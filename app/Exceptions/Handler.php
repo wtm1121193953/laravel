@@ -48,7 +48,7 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         if($request->is('api/*')){
-            return $this->renderForApi($request, $exception);
+//            return $this->renderForApi($request, $exception);
         }else {
             return redirect('/app?__from=' . urldecode($request->getRequestUri()));
         }
@@ -88,9 +88,9 @@ class Handler extends ExceptionHandler
         if(!$code){
             $code = ResultCode::UNKNOWN;
         }
-        if(env('APP_DEBUG')){
-            $message .= " 文件: " . $exception->getFile() . ' 行数: ' . $exception->getLine();
-        }
+        /*if(env('APP_DEBUG')){
+            $message = $message . " 文件: " . $exception->getFile() . ' 行数: ' . $exception->getLine();
+        }*/
 
         return response(['code' => $code, 'message' => $message]);
     }

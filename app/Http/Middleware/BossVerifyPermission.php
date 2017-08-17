@@ -9,6 +9,7 @@ namespace App\Http\Middleware;
 
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\UnloginException;
+use App\Modules\BossAuth\BossAuthService;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,7 +18,7 @@ class BossVerifyPermission
 {
     public function handle(Request $request, Closure $next){
         // 不需要登录的路由名称列表
-        $excludeLoginRouteNames = ['login', 'dev'];
+        /*$excludeLoginRouteNames = ['login', 'dev'];
         // 不需要检查权限的地址列表
         $excludeCheckAuthUrls = [];
         $currentPath = '/' . $request->path();
@@ -31,14 +32,14 @@ class BossVerifyPermission
             }
             if(!in_array($currentPath, $excludeCheckAuthUrls)){
 
-                $hasPermission = BossAuthService::checkAuthByUrl($user['id'], $currentPath);
-
+//                $hasPermission = BossAuthService::checkAuthByUrl($user['id'], $currentPath);
+                $hasPermission = true;
                 if(!$hasPermission){
                     throw new NoPermissionException('没有权限, 权限地址: ' . $currentPath);
                 }
 
             }
-        }
+        }*/
 
         $response = $next($request);
         return $response;

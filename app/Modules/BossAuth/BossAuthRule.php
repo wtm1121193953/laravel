@@ -2,9 +2,9 @@
 
 namespace App\Modules\BossAuth;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Modules\BaseModel;
 
-class BossAuthRule extends Model
+class BossAuthRule extends BaseModel
 {
     //
 }
