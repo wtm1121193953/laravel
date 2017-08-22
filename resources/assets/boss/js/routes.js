@@ -7,6 +7,10 @@ import Error from './components/page/public/error.vue'
 import Index from './components/page/public/index.vue'
 import Refresh from './components/page/public/refresh.vue'
 
+import UserList from './components/page/user/list.vue'
+import UserAdd from './components/page/user/add.vue'
+import UserEdit from './components/page/user/edit.vue'
+
 /**
  * meta参数解析
  * hideLeft: 是否隐藏左侧菜单，单页菜单为true
@@ -35,20 +39,21 @@ const routes = [
     },
 
     // 权限模块
-    /*{
+    {
         path: '/boss',
         component: Home,
         children: [
-            { path: 'auth/group/list', component: GroupList, name: 'GroupList'},
-            { path: 'auth/group/add',  component: GroupAdd,  name: 'GroupAdd'},
-            { path: 'auth/group/edit', component: GroupEdit, name: 'GroupEdit'},
-            { path: 'auth/rule/list',  component: RuleList,  name: 'RuleList'},
-            { path: 'auth/rule/add',   component: RuleAdd,   name: 'RuleAdd'},
-            { path: 'auth/rule/edit',  component: RuleEdit,  name: 'RuleEdit'},
-            { path: 'auth/account/list',  component: AccountList,  name: 'AccountList'},
-            { path: 'auth/account/edit',  component: AccountEdit,  name: 'AccountEdit'}
+            { path: 'user/list', component: UserList, name: 'UserList'},
+            { path: 'user/add',  component: UserAdd,  name: 'UserAdd'},
+            { path: 'user/edit', component: UserEdit, name: 'UserEdit'},
+            /*{ path: 'group/list',  component: AccountList,  name: 'AccountList'},
+            { path: 'group/add',  component: AccountEdit,  name: 'AccountEdit'},
+            { path: 'group/edit',  component: AccountEdit,  name: 'AccountEdit'},
+            { path: 'rule/list',  component: RuleList,  name: 'RuleList'},
+            { path: 'rule/add',   component: RuleAdd,   name: 'RuleAdd'},
+            { path: 'rule/edit',  component: RuleEdit,  name: 'RuleEdit'},*/
         ]
-    },*/
+    },
 
     {path: '*', redirect: '/boss/404'},
 

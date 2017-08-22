@@ -185,9 +185,9 @@
                 }
             },
             getTitleAndLogo() {
-                document.title = '运营平台 - BOSS'
+                document.title = '项目管理 - BOSS'
                 this.logo_type = '2'
-                this.title = '运营平台 - BOSS'
+                this.title = '项目管理 - BOSS'
             }
         },
         created() {

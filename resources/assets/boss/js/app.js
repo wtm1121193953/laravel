@@ -4,7 +4,7 @@ import App from './components/app'
 
 import bus from '../../js/bus';
 
-window.baseApiUrl = '/api/boss';
+window.baseApiUrl = '/api/boss/';
 import api from '../../js/api';
 
 window.bus = bus;

@@ -6,6 +6,7 @@ use App\Result;
 use App\ResultCode;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -48,9 +49,11 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         if($request->is('api/*')){
-//            return $this->renderForApi($request, $exception);
-        }else {
-            return redirect('/app?__from=' . urldecode($request->getRequestUri()));
+            return $this->renderForApi($request, $exception);
+        }else if($request->is('boss/*')){
+            if($exception instanceof NotFoundHttpException){
+                return redirect('/boss?__from=' . urldecode($request->getRequestUri()));
+            }
         }
         return parent::render($request, $exception);
     }
@@ -82,16 +85,15 @@ class Handler extends ExceptionHandler
         if($exception instanceof NotFoundHttpException){
             return response(['code' => ResultCode::API_NOT_FOUND, 'message' => '接口不存在']);
         }
-
-        $code = $exception->getCode();
-        $message = $exception->getMessage();
-        if(!$code){
-            $code = ResultCode::UNKNOWN;
+        if($exception instanceof ModelNotFoundException){
+            $message = '数据不存在: ' . $exception->getModel() . ' -> [ ' . implode(',', $exception->getIds()) . ']';
+            $exception = new BaseResponseException($message, ResultCode::DB_QUERY_FAIL);
         }
-        /*if(env('APP_DEBUG')){
-            $message = $message . " 文件: " . $exception->getFile() . ' 行数: ' . $exception->getLine();
-        }*/
+        if($exception instanceof BaseResponseException){
+            return $exception->getResponse();
+        }else {
+            return parent::render($request, $exception);
+        }
 
-        return response(['code' => $code, 'message' => $message]);
     }
 }

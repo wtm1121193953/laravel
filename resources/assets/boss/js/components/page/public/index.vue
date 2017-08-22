@@ -13,7 +13,7 @@
 
             <div>
                 <el-col :offset="2" :span="16">
-                    <h1 class="title">欢迎来到运营服务平台-BOSS系统</h1>
+                    <h1 class="title">项目管理</h1>
                 </el-col>
             </div>
         </el-row>

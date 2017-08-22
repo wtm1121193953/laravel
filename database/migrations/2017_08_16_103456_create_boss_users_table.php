@@ -19,6 +19,8 @@ class CreateBossUsersTable extends Migration
             $table->string('password', 64)->comment('密码');
             $table->string('salt', 64)->default('')->comment('盐值');
             $table->integer('group_id')->default(0)->comment('所属分组');
+            $table->tinyInteger('is_super')->default(2)->comment('是否是超级用户 1-超级用户 2-普通用户');
+            $table->tinyInteger('status')->default(1)->comment('状态 1-正常  2-禁用');
             $table->timestamps();
         });
     }

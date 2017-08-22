@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let baseApiUrl = window.baseApiUrl || '';
+window.baseApiUrl = window.baseApiUrl || '';
 const CODE_OK = 0;
 const CODE_UN_LOGIN = 10003;
 
@@ -32,11 +32,22 @@ function handlerNetworkError(error) {
     bus.$message.error('请求超时，请检查网络')
 }
 
+function getRealUrl(url) {
+    if(url.indexOf(window.baseApiUrl) === 0){
+        return url;
+    }
+    if(url.indexOf('/') === 0){
+        url = url.substr(1);
+    }
+    return window.baseApiUrl + url
+}
+
 function get(url, params) {
     let options = {
         headers: {'X-Requested-With': 'XMLHttpRequest'},
         params: params,
     };
+    url = getRealUrl(url);
     return axios.get(url, options).then(res => {
         return res.data
     }).catch(handlerNetworkError)
@@ -46,6 +57,7 @@ function post(url, params) {
     let options = {
         headers: {'X-Requested-With': 'XMLHttpRequest'}
     };
+    url = getRealUrl(url);
     return axios.post(url, params, options).then(res => {
         return res.data
     }).catch(handlerNetworkError)
@@ -61,24 +73,7 @@ export default {
     get,
     post,
     mockData,
-    handlerRes,
-    doLogin: function (params) {
-        // 调试时不去真实请求数据
-        return post(`${baseApiUrl}/provider/account/login`, params).then(res => {
-            return handlerRes(res)
-        });
-    },
-    doLoginWithSign: function (params) {
-        // 调试时不去真实请求数据
-        return post(`${base}/provider/account/freeLogin`, params).then(res => {
-            return handlerRes(res)
-        });
-    },
-    providerPost: function (url, params) {
-        return post(url, params).then(res => {
-            return handlerRes(res)
-        });
-    }
+    handlerRes
 }
 
 // export const requestLogin = params => { return axios.post(`${base}/login`, params).then(res => res.data); };

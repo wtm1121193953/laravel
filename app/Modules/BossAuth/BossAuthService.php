@@ -9,6 +9,7 @@ namespace App\Modules\BossAuth;
 
 
 use App\Modules\Service;
+use Illuminate\Contracts\Support\Arrayable;
 
 class BossAuthService extends Service
 {
@@ -38,6 +39,9 @@ class BossAuthService extends Service
     public static function getEnableRulesByUserId($userId)
     {
         $user = self::getUserById($userId);
+        if($user->is_super){
+            return self::getAllEnableRules();
+        }
         $groupId = $user->group_id;
         return self::getEnableRulesByGroupId($groupId);
     }
@@ -74,6 +78,16 @@ class BossAuthService extends Service
         $ruleIds = BossAuthGroup::where('id', $groupId)->value('rule_ids');
         $rules = BossAuthRule::whereIn('id', explode(',', $ruleIds))->get();
         return $rules;
+    }
+
+    /**
+     * 根据用户名获取用户信息
+     * @param $username
+     * @return BossUser
+     */
+    public static function getUserByName($username)
+    {
+        return BossUser::where('username', $username)->first();
     }
 
     /**
@@ -119,4 +133,53 @@ class BossAuthService extends Service
         return BossAuthRule::all();
     }
 
+    /**
+     * 获取所有可用的权限
+     * @return \Illuminate\Support\Collection
+     */
+    private static function getAllEnableRules()
+    {
+        return BossAuthRule::where('status', 1)->get();
+    }
+
+    /**
+     * 生成加密后的密码
+     * @param $password
+     * @param $salt
+     * @return string
+     */
+    public static function genPassword($password, $salt)
+    {
+        return md5(md5($password) . $salt);
+    }
+
+    /**
+     * 将权限数组转换为树形结构
+     * @param $rules array|Arrayable
+     * @return array
+     */
+    public static function convertRulesToTree($rules){
+        foreach ($rules as $k=> $rule) {
+            $rules[$k] = $rule->toArray();
+        }
+        $tree = [];
+        foreach ($rules as &$parent){
+            if($parent['pid'] == 0){
+                if(!isset($rule2['sub'])){
+                    $rule2['sub'] = [];
+                }
+                $tree[] =& $parent;
+            }
+            foreach ($rules as &$sub){
+                if($sub['pid'] == $parent['id']){
+                    if(!isset($parent['sub'])){
+                        $parent['sub'] = [];
+                    }
+                    $parent['sub'][] =& $sub;
+                }
+            }
+
+        }
+        return $tree;
+    }
 }
