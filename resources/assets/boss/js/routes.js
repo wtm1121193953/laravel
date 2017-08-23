@@ -11,6 +11,10 @@ import UserList from './components/page/user/list.vue'
 import UserAdd from './components/page/user/add.vue'
 import UserEdit from './components/page/user/edit.vue'
 
+import RuleList from './components/page/rule/list.vue'
+import RuleAdd from './components/page/rule/add.vue'
+import RuleEdit from './components/page/rule/edit.vue'
+
 /**
  * meta参数解析
  * hideLeft: 是否隐藏左侧菜单，单页菜单为true
@@ -48,10 +52,10 @@ const routes = [
             { path: 'user/edit', component: UserEdit, name: 'UserEdit'},
             /*{ path: 'group/list',  component: AccountList,  name: 'AccountList'},
             { path: 'group/add',  component: AccountEdit,  name: 'AccountEdit'},
-            { path: 'group/edit',  component: AccountEdit,  name: 'AccountEdit'},
+            { path: 'group/edit',  component: AccountEdit,  name: 'AccountEdit'},*/
             { path: 'rule/list',  component: RuleList,  name: 'RuleList'},
             { path: 'rule/add',   component: RuleAdd,   name: 'RuleAdd'},
-            { path: 'rule/edit',  component: RuleEdit,  name: 'RuleEdit'},*/
+            { path: 'rule/edit',  component: RuleEdit,  name: 'RuleEdit'},
         ]
     },
 

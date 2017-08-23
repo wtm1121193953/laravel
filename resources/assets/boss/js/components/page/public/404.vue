@@ -2,7 +2,7 @@
     <!-- Vue file -->
     <div>
         <el-breadcrumb>
-            <el-breadcrumb-item @click.native="$menu.change('/provider/index')">首页</el-breadcrumb-item>
+            <el-breadcrumb-item @click.native="$menu.change('/')">首页</el-breadcrumb-item>
             <el-breadcrumb-item>404页面</el-breadcrumb-item>
         </el-breadcrumb>
 

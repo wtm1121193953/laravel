@@ -521,6 +521,397 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/boss/js/components/page/rule/add.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {};
+    },
+    methods: {},
+    created: function created() {}
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/boss/js/components/page/rule/edit.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {};
+    },
+    methods: {},
+    created: function created() {}
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/boss/js/components/page/rule/list-page.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__js_api_js__ = __webpack_require__("./resources/assets/js/api.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/*
+ * 事件列表 : add, export, search, edit, del
+ * 属性列表
+ *      title: 页面标题 必须
+ *      dataUrl: 数据获取接口地址 必须
+ *      columns: 要展示的数据列 必须
+ *      exportBtn: 导出按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'导出数据', false不显示按钮 默认: false
+ *      addBtn: 添加数据按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'添加数据', false不显示按钮 默认: false
+ *      edit: 列表中是否有编辑选项  默认: 有
+ *      del: 列表中是否有删除选项  默认: 有
+ *      rowOptions: 列表每一行的其他操作项  可以为空
+ *      disablePage: 是否禁用分页  默认不禁用
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: {
+        breadcrumb: { type: Object, required: true },
+        title: { type: String, required: true },
+        dataUrl: { type: String, required: true },
+        columns: { type: Object, required: true },
+        edit: { type: [Boolean, Function], default: true }, // 是否有编辑选项
+        del: { type: [Boolean, Function], default: true }, // 是否有编辑选项
+        rowOptions: { type: Object },
+        exportBtn: { type: [Boolean, String], default: false },
+        addBtn: { type: [Boolean, String], default: false },
+        disablePage: { type: Boolean, default: false },
+        batchOption: { type: Boolean, default: false },
+        searchForm: { type: Object, default: null }
+    },
+    data: function data() {
+        return {
+            loading: false,
+            page: 1,
+            pageSize: 15,
+            total: 0,
+            list: [],
+            selectionList: []
+        };
+    },
+    methods: {
+        toPath: function toPath(path) {
+            router.push(path);
+        },
+        getList: function getList() {
+            this.loading = true;
+            var params = {};
+            if (this.searchForm) {
+                params = this.searchForm;
+                params.page = this.page;
+            }
+
+            var self = this;
+            __WEBPACK_IMPORTED_MODULE_0__js_api_js__["a" /* default */].get(this.dataUrl, params).then(function (res) {
+                self.loading = false;
+                __WEBPACK_IMPORTED_MODULE_0__js_api_js__["a" /* default */].handlerRes(res).then(function (data) {
+                    self.list = data.list;
+                    self.total = data.total;
+                });
+            });
+        },
+
+        // 搜索列表
+        search: function search() {
+            this.getList();
+        },
+
+        // 翻页
+        changePage: function changePage() {
+            this.getList();
+        },
+
+        // 改变状态
+        changeStatus: function changeStatus(row) {
+            row.status = row.status == 1 ? 2 : 1;
+        },
+
+        // 列表项选中事件
+        selectionChange: function selectionChange(list) {
+            this.selectionList = list;
+        },
+
+        // 批量启用
+        batchEnable: function batchEnable() {
+            var _self = this;
+            if (_self.selectionList.length <= 0) {
+                this.$message.warning('请先选择项目');
+                return false;
+            }
+            this.$confirm('确定要启用你所选择的项目吗? ').then(function () {
+                _self.selectionList.forEach(function (item) {
+                    item.status = 1;
+                });
+            });
+        },
+
+        // 批量禁用
+        batchDisable: function batchDisable() {
+            var _self = this;
+
+            if (_self.selectionList.length <= 0) {
+                this.$message.warning('请先选择项目');
+                return false;
+            }
+            this.$confirm('确定要禁用你所选择的项目吗? ').then(function () {
+                _self.selectionList.forEach(function (item) {
+                    item.status = 2;
+                });
+            });
+        },
+        moreMenuClick: function moreMenuClick(options) {
+            this.$message.success('您点击了 ' + options + ' 选项');
+        }
+    },
+    created: function created() {
+        this.getList();
+    }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/boss/js/components/page/rule/list.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__list_page_vue__ = __webpack_require__("./resources/assets/boss/js/components/page/rule/list-page.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__list_page_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__list_page_vue__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            columns: {
+                权限名: 'name',
+                url: 'url',
+                状态: function _(row) {
+                    return row.status == 1 ? '<span class="c-green">正常</span>' : '<span class="c-warning">禁用</span>';
+                },
+                创建时间: 'create_at'
+            },
+            options: {
+                修改状态: [function (row) {
+                    return bus.$message.error('sdafasdfkjfld修改状态');
+                }, function (row) {
+                    return row.name == '权限';
+                }]
+            },
+            searchForm: {
+                key: '',
+                keyword: '',
+                status: '',
+                page: 1
+            },
+            loading: false,
+            total: 0,
+            list: [],
+            selectionList: []
+        };
+    },
+    methods: {
+        editFunction: function editFunction(row) {
+            console.log(row);
+            return row.name !== '权限';
+        },
+
+        add: function add() {
+            this.$message.success('add success');
+        }
+    },
+    created: function created() {},
+    components: {
+        List: __WEBPACK_IMPORTED_MODULE_0__list_page_vue___default.a
+    }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/boss/js/components/page/user/add.vue":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -801,6 +1192,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: ['menuList'],
@@ -1036,6 +1428,156 @@ if (false) {
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-2595c3e4\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/boss/js/components/page/rule/list-page.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [_c('el-breadcrumb', {
+    staticClass: "p-b-10"
+  }, [_vm._l((_vm.breadcrumb), function(value, key) {
+    return _c('el-breadcrumb-item', {
+      key: key,
+      nativeOn: {
+        "click": function($event) {
+          typeof value == 'function' ? value() : _vm.toPath(value)
+        }
+      }
+    }, [_vm._v(_vm._s(key))])
+  }), _vm._v(" "), _c('el-breadcrumb-item', [_vm._v(_vm._s(_vm.title))])], 2), _vm._v(" "), _c('el-row', {
+    staticClass: "page-content"
+  }, [_c('div', {
+    staticClass: "page-title"
+  }, [_vm._v("\n            " + _vm._s(_vm.title) + "\n        ")]), _vm._v(" "), _c('el-col', [(_vm.searchForm) ? [_vm._t("search"), _vm._v(" "), _c('div', {
+    staticClass: "el-form-item__content fl"
+  }, [_c('el-button', {
+    attrs: {
+      "type": "primary",
+      "size": "small"
+    },
+    on: {
+      "click": _vm.search
+    }
+  }, [_vm._v("搜索")])], 1)] : _vm._e(), _vm._v(" "), _c('div', {
+    staticClass: "el-form-item fr"
+  }, [(_vm.exportBtn) ? _c('el-button', {
+    on: {
+      "click": function($event) {
+        _vm.$emit('export')
+      }
+    }
+  }, [_vm._v(_vm._s(typeof _vm.exportBtn == 'string' ? _vm.exportBtn : '导出数据'))]) : _vm._e(), _vm._v(" "), (_vm.addBtn) ? _c('el-button', {
+    attrs: {
+      "type": "success"
+    },
+    on: {
+      "click": function($event) {
+        _vm.$emit('add')
+      }
+    }
+  }, [_vm._v(_vm._s(typeof _vm.addBtn == 'string' ? _vm.addBtn : '添加数据'))]) : _vm._e()], 1)], 2), _vm._v(" "), _c('el-col', [_c('el-table', {
+    directives: [{
+      name: "loading",
+      rawName: "v-loading",
+      value: (_vm.loading),
+      expression: "loading"
+    }],
+    attrs: {
+      "stripe": "",
+      "data": _vm.list
+    },
+    on: {
+      "selection-change": _vm.selectionChange
+    }
+  }, [(_vm.batchOption) ? _c('el-table-column', {
+    attrs: {
+      "type": "selection"
+    }
+  }) : _vm._e(), _vm._v(" "), _vm._l((_vm.columns), function(name, key) {
+    return _c('el-table-column', {
+      key: key,
+      attrs: {
+        "label": key
+      },
+      scopedSlots: _vm._u([{
+        key: "default",
+        fn: function(scope) {
+          return [_c('div', {
+            domProps: {
+              "innerHTML": _vm._s(typeof name == 'function' ? name(scope.row) : scope.row[name])
+            }
+          })]
+        }
+      }])
+    })
+  }), _vm._v(" "), (_vm.rowOptions || _vm.edit || _vm.del) ? _c('el-table-column', {
+    attrs: {
+      "label": "操作"
+    },
+    scopedSlots: _vm._u([{
+      key: "default",
+      fn: function(scope) {
+        return [_vm._l((_vm.rowOptions), function(callback, key) {
+          return (typeof callback == 'function' ||
+            (typeof callback[1] == 'function' && callback[1](scope.row))) ? _c('el-button', {
+            key: key,
+            attrs: {
+              "type": "text"
+            },
+            on: {
+              "click": function($event) {
+                typeof callback == 'function' ? callback(scope.row) : callback[0](scope.row)
+              }
+            }
+          }, [_vm._v(_vm._s(key))]) : _vm._e()
+        }), _vm._v(" "), (typeof _vm.edit == 'function' ? _vm.edit(scope.row) : _vm.edit) ? _c('el-button', {
+          attrs: {
+            "type": "text"
+          },
+          on: {
+            "click": function($event) {
+              _vm.$emit('edit', scope.row)
+            }
+          }
+        }, [_vm._v("编辑")]) : _vm._e(), _vm._v(" "), (typeof _vm.del == 'function' ? _vm.del(scope.row) : _vm.del) ? _c('el-button', {
+          attrs: {
+            "type": "text"
+          },
+          on: {
+            "click": function($event) {
+              _vm.$emit('del', scope.row)
+            }
+          }
+        }, [_vm._v("删除")]) : _vm._e()]
+      }
+    }])
+  }) : _vm._e()], 2), _vm._v(" "), _c('el-col', {
+    staticClass: "m-t-20"
+  }, [(!_vm.disablePage) ? _c('el-pagination', {
+    staticClass: "fr",
+    attrs: {
+      "layout": "total, prev, pager, next",
+      "current-page": _vm.page,
+      "page-size": _vm.pageSize,
+      "total": _vm.total
+    },
+    on: {
+      "update:currentPage": function($event) {
+        _vm.page = $event
+      },
+      "current-change": _vm.changePage
+    }
+  }) : _vm._e()], 1)], 1)], 1)], 1)
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-2595c3e4", module.exports)
+  }
+}
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-56a50382\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/boss/js/components/login.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1162,6 +1704,22 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
      require("vue-hot-reload-api").rerender("data-v-56a50382", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-5a306727\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/boss/js/components/page/rule/add.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div')
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-5a306727", module.exports)
   }
 }
 
@@ -1354,7 +1912,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   return _c('div', [_c('el-breadcrumb', [_c('el-breadcrumb-item', {
     nativeOn: {
       "click": function($event) {
-        _vm.$menu.change('/provider/index')
+        _vm.$menu.change('/')
       }
     }
   }, [_vm._v("首页")]), _vm._v(" "), _c('el-breadcrumb-item', [_vm._v("404页面")])], 1), _vm._v(" "), _c('el-row', {
@@ -1586,6 +2144,134 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
      require("vue-hot-reload-api").rerender("data-v-cc0abcce", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-d0b9b618\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/boss/js/components/page/rule/edit.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div')
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-d0b9b618", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-ef4a04f0\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/boss/js/components/page/rule/list.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [_c('list', {
+    attrs: {
+      "breadcrumb": {
+        首页: function() {
+          _vm.$menu.change('/')
+        }
+      },
+      "title": "权限列表",
+      "data-url": "/rules",
+      "columns": _vm.columns,
+      "rowOptions": _vm.options,
+      "addBtn": "添加权限",
+      "exportBtn": "导出",
+      "edit": function(row) {
+        return row.name != '用户管理'
+      },
+      "disablePage": true,
+      "searchForm": _vm.searchForm
+    },
+    on: {
+      "add": _vm.add,
+      "export": function(row) {
+        _vm.$message.error('导出');
+      }
+    }
+  }, [_c('el-form', {
+    staticClass: "search-form fl",
+    attrs: {
+      "inline": true,
+      "model": _vm.searchForm
+    },
+    slot: "search"
+  }, [_c('el-form-item', [_c('el-form-item', [_c('el-select', {
+    attrs: {
+      "size": "small",
+      "placeholder": "请选择搜索项"
+    },
+    model: {
+      value: (_vm.searchForm.key),
+      callback: function($$v) {
+        _vm.searchForm.key = $$v
+      },
+      expression: "searchForm.key"
+    }
+  }, [_c('el-option', {
+    attrs: {
+      "label": "名称",
+      "value": "name"
+    }
+  }), _vm._v(" "), _c('el-option', {
+    attrs: {
+      "label": "描述",
+      "value": "desc"
+    }
+  })], 1)], 1), _vm._v(" "), _c('el-form-item', [_c('el-input', {
+    attrs: {
+      "size": "small",
+      "placeholder": "请输入关键字"
+    },
+    model: {
+      value: (_vm.searchForm.keyword),
+      callback: function($$v) {
+        _vm.searchForm.keyword = $$v
+      },
+      expression: "searchForm.keyword"
+    }
+  })], 1)], 1), _vm._v(" "), _c('el-form-item', {
+    attrs: {
+      "label": "状态："
+    }
+  }, [_c('el-select', {
+    attrs: {
+      "size": "small"
+    },
+    model: {
+      value: (_vm.searchForm.status),
+      callback: function($$v) {
+        _vm.searchForm.status = $$v
+      },
+      expression: "searchForm.status"
+    }
+  }, [_c('el-option', {
+    attrs: {
+      "label": "全部",
+      "value": ""
+    }
+  }), _vm._v(" "), _c('el-option', {
+    attrs: {
+      "label": "启用",
+      "value": "1"
+    }
+  }), _vm._v(" "), _c('el-option', {
+    attrs: {
+      "label": "禁用",
+      "value": "2"
+    }
+  })], 1)], 1)], 1)], 1)], 1)
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-ef4a04f0", module.exports)
   }
 }
 
@@ -2121,6 +2807,170 @@ module.exports = Component.exports
 
 /***/ }),
 
+/***/ "./resources/assets/boss/js/components/page/rule/add.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")(
+  /* script */
+  __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/boss/js/components/page/rule/add.vue"),
+  /* template */
+  __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-5a306727\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/boss/js/components/page/rule/add.vue"),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\add.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] add.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5a306727", Component.options)
+  } else {
+    hotAPI.reload("data-v-5a306727", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/assets/boss/js/components/page/rule/edit.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")(
+  /* script */
+  __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/boss/js/components/page/rule/edit.vue"),
+  /* template */
+  __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-d0b9b618\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/boss/js/components/page/rule/edit.vue"),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\edit.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] edit.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-d0b9b618", Component.options)
+  } else {
+    hotAPI.reload("data-v-d0b9b618", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/assets/boss/js/components/page/rule/list-page.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")(
+  /* script */
+  __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/boss/js/components/page/rule/list-page.vue"),
+  /* template */
+  __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-2595c3e4\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/boss/js/components/page/rule/list-page.vue"),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\list-page.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] list-page.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-2595c3e4", Component.options)
+  } else {
+    hotAPI.reload("data-v-2595c3e4", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/assets/boss/js/components/page/rule/list.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")(
+  /* script */
+  __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/boss/js/components/page/rule/list.vue"),
+  /* template */
+  __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-ef4a04f0\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/boss/js/components/page/rule/list.vue"),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\list.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] list.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-ef4a04f0", Component.options)
+  } else {
+    hotAPI.reload("data-v-ef4a04f0", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
 /***/ "./resources/assets/boss/js/components/page/user/add.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2266,6 +3116,16 @@ module.exports = Component.exports
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__components_page_user_add_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7__components_page_user_add_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_page_user_edit_vue__ = __webpack_require__("./resources/assets/boss/js/components/page/user/edit.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_page_user_edit_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__components_page_user_edit_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_page_rule_list_vue__ = __webpack_require__("./resources/assets/boss/js/components/page/rule/list.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_page_rule_list_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__components_page_rule_list_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__components_page_rule_add_vue__ = __webpack_require__("./resources/assets/boss/js/components/page/rule/add.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__components_page_rule_add_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10__components_page_rule_add_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__components_page_rule_edit_vue__ = __webpack_require__("./resources/assets/boss/js/components/page/rule/edit.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__components_page_rule_edit_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11__components_page_rule_edit_vue__);
+
+
+
+
 
 
 
@@ -2299,7 +3159,11 @@ var routes = [
 {
     path: '/boss',
     component: __WEBPACK_IMPORTED_MODULE_0__components_home_vue___default.a,
-    children: [{ path: 'user/list', component: __WEBPACK_IMPORTED_MODULE_6__components_page_user_list_vue___default.a, name: 'UserList' }, { path: 'user/add', component: __WEBPACK_IMPORTED_MODULE_7__components_page_user_add_vue___default.a, name: 'UserAdd' }, { path: 'user/edit', component: __WEBPACK_IMPORTED_MODULE_8__components_page_user_edit_vue___default.a, name: 'UserEdit' }]
+    children: [{ path: 'user/list', component: __WEBPACK_IMPORTED_MODULE_6__components_page_user_list_vue___default.a, name: 'UserList' }, { path: 'user/add', component: __WEBPACK_IMPORTED_MODULE_7__components_page_user_add_vue___default.a, name: 'UserAdd' }, { path: 'user/edit', component: __WEBPACK_IMPORTED_MODULE_8__components_page_user_edit_vue___default.a, name: 'UserEdit' },
+    /*{ path: 'group/list',  component: AccountList,  name: 'AccountList'},
+    { path: 'group/add',  component: AccountEdit,  name: 'AccountEdit'},
+    { path: 'group/edit',  component: AccountEdit,  name: 'AccountEdit'},*/
+    { path: 'rule/list', component: __WEBPACK_IMPORTED_MODULE_9__components_page_rule_list_vue___default.a, name: 'RuleList' }, { path: 'rule/add', component: __WEBPACK_IMPORTED_MODULE_10__components_page_rule_add_vue___default.a, name: 'RuleAdd' }, { path: 'rule/edit', component: __WEBPACK_IMPORTED_MODULE_11__components_page_rule_edit_vue___default.a, name: 'RuleEdit' }]
 }, { path: '*', redirect: '/boss/404' }];
 /* harmony default export */ __webpack_exports__["a"] = (routes);
 

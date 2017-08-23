@@ -23,6 +23,7 @@ class Result
             'code'    => ResultCode::SUCCESS,
             'message' => $message,
             'data'    => $data,
+            'timestamp' => time(),
         ]);
     }
 }

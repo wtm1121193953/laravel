@@ -83,7 +83,7 @@ class Handler extends ExceptionHandler
     private function renderForApi($request, Exception $exception)
     {
         if($exception instanceof NotFoundHttpException){
-            return response(['code' => ResultCode::API_NOT_FOUND, 'message' => '接口不存在']);
+            return response(['code' => ResultCode::API_NOT_FOUND, 'message' => '接口不存在', 'timestamp' => time()]);
         }
         if($exception instanceof ModelNotFoundException){
             $message = '数据不存在: ' . $exception->getModel() . ' -> [ ' . implode(',', $exception->getIds()) . ']';

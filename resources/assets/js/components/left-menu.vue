@@ -6,6 +6,7 @@
                 <el-menu-item index="/">
                     <i class=""></i>首页
                 </el-menu-item>
+
                 <el-menu-item v-if="!menu.sub || menu.sub.length <= 0" :index="menu.url">
                     <i v-if="menu.icon" :class="menu.icon"></i>
                     {{menu.name}}

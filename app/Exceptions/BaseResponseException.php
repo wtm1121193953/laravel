@@ -24,7 +24,8 @@ class BaseResponseException extends HttpResponseException
     {
         $response = response([
             'code' => $code,
-            'message' => $message
+            'message' => $message,
+            'timestamp' => time(),
         ]);
         parent::__construct($response);
     }
