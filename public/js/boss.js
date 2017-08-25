@@ -521,23 +521,214 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/boss/js/components/page/rule/add-page.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__js_api__ = __webpack_require__("./resources/assets/js/api.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/*
+ *
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+    props: {
+        breadcrumb: { type: Object, required: true },
+        title: { type: String, required: true },
+        url: { type: String, required: true },
+        fields: { type: Array, required: true }
+    },
+    data: function data() {
+        return {
+            isLoading: false,
+            form: {
+                name: '',
+                pid: '',
+                status: 1,
+                url: '',
+                url_all: ''
+            },
+            parentRules: [],
+            formRules: {
+                name: [{ required: true, message: '请输入权限名称', trigger: 'blur' }],
+                url: [{ required: true, message: '请输入权限url', trigger: 'blur' }]
+            }
+        };
+    },
+
+    computed: {
+        url_all_for_post: function url_all_for_post() {
+            if (!this.form.url_all) return '';
+            return this.form.url_all.toString().replace(/，/gm, ',').replace(/[\r\n]/igm, '').replace(/\s+/gm, '');
+        }
+    },
+    methods: {
+        getFieldName: function getFieldName(field) {
+            return typeof field == 'string' ? field : field.name;
+        },
+        getFieldType: function getFieldType(field) {
+            var type = typeof field == 'string' ? 'text' : field.type;
+            return type || 'text';
+        },
+        getFieldPlaceholder: function getFieldPlaceholder(field) {
+            var placeholder = typeof field == 'string' ? '' : field.placeholder;
+            return placeholder || '';
+        },
+        getFieldRules: function getFieldRules(field) {},
+        toPath: function toPath(path) {
+            router.push(path);
+        },
+        commitAdd: function commitAdd(form) {
+            var _this = this;
+
+            this.$refs[form].validate(function (valid) {
+                if (valid) {
+                    _this.isLoading = !_this.isLoading;
+                    var postData = {
+                        id: _this.form.id,
+                        name: _this.form.name,
+                        pid: _this.form.pid,
+                        url: _this.form.url,
+                        url_all: _this.url_all_for_post,
+                        status: _this.form.status
+                    };
+                    __WEBPACK_IMPORTED_MODULE_0__js_api__["a" /* default */].post('/api/boss/auth/rule/create', postData).then(function (res) {
+                        __WEBPACK_IMPORTED_MODULE_0__js_api__["a" /* default */].handlerRes(res).then(function (data) {
+                            _this.$message.success('添加成功');
+                            _this.$router.back();
+                        });
+                    }).catch(function (res) {
+                        _this.isLoading = !_this.isLoading;
+                    });
+                }
+            });
+        },
+        getParentRuleList: function getParentRuleList() {
+            var _self = this;
+            __WEBPACK_IMPORTED_MODULE_0__js_api__["a" /* default */].get('/api/boss/auth/rule/getParentRuleList', {}).then(function (res) {
+                __WEBPACK_IMPORTED_MODULE_0__js_api__["a" /* default */].handlerRes(res).then(function (data) {
+                    _self.parentRules = data.list;
+                });
+            }).catch(function (res) {});
+        }
+    },
+    created: function created() {
+        this.getParentRuleList();
+    }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/boss/js/components/page/rule/add.vue":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__add_page_vue__ = __webpack_require__("./resources/assets/boss/js/components/page/rule/add-page.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__add_page_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__add_page_vue__);
 //
 //
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {};
     },
     methods: {},
-    created: function created() {}
+    created: function created() {},
+    components: {
+        add: __WEBPACK_IMPORTED_MODULE_0__add_page_vue___default.a
+    }
 });
 
 /***/ }),
@@ -696,30 +887,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /*
  * 事件列表 : add, export, search, edit, del
  * 属性列表
+ *      breadcrumb: 页面面包屑, 不需要包含当前页面的标题
  *      title: 页面标题 必须
  *      dataUrl: 数据获取接口地址 必须
+ *      searchForm: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
  *      columns: 要展示的数据列 必须
- *      exportBtn: 导出按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'导出数据', false不显示按钮 默认: false
  *      addBtn: 添加数据按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'添加数据', false不显示按钮 默认: false
+ *      exportBtn: 导出按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'导出数据', false不显示按钮 默认: false
  *      edit: 列表中是否有编辑选项  默认: 有
  *      del: 列表中是否有删除选项  默认: 有
  *      rowOptions: 列表每一行的其他操作项  可以为空
  *      disablePage: 是否禁用分页  默认不禁用
+ *      batchOptions: 批量操作
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
         breadcrumb: { type: Object, required: true },
         title: { type: String, required: true },
         dataUrl: { type: String, required: true },
+        searchForm: { type: Object, default: null },
         columns: { type: Object, required: true },
+        exportBtn: { type: [Boolean, String], default: false },
+        addBtn: { type: [Boolean, String], default: false },
         edit: { type: [Boolean, Function], default: true }, // 是否有编辑选项
         del: { type: [Boolean, Function], default: true }, // 是否有编辑选项
         rowOptions: { type: Object },
-        exportBtn: { type: [Boolean, String], default: false },
-        addBtn: { type: [Boolean, String], default: false },
         disablePage: { type: Boolean, default: false },
-        batchOption: { type: Boolean, default: false },
-        searchForm: { type: Object, default: null }
+        batchOptions: { type: Object, default: null }
     },
     data: function data() {
         return {
@@ -868,6 +1062,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     data: function data() {
         return {
             columns: {
+                ID: 'id',
                 权限名: 'name',
                 url: 'url',
                 状态: function _(row) {
@@ -901,7 +1096,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
 
         add: function add() {
-            this.$message.success('add success');
+            router.push('/boss/rule/add');
         }
     },
     created: function created() {},
@@ -1488,7 +1683,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "selection-change": _vm.selectionChange
     }
-  }, [(_vm.batchOption) ? _c('el-table-column', {
+  }, [(_vm.batchOptions) ? _c('el-table-column', {
     attrs: {
       "type": "selection"
     }
@@ -1713,13 +1908,184 @@ if (false) {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div')
+  return _c('div', [_c('add', {
+    attrs: {
+      "breadcrumb": {
+        首页: function() {
+          _vm.$menu.change('/')
+        },
+        权限列表: '/boss/rule/list'
+      },
+      "title": "添加权限",
+      "url": "/rule/add",
+      "fields": []
+    }
+  })], 1)
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
   module.hot.accept()
   if (module.hot.data) {
      require("vue-hot-reload-api").rerender("data-v-5a306727", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-6d0c85a5\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/boss/js/components/page/rule/add-page.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
+  return _c('div', [_c('el-breadcrumb', {
+    staticClass: "p-b-10"
+  }, [_vm._l((_vm.breadcrumb), function(value, key) {
+    return _c('el-breadcrumb-item', {
+      key: key,
+      nativeOn: {
+        "click": function($event) {
+          typeof value == 'function' ? value() : _vm.toPath(value)
+        }
+      }
+    }, [_vm._v(_vm._s(key))])
+  }), _vm._v(" "), _c('el-breadcrumb-item', [_vm._v(_vm._s(_vm.title))])], 2), _vm._v(" "), _c('el-row', {
+    staticClass: "page-content"
+  }, [_c('div', {
+    staticClass: "page-title"
+  }, [_vm._v("\n                " + _vm._s(_vm.title) + "\n            ")]), _vm._v(" "), _c('el-form', {
+    ref: "form",
+    attrs: {
+      "model": _vm.form,
+      "rules": _vm.formRules,
+      "label-width": "130px"
+    }
+  }, [_vm._l((_vm.fields), function(field, key) {
+    return _c('el-form-item', {
+      key: key,
+      attrs: {
+        "label": key,
+        "prop": _vm.getFieldName(field)
+      }
+    }, [(_vm.getFieldType(field) == 'select') ? _c('el-select', {
+      staticClass: "w-200",
+      attrs: {
+        "placeholder": _vm.getFieldPlaceholder(field),
+        "rules": _vm.getFieldRules(field),
+        "clearable": ""
+      },
+      model: {
+        value: (_vm.form[_vm.getFieldName(field)]),
+        callback: function($$v) {
+          _vm.$set(_vm.form, _vm.getFieldName(field), $$v)
+        },
+        expression: "form[getFieldName(field)]"
+      }
+    }, _vm._l((field.select), function(item) {
+      return _c('el-option', {
+        key: item.id,
+        attrs: {
+          "label": item.name,
+          "value": item.id
+        }
+      })
+    })) : _vm._e()], 1)
+  }), _vm._v(" "), _c('el-form-item', {
+    attrs: {
+      "label": _vm.form.pid ? '子权限名称' : '权限名称',
+      "prop": "name"
+    }
+  }, [_c('el-input', {
+    staticClass: "h-40 w-200",
+    attrs: {
+      "placeholder": _vm.form.pid ? '例：分组管理' : '例：权限管理'
+    },
+    model: {
+      value: (_vm.form.name),
+      callback: function($$v) {
+        _vm.form.name = (typeof $$v === 'string' ? $$v.trim() : $$v)
+      },
+      expression: "form.name"
+    }
+  })], 1), _vm._v(" "), _c('el-form-item', {
+    attrs: {
+      "label": _vm.form.pid ? '路由地址' : '权限代号',
+      "prop": "name"
+    }
+  }, [_c('el-input', {
+    staticClass: "h-40 w-400",
+    attrs: {
+      "placeholder": _vm.form.pid ? '例：/boss/group/list' : '例：authManage'
+    },
+    model: {
+      value: (_vm.form.url),
+      callback: function($$v) {
+        _vm.form.url = (typeof $$v === 'string' ? $$v.trim() : $$v)
+      },
+      expression: "form.url"
+    }
+  })], 1), _vm._v(" "), (_vm.form.pid) ? _c('el-form-item', {
+    attrs: {
+      "label": "权限接口列表"
+    }
+  }, [_c('el-input', {
+    staticClass: "w-400",
+    attrs: {
+      "type": "textarea",
+      "rows": 10,
+      "placeholder": "多个接口地址之间以,分隔\n示例 ：\n/api/boss/test/getList ,\n/api/boss/test/doAdd"
+    },
+    model: {
+      value: (_vm.form.url_all),
+      callback: function($$v) {
+        _vm.form.url_all = $$v
+      },
+      expression: "form.url_all"
+    }
+  })], 1) : _vm._e(), _vm._v(" "), _c('el-form-item', {
+    attrs: {
+      "label": "状态",
+      "prop": "status"
+    }
+  }, [
+    [_c('el-radio-group', {
+      model: {
+        value: (_vm.form.status),
+        callback: function($$v) {
+          _vm.form.status = $$v
+        },
+        expression: "form.status"
+      }
+    }, [_c('el-radio', {
+      attrs: {
+        "label": 1
+      }
+    }, [_vm._v("启用")]), _vm._v(" "), _c('el-radio', {
+      attrs: {
+        "label": 2
+      }
+    }, [_vm._v("禁用")])], 1)]
+  ], 2), _vm._v(" "), _c('el-form-item', [_c('el-button', {
+    attrs: {
+      "type": "primary",
+      "loading": _vm.isLoading
+    },
+    on: {
+      "click": function($event) {
+        _vm.commitAdd('form')
+      }
+    }
+  }, [_vm._v("提交")]), _vm._v(" "), _c('el-button', {
+    on: {
+      "click": function($event) {
+        _vm.$router.back()
+      }
+    }
+  }, [_vm._v("返回")])], 1)], 2)], 1)], 1)
+},staticRenderFns: []}
+module.exports.render._withStripped = true
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+     require("vue-hot-reload-api").rerender("data-v-6d0c85a5", module.exports)
   }
 }
 
@@ -2178,15 +2544,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       },
       "title": "权限列表",
       "data-url": "/rules",
-      "columns": _vm.columns,
-      "rowOptions": _vm.options,
+      "searchForm": _vm.searchForm,
       "addBtn": "添加权限",
       "exportBtn": "导出",
+      "columns": _vm.columns,
+      "rowOptions": _vm.options,
       "edit": function(row) {
         return row.name != '用户管理'
       },
-      "disablePage": true,
-      "searchForm": _vm.searchForm
+      "disablePage": true
     },
     on: {
       "add": _vm.add,
@@ -2807,6 +3173,47 @@ module.exports = Component.exports
 
 /***/ }),
 
+/***/ "./resources/assets/boss/js/components/page/rule/add-page.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var Component = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")(
+  /* script */
+  __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/boss/js/components/page/rule/add-page.vue"),
+  /* template */
+  __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-6d0c85a5\",\"hasScoped\":false}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/boss/js/components/page/rule/add-page.vue"),
+  /* styles */
+  null,
+  /* scopeId */
+  null,
+  /* moduleIdentifier (server only) */
+  null
+)
+Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\add-page.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
+if (Component.options.functional) {console.error("[vue-loader] add-page.vue: functional components are not supported with templates, they should use render functions.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-6d0c85a5", Component.options)
+  } else {
+    hotAPI.reload("data-v-6d0c85a5", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
 /***/ "./resources/assets/boss/js/components/page/rule/add.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3201,6 +3608,7 @@ function handlerRes(res) {
                     bus.$message.error('您的登录信息已失效, 请先登录');
                     break;
                 default:
+                    console.log('接口返回错误信息:', res);
                     if (!res.disableErrorMessage) {
                         bus.$message.error(res.message || '操作失败');
                     }

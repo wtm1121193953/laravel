@@ -17,6 +17,7 @@ function handlerRes(res) {
                     bus.$message.error('您的登录信息已失效, 请先登录');
                     break;
                 default:
+                    console.log('接口返回错误信息:', res);
                     if(!res.disableErrorMessage){
                         bus.$message.error(res.message || '操作失败');
                     }

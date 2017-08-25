@@ -7,15 +7,15 @@
                 :breadcrumb="{首页: function(){$menu.change('/')} }"
                 title="权限列表"
                 data-url="/rules"
+                :searchForm="searchForm"
+                addBtn="添加权限"
+                exportBtn="导出"
                 :columns="columns"
                 :rowOptions="options"
-                addBtn="添加权限"
-                @add="add"
-                exportBtn="导出"
-                @export="function(row){ $message.error('导出'); }"
                 :edit="function(row){ return row.name != '用户管理'}"
                 :disablePage="true"
-                :searchForm="searchForm"
+                @add="add"
+                @export="function(row){ $message.error('导出'); }"
         >
             <el-form slot="search" class="search-form fl" :inline="true" :model="searchForm">
                 <el-form-item>
@@ -47,6 +47,7 @@
         data: function () {
             return {
                 columns: {
+                    ID: 'id',
                     权限名: 'name',
                     url: 'url',
                     状态: function(row){
@@ -81,7 +82,7 @@
                 return row.name !== '权限'
             },
             add: function(){
-                this.$message.success('add success')
+                router.push('/boss/rule/add')
             }
         },
         created: function () {

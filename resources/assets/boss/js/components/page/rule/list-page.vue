@@ -61,7 +61,7 @@
             <!-- 列表栏 -->
             <el-col>
                 <el-table stripe :data="list" @selection-change="selectionChange" v-loading="loading">
-                    <el-table-column v-if="batchOption" type="selection"></el-table-column>
+                    <el-table-column v-if="batchOptions" type="selection"></el-table-column>
                     <el-table-column v-for="(name, key) in columns" :key="key" :label="key">
                         <template scope="scope">
                             <div v-html="typeof name == 'function' ? name(scope.row) : scope.row[name]"></div>
@@ -125,30 +125,33 @@
     /*
      * 事件列表 : add, export, search, edit, del
      * 属性列表
+     *      breadcrumb: 页面面包屑, 不需要包含当前页面的标题
      *      title: 页面标题 必须
      *      dataUrl: 数据获取接口地址 必须
+     *      searchForm: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
      *      columns: 要展示的数据列 必须
-     *      exportBtn: 导出按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'导出数据', false不显示按钮 默认: false
      *      addBtn: 添加数据按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'添加数据', false不显示按钮 默认: false
+     *      exportBtn: 导出按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'导出数据', false不显示按钮 默认: false
      *      edit: 列表中是否有编辑选项  默认: 有
      *      del: 列表中是否有删除选项  默认: 有
      *      rowOptions: 列表每一行的其他操作项  可以为空
      *      disablePage: 是否禁用分页  默认不禁用
+     *      batchOptions: 批量操作
      */
     export default {
         props: {
             breadcrumb: {type: Object, required: true},
             title: { type: String, required: true },
             dataUrl: {type: String, required: true},
+            searchForm: {type: Object, default: null},
             columns: {type: Object, required: true},
+            exportBtn: {type: [Boolean, String], default: false},
+            addBtn: {type: [Boolean, String], default: false},
             edit: {type: [Boolean, Function], default: true},  // 是否有编辑选项
             del: {type: [Boolean, Function], default: true},  // 是否有编辑选项
             rowOptions: {type: Object},
-            exportBtn: {type: [Boolean, String], default: false},
-            addBtn: {type: [Boolean, String], default: false},
             disablePage: {type: Boolean, default: false},
-            batchOption: {type: Boolean, default: false},
-            searchForm: {type: Object, default: null},
+            batchOptions: {type: Object, default: null},
         },
         data: function () {
             return {
