@@ -27,7 +27,7 @@ class BossAuthRuleTableSeeder extends Seeder
             ['id' => 3, 'name' => '角色管理', 'level' => 2, 'url' => '/boss/group/list',
              'url_all' => '/boss/group/list,/api/boss/groups', 'sort' => 2, 'status' => 1, 'pid' => 1],
             ['id' => 4, 'name' => '权限管理', 'level' => 2, 'url' => '/boss/rule/list',
-             'url_all' => '/boss/rule/list,/api/boss/rules', 'sort' => 3, 'status' => 1, 'pid' => 1],
+             'url_all' => '/boss/rule/list,/api/boss/rules,/api/boss/rule/getTopList', 'sort' => 3, 'status' => 1, 'pid' => 1],
         ]);
     }
 }

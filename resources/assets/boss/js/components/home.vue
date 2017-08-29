@@ -78,7 +78,8 @@
     }
 
     .panel-c-c {
-        background: #f1f2f7;
+        /*background: #f1f2f7;*/
+        background: #ffffff;
         position: absolute;
         right: 0px;
         top: 0px;

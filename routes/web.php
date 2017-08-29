@@ -19,4 +19,8 @@ Route::get('/boss', function () {
     return view('boss');
 });
 
+Route::get('/react', function () {
+    return view('react');
+});
+
 Route::get('/home', 'HomeController@index')->name('home');

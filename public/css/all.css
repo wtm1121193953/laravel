@@ -572,11 +572,14 @@ a {
     margin: 10px 0 15px;
     padding: 0 2px 4px;
     font-size: 15px;
-    border-bottom: solid 2px #54b0ff;
+    /*border-bottom: solid 2px #54b0ff;*/
     font-weight: bold;
 }
 .page-content {
-    background-color: #ffffff; padding: 10px; margin-top: 10px; border-radius: 7px;
+    /*background-color: #ffffff;*/
+    padding: 15px;
+    /*margin-top: 10px;*/
+    /*border-radius: 7px;*/
 }
 .form-footer {
     float: right;

@@ -18,6 +18,7 @@ mix.options({
     }
 });
 
+/*
 mix
     // 加载 boss 前端模块
     .js('resources/assets/boss/js/app.js', 'public/js/boss.js')
@@ -30,6 +31,8 @@ mix
     ], 'public/css/all.css')
     // 复制element-ui的字体文件
     .copy('node_modules/element-ui/lib/theme-default/fonts', 'public/css/fonts/');
+*/
+mix.react('resources/assets/react/src/index.js', 'public/element-react/index.js');
 
 
 // 如果是运行 npm run prod 命令, 启用版本号

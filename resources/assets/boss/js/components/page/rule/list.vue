@@ -2,14 +2,12 @@
     <!-- Vue file -->
     <div>
 
-
         <list
                 :breadcrumb="{首页: function(){$menu.change('/')} }"
                 title="权限列表"
                 data-url="/rules"
                 :searchForm="searchForm"
                 addBtn="添加权限"
-                exportBtn="导出"
                 :columns="columns"
                 :rowOptions="options"
                 :edit="function(row){ return row.name != '用户管理'}"
@@ -38,10 +36,19 @@
                 </el-form-item>
             </el-form>
         </list>
+
+        <list type="dialog"
+              :visible.sync="showList"
+              title="权限列表"
+              data-url="/rules"
+              :searchForm="searchForm"
+              :columns="columns"
+              :disablePage="true"
+        ></list>
     </div>
 </template>
 <script>
-    import List from './list-page.vue'
+    import List from './components/list-page.vue'
 
     export default {
         data: function () {
@@ -74,6 +81,7 @@
                 total: 0,
                 list: [],
                 selectionList: [],
+                showList: false
             }
         },
         methods: {
@@ -82,6 +90,7 @@
                 return row.name !== '权限'
             },
             add: function(){
+//                this.showList= true;
                 router.push('/boss/rule/add')
             }
         },

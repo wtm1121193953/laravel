@@ -8,3 +8,4 @@ Route::post('login', 'LoginController@login');
 Route::get('users', 'UserController@getList');
 
 Route::get('rules', 'RuleController@getList');
+Route::get('rule/getTopList', 'RuleController@getTopList');

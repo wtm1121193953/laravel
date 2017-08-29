@@ -19,4 +19,9 @@ class RuleController extends Controller
     {
         return Result::success(['list' => BossAuthRule::all()]);
     }
+
+    public function getTopList()
+    {
+        return Result::success(['list' => BossAuthRule::where('pid', 0)->get()]);
+    }
 }
