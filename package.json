@@ -35,9 +35,9 @@
     "babel-preset-stage-1": "^6.24.1"
   },
   "dependencies": {
-    "element-react": "^1.1.8",
-    "element-theme-default": "^1.4.3",
     "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "react-dom": "^15.6.1",
+    "element-react": "^1.1.8",
+    "element-theme-default": "^1.4.3"
   }
 }

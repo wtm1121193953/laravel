@@ -54,6 +54,10 @@ class Handler extends ExceptionHandler
             if($exception instanceof NotFoundHttpException){
                 return redirect('/boss?__from=' . urldecode($request->getRequestUri()));
             }
+        }else if($request->is('react/*')){
+            if($exception instanceof NotFoundHttpException){
+                return redirect('/react?__from=' . urldecode($request->getRequestUri()));
+            }
         }
         return parent::render($request, $exception);
     }

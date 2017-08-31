@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Laravel</title>
+    {{--<link rel="stylesheet" href="{{ mix('css/bootstrap-animation.css') }}">--}}
     <link rel="stylesheet" href="{{ mix('css/all.css') }}">
     <style>
         @-webkit-keyframes scale {

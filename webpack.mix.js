@@ -32,7 +32,11 @@ mix
     // 复制element-ui的字体文件
     .copy('node_modules/element-ui/lib/theme-default/fonts', 'public/css/fonts/');
 */
+
 mix.react('resources/assets/react/src/index.js', 'public/element-react/index.js');
+mix.extract(['react', 'react-dom', 'element-react', 'element-theme-default']);
+// 页面初始动画
+mix.styles('resources/assets/css/bootstrap-animation.css', 'public/css/bootstrap-animation.css');
 
 
 // 如果是运行 npm run prod 命令, 启用版本号

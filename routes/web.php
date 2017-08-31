@@ -23,4 +23,12 @@ Route::get('/react', function () {
     return view('react');
 });
 
+Route::get('/react/login', function () {
+    return view('react');
+});
+
+Route::get('/react/a', function () {
+    return view('react');
+});
+
 Route::get('/home', 'HomeController@index')->name('home');
