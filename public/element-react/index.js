@@ -4496,6 +4496,11 @@ var Home = function (_Component) {
             // 判断是否登录, 未登录跳转到登录页面
         }
     }, {
+        key: 'onSelect',
+        value: function onSelect(index) {
+            console.log(e);
+        }
+    }, {
         key: 'render',
         value: function render() {
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -4506,10 +4511,10 @@ var Home = function (_Component) {
                     null,
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         __WEBPACK_IMPORTED_MODULE_1_element_react__["Menu"],
-                        { mode: 'horizontal', onSelect: this.onSelect() },
+                        { mode: 'horizontal', onSelect: this.onSelect.bind(this) },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             __WEBPACK_IMPORTED_MODULE_1_element_react__["Menu"].Item,
-                            { index: '1' },
+                            { index: '1', style: { float: 'right' } },
                             '\u5904\u7406\u4E2D\u5FC3'
                         )
                     )

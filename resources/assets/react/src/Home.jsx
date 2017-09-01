@@ -14,11 +14,14 @@ class Home extends Component {
     componentDidMount(){
         // 判断是否登录, 未登录跳转到登录页面
     }
+    onSelect(index){
+        console.log(e);
+    }
     render(){
         return (<div>
             <Layout.Row>
-                <Menu mode="horizontal" onSelect={this.onSelect()}>
-                    <Menu.Item index="1">处理中心</Menu.Item>
+                <Menu mode="horizontal" onSelect={this.onSelect.bind(this)}>
+                    <Menu.Item index="1" style={ {float: 'right'} }>处理中心</Menu.Item>
                 </Menu>
             </Layout.Row>
             <Layout.Row>
