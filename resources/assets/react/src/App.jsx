@@ -7,7 +7,7 @@ import {
 import { Button } from 'element-react';
 
 import Login from './page/Login'
-import Home from './page/Home'
+import Home from './Home'
 
 class App extends Component{
 
@@ -16,10 +16,14 @@ class App extends Component{
         <Router
             basename="/react"
         >
-            <div>
-                <Route path="/login" component={Login}/>
-                <Route path="/" component={Home}/>
-            </div>
+            <Route path="/" render={(options) => {
+                // 根据路径动态渲染
+                if(options.location.pathname == '/login'){
+                    return <Login/>
+                }else{
+                    return <Home/>
+                }
+            }}/>
         </Router>
         );
     }

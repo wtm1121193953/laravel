@@ -7,6 +7,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>React测试</title>
     {{--<link rel="stylesheet" href="{{ mix('css/bootstrap-animation.css') }}">--}}
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
 <style>
     body {
