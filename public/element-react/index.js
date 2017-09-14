@@ -4487,22 +4487,33 @@ var Home = function (_Component) {
     function Home(props) {
         _classCallCheck(this, Home);
 
-        return _possibleConstructorReturn(this, (Home.__proto__ || Object.getPrototypeOf(Home)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (Home.__proto__ || Object.getPrototypeOf(Home)).call(this, props));
+
+        _this.state = {
+            theme: 'light', // 系统主题
+            menus: [{ id: 0, name: '首页', url: '/' }],
+            username: 'test username'
+        };
+
+        _this.onSelect = _this.onSelect.bind(_this);
+        return _this;
     }
 
     _createClass(Home, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            // 判断是否登录, 未登录跳转到登录页面
+            // todo 判断是否登录, 未登录跳转到登录页面
         }
     }, {
         key: 'onSelect',
         value: function onSelect(index) {
-            console.log(e);
+            console.log(index);
         }
     }, {
         key: 'render',
         value: function render() {
+            var _this2 = this;
+
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
                 null,
@@ -4511,11 +4522,33 @@ var Home = function (_Component) {
                     null,
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         __WEBPACK_IMPORTED_MODULE_1_element_react__["Menu"],
-                        { mode: 'horizontal', onSelect: this.onSelect.bind(this) },
+                        { mode: 'horizontal', theme: this.state.theme, onSelect: this.onSelect },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             __WEBPACK_IMPORTED_MODULE_1_element_react__["Menu"].Item,
                             { index: '1', style: { float: 'right' } },
-                            '\u5904\u7406\u4E2D\u5FC3'
+                            '\u9000\u51FA'
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_1_element_react__["Menu"].Item,
+                            { index: '1', style: { float: 'right' } },
+                            this.state.username
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_1_element_react__["Menu"].Item,
+                            { index: '1', style: { float: 'right' } },
+                            '\u4E3B\u9898',
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_element_react__["Switch"], {
+                                value: this.state.theme,
+                                onValue: 'light',
+                                offValue: 'dark',
+                                onColor: '#E5E9F2',
+                                offColor: '#324057',
+                                onText: 'light',
+                                offText: 'dark',
+                                width: 70,
+                                onChange: function onChange(value) {
+                                    _this2.setState({ theme: value });
+                                } })
                         )
                     )
                 ),
@@ -4525,7 +4558,10 @@ var Home = function (_Component) {
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         __WEBPACK_IMPORTED_MODULE_1_element_react__["Layout"].Col,
                         { span: '3' },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__components_LeftMenu__["a" /* default */], null)
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4__components_LeftMenu__["a" /* default */], {
+                            theme: this.state.theme,
+                            menus: this.state.menus
+                        })
                     ),
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         __WEBPACK_IMPORTED_MODULE_1_element_react__["Layout"].Col,
@@ -4684,6 +4720,8 @@ var Header = function (_Component) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__("./node_modules/react/react.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_element_react__ = __webpack_require__("./node_modules/element-react/dist/npm/es5/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_element_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_element_react__);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -4694,22 +4732,61 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 
+
+
 var LeftMenu = function (_Component) {
     _inherits(LeftMenu, _Component);
 
-    function LeftMenu() {
+    function LeftMenu(props) {
         _classCallCheck(this, LeftMenu);
 
-        return _possibleConstructorReturn(this, (LeftMenu.__proto__ || Object.getPrototypeOf(LeftMenu)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (LeftMenu.__proto__ || Object.getPrototypeOf(LeftMenu)).call(this, props));
+
+        _this.state = {
+            currentMenu: '',
+            theme: 'light'
+        };
+        // todo 处理当前选中的菜单
+
+        _this.onSelect = _this.onSelect.bind(_this);
+        return _this;
     }
 
     _createClass(LeftMenu, [{
+        key: 'onSelect',
+        value: function onSelect(index) {
+            console.log(index);
+        }
+    }, {
         key: 'render',
         value: function render() {
+            var menuItems = this.props.menus.map(function (subMenu) {
+                if (subMenu.subs && subMenu.subs.length > 0) {
+                    var _menuItems = subMenu.subs.map(function (item) {
+                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_1_element_react__["Menu"].Item,
+                            { index: item.url, key: item.url },
+                            item.name
+                        );
+                    });
+                    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_1_element_react__["Menu"].SubMenu,
+                        { index: subMenu.url, title: subMenu.name },
+                        _menuItems
+                    );
+                } else {
+                    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_1_element_react__["Menu"].Item,
+                        { index: subMenu.url, key: subMenu.url },
+                        subMenu.name
+                    );
+                }
+            });
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                'div',
-                null,
-                'LeftMenu'
+                __WEBPACK_IMPORTED_MODULE_1_element_react__["Menu"],
+                { defaultActive: '2', theme: this.props.theme, className: 'el-menu-vertical-demo', onSelect: this.onSelect },
+                menuItems,
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_element_react__["Menu"].Item, { index: '-1', key: '-1' })
             );
         }
     }]);
