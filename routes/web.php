@@ -27,7 +27,7 @@ Route::get('/react/login', function () {
     return view('react');
 });
 
-Route::get('/react/a', function () {
+Route::get('/react/rule/list', function () {
     return view('react');
 });
 

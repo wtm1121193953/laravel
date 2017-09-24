@@ -2070,7 +2070,7 @@ module.exports = function (it) {
 /***/ "./node_modules/core-js/library/modules/_core.js":
 /***/ (function(module, exports) {
 
-var core = module.exports = { version: '2.5.0' };
+var core = module.exports = { version: '2.5.1' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -2540,23 +2540,6 @@ module.exports = function (done, value) {
 /***/ (function(module, exports) {
 
 module.exports = {};
-
-
-/***/ }),
-
-/***/ "./node_modules/core-js/library/modules/_keyof.js":
-/***/ (function(module, exports, __webpack_require__) {
-
-var getKeys = __webpack_require__("./node_modules/core-js/library/modules/_object-keys.js");
-var toIObject = __webpack_require__("./node_modules/core-js/library/modules/_to-iobject.js");
-module.exports = function (object, el) {
-  var O = toIObject(object);
-  var keys = getKeys(O);
-  var length = keys.length;
-  var index = 0;
-  var key;
-  while (length > index) if (O[key = keys[index++]] === el) return key;
-};
 
 
 /***/ }),
@@ -3398,7 +3381,6 @@ var uid = __webpack_require__("./node_modules/core-js/library/modules/_uid.js");
 var wks = __webpack_require__("./node_modules/core-js/library/modules/_wks.js");
 var wksExt = __webpack_require__("./node_modules/core-js/library/modules/_wks-ext.js");
 var wksDefine = __webpack_require__("./node_modules/core-js/library/modules/_wks-define.js");
-var keyOf = __webpack_require__("./node_modules/core-js/library/modules/_keyof.js");
 var enumKeys = __webpack_require__("./node_modules/core-js/library/modules/_enum-keys.js");
 var isArray = __webpack_require__("./node_modules/core-js/library/modules/_is-array.js");
 var anObject = __webpack_require__("./node_modules/core-js/library/modules/_an-object.js");
@@ -3562,9 +3544,9 @@ $export($export.S + $export.F * !USE_NATIVE, 'Symbol', {
       : SymbolRegistry[key] = $Symbol(key);
   },
   // 19.4.2.5 Symbol.keyFor(sym)
-  keyFor: function keyFor(key) {
-    if (isSymbol(key)) return keyOf(SymbolRegistry, key);
-    throw TypeError(key + ' is not a symbol!');
+  keyFor: function keyFor(sym) {
+    if (!isSymbol(sym)) throw TypeError(sym + ' is not a symbol!');
+    for (var key in SymbolRegistry) if (SymbolRegistry[key] === sym) return key;
   },
   useSetter: function () { setter = true; },
   useSimple: function () { setter = false; }
@@ -6298,6 +6280,15 @@ var _temp = function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+var _extends2 = __webpack_require__("./node_modules/babel-runtime/helpers/extends.js");
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = __webpack_require__("./node_modules/babel-runtime/helpers/objectWithoutProperties.js");
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
 exports.PopperMixin = PopperMixin;
 exports.PopperReactMixin = PopperReactMixin;
 
@@ -6309,7 +6300,7 @@ var _assert = __webpack_require__("./node_modules/element-react/dist/npm/es5/lib
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var MixinMethods = {
+var mixinPrototype = {
   //---------- start: public methods
   /**
    * @param {HTMLElement} popupElement - The reference element used to position the popper.
@@ -6320,15 +6311,16 @@ var MixinMethods = {
     var _this = this;
 
     (0, _assert.require_condition)(popupElement && refElement);
-    if (!popperOptions) {
-      popperOptions = {};
-    }
 
     var _popper_config = this._popper_config,
         visibleArrow = _popper_config.visibleArrow,
         placement = _popper_config.placement,
         zIndex = _popper_config.zIndex,
-        offset = _popper_config.offset;
+        offset = _popper_config.offset,
+        width = _popper_config.width,
+        others = (0, _objectWithoutProperties3.default)(_popper_config, ['visibleArrow', 'placement', 'zIndex', 'offset', 'width']);
+
+    popperOptions = (0, _extends3.default)({}, popperOptions, others);
 
     if (!/^(top|bottom|left|right)(-start|-end)?$/g.test(placement)) {
       return;
@@ -6357,6 +6349,7 @@ var MixinMethods = {
       _this._resetTransformOrigin();
       _this._popper_state.isCreated = true;
       _this._poperJS._popper.style.zIndex = zIndex;
+      _this._poperJS._popper.style.width = width !== null ? width + 'px' : reference.getBoundingClientRect().width + 'px';
     });
   },
   destroyPopper: function destroyPopper() {
@@ -6394,6 +6387,7 @@ var MixinMethods = {
 };
 
 /**
+ * @param {args} @see PopperMixin
  * @param {object} config
     * @param {String} [placement=button] - Placement of the popper accepted values: top(-start, -end), right(-start, -end), bottom(-start, -right), left(-start, -end)
     * @param {Number} [offset=0] - Amount of pixels the popper will be shifted (can be negative).
@@ -6402,18 +6396,16 @@ var MixinMethods = {
 */
 function PopperMixin(config) {
   this._popper_config = Object.assign({}, {
-    zIndex: 100,
+    width: null,
+    zIndex: 1050,
     offset: 0,
     placement: 'bottom',
     boundariesPadding: 5,
     visibleArrow: false
   }, config);
   this._popper_state = {};
-
-  for (var m in MixinMethods) {
-    this[m] = MixinMethods[m];
-  }
 }
+PopperMixin.prototype = mixinPrototype;
 
 var PopperReactMixinMethods = {
   hookReactLifeCycle: function hookReactLifeCycle(getPopperRootDom, getRefDom) {
@@ -6456,30 +6448,24 @@ var PopperReactMixinMethods = {
 
 /**
  * this Mixin provide utility method to hook reactjs component lifecycle
- *
- * @param getPopperRootDom: ()=>HTMLElement, return your popper root HTMLElement when componentDidMout is called
- * @param {args} @see PopperMixin
+ * 
+ * @param getPopperRootDom: ()=>HTMLElement, return your popper root HTMLElement when componentDidMount is called
+ * @param getRefDom: ()=>HTMLElement, ref node, the node that popper aligns its pop-up to, see the popperjs doc for more information 
  */
-function PopperReactMixin(getPopperRootDom, getRefDom) {
+function PopperReactMixin(getPopperRootDom, getRefDom, config) {
+  var _this2 = this;
+
   (0, _assert.require_condition)(typeof getPopperRootDom === 'function', '`getPopperRootDom` func is required!');
   (0, _assert.require_condition)(typeof getRefDom === 'function', '`getRefDom` func is required!');
 
-  for (var _len3 = arguments.length, args = Array(_len3 > 2 ? _len3 - 2 : 0), _key3 = 2; _key3 < _len3; _key3++) {
-    args[_key3 - 2] = arguments[_key3];
-  }
-
-  PopperMixin.apply(this, args);
-
-  for (var m in PopperReactMixinMethods) {
-    this[m] = PopperReactMixinMethods[m];
-  }
-
-  this.hookReactLifeCycle(getPopperRootDom, getRefDom);
+  PopperMixin.call(this, config);
+  Object.keys(mixinPrototype).forEach(function (k) {
+    return _this2[k] = mixinPrototype[k];
+  });
+  PopperReactMixinMethods.hookReactLifeCycle.call(this, getPopperRootDom, getRefDom);
 
   return this;
 }
-
-PopperReactMixin.prototype = PopperMixin.prototype;
 ;
 
 var _temp = function () {
@@ -6487,7 +6473,7 @@ var _temp = function () {
     return;
   }
 
-  __REACT_HOT_LOADER__.register(MixinMethods, 'MixinMethods', 'libs/utils/popper-mixins.js');
+  __REACT_HOT_LOADER__.register(mixinPrototype, 'mixinPrototype', 'libs/utils/popper-mixins.js');
 
   __REACT_HOT_LOADER__.register(PopperMixin, 'PopperMixin', 'libs/utils/popper-mixins.js');
 
@@ -13506,10 +13492,11 @@ var _constants = __webpack_require__("./node_modules/element-react/dist/npm/es5/
 
 var _utils = __webpack_require__("./node_modules/element-react/dist/npm/es5/libs/utils/index.js");
 
+var _MountBody = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/date-picker/MountBody.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var idGen = new _utils.IDGenerator();
-
 var haveTriggerType = function haveTriggerType(type) {
   return _constants.HAVE_TRIGGER_TYPES.indexOf(type) !== -1;
 };
@@ -13761,6 +13748,7 @@ var BasePicker = function (_Component) {
         return;
       }
       if (this.domRoot.contains(evt.target)) return;
+      if (this.pickerProxy && this.pickerProxy.getMountNode().contains(evt.target)) return;
       if (this.isDateValid(value)) {
         this.setState({ pickerVisible: false });
         this.props.onChange(value);
@@ -13826,14 +13814,20 @@ var BasePicker = function (_Component) {
 
       var createPickerPanel = function createPickerPanel() {
         if (pickerVisible) {
-          return _this3.pickerPanel(_this3.state, Object.assign({}, _this3.props, {
-            getPopperRefElement: function getPopperRefElement() {
-              return _reactDom2.default.findDOMNode(_this3.refs.inputRoot);
-            },
-            popperMixinOption: {
-              placement: _constants.PLACEMENT_MAP[_this3.props.align] || _constants.PLACEMENT_MAP.left
-            }
-          }));
+          return _react2.default.createElement(
+            _MountBody.MountBody,
+            { ref: function ref(e) {
+                return _this3.pickerProxy = e;
+              } },
+            _this3.pickerPanel(_this3.state, Object.assign({}, _this3.props, {
+              getPopperRefElement: function getPopperRefElement() {
+                return _reactDom2.default.findDOMNode(_this3.refs.inputRoot);
+              },
+              popperMixinOption: {
+                placement: _constants.PLACEMENT_MAP[_this3.props.align] || _constants.PLACEMENT_MAP.left
+              }
+            }))
+          );
         } else {
           return null;
         }
@@ -14134,6 +14128,93 @@ var _temp = function () {
   __REACT_HOT_LOADER__.register(DateRangePicker, 'DateRangePicker', 'src/date-picker/DateRangePicker.jsx');
 
   __REACT_HOT_LOADER__.register(_default, 'default', 'src/date-picker/DateRangePicker.jsx');
+}();
+
+;
+
+/***/ }),
+
+/***/ "./node_modules/element-react/dist/npm/es5/src/date-picker/MountBody.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.MountBody = undefined;
+
+var _classCallCheck2 = __webpack_require__("./node_modules/babel-runtime/helpers/classCallCheck.js");
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = __webpack_require__("./node_modules/babel-runtime/helpers/createClass.js");
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = __webpack_require__("./node_modules/babel-runtime/helpers/possibleConstructorReturn.js");
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__("./node_modules/babel-runtime/helpers/inherits.js");
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _react = __webpack_require__("./node_modules/react/react.js");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = __webpack_require__("./node_modules/react-dom/index.js");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var MountBody = exports.MountBody = function (_Component) {
+  (0, _inherits3.default)(MountBody, _Component);
+
+  function MountBody() {
+    (0, _classCallCheck3.default)(this, MountBody);
+    return (0, _possibleConstructorReturn3.default)(this, (MountBody.__proto__ || Object.getPrototypeOf(MountBody)).apply(this, arguments));
+  }
+
+  (0, _createClass3.default)(MountBody, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      var c = _react2.default.cloneElement(this.props.children);
+      this.tnode = document.createElement('div');
+      document.body.appendChild(this.tnode);
+      _reactDom2.default.render(c, this.tnode);
+    }
+  }, {
+    key: 'componentWillUnmount',
+    value: function componentWillUnmount() {
+      _reactDom2.default.unmountComponentAtNode(this.tnode);
+      document.body.removeChild(this.tnode);
+    }
+  }, {
+    key: 'getMountNode',
+    value: function getMountNode() {
+      return this.tnode;
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return null;
+    }
+  }]);
+  return MountBody;
+}(_react.Component);
+
+;
+
+var _temp = function () {
+  if (typeof __REACT_HOT_LOADER__ === 'undefined') {
+    return;
+  }
+
+  __REACT_HOT_LOADER__.register(MountBody, 'MountBody', 'src/date-picker/MountBody.jsx');
 }();
 
 ;
@@ -16160,13 +16241,13 @@ var _classCallCheck2 = __webpack_require__("./node_modules/babel-runtime/helpers
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__("./node_modules/babel-runtime/helpers/createClass.js");
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
 var _possibleConstructorReturn2 = __webpack_require__("./node_modules/babel-runtime/helpers/possibleConstructorReturn.js");
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _createClass2 = __webpack_require__("./node_modules/babel-runtime/helpers/createClass.js");
+
+var _createClass3 = _interopRequireDefault(_createClass2);
 
 var _inherits2 = __webpack_require__("./node_modules/babel-runtime/helpers/inherits.js");
 
@@ -16186,7 +16267,7 @@ var _utils = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/
 
 var _basic = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/date-picker/basic/index.js");
 
-var _utils2 = __webpack_require__("./node_modules/element-react/dist/npm/es5/libs/utils/index.js");
+var _PopperBase2 = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/date-picker/panel/PopperBase.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -16200,8 +16281,37 @@ var PICKER_VIEWS = {
     handle timepicker inside this picker
   */
 };
-var DatePanel = function (_Component) {
-  (0, _inherits3.default)(DatePanel, _Component);
+var DatePanel = function (_PopperBase) {
+  (0, _inherits3.default)(DatePanel, _PopperBase);
+  (0, _createClass3.default)(DatePanel, null, [{
+    key: 'propTypes',
+    get: function get() {
+
+      return Object.assign({
+        // user picked date value
+        // value: Date | null
+        value: _libs.PropTypes.instanceOf(Date),
+        // todo:
+        onPick: _libs.PropTypes.func.isRequired,
+        showTime: _libs.PropTypes.bool,
+        showWeekNumber: _libs.PropTypes.bool,
+        format: _libs.PropTypes.string,
+        // Array[{text: String, onClick: (picker)=>()}]
+        shortcuts: _libs.PropTypes.arrayOf(_libs.PropTypes.shape({
+          text: _libs.PropTypes.string.isRequired,
+          // ()=>()
+          onClick: _libs.PropTypes.func.isRequired
+        })),
+        selectionMode: _libs.PropTypes.oneOf(Object.keys(_utils.SELECTION_MODES).map(function (e) {
+          return _utils.SELECTION_MODES[e];
+        })),
+        // (Date)=>bool, if true, disabled
+        disabledDate: _libs.PropTypes.func,
+        firstDayOfWeek: _libs.PropTypes.range(0, 6)
+
+      }, _PopperBase2.PopperBase.propTypes);
+    }
+  }]);
 
   function DatePanel(props) {
     (0, _classCallCheck3.default)(this, DatePanel);
@@ -16224,13 +16334,6 @@ var DatePanel = function (_Component) {
     if (props.value) {
       _this.state.date = new Date(props.value);
     }
-
-    _utils2.PopperReactMixin.call(_this, function () {
-      return _this.refs.root;
-    }, props.getPopperRefElement, Object.assign({
-      boundariesPadding: 0,
-      gpuAcceleration: false
-    }, props.popperMixinOption));
     return _this;
   }
 
@@ -16543,7 +16646,8 @@ var DatePanel = function (_Component) {
           className: this.classNames('el-picker-panel el-date-picker', {
             'has-sidebar': shortcuts,
             'has-time': showTime
-          }) },
+          })
+        },
         _react2.default.createElement(
           'div',
           { className: 'el-picker-panel__body-wrapper' },
@@ -16663,38 +16767,11 @@ var DatePanel = function (_Component) {
     }
   }]);
   return DatePanel;
-}(_libs.Component);
+}(_PopperBase2.PopperBase);
 
 var _default = DatePanel;
 exports.default = _default;
 
-
-DatePanel.propTypes = {
-  // user picked date value
-  // value: Date | null
-  value: _libs.PropTypes.instanceOf(Date),
-  // todo:
-  onPick: _libs.PropTypes.func.isRequired,
-  showTime: _libs.PropTypes.bool,
-  showWeekNumber: _libs.PropTypes.bool,
-  format: _libs.PropTypes.string,
-  // Array[{text: String, onClick: (picker)=>()}]
-  shortcuts: _libs.PropTypes.arrayOf(_libs.PropTypes.shape({
-    text: _libs.PropTypes.string.isRequired,
-    // ()=>()
-    onClick: _libs.PropTypes.func.isRequired
-  })),
-  selectionMode: _libs.PropTypes.oneOf(Object.keys(_utils.SELECTION_MODES).map(function (e) {
-    return _utils.SELECTION_MODES[e];
-  })),
-  // (Date)=>bool, if true, disabled
-  disabledDate: _libs.PropTypes.func,
-  firstDayOfWeek: _libs.PropTypes.range(0, 6),
-
-  //()=>HtmlElement
-  getPopperRefElement: _libs.PropTypes.func,
-  popperMixinOption: _libs.PropTypes.object
-};
 
 DatePanel.defaultProps = {
   showTime: false,
@@ -16733,13 +16810,13 @@ var _classCallCheck2 = __webpack_require__("./node_modules/babel-runtime/helpers
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__("./node_modules/babel-runtime/helpers/createClass.js");
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
 var _possibleConstructorReturn2 = __webpack_require__("./node_modules/babel-runtime/helpers/possibleConstructorReturn.js");
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _createClass2 = __webpack_require__("./node_modules/babel-runtime/helpers/createClass.js");
+
+var _createClass3 = _interopRequireDefault(_createClass2);
 
 var _inherits2 = __webpack_require__("./node_modules/babel-runtime/helpers/inherits.js");
 
@@ -16759,7 +16836,7 @@ var _utils = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/
 
 var _basic = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/date-picker/basic/index.js");
 
-var _utils2 = __webpack_require__("./node_modules/element-react/dist/npm/es5/libs/utils/index.js");
+var _PopperBase2 = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/date-picker/panel/PopperBase.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -16805,8 +16882,35 @@ var mapPropsToState = function mapPropsToState(props) {
   return state;
 };
 
-var DateRangePanel = function (_Component) {
-  (0, _inherits3.default)(DateRangePanel, _Component);
+var DateRangePanel = function (_PopperBase) {
+  (0, _inherits3.default)(DateRangePanel, _PopperBase);
+  (0, _createClass3.default)(DateRangePanel, null, [{
+    key: 'propTypes',
+    get: function get() {
+      return Object.assign({
+        // user picked date value
+        /*
+        value: null | [Date, null | false]
+        */
+        value: _libs.PropTypes.any,
+        // ([value1, value2]|null, isKeepPanel)=>()
+        onPick: _libs.PropTypes.func.isRequired,
+        showTime: _libs.PropTypes.bool,
+        // Array[{text: String, onClick: (picker)=>()}]
+        shortcuts: _libs.PropTypes.arrayOf(_libs.PropTypes.shape({
+          text: _libs.PropTypes.string.isRequired,
+          // ()=>()
+          onClick: _libs.PropTypes.func.isRequired
+        })),
+        // (Date)=>bool, if true, disabled
+        disabledDate: _libs.PropTypes.func,
+        firstDayOfWeek: _libs.PropTypes.range(0, 6),
+        //()=>HtmlElement
+        getPopperRefElement: _libs.PropTypes.func,
+        popperMixinOption: _libs.PropTypes.object
+      }, _PopperBase2.PopperBase.propTypes);
+    }
+  }]);
 
   function DateRangePanel(props) {
     (0, _classCallCheck3.default)(this, DateRangePanel);
@@ -16815,12 +16919,6 @@ var DateRangePanel = function (_Component) {
 
     _this.state = {};
     _this.state = Object.assign(_this.state, mapPropsToState(props));
-    _utils2.PopperReactMixin.call(_this, function () {
-      return _this.refs.root;
-    }, props.getPopperRefElement, Object.assign({
-      boundariesPadding: 0,
-      gpuAcceleration: false
-    }, props.popperMixinOption));
     return _this;
   }
 
@@ -16919,7 +17017,7 @@ var DateRangePanel = function (_Component) {
 
       var t = _locale2.default.t;
       var leftLabel = date.getFullYear() + ' ' + t('el.datepicker.year') + ' ' + t('el.datepicker.month' + (date.getMonth() + 1));
-      var rightLabel = date.getFullYear() + ' ' + t('el.datepicker.year') + ' ' + t('el.datepicker.month' + (rightDate.getMonth() + 1));
+      var rightLabel = rightDate.getFullYear() + ' ' + t('el.datepicker.year') + ' ' + t('el.datepicker.month' + (rightDate.getMonth() + 1));
 
       return _react2.default.createElement(
         'div',
@@ -17026,48 +17124,15 @@ var DateRangePanel = function (_Component) {
   }, {
     key: 'rightDate',
     get: function get() {
-      var newDate = new Date(this.state.date);
-      var month = newDate.getMonth();
-      newDate.setDate(1);
-
-      if (month === 11) {
-        newDate.setFullYear(newDate.getFullYear() + 1);
-        newDate.setMonth(0);
-      } else {
-        newDate.setMonth(month + 1);
-      }
-      return newDate;
+      return (0, _utils.nextMonth)(this.state.date);
     }
   }]);
   return DateRangePanel;
-}(_libs.Component);
+}(_PopperBase2.PopperBase);
 
 var _default = DateRangePanel;
 exports.default = _default;
 
-
-DateRangePanel.propTypes = {
-  // user picked date value
-  /*
-  value: null | [Date, null | false]
-  */
-  value: _libs.PropTypes.any,
-  // ([value1, value2]|null, isKeepPanel)=>()
-  onPick: _libs.PropTypes.func.isRequired,
-  showTime: _libs.PropTypes.bool,
-  // Array[{text: String, onClick: (picker)=>()}]
-  shortcuts: _libs.PropTypes.arrayOf(_libs.PropTypes.shape({
-    text: _libs.PropTypes.string.isRequired,
-    // ()=>()
-    onClick: _libs.PropTypes.func.isRequired
-  })),
-  // (Date)=>bool, if true, disabled
-  disabledDate: _libs.PropTypes.func,
-  firstDayOfWeek: _libs.PropTypes.range(0, 6),
-  //()=>HtmlElement
-  getPopperRefElement: _libs.PropTypes.func,
-  popperMixinOption: _libs.PropTypes.object
-};
 
 DateRangePanel.defaultProps = {};
 ;
@@ -17086,6 +17151,83 @@ var _temp = function () {
   __REACT_HOT_LOADER__.register(DateRangePanel, 'DateRangePanel', 'src/date-picker/panel/DateRangePanel.jsx');
 
   __REACT_HOT_LOADER__.register(_default, 'default', 'src/date-picker/panel/DateRangePanel.jsx');
+}();
+
+;
+
+/***/ }),
+
+/***/ "./node_modules/element-react/dist/npm/es5/src/date-picker/panel/PopperBase.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PopperBase = undefined;
+
+var _classCallCheck2 = __webpack_require__("./node_modules/babel-runtime/helpers/classCallCheck.js");
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__("./node_modules/babel-runtime/helpers/possibleConstructorReturn.js");
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _createClass2 = __webpack_require__("./node_modules/babel-runtime/helpers/createClass.js");
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _inherits2 = __webpack_require__("./node_modules/babel-runtime/helpers/inherits.js");
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _libs = __webpack_require__("./node_modules/element-react/dist/npm/es5/libs/index.js");
+
+var _utils = __webpack_require__("./node_modules/element-react/dist/npm/es5/libs/utils/index.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var PopperBase = exports.PopperBase = function (_Component) {
+  (0, _inherits3.default)(PopperBase, _Component);
+  (0, _createClass3.default)(PopperBase, null, [{
+    key: 'propTypes',
+    get: function get() {
+      return {
+        //()=>HtmlElement
+        getPopperRefElement: _libs.PropTypes.func,
+        popperMixinOption: _libs.PropTypes.object
+      };
+    }
+  }]);
+
+  function PopperBase(props) {
+    (0, _classCallCheck3.default)(this, PopperBase);
+
+    var _this = (0, _possibleConstructorReturn3.default)(this, (PopperBase.__proto__ || Object.getPrototypeOf(PopperBase)).call(this, props));
+
+    _utils.PopperReactMixin.call(_this, function () {
+      return _this.refs.root;
+    }, props.getPopperRefElement, Object.assign({
+      boundariesPadding: 0,
+      gpuAcceleration: false
+    }, props.popperMixinOption));
+    return _this;
+  }
+
+  return PopperBase;
+}(_libs.Component);
+
+;
+
+var _temp = function () {
+  if (typeof __REACT_HOT_LOADER__ === 'undefined') {
+    return;
+  }
+
+  __REACT_HOT_LOADER__.register(PopperBase, 'PopperBase', 'src/date-picker/panel/PopperBase.js');
 }();
 
 ;
@@ -17130,11 +17272,11 @@ var _TimeSpinner = __webpack_require__("./node_modules/element-react/dist/npm/es
 
 var _TimeSpinner2 = _interopRequireDefault(_TimeSpinner);
 
-var _utils2 = __webpack_require__("./node_modules/element-react/dist/npm/es5/libs/utils/index.js");
-
 var _locale = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/locale/index.js");
 
 var _locale2 = _interopRequireDefault(_locale);
+
+var _PopperBase2 = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/date-picker/panel/PopperBase.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -17147,8 +17289,8 @@ var mapPropsToState = function mapPropsToState(props) {
   return state;
 };
 
-var TimePanel = function (_Component) {
-  (0, _inherits3.default)(TimePanel, _Component);
+var TimePanel = function (_PopperBase) {
+  (0, _inherits3.default)(TimePanel, _PopperBase);
   (0, _createClass3.default)(TimePanel, null, [{
     key: 'propTypes',
     get: function get() {
@@ -17166,11 +17308,8 @@ var TimePanel = function (_Component) {
         onPicked: _libs.PropTypes.func.isRequired,
         // cancel btn is clicked
         //()=>()
-        onCancel: _libs.PropTypes.func.isRequired,
-        //()=>HtmlElement
-        getPopperRefElement: _libs.PropTypes.func, //todo: make this dry
-        popperMixinOption: _libs.PropTypes.object
-      });
+        onCancel: _libs.PropTypes.func.isRequired
+      }, _PopperBase2.PopperBase.propTypes);
     }
   }, {
     key: 'defaultProps',
@@ -17187,14 +17326,6 @@ var TimePanel = function (_Component) {
     var _this = (0, _possibleConstructorReturn3.default)(this, (TimePanel.__proto__ || Object.getPrototypeOf(TimePanel)).call(this, props));
 
     _this.state = mapPropsToState(props);
-    //todo: make this dry
-    _utils2.PopperReactMixin.call(_this, function () {
-      return _this.refs.root;
-    }, props.getPopperRefElement, Object.assign({
-      boundariesPadding: 0,
-      gpuAcceleration: false
-    }, props.popperMixinOption));
-
     return _this;
   }
 
@@ -17306,7 +17437,7 @@ var TimePanel = function (_Component) {
     }
   }]);
   return TimePanel;
-}(_libs.Component);
+}(_PopperBase2.PopperBase);
 
 var _default = TimePanel;
 exports.default = _default;
@@ -17370,11 +17501,11 @@ var _TimeSpinner = __webpack_require__("./node_modules/element-react/dist/npm/es
 
 var _TimeSpinner2 = _interopRequireDefault(_TimeSpinner);
 
-var _utils2 = __webpack_require__("./node_modules/element-react/dist/npm/es5/libs/utils/index.js");
-
 var _locale = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/locale/index.js");
 
 var _locale2 = _interopRequireDefault(_locale);
+
+var _PopperBase2 = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/date-picker/panel/PopperBase.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -17420,12 +17551,12 @@ var mapPropsToState = function mapPropsToState(props) {
   return state;
 };
 
-var TimeRangePanel = function (_Component) {
-  (0, _inherits3.default)(TimeRangePanel, _Component);
+var TimeRangePanel = function (_PopperBase) {
+  (0, _inherits3.default)(TimeRangePanel, _PopperBase);
   (0, _createClass3.default)(TimeRangePanel, null, [{
     key: 'propTypes',
     get: function get() {
-      return Object.assign({}, {
+      return Object.assign({
         pickerWidth: _libs.PropTypes.number,
         currentDates: _libs.PropTypes.arrayOf(_libs.PropTypes.instanceOf(Date)),
         /*
@@ -17438,11 +17569,8 @@ var TimeRangePanel = function (_Component) {
         //()=>()
         onCancel: _libs.PropTypes.func.isRequired,
         // (start, end)=>(), index range indicate which field [hours, minutes, seconds] changes
-        onSelectRangeChange: _TimeSpinner2.default.propTypes.onSelectRangeChange,
-        //()=>HtmlElement
-        getPopperRefElement: _libs.PropTypes.func,
-        popperMixinOption: _libs.PropTypes.object
-      });
+        onSelectRangeChange: _TimeSpinner2.default.propTypes.onSelectRangeChange
+      }, _PopperBase2.PopperBase.propTypes);
     }
   }, {
     key: 'defaultProps',
@@ -17462,13 +17590,6 @@ var TimeRangePanel = function (_Component) {
       visible: false,
       width: 0
     }, mapPropsToState(props));
-
-    _utils2.PopperReactMixin.call(_this, function () {
-      return _this.refs.root;
-    }, props.getPopperRefElement, Object.assign({
-      boundariesPadding: 0,
-      gpuAcceleration: false
-    }, props.popperMixinOption));
     return _this;
   }
 
@@ -17645,7 +17766,7 @@ var TimeRangePanel = function (_Component) {
     }
   }]);
   return TimeRangePanel;
-}(_libs.Component);
+}(_PopperBase2.PopperBase);
 
 var _default = TimeRangePanel;
 exports.default = _default;
@@ -17689,13 +17810,13 @@ var _classCallCheck2 = __webpack_require__("./node_modules/babel-runtime/helpers
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = __webpack_require__("./node_modules/babel-runtime/helpers/createClass.js");
-
-var _createClass3 = _interopRequireDefault(_createClass2);
-
 var _possibleConstructorReturn2 = __webpack_require__("./node_modules/babel-runtime/helpers/possibleConstructorReturn.js");
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _createClass2 = __webpack_require__("./node_modules/babel-runtime/helpers/createClass.js");
+
+var _createClass3 = _interopRequireDefault(_createClass2);
 
 var _inherits2 = __webpack_require__("./node_modules/babel-runtime/helpers/inherits.js");
 
@@ -17707,29 +17828,39 @@ var _react2 = _interopRequireDefault(_react);
 
 var _libs = __webpack_require__("./node_modules/element-react/dist/npm/es5/libs/index.js");
 
-var _utils = __webpack_require__("./node_modules/element-react/dist/npm/es5/libs/utils/index.js");
-
 var _dom = __webpack_require__("./node_modules/element-react/dist/npm/es5/libs/utils/dom.js");
 
 var _scrollbar = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/scrollbar/index.js");
 
+var _PopperBase2 = __webpack_require__("./node_modules/element-react/dist/npm/es5/src/date-picker/panel/PopperBase.js");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var TimeSelectPanel = function (_Component) {
-  (0, _inherits3.default)(TimeSelectPanel, _Component);
+var TimeSelectPanel = function (_PopperBase) {
+  (0, _inherits3.default)(TimeSelectPanel, _PopperBase);
+  (0, _createClass3.default)(TimeSelectPanel, null, [{
+    key: 'propTypes',
+    get: function get() {
+      return Object.assign({
+        start: _libs.PropTypes.string,
+        end: _libs.PropTypes.string,
+        step: _libs.PropTypes.string,
+        minTime: _libs.PropTypes.string,
+        maxTime: _libs.PropTypes.string,
+        value: _libs.PropTypes.string,
+        onPicked: _libs.PropTypes.func,
+        //(string)=>date
+        dateParser: _libs.PropTypes.func.isRequired,
+        //()=>HtmlElement
+        getPopperRefElement: _libs.PropTypes.func,
+        popperMixinOption: _libs.PropTypes.object
+      }, _PopperBase2.PopperBase.propTypes);
+    }
+  }]);
 
   function TimeSelectPanel(props) {
     (0, _classCallCheck3.default)(this, TimeSelectPanel);
-
-    var _this = (0, _possibleConstructorReturn3.default)(this, (TimeSelectPanel.__proto__ || Object.getPrototypeOf(TimeSelectPanel)).call(this, props));
-
-    _utils.PopperReactMixin.call(_this, function () {
-      return _this.refs.root;
-    }, _this.props.getPopperRefElement, Object.assign({
-      boundariesPadding: 0,
-      gpuAcceleration: false
-    }, props.popperMixinOption));
-    return _this;
+    return (0, _possibleConstructorReturn3.default)(this, (TimeSelectPanel.__proto__ || Object.getPrototypeOf(TimeSelectPanel)).call(this, props));
   }
 
   (0, _createClass3.default)(TimeSelectPanel, [{
@@ -17806,7 +17937,7 @@ var TimeSelectPanel = function (_Component) {
     }
   }]);
   return TimeSelectPanel;
-}(_libs.Component);
+}(_PopperBase2.PopperBase);
 
 var _default = TimeSelectPanel;
 exports.default = _default;
@@ -17847,21 +17978,6 @@ TimeSelectPanel.items = function (_ref2) {
     }
   }
   return result;
-};
-
-TimeSelectPanel.propTypes = {
-  start: _libs.PropTypes.string,
-  end: _libs.PropTypes.string,
-  step: _libs.PropTypes.string,
-  minTime: _libs.PropTypes.string,
-  maxTime: _libs.PropTypes.string,
-  value: _libs.PropTypes.string,
-  onPicked: _libs.PropTypes.func,
-  //(string)=>date
-  dateParser: _libs.PropTypes.func.isRequired,
-  //()=>HtmlElement
-  getPopperRefElement: _libs.PropTypes.func,
-  popperMixinOption: _libs.PropTypes.object
 };
 
 TimeSelectPanel.defaultProps = {
@@ -18109,22 +18225,22 @@ var prevMonth = exports.prevMonth = function prevMonth(src) {
 };
 
 var nextMonth = exports.nextMonth = function nextMonth(src) {
-  var year = src.getFullYear();
-  var month = src.getMonth();
-  var date = src.getDate();
+  var clone = new Date(src.getTime());
+  var year = clone.getFullYear();
+  var month = clone.getMonth();
+  var date = clone.getDate();
 
   var newYear = month === 11 ? year + 1 : year;
   var newMonth = month === 11 ? 0 : month + 1;
 
   var newMonthDayCount = getDayCountOfMonth(newYear, newMonth);
   if (newMonthDayCount < date) {
-    src.setDate(newMonthDayCount);
+    clone.setDate(newMonthDayCount);
   }
 
-  src.setMonth(newMonth);
-  src.setFullYear(newYear);
-
-  return new Date(src.getTime());
+  clone.setMonth(newMonth);
+  clone.setFullYear(newYear);
+  return clone;
 };
 
 var getRangeHours = exports.getRangeHours = function getRangeHours(ranges) {
@@ -22960,7 +23076,7 @@ MessageBox.propTypes = {
   modal: _libs.PropTypes.oneOf(['alert', 'confirm', 'prompt']),
   type: _libs.PropTypes.oneOf(['success', 'warning', 'info', 'error']),
   title: _libs.PropTypes.string,
-  message: _libs.PropTypes.string,
+  message: _libs.PropTypes.oneOfType([_libs.PropTypes.string, _libs.PropTypes.element]),
   showInput: _libs.PropTypes.bool,
   showClose: _libs.PropTypes.bool,
   showCancelButton: _libs.PropTypes.bool,
@@ -23164,7 +23280,7 @@ function Message() {
 
   document.body.appendChild(div);
 
-  if (typeof props === 'string') {
+  if (typeof props === 'string' || _react2.default.isValidElement(props)) {
     props = {
       message: props
     };
@@ -23350,7 +23466,7 @@ exports.default = _default;
 
 Toast.propTypes = {
   type: _libs.PropTypes.oneOf(['success', 'warning', 'info', 'error']),
-  message: _libs.PropTypes.string.isRequired,
+  message: _libs.PropTypes.oneOfType([_libs.PropTypes.string, _libs.PropTypes.element]).isRequired,
   duration: _libs.PropTypes.number,
   showClose: _libs.PropTypes.bool,
   customClass: _libs.PropTypes.string,
@@ -23606,7 +23722,7 @@ exports.default = _default;
 Notification.propTypes = {
   type: _libs.PropTypes.oneOf(['success', 'warning', 'info', 'error']),
   title: _libs.PropTypes.string,
-  message: _libs.PropTypes.string,
+  message: _libs.PropTypes.oneOfType([_libs.PropTypes.string, _libs.PropTypes.element]),
   duration: _libs.PropTypes.number,
   iconClass: _libs.PropTypes.string,
   onClick: _libs.PropTypes.func,
@@ -23669,7 +23785,7 @@ function NotificationCenter() {
 
   document.body.appendChild(div);
 
-  if (typeof props === 'string') {
+  if (typeof props === 'string' || _react2.default.isValidElement(props)) {
     props = {
       message: props
     };
@@ -35588,14 +35704,12 @@ var Upload = function (_Component) {
   }, {
     key: 'getFile',
     value: function getFile(file) {
-      var fileList = this.state.fileList;
-
-      var target = fileList.find(function (item) {
-        return item.uid === file.uid;
-      });
-      if (target) {
-        return target;
+      if (file) {
+        return this.state.fileList.find(function (item) {
+          return item.uid === file.uid;
+        });
       }
+
       return null;
     }
   }, {
@@ -35605,7 +35719,9 @@ var Upload = function (_Component) {
           tempIndex = _state.tempIndex,
           fileList = _state.fileList;
 
+
       file.uid = Date.now() + tempIndex++;
+
       var _file = {
         status: 'ready',
         name: file.name,
@@ -35614,12 +35730,13 @@ var Upload = function (_Component) {
         uid: file.uid,
         raw: file
       };
+
       try {
         _file.url = URL.createObjectURL(file);
       } catch (err) {
-        console.error(err);
         return;
       }
+
       fileList.push(_file);
       this.setState({
         fileList: fileList,
@@ -35727,8 +35844,6 @@ var Upload = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this6 = this;
-
       var fileList = this.state.fileList;
       var _props = this.props,
           showFileList = _props.showFileList,
@@ -35762,26 +35877,14 @@ var Upload = function (_Component) {
         data: data,
         accept: accept,
         listType: listType,
-        onStart: function onStart(file) {
-          return _this6.handleStart(file);
-        },
-        onProgress: function onProgress(e, file) {
-          return _this6.handleProgress(e, file);
-        },
-        onSuccess: function onSuccess(res, file) {
-          return _this6.handleSuccess(res, file);
-        },
-        onError: function onError(error, res, file) {
-          return _this6.handleError(error, file);
-        },
-        onPreview: function onPreview(file) {
-          return _this6.handlePreview(file);
-        },
-        onRemove: function onRemove(file) {
-          return _this6.handleRemove(file);
-        },
-        ref: 'upload-inner',
-        showCover: this.showCover()
+        onStart: this.handleStart.bind(this),
+        onProgress: this.handleProgress.bind(this),
+        onSuccess: this.handleSuccess.bind(this),
+        onError: this.handleError.bind(this),
+        onPreview: this.handlePreview.bind(this),
+        onRemove: this.handleRemove.bind(this),
+        showCover: this.showCover(),
+        ref: 'upload-inner'
       };
       var trigger = this.props.trigger || this.props.children;
       var uploadComponent = typeof FormData !== 'undefined' ? _react2.default.createElement(
@@ -36062,16 +36165,25 @@ var _temp = function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var getError = function getError(action, option, xhr) {
-  var msg = 'fail to post ' + action + ' ' + xhr.status + '\'';
+exports.default = upload;
+function getError(action, option, xhr) {
+  var msg = void 0;
+  if (xhr.response) {
+    msg = xhr.status + ' ' + (xhr.response.error || xhr.response);
+  } else if (xhr.responseText) {
+    msg = xhr.status + ' ' + xhr.responseText;
+  } else {
+    msg = 'fail to post ' + action + ' ' + xhr.status;
+  }
+
   var err = new Error(msg);
   err.status = xhr.status;
   err.method = 'post';
   err.url = action;
   return err;
-};
+}
 
-var getBody = function getBody(xhr) {
+function getBody(xhr) {
   var text = xhr.responseText || xhr.response;
   if (!text) {
     return text;
@@ -36082,9 +36194,9 @@ var getBody = function getBody(xhr) {
   } catch (e) {
     return text;
   }
-};
+}
 
-var upload = function upload(option) {
+function upload(option) {
   if (typeof XMLHttpRequest === 'undefined') {
     return;
   }
@@ -36117,7 +36229,7 @@ var upload = function upload(option) {
 
   xhr.onload = function onload() {
     if (xhr.status < 200 || xhr.status >= 300) {
-      return option.onError(getError(action, option, xhr), getBody(xhr));
+      return option.onError(getError(action, option, xhr));
     }
 
     option.onSuccess(getBody(xhr));
@@ -36131,20 +36243,14 @@ var upload = function upload(option) {
 
   var headers = option.headers || {};
 
-  if (headers['X-Requested-With'] !== null) {
-    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-  }
-
   for (var item in headers) {
     if (headers.hasOwnProperty(item) && headers[item] !== null) {
       xhr.setRequestHeader(item, headers[item]);
     }
   }
   xhr.send(formData);
-};
-
-var _default = upload;
-exports.default = _default;
+  return xhr;
+}
 ;
 
 var _temp = function () {
@@ -36157,8 +36263,6 @@ var _temp = function () {
   __REACT_HOT_LOADER__.register(getBody, 'getBody', 'src/upload/ajax.js');
 
   __REACT_HOT_LOADER__.register(upload, 'upload', 'src/upload/ajax.js');
-
-  __REACT_HOT_LOADER__.register(_default, 'default', 'src/upload/ajax.js');
 }();
 
 ;

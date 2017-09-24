@@ -12,7 +12,7 @@ class Home extends Component {
         super(props);
     }
     componentDidMount(){
-        // 判断是否登录, 未登录跳转到登录页面
+        // todo 判断是否登录, 未登录跳转到登录页面
     }
     onSelect(index){
         console.log(e);
@@ -20,15 +20,13 @@ class Home extends Component {
     render(){
         return (<div>
             <Layout.Row>
-                <Menu mode="horizontal" onSelect={this.onSelect.bind(this)}>
-                    <Menu.Item index="1" style={ {float: 'right'} }>处理中心</Menu.Item>
-                </Menu>
+                <Header/>
             </Layout.Row>
             <Layout.Row>
-                <Layout.Col span="3">
+                <Layout.Col span="2" style={{minWidth: '200px'}}>
                     <LeftMenu/>
                 </Layout.Col>
-                <Layout.Col span="21">
+                <Layout.Col span="21" style={{margin: '20px'}}>
                     <Content/>
                 </Layout.Col>
             </Layout.Row>
