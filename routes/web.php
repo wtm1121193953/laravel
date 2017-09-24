@@ -23,8 +23,8 @@ Route::get('/react', function () {
     return view('react');
 });
 
-Route::get('/react/login', function () {
-    return view('react');
+Route::get('/react-antd', function(){
+    return view('react-antd');
 });
 
 Route::get('/react/rule/list', function () {

@@ -43,6 +43,16 @@ mix.styles('resources/assets/css/bootstrap-animation.css', 'public/css/bootstrap
 // mix.react('resources/assets/antd/index.js', 'public/antd.js');
 
 
+// mix.react('resources/assets/react/src/index.js', 'public/element-react/index.js');
+// mix.extract(['react', 'react-dom', 'element-react', 'element-theme-default']);
+
+mix.react('resources/assets/react-antd/src/index.js', 'public/react-antd/index.js');
+mix.extract(['react', 'react-dom', 'antd']);
+
+
+// 页面初始动画
+mix.styles('resources/assets/css/bootstrap-animation.css', 'public/css/bootstrap-animation.css');
+
 // 如果是运行 npm run prod 命令, 启用版本号
 mix.version();
 if (mix.config.inProduction) {
