@@ -6,7 +6,7 @@
     >
         <!-- 搜索栏 -->
         <el-col>
-            <template v-if="searchForm">
+            <template v-if="searchParams">
                 <slot name="search">
 
                 </slot>
@@ -95,7 +95,7 @@
      *      visible: 页面是否可见, 需要使用 :visible.sync="isVisible" 的方式绑定
      *      title: 页面标题 必须
      *      dataUrl: 数据获取接口地址 必须
-     *      searchForm: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
+     *      searchParams: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
      *      columns: 要展示的数据列 必须
      *      addBtn: 添加数据按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'添加数据', false不显示按钮 默认: false
      *      exportBtn: 导出按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'导出数据', false不显示按钮 默认: false
@@ -111,7 +111,7 @@
             visible: {type: Boolean, default: false},
             title: { type: String, required: true },
             dataUrl: {type: String, required: true},
-            searchForm: {type: Object, default: null},
+            searchParams: {type: Object, default: null},
             columns: {type: Object, required: true},
             exportBtn: {type: [Boolean, String], default: false},
             addBtn: {type: [Boolean, String], default: false},
@@ -137,8 +137,8 @@
             getList(){
                 this.loading = true;
                 let params = {};
-                if(this.searchForm){
-                    params = this.searchForm;
+                if(this.searchParams){
+                    params = this.searchParams;
                     params.page = this.page;
                 }
 

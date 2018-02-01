@@ -4,7 +4,7 @@
               :breadcrumb="breadcrumb"
               :title="title"
               :dataUrl="dataUrl"
-              :searchForm="searchForm"
+              :searchParams="searchParams"
               :columns="columns"
               :addBtn="addBtn"
               :exportBtn="exportBtn"
@@ -25,7 +25,7 @@
                 :visible.sync="dialogVisible"
                 :title="title"
                 :dataUrl="dataUrl"
-                :searchForm="searchForm"
+                :searchParams="searchParams"
                 :columns="columns"
                 :addBtn="addBtn"
                 :exportBtn="exportBtn"
@@ -58,7 +58,7 @@
      *      breadcrumb: 页面面包屑, 不需要包含当前页面的标题
      *      title: 页面标题 必须
      *      dataUrl: 数据获取接口地址 必须
-     *      searchForm: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
+     *      searchParams: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
      *      columns: 要展示的数据列 必须
      *      addBtn: 添加数据按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'添加数据', false不显示按钮 默认: false
      *      exportBtn: 导出按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'导出数据', false不显示按钮 默认: false
@@ -75,7 +75,7 @@
             breadcrumb: {type: Object},
             title: { type: String, required: true },
             dataUrl: {type: String, required: true},
-            searchForm: {type: Object, default: null},
+            searchParams: {type: Object, default: null},
             columns: {type: Object, required: true},
             exportBtn: {type: [Boolean, String], default: false},
             addBtn: {type: [Boolean, String], default: false},

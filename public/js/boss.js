@@ -728,7 +728,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  *      visible: 页面是否可见, 需要使用 :visible.sync="isVisible" 的方式绑定
  *      title: 页面标题 必须
  *      dataUrl: 数据获取接口地址 必须
- *      searchForm: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
+ *      searchParams: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
  *      columns: 要展示的数据列 必须
  *      addBtn: 添加数据按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'添加数据', false不显示按钮 默认: false
  *      exportBtn: 导出按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'导出数据', false不显示按钮 默认: false
@@ -744,7 +744,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         visible: { type: Boolean, default: false },
         title: { type: String, required: true },
         dataUrl: { type: String, required: true },
-        searchForm: { type: Object, default: null },
+        searchParams: { type: Object, default: null },
         columns: { type: Object, required: true },
         exportBtn: { type: [Boolean, String], default: false },
         addBtn: { type: [Boolean, String], default: false },
@@ -770,8 +770,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         getList: function getList() {
             this.loading = true;
             var params = {};
-            if (this.searchForm) {
-                params = this.searchForm;
+            if (this.searchParams) {
+                params = this.searchParams;
                 params.page = this.page;
             }
 
@@ -950,7 +950,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  *      breadcrumb: 页面面包屑, 不需要包含当前页面的标题
  *      title: 页面标题 必须
  *      dataUrl: 数据获取接口地址 必须
- *      searchForm: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
+ *      searchParams: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
  *      columns: 要展示的数据列 必须
  *      addBtn: 添加数据按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'添加数据', false不显示按钮 默认: false
  *      exportBtn: 导出按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'导出数据', false不显示按钮 默认: false
@@ -965,7 +965,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         breadcrumb: { type: Object },
         title: { type: String, required: true },
         dataUrl: { type: String, required: true },
-        searchForm: { type: Object, default: null },
+        searchParams: { type: Object, default: null },
         columns: { type: Object, required: true },
         exportBtn: { type: [Boolean, String], default: false },
         addBtn: { type: [Boolean, String], default: false },
@@ -987,13 +987,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     methods: {
         searchFormAvailable: function searchFormAvailable() {
-            return Object.keys(this.searchForm).length > 0;
+            return Object.keys(this.searchParams).length > 0;
         },
         getList: function getList() {
             this.loading = true;
             var params = {};
-            if (this.searchForm) {
-                params = JSON.parse(JSON.stringify(this.searchForm));
+            if (this.searchParams) {
+                params = JSON.parse(JSON.stringify(this.searchParams));
                 params.page = this.page;
             }
 
@@ -1138,7 +1138,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  *      breadcrumb: 页面面包屑, 不需要包含当前页面的标题
  *      title: 页面标题 必须
  *      dataUrl: 数据获取接口地址 必须
- *      searchForm: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
+ *      searchParams: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
  *      columns: 要展示的数据列 必须
  *      addBtn: 添加数据按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'添加数据', false不显示按钮 默认: false
  *      exportBtn: 导出按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'导出数据', false不显示按钮 默认: false
@@ -1155,7 +1155,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         breadcrumb: { type: Object },
         title: { type: String, required: true },
         dataUrl: { type: String, required: true },
-        searchForm: { type: Object, default: null },
+        searchParams: { type: Object, default: null },
         columns: { type: Object, required: true },
         exportBtn: { type: [Boolean, String], default: false },
         addBtn: { type: [Boolean, String], default: false },
@@ -1716,7 +1716,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-56a50382\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/boss/js/components/login.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(undefined);
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")();
 // imports
 
 
@@ -1731,7 +1731,7 @@ exports.push([module.i, "\n.login-box {\n    margin-top: 120px;\n    width:400px
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-75d4030c\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/boss/js/components/app.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(undefined);
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")();
 // imports
 
 
@@ -1746,7 +1746,7 @@ exports.push([module.i, "\n.bounce-enter-active {\n    animation: bounce-in .5s;
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-7db39dd6\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/boss/js/components/home.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(undefined);
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")();
 // imports
 
 
@@ -1761,7 +1761,7 @@ exports.push([module.i, "\n.fade-enter-active,\n.fade-leave-active {\n    transi
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-80a6c376\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/boss/js/components/page/public/index.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(undefined);
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")();
 // imports
 
 
@@ -2231,7 +2231,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "breadcrumb": _vm.breadcrumb,
       "title": _vm.title,
       "dataUrl": _vm.dataUrl,
-      "searchForm": _vm.searchForm,
+      "searchParams": _vm.searchParams,
       "columns": _vm.columns,
       "addBtn": _vm.addBtn,
       "exportBtn": _vm.exportBtn,
@@ -2265,7 +2265,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "visible": _vm.dialogVisible,
       "title": _vm.title,
       "dataUrl": _vm.dataUrl,
-      "searchForm": _vm.searchForm,
+      "searchParams": _vm.searchParams,
       "columns": _vm.columns,
       "addBtn": _vm.addBtn,
       "exportBtn": _vm.exportBtn,
@@ -2328,7 +2328,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.dialogVisible = $event
       }
     }
-  }, [_c('el-col', [(_vm.searchForm) ? [_vm._t("search"), _vm._v(" "), _c('div', {
+  }, [_c('el-col', [(_vm.searchParams) ? [_vm._t("search"), _vm._v(" "), _c('div', {
     staticClass: "el-form-item__content fl"
   }, [_c('el-button', {
     attrs: {
@@ -2742,7 +2742,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "type": "selection"
     }
-  }) : _vm._e(), _vm._v(" "), _vm._l((_vm.columns), function(name, key) {
+  }) : _vm._e(), _vm._v(" "), _vm._l((_vm.columns), function(column, key) {
     return _c('el-table-column', {
       key: key,
       attrs: {
@@ -2753,7 +2753,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         fn: function(scope) {
           return [_c('div', {
             domProps: {
-              "innerHTML": _vm._s(typeof name == 'function' ? name(scope.row) : scope.row[name])
+              "innerHTML": _vm._s(typeof column == 'function' ? column(scope.row) : scope.row[column])
             }
           })]
         }
@@ -3423,7 +3423,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\app.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\app.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] app.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3468,7 +3468,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\home.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\home.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] home.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3513,7 +3513,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\login.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\login.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] login.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3554,7 +3554,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\public\\404.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\public\\404.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] 404.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3595,7 +3595,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\public\\error.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\public\\error.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] error.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3640,7 +3640,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\public\\index.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\public\\index.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] index.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3681,7 +3681,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\public\\refresh.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\public\\refresh.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] refresh.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3722,7 +3722,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\add.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\add.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] add.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3763,7 +3763,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\components\\list-dialog-style.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\components\\list-dialog-style.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] list-dialog-style.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3804,7 +3804,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\components\\list-page-style.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\components\\list-page-style.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] list-page-style.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3845,7 +3845,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\components\\list-page.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\components\\list-page.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] list-page.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3886,7 +3886,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\components\\page.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\components\\page.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] page.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3927,7 +3927,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\edit.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\edit.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] edit.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -3968,7 +3968,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\list.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\rule\\list.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] list.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -4009,7 +4009,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\user\\add.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\user\\add.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] add.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -4050,7 +4050,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\user\\edit.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\user\\edit.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] edit.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -4091,7 +4091,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\boss\\js\\components\\page\\user\\list.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\boss\\js\\components\\page\\user\\list.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] list.vue: functional components are not supported with templates, they should use render functions.")}
 
@@ -4363,7 +4363,7 @@ var Component = __webpack_require__("./node_modules/vue-loader/lib/component-nor
   /* moduleIdentifier (server only) */
   null
 )
-Component.options.__file = "D:\\ola_workspace\\source\\project-manager\\resources\\assets\\js\\components\\left-menu.vue"
+Component.options.__file = "D:\\ola_workspace\\source\\projects\\project-manager\\resources\\assets\\js\\components\\left-menu.vue"
 if (Component.esModule && Object.keys(Component.esModule).some(function (key) {return key !== "default" && key.substr(0, 2) !== "__"})) {console.error("named exports are not supported in *.vue files.")}
 if (Component.options.functional) {console.error("[vue-loader] left-menu.vue: functional components are not supported with templates, they should use render functions.")}
 

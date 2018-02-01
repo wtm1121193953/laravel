@@ -22,9 +22,9 @@
         <el-col>
             <el-table stripe :data="list" @selection-change="selectionChange" v-loading="loading">
                 <el-table-column v-if="batchOptions" type="selection"></el-table-column>
-                <el-table-column v-for="(name, key) in columns" :key="key" :label="key">
+                <el-table-column v-for="(column, key) in columns" :key="key" :label="key">
                     <template scope="scope">
-                        <div v-html="typeof name == 'function' ? name(scope.row) : scope.row[name]"></div>
+                        <div v-html="typeof column == 'function' ? column(scope.row) : scope.row[column]"></div>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" v-if="rowOptions || edit || del">
@@ -88,7 +88,7 @@
      *      breadcrumb: 页面面包屑, 不需要包含当前页面的标题
      *      title: 页面标题 必须
      *      dataUrl: 数据获取接口地址 必须
-     *      searchForm: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
+     *      searchParams: 搜索表单, 获取数据时会把搜索表单的数据加入到查询中
      *      columns: 要展示的数据列 必须
      *      addBtn: 添加数据按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'添加数据', false不显示按钮 默认: false
      *      exportBtn: 导出按钮的文字, 布尔值或字符串, 值为true时按钮上的文字为默认的'导出数据', false不显示按钮 默认: false
@@ -103,7 +103,7 @@
             breadcrumb: {type: Object},
             title: { type: String, required: true },
             dataUrl: {type: String, required: true},
-            searchForm: {type: Object, default: null},
+            searchParams: {type: Object, default: null},
             columns: {type: Object, required: true},
             exportBtn: {type: [Boolean, String], default: false},
             addBtn: {type: [Boolean, String], default: false},
@@ -125,13 +125,13 @@
         },
         methods: {
             searchFormAvailable(){
-                return Object.keys(this.searchForm).length > 0
+                return Object.keys(this.searchParams).length > 0
             },
             getList(){
                 this.loading = true;
                 let params = {};
-                if(this.searchForm){
-                    params = JSON.parse(JSON.stringify(this.searchForm));
+                if(this.searchParams){
+                    params = JSON.parse(JSON.stringify(this.searchParams));
                     params.page = this.page;
                 }
 
