@@ -14,21 +14,3 @@
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/boss', function () {
-    return view('boss');
-});
-
-Route::get('/react', function () {
-    return view('react');
-});
-
-Route::get('/react-antd', function(){
-    return view('react-antd');
-});
-
-Route::get('/react/rule/list', function () {
-    return view('react');
-});
-
-Route::get('/home', 'HomeController@index')->name('home');

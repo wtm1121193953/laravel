@@ -39,8 +39,7 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapWebRoutes();
 
-        // 映射boss接口路由
-        $this->mapBossApiRoutes();
+        //
     }
 
     /**
@@ -70,13 +69,5 @@ class RouteServiceProvider extends ServiceProvider
              ->middleware('api')
              ->namespace($this->namespace)
              ->group(base_path('routes/api.php'));
-    }
-
-    private function mapBossApiRoutes()
-    {
-        Route::prefix('api/boss')
-            ->middleware('boss_api')
-            ->namespace($this->namespace . '\Boss')
-            ->group(base_path('routes/api/boss.php'));
     }
 }
