@@ -31,6 +31,16 @@ mix
     // 复制element-ui的字体文件
     .copy('node_modules/element-ui/lib/theme-default/fonts', 'public/css/fonts/');
 
+// element-react
+mix.react('resources/assets/react/src/index.js', 'public/element-react/index.js');
+mix.extract(['react', 'react-dom', 'element-react', 'element-theme-default']);
+// 页面初始动画
+mix.styles('resources/assets/css/bootstrap-animation.css', 'public/css/bootstrap-animation.css');
+
+// antd 阿里 蚂蚁金服出的reactUI
+// mix.react('resources/assets/antd/index.js', 'public/antd.js');
+
+
 // mix.react('resources/assets/react/src/index.js', 'public/element-react/index.js');
 // mix.extract(['react', 'react-dom', 'element-react', 'element-theme-default']);
 

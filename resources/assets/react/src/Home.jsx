@@ -28,25 +28,7 @@ class Home extends Component {
     render(){
         return (<div>
             <Layout.Row>
-                <Menu mode="horizontal" theme={ this.state.theme } onSelect={this.onSelect}>
-                    <Menu.Item index="1" style={ {float: 'right'} }>退出</Menu.Item>
-                    <Menu.Item index="1" style={ {float: 'right'} }>{this.state.username}</Menu.Item>
-                    <Menu.Item index="1" style={ {float: 'right'} }>
-                        主题
-                        <Switch
-                            value={this.state.theme}
-                            onValue="light"
-                            offValue="dark"
-                            onColor="#E5E9F2"
-                            offColor="#324057"
-                            onText="light"
-                            offText="dark"
-                            width={70}
-                            onChange={(value)=>{this.setState({theme: value})}}>
-                        </Switch>
-                    </Menu.Item>
-
-                </Menu>
+                <Header/>
             </Layout.Row>
             <Layout.Row>
                 <Layout.Col span="3">
@@ -56,7 +38,7 @@ class Home extends Component {
                     />
 
                 </Layout.Col>
-                <Layout.Col span="21">
+                <Layout.Col span="21" style={{margin: '20px'}}>
                     <Content/>
                 </Layout.Col>
             </Layout.Row>

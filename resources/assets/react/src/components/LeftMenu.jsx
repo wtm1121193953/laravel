@@ -1,9 +1,20 @@
 import React, {Component} from 'react';
-
 import {Menu, Switch} from 'element-react';
 
-
 class LeftMenu extends Component {
+    constructor(props){
+        super(props);
+        this.menus = [
+            {id: 1, name: '权限管理', pid: 0, url: 'auth', subMenu: [
+                {id: 2, name: '用户管理', pid: 1, url: 'user/list'},
+                {id: 3, name: '角色管理', pid: 1, url: 'group/list'},
+                {id: 4, name: '权限管理', pid: 1, url: 'rule/list'},
+            ]},
+        ];
+    }
+    onSelect(e){
+        console.log(e);
+    }
 
     constructor(props){
         super(props);
@@ -22,6 +33,7 @@ class LeftMenu extends Component {
     }
 
     render(){
+
         const menuItems = this.props.menus.map(function(subMenu){
             if(subMenu.subs && subMenu.subs.length > 0){
                 let menuItems = subMenu.subs.map(function(item){
