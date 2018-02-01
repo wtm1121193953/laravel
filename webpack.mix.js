@@ -11,5 +11,42 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/assets/js/app.js', 'public/js')
-   .sass('resources/assets/sass/app.scss', 'public/css');
+// 禁用imgLoader, 只对图片做简单的复制
+mix.options({
+    imgLoaderOptions: {
+        enabled: false,
+    }
+});
+
+// 加载 admin 前端模块
+mix.js('./resources/admin/app.js', 'public/js/admin.js');
+
+// 抽离不会变的js模块
+mix.extract([
+    'axios',
+    'js-cookie',
+    'jquery',
+    'lockr',
+    'lodash',
+    'moment',
+    'nprogress',
+    'vue',
+    'vue-router',
+    'element-ui',
+    // 'font-awesome-webpack',
+    // 'vue-echarts-v3',
+    // 'vue-quill-editor'
+]);
+
+// 加载通用样式
+mix.styles(['node_modules/element-ui/lib/theme-chalk/index.css',
+    'resources/assets/css/base.css', 'resources/assets/css/global.css'
+], 'public/css/all.css')
+// 复制element-ui的字体文件
+mix.copy('node_modules/element-ui/lib/theme-chalk/fonts', 'public/css/fonts/');
+
+// 如果是运行 npm run prod 命令, 启用版本号
+mix.version();
+if (mix.config.inProduction) {
+
+}
