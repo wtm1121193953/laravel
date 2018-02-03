@@ -13,6 +13,7 @@ use App\Exceptions\AccountNotFoundException;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Exceptions\PasswordErrorException;
+use App\Modules\Admin\AdminService;
 use App\Modules\Admin\AdminUser;
 use App\Result;
 use App\ResultCode;
@@ -36,9 +37,15 @@ class UserController
             throw new PasswordErrorException();
         }
 
+        $rules = AdminService::getRulesForUser($user);
+        $menuTree = AdminService::convertRulesToTree($rules);
+
+        session(['admin_user' => $user]);
+        session(['admin_user_rules' => $rules]);
+
         return Result::success([
             'userInfo' => $user,
-            'menuList' => []
+            'menus' => $menuTree
         ]);
 
     }

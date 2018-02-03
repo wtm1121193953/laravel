@@ -1,13 +1,12 @@
 <!doctype html>
-<html lang="{{ config('app.locale') }}">
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>后台管理系统</title>
-    {{--<link rel="stylesheet" href="{{ mix('css/bootstrap-animation.css') }}">--}}
-    <link rel="stylesheet" href="{{ mix('css/all.css') }}">
+    <title>中交出行运营平台 - BOSS</title>
+    <link rel="stylesheet" href="{{mix('css/all.css')}}">
     <style>
         @-webkit-keyframes scale {
             0% {
@@ -180,20 +179,22 @@
             -webkit-animation: line-scale 1s 0.5s infinite cubic-bezier(.2, .68, .18, 1.08);
             animation: line-scale 1s 0.5s infinite cubic-bezier(.2, .68, .18, 1.08); }
         .line-scale > div {
-            background-color: #fff;
+            background-color: rgb(105, 187, 255);
             width: 4px;
-            height: 35px;
+            height: 40px;
             border-radius: 2px;
             margin: 2px;
             -webkit-animation-fill-mode: both;
             animation-fill-mode: both;
-            display: inline-block; }
+            display: inline-block;
+        }
 
         html, body {
             height: 100%;
+            margin: 0;
+            padding: 0;
         }
         #bootstrap-loader {
-            background-color: #324057;
             width: 100%;
             height: 100%;
             text-align: center;
@@ -205,7 +206,7 @@
     </style>
 </head>
 <body>
-{{-- 初始页面加载动画 --}}
+<!--初始页面加载动画-->
 <div id="bootstrap-loader">
     <div class="loader">
         <div class="line-scale">

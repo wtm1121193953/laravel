@@ -2,9 +2,9 @@
 
 namespace App\Modules\Admin;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class AdminAuthGroup extends Model
+class AdminAuthGroup extends BaseModel
 {
     //
 }

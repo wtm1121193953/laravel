@@ -2,9 +2,11 @@
 
 namespace App\Modules\Admin;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class AdminAuthRule extends Model
+class AdminAuthRule extends BaseModel
 {
     //
+    const STATUS_ON = 1;
+    const STATUS_OFF = 2;
 }

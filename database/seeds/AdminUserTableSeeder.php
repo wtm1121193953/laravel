@@ -19,7 +19,7 @@ class AdminUserTableSeeder extends Seeder
             'username' => 'admin',
             'password' => \App\Modules\Admin\AdminUser::genPassword('123456', $salt),
             'salt' => $salt,
-            'is_super' => 1,
+            'super' => 1,
         ]);
     }
 }

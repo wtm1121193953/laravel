@@ -2,9 +2,9 @@
 
 namespace App\Modules\Admin;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class AdminUser extends Model
+class AdminUser extends BaseModel
 {
     //
 
@@ -16,6 +16,11 @@ class AdminUser extends Model
      */
     public static function genPassword($password, $salt){
         return md5(md5($password) . $salt);
+    }
+
+    public function isSuper()
+    {
+        return $this->super == 1;
     }
 
 }
