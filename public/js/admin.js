@@ -230,6 +230,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
+//
+//
 
 
 
@@ -237,7 +240,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
-            isAdd: false
+            isAdd: false,
+            isEdit: false,
+            currentEditRule: null
         };
     },
 
@@ -256,8 +261,29 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                 });
             });
         },
-        edit: function edit() {},
-        del: function del() {}
+        edit: function edit(scope) {
+            this.isEdit = true;
+            this.currentEditRule = scope.row;
+        },
+        doEdit: function doEdit(rule) {
+            var _this2 = this;
+
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/rule/edit', rule).then(function (res) {
+                __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].handlerRes(res).then(function (data) {
+                    _this2.isEdit = false;
+                    _this2.getRules();
+                });
+            });
+        },
+        del: function del(scope) {
+            var _this3 = this;
+
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/rule/del', { id: scope.row.id }).then(function (res) {
+                __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].handlerRes(res).then(function (data) {
+                    _this3.getRules();
+                });
+            });
+        }
     }),
     created: function created() {
         this.getRules();
@@ -10244,7 +10270,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -11162,12 +11188,14 @@ var render = function() {
                                 item,
                                 index
                               ) {
-                                return _c(
-                                  "div",
-                                  { key: index },
-                                  [_c("el-tag", [_vm._v(_vm._s(item))])],
-                                  1
-                                )
+                                return item
+                                  ? _c(
+                                      "div",
+                                      { key: index },
+                                      [_c("el-tag", [_vm._v(_vm._s(item))])],
+                                      1
+                                    )
+                                  : _vm._e()
                               })
                             )
                           ],
@@ -11259,7 +11287,11 @@ var render = function() {
                               "el-button",
                               {
                                 attrs: { type: "text" },
-                                on: { click: _vm.del }
+                                on: {
+                                  click: function($event) {
+                                    _vm.del(scope)
+                                  }
+                                }
                               },
                               [_vm._v("删除")]
                             )
@@ -11290,6 +11322,30 @@ var render = function() {
                     _vm.isAdd = false
                   },
                   save: _vm.doAdd
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "el-dialog",
+            {
+              attrs: { title: "编辑权限", visible: _vm.isEdit },
+              on: {
+                "update:visible": function($event) {
+                  _vm.isEdit = $event
+                }
+              }
+            },
+            [
+              _c("rule-form", {
+                attrs: { rule: _vm.currentEditRule },
+                on: {
+                  cancel: function($event) {
+                    _vm.isEdit = false
+                  },
+                  save: _vm.doEdit
                 }
               })
             ],

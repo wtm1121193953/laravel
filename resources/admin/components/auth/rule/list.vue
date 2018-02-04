@@ -13,7 +13,7 @@
                     <template slot-scope="scope">
                         <el-form label-width="150px">
                             <el-form-item label="权限节点列表">
-                                <div v-for="(item, index) in scope.row.url_all.split(',')" :key="index">
+                                <div v-for="(item, index) in scope.row.url_all.split(',')" v-if="item" :key="index">
                                     <el-tag >{{item}}</el-tag>
                                 </div>
                             </el-form-item>
@@ -39,13 +39,16 @@
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <el-button type="text" @click="edit(scope)">编辑</el-button>
-                        <el-button type="text" v-if="scope.row.created_at" @click="del">删除</el-button>
+                        <el-button type="text" v-if="scope.row.created_at" @click="del(scope)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
 
             <el-dialog title="添加权限" :visible.sync="isAdd">
                 <rule-form @cancel="isAdd = false" @save="doAdd"></rule-form>
+            </el-dialog>
+            <el-dialog title="编辑权限" :visible.sync="isEdit">
+                <rule-form :rule="currentEditRule" @cancel="isEdit = false" @save="doEdit"></rule-form>
             </el-dialog>
         </el-main>
     </el-container>
@@ -57,7 +60,9 @@
     export default {
         data(){
             return {
-                isAdd: false
+                isAdd: false,
+                isEdit: false,
+                currentEditRule: null,
             }
         },
         computed:{
@@ -80,11 +85,24 @@
                     })
                 })
             },
-            edit(){
-
+            edit(scope){
+                this.isEdit = true;
+                this.currentEditRule = scope.row;
             },
-            del(){
-
+            doEdit(rule){
+                api.post('/rule/edit', rule).then(res => {
+                    api.handlerRes(res).then(data => {
+                        this.isEdit = false;
+                        this.getRules();
+                    })
+                })
+            },
+            del(scope){
+                api.post('/rule/del', {id: scope.row.id}).then(res => {
+                    api.handlerRes(res).then(data => {
+                        this.getRules();
+                    })
+                })
             }
         },
         created(){
