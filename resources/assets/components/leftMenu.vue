@@ -10,7 +10,7 @@
                 @select="change" :unique-opened="true"
                 style="height: 100%;"
         >
-            <template v-for="secMenu in userMenuList">
+            <template v-for="secMenu in menus">
                 <el-submenu v-if="secMenu.sub && secMenu.sub.length > 0" :index="secMenu.url">
                     <template slot="title">
                         <i>{{collapse ? secMenu.name.substr(0, 2) : ''}}</i><span slot="title">{{secMenu.name}}</span>
@@ -30,7 +30,7 @@
     import {mapState} from 'vuex'
 
     export default {
-        props: ['userMenuList', 'collapse'],
+        props: ['menus', 'collapse'],
         data() {
             return {
                 currentMenu: ''
@@ -47,19 +47,19 @@
                 if (key != this.$route.path) {
                     router.push(key)
                 } else {
-                    bus.refresh(this.$route.name)
+                    router.replace({path: '/refresh', query: {name: this.$route.name}})
                 }
             },
             reload(menus){
-                this.menuList = menus;
+                this.menus = menus;
             },
             getFirstMenu(){ // 获取用户的第一个有效权限作为默认首页
                 let firstRoute = '/';
-                if(this.userMenuList[0]){
-                    if(this.userMenuList[0].sub && this.userMenuList[0].sub[0]){
-                        firstRoute = this.userMenuList[0].sub[0].url
+                if(this.menus[0]){
+                    if(this.menus[0].sub && this.menus[0].sub[0]){
+                        firstRoute = this.menus[0].sub[0].url
                     }else{
-                        firstRoute = this.userMenuList[0].url;
+                        firstRoute = this.menus[0].url;
                     }
                 }
                 return firstRoute;

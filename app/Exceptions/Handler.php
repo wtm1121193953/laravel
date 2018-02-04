@@ -6,6 +6,8 @@ use App\ResultCode;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
@@ -72,14 +74,25 @@ class Handler extends ExceptionHandler
     {
         if($exception instanceof NotFoundHttpException){
             return response(['code' => ResultCode::API_NOT_FOUND, 'message' => '接口不存在', 'timestamp' => time()]);
-        }
-        if($exception instanceof ModelNotFoundException){
+        }else if($exception instanceof ModelNotFoundException){
             $message = '数据不存在: ' . $exception->getModel() . ' -> [ ' . implode(',', $exception->getIds()) . ']';
             $exception = new BaseResponseException($message, ResultCode::DB_QUERY_FAIL);
+        }else if($exception instanceof ValidationException){
+            $errors = array_map(function(&$value){
+                return implode('|', $value);
+            }, $exception->errors());
+            $exception = new ParamInvalidException(implode('|', $errors));
+        }else if($exception instanceof MethodNotAllowedHttpException){
+            $exception = new BaseResponseException('不允许的请求方法', ResultCode::UNKNOWN);
         }
+
         if($exception instanceof BaseResponseException){
             return $exception->getResponse();
         }else {
+            // 转换为json
+            if(!$request->ajax() && !$request->wantsJson()){
+                $request->headers->set('X-Requested-With', 'XMLHttpRequest');
+            }
             return parent::render($request, $exception);
         }
 

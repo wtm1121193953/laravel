@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+import {Message} from 'element-ui'
+
 window.baseApiUrl = window.baseApiUrl || '';
 const CODE_OK = 0;
-const CODE_UN_LOGIN = 10000;
+const CODE_UN_LOGIN = 10003;
 
 function handlerRes(res) {
     return new Promise((resolve, reject) => {
@@ -14,12 +16,12 @@ function handlerRes(res) {
                     Lockr.rm('userInfo');
                     Lockr.rm('menus');
                     router.push('/login');
-                    bus.$message.error('您的登录信息已失效, 请先登录');
+                    Message.error('您的登录信息已失效, 请先登录');
                     break;
                 default:
                     console.log('接口返回错误信息:', res);
                     if(!res.disableErrorMessage){
-                        bus.$message.error(res.message || '操作失败');
+                        Message.error(res.message || '操作失败');
                     }
                     break;
             }
@@ -30,7 +32,7 @@ function handlerRes(res) {
 
 function handlerNetworkError(error) {
     console.log('network error: ', error);
-    bus.$message.error('请求超时，请检查网络')
+    Message.error('请求超时，请检查网络')
 }
 
 function getRealUrl(url) {

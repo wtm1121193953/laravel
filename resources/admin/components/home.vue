@@ -28,6 +28,7 @@
             >
                 <el-submenu index="options" :show-timeout="100" style="float: right;">
                     <template slot="title">{{username}} <i class="fa fa-user" aria-hidden="true"></i></template>
+                    <el-menu-item index="refresh-rules" class="top-menu-item">刷新权限</el-menu-item>
                     <el-menu-item index="theme-setting" class="top-menu-item">主题设置</el-menu-item>
                     <el-menu-item index="logout" class="top-menu-item">退出</el-menu-item>
                 </el-submenu>
@@ -70,7 +71,7 @@
             </el-dialog>
         </el-header>
         <el-container>
-            <leftMenu :collapse="collapseLeftMenu" style="height: 100%" :class="{'uncollapse-menu': !collapseLeftMenu}" :userMenuList="userMenuList" ref="leftMenu"/>
+            <leftMenu :collapse="collapseLeftMenu" style="height: 100%" :class="{'uncollapse-menu': !collapseLeftMenu}" :menus="menus" ref="leftMenu"/>
 
             <el-main>
                 <el-col :span="24">
@@ -85,14 +86,12 @@
 <script>
     import api from '../../assets/js/api'
     import leftMenu from '../../assets/components/leftMenu.vue'
-    import {mapState, mapMutations} from 'vuex'
+    import {mapState, mapMutations, mapActions} from 'vuex'
 
     export default {
         data() {
             return {
                 collapseLeftMenu: false,
-                username: '',
-                userMenuList: [],
                 img: '',
                 title: '',
                 logo_type: null,
@@ -107,17 +106,27 @@
             }
         },
         computed: {
-            ...mapState(['theme', 'globalLoading'])
+            ...mapState([
+                'theme',
+                'globalLoading',
+                'user',
+                'menus'
+            ]),
+            username(){
+                return this.user ? this.user.username : '';
+            }
         },
         methods: {
             ...mapMutations([
                 'setTheme',
+            ]),
+            ...mapActions([
                 'resetTheme',
                 'setThemeByName'
             ]),
             resetTheme(){
-                store.commit('resetTheme');
-                this.themeSettingForm = JSON.parse(JSON.stringify(store.state.theme));
+                store.dispatch('resetTheme');
+                this.themeSettingForm = deepCopy(store.state.theme);
             },
             setCustomTheme(){
                 this.setTheme(this.themeSettingForm)
@@ -127,28 +136,16 @@
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(() => {
-                    let data = {
-                        userInfo : Lockr.get('userInfo')
-                    }
-                    api.post('/boss/account/logout', data).then((res) => {
+                    api.post('/logout').then((res) => {
                         api.handlerRes(res).then(data => {
                             this.$message.success('退出成功')
                         })
                     })
-                    Lockr.rm('userMenuList')
-                    Lockr.rm('data')
-                    Lockr.rm('userInfo')
+                    store.dispatch('clearUserInfo');
                     router.replace('/login')
                 }).catch(() => {
 
                 })
-            },
-            switchTopMenu(item) {
-                if (!item.child) {
-                    router.push(item.url)
-                } else {
-                    router.push(item.child[0].child[0].url)
-                }
             },
             selectTopMenu(key, keyPath){
                 switch (key) {
@@ -158,6 +155,15 @@
                     case 'theme-setting':
                         this.showThemeSetting = true;
                         break;
+                    case 'refresh-rules':
+                        store.dispatch('openGlobalLoading');
+                        api.get('/user/rules').then(res => {
+                            api.handlerRes(res).then(data => {
+                                store.dispatch('storeUserInfo', data);
+                                store.dispatch('closeGlobalLoading')
+                            })
+                        });
+
                 }
             },
             getTitleAndLogo() {
@@ -166,9 +172,8 @@
                 this.title = '中交出行运营平台 - BOSS'
             },
             getFirstRoute(){ // 获取用户的第一个有效权限作为默认首页
-                let userMenuList = Lockr.get('userMenuList');
-                let firstRoute = '/boss/welcome';
-                _(userMenuList).forEach((userMenu) => {
+                let firstRoute = '/admin/welcome';
+                _(this.menus).forEach((userMenu) => {
                     if (userMenu.sub  && userMenu.sub[0]  && userMenu.sub[0].url !== '' ) {
                         firstRoute = userMenu.sub[0].url;
                         return false;
@@ -177,7 +182,7 @@
                 return firstRoute;
             },
             relocation() {
-                if(this.$route.path == '/boss'){
+                if(this.$route.path == '/admin'){
                     let lastVisitedMenu = Lockr.get('current-menu');
                     if(lastVisitedMenu){
                         router.push(lastVisitedMenu);
@@ -191,36 +196,15 @@
         },
         created() {
             this.getTitleAndLogo();
-            let _self = this;
-            //如果是从tsp带签名访问过来, 使用签名免密登录
-            if (this.$route.query && this.$route.query.sign) {
-                api.post('/boss/account/freeLogin', _self.$route.query).then(res => {
-                    api.handlerRes(res).then(data => {
-                        Lockr.set('userMenuList', data.menuList)
-                        Lockr.set('data', data)
-                        Lockr.set('userInfo', data.userInfo)
-                        _self.username = data.userInfo.username;
-                        _self.userMenuList = data.menuList;
-                        Vue.nextTick(_self.relocation)
-                    }).catch(function () {
-                        router.replace('/login');
-                    })
-                });
-                return;
-            }
-            let userInfo = Lockr.get('userInfo');
-            if(!userInfo){
+            if(!this.user){
                 this.$message.warning('您尚未登录');
                 router.replace('/login');
                 return ;
             }
 
-            this.username = userInfo.username;
-            this.userMenuList = Lockr.get('userMenuList');
-
             Vue.nextTick(this.relocation)
 
-            this.themeSettingForm = JSON.parse(JSON.stringify(store.state.theme));
+            this.themeSettingForm = deepCopy(store.state.theme);
         },
         components: {
             leftMenu,

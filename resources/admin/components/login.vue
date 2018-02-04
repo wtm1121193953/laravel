@@ -86,7 +86,7 @@
                         <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" style="width:100%;" v-loading="loading"
+                        <el-button type="primary" style="width:100%;" v-loading="loading" :disabled="loading"
                                    @click.native.prevent="doLogin">登录
                         </el-button>
                     </el-form-item>
@@ -100,6 +100,7 @@
 <script>
     import api from '../../assets/js/api'
     import THREE from '../../assets/js/three/three';
+    import {mapState} from 'vuex'
     export default {
         data(){
             return {
@@ -127,6 +128,11 @@
                 showLogin: false,
             }
         },
+        computed:{
+            ...mapState([
+                'user'
+            ])
+        },
         methods: {
             refreshVerify(){
                 this.captchaSrc = ''
@@ -143,16 +149,12 @@
             },
             doLogin(){
                 let _self = this;
-                _self.loading = true;
                 this.$refs.form.validate(valid => {
                     if(valid){
+                        _self.loading = true;
                         api.post('/login', this.form).then(res => {
                             api.handlerRes(res).then(data => {
-                                console.log('login data', data);
-                                // 存储信息 data
-                                Lockr.set('userMenuList', data.menuList);
-                                Lockr.set('data', data);
-                                Lockr.set('userInfo', data.userInfo);
+                                store.dispatch('storeUserInfo', data);
                                 _self.loading = false;
                                 _self.relocation();
                             }).catch(function () {
@@ -239,9 +241,8 @@
         created: function () {
             let _self = this;
 
-            let userInfo = Lockr.get('userInfo')
-            if (userInfo) {
-                _self.relocation();
+            if (this.user) {
+//                _self.relocation();
             }
         },
         mounted () {

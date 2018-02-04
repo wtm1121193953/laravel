@@ -18,9 +18,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::any('test', function(){
+    dump(Session::all());
+});
+
 Route::prefix('admin')
     ->middleware('admin')
     ->namespace('Admin')
     ->group(function(){
     Route::post('login', 'UserController@login');
+    Route::get('user/rules', 'UserController@getRules');
 });

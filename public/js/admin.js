@@ -148,6 +148,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
 
 
 
@@ -157,8 +158,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     data: function data() {
         return {
             collapseLeftMenu: false,
-            username: '',
-            userMenuList: [],
             img: '',
             title: '',
             logo_type: null,
@@ -173,11 +172,15 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         };
     },
 
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["c" /* mapState */])(['theme', 'globalLoading'])),
-    methods: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["b" /* mapMutations */])(['setTheme', 'resetTheme', 'setThemeByName']), {
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["d" /* mapState */])(['theme', 'globalLoading', 'user', 'menus']), {
+        username: function username() {
+            return this.user ? this.user.username : '';
+        }
+    }),
+    methods: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["c" /* mapMutations */])(['setTheme']), Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["b" /* mapActions */])(['resetTheme', 'setThemeByName']), {
         resetTheme: function resetTheme() {
-            store.commit('resetTheme');
-            this.themeSettingForm = JSON.parse(JSON.stringify(store.state.theme));
+            store.dispatch('resetTheme');
+            this.themeSettingForm = deepCopy(store.state.theme);
         },
         setCustomTheme: function setCustomTheme() {
             this.setTheme(this.themeSettingForm);
@@ -189,26 +192,14 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(function () {
-                var data = {
-                    userInfo: Lockr.get('userInfo')
-                };
-                __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/boss/account/logout', data).then(function (res) {
+                __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/logout').then(function (res) {
                     __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].handlerRes(res).then(function (data) {
                         _this.$message.success('退出成功');
                     });
                 });
-                Lockr.rm('userMenuList');
-                Lockr.rm('data');
-                Lockr.rm('userInfo');
+                store.dispatch('clearUserInfo');
                 router.replace('/login');
             }).catch(function () {});
-        },
-        switchTopMenu: function switchTopMenu(item) {
-            if (!item.child) {
-                router.push(item.url);
-            } else {
-                router.push(item.child[0].child[0].url);
-            }
         },
         selectTopMenu: function selectTopMenu(key, keyPath) {
             switch (key) {
@@ -218,6 +209,15 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                 case 'theme-setting':
                     this.showThemeSetting = true;
                     break;
+                case 'refresh-rules':
+                    store.dispatch('openGlobalLoading');
+                    __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/user/rules').then(function (res) {
+                        __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].handlerRes(res).then(function (data) {
+                            store.dispatch('storeUserInfo', data);
+                            store.dispatch('closeGlobalLoading');
+                        });
+                    });
+
             }
         },
         getTitleAndLogo: function getTitleAndLogo() {
@@ -227,9 +227,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         },
         getFirstRoute: function getFirstRoute() {
             // 获取用户的第一个有效权限作为默认首页
-            var userMenuList = Lockr.get('userMenuList');
-            var firstRoute = '/boss/welcome';
-            _(userMenuList).forEach(function (userMenu) {
+            var firstRoute = '/admin/welcome';
+            _(this.menus).forEach(function (userMenu) {
                 if (userMenu.sub && userMenu.sub[0] && userMenu.sub[0].url !== '') {
                     firstRoute = userMenu.sub[0].url;
                     return false;
@@ -240,7 +239,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         relocation: function relocation() {
             var _this2 = this;
 
-            if (this.$route.path == '/boss') {
+            if (this.$route.path == '/admin') {
                 var lastVisitedMenu = Lockr.get('current-menu');
                 if (lastVisitedMenu) {
                     router.push(lastVisitedMenu);
@@ -254,36 +253,15 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
     }),
     created: function created() {
         this.getTitleAndLogo();
-        var _self = this;
-        //如果是从tsp带签名访问过来, 使用签名免密登录
-        if (this.$route.query && this.$route.query.sign) {
-            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/boss/account/freeLogin', _self.$route.query).then(function (res) {
-                __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].handlerRes(res).then(function (data) {
-                    Lockr.set('userMenuList', data.menuList);
-                    Lockr.set('data', data);
-                    Lockr.set('userInfo', data.userInfo);
-                    _self.username = data.userInfo.username;
-                    _self.userMenuList = data.menuList;
-                    Vue.nextTick(_self.relocation);
-                }).catch(function () {
-                    router.replace('/login');
-                });
-            });
-            return;
-        }
-        var userInfo = Lockr.get('userInfo');
-        if (!userInfo) {
+        if (!this.user) {
             this.$message.warning('您尚未登录');
             router.replace('/login');
             return;
         }
 
-        this.username = userInfo.username;
-        this.userMenuList = Lockr.get('userMenuList');
-
         Vue.nextTick(this.relocation);
 
-        this.themeSettingForm = JSON.parse(JSON.stringify(store.state.theme));
+        this.themeSettingForm = deepCopy(store.state.theme);
     },
 
     components: {
@@ -301,6 +279,9 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_js_three_three__ = __webpack_require__("./resources/assets/js/three/three.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 //
 //
 //
@@ -400,6 +381,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+
 
 
 
@@ -424,6 +406,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         };
     },
 
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["d" /* mapState */])(['user'])),
     methods: {
         refreshVerify: function refreshVerify() {
             var _this = this;
@@ -444,16 +427,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this2 = this;
 
             var _self = this;
-            _self.loading = true;
             this.$refs.form.validate(function (valid) {
                 if (valid) {
+                    _self.loading = true;
                     __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/login', _this2.form).then(function (res) {
                         __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].handlerRes(res).then(function (data) {
-                            console.log('login data', data);
-                            // 存储信息 data
-                            Lockr.set('userMenuList', data.menuList);
-                            Lockr.set('data', data);
-                            Lockr.set('userInfo', data.userInfo);
+                            store.dispatch('storeUserInfo', data);
                             _self.loading = false;
                             _self.relocation();
                         }).catch(function () {
@@ -539,9 +518,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     created: function created() {
         var _self = this;
 
-        var userInfo = Lockr.get('userInfo');
-        if (userInfo) {
-            _self.relocation();
+        if (this.user) {
+            //                _self.relocation();
         }
     },
     mounted: function mounted() {
@@ -642,34 +620,34 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['userMenuList', 'collapse'],
+    props: ['menus', 'collapse'],
     data: function data() {
         return {
             currentMenu: ''
         };
     },
 
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["c" /* mapState */])(['theme'])),
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["d" /* mapState */])(['theme'])),
     methods: {
         change: function change(key) {
             this.currentMenu = key;
             if (key != this.$route.path) {
                 router.push(key);
             } else {
-                bus.refresh(this.$route.name);
+                router.replace({ path: '/refresh', query: { name: this.$route.name } });
             }
         },
         reload: function reload(menus) {
-            this.menuList = menus;
+            this.menus = menus;
         },
         getFirstMenu: function getFirstMenu() {
             // 获取用户的第一个有效权限作为默认首页
             var firstRoute = '/';
-            if (this.userMenuList[0]) {
-                if (this.userMenuList[0].sub && this.userMenuList[0].sub[0]) {
-                    firstRoute = this.userMenuList[0].sub[0].url;
+            if (this.menus[0]) {
+                if (this.menus[0].sub && this.menus[0].sub[0]) {
+                    firstRoute = this.menus[0].sub[0].url;
                 } else {
-                    firstRoute = this.userMenuList[0].url;
+                    firstRoute = this.menus[0].url;
                 }
             }
             return firstRoute;
@@ -11008,6 +10986,15 @@ var render = function() {
                     "el-menu-item",
                     {
                       staticClass: "top-menu-item",
+                      attrs: { index: "refresh-rules" }
+                    },
+                    [_vm._v("刷新权限")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-menu-item",
+                    {
+                      staticClass: "top-menu-item",
                       attrs: { index: "theme-setting" }
                     },
                     [_vm._v("主题设置")]
@@ -11179,10 +11166,7 @@ var render = function() {
             ref: "leftMenu",
             class: { "uncollapse-menu": !_vm.collapseLeftMenu },
             staticStyle: { height: "100%" },
-            attrs: {
-              collapse: _vm.collapseLeftMenu,
-              userMenuList: _vm.userMenuList
-            }
+            attrs: { collapse: _vm.collapseLeftMenu, menus: _vm.menus }
           }),
           _vm._v(" "),
           _c(
@@ -11326,7 +11310,7 @@ var render = function() {
           on: { select: _vm.change }
         },
         [
-          _vm._l(_vm.userMenuList, function(secMenu) {
+          _vm._l(_vm.menus, function(secMenu) {
             return [
               secMenu.sub && secMenu.sub.length > 0
                 ? _c(
@@ -11577,7 +11561,7 @@ var render = function() {
                           }
                         ],
                         staticStyle: { width: "100%" },
-                        attrs: { type: "primary" },
+                        attrs: { type: "primary", disabled: _vm.loading },
                         nativeOn: {
                           click: function($event) {
                             $event.preventDefault()
@@ -12067,10 +12051,10 @@ module.exports = function listToStyles (parentId, list) {
 "use strict";
 /* unused harmony export Store */
 /* unused harmony export install */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return mapState; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return mapMutations; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return mapState; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return mapMutations; });
 /* unused harmony export mapGetters */
-/* unused harmony export mapActions */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return mapActions; });
 /* unused harmony export createNamespacedHelpers */
 /**
  * vuex v3.0.1
@@ -13236,13 +13220,14 @@ Date.prototype.format = function (fmt) {
 window.deepCopy = function (source) {
     var obj = {};
     if ((typeof source === 'undefined' ? 'undefined' : _typeof(source)) == 'object') {
-        source.forEach(function (value, key) {
+        for (var key in source) {
+            var value = source[key];
             if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) == 'object') {
-                obj[key] = deepCopy(source[key]);
+                obj[key] = deepCopy(value);
             } else {
-                obj[key] = source[key];
+                obj[key] = value;
             }
-        });
+        }
         return obj;
     } else {
         return source;
@@ -13702,11 +13687,34 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuex
 
 // 页面离开时把store中的状态存储到localStorage中
 var STATE_KEY = 'state';
+
+var defaultThemes = {
+    '深蓝': {
+        name: '深蓝',
+        color: '#324057',
+        menuTextColor: '#bfcbd9',
+        menuActiveTextColor: '#409EFF'
+    },
+    '深灰': {
+        name: '深灰',
+        color: '#545c64',
+        menuTextColor: '#fff',
+        menuActiveTextColor: '#ffd04b'
+    },
+    '亮白': {
+        name: '亮白',
+        color: '',
+        menuTextColor: '',
+        menuActiveTextColor: ''
+    }
+};
 // 状态本地存储插件
 var stateLocalstorePlugin = function stateLocalstorePlugin(store) {
     var state = Lockr.get(STATE_KEY);
     if (state) {
         store.commit('setTheme', state.theme);
+        store.commit('setUser', state.user || null);
+        store.commit('setMenus', state.menus || []);
     }
 
     store.subscribe(function (mutation, state) {
@@ -13720,12 +13728,9 @@ var stateLocalstorePlugin = function stateLocalstorePlugin(store) {
     strict: "development" !== 'production',
     state: {
         globalLoading: false,
-        theme: {
-            name: '深蓝',
-            color: '#324057',
-            menuTextColor: '#bfcbd9',
-            menuActiveTextColor: ''
-        }
+        theme: deepCopy(defaultThemes['深蓝']),
+        user: null,
+        menus: []
     },
     mutations: {
         setGlobalLoading: function setGlobalLoading(state, loading) {
@@ -13739,36 +13744,43 @@ var stateLocalstorePlugin = function stateLocalstorePlugin(store) {
                 menuActiveTextColor: theme.menuActiveTextColor
             };
         },
-        resetTheme: function resetTheme(state) {
-            state.theme = {
-                name: '深蓝',
-                color: '#324057',
-                menuTextColor: '#bfcbd9',
-                menuActiveTextColor: '#409EFF'
-            };
+        setUser: function setUser(state, user) {
+            state.user = user;
         },
-        setThemeByName: function setThemeByName(state, name) {
-            state.theme.name = name;
-            switch (name) {
-                case '深蓝':
-                    state.theme.color = '#324057';
-                    state.theme.menuTextColor = '#bfcbd9';
-                    state.theme.menuActiveTextColor = '#409EFF';
-                    break;
-                case '深灰':
-                    state.theme.color = '#545c64';
-                    state.theme.menuTextColor = '#fff';
-                    state.theme.menuActiveTextColor = '#ffd04b';
-                    break;
-                case '亮白':
-                    state.theme.color = '';
-                    state.theme.menuTextColor = '';
-                    state.theme.menuActiveTextColor = '';
-                    break;
-            }
+        setMenus: function setMenus(state, menus) {
+            state.menus = menus;
         }
     },
-    actions: {},
+    actions: {
+        openGlobalLoading: function openGlobalLoading(context) {
+            context.commit('setGlobalLoading', true);
+        },
+        closeGlobalLoading: function closeGlobalLoading(context) {
+            context.commit('setGlobalLoading', false);
+        },
+        resetTheme: function resetTheme(context) {
+            context.commit('setTheme', deepCopy(defaultThemes['深蓝']));
+        },
+        setThemeByName: function setThemeByName(context, name) {
+            var theme = deepCopy(defaultThemes[name]);
+            context.commit('setTheme', theme);
+        },
+        clearUserInfo: function clearUserInfo(context) {
+            Lockr.rm('userMenuList');
+            Lockr.rm('userInfo');
+            context.commit('setUser', null);
+            context.commit('setMenus', []);
+        },
+        storeUserInfo: function storeUserInfo(context, _ref) {
+            var user = _ref.user,
+                menus = _ref.menus;
+
+            Lockr.set('userMenuList', menus);
+            Lockr.set('userInfo', user);
+            context.commit('setUser', user);
+            context.commit('setMenus', menus);
+        }
+    },
     plugins: [stateLocalstorePlugin]
 }));
 
@@ -13902,11 +13914,15 @@ module.exports = "/images/logout_36.png?0ad0ae2ae7daa72d5f91cd30ba99ce5e";
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__("./node_modules/axios/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_element_ui__ = __webpack_require__("./node_modules/element-ui/lib/element-ui.common.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_element_ui___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_element_ui__);
+
+
 
 
 window.baseApiUrl = window.baseApiUrl || '';
 var CODE_OK = 0;
-var CODE_UN_LOGIN = 10000;
+var CODE_UN_LOGIN = 10003;
 
 function handlerRes(res) {
     return new Promise(function (resolve, reject) {
@@ -13918,12 +13934,12 @@ function handlerRes(res) {
                     Lockr.rm('userInfo');
                     Lockr.rm('menus');
                     router.push('/login');
-                    bus.$message.error('您的登录信息已失效, 请先登录');
+                    __WEBPACK_IMPORTED_MODULE_1_element_ui__["Message"].error('您的登录信息已失效, 请先登录');
                     break;
                 default:
                     console.log('接口返回错误信息:', res);
                     if (!res.disableErrorMessage) {
-                        bus.$message.error(res.message || '操作失败');
+                        __WEBPACK_IMPORTED_MODULE_1_element_ui__["Message"].error(res.message || '操作失败');
                     }
                     break;
             }
@@ -13934,7 +13950,7 @@ function handlerRes(res) {
 
 function handlerNetworkError(error) {
     console.log('network error: ', error);
-    bus.$message.error('请求超时，请检查网络');
+    __WEBPACK_IMPORTED_MODULE_1_element_ui__["Message"].error('请求超时，请检查网络');
 }
 
 function getRealUrl(url) {

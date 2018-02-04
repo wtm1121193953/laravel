@@ -69,13 +69,14 @@ Date.prototype.format = function(fmt){
 window.deepCopy = function(source){
     let obj = {};
     if(typeof source == 'object'){
-        source.forEach((value, key) => {
+        for(let key in source){
+            let value = source[key];
             if(typeof value == 'object'){
-                obj[key] = deepCopy(source[key])
+                obj[key] = deepCopy(value)
             }else {
-                obj[key] = source[key]
+                obj[key] = value
             }
-        });
+        }
         return obj;
     } else {
         return source;
