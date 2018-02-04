@@ -58,7 +58,7 @@ class Handler extends ExceptionHandler
             return $this->renderForApi($request, $exception);
         }else if($request->is('admin/*')){
             if($exception instanceof NotFoundHttpException){
-                return redirect('/admin?_from=' . urlencode($request->fullUrl()));
+                return redirect('/admin?_from=' . urlencode(substr($request->getRequestUri(), 6)));
             }
         }
         return parent::render($request, $exception);

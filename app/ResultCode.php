@@ -17,6 +17,7 @@ class ResultCode
 
     const API_NOT_FOUND = 10000; // 接口不存在
     const PARAMS_INVALID = 10001; // 参数不合法
+    const NO_PERMISSION = 10002; // 参数不合法
 
     const UNLOGIN = 10003;  // 未登录
     const ACCOUNT_NOT_FOUND = 10004; // 账号不存在

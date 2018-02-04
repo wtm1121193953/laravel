@@ -28,4 +28,10 @@ Route::prefix('admin')
     ->group(function(){
     Route::post('login', 'UserController@login');
     Route::get('user/rules', 'UserController@getRules');
+
+    Route::get('rules', 'RuleController@getList');
+    Route::post('rule/add', 'RuleController@add');
+    Route::post('rule/edit', 'RuleController@edit');
+    Route::post('rule/del', 'RuleController@del');
+    Route::post('rule/changeStatus', 'RuleController@changeStatus');
 });

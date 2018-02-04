@@ -57,6 +57,13 @@ return [
         'name' => [
             'required' => '名称不能为空',
         ],
+        'status' => [
+            'required' => '状态不能为空',
+            'numeric' => '状态只能是数字',
+            'integer' => '状态只能是整数',
+        ],
+
+
         'base_url' => [
             'required' => '根地址不能为空',
             'url' => '根地址格式不正确',

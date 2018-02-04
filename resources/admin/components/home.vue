@@ -173,9 +173,9 @@
             },
             getFirstRoute(){ // 获取用户的第一个有效权限作为默认首页
                 let firstRoute = '/admin/welcome';
-                _(this.menus).forEach((userMenu) => {
-                    if (userMenu.sub  && userMenu.sub[0]  && userMenu.sub[0].url !== '' ) {
-                        firstRoute = userMenu.sub[0].url;
+                _(this.menus).forEach((menu) => {
+                    if (menu.sub  && menu.sub[0]  && menu.sub[0].url !== '' ) {
+                        firstRoute = menu.sub[0].url;
                         return false;
                     }
                 });

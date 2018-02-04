@@ -5,8 +5,7 @@ Vue.use(Vuex);
 
 import api from '../../assets/js/api'
 
-// 页面离开时把store中的状态存储到localStorage中
-const STATE_KEY = 'state';
+import auth from './auth'
 
 let defaultThemes = {
     '深蓝': {
@@ -28,8 +27,25 @@ let defaultThemes = {
         menuActiveTextColor: '',
     },
 };
-// 状态本地存储插件
+
+// 去除菜单url中的前缀: /admin
+let trimMenuUrlPrefix = function(menus, prefix = '/admin'){
+    menus.forEach((menu) => {
+        if(menu.url && menu.url.indexOf(prefix) == 0){
+            menu.url = menu.url.substr(prefix.length);
+        }
+        if(menu.sub && menu.sub.length > 0){
+            trimMenuUrlPrefix(menu.sub)
+        }
+    })
+    return menus;
+};
+
+// 状态存储的 key
+const STATE_KEY = 'state';
+// 状态本地存储插件, 页面离开时把store中的状态存储到localStorage中
 const stateLocalstorePlugin = function(store){
+    // store 初始化时调用, 初始化store的数据
     let state = Lockr.get(STATE_KEY);
     if(state){
         store.commit('setTheme', state.theme);
@@ -92,11 +108,15 @@ export default new Vuex.Store({
             context.commit('setMenus', []);
         },
         storeUserInfo(context, {user, menus}){
+            menus = trimMenuUrlPrefix(menus);
             Lockr.set('userMenuList', menus);
             Lockr.set('userInfo', user);
             context.commit('setUser', user);
             context.commit('setMenus', menus);
         }
+    },
+    modules: {
+        auth
     },
     plugins: [
         stateLocalstorePlugin

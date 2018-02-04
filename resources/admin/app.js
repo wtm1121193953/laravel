@@ -26,10 +26,10 @@ router.beforeEach((to, from, next) => {
     store.commit('setGlobalLoading', true)
     NProgress.start()
     // 处理服务器重定向到指定页面时在浏览器返回页面为空的问题
-    if(to.query.from){
+    if(to.query._from){
         store.commit('setGlobalLoading', false)
         NProgress.done()
-        next(to.query.from);
+        next(to.query._from);
     }else {
         next()
     }
@@ -54,6 +54,7 @@ window.HOST = '/'
 window.pageSize = 15
 
 import api from '../assets/js/api'
+window.api = api;
 Vue.prototype.$api = api;
 
 new Vue({

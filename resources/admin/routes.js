@@ -4,36 +4,22 @@ import Home from './components/home.vue'
 import ErrorPage from './components/404.vue'
 import welcome from './components/welcome.vue'
 
+import RuleList from './components/auth/rule/list.vue'
+
 /**
  *
  */
 const routes = [
 
     {path: '/login', component: Login, name: 'Login'},
-    {
-        path: '/',
-        component: Home,
-        children: [
-            {path: '/refresh', component: refresh, name: 'refresh'},
-        ]
-    },
 
-    // demo组件示例
-    {
-        path: '/',
-        component: Home,
-        children: [
-          // {path: 'aaa', component: ProviderList, name: 'ProviderList'},
-          {path: 'welcome', component: welcome, name: 'welcome'},
-            // {path: 'ad/index/:provider_id/:ad_position_id', component: AdList, name: 'AdList'}
-        ]
-    },
 
     // 权限模块
     {
         path: '/',
         component: Home,
         children: [
+            {path: 'rules', component: RuleList, name: 'RuleList'}
         ]
     },
 
@@ -41,6 +27,8 @@ const routes = [
         path: '/',
         component: Home,
         children: [
+            // demo组件示例
+            {path: 'welcome', component: welcome, name: 'welcome'},
             // 刷新组件
             {path: 'refresh', component: refresh, name: 'refresh'},
             // 拦截所有无效的页面到错误页面

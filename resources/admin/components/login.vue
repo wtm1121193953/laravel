@@ -141,8 +141,8 @@
                 }, 300)
             },
             relocation() {
-                if (this.$route.query && this.$route.query.from) {
-                    router.push(this.$route.query.from);
+                if (this.$route.query && this.$route.query._from) {
+                    router.push(this.$route.query._from);
                 }else{
                     router.push('/');
                 }
