@@ -12,17 +12,44 @@ namespace App\Http\Controllers\Admin;
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Admin\AdminAuthRule;
+use App\Modules\Admin\AdminService;
 use App\Result;
 use App\ResultCode;
 
 class RuleController extends Controller
 {
 
+    private function getRuleListFromTree($tree, &$list)
+    {
+        foreach ($tree as &$item) {
+            $list[] = &$item;
+            if(isset($item['sub']) && is_array($item['sub']) && sizeof($item['sub']) > 0){
+                $this->getRuleListFromTree($item['sub'], $list);
+            }
+        }
+        return $list;
+    }
+
     public function getList()
     {
-        // todo 封装权限列表, 子权限要在父权限的后面
+        $rules = AdminAuthRule::orderBy('sort')->get();
+        // 封装权限列表, 子权限要在父权限的后面
+        $t_start = microtime(true);
+        $tree = AdminService::convertRulesToTree($rules);
+        $t_end = microtime(true);
+        $list = [];
+        $start = microtime(true);
+        $list = $this->getRuleListFromTree($tree, $list);
+        $end = microtime(true);
+
         return Result::success([
-            'list' => AdminAuthRule::all()
+            'list' => $list,
+            'start' => $start,
+            'end' => $end,
+            'total' => $end - $start,
+            't_start' => $t_start,
+            't_end' => $t_end,
+            't_total' => $t_end - $t_start,
         ]);
     }
 
