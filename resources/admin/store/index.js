@@ -31,7 +31,7 @@ let defaultThemes = {
 // 去除菜单url中的前缀: /admin
 let trimMenuUrlPrefix = function(menus, prefix = '/admin'){
     menus.forEach((menu) => {
-        if(menu.url && menu.url.indexOf(prefix) == 0){
+        if(menu.url && menu.url.indexOf(prefix) === 0){
             menu.url = menu.url.substr(prefix.length);
         }
         if(menu.sub && menu.sub.length > 0){
@@ -39,6 +39,17 @@ let trimMenuUrlPrefix = function(menus, prefix = '/admin'){
         }
     })
     return menus;
+};
+
+let getFirstMenu = function(menus){
+    let firstRoute = '/admin/welcome';
+    menus.forEach((menu) => {
+        if (menu.sub  && menu.sub[0]  && menu.sub[0].url !== '' ) {
+            firstRoute = menu.sub[0].url;
+            return false;
+        }
+    });
+    return firstRoute;
 };
 
 // 状态存储的 key
@@ -51,6 +62,7 @@ const stateLocalstorePlugin = function(store){
         store.commit('setTheme', state.theme);
         store.commit('setUser', state.user || null);
         store.commit('setMenus', state.menus || []);
+        store.commit('setCurrentMenu', state.currentMenu || getFirstMenu(store.state.menus));
     }
 
     store.subscribe((mutation, state) => {
@@ -67,6 +79,7 @@ export default new Vuex.Store({
         theme: deepCopy(defaultThemes['深蓝']),
         user: null,
         menus: [],
+        currentMenu: null,
     },
     mutations: {
         setGlobalLoading(state, loading){
@@ -85,6 +98,9 @@ export default new Vuex.Store({
         },
         setMenus(state, menus){
             state.menus = menus;
+        },
+        setCurrentMenu(state, currentMenu){
+            state.currentMenu = currentMenu;
         }
     },
     actions:{
@@ -113,7 +129,7 @@ export default new Vuex.Store({
             Lockr.set('userInfo', user);
             context.commit('setUser', user);
             context.commit('setMenus', menus);
-        }
+        },
     },
     modules: {
         auth

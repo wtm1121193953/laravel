@@ -33,18 +33,18 @@
         props: ['menus', 'collapse'],
         data() {
             return {
-                currentMenu: ''
             }
         },
         computed: {
             ...mapState([
-                'theme'
+                'theme',
+                'currentMenu',
             ])
         },
         methods: {
             change(key){
-                this.currentMenu = key;
-                if (key != this.$route.path) {
+                store.commit('setCurrentMenu', key);
+                if (key !== this.$route.path) {
                     router.push(key)
                 } else {
                     router.replace({path: '/refresh', query: {name: this.$route.name}})
@@ -52,32 +52,16 @@
             },
             reload(menus){
                 this.menus = menus;
-            },
-            getFirstMenu(){ // 获取用户的第一个有效权限作为默认首页
-                let firstRoute = '/';
-                if(this.menus[0]){
-                    if(this.menus[0].sub && this.menus[0].sub[0]){
-                        firstRoute = this.menus[0].sub[0].url
-                    }else{
-                        firstRoute = this.menus[0].url;
-                    }
-                }
-                return firstRoute;
-            },
-            toFirstMenu(){ // 转到第一个菜单
-                this.change(this.getFirstMenu())
             }
         },
         created: function () {
-            this.currentMenu = Lockr.get('current-menu') || this.getFirstMenu();
 
-            let _self = this;
             // 全局注册一个菜单对象
             Vue.prototype.$menu = this;
 
-            window.onbeforeunload = function(){
-                Lockr.set('current-menu', _self.currentMenu);
-            }
+            Vue.nextTick(() => {
+                router.push(this.currentMenu)
+            })
         }
     }
 </script>

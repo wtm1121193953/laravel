@@ -171,28 +171,6 @@
                 this.logo_type = '1'
                 this.title = '中交出行运营平台 - BOSS'
             },
-            getFirstRoute(){ // 获取用户的第一个有效权限作为默认首页
-                let firstRoute = '/admin/welcome';
-                _(this.menus).forEach((menu) => {
-                    if (menu.sub  && menu.sub[0]  && menu.sub[0].url !== '' ) {
-                        firstRoute = menu.sub[0].url;
-                        return false;
-                    }
-                });
-                return firstRoute;
-            },
-            relocation() {
-                if(this.$route.path == '/admin'){
-                    let lastVisitedMenu = Lockr.get('current-menu');
-                    if(lastVisitedMenu){
-                        router.push(lastVisitedMenu);
-                    } else{
-                        this.$menu ? this.$menu.toFirstMenu() : setTimeout(() => {
-                            this.$menu.toFirstMenu()
-                        }, 100);
-                    }
-                }
-            }
         },
         created() {
             this.getTitleAndLogo();
@@ -201,9 +179,6 @@
                 router.replace('/login');
                 return ;
             }
-
-            Vue.nextTick(this.relocation)
-
             this.themeSettingForm = deepCopy(store.state.theme);
         },
         components: {

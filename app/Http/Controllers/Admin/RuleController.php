@@ -34,22 +34,24 @@ class RuleController extends Controller
     {
         $rules = AdminAuthRule::orderBy('sort')->get();
         // 封装权限列表, 子权限要在父权限的后面
-        $t_start = microtime(true);
         $tree = AdminService::convertRulesToTree($rules);
-        $t_end = microtime(true);
         $list = [];
-        $start = microtime(true);
         $list = $this->getRuleListFromTree($tree, $list);
-        $end = microtime(true);
 
         return Result::success([
             'list' => $list,
-            'start' => $start,
-            'end' => $end,
-            'total' => $end - $start,
-            't_start' => $t_start,
-            't_end' => $t_end,
-            't_total' => $t_end - $t_start,
+        ]);
+    }
+
+    public function getTree()
+    {
+        $rules = AdminAuthRule::orderBy('sort')->get();
+        // 封装权限列表, 子权限要在父权限的后面
+        $tree = AdminService::convertRulesToTree($rules);
+
+        return Result::success([
+            'tree' => $tree,
+            'list' => $rules,
         ]);
     }
 
@@ -103,6 +105,10 @@ class RuleController extends Controller
         return Result::success($rule);
     }
 
+    /**
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function del()
     {
         $this->validate(request(), [

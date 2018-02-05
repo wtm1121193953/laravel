@@ -5,6 +5,7 @@ import ErrorPage from './components/404.vue'
 import welcome from './components/welcome.vue'
 
 import RuleList from './components/auth/rule/list.vue'
+import GroupList from './components/auth/group/list.vue'
 
 /**
  *
@@ -19,7 +20,8 @@ const routes = [
         path: '/',
         component: Home,
         children: [
-            {path: 'rules', component: RuleList, name: 'RuleList'}
+            {path: 'rules', component: RuleList, name: 'RuleList'},
+            {path: 'groups', component: GroupList, name: 'GroupList'},
         ]
     },
 

@@ -239,11 +239,6 @@
             }
         },
         created: function () {
-            let _self = this;
-
-            if (this.user) {
-//                _self.relocation();
-            }
         },
         mounted () {
             const that = this;

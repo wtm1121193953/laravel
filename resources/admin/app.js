@@ -15,7 +15,6 @@ import 'nprogress/nprogress.css'
 import store from './store'
 window.store = store;
 
-window.baseApiUrl = '/api/admin/'
 const router = new VueRouter({
     mode: 'history',
     base: '/admin',
@@ -53,6 +52,7 @@ window.router = router
 window.HOST = '/'
 window.pageSize = 15
 
+window.baseApiUrl = '/api/admin/'
 import api from '../assets/js/api'
 window.api = api;
 Vue.prototype.$api = api;
