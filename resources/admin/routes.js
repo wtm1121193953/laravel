@@ -6,6 +6,7 @@ import welcome from './components/welcome.vue'
 
 import RuleList from './components/auth/rule/list.vue'
 import GroupList from './components/auth/group/list.vue'
+import UserList from './components/auth/user/list.vue'
 
 /**
  *
@@ -22,6 +23,7 @@ const routes = [
         children: [
             {path: 'rules', component: RuleList, name: 'RuleList'},
             {path: 'groups', component: GroupList, name: 'GroupList'},
+            {path: 'users', component: UserList, name: 'UserList'},
         ]
     },
 

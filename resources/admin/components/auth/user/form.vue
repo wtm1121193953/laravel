@@ -2,18 +2,20 @@
     <el-row>
         <el-col :span="22">
             <el-form :model="form" label-width="120px" :rules="formRules" ref="form">
-                <el-form-item prop="name" label="角色名">
-                    <el-input v-model="form.name"/>
+                <el-form-item prop="username" label="用户名">
+                    <el-input v-model="form.username"/>
                 </el-form-item>
-                <el-form-item label="权限列表">
-                    <el-tree
-                            ref="tree"
-                            :data="ruleTree"
-                            show-checkbox
-                            node-key="id"
-                            :props="{label: 'name', children: 'sub'}"
-                            default-expand-all>
-                    </el-tree>
+                <el-form-item v-if="!form.id" prop="password" label="密码">
+                    <el-input v-model="form.password" type="password"/>
+                </el-form-item>
+                <el-form-item prop="group_id" label="所属角色">
+                    <el-select v-model="form.group_id" placeholder="请选择角色">
+                        <el-option
+                                v-for="group in groups"
+                                :key="group.id"
+                                :label="group.name"
+                                :value="group.id"/>
+                    </el-select>
                 </el-form-item>
                 <el-form-item prop="status" label="状态">
                     <el-radio-group v-model="form.status">
@@ -33,18 +35,20 @@
 <script>
     import {mapState} from 'vuex'
     export default {
-        name: 'group-form',
+        name: 'user-form',
         props: {
-            group: Object
+            user: Object
         },
         data(){
             return {
                 form: {
-                    name: '',
+                    username: '',
+                    password: '',
+                    group_id: '',
                     status: 1,
                 },
                 formRules: {
-                    name: [
+                    username: [
                         {required: true, message: '名称不能为空'}
                     ]
                 }
@@ -52,26 +56,18 @@
         },
         computed: {
             ...mapState('auth', [
-                'ruleTree',
-                'rulesIdMapping',
-                'rulePids'
+                'groups'
             ])
         },
         methods: {
             initForm(){
-                if(this.group){
-                    this.form = deepCopy(this.group);
-                    // 初始化时去掉有上级菜单,只保留叶子节点
-                    let ruleIds = [];
-                    this.group.rule_ids.split(',').forEach(id => {
-                        if(this.rulePids.indexOf(parseInt(id)) < 0){
-                            ruleIds.push(id)
-                        }
-                    });
-                    this.$refs.tree.setCheckedKeys(ruleIds)
+                if(this.user){
+                    this.form = deepCopy(this.user)
                 }else {
                     this.form = {
-                        name: '',
+                        username: '',
+                        password: '',
+                        group_id: '',
                         status: 1,
                     }
                 }
@@ -82,33 +78,20 @@
             save(){
                 this.$refs.form.validate(valid => {
                     if(valid){
-                        // 提交时将子菜单的父菜单加入权限列表
-                        let ruleIds = [];
-                        this.$refs.tree.getCheckedKeys().forEach(id => {
-                            let rule = this.rulesIdMapping[id];
-                            if(rule.pid > 0){
-                                if(ruleIds.indexOf(rule.pid) < 0){
-                                    ruleIds.push(rule.pid)
-                                }
-                            }
-                            ruleIds.push(rule.id);
-                        });
-                        this.form.rule_ids = ruleIds.join(',');
                         this.$emit('save', deepCopy(this.form));
                         setTimeout(() => {
                             this.$refs.form.resetFields();
-                            this.$refs.tree.setCheckedKeys([])
                         }, 500)
                     }
                 })
 
             }
         },
-        mounted(){
+        created(){
             this.initForm();
         },
         watch: {
-            group(val){
+            user(){
                 this.initForm();
             }
         }

@@ -11,19 +11,21 @@ function handlerRes(res) {
         if (res && res.code === CODE_OK) {
             resolve(res.data);
         } else {
-            switch (res.code) {
-                case CODE_UN_LOGIN:
-                    Lockr.rm('userInfo');
-                    Lockr.rm('menus');
-                    router.push('/login');
-                    Message.error('您的登录信息已失效, 请先登录');
-                    break;
-                default:
-                    console.log('接口返回错误信息:', res);
-                    if(!res.disableErrorMessage){
-                        Message.error(res.message || '操作失败');
-                    }
-                    break;
+            if(res && res.code){
+                switch (res.code) {
+                    case CODE_UN_LOGIN:
+                        Lockr.rm('userInfo');
+                        Lockr.rm('menus');
+                        router.push('/login');
+                        Message.error('您的登录信息已失效, 请先登录');
+                        break;
+                    default:
+                        console.log('接口返回错误信息:', res);
+                        if(!res.disableErrorMessage){
+                            Message.error(res.message || '操作失败');
+                        }
+                        break;
+                }
             }
             reject(res);
         }
@@ -61,7 +63,6 @@ function post(url, params) {
         headers: {'X-Requested-With': 'XMLHttpRequest'}
     };
     url = getRealUrl(url);
-    console.log(url)
     return axios.post(url, params, options).then(res => {
         return res.data
     }).catch(handlerNetworkError)

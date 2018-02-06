@@ -8,74 +8,104 @@
 
 namespace App\Http\Controllers\Admin;
 
-
-use App\Exceptions\AccountNotFoundException;
-use App\Exceptions\ParamInvalidException;
-use App\Exceptions\PasswordErrorException;
-use App\Exceptions\UnloginException;
+use App\Exceptions\BaseResponseException;
+use App\Exceptions\NoPermissionException;
 use App\Http\Controllers\Controller;
-use App\Modules\Admin\AdminService;
 use App\Modules\Admin\AdminUser;
 use App\Result;
-use Illuminate\Support\Facades\Session;
+use App\ResultCode;
 
 class UserController extends Controller
 {
 
-    public function login()
+    public function getList()
     {
-        $username = request('username');
-        $password = request('password');
-        if(empty($username) || empty($password)){
-            throw new ParamInvalidException();
-        }
+        $list = AdminUser::all();
+        return Result::success([
+            'list' => $list
+        ]);
+    }
 
+    public function add()
+    {
         $this->validate(request(), [
             'username' => 'required',
-            'password' => 'required|between:6,30',
-            'verifyCode' => 'required|captcha'
+            'password' => 'required|between:6,30'
         ]);
-        $user = AdminUser::where('username', $username)->first();
-        if(empty($user)){
-            throw new AccountNotFoundException();
+        $user = AdminUser::where('username', request('username'))->first();
+        if($user){
+            throw new BaseResponseException('账号已存在', ResultCode::ACCOUNT_EXISTS);
         }
-        if(AdminUser::genPassword($password, $user['salt']) != $user['password']){
-            throw new PasswordErrorException();
-        }
-
-        $rules = AdminService::getRulesForUser($user);
-        $menuTree = AdminService::convertRulesToTree($rules);
-
-        session([
-            'admin_user' => $user,
-            'admin_user_rules' => $rules
-        ]);
-
-        return Result::success([
-            'user' => $user,
-            'menus' => $menuTree
-        ]);
+        $user = new AdminUser();
+        $user->username = request('username');
+        $salt = str_random();
+        $user->salt = $salt;
+        $user->password = AdminUser::genPassword(request('password'), $salt);
+        $user->group_id = request('group_id', 0);
+        $user->super = 2;
+        $user->status = request('status', 1);
+        $user->save();
+        return Result::success($user);
     }
 
-    public function logout()
+    public function edit()
     {
-        Session::remove('admin_user');
-        Session::remove('admin_user_rules');
-        return Result::success();
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'username' => 'required',
+        ]);
+        $user = AdminUser::findOrFail(request('id'));
+        $user->username = request('username');
+        $user->group_id = request('group_id', 0);
+        $user->status = request('status', 1);
+        $user->save();
+        return Result::success($user);
     }
 
-    public function getRules()
+    public function resetPassword()
     {
-        $user = Session::get('admin_user');
-        if(empty($user)){
-            throw new UnloginException();
+        $currentUser = request()->get('current_user');
+        if(!$currentUser->isSuper()){
+            throw new NoPermissionException();
         }
-        $rules = AdminService::getRulesForUser($user);
-        $menuTree = AdminService::convertRulesToTree($rules);
-
-        return Result::success([
-            'user' => $user,
-            'menus' => $menuTree
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'password' => 'required|between:6,30'
         ]);
+        $user = AdminUser::findOrFail(request('id'));
+        $salt = str_random();
+        $user->salt = $salt;
+        $user->password = AdminUser::genPassword(request('password'), $salt);
+        $user->save();
+        return Result::success($user);
+    }
+
+    public function changeStatus()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'status' => 'required|integer'
+        ]);
+        $user = AdminUser::findOrFail(request('id'));
+        $user->status = request('status');
+        $user->save();
+        return Result::success($user);
+    }
+
+    /**
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
+    public function del()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $user = AdminUser::findOrFail(request('id'));
+        if($user->isSuper()){
+            throw new BaseResponseException('无权限删除', ResultCode::NO_PERMISSION);
+        }
+        $user->delete();
+        return Result::success($user);
     }
 }

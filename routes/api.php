@@ -26,8 +26,16 @@ Route::prefix('admin')
     ->middleware('admin')
     ->namespace('Admin')
     ->group(function(){
-    Route::post('login', 'UserController@login');
-    Route::get('user/rules', 'UserController@getRules');
+    Route::post('login', 'SelfController@login');
+    Route::post('logout', 'SelfController@logout');
+    Route::get('self/rules', 'SelfController@getRules');
+
+    Route::get('users', 'UserController@getList');
+    Route::post('user/add', 'UserController@add');
+    Route::post('user/edit', 'UserController@edit');
+    Route::post('user/del', 'UserController@del');
+    Route::post('user/changeStatus', 'UserController@changeStatus');
+    Route::post('user/resetPassword', 'UserController@resetPassword');
 
     Route::get('groups', 'GroupController@getList');
     Route::post('group/add', 'GroupController@add');

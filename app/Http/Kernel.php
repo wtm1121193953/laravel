@@ -2,6 +2,8 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\AdminLoginFilter;
+use App\Http\Middleware\AdminPermissionAuthenticate;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -45,7 +47,8 @@ class Kernel extends HttpKernel
         ],
 
         'admin' => [
-
+            AdminLoginFilter::class,
+            AdminPermissionAuthenticate::class,
         ]
     ];
 

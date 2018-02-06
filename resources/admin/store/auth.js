@@ -9,6 +9,7 @@ const auth = {
         rulesIdMapping: {},
         rulePids: [],
         groups: [],
+        groupsIdMapping: {},
         users: [],
     },
     mutations: {
@@ -26,6 +27,9 @@ const auth = {
         },
         setGroups(state, groups){
             state.groups = groups;
+        },
+        setGroupsIdMapping(state, mapping){
+            state.groupsIdMapping = mapping;
         },
         setUsers(state, users){
             state.users = users;
@@ -58,10 +62,18 @@ const auth = {
                 })
             })
         },
+        mapGroupsId(context, groups){
+            let idMapping = {};
+            groups.forEach(item => {
+                idMapping[item.id] = item;
+            });
+            context.commit('setGroupsIdMapping', idMapping);
+        },
         getGroups(context){
             api.get('/groups').then(res => {
                 api.handlerRes(res).then(data => {
                     context.commit('setGroups', data.list)
+                    context.dispatch('mapGroupsId', data.list)
                 })
             })
         },

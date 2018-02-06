@@ -3,7 +3,7 @@
         <el-header class="header">
             <!-- logo -->
             <div class="panel-logo fl" :style="{'background-color': theme.color}">
-                <template v-if="logo_type == '1'">
+                <template v-if="logo_type === 1">
                     <img src="../../assets/images/logo.png" class="logo">
                 </template>
                 <template v-else>
@@ -47,7 +47,7 @@
                         <el-button type="text" class="fr" @click="resetTheme">重置主题</el-button>
                     </el-form-item>
 
-                    <el-form-item v-if="themeSettingForm.name == 'custom'">
+                    <el-form-item v-if="themeSettingForm.name === 'custom'">
                         <el-form-item label="背景颜色">
                             <el-color-picker
                                     v-model="themeSettingForm.color"
@@ -137,7 +137,7 @@
                     cancelButtonText: '取消'
                 }).then(() => {
                     api.post('/logout').then((res) => {
-                        api.handlerRes(res).then(data => {
+                        api.handlerRes(res).then(() => {
                             this.$message.success('退出成功')
                         })
                     })
@@ -147,7 +147,7 @@
 
                 })
             },
-            selectTopMenu(key, keyPath){
+            selectTopMenu(key, ){
                 switch (key) {
                     case 'logout':
                         this.logout()
@@ -157,7 +157,7 @@
                         break;
                     case 'refresh-rules':
                         store.dispatch('openGlobalLoading');
-                        api.get('/user/rules').then(res => {
+                        api.get('/self/rules').then(res => {
                             api.handlerRes(res).then(data => {
                                 store.dispatch('storeUserInfo', data);
                                 store.dispatch('closeGlobalLoading')
@@ -168,7 +168,7 @@
             },
             getTitleAndLogo() {
                 document.title = '中交出行运营平台 - BOSS'
-                this.logo_type = '1'
+                this.logo_type = 1
                 this.title = '中交出行运营平台 - BOSS'
             },
         },

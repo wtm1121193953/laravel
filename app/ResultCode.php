@@ -22,6 +22,7 @@ class ResultCode
     const UNLOGIN = 10003;  // 未登录
     const ACCOUNT_NOT_FOUND = 10004; // 账号不存在
     const ACCOUNT_PASSWORD_ERROR = 10005;  // 账号密码错误
+    const ACCOUNT_EXISTS = 10006;  // 账号已存在
 
     const DB_QUERY_FAIL = 10010;  // 数据库查询失败
     const DB_INSERT_FAIL = 10011;   // 数据库插入失败

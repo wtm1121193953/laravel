@@ -10,7 +10,6 @@ namespace App\Modules\Admin;
 
 
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\Model;
 
 class AdminService
 {

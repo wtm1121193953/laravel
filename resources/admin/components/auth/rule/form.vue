@@ -9,7 +9,7 @@
                     <el-input v-model="form.url"/>
                 </el-form-item>
                 <el-form-item prop="url_all" label="url_all">
-                    <el-input type="textarea" v-model="form.url_all"/>
+                    <el-input type="textarea" :autosize="{ minRows: 2}" v-model="form.url_all"/>
                 </el-form-item>
                 <el-form-item prop="status" label="状态">
                     <el-radio-group v-model="form.status">
@@ -55,6 +55,7 @@
             initForm(){
                 if(this.rule){
                     this.form = deepCopy(this.rule)
+                    this.form.url_all = this.form.url_all.split(',').join('\n')
                 }else {
                     this.form = {
                         name: '',
@@ -71,24 +72,12 @@
             save(){
                 this.$refs.form.validate(valid => {
                     if(valid){
-                        let url_all = this.form.url_all;
-                        url_all = url_all.split("\n");
-                        let urlArr = [];
-                        url_all.forEach(item => {
-                            item = item.trim();
-                            if(item.startsWith(',') || item.startsWith('，')){
-                                item = item.substr(1);
-                            }
-                            if(item.endsWith(',') || item.startsWith('，')){
-                                item = item.substring(0, -1)
-                            }
-                            if(item){
-                                urlArr.push(item);
-                            }
-                        });
-                        this.form.url_all = urlArr.join(',');
-                        this.$emit('save', deepCopy(this.form));
-                        this.$refs.form.resetFields();
+                        let rule = deepCopy(this.form);
+                        rule.url_all = rule.url_all.split("\n").join(',')
+                        this.$emit('save', rule);
+                        setTimeout(() => {
+                            this.$refs.form.resetFields();
+                        }, 500)
                     }
                 })
 
