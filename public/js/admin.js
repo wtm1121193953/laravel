@@ -880,6 +880,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
 
 
 
@@ -953,7 +954,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         },
         getTitleAndLogo: function getTitleAndLogo() {
             document.title = '中交出行运营平台 - BOSS';
-            this.logo_type = 1;
+            this.logo_type = 2;
             this.title = '中交出行运营平台 - BOSS';
         }
     }),
@@ -10796,7 +10797,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n.uncollapse-menu[data-v-45b03343] {\n    width: 200px;\n}\n.fade-enter-active[data-v-45b03343],\n.fade-leave-active[data-v-45b03343] {\n    transition: opacity .5s\n}\n.fade-enter[data-v-45b03343],\n.fade-leave-active[data-v-45b03343] {\n    opacity: 0\n}\n.container[data-v-45b03343] {\n    height: 100%;\n}\n.header[data-v-45b03343] {\n    padding: 0;\n}\n.mock-menu-bottom-line[data-v-45b03343] {\n    position:absolute; height: 0; width: 260px; top: 60px; border-bottom: solid 1px #e6e6e6;\n}\n.panel-logo[data-v-45b03343] {\n    cursor: pointer;\n    position: relative;\n    height: 60px;\n    width: 200px\n}\n.logo[data-v-45b03343] {\n    width: 150px;\n    float: left;\n    margin: 6px 15px;\n}\n.top-menu-item[data-v-45b03343] {\n    min-width: 0;\n    width: 100%\n}\n.logout[data-v-45b03343] {\n    background: url(" + escape(__webpack_require__("./resources/assets/images/logout_36.png")) + ");\n    background-size: contain;\n    width: 20px;\n    height: 20px;\n    float: left;\n}\n.tip-logout[data-v-45b03343] {\n    float: right;\n    margin-right: 20px;\n    padding-top: 5px;\n    cursor: pointer;\n}\n.admin[data-v-45b03343] {\n    color: #c0ccda;\n    text-align: center;\n}\n.hide-leftMenu[data-v-45b03343] {\n    left: 0;\n}\n", ""]);
+exports.push([module.i, "\n.uncollapse-menu[data-v-45b03343] {\n    width: 200px;\n}\n.fade-enter-active[data-v-45b03343],\n.fade-leave-active[data-v-45b03343] {\n    transition: opacity .5s\n}\n.fade-enter[data-v-45b03343],\n.fade-leave-active[data-v-45b03343] {\n    opacity: 0\n}\n.container[data-v-45b03343] {\n    height: 100%;\n}\n.header[data-v-45b03343] {\n    padding: 0;\n}\n.mock-menu-bottom-line[data-v-45b03343] {\n    position:absolute; height: 0; width: 260px; top: 60px; border-bottom: solid 1px #e6e6e6;\n}\n.panel-logo[data-v-45b03343] {\n    cursor: pointer;\n    position: relative;\n    height: 60px;\n    width: 200px\n}\n.logo[data-v-45b03343] {\n    width: 150px;\n    float: left;\n    margin: 6px 15px;\n    line-height: 48px;\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: nowrap;\n}\n.top-menu-item[data-v-45b03343] {\n    min-width: 0;\n    width: 100%\n}\n.logout[data-v-45b03343] {\n    background: url(" + escape(__webpack_require__("./resources/assets/images/logout_36.png")) + ");\n    background-size: contain;\n    width: 20px;\n    height: 20px;\n    float: left;\n}\n.tip-logout[data-v-45b03343] {\n    float: right;\n    margin-right: 20px;\n    padding-top: 5px;\n    cursor: pointer;\n}\n.admin[data-v-45b03343] {\n    color: #c0ccda;\n    text-align: center;\n}\n.hide-leftMenu[data-v-45b03343] {\n    left: 0;\n}\n", ""]);
 
 // exports
 
@@ -12580,9 +12581,14 @@ var render = function() {
                     })
                   ]
                 : [
-                    _c("span", { staticClass: "p-l-20" }, [
-                      _vm._v(_vm._s(_vm.title))
-                    ])
+                    _c(
+                      "div",
+                      {
+                        staticClass: "logo p-l-20 p-r-20",
+                        style: { color: _vm.theme.menuTextColor }
+                      },
+                      [_vm._v(_vm._s(_vm.title))]
+                    )
                   ]
             ],
             2
@@ -12666,6 +12672,15 @@ var render = function() {
                       attrs: { index: "theme-setting" }
                     },
                     [_vm._v("主题设置")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-menu-item",
+                    {
+                      staticClass: "top-menu-item",
+                      attrs: { index: "modify-password" }
+                    },
+                    [_vm._v("修改密码")]
                   ),
                   _vm._v(" "),
                   _c(

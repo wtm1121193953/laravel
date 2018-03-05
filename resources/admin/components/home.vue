@@ -7,7 +7,7 @@
                     <img src="../../assets/images/logo.png" class="logo">
                 </template>
                 <template v-else>
-                    <span class="p-l-20">{{title}}</span>
+                    <div class="logo p-l-20 p-r-20" :style="{'color': theme.menuTextColor}">{{title}}</div>
                 </template>
             </div>
             <div class="top-left-menu" style="height: 60px; float: left; line-height: 60px; text-align: center;" :style="{'background-color': theme.color, 'color': theme.menuTextColor}">
@@ -30,6 +30,7 @@
                     <template slot="title">{{username}} <i class="fa fa-user" aria-hidden="true"></i></template>
                     <el-menu-item index="refresh-rules" class="top-menu-item">刷新权限</el-menu-item>
                     <el-menu-item index="theme-setting" class="top-menu-item">主题设置</el-menu-item>
+                    <el-menu-item index="modify-password" class="top-menu-item">修改密码</el-menu-item>
                     <el-menu-item index="logout" class="top-menu-item">退出</el-menu-item>
                 </el-submenu>
             </el-menu>
@@ -168,7 +169,7 @@
             },
             getTitleAndLogo() {
                 document.title = '中交出行运营平台 - BOSS'
-                this.logo_type = 1
+                this.logo_type = 2
                 this.title = '中交出行运营平台 - BOSS'
             },
         },
@@ -222,6 +223,10 @@
         width: 150px;
         float: left;
         margin: 6px 15px;
+        line-height: 48px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .top-menu-item {
         min-width: 0;
