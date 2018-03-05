@@ -1,4 +1,4 @@
-## 基于Laravel与ElementUI的项目
+## 基于Laravel与ElementUI, 用于快速构建后台管理系统
 
 
 
