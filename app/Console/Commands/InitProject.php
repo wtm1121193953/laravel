@@ -85,6 +85,7 @@ class InitProject extends Command
             'DB_DATABASE' => '数据库名',
             'DB_USERNAME' => '数据库用户名',
             'DB_PASSWORD' => '数据库密码',
+            'DB_PREFIX' => '数据库表前缀',
         ];
         foreach($envArray as $index => $env){
             if(empty($env) || strpos($env, '=') === false ){
