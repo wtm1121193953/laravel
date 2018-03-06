@@ -64,6 +64,7 @@ class RuleController extends Controller
         $rule = new AdminAuthRule();
 
         $rule->name = request('name', '');
+        $rule->pid = request('pid', 0);
         $rule->url = request('url', '');
         $rule->url_all = request('url_all', '');
         $rule->status = request('status', 1);
@@ -82,6 +83,7 @@ class RuleController extends Controller
         $rule = AdminAuthRule::findOrFail(request('id'));
 
         $rule->name = request('name', '');
+        $rule->pid = request('pid', 0);
         $rule->url = request('url', '');
         $rule->url_all = request('url_all', '');
         $rule->status = request('status', 1);

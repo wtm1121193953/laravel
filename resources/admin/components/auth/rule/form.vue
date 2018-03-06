@@ -5,6 +5,12 @@
                 <el-form-item prop="name" label="权限名">
                     <el-input v-model="form.name"/>
                 </el-form-item>
+                <el-form-item prop="pid" label="所属父权限">
+                    <el-select v-model="form.pid" placeholder="顶级权限">
+                        <el-option :value="0" label="顶级权限"/>
+                        <el-option v-for="item in parentRules" :key="item.id" :value="item.id" :label="item.name"/>
+                    </el-select>
+                </el-form-item>
                 <el-form-item prop="url" label="url">
                     <el-input v-model="form.url"/>
                 </el-form-item>
@@ -33,7 +39,15 @@
     export default {
         name: 'rule-form',
         props: {
-            rule: Object
+            rule: Object,
+            pid: {type: Number, default: 0}
+        },
+        computed:{
+            parentRules(){
+                return store.state.auth.rules.filter(item => {
+                    return parseInt(item.pid) === 0
+                })
+            }
         },
         data(){
             return {
@@ -42,7 +56,8 @@
                     url: '',
                     url_all: '',
                     status: 1,
-                    sort: 1
+                    sort: 1,
+                    pid: 0
                 },
                 formRules: {
                     name: [
@@ -62,8 +77,11 @@
                         url: '',
                         url_all: '',
                         status: 1,
-                        sort: 1
+                        sort: 1,
+                        pid: this.pid || 0
                     }
+
+                    console.log(this.pid, this.form)
                 }
             },
             cancel(){

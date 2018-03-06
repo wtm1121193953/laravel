@@ -33,13 +33,14 @@
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="edit(scope)">编辑</el-button>
+                    <el-button type="text" @click="addSubRule(scope)">添加子权限</el-button>
                     <el-button type="text" v-if="scope.row.created_at" @click="del(scope)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
 
         <el-dialog title="添加权限" :visible.sync="isAdd">
-            <rule-form @cancel="isAdd = false" @save="doAdd"/>
+            <rule-form :pid="addPid" @cancel="isAdd = false" @save="doAdd"/>
         </el-dialog>
         <el-dialog title="编辑权限" :visible.sync="isEdit">
             <rule-form :rule="currentEditRule" @cancel="isEdit = false" @save="doEdit"/>
@@ -57,6 +58,7 @@
                 isEdit: false,
                 isLoading: false,
                 currentEditRule: null,
+                addPid: null,
             }
         },
         computed:{
@@ -76,6 +78,10 @@
                     this.isAdd = false;
                     this.getRules();
                 })
+            },
+            addSubRule(scope){
+                this.isAdd = true;
+                this.addPid = scope.row.id;
             },
             edit(scope){
                 this.isEdit = true;
