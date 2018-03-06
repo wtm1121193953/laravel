@@ -7,7 +7,7 @@
                     <img src="../../assets/images/logo.png" class="logo">
                 </template>
                 <template v-else>
-                    <div class="logo p-l-20 p-r-20" :style="{'color': theme.menuTextColor}">{{title}}</div>
+                    <div class="logo p-l-20 p-r-20" :style="{'color': theme.menuTextColor}">{{logo}}</div>
                 </template>
             </div>
             <div class="top-left-menu" style="height: 60px; float: left; line-height: 60px; text-align: center;" :style="{'background-color': theme.color, 'color': theme.menuTextColor}">
@@ -70,9 +70,28 @@
                     </el-form-item>
                 </el-form>
             </el-dialog>
+
+            <!-- 修改密码面板 -->
+            <el-dialog :visible.sync="showModifyPasswordForm" title="修改密码">
+                <el-form :model="modifyPasswordForm" label-width="100px" ref="modifyPasswordForm" :rules="modifyPasswordFormRules">
+                    <el-form-item label="原密码" prop="password">
+                        <el-input type="password" v-model="modifyPasswordForm.password" placeholder="请输入原密码"/>
+                    </el-form-item>
+                    <el-form-item label="新密码" prop="newPassword">
+                        <el-input type="password" v-model="modifyPasswordForm.newPassword" placeholder="请输入新密码"/>
+                    </el-form-item>
+                    <el-form-item label="确认新密码" prop="reNewPassword">
+                        <el-input type="password" v-model="modifyPasswordForm.reNewPassword" placeholder="请再次输入新密码"/>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="modifyPassword">确定</el-button>
+                        <el-button @click="showModifyPasswordForm=false">取消</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
         </el-header>
         <el-container>
-            <leftMenu :collapse="collapseLeftMenu" style="height: 100%" :class="{'uncollapse-menu': !collapseLeftMenu}" :menus="menus" ref="leftMenu"/>
+            <leftMenu :collapse="collapseLeftMenu" :menus="menus" ref="leftMenu"/>
 
             <el-main>
                 <el-col :span="24">
@@ -91,10 +110,18 @@
 
     export default {
         data() {
+            let validateReNewPassword = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请再次输入新密码'));
+                } else if (value !== this.modifyPasswordForm.newPassword) {
+                    callback(new Error('两次输入新密码不一致!'));
+                } else {
+                    callback();
+                }
+            };
             return {
                 collapseLeftMenu: false,
-                img: '',
-                title: '',
+                logo: '',
                 logo_type: null,
 
                 showThemeSetting: false,
@@ -103,6 +130,25 @@
                     color: '',
                     menuTextColor: '',
                     menuActiveTextColor: '',
+                },
+
+                showModifyPasswordForm: false,
+                modifyPasswordForm: {
+                    password: '',
+                    newPassword: '',
+                    reNewPassword: '',
+                },
+                modifyPasswordFormRules: {
+                    password: [
+                        {required: true, type: 'string', message: '请输入原密码'}
+                    ],
+                    newPassword: [
+                        {required: true, type: 'string', message: '请输入新密码'},
+                        { min: 6, max: 30, message: '密码必须在6-30位之间'}
+                    ],
+                    reNewPassword: [
+                        { validator: validateReNewPassword }
+                    ]
                 }
             }
         },
@@ -118,6 +164,11 @@
             }
         },
         methods: {
+            getTitleAndLogo() {
+                document.title = '中交问答系统 - 后台管理'
+                this.logo_type = 2
+                this.logo = '中交问答系统'
+            },
             ...mapMutations([
                 'setTheme',
             ]),
@@ -137,10 +188,8 @@
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(() => {
-                    api.post('/logout').then((res) => {
-                        api.handlerRes(res).then(() => {
-                            this.$message.success('退出成功')
-                        })
+                    api.post('/logout').then(() => {
+                        this.$message.success('退出成功')
                     })
                     store.dispatch('clearUserInfo');
                     router.replace('/login')
@@ -158,19 +207,24 @@
                         break;
                     case 'refresh-rules':
                         store.dispatch('openGlobalLoading');
-                        api.get('/self/rules').then(res => {
-                            api.handlerRes(res).then(data => {
-                                store.dispatch('storeUserInfo', data);
-                                store.dispatch('closeGlobalLoading')
-                            })
+                        api.get('/self/rules').then(data => {
+                            store.dispatch('storeUserInfo', data);
+                            store.dispatch('closeGlobalLoading')
                         });
+                        break;
+                    case 'modify-password':
+                        this.showModifyPasswordForm = true;
+                        break;
 
                 }
             },
-            getTitleAndLogo() {
-                document.title = '中交出行运营平台 - BOSS'
-                this.logo_type = 2
-                this.title = '中交出行运营平台 - BOSS'
+            modifyPassword(){
+                api.post('/self/modifyPassword', this.modifyPasswordForm).then(data => {
+                    this.$message.success('修改密码成功')
+                    this.showModifyPasswordForm = false;
+                }).finally(() => {
+                    console.log('finally')
+                })
             },
         },
         created() {
@@ -190,9 +244,6 @@
     }
 </script>
 <style scoped>
-    .uncollapse-menu {
-        width: 200px;
-    }
     .fade-enter-active,
     .fade-leave-active {
         transition: opacity .5s

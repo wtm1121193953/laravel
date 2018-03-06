@@ -10,6 +10,7 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
+        "@tweenjs/tween.js": "^17.2.0",
         "axios": "^0.16.2",
         "babel-plugin-import": "^1.6.2",
         "babel-polyfill": "^6.26.0",
@@ -32,5 +33,6 @@
         "vue-loader": "^13.5.0",
         "vue-router": "^2.8.1",
         "vuex": "^3.0.1"
-    }
+    },
+    "dependencies": {}
 }

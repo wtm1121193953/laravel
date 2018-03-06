@@ -68,7 +68,7 @@
         <transition name="form-fade" mode="in-out">
             <div class="login-form" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
                 <div class="login-logo">
-                    <span>中交出行运营平台 - BOSS平台</span>
+                    <span>中交问答系统 - 后台管理</span>
                 </div>
                 <el-form :model="form" :rules="formRules" ref="form"
                          @keyup.native.enter="doLogin"
@@ -152,15 +152,13 @@
                 this.$refs.form.validate(valid => {
                     if(valid){
                         _self.loading = true;
-                        api.post('/login', this.form).then(res => {
-                            api.handlerRes(res).then(data => {
-                                store.dispatch('storeUserInfo', data);
-                                _self.loading = false;
-                                _self.relocation();
-                            }).catch(function () {
-                                _self.loading = false;
-                                _self.refreshVerify();
-                            });
+                        api.post('/login', this.form).then(data => {
+                            store.dispatch('storeUserInfo', data);
+                            _self.relocation();
+                        }).catch(() => {
+                            _self.refreshVerify();
+                        }).finally(() => {
+                            _self.loading = false;
                         })
                     }
                 })

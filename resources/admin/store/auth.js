@@ -47,19 +47,15 @@ const auth = {
             context.commit('setRulePids', pids)
         },
         getRules(context){
-            api.get('/rules').then((res) => {
-                api.handlerRes(res).then(data => {
-                    context.commit('setRules', data.list);
-                    context.dispatch('mapRulesId', data.list)
-                })
+            api.get('/rules').then((data) => {
+                context.commit('setRules', data.list);
+                context.dispatch('mapRulesId', data.list)
             })
         },
         getRuleTree(context){
-            api.get('/rules/tree').then((res) => {
-                api.handlerRes(res).then(data => {
-                    context.commit('setRuleTree', data.tree);
-                    context.dispatch('mapRulesId', data.list)
-                })
+            api.get('/rules/tree').then((data) => {
+                context.commit('setRuleTree', data.tree);
+                context.dispatch('mapRulesId', data.list)
             })
         },
         mapGroupsId(context, groups){
@@ -70,18 +66,14 @@ const auth = {
             context.commit('setGroupsIdMapping', idMapping);
         },
         getGroups(context){
-            api.get('/groups').then(res => {
-                api.handlerRes(res).then(data => {
-                    context.commit('setGroups', data.list)
-                    context.dispatch('mapGroupsId', data.list)
-                })
+            api.get('/groups').then(data => {
+                context.commit('setGroups', data.list)
+                context.dispatch('mapGroupsId', data.list)
             })
         },
         getUsers(context){
-            api.get('/users').then(res => {
-                api.handlerRes(res).then(data => {
-                    context.commit('setUsers', data.list)
-                })
+            api.get('/users').then(data => {
+                context.commit('setUsers', data.list)
             })
         }
     },

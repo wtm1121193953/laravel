@@ -77,11 +77,9 @@
                 this.isAdd = true;
             },
             doAdd(rule){
-                api.post('/user/add', rule).then(res => {
-                    api.handlerRes(res).then(data => {
-                        this.isAdd = false;
-                        this.getUsers();
-                    })
+                api.post('/user/add', rule).then(data => {
+                    this.isAdd = false;
+                    this.getUsers();
                 })
             },
             edit(scope){
@@ -89,28 +87,22 @@
                 this.currentEditUser = scope.row;
             },
             doEdit(rule){
-                api.post('/user/edit', rule).then(res => {
-                    api.handlerRes(res).then(data => {
-                        this.isEdit = false;
-                        this.getUsers();
-                    })
+                api.post('/user/edit', rule).then(data => {
+                    this.isEdit = false;
+                    this.getUsers();
                 })
             },
             resetPassword(scope){
                 this.$prompt(`请输入密码`, `重置用户 ${scope.row.username} 的密码`, {}).then(({value}) => {
-                    api.post('/user/resetPassword', {id: scope.row.id, password: value}).then(res => {
-                        api.handlerRes(res).then(data => {
-                            this.$message.success('重置密码成功')
-                        })
+                    api.post('/user/resetPassword', {id: scope.row.id, password: value}).then(data => {
+                        this.$message.success('重置密码成功')
                     })
                 })
             },
             del(scope){
                 this.$confirm(`确定要删除用户 ${scope.row.username} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
-                    api.post('/user/del', {id: scope.row.id}).then(res => {
-                        api.handlerRes(res).then(data => {
-                            this.getUsers();
-                        })
+                    api.post('/user/del', {id: scope.row.id}).then(data => {
+                        this.getUsers();
                     })
                 })
             }

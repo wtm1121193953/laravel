@@ -2,25 +2,21 @@
 import './bootstrap'
 
 import 'babel-polyfill'
-import Vue from 'vue'
-import App from './App.vue'
-import ElementUI from 'element-ui'
-import routes from './routes'
-import VueRouter from 'vue-router'
 import NProgress from 'nprogress'
 
-import 'nprogress/nprogress.css'
-
+import Vue from 'vue'
+window.Vue = Vue;
 
 import store from './store'
 window.store = store;
 
+import routes from './routes'
+import VueRouter from 'vue-router'
 const router = new VueRouter({
     mode: 'history',
     base: '/admin',
     routes
 })
-
 router.beforeEach((to, from, next) => {
     store.commit('setGlobalLoading', true)
     NProgress.start()
@@ -33,30 +29,31 @@ router.beforeEach((to, from, next) => {
         next()
     }
 })
-
 router.afterEach(transition => {
     store.commit('setGlobalLoading', false)
     NProgress.done()
 })
+window.router = router
+Vue.use(VueRouter)
 
+import ElementUI from 'element-ui'
+Vue.use(ElementUI)
+
+import page from './components/page'
+Vue.component('page', page)
+
+// single image upload
 import SingleImageUpload from '../assets/components/upload/single-image-upload'
 Vue.component(SingleImageUpload.name, SingleImageUpload)
 
-Vue.use(ElementUI)
-Vue.use(VueRouter)
 
-window.Vue = Vue;
-window.router = router
-
-// window.HOST = HOST
-window.HOST = '/'
-window.pageSize = 15
 
 window.baseApiUrl = '/api/admin/'
 import api from '../assets/js/api'
 window.api = api;
 Vue.prototype.$api = api;
 
+import App from './App.vue'
 new Vue({
     el: '#app',
     template: '<App/>',

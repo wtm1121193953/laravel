@@ -9,13 +9,6 @@ window._ = _
 window.moment = moment
 
 /**
- * 引入 jquery 并全局挂载
- */
-import $ from './js/jquery.dragsort-0.5.2.min'
-window.$ = window.jQuery = $;
-
-
-/**
  * 引入 js-cookie 并全局挂载
  */
 import Cookies from 'js-cookie'
@@ -50,8 +43,8 @@ Date.prototype.format = function(fmt){
     if(!fmt){
         fmt = 'yyyy-MM-dd hh:mm:ss'
     }
-    if(fmt == 'date') fmt = 'yyyy-MM-dd';
-    var o = {
+    if(fmt === 'date') fmt = 'yyyy-MM-dd';
+    let o = {
         "M+": this.getMonth() + 1, //月份
         "d+": this.getDate(), //日
         "h+": this.getHours(), //小时
@@ -62,16 +55,16 @@ Date.prototype.format = function(fmt){
     };
     if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
     for (var k in o)
-        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
 };
 
 window.deepCopy = function(source){
     let obj = {};
-    if(typeof source == 'object'){
+    if(typeof source === 'object'){
         for(let key in source){
             let value = source[key];
-            if(typeof value == 'object'){
+            if(typeof value === 'object'){
                 obj[key] = deepCopy(value)
             }else {
                 obj[key] = value
@@ -84,6 +77,64 @@ window.deepCopy = function(source){
 };
 
 // 如果页面在iframe中, 跳到顶层页面
-if(window.top != window){
+if(window.top !== window){
     window.top.location = window.location;
 }
+
+import TWEEN from '@tweenjs/tween.js'
+
+window.$tween = function $tween (from, to, onUpdate, options){
+
+    let defaultOptions = {
+        time: 300,
+        easing: TWEEN.Easing.Quadratic.In,
+        onUpdate: null,
+        onStart: null,
+        onStop: null,
+    }
+    if(typeof onUpdate === 'object'){
+        options = onUpdate;
+        onUpdate = null;
+    }else {
+        options = options || {};
+        options.onUpdate = onUpdate;
+    }
+    options.time = options.time || defaultOptions.time;
+    options.easing = options.easing || defaultOptions.easing;
+    options.onUpdate = options.onUpdate || defaultOptions.onUpdate;
+    options.onStart = options.onStart || defaultOptions.onStart;
+    options.onStop = options.onStop || defaultOptions.onStop;
+
+    if(typeof from !== 'object'){
+        from = {n: from}
+        to = {n: to}
+        let simpleUpdate = options.onUpdate;
+        options.onUpdate = function(data) {
+            typeof simpleUpdate === 'function' && simpleUpdate(data.n)
+        }
+    }
+
+    function animate () {
+        if (TWEEN.update()) {
+            requestAnimationFrame(animate)
+        }
+    }
+    console.log(options)
+    let tween = new TWEEN.Tween(from)
+        .to(to, options.time)
+        .easing(options.easing)
+    if(options.onStart){
+        tween.onStart(options.onStart)
+    }
+    if(options.onUpdate){
+        tween.onUpdate(options.onUpdate)
+    }
+    if(options.onStop){
+        tween.onStop(options.onStop)
+    }
+
+    tween.start()
+    animate()
+    return tween;
+}
+$tween.Easing = TWEEN.Easing;

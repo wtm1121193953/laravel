@@ -76,11 +76,9 @@
                 this.isAdd = true;
             },
             doAdd(group){
-                api.post('/group/add', group).then(res => {
-                    api.handlerRes(res).then(data => {
-                        this.isAdd = false;
-                        this.getGroups();
-                    })
+                api.post('/group/add', group).then(data => {
+                    this.isAdd = false;
+                    this.getGroups();
                 })
             },
             edit(scope){
@@ -88,19 +86,15 @@
                 this.currentEditGroup = scope.row;
             },
             doEdit(group){
-                api.post('/group/edit', group).then(res => {
-                    api.handlerRes(res).then(data => {
-                        this.isEdit = false;
-                        this.getGroups();
-                    })
+                api.post('/group/edit', group).then(data => {
+                    this.isEdit = false;
+                    this.getGroups();
                 })
             },
             del(scope){
                 this.$confirm(`确定要删除角色 ${scope.row.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
-                    api.post('/group/del', {id: scope.row.id}).then(res => {
-                        api.handlerRes(res).then(data => {
-                            this.getGroups();
-                        })
+                    api.post('/group/del', {id: scope.row.id}).then(data => {
+                        this.getGroups();
                     })
                 })
             }

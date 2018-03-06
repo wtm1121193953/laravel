@@ -6,35 +6,45 @@ window.baseApiUrl = window.baseApiUrl || '';
 const CODE_OK = 0;
 const CODE_UN_LOGIN = 10003;
 
-function handlerRes(res) {
-    return new Promise((resolve, reject) => {
-        if (res && res.code === CODE_OK) {
-            resolve(res.data);
-        } else {
-            if(res && res.code){
-                switch (res.code) {
-                    case CODE_UN_LOGIN:
-                        Lockr.rm('userInfo');
-                        Lockr.rm('menus');
-                        router.push('/login');
-                        Message.error('您的登录信息已失效, 请先登录');
-                        break;
-                    default:
-                        console.log('接口返回错误信息:', res);
-                        if(!res.disableErrorMessage){
-                            Message.error(res.message || '操作失败');
-                        }
-                        break;
-                }
-            }
-            reject(res);
-        }
-    })
+class ResponseError {
+    constructor(response){
+        this.response = response;
+    }
 }
 
-function handlerNetworkError(error) {
-    console.log('network error: ', error);
-    Message.error('请求超时，请检查网络')
+function handlerRes(res) {
+    if (res && res.code === CODE_OK) {
+        return res.data;
+    } else {
+        return Promise.reject(new ResponseError(res));
+    }
+}
+
+function handlerError(error) {
+    if(error instanceof ResponseError){
+        let res = error.response;
+        if(res && res.code){
+            switch (res.code) {
+                case CODE_UN_LOGIN:
+                    Lockr.rm('userInfo');
+                    Lockr.rm('menus');
+                    router.push('/login');
+                    Message.error('您的登录信息已失效, 请先登录');
+                    break;
+                default:
+                    console.log('接口返回错误信息:', res);
+                    if(!res.disableErrorMessage){
+                        Message.error(res.message)
+                    }
+                    break;
+            }
+        }else {
+            console.log('未知错误:', res);
+        }
+    }else {
+        console.error('network error: ', error);
+        Message.error('请求超时，请检查网络')
+    }
 }
 
 function getRealUrl(url) {
@@ -47,25 +57,39 @@ function getRealUrl(url) {
     return window.baseApiUrl + url
 }
 
-function get(url, params) {
+function get(url, params, defaultHandlerRes=true) {
     let options = {
         headers: {'X-Requested-With': 'XMLHttpRequest'},
         params: params,
     };
     url = getRealUrl(url);
-    return axios.get(url, options).then(res => {
-        return res.data
-    }).catch(handlerNetworkError)
+    let promise = axios.get(url, options).then(res => {
+        let result = res.data;
+        if(defaultHandlerRes){
+            return handlerRes(result);
+        }else {
+            return result;
+        }
+    });
+    promise.catch(handlerError);
+    return promise;
 }
 
-function post(url, params) {
+function post(url, params, defaultHandlerRes=true) {
     let options = {
         headers: {'X-Requested-With': 'XMLHttpRequest'}
     };
     url = getRealUrl(url);
-    return axios.post(url, params, options).then(res => {
-        return res.data
-    }).catch(handlerNetworkError)
+    let promise = axios.post(url, params, options).then(res => {
+        let result = res.data;
+        if(defaultHandlerRes){
+            return handlerRes(result);
+        }else {
+            return result;
+        }
+    });
+    promise.catch(handlerError);
+    return promise;
 }
 
 function mockData(data) {
@@ -78,7 +102,5 @@ export default {
     get,
     post,
     mockData,
-    handlerRes
+    handlerRes,
 }
-
-// export const requestLogin = params => { return axios.post(`${base}/login`, params).then(res => res.data); };

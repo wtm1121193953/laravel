@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>中交出行运营平台 - BOSS</title>
+    <title>后台管理</title>
     <link rel="stylesheet" href="{{mix('css/all.css')}}">
     <style>
         @-webkit-keyframes scale {

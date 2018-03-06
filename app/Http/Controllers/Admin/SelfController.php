@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Exceptions\AccountNotFoundException;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\PasswordErrorException;
 use App\Exceptions\UnloginException;
 use App\Http\Controllers\Controller;
@@ -81,6 +82,19 @@ class SelfController extends Controller
             'user' => $user,
             'menus' => $menuTree
         ]);
+    }
+
+    public function modifyPassword()
+    {
+        $this->validate(request(), [
+            'password' => 'required',
+            'newPassword' => 'required',
+            'reNewPassword' => ''
+        ]);
+        $user = request()->get('current_user');
+        dd($user);
+//        throw new DataNotFoundException();
+        dd($user);
     }
 
 }

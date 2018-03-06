@@ -79,11 +79,9 @@
                 this.isAdd = true;
             },
             doAdd(rule){
-                api.post('/rule/add', rule).then(res => {
-                    api.handlerRes(res).then(data => {
-                        this.isAdd = false;
-                        this.getRules();
-                    })
+                api.post('/rule/add', rule).then(data => {
+                    this.isAdd = false;
+                    this.getRules();
                 })
             },
             edit(scope){
@@ -91,19 +89,15 @@
                 this.currentEditRule = scope.row;
             },
             doEdit(rule){
-                api.post('/rule/edit', rule).then(res => {
-                    api.handlerRes(res).then(data => {
-                        this.isEdit = false;
-                        this.getRules();
-                    })
+                api.post('/rule/edit', rule).then(data => {
+                    this.isEdit = false;
+                    this.getRules();
                 })
             },
             del(scope){
                 this.$confirm(`确定要删除权限 ${scope.row.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
-                    api.post('/rule/del', {id: scope.row.id}).then(res => {
-                        api.handlerRes(res).then(data => {
-                            this.getRules();
-                        })
+                    api.post('/rule/del', {id: scope.row.id}).then(data => {
+                        this.getRules();
                     })
                 })
             }

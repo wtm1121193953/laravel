@@ -23,6 +23,7 @@ mix.js('./resources/admin/app.js', 'public/js/admin.js');
 
 // 抽离不会变的js模块
 mix.extract([
+    '@tweenjs/tween.js',
     'axios',
     'js-cookie',
     'jquery',
@@ -40,7 +41,9 @@ mix.extract([
 
 // 加载通用样式
 mix.styles(['node_modules/element-ui/lib/theme-chalk/index.css',
-    'resources/assets/css/base.css', 'resources/assets/css/global.css'
+    'node_modules/nprogress/nprogress.css',
+    'resources/assets/css/base.css',
+    'resources/assets/css/global.css'
 ], 'public/css/all.css')
 // 复制element-ui的字体文件
 mix.copy('node_modules/element-ui/lib/theme-chalk/fonts', 'public/css/fonts/');

@@ -1,6 +1,5 @@
 <template>
 
-    <div>
         <el-menu
                 :background-color="theme.color"
                 :text-color="theme.menuTextColor"
@@ -8,7 +7,7 @@
                 :default-active="currentMenu"
                 :collapse="collapse"
                 @select="change" :unique-opened="true"
-                style="height: 100%;"
+                class="menu"
         >
             <template v-for="secMenu in menus">
                 <el-submenu v-if="secMenu.sub && secMenu.sub.length > 0" :index="secMenu.url">
@@ -23,7 +22,6 @@
             </template>
 
         </el-menu>
-    </div>
 </template>
 
 <script>
@@ -60,8 +58,16 @@
             Vue.prototype.$menu = this;
 
             Vue.nextTick(() => {
-                router.push(this.currentMenu)
+                if(this.$route.name === undefined && this.currentMenu){
+                    router.push(this.currentMenu)
+                }
             })
         }
     }
 </script>
+<style scoped>
+    .menu:not(.el-menu--collapse){
+        width: 200px;
+        min-height: 400px;
+    }
+</style>
