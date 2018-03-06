@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class CreateItemsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('items', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name')->default('')->comment('商品名');
+            $table->string('pict_url', 500)->default('')->comment('商品图片');
+            $table->integer('category_id')->index()->default(0)->comment('商品分类ID');
+            $table->string('detail', 5000)->default('')->comment('商品图文详情');
+            $table->string('small_images', 5000)->default('')->comment('商品小图列表 (json格式数组)');
+            $table->decimal('origin_price')->default(0)->comment('商品价格');
+            $table->decimal('discount_price')->default(0)->comment('商品折扣价格');
+            // 运费 -> 放到物流上  -> 商品中可以加是否免运费
+            $table->timestamps();
+            $table->softDeletes();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('items');
+    }
+}
