@@ -154,10 +154,12 @@
         },
         computed: {
             ...mapState([
+                'projectName',
+                'systemName',
                 'theme',
                 'globalLoading',
                 'user',
-                'menus'
+                'menus',
             ]),
             username(){
                 return this.user ? this.user.username : '';
@@ -165,9 +167,9 @@
         },
         methods: {
             getTitleAndLogo() {
-                document.title = '中交问答系统 - 后台管理'
+                document.title = this.projectName + ' - ' + this.systemName
                 this.logo_type = 2
-                this.logo = '中交问答系统'
+                this.logo = this.projectName
             },
             ...mapMutations([
                 'setTheme',

@@ -68,7 +68,7 @@
         <transition name="form-fade" mode="in-out">
             <div class="login-form" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
                 <div class="login-logo">
-                    <span>中交问答系统 - 后台管理</span>
+                    <span>{{projectName}} - {{systemName}}</span>
                 </div>
                 <el-form :model="form" :rules="formRules" ref="form"
                          @keyup.native.enter="doLogin"
@@ -130,6 +130,8 @@
         },
         computed:{
             ...mapState([
+                'projectName',
+                'systemName',
                 'user'
             ])
         },
