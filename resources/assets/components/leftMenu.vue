@@ -1,27 +1,27 @@
 <template>
-
-        <el-menu
-                :background-color="theme.color"
-                :text-color="theme.menuTextColor"
-                :active-text-color="theme.menuActiveTextColor"
-                :default-active="currentMenu"
-                :collapse="collapse"
-                @select="change" :unique-opened="true"
-                class="menu"
-        >
-            <template v-for="secMenu in menus">
-                <el-submenu v-if="secMenu.sub && secMenu.sub.length > 0" :index="secMenu.url">
-                    <template slot="title">
-                        <i>{{collapse ? secMenu.name.substr(0, 2) : ''}}</i><span slot="title">{{secMenu.name}}</span>
-                    </template>
-                    <el-menu-item v-for="item in secMenu.sub" :key="item.url" :index="item.url">{{item.name}}</el-menu-item>
-                </el-submenu>
-                <el-menu-item v-if="!secMenu.sub || secMenu.sub.length <= 0" :index="secMenu.url">
+    <el-menu
+            :background-color="theme.color"
+            :text-color="theme.menuTextColor"
+            :active-text-color="theme.menuActiveTextColor"
+            :default-active="currentMenu"
+            :collapse="collapse"
+            @select="change"
+            :unique-opened="true"
+            class="menu"
+    >
+        <template v-for="secMenu in menus">
+            <el-submenu v-if="secMenu.sub && secMenu.sub.length > 0" :index="secMenu.url">
+                <template slot="title">
                     <i>{{collapse ? secMenu.name.substr(0, 2) : ''}}</i><span slot="title">{{secMenu.name}}</span>
-                </el-menu-item>
-            </template>
+                </template>
+                <el-menu-item v-for="item in secMenu.sub" :key="item.url" :index="item.url">{{item.name}}</el-menu-item>
+            </el-submenu>
+            <el-menu-item v-if="!secMenu.sub || secMenu.sub.length <= 0" :index="secMenu.url">
+                <i>{{collapse ? secMenu.name.substr(0, 2) : ''}}</i><span slot="title">{{secMenu.name}}</span>
+            </el-menu-item>
+        </template>
 
-        </el-menu>
+    </el-menu>
 </template>
 
 <script>

@@ -1,49 +1,41 @@
 <template>
-    <el-container>
-        <el-header height="20px">
-            <el-breadcrumb>
-                <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-            </el-breadcrumb>
-        </el-header>
-        <el-main>
-            用户列表
-            <el-button class="fr" type="primary" @click="add">添加用户</el-button>
-            <el-table :data="users" stripe>
-                <el-table-column prop="id" label="用户ID"/>
-                <el-table-column prop="username" label="用户名"/>
-                <el-table-column label="所属分组">
-                    <template slot-scope="scope">
-                        <span v-if="scope.row.super == 1">超级管理员</span>
-                        <span v-else>
+    <page title="用户管理">
+        <el-button class="fr" type="primary" @click="add">添加用户</el-button>
+        <el-table :data="users" stripe>
+            <el-table-column prop="id" label="用户ID"/>
+            <el-table-column prop="username" label="用户名"/>
+            <el-table-column label="所属分组">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.super == 1">超级管理员</span>
+                    <span v-else>
                             {{groupsIdMapping[scope.row.group_id] ? groupsIdMapping[scope.row.group_id].name : ''}}
                         </span>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="status" label="状态">
-                    <template slot-scope="scope">
-                        <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                        <span v-else-if="scope.row.status === 2" class="c-danger">无效</span>
-                        <span v-else>未知 ({{scope.row.status}})</span>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="created_at" label="创建时间"/>
-                <el-table-column label="操作">
-                    <template slot-scope="scope">
-                        <el-button type="text" @click="edit(scope)">编辑</el-button>
-                        <el-button type="text" v-if="user.super === 1" @click="resetPassword(scope)">重置密码</el-button>
-                        <el-button type="text" v-if="scope.row.super !== 1" @click="del(scope)">删除</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
+                </template>
+            </el-table-column>
+            <el-table-column prop="status" label="状态">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
+                    <span v-else-if="scope.row.status === 2" class="c-danger">无效</span>
+                    <span v-else>未知 ({{scope.row.status}})</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="created_at" label="创建时间"/>
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <el-button type="text" @click="edit(scope)">编辑</el-button>
+                    <el-button type="text" v-if="user.super === 1" @click="resetPassword(scope)">重置密码</el-button>
+                    <el-button type="text" v-if="scope.row.super !== 1" @click="del(scope)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
 
-            <el-dialog title="添加用户" :visible.sync="isAdd">
-                <user-form @cancel="isAdd = false" @save="doAdd"/>
-            </el-dialog>
-            <el-dialog title="修改用户信息" :visible.sync="isEdit">
-                <user-form :user="currentEditUser" @cancel="isEdit = false" @save="doEdit"/>
-            </el-dialog>
-        </el-main>
-    </el-container>
+        <el-dialog title="添加用户" :visible.sync="isAdd">
+            <user-form @cancel="isAdd = false" @save="doAdd"/>
+        </el-dialog>
+        <el-dialog title="修改用户信息" :visible.sync="isEdit">
+            <user-form :user="currentEditUser" @cancel="isEdit = false" @save="doEdit"/>
+        </el-dialog>
+    </page>
 </template>
 <script>
     import api from '../../../../assets/js/api'

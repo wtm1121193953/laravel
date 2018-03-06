@@ -89,12 +89,18 @@ class SelfController extends Controller
         $this->validate(request(), [
             'password' => 'required',
             'newPassword' => 'required',
-            'reNewPassword' => ''
+            'reNewPassword' => 'required|same:newPassword'
         ]);
         $user = request()->get('current_user');
-        dd($user);
-//        throw new DataNotFoundException();
-        dd($user);
+        // 检查原密码是否正确
+        if(AdminUser::genPassword(request('password'), $user->salt) !== $user->password){
+            throw new PasswordErrorException();
+        }
+        $salt = str_random();
+        $user->salt = $salt;
+        $user->password = AdminUser::genPassword(request('newPassword'), $salt);
+        $user->save();
+        return Result::success($user);
     }
 
 }

@@ -222,8 +222,6 @@
                 api.post('/self/modifyPassword', this.modifyPasswordForm).then(data => {
                     this.$message.success('修改密码成功')
                     this.showModifyPasswordForm = false;
-                }).finally(() => {
-                    console.log('finally')
                 })
             },
         },
