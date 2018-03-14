@@ -20,7 +20,9 @@ class CreateItemsTable extends Migration
             $table->integer('category_id')->index()->default(0)->comment('商品分类ID');
             $table->string('detail', 5000)->default('')->comment('商品图文详情');
             $table->string('small_images', 5000)->default('')->comment('商品小图列表 (json格式数组)');
-            $table->decimal('origin_price')->default(0)->comment('商品价格');
+            $table->integer('total_count')->default(0)->comment('总库存');
+            $table->integer('sell_count')->default(0)->comment('总销量');
+            $table->decimal('origin_price')->default(0)->comment('商品原价');
             $table->decimal('discount_price')->default(0)->comment('商品折扣价格');
             // 运费 -> 放到物流上  -> 商品中可以加是否免运费
             $table->timestamps();

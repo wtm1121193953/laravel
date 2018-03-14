@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
  *
  * @mixin Builder
  * @method static static select($columns = ['*'])
+ * @method static static create(array $attributes = [])
  * @method static static find($id, $columns = ['*'])
  * @method static static findOrFail($id, $columns = ['*'])
  * @method static static when($value, $callback, $default = null)

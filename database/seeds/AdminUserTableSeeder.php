@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Admin\AdminUser;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -14,12 +15,11 @@ class AdminUserTableSeeder extends Seeder
     {
         //
         $salt = 'salt';
-        DB::table('admin_users')->insert([
-            'id' => 1,
+        $user = AdminUser::create([
             'username' => 'admin',
-            'password' => \App\Modules\Admin\AdminUser::genPassword('123456', $salt),
+            'password' => AdminUser::genPassword('123456', $salt),
             'salt' => $salt,
-            'super' => 1,
         ]);
+        $user->assignRole('super-admin');
     }
 }
