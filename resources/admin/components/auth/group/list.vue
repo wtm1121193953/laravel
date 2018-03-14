@@ -25,6 +25,7 @@
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="edit(scope)">修改</el-button>
+                    <el-button type="text" @click="changeStatus(scope)">{scope.row.status == 1 ? '禁用' : '启用'}</el-button>
                     <el-button type="text" @click="del(scope)">删除</el-button>
                 </template>
             </el-table-column>
@@ -68,9 +69,12 @@
                 this.isAdd = true;
             },
             doAdd(group){
-                api.post('/group/add', group).then(data => {
+                this.isLoading = true;
+                api.post('/group/add', group).then(() => {
                     this.isAdd = false;
                     this.getGroups();
+                }).finally(() => {
+                    this.isLoading = false;
                 })
             },
             edit(scope){
@@ -78,15 +82,31 @@
                 this.currentEditGroup = scope.row;
             },
             doEdit(group){
-                api.post('/group/edit', group).then(data => {
+                this.isLoading = true;
+                api.post('/group/edit', group).then(() => {
                     this.isEdit = false;
                     this.getGroups();
+                }).finally(() => {
+                    this.isLoading = false;
+                })
+            },
+            changeStatus(scope){
+                let status = scope.row.status === 1 ? 2 : 1;
+                this.isLoading = true;
+                api.post('/group/changeStatus', {id: scope.row.id, status: status}).then(() => {
+                    scope.row.status = status;
+                    this.getList();
+                }).finally(() => {
+                    this.isLoading = false;
                 })
             },
             del(scope){
                 this.$confirm(`确定要删除角色 ${scope.row.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
-                    api.post('/group/del', {id: scope.row.id}).then(data => {
+                    this.isLoading = true;
+                    api.post('/group/del', {id: scope.row.id}).then(() => {
                         this.getGroups();
+                    }).finally(() => {
+                        this.isLoading = false;
                     })
                 })
             }

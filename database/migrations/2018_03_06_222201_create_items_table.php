@@ -16,6 +16,7 @@ class CreateItemsTable extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name')->default('')->comment('商品名');
+            $table->tinyInteger('status')->default(1)->comment('状态 1-正常 2-禁用');
             $table->string('pict_url', 500)->default('')->comment('商品图片');
             $table->integer('category_id')->index()->default(0)->comment('商品分类ID');
             $table->string('detail', 5000)->default('')->comment('商品图文详情');

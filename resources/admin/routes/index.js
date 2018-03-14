@@ -1,12 +1,15 @@
-import Login from './components/login.vue'
-import refresh from './components/refresh.vue'
-import Home from './components/home.vue'
-import ErrorPage from './components/404.vue'
-import welcome from './components/welcome.vue'
+import Login from '../components/login.vue'
+import refresh from '../components/refresh.vue'
+import Home from '../components/home.vue'
+import ErrorPage from '../components/404.vue'
+import welcome from '../components/welcome.vue'
 
-import RuleList from './components/auth/rule/list.vue'
-import GroupList from './components/auth/group/list.vue'
-import UserList from './components/auth/user/list.vue'
+import RuleList from '../components/auth/rule/list.vue'
+import GroupList from '../components/auth/group/list.vue'
+import UserList from '../components/auth/user/list.vue'
+
+import suppliers from './supplier'
+import items from './item'
 
 /**
  *
@@ -14,7 +17,6 @@ import UserList from './components/auth/user/list.vue'
 const routes = [
 
     {path: '/login', component: Login, name: 'Login'},
-
 
     // 权限模块
     {
@@ -26,6 +28,10 @@ const routes = [
             {path: 'users', component: UserList, name: 'UserList'},
         ]
     },
+
+    // 供应商模块
+    ...suppliers,
+    ...items,
 
     {
         path: '/',
@@ -39,6 +45,7 @@ const routes = [
             {path: '*', component: ErrorPage, name: 'ErrorPage'},
         ]
     },
+
     // 拦截所有无效的页面到错误页面
     { path: '*' , component: ErrorPage, name: 'GlobalErrorPage'}
 

@@ -10,7 +10,7 @@ window.Vue = Vue;
 import store from './store'
 window.store = store;
 
-import routes from './routes'
+import routes from './routes/index'
 import VueRouter from 'vue-router'
 const router = new VueRouter({
     mode: 'history',

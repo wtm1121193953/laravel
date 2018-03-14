@@ -19,7 +19,6 @@
 		},
 		created: function(){
             store.commit('setGlobalLoading', false);
-			console.log(this.$route.query);
 		}
 	}
 </script>
