@@ -9,8 +9,7 @@
         "fideloper/proxy": "~4.0",
         "laravel/framework": "5.6.*",
         "laravel/tinker": "~1.0",
-        "mews/captcha": "^2.1",
-        "spatie/laravel-permission": "^2.9"
+        "mews/captcha": "^2.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.1",

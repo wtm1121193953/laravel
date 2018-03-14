@@ -22,12 +22,9 @@ class AdminAuthRuleTableSeeder extends Seeder
 
         DB::table('admin_auth_rules')->insert([
             ['id' => 1, 'name' => '权限', 'level' => 1, 'url' => '', 'url_all' => '', 'sort' => 1, 'status' => 1, 'pid' => 0],
-            ['id' => 2, 'name' => '用户管理', 'level' => 2, 'url' => '/admin/users',
-             'url_all' => '/admin/users,/api/admin/users', 'sort' => 1, 'status' => 1, 'pid' => 1],
-            ['id' => 3, 'name' => '角色管理', 'level' => 2, 'url' => '/admin/groups',
-             'url_all' => '/admin/groups,/api/admin/groups', 'sort' => 2, 'status' => 1, 'pid' => 1],
-            ['id' => 4, 'name' => '权限管理', 'level' => 2, 'url' => '/admin/rules',
-             'url_all' => '/admin/rules,/api/admin/rules,/api/admin/rules/top', 'sort' => 3, 'status' => 1, 'pid' => 1],
+            ['id' => 2, 'name' => '用户管理', 'level' => 2, 'url' => '/admin/users', 'url_all' => '/admin/users,/api/admin/users,/api/admin/user/add,/api/admin/user/edit,/api/admin/user/changeStatus,/api/admin/user/resetPassword,/api/admin/user/del', 'sort' => 1, 'status' => 1, 'pid' => 1],
+            ['id' => 3, 'name' => '角色管理', 'level' => 2, 'url' => '/admin/groups', 'url_all' => '/admin/groups,/api/admin/groups,/api/admin/group/add,/api/admin/group/edit,/api/admin/group/changeStatus,/api/admin/group/del,/api/admin/rules/tree', 'sort' => 2, 'status' => 1, 'pid' => 1],
+            ['id' => 4, 'name' => '权限管理', 'level' => 2, 'url' => '/admin/rules', 'url_all' => '/admin/rules,/api/admin/rules,/api/admin/rule/add,/api/admin/rule/edit,/api/admin/rule/del,/api/admin/rule/changeStatus', 'sort' => 3, 'status' => 1, 'pid' => 1],
         ]);
     }
 }

@@ -14,11 +14,11 @@ class AdminUserTableSeeder extends Seeder
     {
         //
         $salt = 'salt';
-        $user = AdminUser::create([
+        AdminUser::create([
             'username' => 'admin',
             'password' => AdminUser::genPassword('123456', $salt),
             'salt' => $salt,
+            'super' => 1,
         ]);
-        $user->assignRole('super-admin');
     }
 }

@@ -3,11 +3,9 @@
 namespace App\Modules\Admin;
 
 use App\BaseModel;
-use Spatie\Permission\Traits\HasRoles;
 
 class AdminUser extends BaseModel
 {
-    use HasRoles;
 
     //
     protected $hidden = ['password', 'salt'];
