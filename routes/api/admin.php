@@ -5,7 +5,9 @@
 use Illuminate\Support\Facades\Route;
 
 
-Route::middleware('admin')->group(function (){
+Route::prefix('admin')
+    ->namespace('Admin')
+    ->middleware('admin')->group(function (){
 
     Route::post('login', 'SelfController@login');
     Route::post('logout', 'SelfController@logout');

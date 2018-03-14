@@ -25,6 +25,4 @@ Route::any('test', function(){
 /**
  * 加载后台接口路由
  */
-Route::prefix('admin')
-    ->namespace('Admin')
-    ->group(base_path('routes/api/admin.php'));
+Route::group([], base_path('routes/api/admin.php'));
