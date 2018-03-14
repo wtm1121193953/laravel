@@ -34,7 +34,6 @@ mix.extract([
     'vue',
     'vue-router',
     'element-ui',
-    // 'font-awesome-webpack',
     // 'vue-echarts-v3',
     // 'vue-quill-editor'
 ]);

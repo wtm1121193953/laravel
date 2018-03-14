@@ -23,7 +23,7 @@ Route::any('test', function(){
 });
 
 Route::prefix('admin')
-    ->middleware('admin')
+    ->middleware(['admin', 'role:super-admin'])
     ->namespace('Admin')
     ->group(function(){
     Route::post('login', 'SelfController@login');

@@ -2,7 +2,6 @@
 
 use App\Modules\Admin\AdminUser;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class AdminUserTableSeeder extends Seeder
 {
