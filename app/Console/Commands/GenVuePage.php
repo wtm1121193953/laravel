@@ -15,7 +15,7 @@ class GenVuePage extends Command
      *
      * @var string
      */
-    protected $signature = 'gen:vue-page {--with-php}';
+    protected $signature = 'gen:vue-page {--with-php} {--force}';
 
     /**
      * The console command description.
@@ -69,11 +69,19 @@ class GenVuePage extends Command
 
         // 输出 vue 模板文件
         $templateOutputPath = resource_path('admin/components/' . $name);
-        $this->putStub($this->findStub(resource_path('/stubs/vue/template')), $templateOutputPath, $variable);
+        if(file_exists($templateOutputPath) && !$this->option('force')){
+            throw new RuntimeException("vue模板目录[$templateOutputPath]已存在, 跳过生成");
+        }else {
+            $this->putStub($this->findStub(resource_path('/stubs/vue/template')), $templateOutputPath, $variable);
+        }
 
         // 输出 vue 路由文件
         $vueRouteOutputPath = resource_path('admin/routes');
-        $this->putStub($this->findStub(resource_path('/stubs/vue/route')), $vueRouteOutputPath, $variable);
+        if(file_exists($vueRouteOutputPath) && !$this->option('force')){
+            throw new RuntimeException("vue route 目录[$vueRouteOutputPath]已存在, 跳过生成");
+        }else {
+            $this->putStub($this->findStub(resource_path('/stubs/vue/route')), $vueRouteOutputPath, $variable);
+        }
 
         if($this->option('with-php')){
             $modelClass = $this->ask('模型类: ', "App\\Modules\\$studlyName\\$studlyName");
@@ -84,11 +92,20 @@ class GenVuePage extends Command
 
             // 生成控制器
             $controllerOutputPath = app_path('/Http/Controllers/Admin');
-            $this->putStub($this->findStub(resource_path('/stubs/php/controller')), $controllerOutputPath, $variable);
+            if(file_exists($controllerOutputPath) && !$this->option('force')){
+                throw new RuntimeException("控制器[App/Controllers/Admin/{$studlyName}Controller]已存在, 跳过生成");
+            }else {
+                $this->putStub($this->findStub(resource_path('/stubs/php/controller')), $controllerOutputPath, $variable);
+            }
 
             // 生成路由
             $laravelRouteOutputPath = base_path('routes/api/admin');
-            $this->putStub($this->findStub(resource_path('/stubs/php/route')), $laravelRouteOutputPath, $variable);
+            if(file_exists($laravelRouteOutputPath) && !$this->option('force')){
+                throw new RuntimeException("laravel路由文件[$laravelRouteOutputPath/$name.php]已存在, 跳过生成");
+            }else {
+                $this->putStub($this->findStub(resource_path('/stubs/php/route')), $laravelRouteOutputPath, $variable);
+            }
+
         }
         return ;
     }

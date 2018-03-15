@@ -76,11 +76,19 @@ class GenController extends Command
 
         // 生成控制器
         $controllerOutputPath = app_path('/Http/Controllers/Admin');
-        $this->putStub($this->findStub(resource_path('/stubs/php/controller')), $controllerOutputPath, $variable);
+        if(file_exists($controllerOutputPath) && !$this->option('force')){
+            throw new RuntimeException("控制器[App/Controllers/Admin/{$studlyName}Controller]已存在, 跳过生成");
+        }else {
+            $this->putStub($this->findStub(resource_path('/stubs/php/controller')), $controllerOutputPath, $variable);
+        }
 
         // 生成路由
         $laravelRouteOutputPath = base_path('routes/api/admin');
-        $this->putStub($this->findStub(resource_path('/stubs/php/route')), $laravelRouteOutputPath, $variable);
+        if(file_exists($laravelRouteOutputPath) && !$this->option('force')){
+            throw new RuntimeException("laravel路由文件[$laravelRouteOutputPath/$name.php]已存在, 跳过生成");
+        }else {
+            $this->putStub($this->findStub(resource_path('/stubs/php/route')), $laravelRouteOutputPath, $variable);
+        }
         return ;
     }
 
