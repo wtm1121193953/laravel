@@ -70,7 +70,7 @@ class GenVuePage extends Command
         // 输出 vue 模板文件
         $templateOutputPath = resource_path('admin/components/' . $name);
         if(file_exists($templateOutputPath) && !$this->option('force')){
-            throw new RuntimeException("vue模板目录[$templateOutputPath]已存在, 跳过生成");
+            $this->throwFileOrDirExistException("vue模板目录[$templateOutputPath]");
         }else {
             $this->putStub($this->findStub(resource_path('/stubs/vue/template')), $templateOutputPath, $variable);
         }
@@ -78,7 +78,7 @@ class GenVuePage extends Command
         // 输出 vue 路由文件
         $vueRouteOutputPath = resource_path('admin/routes');
         if(file_exists($vueRouteOutputPath) && !$this->option('force')){
-            throw new RuntimeException("vue route 目录[$vueRouteOutputPath]已存在, 跳过生成");
+            $this->throwFileOrDirExistException("vue route 目录[$vueRouteOutputPath]");
         }else {
             $this->putStub($this->findStub(resource_path('/stubs/vue/route')), $vueRouteOutputPath, $variable);
         }
@@ -93,7 +93,7 @@ class GenVuePage extends Command
             // 生成控制器
             $controllerOutputPath = app_path('/Http/Controllers/Admin');
             if(file_exists($controllerOutputPath) && !$this->option('force')){
-                throw new RuntimeException("控制器[App/Controllers/Admin/{$studlyName}Controller]已存在, 跳过生成");
+                $this->throwFileOrDirExistException("控制器[App/Controllers/Admin/{$studlyName}Controller]");
             }else {
                 $this->putStub($this->findStub(resource_path('/stubs/php/controller')), $controllerOutputPath, $variable);
             }
@@ -101,7 +101,7 @@ class GenVuePage extends Command
             // 生成路由
             $laravelRouteOutputPath = base_path('routes/api/admin');
             if(file_exists($laravelRouteOutputPath) && !$this->option('force')){
-                throw new RuntimeException("laravel路由文件[$laravelRouteOutputPath/$name.php]已存在, 跳过生成");
+                $this->throwFileOrDirExistException("laravel路由文件[$laravelRouteOutputPath/$name.php]");
             }else {
                 $this->putStub($this->findStub(resource_path('/stubs/php/route')), $laravelRouteOutputPath, $variable);
             }

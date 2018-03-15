@@ -9,6 +9,7 @@
 namespace App\Support;
 
 
+use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Finder\Finder;
 
 trait GeneralCode
@@ -69,6 +70,10 @@ trait GeneralCode
         }
 
         $this->getOutput()->progressFinish();
+    }
+
+    protected function throwFileOrDirExistException($fileIntro){
+        throw new RuntimeException("{$fileIntro}已存在, 停止生成文件, 可使用 --force 选项强制覆盖文件");
     }
 
 }
