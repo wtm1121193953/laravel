@@ -17,8 +17,9 @@ class CreateItemsTable extends Migration
             $table->increments('id');
             $table->string('name')->default('')->comment('商品名');
             $table->tinyInteger('status')->default(1)->comment('状态 1-正常 2-禁用');
-            $table->string('pict_url', 500)->default('')->comment('商品图片');
+            $table->integer('supplier_id')->index()->default(0)->comment('所属供应商ID');
             $table->integer('category_id')->index()->default(0)->comment('商品分类ID');
+            $table->string('pict_url', 500)->default('')->comment('商品图片');
             $table->string('detail', 5000)->default('')->comment('商品图文详情');
             $table->string('small_images', 5000)->default('')->comment('商品小图列表 (json格式数组)');
             $table->integer('total_count')->default(0)->comment('总库存');

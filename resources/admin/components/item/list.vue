@@ -1,9 +1,19 @@
 <template>
-    <page title="xxxxxxx管理" v-loading="isLoading">
-        <el-button class="fr" type="primary" @click="add">添加xxxxxxx</el-button>
+    <page title="商品管理" v-loading="isLoading">
+        <el-button class="fr" type="primary" @click="add">添加商品</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
-            <el-table-column prop="name" label="xxxxxxx名"/>
+            <el-table-column prop="name" label="商品名称"/>
+            <el-table-column label="分类">
+                <template slot-scope="scope">
+                    {{getCategoryNameById(scope.row.category_id)}}
+                </template>
+            </el-table-column>
+            <el-table-column label="所属供应商">
+                <template slot-scope="scope">
+                    {{getSupplierNameById(scope.row.supplier_id)}}
+                </template>
+            </el-table-column>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>
@@ -21,11 +31,20 @@
             </el-table-column>
         </el-table>
 
-        <el-dialog title="添加xxxxxxx" :visible.sync="isAdd">
-            <item-form @cancel="isAdd = false" @save="doAdd"/>
+        <el-dialog title="添加商品" :visible.sync="isAdd">
+            <item-form
+                    :suppliers="suppliers"
+                    :categories="categories"
+                    @cancel="isAdd = false"
+                    @save="doAdd"/>
         </el-dialog>
-        <el-dialog title="编辑xxxxxxx信息" :visible.sync="isEdit">
-            <item-form :data="currentEditItem" @cancel="isEdit = false" @save="doEdit"/>
+        <el-dialog title="编辑商品信息" :visible.sync="isEdit">
+            <item-form
+                    :suppliers="suppliers"
+                    :categories="categories"
+                    :data="currentEditItem"
+                    @cancel="isEdit = false"
+                    @save="doEdit"/>
         </el-dialog>
     </page>
 </template>
@@ -41,12 +60,42 @@
                 isLoading: false,
                 currentEditItem: null,
                 list: [],
+                suppliers: [],
+                categories: [],
             }
         },
         computed:{
 
         },
         methods: {
+            getSupplierNameById(supplierId){
+                let name = '未知(已删除)';
+                this.suppliers.forEach(item => {
+                    if(item.id === supplierId){
+                        name = item.name;
+                    }
+                })
+                return name;
+            },
+            getCategoryNameById(categoryId){
+                let name = '未知(已删除)';
+                this.categories.forEach(item => {
+                    if(item.id === categoryId){
+                        name = item.name;
+                    }
+                })
+                return name;
+            },
+            getEnableSupplierList(){
+                api.get('/suppliers/all', {status: 1}).then(data => {
+                    this.suppliers = data.list;
+                })
+            },
+            getCategories(){
+                api.get('/categories/all', {status: 1}).then(data => {
+                    this.categories = data.list;
+                })
+            },
             getList(){
                 this.isLoading = true;
                 api.get('/items').then(data => {
@@ -92,7 +141,7 @@
                 })
             },
             del(scope){
-                this.$confirm(`确定要删除xxxxxxx ${scope.row.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
+                this.$confirm(`确定要删除商品 ${scope.row.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
                     this.isLoading = true;
                     api.post('/item/del', {id: scope.row.id}).then(() => {
                         this.getList();
@@ -104,6 +153,16 @@
         },
         created(){
             this.getList();
+            this.getEnableSupplierList();
+            this.getCategories();
+        },
+        watch: {
+            categories: {
+                deep: true,
+                handler: function(val, oldVal){
+                    console.log('new val', JSON.parse(JSON.stringify(val)), 'old val', JSON.parse(JSON.stringify(oldVal)))
+                }
+            }
         },
         components: {
             ItemForm

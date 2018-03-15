@@ -2,9 +2,9 @@
 
 namespace App\Modules\Item;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class Category extends Model
+class Category extends BaseModel
 {
     //
 }

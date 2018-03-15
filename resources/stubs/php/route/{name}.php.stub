@@ -5,6 +5,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('{listApi}', '{studlyName}Controller@getList');
+Route::get('{listApi}/all', '{studlyName}Controller@getAllList');
 Route::post('{addApi}', '{studlyName}Controller@add');
 Route::post('{editApi}', '{studlyName}Controller@edit');
 Route::post('{changeStatusApi}', '{studlyName}Controller@changeStatus');

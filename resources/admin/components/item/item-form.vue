@@ -2,8 +2,26 @@
     <el-row>
         <el-col :span="22">
             <el-form :model="form" label-width="120px" :rules="formRules" ref="form" @submit.native.prevent>
-                <el-form-item prop="name" label="xxxxxxx名">
+                <el-form-item prop="name" label="商品名称">
                     <el-input v-model="form.name"/>
+                </el-form-item>
+                <el-form-item prop="supplier_id" label="所属供应商">
+                    <el-select filterable placeholder="请选择供应商" v-model="form.supplier_id">
+                        <el-option
+                                v-for="supplier in suppliers"
+                                :key="supplier.id"
+                                :label="supplier.name"
+                                :value="supplier.id"/>
+                    </el-select>
+                </el-form-item>
+                <el-form-item prop="category_id" label="商品分类">
+                    <el-select filterable placeholder="请选择商品分类" v-model="form.category_id">
+                        <el-option
+                                v-for="category in categories"
+                                :key="category.id"
+                                :label="category.name"
+                                :value="category.id"/>
+                    </el-select>
                 </el-form-item>
                 <el-form-item prop="status" label="状态">
                     <el-radio-group v-model="form.status">
@@ -24,11 +42,15 @@
     let defaultForm = {
         name: '',
         status: 1,
+        supplier_id: '',
+        category_id: '',
     };
     export default {
         name: 'item-form',
         props: {
             data: Object,
+            suppliers: Array,
+            categories: Array,
         },
         computed:{
 
@@ -68,6 +90,7 @@
             }
         },
         created(){
+            console.log('category-form', JSON.parse(JSON.stringify(this.categories)))
             this.initForm();
         },
         watch: {

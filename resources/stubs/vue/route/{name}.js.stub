@@ -10,7 +10,7 @@ export default [
         path: '/',
         component: Home,
         children: [
-            {path: '{name}s', component: {studlyName}List, name: '{studlyName}List'},
+            {path: '{listApi}', component: {studlyName}List, name: '{studlyName}List'},
         ]
     },
 ];

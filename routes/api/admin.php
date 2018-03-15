@@ -35,4 +35,5 @@ Route::prefix('admin')
 
     Route::group([], base_path('routes/api/admin/supplier.php'));
     Route::group([], base_path('routes/api/admin/item.php'));
+    Route::group([], base_path('routes/api/admin/category.php'));
 });

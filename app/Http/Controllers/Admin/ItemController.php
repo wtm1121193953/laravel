@@ -6,13 +6,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Modules\Item\Item;
 use App\Result;
+use Illuminate\Database\Eloquent\Builder;
 
 class ItemController extends Controller
 {
 
     public function getList()
     {
-        $data = Item::orderBy('id', 'desc')->paginate();
+        $status = request('status');
+        $data = Item::when($status, function (Builder $query) use ($status){
+            $query->where('status', $status);
+        })->orderBy('id', 'desc')->paginate();
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -23,9 +27,13 @@ class ItemController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required',
+            'supplier_id' => 'required|integer',
+            'category_id' => 'required|integer',
         ]);
         $item = new Item();
         $item->name = request('name');
+        $item->supplier_id = request('supplier_id');
+        $item->category_id = request('category_id');
         $item->status = request('status', 1);
 
         $item->save();
@@ -38,9 +46,13 @@ class ItemController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
             'name' => 'required',
+            'supplier_id' => 'required|integer',
+            'category_id' => 'required|integer',
         ]);
         $item = Item::findOrFail(request('id'));
         $item->name = request('name');
+        $item->supplier_id = request('supplier_id');
+        $item->category_id = request('category_id');
         $item->status = request('status', 1);
 
         $item->save();

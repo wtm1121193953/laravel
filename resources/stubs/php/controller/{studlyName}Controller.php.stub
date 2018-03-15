@@ -12,10 +12,26 @@ class {studlyName}Controller extends Controller
 
     public function getList()
     {
-        $data = {modelClassName}::orderBy('id', 'desc')->paginate();
+        $status = request('status');
+        $data = {modelClassName}::when($status, function (Builder $query) use ($status){
+            $query->where('status', $status);
+        })->orderBy('id', 'desc')->paginate();
+
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
+        ]);
+    }
+
+    public function getAllList()
+    {
+        $status = request('status');
+        $list = {modelClassName}::when($status, function (Builder $query) use ($status){
+            $query->where('status', $status);
+        })->orderBy('id', 'desc')->get();
+
+        return Result::success([
+            'list' => $list,
         ]);
     }
 

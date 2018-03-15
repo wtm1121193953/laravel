@@ -83,8 +83,8 @@ class GenVuePage extends Command
 
         // 输出 vue 路由文件
         $vueRouteOutputPath = resource_path('admin/routes');
-        if(file_exists($vueRouteOutputPath) && !$this->option('force')){
-            $this->throwFileOrDirExistException("vue route 目录[$vueRouteOutputPath]");
+        if(file_exists("$vueRouteOutputPath/$name.js") && !$this->option('force')){
+            $this->throwFileOrDirExistException("vue route 文件[$vueRouteOutputPath/$name.js]");
         }else {
             $this->putStub($this->findStub(resource_path('/stubs/vue/route')), $vueRouteOutputPath, $variable);
         }
@@ -98,15 +98,15 @@ class GenVuePage extends Command
 
             // 生成控制器
             $controllerOutputPath = app_path('/Http/Controllers/Admin');
-            if(file_exists($controllerOutputPath) && !$this->option('force')){
-                $this->throwFileOrDirExistException("控制器[App/Controllers/Admin/{$studlyName}Controller]");
+            if(class_exists("App/Controllers/Admin/{$studlyName}Controller") && !$this->option('force')){
+                $this->throwFileOrDirExistException("控制器类[App/Controllers/Admin/{$studlyName}Controller]");
             }else {
                 $this->putStub($this->findStub(resource_path('/stubs/php/controller')), $controllerOutputPath, $variable);
             }
 
             // 生成路由
             $laravelRouteOutputPath = base_path('routes/api/admin');
-            if(file_exists($laravelRouteOutputPath) && !$this->option('force')){
+            if(file_exists("$laravelRouteOutputPath/$name.php") && !$this->option('force')){
                 $this->throwFileOrDirExistException("laravel路由文件[$laravelRouteOutputPath/$name.php]");
             }else {
                 $this->putStub($this->findStub(resource_path('/stubs/php/route')), $laravelRouteOutputPath, $variable);

@@ -12,16 +12,31 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Modules\Supplier\Supplier;
 use App\Result;
+use Illuminate\Database\Eloquent\Builder;
 
 class SupplierController extends Controller
 {
 
     public function getList()
     {
-        $data = Supplier::orderBy('id', 'desc')->paginate();
+        $status = request('status');
+        $data = Supplier::when($status, function(Builder $query) use ($status){
+            $query->where('status', $status);
+        })->orderBy('id', 'desc')->paginate();
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
+        ]);
+    }
+
+    public function getAllList()
+    {
+        $status = request('status');
+        $list = Supplier::when($status, function(Builder $query) use ($status){
+            $query->where('status', $status);
+        })->orderBy('id', 'desc')->get();
+        return Result::success([
+            'list' => $list,
         ]);
     }
 

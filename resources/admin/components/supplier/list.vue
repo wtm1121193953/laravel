@@ -1,9 +1,9 @@
 <template>
-    <page title="xxxxxxx管理" v-loading="isLoading">
-        <el-button class="fr" type="primary" @click="add">添加xxxxxxx</el-button>
+    <page title="供应商管理" v-loading="isLoading">
+        <el-button class="fr" type="primary" @click="add">添加供应商</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
-            <el-table-column prop="name" label="xxxxxxx名"/>
+            <el-table-column prop="name" label="供应商名称"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>
@@ -21,10 +21,10 @@
             </el-table-column>
         </el-table>
 
-        <el-dialog title="添加xxxxxxx" :visible.sync="isAdd">
+        <el-dialog title="添加供应商" :visible.sync="isAdd">
             <supplier-form @cancel="isAdd = false" @save="doAdd"/>
         </el-dialog>
-        <el-dialog title="编辑xxxxxxx信息" :visible.sync="isEdit">
+        <el-dialog title="编辑供应商信息" :visible.sync="isEdit">
             <supplier-form :data="currentEditSupplier" @cancel="isEdit = false" @save="doEdit"/>
         </el-dialog>
     </page>
@@ -92,7 +92,7 @@
                 })
             },
             del(scope){
-                this.$confirm(`确定要删除xxxxxxx ${scope.row.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
+                this.$confirm(`确定要删除供应商 ${scope.row.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
                     this.isLoading = true;
                     api.post('/supplier/del', {id: scope.row.id}).then(() => {
                         this.getList();
