@@ -53,6 +53,10 @@ class ItemController extends Controller
         $item->name = request('name');
         $item->supplier_id = request('supplier_id');
         $item->category_id = request('category_id');
+        $item->pict_url = request('pict_url');
+        $item->detail = request('detail');
+        $item->small_images = request('small_images');
+
         $item->status = request('status', 1);
 
         $item->save();

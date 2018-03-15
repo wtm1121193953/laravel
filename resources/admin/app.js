@@ -44,7 +44,9 @@ Vue.component('page', page)
 
 // single image upload
 import SingleImageUpload from '../assets/components/upload/single-image-upload'
+import ImageUpload from '../assets/components/upload/image-upload'
 Vue.component(SingleImageUpload.name, SingleImageUpload)
+Vue.component(ImageUpload.name, ImageUpload)
 
 
 

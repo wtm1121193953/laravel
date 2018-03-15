@@ -22,6 +22,8 @@ Route::any('test', function(){
     dump(Session::all());
 });
 
+Route::post('/upload/image', 'UploadController@image');
+
 /**
  * 加载后台接口路由
  */

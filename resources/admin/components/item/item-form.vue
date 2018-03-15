@@ -23,6 +23,21 @@
                                 :value="category.id"/>
                     </el-select>
                 </el-form-item>
+                <el-form-item prop="pict_url" label="商品图片">
+                    <image-upload v-model="form.pict_url" :limit="1"/>
+                </el-form-item>
+                <el-form-item prop="small_images" label="小图列表">
+                    <image-upload v-model="form.small_images"/>
+                </el-form-item>
+                <el-form-item prop="detail" label="图文详情">
+                    <quill-editor
+                            v-model="form.detail"
+                            ref="myQuillEditor"
+                            :options="editorOption"
+                            aria-placeholder="请输入内容"
+                    />
+                </el-form-item>
+
                 <el-form-item prop="status" label="状态">
                     <el-radio-group v-model="form.status">
                         <el-radio :label="1">正常</el-radio>
@@ -38,12 +53,27 @@
     </el-row>
 
 </template>
+<style>
+    /* 在dialog中的编辑器会被影响变形 */
+    .quill-editor {
+        line-height: normal;
+    }
+</style>
 <script>
+    // require styles
+    import 'quill/dist/quill.core.css'
+    import 'quill/dist/quill.snow.css'
+    import 'quill/dist/quill.bubble.css'
+
+    import { quillEditor } from 'vue-quill-editor'
     let defaultForm = {
         name: '',
         status: 1,
         supplier_id: '',
         category_id: '',
+        pict_url: '',
+        detail: '',
+        small_images: '',
     };
     export default {
         name: 'item-form',
@@ -62,6 +92,26 @@
                     name: [
                         {required: true, message: '名称不能为空'}
                     ]
+                },
+                editorOption: {
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline', 'strike'],
+                            ['blockquote', 'code-block'],
+                            [{'header': 1}, {'header': 2}],
+                            [{'list': 'ordered'}, {'list': 'bullet'}],
+                            [{'script': 'sub'}, {'script': 'super'}],
+                            [{'indent': '-1'}, {'indent': '+1'}],
+                            [{'direction': 'rtl'}],
+                            [{'size': ['small', false, 'large', 'huge']}],
+                            [{'header': [1, 2, 3, 4, 5, 6, false]}],
+                            [{'font': []}],
+                            [{'color': []}, {'background': []}],
+                            [{'align': []}],
+                            ['clean'],
+                            ['link', 'image', 'video']
+                        ],
+                    }
                 }
             }
         },
@@ -72,6 +122,13 @@
                 }else {
                     this.form = deepCopy(defaultForm)
                 }
+                /*if(!this.form.small_images){
+                    this.form.small_images = [];
+                }else if(typeof this.form.small_images === 'string'){
+                    this.form.small_images = this.form.small_images.split(',')
+                } else if(!this.form.small_images[0]){
+                    this.form.small_images = [];
+                }*/
             },
             cancel(){
                 this.$emit('cancel');
@@ -90,13 +147,15 @@
             }
         },
         created(){
-            console.log('category-form', JSON.parse(JSON.stringify(this.categories)))
             this.initForm();
         },
         watch: {
             data(){
                 this.initForm();
             }
+        },
+        components: {
+            quillEditor
         }
     }
 </script>

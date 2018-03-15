@@ -157,15 +157,9 @@
             this.getCategories();
         },
         watch: {
-            categories: {
-                deep: true,
-                handler: function(val, oldVal){
-                    console.log('new val', JSON.parse(JSON.stringify(val)), 'old val', JSON.parse(JSON.stringify(oldVal)))
-                }
-            }
         },
         components: {
-            ItemForm
+            ItemForm,
         }
     }
 </script>
