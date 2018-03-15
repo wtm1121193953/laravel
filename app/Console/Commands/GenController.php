@@ -49,7 +49,12 @@ class GenController extends Command
         }
         // laravel 命令行输入中文报错, 还没找到解决办法
 //        $title = $this->ask('功能描述[中文名]:');
-        $this->info('功能描述[中文名]: 请自行到文件中将[xxxxxxx]替换为对应的中文名');
+        if(php_uname('s') == 'Windows NT'){
+            $title = 'xxxxxxx';
+            $this->info("功能描述[中文名]: 请自行到文件中将[$title]替换为对应的中文名");
+        }else {
+            $title = $this->ask('功能描述[中文名]:');
+        }
         $listApi = $this->ask("列表api地址:", "/{$name}s");
         $addApi = $this->ask("添加api地址:", "/{$name}/add");
         $editApi = $this->ask("编辑api地址:", "/{$name}/edit");
@@ -62,7 +67,7 @@ class GenController extends Command
         $modelClassName = substr($modelClass, strrpos($modelClass, '\\') + 1);
 
         $variable = [
-            '{title}' => 'xxxxxxx',
+            '{title}' => $title,
             '{name}' => $name,
             '{studlyName}' => $studlyName,
             '{listApi}' => $listApi,
