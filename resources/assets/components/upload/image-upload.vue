@@ -2,7 +2,7 @@
     <el-upload
             class="uploader"
             :action="action"
-            list-type="picture-card"
+            :list-type="listType"
             :file-list="fileList"
             :on-success="handleUploadSuccess"
             :before-upload="beforeUpload"
@@ -28,6 +28,7 @@
      *      checkSize: 是否检查图片宽高 (宽高都传入时才有效)
      *      limit: 限制高度
      *      disabled: 是否可删除, 禁用
+     *      listType: 图片列表类型: picture-card/picture/text, 默认: picture-card
      *  功能:
      *      图片上传功能
      *      删除按钮
@@ -47,6 +48,7 @@
             checkSize: {type: Boolean, default: true},
             limit: {type: Number},
             disabled: {type: Boolean, default: false},
+            listType: {type: String, default: 'picture-card'},
         },
         mixins: [emitter],
         data(){
@@ -147,43 +149,5 @@
 </script>
 
 <style scoped>
-    .el-icon-close {
-        position: absolute;
-        right: 0;
-        z-index: 1000;
-        padding: 3px;
-        margin: 3px;
-        border: 1px dashed #d9d9d9;
-        border-radius: 4px;
-    }
-    .el-icon-close:hover{
-        border-color: #0e90d2;
-    }
-    .img-icon {
-        position: relative;
-    }
-    .img {
-        width: 180px;
-        min-height: 30px;
-        height: auto;
-    }
-    .uploader-icon {
-        border: 1px dashed #d9d9d9;
-        border-radius: 6px;
-        font-size: 28px;
-        color: #8c939d;
-        width: 180px;
-        /*height: 180px;*/
-        line-height: 178px;
-        text-align: center;
-        min-height: 30px;
-    }
-    .img, .uploader-icon{
-        border: 1px dashed #d9d9d9;
-        border-radius: 6px;
-        padding: 1px;
-    }
-    .img:focus, .img:hover, .uploader-icon:focus, .uploader-icon:hover{
-        border-color:#409eff
-    }
+
 </style>

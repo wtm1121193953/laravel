@@ -2265,6 +2265,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  *      checkSize: 是否检查图片宽高 (宽高都传入时才有效)
  *      limit: 限制高度
  *      disabled: 是否可删除, 禁用
+ *      listType: 图片列表类型: picture-card/picture/text, 默认: picture-card
  *  功能:
  *      图片上传功能
  *      删除按钮
@@ -2283,7 +2284,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         height: { type: Number },
         checkSize: { type: Boolean, default: true },
         limit: { type: Number },
-        disabled: { type: Boolean, default: false }
+        disabled: { type: Boolean, default: false },
+        listType: { type: String, default: 'picture-card' }
     },
     mixins: [__WEBPACK_IMPORTED_MODULE_0_element_ui_src_mixins_emitter__["a" /* default */]],
     data: function data() {
@@ -13954,7 +13956,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n.el-icon-close[data-v-82eb6868] {\n    position: absolute;\n    right: 0;\n    z-index: 1000;\n    padding: 3px;\n    margin: 3px;\n    border: 1px dashed #d9d9d9;\n    border-radius: 4px;\n}\n.el-icon-close[data-v-82eb6868]:hover{\n    border-color: #0e90d2;\n}\n.img-icon[data-v-82eb6868] {\n    position: relative;\n}\n.img[data-v-82eb6868] {\n    width: 180px;\n    min-height: 30px;\n    height: auto;\n}\n.uploader-icon[data-v-82eb6868] {\n    border: 1px dashed #d9d9d9;\n    border-radius: 6px;\n    font-size: 28px;\n    color: #8c939d;\n    width: 180px;\n    /*height: 180px;*/\n    line-height: 178px;\n    text-align: center;\n    min-height: 30px;\n}\n.img[data-v-82eb6868], .uploader-icon[data-v-82eb6868]{\n    border: 1px dashed #d9d9d9;\n    border-radius: 6px;\n    padding: 1px;\n}\n.img[data-v-82eb6868]:focus, .img[data-v-82eb6868]:hover, .uploader-icon[data-v-82eb6868]:focus, .uploader-icon[data-v-82eb6868]:hover{\n    border-color:#409eff\n}\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -28976,7 +28978,7 @@ var render = function() {
       staticClass: "uploader",
       attrs: {
         action: _vm.action,
-        "list-type": "picture-card",
+        "list-type": _vm.listType,
         "file-list": _vm.fileList,
         "on-success": _vm.handleUploadSuccess,
         "before-upload": _vm.beforeUpload,
