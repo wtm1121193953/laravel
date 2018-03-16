@@ -28,7 +28,6 @@ class AdminAuthRuleTableSeeder extends Seeder
             ['id' => 5, 'name' => '供应商管理', 'level' => 1, 'url' => '/admin/suppliers', 'url_all' => '/admin/suppliers,/api/admin/suppliers,/api/admin/supplier/add,/api/admin/supplier/edit,/api/admin/supplier/del,/api/admin/supplier/changeStatus', 'sort' => 2, 'status' => 1, 'pid' => 0],
             ['id' => 6, 'name' => '商品管理', 'level' => 1, 'url' => '/admin/items', 'url_all' => '/admin/items,/api/admin/items,/api/admin/item/add,/api/admin/item/edit,/api/admin/item/del,/api/admin/item/changeStatus,/api/admin/suppliers/all,/api/admin/categories/all,/api/admin/item/changeLeftCount', 'sort' => 3, 'status' => 1, 'pid' => 0],
             ['id' => 7, 'name' => '商品分类', 'level' => 1, 'url' => '/admin/categories', 'url_all' => '/admin/categories,/api/admin/categories,/api/admin/categories/all,/api/admin/category/add,/api/admin/category/edit,/api/admin/category/del,/api/admin/category/changeStatus', 'sort' => 4, 'status' => 1, 'pid' => 0],
-            ['id' => 8, 'name' => 'demo', 'level' => 1, 'url' => '/admin/demos', 'url_all' => '/admin/demos,/api/admin/demos,/api/admin/demos/all,/api/admin/demo/add,/api/admin/demo/edit,/api/admin/demo/del,/api/admin/demo/changeStatus', 'sort' => 5, 'status' => 1, 'pid' => 0],
         ]);
     }
 }

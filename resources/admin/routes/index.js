@@ -11,7 +11,6 @@ import UserList from '../components/auth/user/list.vue'
 import suppliers from './supplier'
 import items from './item'
 import category from './category'
-import demo from './demo'
 /**
  *
  */
@@ -36,7 +35,6 @@ const routes = [
     ...items,
     // 商品分类模块
     ...category,
-    ...demo,
 
     {
         path: '/',
