@@ -72,6 +72,8 @@ const stateLocalstorePlugin = function(store){
     })
 };
 
+import demo from './demo'
+
 export default new Vuex.Store({
     strict: process.env.NODE_ENV !== 'production',
     state: {
@@ -136,6 +138,7 @@ export default new Vuex.Store({
     modules: {
         auth,
         items,
+        demo,
     },
     plugins: [
         stateLocalstorePlugin

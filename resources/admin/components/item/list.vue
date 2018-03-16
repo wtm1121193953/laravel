@@ -72,7 +72,6 @@
                 isAdd: false,
                 isEdit: false,
                 isLoading: false,
-                currentEditItem: null,
                 list: [],
                 total: 0,
 
