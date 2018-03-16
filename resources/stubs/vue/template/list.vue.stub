@@ -43,7 +43,6 @@
 
 <script>
     import api from '../../../assets/js/api'
-    import { mapState, mapGetters } from 'vuex'
 
     import {studlyName}ItemOptions from './{name}-item-options'
     import {studlyName}Form from './{name}-form'

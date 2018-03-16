@@ -21,7 +21,6 @@
 
 </template>
 <script>
-    import { mapState, mapGetters } from 'vuex'
     let defaultForm = {
         name: '',
         status: 1,
@@ -32,12 +31,7 @@
             data: Object,
         },
         computed:{
-            ...mapState('{name}', [
-                // some state mapping here
-            ]),
-            ...mapGetters('{name}', [
-                // some getter mapping here
-            ]),
+
         },
         data(){
             return {

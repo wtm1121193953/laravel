@@ -1,11 +1,11 @@
 <template>
-    <!-- xxxxxxx列表项操作 -->
+    <!-- 供应商列表项操作 -->
     <div>
         <el-button type="text" @click="edit">编辑</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '禁用' : '启用'}}</el-button>
         <el-button type="text" @click="del">删除</el-button>
 
-        <el-dialog title="编辑xxxxxxx信息" :visible.sync="isEdit">
+        <el-dialog title="编辑供应商信息" :visible.sync="isEdit">
             <supplier-form
                     :data="scope.row"
                     @cancel="isEdit = false"
@@ -17,7 +17,7 @@
 <script>
     import api from '../../../assets/js/api'
     import SupplierForm from './supplier-form'
-    import { mapState, mapGetters} from 'vuex'
+
     export default {
         name: "supplier-item-options",
         props: {
@@ -29,12 +29,7 @@
             }
         },
         computed: {
-            ...mapState('supplier', [
-                // some state mapping here
-            ]),
-            ...mapGetters('supplier', [
-                // some getter mapping here
-            ]),
+
         },
         methods: {
             edit(){
@@ -61,7 +56,7 @@
             },
             del(){
                 let data = this.scope.row;
-                this.$confirm(`确定要删除xxxxxxx ${data.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
+                this.$confirm(`确定要删除供应商 ${data.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
                     this.$emit('before-request')
                     api.post('/supplier/del', {id: data.id}).then(() => {
                         this.$emit('refresh')

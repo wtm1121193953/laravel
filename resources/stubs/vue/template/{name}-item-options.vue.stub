@@ -17,7 +17,7 @@
 <script>
     import api from '../../../assets/js/api'
     import {studlyName}Form from './{name}-form'
-    import { mapState, mapGetters} from 'vuex'
+
     export default {
         name: "{name}-item-options",
         props: {
@@ -29,12 +29,7 @@
             }
         },
         computed: {
-            ...mapState('{name}', [
-                // some state mapping here
-            ]),
-            ...mapGetters('{name}', [
-                // some getter mapping here
-            ]),
+
         },
         methods: {
             edit(){

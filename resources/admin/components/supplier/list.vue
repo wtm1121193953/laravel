@@ -1,9 +1,9 @@
 <template>
-    <page title="xxxxxxx管理" v-loading="isLoading">
-        <el-button class="fr" type="primary" @click="add">添加xxxxxxx</el-button>
+    <page title="供应商管理" v-loading="isLoading">
+        <el-button class="fr" type="primary" @click="add">添加供应商</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
-            <el-table-column prop="name" label="xxxxxxx名称"/>
+            <el-table-column prop="name" label="供应商名称"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>
@@ -33,7 +33,7 @@
                 :page-size="15"
                 :total="total"/>
 
-        <el-dialog title="添加xxxxxxx" :visible.sync="isAdd">
+        <el-dialog title="添加供应商" :visible.sync="isAdd">
             <supplier-form
                     @cancel="isAdd = false"
                     @save="doAdd"/>
@@ -43,7 +43,6 @@
 
 <script>
     import api from '../../../assets/js/api'
-    import { mapState, mapGetters } from 'vuex'
 
     import SupplierItemOptions from './supplier-item-options'
     import SupplierForm from './supplier-form'

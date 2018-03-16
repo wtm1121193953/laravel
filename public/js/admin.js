@@ -2017,11 +2017,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__supplier_item_options__ = __webpack_require__("./resources/admin/components/supplier/supplier-item-options.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__supplier_item_options___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__supplier_item_options__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__supplier_form__ = __webpack_require__("./resources/admin/components/supplier/supplier-form.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__supplier_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__supplier_form__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__supplier_item_options__ = __webpack_require__("./resources/admin/components/supplier/supplier-item-options.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__supplier_item_options___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__supplier_item_options__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__supplier_form__ = __webpack_require__("./resources/admin/components/supplier/supplier-form.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__supplier_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__supplier_form__);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 //
@@ -2067,7 +2066,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-
 
 
 
@@ -2123,8 +2121,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
 
     components: {
-        SupplierItemOptions: __WEBPACK_IMPORTED_MODULE_2__supplier_item_options___default.a,
-        SupplierForm: __WEBPACK_IMPORTED_MODULE_3__supplier_form___default.a
+        SupplierItemOptions: __WEBPACK_IMPORTED_MODULE_1__supplier_item_options___default.a,
+        SupplierForm: __WEBPACK_IMPORTED_MODULE_2__supplier_form___default.a
     }
 });
 
@@ -2135,9 +2133,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 //
 //
 //
@@ -2160,7 +2155,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
-
 
 var defaultForm = {
     name: '',
@@ -2171,11 +2165,7 @@ var defaultForm = {
     props: {
         data: Object
     },
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["e" /* mapState */])('supplier', [
-        // some state mapping here
-    ]), Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["c" /* mapGetters */])('supplier', [
-        // some getter mapping here
-    ])),
+    computed: {},
     data: function data() {
         return {
             form: deepCopy(defaultForm),
@@ -2232,9 +2222,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__supplier_form__ = __webpack_require__("./resources/admin/components/supplier/supplier-form.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__supplier_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__supplier_form__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 //
 //
 //
@@ -2266,11 +2253,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         };
     },
 
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["e" /* mapState */])('supplier', [
-        // some state mapping here
-    ]), Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["c" /* mapGetters */])('supplier', [
-        // some getter mapping here
-    ])),
+    computed: {},
     methods: {
         edit: function edit() {
             this.isEdit = true;
@@ -2302,7 +2285,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             var _this3 = this;
 
             var data = this.scope.row;
-            this.$confirm('\u786E\u5B9A\u8981\u5220\u9664xxxxxxx ' + data.name + ' \u5417? ', '温馨提示', { type: 'warning' }).then(function () {
+            this.$confirm('\u786E\u5B9A\u8981\u5220\u9664\u4F9B\u5E94\u5546 ' + data.name + ' \u5417? ', '温馨提示', { type: 'warning' }).then(function () {
                 _this3.$emit('before-request');
                 __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/supplier/del', { id: data.id }).then(function () {
                     _this3.$emit('refresh');
@@ -13982,7 +13965,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -13997,7 +13980,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14132,7 +14115,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -39788,7 +39771,7 @@ var render = function() {
           expression: "isLoading"
         }
       ],
-      attrs: { title: "xxxxxxx管理" }
+      attrs: { title: "供应商管理" }
     },
     [
       _c(
@@ -39798,7 +39781,7 @@ var render = function() {
           attrs: { type: "primary" },
           on: { click: _vm.add }
         },
-        [_vm._v("添加xxxxxxx")]
+        [_vm._v("添加供应商")]
       ),
       _vm._v(" "),
       _c(
@@ -39808,7 +39791,7 @@ var render = function() {
           _c("el-table-column", { attrs: { prop: "id", label: "ID" } }),
           _vm._v(" "),
           _c("el-table-column", {
-            attrs: { prop: "name", label: "xxxxxxx名称" }
+            attrs: { prop: "name", label: "供应商名称" }
           }),
           _vm._v(" "),
           _c("el-table-column", {
@@ -39890,7 +39873,7 @@ var render = function() {
       _c(
         "el-dialog",
         {
-          attrs: { title: "添加xxxxxxx", visible: _vm.isAdd },
+          attrs: { title: "添加供应商", visible: _vm.isAdd },
           on: {
             "update:visible": function($event) {
               _vm.isAdd = $event
@@ -39987,7 +39970,7 @@ var render = function() {
             [
               _c(
                 "el-form-item",
-                { attrs: { prop: "name", label: "xxxxxxx名称" } },
+                { attrs: { prop: "name", label: "供应商名称" } },
                 [
                   _c("el-input", {
                     model: {
@@ -40755,7 +40738,7 @@ var render = function() {
       _c(
         "el-dialog",
         {
-          attrs: { title: "编辑xxxxxxx信息", visible: _vm.isEdit },
+          attrs: { title: "编辑供应商信息", visible: _vm.isEdit },
           on: {
             "update:visible": function($event) {
               _vm.isEdit = $event
