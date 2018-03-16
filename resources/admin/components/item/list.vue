@@ -14,10 +14,15 @@
                     {{getSupplierNameById(scope.row.supplier_id)}}
                 </template>
             </el-table-column>
+            <el-table-column label="商品图片">
+                <template slot-scope="scope">
+                    <preview-img :url="scope.row.pict_url" width="40px" height="40px" alt=""/>
+                </template>
+            </el-table-column>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.status === 2" class="c-danger">无效</span>
+                    <span v-if="scope.row.status === 1" class="c-green">已上架</span>
+                    <span v-else-if="scope.row.status === 2" class="c-danger">已下架</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
@@ -25,7 +30,7 @@
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="edit(scope)">编辑</el-button>
-                    <el-button type="text" @click="changeStatus(scope)">{{scope.row.status === 1 ? '禁用' : '启用'}}</el-button>
+                    <el-button type="text" @click="changeStatus(scope)">{{scope.row.status === 1 ? '下架' : '上架'}}</el-button>
                     <el-button type="text" @click="del(scope)">删除</el-button>
                 </template>
             </el-table-column>
@@ -52,6 +57,7 @@
     import api from '../../../assets/js/api'
 
     import ItemForm from './item-form.vue'
+    import PreviewImg from "../../../assets/components/preview-img";
     export default {
         data(){
             return {
@@ -159,6 +165,7 @@
         watch: {
         },
         components: {
+            PreviewImg,
             ItemForm,
         }
     }

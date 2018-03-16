@@ -29,7 +29,7 @@ router.beforeEach((to, from, next) => {
         next()
     }
 })
-router.afterEach(transition => {
+router.afterEach(() => {
     store.commit('setGlobalLoading', false)
     NProgress.done()
 })
@@ -43,12 +43,11 @@ import page from './components/page'
 Vue.component('page', page)
 
 // single image upload
-import SingleImageUpload from '../assets/components/upload/single-image-upload'
 import ImageUpload from '../assets/components/upload/image-upload'
-Vue.component(SingleImageUpload.name, SingleImageUpload)
 Vue.component(ImageUpload.name, ImageUpload)
 
-
+import quillEditorPlugin from './quill-editor-plugin'
+Vue.use(quillEditorPlugin.VueQuillEditor, quillEditorPlugin.globalOptions)
 
 window.baseApiUrl = '/api/admin/'
 import api from '../assets/js/api'

@@ -18,6 +18,16 @@ mix.options({
     }
 });
 
+mix.webpackConfig(webpack => {
+    return {
+        plugins: [
+            new webpack.ProvidePlugin({
+                'window.Quill': 'quill/dist/quill.js'
+            })
+        ]
+    };
+})
+
 // 加载 admin 前端模块
 mix.js('./resources/admin/app.js', 'public/js/admin.js');
 

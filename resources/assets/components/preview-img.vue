@@ -1,0 +1,40 @@
+<template>
+
+    <!--图片预览-->
+    <div class="show-image-box">
+        <img class="img" :src="url" width="100%" :width="width" :height="height" :alt="alt" @click="isShow=true">
+        <el-dialog :title="title" :visible.sync="isShow">
+            <div style="vertical-align: middle;text-align: center;">
+                <img style="max-width: 100%;max-height: 100%;" :src="url">
+            </div>
+        </el-dialog>
+    </div>
+</template>
+<script>
+    export default {
+        props: {
+            title: {type: String, default: '图片预览'},
+            url: {type: String, required: true},
+            alt: {type: String, default: ''},
+            width: {type: String, default: '100%'},
+            height: {type: String, default: '100%'},
+        },
+        data: function(){
+            return {
+                isShow: false
+            }
+        },
+        mounted: function(){
+
+        }
+    };
+</script>
+
+<style>
+
+</style>
+<style scoped>
+    .img {
+        cursor: pointer;
+    }
+</style>
