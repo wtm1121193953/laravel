@@ -6,8 +6,8 @@
             <el-table-column prop="name" label="示例名称"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1" class="c-green">已上架</span>
-                    <span v-else-if="scope.row.status === 2" class="c-danger">已下架</span>
+                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
+                    <span v-else-if="scope.row.status === 2" class="c-danger">禁用</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
@@ -30,9 +30,10 @@
                 layout="total, prev, pager, next"
                 :current-page.sync="query.page"
                 @current-change="getList"
+                :page-size="15"
                 :total="total"/>
 
-        <el-dialog title="添加商品" :visible.sync="isAdd">
+        <el-dialog title="添加示例" :visible.sync="isAdd">
             <demo-form
                     @cancel="isAdd = false"
                     @save="doAdd"/>
@@ -44,13 +45,14 @@
     import api from '../../../assets/js/api'
     import { mapState, mapGetters } from 'vuex'
 
-    import DemoItemOptions from 'demo-item-options'
+    import DemoItemOptions from './demo-item-options'
     import DemoForm from './demo-form'
 
     export default {
         name: "demo-list",
         data(){
             return {
+                isAdd: false,
                 isLoading: false,
                 query: {
                     page: 1,
@@ -74,6 +76,24 @@
             itemChanged(index, data){
                 this.list.splice(index, 1, data)
             },
+            add(){
+                this.isAdd = true;
+            },
+            doAdd(data){
+                this.isLoading = true;
+                api.post('/demo/add', data).then(() => {
+                    this.isAdd = false;
+                    this.getList();
+                }).finally(() => {
+                    this.isLoading = false;
+                })
+            },
+            itemChanged(index, data){
+                this.list.splice(index, 1, data)
+            },
+        },
+        created(){
+            store.dispatch('demo/getList')
         },
         components: {
             DemoItemOptions,

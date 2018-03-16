@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
         if(App::environment('local')){
             $this->call(SupplierTableSeeder::class);
             $this->call(CategoryTableSeeder::class);
+
+            $this->call(DemoTableSeeder::class);
         }
     }
 }

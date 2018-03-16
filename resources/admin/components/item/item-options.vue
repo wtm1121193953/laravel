@@ -1,10 +1,10 @@
 <template>
     <!-- 商品列表项操作 -->
     <div>
-        <el-button type="text" @click="edit(scope)">编辑</el-button>
-        <el-button type="text" @click="changeStatus(scope)">{{scope.row.status === 1 ? '下架' : '上架'}}</el-button>
-        <el-button type="text" @click="leftCountManager(scope)">库存管理</el-button>
-        <el-button type="text" @click="del(scope)">删除</el-button>
+        <el-button type="text" @click="edit">编辑</el-button>
+        <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '下架' : '上架'}}</el-button>
+        <el-button type="text" @click="leftCountManager">库存管理</el-button>
+        <el-button type="text" @click="del">删除</el-button>
 
         <el-dialog title="编辑商品信息" :visible.sync="isEdit">
             <item-form

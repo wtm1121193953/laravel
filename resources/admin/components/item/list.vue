@@ -49,6 +49,9 @@
         <el-pagination
                 class="fr m-t-20"
                 layout="total, prev, pager, next"
+                :current-page.sync="query.page"
+                @current-change="getList"
+                :page-size="15"
                 :total="total"/>
 
         <el-dialog title="添加商品" :visible.sync="isAdd">
@@ -70,8 +73,10 @@
         data(){
             return {
                 isAdd: false,
-                isEdit: false,
                 isLoading: false,
+                query: {
+                    page: 1,
+                },
                 list: [],
                 total: 0,
 
@@ -106,7 +111,7 @@
             },
             getList(){
                 this.isLoading = true;
-                api.get('/items').then(data => {
+                api.get('/items', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                 }).finally(() => {
@@ -116,9 +121,9 @@
             add(){
                 this.isAdd = true;
             },
-            doAdd(rule){
+            doAdd(data){
                 this.isLoading = true;
-                api.post('/item/add', rule).then(() => {
+                api.post('/item/add', data).then(() => {
                     this.isAdd = false;
                     this.getList();
                 }).finally(() => {
