@@ -8,7 +8,7 @@
                 <el-form-item prop="supplier_id" label="所属供应商">
                     <el-select filterable placeholder="请选择供应商" v-model="form.supplier_id">
                         <el-option
-                                v-for="supplier in suppliers"
+                                v-for="supplier in enableSuppliers"
                                 :key="supplier.id"
                                 :label="supplier.name"
                                 :value="supplier.id"/>
@@ -17,11 +17,20 @@
                 <el-form-item prop="category_id" label="商品分类">
                     <el-select filterable placeholder="请选择商品分类" v-model="form.category_id">
                         <el-option
-                                v-for="category in categories"
+                                v-for="category in enableCategories"
                                 :key="category.id"
                                 :label="category.name"
                                 :value="category.id"/>
                     </el-select>
+                </el-form-item>
+                <el-form-item prop="pict_url" label="商品原价">
+                    <el-input-number v-model="form.origin_price"/>
+                </el-form-item>
+                <el-form-item prop="pict_url" label="折扣价">
+                    <el-input-number v-model="form.discount_price"/>
+                </el-form-item>
+                <el-form-item v-if="!data" prop="total_count" label="商品数量">
+                    <el-input-number v-model="form.total_count"/>
                 </el-form-item>
                 <el-form-item prop="pict_url" label="商品图片">
                     <image-upload v-model="form.pict_url" :limit="1"/>
@@ -53,6 +62,7 @@
 
 </template>
 <script>
+    import { mapGetters } from 'vuex'
     let defaultForm = {
         name: '',
         status: 1,
@@ -61,16 +71,20 @@
         pict_url: '',
         detail: '',
         small_images: '',
+        origin_price: '',
+        discount_price: '',
+        total_count: 0,
     };
     export default {
         name: 'item-form',
         props: {
             data: Object,
-            suppliers: Array,
-            categories: Array,
         },
         computed:{
-
+            ...mapGetters('items', [
+                "enableSuppliers",
+                "enableCategories",
+            ]),
         },
         data(){
             return {

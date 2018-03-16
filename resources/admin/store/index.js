@@ -3,9 +3,9 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex);
 
-import api from '../../assets/js/api'
 
 import auth from './auth'
+import items from './items'
 
 let defaultThemes = {
     '深蓝': {
@@ -134,7 +134,8 @@ export default new Vuex.Store({
         },
     },
     modules: {
-        auth
+        auth,
+        items,
     },
     plugins: [
         stateLocalstorePlugin
