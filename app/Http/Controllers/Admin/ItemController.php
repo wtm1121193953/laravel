@@ -36,7 +36,7 @@ class ItemController extends Controller
         $item->supplier_id = request('supplier_id');
         $item->category_id = request('category_id');
         $item->pict_url = request('pict_url', '');
-        $item->detail = request('detail');
+        $item->detail = request('detail', '');
         $item->small_images = request('small_images', '');
         $item->total_count = request('total_count', 0);
         $item->origin_price = request('origin_price');
@@ -63,7 +63,7 @@ class ItemController extends Controller
         $item->supplier_id = request('supplier_id');
         $item->category_id = request('category_id');
         $item->pict_url = request('pict_url', '');
-        $item->detail = request('detail');
+        $item->detail = request('detail', '');
         $item->small_images = request('small_images', '');
         $item->origin_price = request('origin_price');
         $item->discount_price = request('discount_price', request('origin_price'));

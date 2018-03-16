@@ -2,7 +2,7 @@
     <el-row>
         <el-col :span="22">
             <el-form :model="form" label-width="120px" :rules="formRules" ref="form" @submit.native.prevent>
-                <el-form-item prop="name" label="供应商名称">
+                <el-form-item prop="name" label="xxxxxxx名称">
                     <el-input v-model="form.name"/>
                 </el-form-item>
                 <el-form-item prop="status" label="状态">
@@ -21,6 +21,7 @@
 
 </template>
 <script>
+    import { mapState, mapGetters } from 'vuex'
     let defaultForm = {
         name: '',
         status: 1,
@@ -31,7 +32,12 @@
             data: Object,
         },
         computed:{
-
+            ...mapState('supplier', [
+                // some state mapping here
+            ]),
+            ...mapGetters('supplier', [
+                // some getter mapping here
+            ]),
         },
         data(){
             return {
@@ -40,7 +46,7 @@
                     name: [
                         {required: true, message: '名称不能为空'}
                     ]
-                }
+                },
             }
         },
         methods: {
@@ -74,6 +80,8 @@
             data(){
                 this.initForm();
             }
+        },
+        components: {
         }
     }
 </script>

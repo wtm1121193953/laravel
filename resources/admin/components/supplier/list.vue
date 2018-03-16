@@ -1,115 +1,105 @@
 <template>
-    <page title="供应商管理" v-loading="isLoading">
-        <el-button class="fr" type="primary" @click="add">添加供应商</el-button>
+    <page title="xxxxxxx管理" v-loading="isLoading">
+        <el-button class="fr" type="primary" @click="add">添加xxxxxxx</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
-            <el-table-column prop="name" label="供应商名称"/>
+            <el-table-column prop="name" label="xxxxxxx名称"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.status === 2" class="c-danger">无效</span>
+                    <span v-else-if="scope.row.status === 2" class="c-danger">禁用</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="created_at" label="添加时间"/>
-            <el-table-column label="操作">
+            <el-table-column prop="created_at" label="添加时间">
                 <template slot-scope="scope">
-                    <el-button type="text" @click="edit(scope)">编辑</el-button>
-                    <el-button type="text" @click="changeStatus(scope)">{{scope.row.status === 1 ? '禁用' : '启用'}}</el-button>
-                    <el-button type="text" @click="del(scope)">删除</el-button>
+                    {{scope.row.created_at.substr(0, 10)}}
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="250px">
+                <template slot-scope="scope">
+                    <supplier-item-options
+                            :scope="scope"
+                            @change="itemChanged"
+                            @refresh="getList"/>
                 </template>
             </el-table-column>
         </el-table>
+        <el-pagination
+                class="fr m-t-20"
+                layout="total, prev, pager, next"
+                :current-page.sync="query.page"
+                @current-change="getList"
+                :page-size="15"
+                :total="total"/>
 
-        <el-dialog title="添加供应商" :visible.sync="isAdd">
-            <supplier-form @cancel="isAdd = false" @save="doAdd"/>
-        </el-dialog>
-        <el-dialog title="编辑供应商信息" :visible.sync="isEdit">
-            <supplier-form :data="currentEditSupplier" @cancel="isEdit = false" @save="doEdit"/>
+        <el-dialog title="添加xxxxxxx" :visible.sync="isAdd">
+            <supplier-form
+                    @cancel="isAdd = false"
+                    @save="doAdd"/>
         </el-dialog>
     </page>
 </template>
+
 <script>
     import api from '../../../assets/js/api'
+    import { mapState, mapGetters } from 'vuex'
 
-    import SupplierForm from './supplier-form.vue'
+    import SupplierItemOptions from './supplier-item-options'
+    import SupplierForm from './supplier-form'
+
     export default {
+        name: "supplier-list",
         data(){
             return {
                 isAdd: false,
-                isEdit: false,
                 isLoading: false,
-                currentEditSupplier: null,
+                query: {
+                    page: 1,
+                },
                 list: [],
+                total: 0,
             }
         },
-        computed:{
+        computed: {
 
         },
         methods: {
             getList(){
-                this.isLoading = true;
-                api.get('/suppliers').then(data => {
+                api.get('/suppliers', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
-                }).finally(() => {
-                    this.isLoading = false;
                 })
+            },
+            itemChanged(index, data){
+                this.list.splice(index, 1, data)
             },
             add(){
                 this.isAdd = true;
             },
-            doAdd(rule){
+            doAdd(data){
                 this.isLoading = true;
-                api.post('/supplier/add', rule).then(() => {
+                api.post('/supplier/add', data).then(() => {
                     this.isAdd = false;
                     this.getList();
                 }).finally(() => {
-                     this.isLoading = false;
-                })
-            },
-            edit(scope){
-                this.isEdit = true;
-                this.currentEditSupplier = scope.row;
-            },
-            doEdit(rule){
-                this.isLoading = true;
-                api.post('/supplier/edit', rule).then(() => {
-                    this.isEdit = false;
-                    this.getList();
-                }).finally(() => {
                     this.isLoading = false;
                 })
             },
-            changeStatus(scope){
-                let status = scope.row.status === 1 ? 2 : 1;
-                this.isLoading = true;
-                api.post('/supplier/changeStatus', {id: scope.row.id, status: status}).then(() => {
-                    scope.row.status = status;
-                    this.getList();
-                }).finally(() => {
-                    this.isLoading = false;
-                })
+            itemChanged(index, data){
+                this.list.splice(index, 1, data)
             },
-            del(scope){
-                this.$confirm(`确定要删除供应商 ${scope.row.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
-                    this.isLoading = true;
-                    api.post('/supplier/del', {id: scope.row.id}).then(() => {
-                        this.getList();
-                    }).finally(() => {
-                        this.isLoading = false;
-                    })
-                })
-            }
         },
         created(){
             this.getList();
         },
         components: {
-            SupplierForm
+            SupplierItemOptions,
+            SupplierForm,
         }
     }
 </script>
+
 <style scoped>
 
 </style>

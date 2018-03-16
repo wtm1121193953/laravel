@@ -7,117 +7,99 @@
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.status === 2" class="c-danger">无效</span>
+                    <span v-else-if="scope.row.status === 2" class="c-danger">禁用</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="created_at" label="添加时间"/>
-            <el-table-column label="操作">
+            <el-table-column prop="created_at" label="添加时间">
                 <template slot-scope="scope">
-                    <{name}-options :scope="scope" @change="itemChanged" @refresh="getList"/>
+                    {{scope.row.created_at.substr(0, 10)}}
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="250px">
+                <template slot-scope="scope">
+                    <{name}-item-options
+                            :scope="scope"
+                            @change="itemChanged"
+                            @refresh="getList"/>
                 </template>
             </el-table-column>
         </el-table>
         <el-pagination
                 class="fr m-t-20"
                 layout="total, prev, pager, next"
+                :current-page.sync="query.page"
+                @current-change="getList"
+                :page-size="15"
                 :total="total"/>
 
         <el-dialog title="添加{title}" :visible.sync="isAdd">
-            <{name}-form @cancel="isAdd = false" @save="doAdd"/>
-        </el-dialog>
-        <el-dialog title="编辑{title}信息" :visible.sync="isEdit">
-            <{name}-form :data="currentEdit{studlyName}" @cancel="isEdit = false" @save="doEdit"/>
+            <{name}-form
+                    @cancel="isAdd = false"
+                    @save="doAdd"/>
         </el-dialog>
     </page>
 </template>
+
 <script>
     import api from '../../../assets/js/api'
-    import {mapState, mapGetters} from 'vuex'
+    import { mapState, mapGetters } from 'vuex'
 
-    import {studlyName}Form from './{name}-form.vue'
+    import {studlyName}ItemOptions from './{name}-item-options'
+    import {studlyName}Form from './{name}-form'
+
     export default {
+        name: "{name}-list",
         data(){
             return {
                 isAdd: false,
-                isEdit: false,
                 isLoading: false,
+                query: {
+                    page: 1,
+                },
                 list: [],
                 total: 0,
             }
         },
-        computed:{
-            ...mapState('{name}', [
-                // some state mapping
-            ]),
-            ...mapGetters('items', [
-                // some getters mapping
-            ])
+        computed: {
+
         },
         methods: {
             getList(){
-                this.isLoading = true;
-                api.get('{listApi}').then(data => {
+                api.get('{listApi}', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
-                }).finally(() => {
-                    this.isLoading = false;
                 })
+            },
+            itemChanged(index, data){
+                this.list.splice(index, 1, data)
             },
             add(){
                 this.isAdd = true;
             },
-            doAdd(rule){
+            doAdd(data){
                 this.isLoading = true;
-                api.post('{addApi}', rule).then(() => {
+                api.post('{addApi}', data).then(() => {
                     this.isAdd = false;
                     this.getList();
                 }).finally(() => {
-                     this.isLoading = false;
-                })
-            },
-            edit(scope){
-                this.isEdit = true;
-                this.currentEdit{studlyName} = scope.row;
-            },
-            doEdit(rule){
-                this.isLoading = true;
-                api.post('{editApi}', rule).then(() => {
-                    this.isEdit = false;
-                    this.getList();
-                }).finally(() => {
                     this.isLoading = false;
                 })
             },
-            changeStatus(scope){
-                let status = scope.row.status === 1 ? 2 : 1;
-                this.isLoading = true;
-                api.post('{changeStatusApi}', {id: scope.row.id, status: status}).then(() => {
-                    scope.row.status = status;
-                    this.getList();
-                }).finally(() => {
-                    this.isLoading = false;
-                })
+            itemChanged(index, data){
+                this.list.splice(index, 1, data)
             },
-            del(scope){
-                this.$confirm(`确定要删除{title} ${scope.row.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
-                    this.isLoading = true;
-                    api.post('{delApi}', {id: scope.row.id}).then(() => {
-                        this.getList();
-                    }).finally(() => {
-                        this.isLoading = false;
-                    })
-                })
-            }
         },
         created(){
             this.getList();
         },
         components: {
-            {studlyName}Form
+            {studlyName}ItemOptions,
+            {studlyName}Form,
         }
     }
 </script>
+
 <style scoped>
 
 </style>

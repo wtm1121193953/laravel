@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/3/14
- * Time: 21:54
- */
 
 namespace App\Http\Controllers\Admin;
 
@@ -17,29 +11,40 @@ use Illuminate\Database\Eloquent\Builder;
 class SupplierController extends Controller
 {
 
+    /**
+     * 获取列表 (分页)
+     */
     public function getList()
     {
         $status = request('status');
-        $data = Supplier::when($status, function(Builder $query) use ($status){
+        $data = Supplier::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })->orderBy('id', 'desc')->paginate();
+
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
     }
 
+    /**
+     * 获取全部列表
+     */
     public function getAllList()
     {
         $status = request('status');
-        $list = Supplier::when($status, function(Builder $query) use ($status){
+        $list = Supplier::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })->orderBy('id', 'desc')->get();
+
         return Result::success([
             'list' => $list,
         ]);
     }
 
+    /**
+     * 添加数据
+     */
     public function add()
     {
         $this->validate(request(), [
@@ -54,6 +59,9 @@ class SupplierController extends Controller
         return Result::success($supplier);
     }
 
+    /**
+     * 编辑
+     */
     public function edit()
     {
         $this->validate(request(), [
@@ -69,6 +77,9 @@ class SupplierController extends Controller
         return Result::success($supplier);
     }
 
+    /**
+     * 修改状态
+     */
     public function changeStatus()
     {
         $this->validate(request(), [
@@ -83,6 +94,7 @@ class SupplierController extends Controller
     }
 
     /**
+     * 删除
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */

@@ -3,7 +3,7 @@ import Home from '../components/home'
 import SupplierList from '../components/supplier/list.vue'
 
 /**
- * supplier 模块
+ * category 模块
  */
 export default [
     {

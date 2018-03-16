@@ -105,6 +105,7 @@
                 }else {
                     this.form = deepCopy(defaultForm)
                 }
+                console.log(this.form)
             },
             cancel(){
                 this.$emit('cancel');

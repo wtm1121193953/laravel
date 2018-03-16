@@ -60,6 +60,7 @@ Date.prototype.format = function(fmt){
 };
 
 window.deepCopy = function(source){
+    if(source === null) return null;
     let obj = {};
     if(typeof source === 'object'){
         for(let key in source){
