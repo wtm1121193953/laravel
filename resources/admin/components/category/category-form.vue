@@ -40,7 +40,7 @@
                     name: [
                         {required: true, message: '名称不能为空'}
                     ]
-                }
+                },
             }
         },
         methods: {
@@ -74,6 +74,8 @@
             data(){
                 this.initForm();
             }
+        },
+        components: {
         }
     }
 </script>

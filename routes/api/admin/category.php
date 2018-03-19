@@ -4,8 +4,8 @@
  */
 use Illuminate\Support\Facades\Route;
 
-Route::get('categories', 'CategoryController@getList');
-Route::get('categories/all', 'CategoryController@getAllList');
+Route::get('/categories', 'CategoryController@getList');
+Route::get('/categories/all', 'CategoryController@getAllList');
 Route::post('/category/add', 'CategoryController@add');
 Route::post('/category/edit', 'CategoryController@edit');
 Route::post('/category/changeStatus', 'CategoryController@changeStatus');

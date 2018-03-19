@@ -7,109 +7,98 @@
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.status === 2" class="c-danger">无效</span>
+                    <span v-else-if="scope.row.status === 2" class="c-danger">禁用</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="created_at" label="添加时间"/>
-            <el-table-column label="操作">
+            <el-table-column prop="created_at" label="添加时间">
                 <template slot-scope="scope">
-                    <el-button type="text" @click="edit(scope)">编辑</el-button>
-                    <el-button type="text" @click="changeStatus(scope)">{{scope.row.status === 1 ? '禁用' : '启用'}}</el-button>
-                    <el-button type="text" @click="del(scope)">删除</el-button>
+                    {{scope.row.created_at.substr(0, 10)}}
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="250px">
+                <template slot-scope="scope">
+                    <category-item-options
+                            :scope="scope"
+                            @change="itemChanged"
+                            @refresh="getList"/>
                 </template>
             </el-table-column>
         </el-table>
+        <el-pagination
+                class="fr m-t-20"
+                layout="total, prev, pager, next"
+                :current-page.sync="query.page"
+                @current-change="getList"
+                :page-size="15"
+                :total="total"/>
 
         <el-dialog title="添加商品分类" :visible.sync="isAdd">
-            <category-form @cancel="isAdd = false" @save="doAdd"/>
-        </el-dialog>
-        <el-dialog title="编辑商品分类信息" :visible.sync="isEdit">
-            <category-form :data="currentEditCategory" @cancel="isEdit = false" @save="doEdit"/>
+            <category-form
+                    @cancel="isAdd = false"
+                    @save="doAdd"/>
         </el-dialog>
     </page>
 </template>
+
 <script>
     import api from '../../../assets/js/api'
 
-    import CategoryForm from './category-form.vue'
+    import CategoryItemOptions from './category-item-options'
+    import CategoryForm from './category-form'
+
     export default {
+        name: "category-list",
         data(){
             return {
                 isAdd: false,
-                isEdit: false,
                 isLoading: false,
-                currentEditCategory: null,
+                query: {
+                    page: 1,
+                },
                 list: [],
+                total: 0,
             }
         },
-        computed:{
+        computed: {
 
         },
         methods: {
             getList(){
-                this.isLoading = true;
-                api.get('categories').then(data => {
+                api.get('/categories', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
-                }).finally(() => {
-                    this.isLoading = false;
                 })
+            },
+            itemChanged(index, data){
+                this.list.splice(index, 1, data)
             },
             add(){
                 this.isAdd = true;
             },
-            doAdd(rule){
+            doAdd(data){
                 this.isLoading = true;
-                api.post('/category/add', rule).then(() => {
+                api.post('/category/add', data).then(() => {
                     this.isAdd = false;
                     this.getList();
                 }).finally(() => {
-                     this.isLoading = false;
-                })
-            },
-            edit(scope){
-                this.isEdit = true;
-                this.currentEditCategory = scope.row;
-            },
-            doEdit(rule){
-                this.isLoading = true;
-                api.post('/category/edit', rule).then(() => {
-                    this.isEdit = false;
-                    this.getList();
-                }).finally(() => {
                     this.isLoading = false;
                 })
             },
-            changeStatus(scope){
-                let status = scope.row.status === 1 ? 2 : 1;
-                this.isLoading = true;
-                api.post('/category/changeStatus', {id: scope.row.id, status: status}).then(() => {
-                    scope.row.status = status;
-                    this.getList();
-                }).finally(() => {
-                    this.isLoading = false;
-                })
+            itemChanged(index, data){
+                this.list.splice(index, 1, data)
             },
-            del(scope){
-                this.$confirm(`确定要删除商品分类 ${scope.row.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
-                    this.isLoading = true;
-                    api.post('/category/del', {id: scope.row.id}).then(() => {
-                        this.getList();
-                    }).finally(() => {
-                        this.isLoading = false;
-                    })
-                })
-            }
         },
         created(){
             this.getList();
         },
         components: {
-            CategoryForm
+            CategoryItemOptions,
+            CategoryForm,
         }
     }
 </script>
+
 <style scoped>
 
 </style>
