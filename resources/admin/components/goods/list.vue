@@ -54,7 +54,7 @@
                 :page-size="15"
                 :total="total"/>
 
-        <el-dialog title="添加商品" :visible.sync="isAdd">
+        <el-dialog title="添加商品" width="80%" :visible.sync="isAdd">
             <goods-form
                     @cancel="isAdd = false"
                     @save="doAdd"/>

@@ -32,7 +32,7 @@ import Lockr from 'lockr'
 // 设置Lockr前缀
 Lockr.prefix = 'admin_'
 // 修复Lockr的rm方法没有使用前缀的bug
-var  Lockrm = Lockr.rm;
+let  Lockrm = Lockr.rm;
 Lockr.rm = function(key){
     Lockrm(Lockr.prefix + key)
 }
@@ -54,27 +54,47 @@ Date.prototype.format = function(fmt){
         "S": this.getMilliseconds() //毫秒
     };
     if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-    for (var k in o)
+    for (let k in o)
         if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
 };
 
+function getType(obj){
+    //tostring会返回对应不同的标签的构造函数
+    let toString = Object.prototype.toString;
+    let map = {
+        '[object Boolean]'  : 'boolean',
+        '[object Number]'   : 'number',
+        '[object String]'   : 'string',
+        '[object Function]' : 'function',
+        '[object Array]'    : 'array',
+        '[object Date]'     : 'date',
+        '[object RegExp]'   : 'regExp',
+        '[object Undefined]': 'undefined',
+        '[object Null]'     : 'null',
+        '[object Object]'   : 'object'
+    };
+    return map[toString.call(obj)];
+}
+
 window.deepCopy = function(source){
-    if(source === null) return null;
-    let obj = {};
-    if(typeof source === 'object'){
-        for(let key in source){
-            let value = source[key];
-            if(typeof value === 'object'){
-                obj[key] = deepCopy(value)
-            }else {
-                obj[key] = value
-            }
+    let type = getType(source);
+    let obj;
+    if(type === 'array'){
+        obj = [];
+        for(let i = 0, len = source.length; i < len; i++){
+            obj.push(deepCopy(source[i]));
         }
-        return obj;
+    } else if(type === 'object'){
+        obj = {};
+        for(let key in source){
+            obj[key] = deepCopy(source[key]);
+        }
     } else {
+        //不再具有下一层次
         return source;
     }
+    return obj;
 };
 
 // 如果页面在iframe中, 跳到顶层页面

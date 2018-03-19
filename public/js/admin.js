@@ -1148,6 +1148,65 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 var defaultForm = {
@@ -1155,19 +1214,24 @@ var defaultForm = {
     status: 1,
     supplier_id: '',
     category_id: '',
-    pict_url: '',
-    detail: '',
-    small_images: '',
+    useSpec: false,
+    purchase_price: '',
     origin_price: '',
     discount_price: '',
-    total_count: 0
+    stock: 0,
+    spec_name_1: '颜色',
+    spec_name_2: '尺寸',
+    specs: [],
+    default_image: '',
+    small_images: '',
+    detail: ''
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: 'item-form',
     props: {
         data: Object
     },
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["c" /* mapGetters */])('items', ["enableSuppliers", "enableCategories"])),
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_0_vuex__["c" /* mapGetters */])('goods', ["enableSuppliers", "enableCategories"])),
     data: function data() {
         return {
             form: deepCopy(defaultForm),
@@ -1179,13 +1243,45 @@ var defaultForm = {
     },
 
     methods: {
+        specName1Change: function specName1Change(v) {
+            this.form.spec_name_1 = v;
+        },
+        specName2Change: function specName2Change(v) {
+            this.form.spec_name_2 = v;
+        },
+        renderSpecTableHeader: function renderSpecTableHeader(h, _ref) {
+            var column = _ref.column,
+                $index = _ref.$index;
+
+            return h('el-input', {
+                style: {
+                    'margin-top': '15px'
+                },
+                props: {
+                    size: 'small',
+                    value: $index === 0 ? this.form.spec_name_1 : this.form.spec_name_2
+                },
+                on: {
+                    input: $index === 0 ? this.specName1Change : this.specName2Change
+                }
+            });
+        },
+        addSpec: function addSpec() {
+            this.form.specs.push({
+                spec_1: '',
+                spec_2: '',
+                purchase_price: '',
+                origin_price: '',
+                discount_price: '',
+                stock: 0
+            });
+        },
         initForm: function initForm() {
             if (this.data) {
                 this.form = deepCopy(this.data);
             } else {
                 this.form = deepCopy(defaultForm);
             }
-            console.log(this.form);
         },
         cancel: function cancel() {
             this.$emit('cancel');
@@ -1274,7 +1370,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    name: "item-options",
+    name: "goods-item-options",
     props: {
         scope: { type: Object, required: true }
     },
@@ -1292,7 +1388,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         };
     },
 
-    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["c" /* mapGetters */])('items', [])),
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["c" /* mapGetters */])('goods', [])),
     methods: {
         edit: function edit() {
             this.isEdit = true;
@@ -1301,7 +1397,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             var _this = this;
 
             this.$emit('before-request');
-            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/item/edit', data).then(function (data) {
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/goods/edit', data).then(function (data) {
                 _this.isEdit = false;
                 _this.$emit('change', _this.scope.$index, data);
             }).finally(function () {
@@ -1313,7 +1409,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
             var status = this.scope.row.status === 1 ? 2 : 1;
             this.$emit('before-request');
-            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/item/changeStatus', { id: this.scope.row.id, status: status }).then(function (data) {
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/goods/changeStatus', { id: this.scope.row.id, status: status }).then(function (data) {
                 _this2.scope.row.status = status;
                 _this2.$emit('change', _this2.scope.$index, data);
             }).finally(function () {
@@ -1326,7 +1422,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             var data = this.scope.row;
             this.$confirm('\u786E\u5B9A\u8981\u5220\u9664\u5546\u54C1 ' + data.name + ' \u5417? ', '温馨提示', { type: 'warning' }).then(function () {
                 _this3.$emit('before-request');
-                __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/item/del', { id: data.id }).then(function () {
+                __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/goods/del', { id: data.id }).then(function () {
                     _this3.$emit('refresh');
                 }).finally(function () {
                     _this3.$emit('after-request');
@@ -1340,7 +1436,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
             var _this4 = this;
 
             var data = this.scope.row;
-            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('item/changeStock', { id: data.id, stock: this.form.stock }).then(function (data) {
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('goods/changeStock', { id: data.id, stock: this.form.stock }).then(function (data) {
                 _this4.showManageStockDialog = false;
                 _this4.$emit('change', _this4.scope.$index, data);
             });
@@ -13948,7 +14044,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -38640,69 +38736,318 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "el-form-item",
-                { attrs: { prop: "pict_url", label: "商品原价" } },
+                { attrs: { label: "商品规格" } },
                 [
-                  _c("el-input-number", {
+                  _c("el-switch", {
+                    attrs: {
+                      "active-text": "启用规格",
+                      "inactive-text": "不启用规格"
+                    },
                     model: {
-                      value: _vm.form.origin_price,
+                      value: _vm.form.useSpec,
                       callback: function($$v) {
-                        _vm.$set(_vm.form, "origin_price", $$v)
+                        _vm.$set(_vm.form, "useSpec", $$v)
                       },
-                      expression: "form.origin_price"
+                      expression: "form.useSpec"
                     }
-                  })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "el-form-item",
-                { attrs: { prop: "pict_url", label: "折扣价" } },
-                [
-                  _c("el-input-number", {
-                    model: {
-                      value: _vm.form.discount_price,
-                      callback: function($$v) {
-                        _vm.$set(_vm.form, "discount_price", $$v)
-                      },
-                      expression: "form.discount_price"
-                    }
-                  })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              !_vm.data
-                ? _c(
-                    "el-form-item",
-                    { attrs: { prop: "total_count", label: "商品数量" } },
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    { staticStyle: { "margin-top": "15px" } },
                     [
-                      _c("el-input-number", {
-                        model: {
-                          value: _vm.form.total_count,
-                          callback: function($$v) {
-                            _vm.$set(_vm.form, "total_count", $$v)
-                          },
-                          expression: "form.total_count"
-                        }
-                      })
+                      !_vm.form.useSpec
+                        ? _c(
+                            "el-form",
+                            { attrs: { inline: "" } },
+                            [
+                              _c(
+                                "el-form-item",
+                                {
+                                  attrs: {
+                                    prop: "purchase_price",
+                                    label: "采购价"
+                                  }
+                                },
+                                [
+                                  _c("el-input-number", {
+                                    model: {
+                                      value: _vm.form.purchase_price,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.form,
+                                          "purchase_price",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "form.purchase_price"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "el-form-item",
+                                {
+                                  attrs: { prop: "origin_price", label: "售价" }
+                                },
+                                [
+                                  _c("el-input-number", {
+                                    model: {
+                                      value: _vm.form.origin_price,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.form, "origin_price", $$v)
+                                      },
+                                      expression: "form.origin_price"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              !_vm.data
+                                ? _c(
+                                    "el-form-item",
+                                    {
+                                      attrs: {
+                                        prop: "stock",
+                                        label: "库存数量"
+                                      }
+                                    },
+                                    [
+                                      _c("el-input-number", {
+                                        model: {
+                                          value: _vm.form.stock,
+                                          callback: function($$v) {
+                                            _vm.$set(_vm.form, "stock", $$v)
+                                          },
+                                          expression: "form.stock"
+                                        }
+                                      })
+                                    ],
+                                    1
+                                  )
+                                : _vm._e()
+                            ],
+                            1
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm.form.useSpec
+                        ? _c(
+                            "el-table",
+                            {
+                              attrs: {
+                                data: _vm.form.specs,
+                                border: "",
+                                stripe: ""
+                              }
+                            },
+                            [
+                              _c("el-table-column", {
+                                attrs: {
+                                  label: "颜色",
+                                  "render-header": _vm.renderSpecTableHeader
+                                },
+                                scopedSlots: _vm._u([
+                                  {
+                                    key: "default",
+                                    fn: function(scope) {
+                                      return [
+                                        _c("el-input", {
+                                          model: {
+                                            value: scope.row.spec_1,
+                                            callback: function($$v) {
+                                              _vm.$set(scope.row, "spec_1", $$v)
+                                            },
+                                            expression: "scope.row.spec_1"
+                                          }
+                                        })
+                                      ]
+                                    }
+                                  }
+                                ])
+                              }),
+                              _vm._v(" "),
+                              _c("el-table-column", {
+                                attrs: {
+                                  label: "尺寸",
+                                  "render-header": _vm.renderSpecTableHeader
+                                },
+                                scopedSlots: _vm._u([
+                                  {
+                                    key: "default",
+                                    fn: function(scope) {
+                                      return [
+                                        _c("el-input", {
+                                          model: {
+                                            value: scope.row.spec_2,
+                                            callback: function($$v) {
+                                              _vm.$set(scope.row, "spec_2", $$v)
+                                            },
+                                            expression: "scope.row.spec_2"
+                                          }
+                                        })
+                                      ]
+                                    }
+                                  }
+                                ])
+                              }),
+                              _vm._v(" "),
+                              _c("el-table-column", {
+                                attrs: { label: "采购价" },
+                                scopedSlots: _vm._u([
+                                  {
+                                    key: "default",
+                                    fn: function(scope) {
+                                      return [
+                                        _c("el-input-number", {
+                                          model: {
+                                            value: scope.row.purchase_price,
+                                            callback: function($$v) {
+                                              _vm.$set(
+                                                scope.row,
+                                                "purchase_price",
+                                                $$v
+                                              )
+                                            },
+                                            expression:
+                                              "scope.row.purchase_price"
+                                          }
+                                        })
+                                      ]
+                                    }
+                                  }
+                                ])
+                              }),
+                              _vm._v(" "),
+                              _c("el-table-column", {
+                                attrs: { label: "售价" },
+                                scopedSlots: _vm._u([
+                                  {
+                                    key: "default",
+                                    fn: function(scope) {
+                                      return [
+                                        _c("el-input-number", {
+                                          model: {
+                                            value: scope.row.origin_price,
+                                            callback: function($$v) {
+                                              _vm.$set(
+                                                scope.row,
+                                                "origin_price",
+                                                $$v
+                                              )
+                                            },
+                                            expression: "scope.row.origin_price"
+                                          }
+                                        })
+                                      ]
+                                    }
+                                  }
+                                ])
+                              }),
+                              _vm._v(" "),
+                              _c("el-table-column", {
+                                attrs: { label: "库存", prop: "stock" },
+                                scopedSlots: _vm._u([
+                                  {
+                                    key: "default",
+                                    fn: function(scope) {
+                                      return [
+                                        _c("el-input-number", {
+                                          model: {
+                                            value: scope.row.stock,
+                                            callback: function($$v) {
+                                              _vm.$set(scope.row, "stock", $$v)
+                                            },
+                                            expression: "scope.row.stock"
+                                          }
+                                        })
+                                      ]
+                                    }
+                                  }
+                                ])
+                              }),
+                              _vm._v(" "),
+                              _c("el-table-column", {
+                                scopedSlots: _vm._u([
+                                  {
+                                    key: "default",
+                                    fn: function(scope) {
+                                      return [
+                                        _c(
+                                          "el-button",
+                                          {
+                                            attrs: {
+                                              type: "warning",
+                                              size: "small"
+                                            },
+                                            on: {
+                                              click: function($event) {
+                                                _vm.form.specs.splice(
+                                                  scope.$index,
+                                                  1
+                                                )
+                                              }
+                                            }
+                                          },
+                                          [_vm._v("删除")]
+                                        )
+                                      ]
+                                    }
+                                  }
+                                ])
+                              }),
+                              _vm._v(" "),
+                              _c("template", { slot: "append" }, [
+                                _c(
+                                  "div",
+                                  { staticStyle: { margin: "12px" } },
+                                  [
+                                    _c(
+                                      "el-button",
+                                      {
+                                        attrs: {
+                                          type: "primary",
+                                          size: "small"
+                                        },
+                                        on: { click: _vm.addSpec }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "el-icon-plus"
+                                        }),
+                                        _vm._v(" 添加一条规格")
+                                      ]
+                                    )
+                                  ],
+                                  1
+                                )
+                              ])
+                            ],
+                            2
+                          )
+                        : _vm._e()
                     ],
                     1
                   )
-                : _vm._e(),
+                ],
+                1
+              ),
               _vm._v(" "),
               _c(
                 "el-form-item",
-                { attrs: { prop: "pict_url", label: "商品图片" } },
+                { attrs: { prop: "default_image", label: "商品图片" } },
                 [
                   _c("image-upload", {
                     attrs: { limit: 1 },
                     model: {
-                      value: _vm.form.pict_url,
+                      value: _vm.form.default_image,
                       callback: function($$v) {
-                        _vm.$set(_vm.form, "pict_url", $$v)
+                        _vm.$set(_vm.form, "default_image", $$v)
                       },
-                      expression: "form.pict_url"
+                      expression: "form.default_image"
                     }
                   })
                 ],
@@ -40206,7 +40551,7 @@ var render = function() {
       _c(
         "el-dialog",
         {
-          attrs: { title: "添加商品", visible: _vm.isAdd },
+          attrs: { title: "添加商品", width: "80%", visible: _vm.isAdd },
           on: {
             "update:visible": function($event) {
               _vm.isAdd = $event
@@ -43467,22 +43812,42 @@ Date.prototype.format = function (fmt) {
     }return fmt;
 };
 
+function getType(obj) {
+    //tostring会返回对应不同的标签的构造函数
+    var toString = Object.prototype.toString;
+    var map = {
+        '[object Boolean]': 'boolean',
+        '[object Number]': 'number',
+        '[object String]': 'string',
+        '[object Function]': 'function',
+        '[object Array]': 'array',
+        '[object Date]': 'date',
+        '[object RegExp]': 'regExp',
+        '[object Undefined]': 'undefined',
+        '[object Null]': 'null',
+        '[object Object]': 'object'
+    };
+    return map[toString.call(obj)];
+}
+
 window.deepCopy = function (source) {
-    if (source === null) return null;
-    var obj = {};
-    if ((typeof source === 'undefined' ? 'undefined' : _typeof(source)) === 'object') {
-        for (var key in source) {
-            var value = source[key];
-            if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
-                obj[key] = deepCopy(value);
-            } else {
-                obj[key] = value;
-            }
+    var type = getType(source);
+    var obj = void 0;
+    if (type === 'array') {
+        obj = [];
+        for (var i = 0, len = source.length; i < len; i++) {
+            obj.push(deepCopy(source[i]));
         }
-        return obj;
+    } else if (type === 'object') {
+        obj = {};
+        for (var key in source) {
+            obj[key] = deepCopy(source[key]);
+        }
     } else {
+        //不再具有下一层次
         return source;
     }
+    return obj;
 };
 
 // 如果页面在iframe中, 跳到顶层页面

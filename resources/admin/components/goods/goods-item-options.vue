@@ -43,7 +43,7 @@
     import GoodsForm from './goods-form'
     import { mapGetters} from 'vuex'
     export default {
-        name: "item-options",
+        name: "goods-item-options",
         props: {
             scope: {type: Object, required: true}
         },
@@ -63,7 +63,7 @@
             }
         },
         computed: {
-            ...mapGetters('items', [
+            ...mapGetters('goods', [
 
             ]),
         },
@@ -73,7 +73,7 @@
             },
             doEdit(data){
                 this.$emit('before-request')
-                api.post('/item/edit', data).then((data) => {
+                api.post('/goods/edit', data).then((data) => {
                     this.isEdit = false;
                     this.$emit('change', this.scope.$index, data)
                 }).finally(() => {
@@ -83,7 +83,7 @@
             changeStatus(){
                 let status = this.scope.row.status === 1 ? 2 : 1;
                 this.$emit('before-request')
-                api.post('/item/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
+                api.post('/goods/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
                     this.scope.row.status = status;
                     this.$emit('change', this.scope.$index, data)
                 }).finally(() => {
@@ -94,7 +94,7 @@
                 let data = this.scope.row;
                 this.$confirm(`确定要删除商品 ${data.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
                     this.$emit('before-request')
-                    api.post('/item/del', {id: data.id}).then(() => {
+                    api.post('/goods/del', {id: data.id}).then(() => {
                         this.$emit('refresh')
                     }).finally(() => {
                         this.$emit('after-request')
@@ -106,7 +106,7 @@
             },
             saveStock(){
                 let data = this.scope.row;
-                api.post('item/changeStock', {id: data.id, stock: this.form.stock}).then((data) => {
+                api.post('goods/changeStock', {id: data.id, stock: this.form.stock}).then((data) => {
                     this.showManageStockDialog = false;
                     this.$emit('change', this.scope.$index, data)
                 })
