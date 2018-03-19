@@ -4,17 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Item\Item;
+use App\Modules\Goods\Goods;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
-class ItemController extends Controller
+class GoodsController extends Controller
 {
 
     public function getList()
     {
         $status = request('status');
-        $data = Item::when($status, function (Builder $query) use ($status){
+        $data = Goods::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })->orderBy('id', 'desc')->paginate();
         return Result::success([
@@ -31,7 +31,7 @@ class ItemController extends Controller
             'category_id' => 'required|integer',
             'origin_price' => 'required|numeric|min:0',
         ]);
-        $item = new Item();
+        $item = new Goods();
         $item->name = request('name');
         $item->supplier_id = request('supplier_id');
         $item->category_id = request('category_id');
@@ -58,7 +58,7 @@ class ItemController extends Controller
             'category_id' => 'required|integer',
             'origin_price' => 'required|numeric|min:0',
         ]);
-        $item = Item::findOrFail(request('id'));
+        $item = Goods::findOrFail(request('id'));
         $item->name = request('name');
         $item->supplier_id = request('supplier_id');
         $item->category_id = request('category_id');
@@ -81,21 +81,21 @@ class ItemController extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer',
         ]);
-        $item = Item::findOrFail(request('id'));
+        $item = Goods::findOrFail(request('id'));
         $item->status = request('status');
 
         $item->save();
         return Result::success($item);
     }
 
-    public function changeLeftCount()
+    public function changeStock()
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
             'leftCount' => 'required|integer|min:0'
         ]);
         $leftCount = request('leftCount', 0);
-        $item = Item::findOrFail(request('id'));
+        $item = Goods::findOrFail(request('id'));
         $item->total_count = $item->sell_count + $leftCount;
         $item->save();
         return Result::success($item);
@@ -110,7 +110,7 @@ class ItemController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $item = Item::findOrFail(request('id'));
+        $item = Goods::findOrFail(request('id'));
         $item->delete();
         return Result::success($item);
     }

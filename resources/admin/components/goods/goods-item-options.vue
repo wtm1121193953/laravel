@@ -3,18 +3,18 @@
     <div>
         <el-button type="text" @click="edit">编辑</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '下架' : '上架'}}</el-button>
-        <el-button type="text" @click="leftCountManager">库存管理</el-button>
+        <el-button type="text" @click="stockManager">库存管理</el-button>
         <el-button type="text" @click="del">删除</el-button>
 
         <el-dialog title="编辑商品信息" :visible.sync="isEdit">
-            <item-form
+            <goods-form
                     :data="scope.row"
                     @cancel="isEdit = false"
                     @save="doEdit"/>
         </el-dialog>
 
         <!-- 库存管理弹框 -->
-        <el-dialog :title="`管理库存 ( ${scope.row.name} )`" :visible.sync="showManageLeftCountDialog">
+        <el-dialog :title="`管理库存 ( ${scope.row.name} )`" :visible.sync="showManageStockDialog">
             <el-row>
                 <el-col :span="15">
                     <el-form size="small" :rules="formRules" :model="form" label-width="120px">
@@ -24,12 +24,12 @@
                         <el-form-item label="总销量">
                             {{scope.row.sell_count}}
                         </el-form-item>
-                        <el-form-item label="剩余与库存" prop="leftCount">
-                            <el-input-number v-model="form.leftCount"/>
+                        <el-form-item label="剩余与库存" prop="stock">
+                            <el-input-number v-model="form.stock"/>
                         </el-form-item>
                         <el-form-item>
-                            <el-button @click="showManageLeftCountDialog = false">取消</el-button>
-                            <el-button type="primary" @click="saveLeftCount">确认</el-button>
+                            <el-button @click="showManageStockDialog = false">取消</el-button>
+                            <el-button type="primary" @click="saveStock">确认</el-button>
                         </el-form-item>
                     </el-form>
                 </el-col>
@@ -40,7 +40,7 @@
 
 <script>
     import api from '../../../assets/js/api'
-    import ItemForm from './item-form'
+    import GoodsForm from './goods-form'
     import { mapGetters} from 'vuex'
     export default {
         name: "item-options",
@@ -50,12 +50,12 @@
         data(){
             return {
                 isEdit: false,
-                showManageLeftCountDialog: false,
+                showManageStockDialog: false,
                 form: {
-                    leftCount: this.scope.row.total_count - this.scope.row.sell_count
+                    stock: this.scope.row.total_count - this.scope.row.sell_count
                 },
                 formRules: {
-                    leftCount: [
+                    stock: [
                         {type: 'number', required: true, min: 0, message: '请填写正确的剩余库存数'}
                     ]
                 }
@@ -101,19 +101,19 @@
                     })
                 })
             },
-            leftCountManager(){
-                this.showManageLeftCountDialog = true;
+            stockManager(){
+                this.showManageStockDialog = true;
             },
-            saveLeftCount(){
+            saveStock(){
                 let data = this.scope.row;
-                api.post('item/changeLeftCount', {id: data.id, leftCount: this.form.leftCount}).then((data) => {
-                    this.showManageLeftCountDialog = false;
+                api.post('item/changeStock', {id: data.id, stock: this.form.stock}).then((data) => {
+                    this.showManageStockDialog = false;
                     this.$emit('change', this.scope.$index, data)
                 })
             }
         },
         components: {
-            ItemForm
+            GoodsForm
         }
     }
 </script>

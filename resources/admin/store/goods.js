@@ -1,7 +1,7 @@
 
 import api from '../../assets/js/api'
 
-const items = {
+const goods = {
     namespaced: true,
     state: {
         suppliers: [], // 全部供应商列表
@@ -38,4 +38,4 @@ const items = {
     },
 }
 
-export default items
+export default goods

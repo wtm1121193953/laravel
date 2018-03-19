@@ -9,7 +9,7 @@ import GroupList from '../components/auth/group/list.vue'
 import UserList from '../components/auth/user/list.vue'
 
 import suppliers from './supplier'
-import items from './item'
+import goods from './goods'
 import category from './category'
 /**
  *
@@ -31,10 +31,10 @@ const routes = [
 
     // 供应商模块
     ...suppliers,
-    // 商品模块
-    ...items,
     // 商品分类模块
     ...category,
+    // 商品模块
+    ...goods,
 
     {
         path: '/',

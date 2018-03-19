@@ -1,6 +1,6 @@
 <?php
 
-use App\Modules\Item\Category;
+use App\Modules\Goods\Category;
 use Faker\Generator as Faker;
 
 $factory->define(Category::class, function (Faker $faker) {

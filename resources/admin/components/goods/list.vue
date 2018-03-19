@@ -42,7 +42,7 @@
             </el-table-column>
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
-                    <item-options :scope="scope" @change="itemChanged" @refresh="getList"/>
+                    <goods-item-options :scope="scope" @change="itemChanged" @refresh="getList"/>
                 </template>
             </el-table-column>
         </el-table>
@@ -55,7 +55,7 @@
                 :total="total"/>
 
         <el-dialog title="添加商品" :visible.sync="isAdd">
-            <item-form
+            <goods-form
                     @cancel="isAdd = false"
                     @save="doAdd"/>
         </el-dialog>
@@ -64,9 +64,9 @@
 <script>
     import api from '../../../assets/js/api'
 
-    import ItemForm from './item-form.vue'
+    import GoodsForm from './goods-form.vue'
     import PreviewImg from "../../../assets/components/preview-img";
-    import ItemOptions from './item-options'
+    import GoodsItemOptions from './goods-item-options'
     import {mapState, mapGetters} from 'vuex'
 
     export default {
@@ -81,11 +81,11 @@
                 total: 0,
 
                 // 库存管理
-                showManageLeftCountDialog: false,
+                showManageStockDialog: false,
             }
         },
         computed:{
-            ...mapState('items', [
+            ...mapState('goods', [
                 'suppliers',
                 'categories',
             ]),
@@ -111,7 +111,7 @@
             },
             getList(){
                 this.isLoading = true;
-                api.get('/items', this.query).then(data => {
+                api.get('/goods', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                 }).finally(() => {
@@ -123,7 +123,7 @@
             },
             doAdd(data){
                 this.isLoading = true;
-                api.post('/item/add', data).then(() => {
+                api.post('/goods/add', data).then(() => {
                     this.isAdd = false;
                     this.getList();
                 }).finally(() => {
@@ -136,15 +136,15 @@
         },
         created(){
             this.getList();
-            store.dispatch('items/getAllSuppliers')
-            store.dispatch('items/getAllCategories')
+            store.dispatch('goods/getAllSuppliers')
+            store.dispatch('goods/getAllCategories')
         },
         watch: {
         },
         components: {
             PreviewImg,
-            ItemForm,
-            ItemOptions,
+            GoodsForm,
+            GoodsItemOptions,
         }
     }
 </script>

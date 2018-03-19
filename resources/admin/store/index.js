@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 
 import auth from './auth'
-import items from './items'
+import goods from './goods'
 
 let defaultThemes = {
     '深蓝': {
@@ -136,7 +136,7 @@ export default new Vuex.Store({
     },
     modules: {
         auth,
-        items,
+        goods,
     },
     plugins: [
         stateLocalstorePlugin

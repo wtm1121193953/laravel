@@ -19,8 +19,8 @@ class CreateOrdersTable extends Migration
             $table->integer('user_id')->index()->comment('购买用户ID');
             $table->string('user_name')->index()->comment('购买用户名');
             $table->tinyInteger('type')->default(1)->index()->comment('订单类型 1-普通订单 2-聚合父订单 3-聚合子订单');
-            $table->integer('item_id')->index()->default(0)->comment('商品ID');
-            $table->string('item_name')->default('')->comment('商品名');
+            $table->integer('goods_id')->index()->default(0)->comment('商品ID');
+            $table->string('goods_name')->default('')->comment('商品名');
             $table->string('item_pict_url', 500)->default('')->comment('商品图片');
             $table->decimal('origin_price')->default(0)->comment('商品价格');
             $table->decimal('discount_price')->default(0)->comment('商品折扣价格');

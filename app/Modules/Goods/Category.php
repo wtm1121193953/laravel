@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Item;
+namespace App\Modules\Goods;
 
 use App\BaseModel;
 

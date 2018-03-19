@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Item\Category;
+use App\Modules\Goods\Category;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
