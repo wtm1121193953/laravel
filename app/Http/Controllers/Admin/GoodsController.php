@@ -20,11 +20,31 @@ class GoodsController extends Controller
         $status = request('status');
         $data = Goods::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
-        })->orderBy('id', 'desc')->paginate();
+        })->select('id', 'name', 'supplier_id', 'category_id', 'brand', 'purchase_price', 'origin_price', 'discount_price', 'spec_type', 'spec_name_1', 'spec_name_2', 'default_spec_id', 'category_id_1', 'category_id_2', 'category_id_3', 'category_id_4', 'default_image', 'small_images', 'status', 'tags', 'created_at', 'updated_at')
+            ->orderBy('id', 'desc')
+            ->paginate();
+        $data->each(function($item){
+            $item->stock = $this->_getGoodsStock($item);
+        });
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
+
+    /**
+     * 商品详情
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function detail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $goods = Goods::findOrFail(request('id'));
+        $specs = Goods::where('goods_id', $goods->id)->get();
+        $goods->specs = $specs;
+        return Result::success($goods);
     }
 
     public function add()
@@ -46,7 +66,7 @@ class GoodsController extends Controller
         $goods->discount_price = request('discount_price', request('origin_price'));
 
         /*   获取规格数据   */
-        $specData = $this->getSpecData();
+        $specData = $this->_getSpecData();
 
         $goods->spec_type = $specData['spec_type'];
         $goods->spec_name_1 = $specData['spec_name_1'];
@@ -70,6 +90,7 @@ class GoodsController extends Controller
         $defaultSpec = null;
         foreach ($specData['specs'] as $index => $item) {
             $spec = new GoodsSpec();
+            $spec->goods_id = $goods->id;
             $spec->spec_1 = $item['spec_1'];
             $spec->spec_2 = $item['spec_2'];
             $spec->purchase_price = $item['purchase_price'];
@@ -89,6 +110,7 @@ class GoodsController extends Controller
 
         GoodsCreated::dispatch($goods);
 
+        $goods->stock = $this->_getGoodsStock($goods);
         return Result::success($goods);
     }
 
@@ -101,21 +123,22 @@ class GoodsController extends Controller
             'category_id' => 'required|integer',
             'origin_price' => 'required|numeric|min:0',
         ]);
-        $item = Goods::findOrFail(request('id'));
-        $item->name = request('name');
-        $item->supplier_id = request('supplier_id');
-        $item->category_id = request('category_id');
-        $item->pict_url = request('pict_url', '');
-        $item->detail = request('detail', '');
-        $item->small_images = request('small_images', '');
-        $item->origin_price = request('origin_price');
-        $item->discount_price = request('discount_price', request('origin_price'));
+        $goods = Goods::findOrFail(request('id'));
+        $goods->name = request('name');
+        $goods->supplier_id = request('supplier_id');
+        $goods->category_id = request('category_id');
+        $goods->pict_url = request('pict_url', '');
+        $goods->detail = request('detail', '');
+        $goods->small_images = request('small_images', '');
+        $goods->origin_price = request('origin_price');
+        $goods->discount_price = request('discount_price', request('origin_price'));
 
-        $item->status = request('status', 1);
+        $goods->status = request('status', 1);
 
-        $item->save();
+        $goods->save();
 
-        return Result::success($item);
+        $goods->stock = $this->_getGoodsStock($goods);
+        return Result::success($goods);
     }
 
     public function changeStatus()
@@ -124,18 +147,20 @@ class GoodsController extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer',
         ]);
-        $item = Goods::findOrFail(request('id'));
-        $item->status = request('status');
+        $goods = Goods::findOrFail(request('id'));
+        $goods->status = request('status');
 
-        $item->save();
-        return Result::success($item);
+        $goods->save();
+
+        $goods->stock = $this->_getGoodsStock($goods);
+        return Result::success($goods);
     }
 
     public function changeStock()
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
-            'leftCount' => 'required|integer|min:0'
+            'stock' => 'required|integer|min:0'
         ]);
         $leftCount = request('leftCount', 0);
         $item = Goods::findOrFail(request('id'));
@@ -158,16 +183,35 @@ class GoodsController extends Controller
         return Result::success($item);
     }
 
-    private function getSpecData()
+    /**
+     * 获取完整的商品库存
+     * @param $goods
+     * @return int
+     */
+    private function _getGoodsStock($goods)
     {
+        if($goods->spec_type === 0){
+            $stock = GoodsSpec::where('id', $goods->default_spec_id)->value('stock');
+        }else {
+            $stock = GoodsSpec::where('goods_id', $goods->id)
+                ->sum('stock');
+        }
+        return $stock;
+    }
+
+    private function _getSpecData()
+    {
+        $useSpec = request('useSpec', false);
         $spec_name_1 = request('spec_name_1', '');
         $spec_name_2 = request('spec_name_2', '');
-        if($spec_name_1 && $spec_name_2){
-            $spec_type = 2;
-        }else if($spec_name_1 || $spec_name_2) {
-            $spec_type = 1;
-        }else {
+        if(!$useSpec){
             $spec_type = 0;
+        }else {
+            if($spec_name_1 && $spec_name_2){
+                $spec_type = 2;
+            }else if($spec_name_1 || $spec_name_2) {
+                $spec_type = 1;
+            }
         }
 
         if($spec_type == 0){

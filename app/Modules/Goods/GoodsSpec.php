@@ -2,9 +2,9 @@
 
 namespace App\Modules\Goods;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class GoodsSpec extends Model
+class GoodsSpec extends BaseModel
 {
     //
 }
