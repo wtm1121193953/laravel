@@ -23,29 +23,51 @@
                                 :value="category.id"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="商品规格">
+                <el-form-item label="商品规格" size="small">
                     <el-switch
                             v-model="form.useSpec"
-                            active-text="启用规格"
-                            inactive-text="不启用规格">
+                            active-text="开启规格"
+                            inactive-text="不开启规格"
+                    >
                     </el-switch>
-                    <div style="margin-top: 15px;">
+                    <!-- 规格提示信息 -->
+                    <el-alert
+                            v-if="!form.useSpec"
+                            title="您最多可以添加两种商品规格（如：颜色，尺码）如商品没有规格则不用开启"
+                            style="line-height: normal; margin-top: 10px"
+                            type="info"
+                            :closable="false"
+                    />
+                    <el-alert
+                            v-if="form.useSpec"
+                            title="您最多可以添加两种规格（如：颜色和尺码）规格名称可以自定义 如只有一项规格另一项留空"
+                            style="line-height: normal; margin-top: 10px"
+                            type="info"
+                            :closable="false"/>
 
-                        <el-form inline v-if="!form.useSpec">
-                            <el-form-item prop="purchase_price" label="采购价">
+                    <div style="margin-top: 15px;">
+                        <el-form-item class="el-form--inline" v-if="!form.useSpec">
+                            <el-form-item prop="purchase_price" label="采购价" label-width="none">
                                 <el-input-number v-model="form.purchase_price"/>
                             </el-form-item>
-                            <el-form-item prop="origin_price" label="售价">
+                            <el-form-item prop="origin_price" label="售价" label-width="none">
                                 <el-input-number v-model="form.origin_price"/>
                             </el-form-item>
                             <!--<el-form-item prop="discount_price" label="折扣价">
                                 <el-input-number v-model="form.discount_price"/>
                             </el-form-item>-->
-                            <el-form-item v-if="!data" prop="stock" label="库存数量">
+                            <el-form-item v-if="!data" prop="stock" label="库存数量" label-width="none">
                                 <el-input-number v-model="form.stock"/>
                             </el-form-item>
-                        </el-form>
+                        </el-form-item>
+
                         <el-table v-if="form.useSpec" :data="form.specs" border stripe>
+                            <template slot="append">
+                                <div style="margin: 12px;">
+                                    <el-button type="text" size="small" @click="addSpec"><i class="el-icon-plus"></i> 添加一条规格</el-button>
+                                </div>
+                            </template>
+
                             <el-table-column label="颜色" :render-header="renderSpecTableHeader">
                                 <template slot-scope="scope">
                                     <el-input v-model="scope.row.spec_1"/>
@@ -78,15 +100,15 @@
                             </el-table-column>
                             <el-table-column>
                                 <template slot-scope="scope">
-                                    <el-button type="warning" size="small" @click="form.specs.splice(scope.$index, 1)">删除</el-button>
+                                    <el-button type="text" :disabled="scope.$index === 0" @click="specMoveUp(scope)">
+                                        <i class="el-icon-sort-up"></i>
+                                    </el-button>
+                                    <el-button type="text" :disabled="scope.$index === (form.specs.length - 1)" @click="specMoveDown(scope)">
+                                        <i class="el-icon-sort-down"></i>
+                                    </el-button>
+                                    <el-button type="text" size="small" @click="delSpec(scope)">删除</el-button>
                                 </template>
                             </el-table-column>
-                            <template slot="append">
-                                <div style="margin: 12px;">
-                                    <el-button type="primary" size="small" @click="addSpec"><i class="el-icon-plus"></i> 添加一条规格</el-button>
-                                </div>
-                            </template>
-
                         </el-table>
                     </div>
                 </el-form-item>
@@ -167,9 +189,6 @@
             specName2Change(v){ this.form.spec_name_2 = v },
             renderSpecTableHeader(h, {column, $index}){
                 return h('el-input', {
-                    style: {
-                        'margin-top': '15px',
-                    },
                     props: {
                         size: 'small',
                         value: $index === 0 ? this.form.spec_name_1 : this.form.spec_name_2,
@@ -179,6 +198,7 @@
                     },
                 })
             },
+            // 添加规格
             addSpec(){
                 this.form.specs.push({
                     spec_1: '',
@@ -189,9 +209,35 @@
                     stock: 0,
                 });
             },
+            // 规格列表项上移
+            specMoveUp(scope){
+                console.log('up')
+                this.form.specs.splice(scope.$index, 1)
+                this.form.specs.splice(scope.$index-1, 0, scope.row)
+            },
+            // 规格列表项下移
+            specMoveDown(scope){
+                console.log('down')
+                this.form.specs.splice(scope.$index, 1)
+                this.form.specs.splice(scope.$index+1, 0, scope.row)
+            },
+            // 删除规格
+            delSpec(scope){
+                this.form.specs.splice(scope.$index, 1)
+            },
+            // 获取商品详情
+            getDetail(){
+                store.dispatch('openGlobalLoading')
+                api.get('goods/detail', {id: this.data.id}).then(data => {
+                    store.dispatch('closeGlobalLoading')
+                    this.form = data;
+                })
+            },
+            // 初始化表单
             initForm(){
                 if(this.data){
                     this.form = deepCopy(this.data)
+                    this.getDetail()
                 }else {
                     this.form = deepCopy(defaultForm)
                 }
@@ -205,7 +251,7 @@
                         let data = deepCopy(this.form);
                         this.$emit('save', data);
                         setTimeout(() => {
-                            this.$refs.form.resetFields();
+                            // this.$refs.form.resetFields();
                         }, 500)
                     }
                 })

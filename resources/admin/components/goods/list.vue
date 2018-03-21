@@ -16,14 +16,12 @@
             </el-table-column>
             <el-table-column label="商品图片">
                 <template slot-scope="scope">
-                    <preview-img :url="scope.row.pict_url" width="40px" height="40px" alt=""/>
+                    <preview-img :url="scope.row.default_image" width="40px" height="40px" alt=""/>
                 </template>
             </el-table-column>
-            <el-table-column label="库存/销量/剩余">
+            <el-table-column label="库存">
                 <template slot-scope="scope">
-                    <span>{{scope.row.total_count}}</span> /
-                    <span>{{scope.row.sell_count}}</span> /
-                    <span>{{scope.row.total_count - scope.row.sell_count}}</span>
+                    <span>{{scope.row.stock}}</span>
                 </template>
             </el-table-column>
             <el-table-column prop="origin_price" label="商品价格"/>

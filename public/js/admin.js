@@ -1207,6 +1207,28 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 var defaultForm = {
@@ -1254,9 +1276,6 @@ var defaultForm = {
                 $index = _ref.$index;
 
             return h('el-input', {
-                style: {
-                    'margin-top': '15px'
-                },
                 props: {
                     size: 'small',
                     value: $index === 0 ? this.form.spec_name_1 : this.form.spec_name_2
@@ -1266,6 +1285,8 @@ var defaultForm = {
                 }
             });
         },
+
+        // 添加规格
         addSpec: function addSpec() {
             this.form.specs.push({
                 spec_1: '',
@@ -1276,9 +1297,42 @@ var defaultForm = {
                 stock: 0
             });
         },
+
+        // 规格列表项上移
+        specMoveUp: function specMoveUp(scope) {
+            console.log('up');
+            this.form.specs.splice(scope.$index, 1);
+            this.form.specs.splice(scope.$index - 1, 0, scope.row);
+        },
+
+        // 规格列表项下移
+        specMoveDown: function specMoveDown(scope) {
+            console.log('down');
+            this.form.specs.splice(scope.$index, 1);
+            this.form.specs.splice(scope.$index + 1, 0, scope.row);
+        },
+
+        // 删除规格
+        delSpec: function delSpec(scope) {
+            this.form.specs.splice(scope.$index, 1);
+        },
+
+        // 获取商品详情
+        getDetail: function getDetail() {
+            var _this = this;
+
+            store.dispatch('openGlobalLoading');
+            api.get('goods/detail', { id: this.data.id }).then(function (data) {
+                store.dispatch('closeGlobalLoading');
+                _this.form = data;
+            });
+        },
+
+        // 初始化表单
         initForm: function initForm() {
             if (this.data) {
                 this.form = deepCopy(this.data);
+                this.getDetail();
             } else {
                 this.form = deepCopy(defaultForm);
             }
@@ -1287,14 +1341,14 @@ var defaultForm = {
             this.$emit('cancel');
         },
         save: function save() {
-            var _this = this;
+            var _this2 = this;
 
             this.$refs.form.validate(function (valid) {
                 if (valid) {
-                    var data = deepCopy(_this.form);
-                    _this.$emit('save', data);
+                    var data = deepCopy(_this2.form);
+                    _this2.$emit('save', data);
                     setTimeout(function () {
-                        _this.$refs.form.resetFields();
+                        // this.$refs.form.resetFields();
                     }, 500);
                 }
             });
@@ -1464,8 +1518,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-//
-//
 //
 //
 //
@@ -14044,7 +14096,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14150,7 +14202,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -38736,12 +38788,12 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "el-form-item",
-                { attrs: { label: "商品规格" } },
+                { attrs: { label: "商品规格", size: "small" } },
                 [
                   _c("el-switch", {
                     attrs: {
-                      "active-text": "启用规格",
-                      "inactive-text": "不启用规格"
+                      "active-text": "开启规格",
+                      "inactive-text": "不开启规格"
                     },
                     model: {
                       value: _vm.form.useSpec,
@@ -38752,21 +38804,52 @@ var render = function() {
                     }
                   }),
                   _vm._v(" "),
+                  !_vm.form.useSpec
+                    ? _c("el-alert", {
+                        staticStyle: {
+                          "line-height": "normal",
+                          "margin-top": "10px"
+                        },
+                        attrs: {
+                          title:
+                            "您最多可以添加两种商品规格（如：颜色，尺码）如商品没有规格则不用开启",
+                          type: "info",
+                          closable: false
+                        }
+                      })
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.form.useSpec
+                    ? _c("el-alert", {
+                        staticStyle: {
+                          "line-height": "normal",
+                          "margin-top": "10px"
+                        },
+                        attrs: {
+                          title:
+                            "您最多可以添加两种规格（如：颜色和尺码）规格名称可以自定义 如只有一项规格另一项留空",
+                          type: "info",
+                          closable: false
+                        }
+                      })
+                    : _vm._e(),
+                  _vm._v(" "),
                   _c(
                     "div",
                     { staticStyle: { "margin-top": "15px" } },
                     [
                       !_vm.form.useSpec
                         ? _c(
-                            "el-form",
-                            { attrs: { inline: "" } },
+                            "el-form-item",
+                            { staticClass: "el-form--inline" },
                             [
                               _c(
                                 "el-form-item",
                                 {
                                   attrs: {
                                     prop: "purchase_price",
-                                    label: "采购价"
+                                    label: "采购价",
+                                    "label-width": "none"
                                   }
                                 },
                                 [
@@ -38790,7 +38873,11 @@ var render = function() {
                               _c(
                                 "el-form-item",
                                 {
-                                  attrs: { prop: "origin_price", label: "售价" }
+                                  attrs: {
+                                    prop: "origin_price",
+                                    label: "售价",
+                                    "label-width": "none"
+                                  }
                                 },
                                 [
                                   _c("el-input-number", {
@@ -38812,7 +38899,8 @@ var render = function() {
                                     {
                                       attrs: {
                                         prop: "stock",
-                                        label: "库存数量"
+                                        label: "库存数量",
+                                        "label-width": "none"
                                       }
                                     },
                                     [
@@ -38845,6 +38933,29 @@ var render = function() {
                               }
                             },
                             [
+                              _c("template", { slot: "append" }, [
+                                _c(
+                                  "div",
+                                  { staticStyle: { margin: "12px" } },
+                                  [
+                                    _c(
+                                      "el-button",
+                                      {
+                                        attrs: { type: "text", size: "small" },
+                                        on: { click: _vm.addSpec }
+                                      },
+                                      [
+                                        _c("i", {
+                                          staticClass: "el-icon-plus"
+                                        }),
+                                        _vm._v(" 添加一条规格")
+                                      ]
+                                    )
+                                  ],
+                                  1
+                                )
+                              ]),
+                              _vm._v(" "),
                               _c("el-table-column", {
                                 attrs: {
                                   label: "颜色",
@@ -38980,15 +39091,54 @@ var render = function() {
                                           "el-button",
                                           {
                                             attrs: {
-                                              type: "warning",
+                                              type: "text",
+                                              disabled: scope.$index === 0
+                                            },
+                                            on: {
+                                              click: function($event) {
+                                                _vm.specMoveUp(scope)
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _c("i", {
+                                              staticClass: "el-icon-sort-up"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "el-button",
+                                          {
+                                            attrs: {
+                                              type: "text",
+                                              disabled:
+                                                scope.$index ===
+                                                _vm.form.specs.length - 1
+                                            },
+                                            on: {
+                                              click: function($event) {
+                                                _vm.specMoveDown(scope)
+                                              }
+                                            }
+                                          },
+                                          [
+                                            _c("i", {
+                                              staticClass: "el-icon-sort-down"
+                                            })
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "el-button",
+                                          {
+                                            attrs: {
+                                              type: "text",
                                               size: "small"
                                             },
                                             on: {
                                               click: function($event) {
-                                                _vm.form.specs.splice(
-                                                  scope.$index,
-                                                  1
-                                                )
+                                                _vm.delSpec(scope)
                                               }
                                             }
                                           },
@@ -38998,33 +39148,7 @@ var render = function() {
                                     }
                                   }
                                 ])
-                              }),
-                              _vm._v(" "),
-                              _c("template", { slot: "append" }, [
-                                _c(
-                                  "div",
-                                  { staticStyle: { margin: "12px" } },
-                                  [
-                                    _c(
-                                      "el-button",
-                                      {
-                                        attrs: {
-                                          type: "primary",
-                                          size: "small"
-                                        },
-                                        on: { click: _vm.addSpec }
-                                      },
-                                      [
-                                        _c("i", {
-                                          staticClass: "el-icon-plus"
-                                        }),
-                                        _vm._v(" 添加一条规格")
-                                      ]
-                                    )
-                                  ],
-                                  1
-                                )
-                              ])
+                              })
                             ],
                             2
                           )
@@ -40428,7 +40552,7 @@ var render = function() {
                   return [
                     _c("preview-img", {
                       attrs: {
-                        url: scope.row.pict_url,
+                        url: scope.row.default_image,
                         width: "40px",
                         height: "40px",
                         alt: ""
@@ -40441,22 +40565,12 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("el-table-column", {
-            attrs: { label: "库存/销量/剩余" },
+            attrs: { label: "库存" },
             scopedSlots: _vm._u([
               {
                 key: "default",
                 fn: function(scope) {
-                  return [
-                    _c("span", [_vm._v(_vm._s(scope.row.total_count))]),
-                    _vm._v(" /\n                "),
-                    _c("span", [_vm._v(_vm._s(scope.row.sell_count))]),
-                    _vm._v(" /\n                "),
-                    _c("span", [
-                      _vm._v(
-                        _vm._s(scope.row.total_count - scope.row.sell_count)
-                      )
-                    ])
-                  ]
+                  return [_c("span", [_vm._v(_vm._s(scope.row.stock))])]
                 }
               }
             ])
