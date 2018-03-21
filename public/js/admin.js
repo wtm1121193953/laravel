@@ -1220,7 +1220,7 @@ var defaultForm = {
     discount_price: '',
     stock: 0,
     spec_name_1: '颜色',
-    spec_name_2: '尺寸',
+    spec_name_2: '尺码',
     specs: [],
     default_image: '',
     small_images: '',
