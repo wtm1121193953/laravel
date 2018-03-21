@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\GoodsCreated;
 use App\Modules\Goods\CategoryService;
 use App\Modules\Goods\Goods;
+use App\Modules\Goods\GoodsService;
 use App\Modules\Goods\GoodsSpec;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,8 +24,8 @@ class GoodsController extends Controller
         })->select('id', 'name', 'supplier_id', 'category_id', 'brand', 'purchase_price', 'origin_price', 'discount_price', 'spec_type', 'spec_name_1', 'spec_name_2', 'default_spec_id', 'category_id_1', 'category_id_2', 'category_id_3', 'category_id_4', 'default_image', 'small_images', 'status', 'tags', 'created_at', 'updated_at')
             ->orderBy('id', 'desc')
             ->paginate();
-        $data->each(function($item){
-            $item->stock = $this->_getGoodsStock($item);
+        $data->map(function($item){
+            return GoodsService::getDetail($item);
         });
         return Result::success([
             'list' => $data->items(),
@@ -41,9 +42,7 @@ class GoodsController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $goods = Goods::findOrFail(request('id'));
-        $specs = Goods::where('goods_id', $goods->id)->get();
-        $goods->specs = $specs;
+        $goods = GoodsService::getDetail(request('id'));;
         return Result::success($goods);
     }
 
@@ -66,7 +65,7 @@ class GoodsController extends Controller
         $goods->discount_price = request('discount_price', request('origin_price'));
 
         /*   获取规格数据   */
-        $specData = $this->_getSpecData();
+        $specData = $this->_getSpecDataFromRequest();
 
         $goods->spec_type = $specData['spec_type'];
         $goods->spec_name_1 = $specData['spec_name_1'];
@@ -110,8 +109,7 @@ class GoodsController extends Controller
 
         GoodsCreated::dispatch($goods);
 
-        $goods->stock = $this->_getGoodsStock($goods);
-        return Result::success($goods);
+        return Result::success(GoodsService::getDetail($goods));
     }
 
     public function edit()
@@ -137,8 +135,7 @@ class GoodsController extends Controller
 
         $goods->save();
 
-        $goods->stock = $this->_getGoodsStock($goods);
-        return Result::success($goods);
+        return Result::success(GoodsService::getDetail($goods));
     }
 
     public function changeStatus()
@@ -152,24 +149,29 @@ class GoodsController extends Controller
 
         $goods->save();
 
-        $goods->stock = $this->_getGoodsStock($goods);
-        return Result::success($goods);
-    }
-
-    public function changeStock()
-    {
-        $this->validate(request(), [
-            'id' => 'required|integer|min:1',
-            'stock' => 'required|integer|min:0'
-        ]);
-        $leftCount = request('leftCount', 0);
-        $item = Goods::findOrFail(request('id'));
-        $item->total_count = $item->sell_count + $leftCount;
-        $item->save();
-        return Result::success($item);
+        return Result::success(GoodsService::getDetail($goods));
     }
 
     /**
+     * 修改库存
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function changeStock()
+    {
+        $this->validate(request(), [
+            'specId' => 'required|integer|min:1',
+            'stock' => 'required|integer|min:0'
+        ]);
+        $stock = request('stock', 0);
+        $spec = GoodsSpec::findOrFail(request('specId'));
+        $spec->stock = $stock;
+        $spec->save();
+
+        return Result::success(GoodsService::getDetail($spec->goods_id));
+    }
+
+    /**
+     * 删除商品
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
@@ -180,26 +182,11 @@ class GoodsController extends Controller
         ]);
         $item = Goods::findOrFail(request('id'));
         $item->delete();
-        return Result::success($item);
+        // 删除商品时保留商品的规格信息
+        return Result::success();
     }
 
-    /**
-     * 获取完整的商品库存
-     * @param $goods
-     * @return int
-     */
-    private function _getGoodsStock($goods)
-    {
-        if($goods->spec_type === 0){
-            $stock = GoodsSpec::where('id', $goods->default_spec_id)->value('stock');
-        }else {
-            $stock = GoodsSpec::where('goods_id', $goods->id)
-                ->sum('stock');
-        }
-        return $stock;
-    }
-
-    private function _getSpecData()
+    private function _getSpecDataFromRequest()
     {
         $useSpec = request('useSpec', false);
         $spec_name_1 = request('spec_name_1', '');
