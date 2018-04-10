@@ -15,8 +15,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// 后端页面
 Route::get('/admin', function () {
     return view('admin');
+});
+
+// 前端页面
+Route::get('/oper', function () {
+    return view('oper');
 });
 
 Route::post('/upload/image', 'UploadController@image');

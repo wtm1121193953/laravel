@@ -28,3 +28,5 @@ Route::post('/upload/image', 'UploadController@image');
  * 加载后台接口路由
  */
 Route::group([], base_path('routes/api/admin.php'));
+Route::group([], base_path('routes/api/oper.php'));
+Route::group([], base_path('routes/api/merchant.php'));

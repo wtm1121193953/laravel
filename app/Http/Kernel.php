@@ -4,6 +4,8 @@ namespace App\Http;
 
 use App\Http\Middleware\AdminLoginFilter;
 use App\Http\Middleware\AdminPermissionAuthenticate;
+use App\Http\Middleware\Merchant\MerchantLoginFilter;
+use App\Http\Middleware\Oper\OperLoginFilter;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -46,9 +48,25 @@ class Kernel extends HttpKernel
             'bindings',
         ],
 
+        // admin 后台接口中间件
         'admin' => [
             AdminLoginFilter::class,
             AdminPermissionAuthenticate::class,
+        ],
+
+        // 运营中心后台接口中间件
+        'oper' => [
+            OperLoginFilter::class
+        ],
+
+        // merchant 商家后台接口中间件
+        'merchant' => [
+            MerchantLoginFilter::class
+        ],
+
+        // user 用户端接口中间件
+        'user' => [
+
         ]
     ];
 
