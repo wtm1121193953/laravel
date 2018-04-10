@@ -25,7 +25,7 @@ class CreateOrdersTable extends Migration
             $table->string('goods_name')->default('')->comment('商品名');
             $table->string('goods_pic', 500)->default('')->comment('商品图片');
             $table->decimal('price')->default(0)->comment('商品价格');
-            $table->tinyInteger('status')->default(0)->comment('状态 1-未支付 2-已取消 3-已关闭 4-已付款 5-退款中 6-已退款');
+            $table->tinyInteger('status')->default(0)->comment('状态 1-未支付 2-已取消 3-已关闭 (超时自动关闭) 4-已付款 5-退款中 6-已退款 7-已完成 (不可退款)');
             // 下单时间见 created_at 字段
             $table->decimal('pay_price')->default(0)->comment('支付金额');
             $table->timestamp('pay_time')->nullable()->comment('付款时间');
