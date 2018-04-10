@@ -2,9 +2,10 @@
 
 namespace App\Modules\Settlement;
 
+use App\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 
-class Settlement extends Model
+class Settlement extends BaseModel
 {
     //
 }

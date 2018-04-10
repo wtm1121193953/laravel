@@ -2,9 +2,9 @@
 
 namespace App\Modules\Order;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class OrderPay extends Model
+class OrderPay extends BaseModel
 {
     //
 }
