@@ -75,7 +75,6 @@ mix.extract([
     '@tweenjs/tween.js',
     'axios',
     'js-cookie',
-    'jquery',
     'lockr',
     'lodash',
     'moment',

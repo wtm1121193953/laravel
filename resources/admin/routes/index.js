@@ -8,9 +8,9 @@ import RuleList from '../components/auth/rule/list.vue'
 import GroupList from '../components/auth/group/list.vue'
 import UserList from '../components/auth/user/list.vue'
 
-import suppliers from './supplier'
 import goods from './goods'
-import category from './category'
+import oper from './oper'
+import oper_accounts from './oper_account'
 /**
  *
  */
@@ -29,12 +29,10 @@ const routes = [
         ]
     },
 
-    // 供应商模块
-    ...suppliers,
-    // 商品分类模块
-    ...category,
     // 商品模块
     ...goods,
+    ...oper,
+    ...oper_accounts,
 
     {
         path: '/',

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSuppliersTable extends Migration
+class CreateOpersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,14 @@ class CreateSuppliersTable extends Migration
      */
     public function up()
     {
-        Schema::create('suppliers', function (Blueprint $table) {
+        Schema::create('opers', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->default('')->comment('供应商名称');
-            $table->tinyInteger('status')->default(1)->comment('状态 1-正常 2-禁用');
+            $table->string('name')->default('')->comment('运营中心名称');
+            $table->tinyInteger('status')->index()->default(1)->comment('状态 1-正常 2-禁用');
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->comm2ent = '运营中心表';
         });
     }
 
@@ -28,6 +31,6 @@ class CreateSuppliersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('suppliers');
+        Schema::dropIfExists('opers');
     }
 }

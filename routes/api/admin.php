@@ -33,8 +33,8 @@ Route::prefix('admin')
     Route::post('rule/del', 'RuleController@del');
     Route::post('rule/changeStatus', 'RuleController@changeStatus');
 
-    Route::group([], base_path('routes/api/admin/supplier.php'));
     Route::group([], base_path('routes/api/admin/goods.php'));
-    Route::group([], base_path('routes/api/admin/category.php'));
+    Route::group([], base_path('routes/api/admin/oper.php'));
+    Route::group([], base_path('routes/api/admin/oper_account.php'));
 
 });

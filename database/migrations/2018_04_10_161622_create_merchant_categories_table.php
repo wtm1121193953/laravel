@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCategoriesTable extends Migration
+class CreateMerchantCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,16 @@ class CreateCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('merchant_categories', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name')->default('')->comment('分类名');
-            $table->integer('pid')->index()->default(0)->comment('父级分类ID');
+            $table->integer('pid')->index()->default(0)->comment('父ID');
+            $table->string('name')->default('')->comment('类别名称');
+            $table->string('icon')->default('')->comment('类别图标url');
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-正常 2-禁用');
-            $table->integer('sort')->index()->default(0)->comment('排序');
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->comment = '商家类别表';
         });
     }
 
@@ -30,6 +33,6 @@ class CreateCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('merchant_categories');
     }
 }

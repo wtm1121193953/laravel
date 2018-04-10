@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Supplier\Supplier;
+use App\Modules\Oper\Oper;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
-class SupplierController extends Controller
+class OperController extends Controller
 {
 
     /**
@@ -17,7 +17,7 @@ class SupplierController extends Controller
     public function getList()
     {
         $status = request('status');
-        $data = Supplier::when($status, function (Builder $query) use ($status){
+        $data = Oper::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })->orderBy('id', 'desc')->paginate();
 
@@ -33,7 +33,7 @@ class SupplierController extends Controller
     public function getAllList()
     {
         $status = request('status');
-        $list = Supplier::when($status, function (Builder $query) use ($status){
+        $list = Oper::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })->orderBy('id', 'desc')->get();
 
@@ -50,13 +50,13 @@ class SupplierController extends Controller
         $this->validate(request(), [
             'name' => 'required',
         ]);
-        $supplier = new Supplier();
-        $supplier->name = request('name');
-        $supplier->status = request('status', 1);
+        $oper = new Oper();
+        $oper->name = request('name');
+        $oper->status = request('status', 1);
 
-        $supplier->save();
+        $oper->save();
 
-        return Result::success($supplier);
+        return Result::success($oper);
     }
 
     /**
@@ -68,13 +68,13 @@ class SupplierController extends Controller
             'id' => 'required|integer|min:1',
             'name' => 'required',
         ]);
-        $supplier = Supplier::findOrFail(request('id'));
-        $supplier->name = request('name');
-        $supplier->status = request('status', 1);
+        $oper = Oper::findOrFail(request('id'));
+        $oper->name = request('name');
+        $oper->status = request('status', 1);
 
-        $supplier->save();
+        $oper->save();
 
-        return Result::success($supplier);
+        return Result::success($oper);
     }
 
     /**
@@ -86,11 +86,11 @@ class SupplierController extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer',
         ]);
-        $supplier = Supplier::findOrFail(request('id'));
-        $supplier->status = request('status');
+        $oper = Oper::findOrFail(request('id'));
+        $oper->status = request('status');
 
-        $supplier->save();
-        return Result::success($supplier);
+        $oper->save();
+        return Result::success($oper);
     }
 
     /**
@@ -103,9 +103,9 @@ class SupplierController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $supplier = Supplier::findOrFail(request('id'));
-        $supplier->delete();
-        return Result::success($supplier);
+        $oper = Oper::findOrFail(request('id'));
+        $oper->delete();
+        return Result::success($oper);
     }
 
 }

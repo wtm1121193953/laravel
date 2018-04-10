@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Goods\Category;
+use App\Modules\Oper\OperAccount;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
-class CategoryController extends Controller
+class OperAccountController extends Controller
 {
 
     /**
@@ -17,9 +17,9 @@ class CategoryController extends Controller
     public function getList()
     {
         $status = request('status');
-        $data = Category::when($status, function (Builder $query) use ($status){
+        $data = OperAccount::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
-        })->orderBy('id', 'asc')->paginate();
+        })->orderBy('id', 'desc')->paginate();
 
         return Result::success([
             'list' => $data->items(),
@@ -33,9 +33,9 @@ class CategoryController extends Controller
     public function getAllList()
     {
         $status = request('status');
-        $list = Category::when($status, function (Builder $query) use ($status){
+        $list = OperAccount::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
-        })->orderBy('id', 'asc')->get();
+        })->orderBy('id', 'desc')->get();
 
         return Result::success([
             'list' => $list,
@@ -50,13 +50,13 @@ class CategoryController extends Controller
         $this->validate(request(), [
             'name' => 'required',
         ]);
-        $category = new Category();
-        $category->name = request('name');
-        $category->status = request('status', 1);
+        $oper_account = new OperAccount();
+        $oper_account->name = request('name');
+        $oper_account->status = request('status', 1);
 
-        $category->save();
+        $oper_account->save();
 
-        return Result::success($category);
+        return Result::success($oper_account);
     }
 
     /**
@@ -68,13 +68,13 @@ class CategoryController extends Controller
             'id' => 'required|integer|min:1',
             'name' => 'required',
         ]);
-        $category = Category::findOrFail(request('id'));
-        $category->name = request('name');
-        $category->status = request('status', 1);
+        $oper_account = OperAccount::findOrFail(request('id'));
+        $oper_account->name = request('name');
+        $oper_account->status = request('status', 1);
 
-        $category->save();
+        $oper_account->save();
 
-        return Result::success($category);
+        return Result::success($oper_account);
     }
 
     /**
@@ -86,11 +86,11 @@ class CategoryController extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer',
         ]);
-        $category = Category::findOrFail(request('id'));
-        $category->status = request('status');
+        $oper_account = OperAccount::findOrFail(request('id'));
+        $oper_account->status = request('status');
 
-        $category->save();
-        return Result::success($category);
+        $oper_account->save();
+        return Result::success($oper_account);
     }
 
     /**
@@ -103,9 +103,9 @@ class CategoryController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $category = Category::findOrFail(request('id'));
-        $category->delete();
-        return Result::success($category);
+        $oper_account = OperAccount::findOrFail(request('id'));
+        $oper_account->delete();
+        return Result::success($oper_account);
     }
 
 }

@@ -1,6 +1,6 @@
 
 import Home from '../components/home'
-import SupplierList from '../components/supplier/list.vue'
+import OperAccountList from '../components/oper-account/list.vue'
 
 /**
  * category 模块
@@ -10,7 +10,7 @@ export default [
         path: '/',
         component: Home,
         children: [
-            {path: 'suppliers', component: SupplierList, name: 'SupplierList'},
+            {path: '/oper_accounts', component: OperAccountList, name: 'OperAccountList'},
         ]
     },
 ];

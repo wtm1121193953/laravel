@@ -3,22 +3,15 @@
 namespace App\Modules\Admin;
 
 use App\BaseModel;
+use App\Modules\User\GenPassword;
 
 class AdminUser extends BaseModel
 {
 
+    use GenPassword;
+
     //
     protected $hidden = ['password', 'salt'];
-
-    /**
-     * 用户密码加密
-     * @param $password
-     * @param $salt
-     * @return string
-     */
-    public static function genPassword($password, $salt){
-        return md5(md5($password) . $salt);
-    }
 
     public function isSuper()
     {
