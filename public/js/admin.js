@@ -45539,8 +45539,8 @@ var stateLocalstorePlugin = function stateLocalstorePlugin(store) {
 /* harmony default export */ __webpack_exports__["a"] = (new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
     strict: "development" !== 'production',
     state: {
-        projectName: '通用后台系统',
-        systemName: '后台管理',
+        projectName: '云集品运营中心',
+        systemName: 'Saas平台',
         globalLoading: false,
         theme: deepCopy(defaultThemes['深蓝']),
         user: null,

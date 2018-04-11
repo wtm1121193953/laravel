@@ -44,6 +44,7 @@ class GenController extends Command
 //        $moduleName = $this->ask('模块名:', 'admin');
         // laravel 命令行输入中文报错, 还没找到解决办法
 //        $title = $this->ask('功能描述[中文名]:');
+        $module = $this->ask('所属模块(admin|oper|merchant|user)', 'admin');
         if(php_uname('s') == 'Windows NT'){
             $title = 'xxxxxxx';
             $this->info("功能描述[中文名]: 请自行到文件中将[$title]替换为对应的中文名");
@@ -58,7 +59,7 @@ class GenController extends Command
         $studlyName = studly_case($name);
         $modelClass = $this->ask('模型类: ', "App\\Modules\\$studlyName\\$studlyName");
 
-        $result = $this->genPhpCode($title, $name, $pluralName, $modelClass, $this->option('force'));
+        $result = $this->genPhpCode($title, $name, $pluralName, $modelClass, $this->option('force'), $module);
 
         $this->displayGenInfo($result);
         return ;

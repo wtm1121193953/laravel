@@ -73,8 +73,8 @@ const stateLocalstorePlugin = function(store){
 export default new Vuex.Store({
     strict: process.env.NODE_ENV !== 'production',
     state: {
-        projectName: '通用后台系统',
-        systemName: '后台管理',
+        projectName: '云集品 Saas',
+        systemName: '商户中心',
         globalLoading: false,
         theme: deepCopy(defaultThemes['深蓝']),
         user: null,

@@ -68,7 +68,7 @@ trait GenCode
      * @param $force bool 是否强制写入
      * @return array
      */
-    public function genPhpCode($title, $name, $pluralName, $modelClass, $force = false)
+    public function genPhpCode($title, $name, $pluralName, $modelClass, $force = false, $module='admin')
     {
         $variable = $this->getVariable($title, $name, $pluralName);
 
@@ -78,8 +78,8 @@ trait GenCode
         $variable['{modelClassName}'] = $modelClassName;
 
         // 生成控制器
-        $controllerOutputPath = app_path('/Http/Controllers/Admin');
-        $controllerClassName = "App/Controllers/Admin/{$studlyName}Controller";
+        $controllerOutputPath = app_path('/Http/Controllers/' . studly_case($module));
+        $controllerClassName = "App/Http/Controllers/" . studly_case($module) . "/{$studlyName}Controller";
         if(class_exists($controllerClassName) && !$force){
             $this->throwFileOrDirExistException("控制器类[$controllerClassName]");
         }else {
@@ -88,7 +88,7 @@ trait GenCode
         $this->info("控制器生成完成, 控制器类: $controllerClassName");
 
         // 生成路由文件
-        $laravelRouteOutputPath = base_path('routes/api/admin');
+        $laravelRouteOutputPath = base_path('routes/api/' . $module);
         $laravelRouteFile = "$laravelRouteOutputPath/$name.php";
         if(file_exists($laravelRouteFile) && !$force){
             $this->throwFileOrDirExistException("laravel路由文件[$laravelRouteFile]");
@@ -96,7 +96,7 @@ trait GenCode
             $this->putStub($this->findStub(resource_path('/stubs/php/route')), $laravelRouteOutputPath, $variable);
         }
         $this->info("laravel路由文件生成完成, 文件路径: $laravelRouteFile");
-        $this->info("    请在[routes/api/admin.php]中加载路由文件: [ Route::group([], base_path('routes/api/admin/{$name}.php')); ]");
+        $this->info("    请在[routes/api/$module.php]中加载路由文件: [ Route::group([], base_path('routes/api/$module/{$name}.php')); ]");
         return $variable;
     }
 
@@ -108,12 +108,12 @@ trait GenCode
      * @param $force bool 是否强制写入
      * @return array
      */
-    public function genVueCode($title, $name, $pluralName, $force=false){
+    public function genVueCode($title, $name, $pluralName, $force=false, $module='admin'){
 
         $variable = $this->getVariable($title, $name, $pluralName);
 
         // 输出 vue 模板文件
-        $templateOutputPath = resource_path('admin/components/' . $name);
+        $templateOutputPath = resource_path($module . '/components/' . $name);
         if(file_exists($templateOutputPath) && !$force){
             $this->throwFileOrDirExistException("vue模板目录[$templateOutputPath]");
         }else {
@@ -122,7 +122,7 @@ trait GenCode
         $this->info("vue模板生成完成, 模板目录: $templateOutputPath");
 
         // 输出 vue 路由文件
-        $vueRouteOutputPath = resource_path('admin/routes');
+        $vueRouteOutputPath = resource_path($module . '/routes');
         $routeFile = "$vueRouteOutputPath/$name.js";
         if(file_exists($routeFile) && !$force){
             $this->throwFileOrDirExistException("vue route 文件[$routeFile]");
@@ -130,7 +130,7 @@ trait GenCode
             $this->putStub($this->findStub(resource_path('/stubs/vue/route')), $vueRouteOutputPath, $variable);
         }
         $this->info("vue路由生成完成, 路由文件: $routeFile");
-        $this->info("    请在[resources/admin/routes/index.js]中加载路由文件: [ import {$name} from './{$name}' ], 并在路由数组中使用: [ ...{$name}, ]");
+        $this->info("    请在[resources/$module/routes/index.js]中加载路由文件: [ import {$name} from './{$name}' ], 并在路由数组中使用: [ ...{$name}, ]");
 
         return $variable;
     }

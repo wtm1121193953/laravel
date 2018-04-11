@@ -41,7 +41,7 @@ class GenVuePage extends Command
     public function handle()
     {
         //
-//        $moduleName = $this->ask('模块名(admin):', 'admin');
+        $module = $this->ask('所属模块(admin|oper|merchant|user)', 'admin');
 
         // laravel 命令行输入中文报错, 还没找到解决办法
         if(php_uname('s') == 'Windows NT'){
@@ -55,11 +55,11 @@ class GenVuePage extends Command
             throw new RuntimeException('功能名不能为空');
         }
         $pluralName = $this->ask('复数名:', "{$name}s");
-        $result = $this->genVueCode($title, $name, $pluralName, $this->option('force'));
+        $result = $this->genVueCode($title, $name, $pluralName, $this->option('force'), $module);
         if($this->option('with-php')){
             $studlyName = studly_case($name);
             $modelClass = $this->ask('模型类: ', "App\\Modules\\$studlyName\\$studlyName");
-            $result = $this->genPhpCode($title, $name, $pluralName, $modelClass, $this->option('force'));
+            $result = $this->genPhpCode($title, $name, $pluralName, $modelClass, $this->option('force'), $module);
         }
         $this->displayGenInfo($result);
         return ;
