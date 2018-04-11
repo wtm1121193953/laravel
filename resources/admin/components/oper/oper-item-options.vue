@@ -5,6 +5,14 @@
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '冻结' : '解冻'}}</el-button>
         <el-button v-if="!scope.row.account" type="text" @click="showCreateAccountDialog = true">生成账户</el-button>
         <el-button v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改账户密码</el-button>
+        <el-button type="text" @click="editMiniprogramDialog = true">{{!scope.row.miniprogram ? '配置小程序' : '修改小程序配置'}}</el-button>
+
+        <el-dialog title="编辑小程序配置信息" :visible.sync="editMiniprogramDialog">
+            <miniprogram-form
+                    :data="scope.row.miniprogram"
+                    @cancel="editMiniprogramDialog = false"
+                    @save="doEditMiniprogram"/>
+        </el-dialog>
 
         <el-dialog title="编辑运营中心信息" :visible.sync="isEdit">
             <oper-form
@@ -54,6 +62,7 @@
 <script>
     import api from '../../../assets/js/api'
     import OperForm from './oper-form'
+    import MiniprogramForm from '../miniprogram/miniprogram-form'
 
     export default {
         name: "oper-item-options",
@@ -84,7 +93,8 @@
                     password: [
                         {required: true, min: 6, message: '密码不能为空且不能少于6位'}
                     ]
-                }
+                },
+                editMiniprogramDialog: false,
             }
         },
         computed: {
@@ -122,7 +132,7 @@
                 api.post('/oper_account/add', data).then(data => {
                     this.$alert('创建账户成功');
                     this.showCreateAccountDialog = false;
-                    this.$emit('genAccountSuccess', this.scope, data)
+                    this.$emit('accountChanged', this.scope, data)
                 })
             },
             modifyAccount(){
@@ -132,11 +142,34 @@
                 api.post('/oper_account/edit', data).then(data => {
                     this.$alert('修改密码成功')
                     this.showModifyAccountDialog = false;
+                    this.$emit('accountChanged', this.scope, data)
                 })
+            },
+            doEditMiniprogram(data){
+                this.isLoading = true;
+                data.oper_id = this.scope.row.id;
+                if(!this.scope.row.miniprogram){
+                    api.post('/miniprogram/add', data).then((data) => {
+                        this.editMiniprogramDialog = false;
+                        this.$emit('miniprogramChanged', this.scope, data)
+                    }).finally(() => {
+                        this.isLoading = false;
+                    })
+                }else {
+                    api.post('/miniprogram/edit', data).then((data) => {
+                        this.editMiniprogramDialog = false;
+                        this.$emit('miniprogramChanged', this.scope, data)
+                    }).finally(() => {
+                        this.isLoading = false;
+                    })
+                }
             }
         },
+        created(){
+        },
         components: {
-            OperForm
+            OperForm,
+            MiniprogramForm
         }
     }
 </script>

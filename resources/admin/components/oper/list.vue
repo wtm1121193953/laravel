@@ -14,13 +14,14 @@
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="250px">
+            <el-table-column label="操作" width="350px">
                 <template slot-scope="scope">
                     <oper-item-options
                             :scope="scope"
                             @change="itemChanged"
                             @refresh="getList"
-                            @genAccountSuccess="genAccountSuccess"
+                            @accountChanged="accountChanged"
+                            @miniprogramChanged="miniprogramChanged"
                     />
                 </template>
             </el-table-column>
@@ -88,8 +89,15 @@
             itemChanged(index, data){
                 this.list.splice(index, 1, data)
             },
-            genAccountSuccess(scope, account){
-                this.list[scope.$index].account = account;
+            accountChanged(scope, account){
+                let row = this.list[scope.$index];
+                row.account = account;
+                this.list.splice(scope.$index, 1, row);
+            },
+            miniprogramChanged(scope, minprogram){
+                let row = this.list[scope.$index];
+                row.account = minprogram;
+                this.list.splice(scope.$index, 1, row);
             }
         },
         created(){

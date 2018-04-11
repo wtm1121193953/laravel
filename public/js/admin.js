@@ -1874,6 +1874,92 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/admin/components/miniprogram/miniprogram-form.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+var defaultForm = {
+    name: '',
+    appid: '',
+    secret: ''
+};
+/* harmony default export */ __webpack_exports__["default"] = ({
+    name: 'miniprogram-form',
+    props: {
+        data: Object
+    },
+    computed: {},
+    data: function data() {
+        return {
+            form: deepCopy(defaultForm),
+            formRules: {
+                name: [{ required: true, message: '名称不能为空' }],
+                appid: [{ required: true, message: 'App ID 名称不能为空' }],
+                secret: [{ required: true, message: 'App Secret 不能为空' }]
+            }
+        };
+    },
+
+    methods: {
+        initForm: function initForm() {
+            if (this.data) {
+                this.form = deepCopy(this.data);
+            } else {
+                this.form = deepCopy(defaultForm);
+            }
+        },
+        cancel: function cancel() {
+            this.$emit('cancel');
+        },
+        save: function save() {
+            var _this = this;
+
+            this.$refs.form.validate(function (valid) {
+                if (valid) {
+                    var data = deepCopy(_this.form);
+                    _this.$emit('save', data);
+                }
+            });
+        }
+    },
+    created: function created() {
+        this.initForm();
+    },
+
+    watch: {
+        data: function data() {
+            this.initForm();
+        }
+    },
+    components: {}
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/admin/components/oper-account/list.vue":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -2222,6 +2308,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -2271,8 +2358,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
     }, _defineProperty(_methods, 'itemChanged', function itemChanged(index, data) {
         this.list.splice(index, 1, data);
-    }), _defineProperty(_methods, 'genAccountSuccess', function genAccountSuccess(scope, account) {
-        this.list[scope.$index].account = account;
+    }), _defineProperty(_methods, 'accountChanged', function accountChanged(scope, account) {
+        var row = this.list[scope.$index];
+        row.account = account;
+        this.list.splice(scope.$index, 1, row);
+    }), _defineProperty(_methods, 'miniprogramChanged', function miniprogramChanged(scope, minprogram) {
+        var row = this.list[scope.$index];
+        row.account = minprogram;
+        this.list.splice(scope.$index, 1, row);
     }), _methods),
     created: function created() {
         this.getList();
@@ -2480,6 +2573,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__oper_form__ = __webpack_require__("./resources/admin/components/oper/oper-form.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__oper_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__oper_form__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__miniprogram_miniprogram_form__ = __webpack_require__("./resources/admin/components/miniprogram/miniprogram-form.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__miniprogram_miniprogram_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__miniprogram_miniprogram_form__);
 //
 //
 //
@@ -2533,6 +2628,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -2560,7 +2664,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             },
             accountModifyFormRules: {
                 password: [{ required: true, min: 6, message: '密码不能为空且不能少于6位' }]
-            }
+            },
+            editMiniprogramDialog: false
         };
     },
 
@@ -2603,7 +2708,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/oper_account/add', data).then(function (data) {
                 _this3.$alert('创建账户成功');
                 _this3.showCreateAccountDialog = false;
-                _this3.$emit('genAccountSuccess', _this3.scope, data);
+                _this3.$emit('accountChanged', _this3.scope, data);
             });
         },
         modifyAccount: function modifyAccount() {
@@ -2615,11 +2720,36 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/oper_account/edit', data).then(function (data) {
                 _this4.$alert('修改密码成功');
                 _this4.showModifyAccountDialog = false;
+                _this4.$emit('accountChanged', _this4.scope, data);
             });
+        },
+        doEditMiniprogram: function doEditMiniprogram(data) {
+            var _this5 = this;
+
+            this.isLoading = true;
+            data.oper_id = this.scope.row.id;
+            if (!this.scope.row.miniprogram) {
+                __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/miniprogram/add', data).then(function (data) {
+                    _this5.editMiniprogramDialog = false;
+                    _this5.$emit('miniprogramChanged', _this5.scope, data);
+                }).finally(function () {
+                    _this5.isLoading = false;
+                });
+            } else {
+                __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/miniprogram/edit', data).then(function (data) {
+                    _this5.editMiniprogramDialog = false;
+                    _this5.$emit('miniprogramChanged', _this5.scope, data);
+                }).finally(function () {
+                    _this5.isLoading = false;
+                });
+            }
         }
     },
+    created: function created() {},
+
     components: {
-        OperForm: __WEBPACK_IMPORTED_MODULE_1__oper_form___default.a
+        OperForm: __WEBPACK_IMPORTED_MODULE_1__oper_form___default.a,
+        MiniprogramForm: __WEBPACK_IMPORTED_MODULE_2__miniprogram_miniprogram_form___default.a
     }
 });
 
@@ -14474,7 +14604,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14541,6 +14671,21 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8faac352\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/miniprogram/miniprogram-form.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b582ed4e\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/oper/oper-item-options.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14549,7 +14694,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -41107,7 +41252,7 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("el-table-column", {
-            attrs: { label: "操作", width: "250px" },
+            attrs: { label: "操作", width: "350px" },
             scopedSlots: _vm._u([
               {
                 key: "default",
@@ -41118,7 +41263,8 @@ var render = function() {
                       on: {
                         change: _vm.itemChanged,
                         refresh: _vm.getList,
-                        genAccountSuccess: _vm.genAccountSuccess
+                        accountChanged: _vm.accountChanged,
+                        miniprogramChanged: _vm.miniprogramChanged
                       }
                     })
                   ]
@@ -41587,6 +41733,124 @@ if (false) {
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-8faac352\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/admin/components/miniprogram/miniprogram-form.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "el-row",
+    [
+      _c(
+        "el-col",
+        { attrs: { span: 22 } },
+        [
+          _c(
+            "el-form",
+            {
+              ref: "form",
+              attrs: {
+                model: _vm.form,
+                "label-width": "150px",
+                rules: _vm.formRules
+              },
+              nativeOn: {
+                submit: function($event) {
+                  $event.preventDefault()
+                }
+              }
+            },
+            [
+              _c(
+                "el-form-item",
+                { attrs: { prop: "name", label: "小程序配置名称" } },
+                [
+                  _c("el-input", {
+                    model: {
+                      value: _vm.form.name,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "name", $$v)
+                      },
+                      expression: "form.name"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { prop: "appid", label: "小程序AppID" } },
+                [
+                  _c("el-input", {
+                    model: {
+                      value: _vm.form.appid,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "appid", $$v)
+                      },
+                      expression: "form.appid"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { prop: "secret", label: "小程序App Secret" } },
+                [
+                  _c("el-input", {
+                    model: {
+                      value: _vm.form.secret,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "secret", $$v)
+                      },
+                      expression: "form.secret"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                [
+                  _c("el-button", { on: { click: _vm.cancel } }, [
+                    _vm._v("取消")
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "el-button",
+                    { attrs: { type: "primary" }, on: { click: _vm.save } },
+                    [_vm._v("保存")]
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-8faac352", module.exports)
+  }
+}
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-b582ed4e\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/admin/components/oper/oper-item-options.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -41636,6 +41900,50 @@ var render = function() {
             [_vm._v("修改账户密码")]
           )
         : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "el-button",
+        {
+          attrs: { type: "text" },
+          on: {
+            click: function($event) {
+              _vm.editMiniprogramDialog = true
+            }
+          }
+        },
+        [
+          _vm._v(
+            _vm._s(!_vm.scope.row.miniprogram ? "配置小程序" : "修改小程序配置")
+          )
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "el-dialog",
+        {
+          attrs: {
+            title: "编辑小程序配置信息",
+            visible: _vm.editMiniprogramDialog
+          },
+          on: {
+            "update:visible": function($event) {
+              _vm.editMiniprogramDialog = $event
+            }
+          }
+        },
+        [
+          _c("miniprogram-form", {
+            attrs: { data: _vm.scope.row.miniprogram },
+            on: {
+              cancel: function($event) {
+                _vm.editMiniprogramDialog = false
+              },
+              save: _vm.doEditMiniprogram
+            }
+          })
+        ],
+        1
+      ),
       _vm._v(" "),
       _c(
         "el-dialog",
@@ -43175,6 +43483,33 @@ if(false) {
  if(!content.locals) {
    module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-899a394e\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./oper-account-item-options.vue", function() {
      var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-899a394e\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./oper-account-item-options.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8faac352\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/miniprogram/miniprogram-form.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8faac352\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/miniprogram/miniprogram-form.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("54f90cb5", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8faac352\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./miniprogram-form.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8faac352\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./miniprogram-form.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -45528,6 +45863,58 @@ if (false) {(function () {
     hotAPI.createRecord("data-v-e389c896", Component.options)
   } else {
     hotAPI.reload("data-v-e389c896", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/admin/components/miniprogram/miniprogram-form.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8faac352\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/miniprogram/miniprogram-form.vue")
+}
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/admin/components/miniprogram/miniprogram-form.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-8faac352\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/admin/components/miniprogram/miniprogram-form.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-8faac352"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\admin\\components\\miniprogram\\miniprogram-form.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-8faac352", Component.options)
+  } else {
+    hotAPI.reload("data-v-8faac352", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true

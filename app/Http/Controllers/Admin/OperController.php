@@ -8,9 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Modules\Area\Area;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperAccount;
+use App\Modules\Oper\OperMiniprogram;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
-use Psy\Util\Str;
 
 class OperController extends Controller
 {
@@ -27,6 +27,7 @@ class OperController extends Controller
 
         $data->each(function ($item){
             $item->account = OperAccount::where('oper_id', $item->id)->first() ?: null;
+            $item->miniprogram = OperMiniprogram::where('oper_id', $item->id)->first() ?: null;
         });
 
         return Result::success([

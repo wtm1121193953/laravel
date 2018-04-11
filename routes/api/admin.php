@@ -38,5 +38,6 @@ Route::prefix('admin')
     Route::group([], base_path('routes/api/admin/goods.php'));
     Route::group([], base_path('routes/api/admin/oper.php'));
     Route::group([], base_path('routes/api/admin/oper_account.php'));
+    Route::group([], base_path('routes/api/admin/miniprogram.php'));
 
 });

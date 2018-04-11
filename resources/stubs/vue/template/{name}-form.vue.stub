@@ -59,9 +59,6 @@
                     if(valid){
                         let data = deepCopy(this.form);
                         this.$emit('save', data);
-                        setTimeout(() => {
-                            this.$refs.form.resetFields();
-                        }, 500)
                     }
                 })
 
