@@ -1,21 +1,26 @@
 <template>
-    <el-upload
-            class="uploader"
-            :action="action"
-            :list-type="listType"
-            :file-list="fileList"
-            :on-success="handleUploadSuccess"
-            :before-upload="beforeUpload"
-            :on-remove="handleRemove"
-            :disabled="disabled"
-            :limit="limit"
-            :on-exceed="onExceed"
-    >
-        <i class="el-icon-plus"></i>
-    </el-upload>
+    <div>
+        <el-upload
+                class="uploader"
+                :action="action"
+                :list-type="listType"
+                :file-list="fileList"
+                :on-preview="preview ? handlePreview : null"
+                :on-success="handleUploadSuccess"
+                :before-upload="beforeUpload"
+                :on-remove="handleRemove"
+                :disabled="disabled"
+                :limit="limit"
+                :on-exceed="onExceed"
+        >
+            <i class="el-icon-plus"></i>
+        </el-upload>
+        <img-preview-dialog :url="previewImage" :visible.sync="isShow"/>
+    </div>
 </template>
 
 <script>
+    import ImgPreviewDialog from '../img/preview-dialog'
     import emitter from 'element-ui/src/mixins/emitter';
     /**
      * 多图片上传组件
@@ -29,6 +34,7 @@
      *      limit: 限制高度
      *      disabled: 是否可删除, 禁用
      *      listType: 图片列表类型: picture-card/picture/text, 默认: picture-card
+     *      preview: 是否可预览图片
      *  功能:
      *      图片上传功能
      *      删除按钮
@@ -49,12 +55,15 @@
             limit: {type: Number},
             disabled: {type: Boolean, default: false},
             listType: {type: String, default: 'picture-card'},
+            preview: {type: Boolean, default: false},
         },
         mixins: [emitter],
         data(){
             return {
                 valueType: 'array',
                 fileList: [],
+                isShow: false,
+                previewImage: '',
             }
         },
         computed: {
@@ -84,6 +93,10 @@
                 this.$emit('input', value)
                 this.dispatch('ElFormItem', 'el.form.blur', [value]);
                 this.dispatch('ElFormItem', 'el.form.change', [value]);
+            },
+            handlePreview(file){
+                this.previewImage = file.url;
+                this.isShow = true;
             },
             handleRemove(file, fileList) {
                 this.fileList = fileList;
@@ -137,13 +150,16 @@
                 }
             }else {
                 this.valueType = 'array';
-                value = this.value;
+                value = this.value || [];
             }
             value.forEach(item => {
                 this.fileList.push({
                     url: item
                 })
             })
+        },
+        components: {
+            ImgPreviewDialog
         }
     }
 </script>

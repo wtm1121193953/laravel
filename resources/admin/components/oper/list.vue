@@ -4,6 +4,7 @@
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="name" label="运营中心名称"/>
+            <el-table-column prop="contacter" label="联系人" />
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>

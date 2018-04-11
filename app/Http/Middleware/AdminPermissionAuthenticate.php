@@ -25,6 +25,7 @@ class AdminPermissionAuthenticate
         '/api/admin/logout',
         '/api/admin/self/rules',
         '/api/admin/self/modifyPassword',
+        '/api/admin/area/tree',
     ];
 
     /**

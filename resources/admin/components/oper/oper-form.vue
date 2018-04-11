@@ -11,6 +11,73 @@
                         <el-radio :label="2">禁用</el-radio>
                     </el-radio-group>
                 </el-form-item>
+                <el-form-item prop="contacter" label="负责人">
+                    <el-input v-model="form.contacter" placeholder=""/>
+                </el-form-item>
+                <el-form-item prop="tel" label="联系电话">
+                    <el-input v-model="form.tel" placeholder=""/>
+                </el-form-item>
+                <el-form-item prop="area" label="城市">
+                    <el-cascader
+                            :options="areas"
+                            :props="{value: 'area_id', label: 'name', children: 'sub'}"
+                            v-model="form.area">
+                    </el-cascader>
+                </el-form-item>
+                <el-form-item prop="address" label="详细地址">
+                    <el-input v-model="form.address" placeholder=""/>
+                </el-form-item>
+                <el-form-item prop="email" label="邮箱">
+                    <el-input v-model="form.email" placeholder=""/>
+                </el-form-item>
+                <el-form-item prop="legal_name" label="法人姓名">
+                    <el-input v-model="form.legal_name" placeholder=""/>
+                </el-form-item>
+                <el-form-item label="法人身份证" prop="legal_id_card">
+                    <el-input v-model="form.legal_id_card" placeholder=""/>
+                </el-form-item>
+                <el-form-item label="发票类型" prop="invoice_type">
+                    <el-select v-model="form.invoice_type" placeholder="">
+                        <el-option
+                                v-for="item in invoiceTypes"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="发票税点" prop="invoice_tax_rate">
+                    <el-input v-model="form.invoice_tax_rate" placeholder=""/>
+                </el-form-item>
+                <el-form-item label="结款周期" prop="settlement_cycle_type">
+                    <el-select v-model="form.settlement_cycle_type" placeholder="">
+                        <el-option
+                                v-for="item in settlementCycles"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="公司账号" prop="bank_card_no">
+                    <el-input v-model="form.bank_card_no" placeholder=""/>
+                </el-form-item>
+                <el-form-item label="开户支行名称" prop="sub_bank_name">
+                    <el-input v-model="form.sub_bank_name" placeholder=""/>
+                </el-form-item>
+                <el-form-item label="开户名" prop="bank_open_name">
+                    <el-input v-model="form.bank_open_name" placeholder=""/>
+                </el-form-item>
+                <el-form-item label="开户地址" prop="bank_open_address">
+                    <el-input v-model="form.bank_open_address" placeholder=""/>
+                </el-form-item>
+                <el-form-item label="银行代码" prop="bank_code">
+                    <el-input v-model="form.bank_code" placeholder=""/>
+                </el-form-item>
+                <el-form-item label="开户许可证" prop="licence_pic_url">
+                    <image-upload v-model="form.licence_pic_url"/>
+                </el-form-item>
+
                 <el-form-item>
                     <el-button @click="cancel">取消</el-button>
                     <el-button type="primary" @click="save">保存</el-button>
@@ -41,6 +108,20 @@
                         {required: true, message: '名称不能为空'}
                     ]
                 },
+                areas: [],
+                invoiceTypes: [
+                    {label: 1, value: '增值税普票'},
+                    {label: 2, value: '增值税专票'},
+                    {label: 3, value: '国税普票'},
+                    {label: 0, value: '其他'},
+                ],
+                settlementCycles: [
+                    {label: 1, value: '周结'},
+                    {label: 2, value: '半月结'},
+                    {label: 3, value: '月结'},
+                    {label: 4, value: '半年结'},
+                    {label: 5, value: '年结'},
+                ],
             }
         },
         methods: {
@@ -65,10 +146,16 @@
                     }
                 })
 
+            },
+            getAreaTree(){
+                api.get('area/tree', {tier: 2}).then(data => {
+                    this.areas = data.list;
+                })
             }
         },
         created(){
             this.initForm();
+            this.getAreaTree();
         },
         watch: {
             data(){

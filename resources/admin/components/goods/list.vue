@@ -63,7 +63,7 @@
     import api from '../../../assets/js/api'
 
     import GoodsForm from './goods-form.vue'
-    import PreviewImg from "../../../assets/components/preview-img";
+    import PreviewImg from "../../../assets/components/img/preview-img";
     import GoodsItemOptions from './goods-item-options'
     import {mapState, mapGetters} from 'vuex'
 
