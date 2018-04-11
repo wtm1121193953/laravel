@@ -70,6 +70,7 @@ mix.webpackConfig(webpack => {
 // 加载 admin 前端模块
 mix.js('./resources/admin/app.js', 'public/js/admin.js');
 mix.js('./resources/oper/app.js', 'public/js/oper.js');
+mix.js('./resources/merchant/app.js', 'public/js/merchant.js');
 
 // 抽离不会变的js模块
 mix.extract([

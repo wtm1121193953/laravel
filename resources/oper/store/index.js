@@ -25,8 +25,8 @@ let defaultThemes = {
     },
 };
 
-// 去除菜单url中的前缀: /admin
-let trimMenuUrlPrefix = function(menus, prefix = '/admin'){
+// 去除菜单url中的前缀: /oper
+let trimMenuUrlPrefix = function(menus, prefix = '/oper'){
     menus.forEach((menu) => {
         if(menu.url && menu.url.indexOf(prefix) === 0){
             menu.url = menu.url.substr(prefix.length);
@@ -39,7 +39,7 @@ let trimMenuUrlPrefix = function(menus, prefix = '/admin'){
 };
 
 let getFirstMenu = function(menus){
-    let firstRoute = '/admin/welcome';
+    let firstRoute = '/oper/welcome';
     menus.forEach((menu) => {
         if (menu.sub  && menu.sub[0]  && menu.sub[0].url !== '' ) {
             firstRoute = menu.sub[0].url;

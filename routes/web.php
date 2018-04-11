@@ -20,9 +20,15 @@ Route::get('/admin', function () {
     return view('admin');
 });
 
-// 前端页面
+// 运营中心页面
 Route::get('/oper', function () {
     return view('oper');
 });
+
+// 商户中心页面
+Route::get('/merchant', function () {
+    return view('merchant');
+});
+
 
 Route::post('/upload/image', 'UploadController@image');

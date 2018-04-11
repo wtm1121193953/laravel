@@ -62,11 +62,11 @@ class Handler extends ExceptionHandler
             }
         }else if($request->is('oper/*')){
             if($exception instanceof NotFoundHttpException){
-                return redirect('/oper?_from=' . urlencode(substr($request->getRequestUri(), 6)));
+                return redirect('/oper?_from=' . urlencode(substr($request->getRequestUri(), 5)));
             }
         }else if($request->is('merchant/*')){
             if($exception instanceof NotFoundHttpException){
-                return redirect('/merchant?_from=' . urlencode(substr($request->getRequestUri(), 6)));
+                return redirect('/merchant?_from=' . urlencode(substr($request->getRequestUri(), 9)));
             }
         }
         return parent::render($request, $exception);
