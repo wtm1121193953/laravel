@@ -22,11 +22,11 @@ class CreateOpersTable extends Migration
             $table->string('contacter')->default('')->comment('联系人');
             $table->string('tel')->default('')->comment('联系电话');
             $table->string('province')->default('')->comment('所在省份');
-            $table->string('province_id')->default('')->comment('所在省份Id');
+            $table->integer('province_id')->default(0)->comment('所在省份Id');
             $table->string('city')->default('')->comment('所在城市');
-            $table->string('city_id')->default('')->comment('所在城市Id');
+            $table->integer('city_id')->default(0)->comment('所在城市Id');
             $table->string('area')->default('')->comment('所在县区');
-            $table->string('area_id')->default('')->comment('所在县区Id');
+            $table->integer('area_id')->default(0)->comment('所在县区Id');
             $table->string('address')->default('')->comment('详细地址');
             $table->string('email')->default('')->comment('邮箱');
             $table->string('legal_name')->default('')->comment('法人姓名');
@@ -45,7 +45,7 @@ class CreateOpersTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->comm2ent = '运营中心表';
+            $table->comment = '运营中心表';
         });
     }
 

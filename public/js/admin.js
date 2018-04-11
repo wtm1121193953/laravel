@@ -2175,9 +2175,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__oper_item_options___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__oper_item_options__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__oper_form__ = __webpack_require__("./resources/admin/components/oper/oper-form.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__oper_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__oper_form__);
+var _methods;
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-//
 //
 //
 //
@@ -2242,7 +2243,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
 
     computed: {},
-    methods: _defineProperty({
+    methods: (_methods = {
         getList: function getList() {
             var _this = this;
 
@@ -2268,9 +2269,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 _this2.isLoading = false;
             });
         }
-    }, 'itemChanged', function itemChanged(index, data) {
+    }, _defineProperty(_methods, 'itemChanged', function itemChanged(index, data) {
         this.list.splice(index, 1, data);
-    }),
+    }), _defineProperty(_methods, 'genAccountSuccess', function genAccountSuccess(scope, account) {
+        this.list[scope.$index].account = account;
+    }), _methods),
     created: function created() {
         this.getList();
     },
@@ -2377,10 +2380,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 var defaultForm = {
     name: '',
-    status: 1
+    status: 1,
+    contacter: '',
+    tel: '',
+    selectAreas: [],
+    address: '',
+    email: '',
+    legal_name: '',
+    legal_id_card: '',
+    invoice_type: 1,
+    invoice_tax_rate: '',
+    settlement_cycle_type: 1,
+    bank_card_no: '',
+    sub_bank_name: '',
+    bank_open_name: '',
+    bank_open_address: '',
+    bank_code: '',
+    licence_pic_url: '',
+    business_licence_pic_url: ''
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: 'oper-form',
@@ -2392,11 +2416,12 @@ var defaultForm = {
         return {
             form: deepCopy(defaultForm),
             formRules: {
-                name: [{ required: true, message: '名称不能为空' }]
+                name: [{ required: true, message: '名称不能为空' }],
+                selectAreas: [{ required: true, type: 'array', message: '地区不能为空' }]
             },
             areas: [],
-            invoiceTypes: [{ label: 1, value: '增值税普票' }, { label: 2, value: '增值税专票' }, { label: 3, value: '国税普票' }, { label: 0, value: '其他' }],
-            settlementCycles: [{ label: 1, value: '周结' }, { label: 2, value: '半月结' }, { label: 3, value: '月结' }, { label: 4, value: '半年结' }, { label: 5, value: '年结' }]
+            invoiceTypes: [{ value: 1, label: '增值税普票' }, { value: 2, label: '增值税专票' }, { value: 3, label: '国税普票' }, { value: 0, label: '其他' }],
+            settlementCycles: [{ value: 1, label: '周结' }, { value: 2, label: '半月结' }, { value: 3, label: '月结' }, { value: 4, label: '半年结' }, { value: 5, label: '年结' }]
         };
     },
 
@@ -2404,6 +2429,7 @@ var defaultForm = {
         initForm: function initForm() {
             if (this.data) {
                 this.form = deepCopy(this.data);
+                this.form.selectAreas = [this.data.province_id, this.data.city_id];
             } else {
                 this.form = deepCopy(defaultForm);
             }
@@ -2417,10 +2443,9 @@ var defaultForm = {
             this.$refs.form.validate(function (valid) {
                 if (valid) {
                     var data = deepCopy(_this.form);
+                    data.province_id = data.selectAreas[0];
+                    data.city_id = data.selectAreas[1];
                     _this.$emit('save', data);
-                    setTimeout(function () {
-                        _this.$refs.form.resetFields();
-                    }, 500);
                 }
             });
         },
@@ -2471,6 +2496,43 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2482,7 +2544,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     data: function data() {
         return {
-            isEdit: false
+            isEdit: false,
+            showCreateAccountDialog: false,
+            accountForm: {
+                account: '',
+                password: ''
+            },
+            accountFormRules: {
+                account: [{ required: true, message: '账号名不能为空' }],
+                password: [{ required: true, min: 6, message: '密码不能为空且不能少于6位' }]
+            },
+            showModifyAccountDialog: false,
+            accountModifyPasswordForm: {
+                password: ''
+            },
+            accountModifyFormRules: {
+                password: [{ required: true, min: 6, message: '密码不能为空且不能少于6位' }]
+            }
         };
     },
 
@@ -2505,26 +2583,38 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         changeStatus: function changeStatus() {
             var _this2 = this;
 
-            var status = this.scope.row.status === 1 ? 2 : 1;
-            this.$emit('before-request');
-            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/oper/changeStatus', { id: this.scope.row.id, status: status }).then(function (data) {
-                _this2.scope.row.status = status;
-                _this2.$emit('change', _this2.scope.$index, data);
-            }).finally(function () {
-                _this2.$emit('after-request');
+            var opt = this.scope.row.status === 1 ? '冻结' : '解冻';
+            this.$confirm('\u786E\u8BA4\u8981' + opt + '\u8FD0\u8425\u4E2D\u5FC3[ ' + this.scope.row.name + ' ]\u5417?').then(function () {
+                var status = _this2.scope.row.status === 1 ? 2 : 1;
+                _this2.$emit('before-request');
+                __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/oper/changeStatus', { id: _this2.scope.row.id, status: status }).then(function (data) {
+                    _this2.scope.row.status = status;
+                    _this2.$emit('change', _this2.scope.$index, data);
+                }).finally(function () {
+                    _this2.$emit('after-request');
+                });
             });
         },
-        del: function del() {
+        createAccount: function createAccount() {
             var _this3 = this;
 
-            var data = this.scope.row;
-            this.$confirm('\u786E\u5B9A\u8981\u5220\u9664\u8FD0\u8425\u4E2D\u5FC3 ' + data.name + ' \u5417? ', '温馨提示', { type: 'warning' }).then(function () {
-                _this3.$emit('before-request');
-                __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/oper/del', { id: data.id }).then(function () {
-                    _this3.$emit('refresh');
-                }).finally(function () {
-                    _this3.$emit('after-request');
-                });
+            var data = this.accountForm;
+            data.oper_id = this.scope.row.id;
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/oper_account/add', data).then(function (data) {
+                _this3.$alert('创建账户成功');
+                _this3.showCreateAccountDialog = false;
+                _this3.$emit('genAccountSuccess', _this3.scope, data);
+            });
+        },
+        modifyAccount: function modifyAccount() {
+            var _this4 = this;
+
+            var data = this.accountModifyPasswordForm;
+            data.id = this.scope.row.account.id;
+            data.oper_id = this.scope.row.id;
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/oper_account/edit', data).then(function (data) {
+                _this4.$alert('修改密码成功');
+                _this4.showModifyAccountDialog = false;
             });
         }
     },
@@ -14384,7 +14474,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14459,7 +14549,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14550,7 +14640,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -40983,43 +41073,33 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("el-table-column", {
-            attrs: { prop: "contacter", label: "联系人" }
+            attrs: { prop: "contacter", label: "负责人" }
           }),
           _vm._v(" "),
+          _c("el-table-column", { attrs: { prop: "tel", label: "联系电话" } }),
+          _vm._v(" "),
           _c("el-table-column", {
-            attrs: { prop: "status", label: "状态" },
+            attrs: { prop: "status", label: "合作状态" },
             scopedSlots: _vm._u([
               {
                 key: "default",
                 fn: function(scope) {
                   return [
                     scope.row.status === 1
-                      ? _c("span", { staticClass: "c-green" }, [_vm._v("正常")])
+                      ? _c("span", { staticClass: "c-green" }, [
+                          _vm._v("正常合作中")
+                        ])
                       : scope.row.status === 2
-                        ? _c("span", { staticClass: "c-danger" }, [
-                            _vm._v("禁用")
+                        ? _c("span", { staticClass: "c-warning" }, [
+                            _vm._v("已冻结")
                           ])
-                        : _c("span", [
-                            _vm._v("未知 (" + _vm._s(scope.row.status) + ")")
-                          ])
-                  ]
-                }
-              }
-            ])
-          }),
-          _vm._v(" "),
-          _c("el-table-column", {
-            attrs: { prop: "created_at", label: "添加时间" },
-            scopedSlots: _vm._u([
-              {
-                key: "default",
-                fn: function(scope) {
-                  return [
-                    _vm._v(
-                      "\n                " +
-                        _vm._s(scope.row.created_at.substr(0, 10)) +
-                        "\n            "
-                    )
+                        : scope.row.status === 3
+                          ? _c("span", { staticClass: "c-danger" }, [
+                              _vm._v("停止合作")
+                            ])
+                          : _c("span", [
+                              _vm._v("未知 (" + _vm._s(scope.row.status) + ")")
+                            ])
                   ]
                 }
               }
@@ -41035,7 +41115,11 @@ var render = function() {
                   return [
                     _c("oper-item-options", {
                       attrs: { scope: scope },
-                      on: { change: _vm.itemChanged, refresh: _vm.getList }
+                      on: {
+                        change: _vm.itemChanged,
+                        refresh: _vm.getList,
+                        genAccountSuccess: _vm.genAccountSuccess
+                      }
                     })
                   ]
                 }
@@ -41520,12 +41604,38 @@ var render = function() {
       _c(
         "el-button",
         { attrs: { type: "text" }, on: { click: _vm.changeStatus } },
-        [_vm._v(_vm._s(_vm.scope.row.status === 1 ? "禁用" : "启用"))]
+        [_vm._v(_vm._s(_vm.scope.row.status === 1 ? "冻结" : "解冻"))]
       ),
       _vm._v(" "),
-      _c("el-button", { attrs: { type: "text" }, on: { click: _vm.del } }, [
-        _vm._v("删除")
-      ]),
+      !_vm.scope.row.account
+        ? _c(
+            "el-button",
+            {
+              attrs: { type: "text" },
+              on: {
+                click: function($event) {
+                  _vm.showCreateAccountDialog = true
+                }
+              }
+            },
+            [_vm._v("生成账户")]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.scope.row.account
+        ? _c(
+            "el-button",
+            {
+              attrs: { type: "text" },
+              on: {
+                click: function($event) {
+                  _vm.showModifyAccountDialog = true
+                }
+              }
+            },
+            [_vm._v("修改账户密码")]
+          )
+        : _vm._e(),
       _vm._v(" "),
       _c(
         "el-dialog",
@@ -41549,7 +41659,202 @@ var render = function() {
           })
         ],
         1
-      )
+      ),
+      _vm._v(" "),
+      _c(
+        "el-dialog",
+        {
+          attrs: {
+            title: "创建运营中心账户",
+            visible: _vm.showCreateAccountDialog
+          },
+          on: {
+            "update:visible": function($event) {
+              _vm.showCreateAccountDialog = $event
+            }
+          }
+        },
+        [
+          _c(
+            "el-row",
+            [
+              _c(
+                "el-col",
+                { attrs: { span: 16 } },
+                [
+                  _c(
+                    "el-form",
+                    {
+                      attrs: {
+                        size: "mini",
+                        model: _vm.accountForm,
+                        rules: _vm.accountFormRules,
+                        "label-width": "150px"
+                      }
+                    },
+                    [
+                      _c(
+                        "el-form-item",
+                        { attrs: { label: "账户名", prop: "account" } },
+                        [
+                          _c("el-input", {
+                            attrs: { placeholder: "请输入账户" },
+                            model: {
+                              value: _vm.accountForm.account,
+                              callback: function($$v) {
+                                _vm.$set(_vm.accountForm, "account", $$v)
+                              },
+                              expression: "accountForm.account"
+                            }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "el-form-item",
+                        { attrs: { label: "密码", prop: "password" } },
+                        [
+                          _c("el-input", {
+                            attrs: {
+                              type: "password",
+                              placeholder: "请输入密码"
+                            },
+                            model: {
+                              value: _vm.accountForm.password,
+                              callback: function($$v) {
+                                _vm.$set(_vm.accountForm, "password", $$v)
+                              },
+                              expression: "accountForm.password"
+                            }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "el-form-item",
+                        [
+                          _c(
+                            "el-button",
+                            {
+                              attrs: { type: "primary" },
+                              on: { click: _vm.createAccount }
+                            },
+                            [_vm._v("确定")]
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _vm.scope.row.account
+        ? _c(
+            "el-dialog",
+            {
+              attrs: {
+                title: "修改账户密码",
+                visible: _vm.showModifyAccountDialog
+              },
+              on: {
+                "update:visible": function($event) {
+                  _vm.showModifyAccountDialog = $event
+                }
+              }
+            },
+            [
+              _c(
+                "el-row",
+                [
+                  _c(
+                    "el-col",
+                    { attrs: { span: 16 } },
+                    [
+                      _c(
+                        "el-form",
+                        {
+                          attrs: {
+                            size: "mini",
+                            model: _vm.accountModifyPasswordForm,
+                            rules: _vm.accountModifyFormRules,
+                            "label-width": "150px"
+                          }
+                        },
+                        [
+                          _c(
+                            "el-form-item",
+                            { attrs: { label: "账户名", prop: "account" } },
+                            [
+                              _c("div", [
+                                _vm._v(_vm._s(_vm.scope.row.account.account))
+                              ])
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            { attrs: { label: "密码", prop: "password" } },
+                            [
+                              _c("el-input", {
+                                attrs: {
+                                  type: "password",
+                                  placeholder: "请输入密码"
+                                },
+                                model: {
+                                  value: _vm.accountModifyPasswordForm.password,
+                                  callback: function($$v) {
+                                    _vm.$set(
+                                      _vm.accountModifyPasswordForm,
+                                      "password",
+                                      $$v
+                                    )
+                                  },
+                                  expression:
+                                    "accountModifyPasswordForm.password"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            [
+                              _c(
+                                "el-button",
+                                {
+                                  attrs: { type: "primary" },
+                                  on: { click: _vm.modifyAccount }
+                                },
+                                [_vm._v("确定")]
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        : _vm._e()
     ],
     1
   )
@@ -41966,32 +42271,6 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "el-form-item",
-                { attrs: { prop: "status", label: "状态" } },
-                [
-                  _c(
-                    "el-radio-group",
-                    {
-                      model: {
-                        value: _vm.form.status,
-                        callback: function($$v) {
-                          _vm.$set(_vm.form, "status", $$v)
-                        },
-                        expression: "form.status"
-                      }
-                    },
-                    [
-                      _c("el-radio", { attrs: { label: 1 } }, [_vm._v("正常")]),
-                      _vm._v(" "),
-                      _c("el-radio", { attrs: { label: 2 } }, [_vm._v("禁用")])
-                    ],
-                    1
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "el-form-item",
                 { attrs: { prop: "contacter", label: "负责人" } },
                 [
                   _c("el-input", {
@@ -42028,7 +42307,7 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "el-form-item",
-                { attrs: { prop: "area", label: "城市" } },
+                { attrs: { prop: "selectAreas", label: "城市" } },
                 [
                   _c("el-cascader", {
                     attrs: {
@@ -42040,11 +42319,11 @@ var render = function() {
                       }
                     },
                     model: {
-                      value: _vm.form.area,
+                      value: _vm.form.selectAreas,
                       callback: function($$v) {
-                        _vm.$set(_vm.form, "area", $$v)
+                        _vm.$set(_vm.form, "selectAreas", $$v)
                       },
-                      expression: "form.area"
+                      expression: "form.selectAreas"
                     }
                   })
                 ],
@@ -42154,7 +42433,7 @@ var render = function() {
                 "el-form-item",
                 { attrs: { label: "发票税点", prop: "invoice_tax_rate" } },
                 [
-                  _c("el-input", {
+                  _c("el-input-number", {
                     attrs: { placeholder: "" },
                     model: {
                       value: _vm.form.invoice_tax_rate,
@@ -42290,6 +42569,7 @@ var render = function() {
                 { attrs: { label: "开户许可证", prop: "licence_pic_url" } },
                 [
                   _c("image-upload", {
+                    attrs: { limit: 1 },
                     model: {
                       value: _vm.form.licence_pic_url,
                       callback: function($$v) {
@@ -42298,6 +42578,59 @@ var render = function() {
                       expression: "form.licence_pic_url"
                     }
                   })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                {
+                  attrs: { label: "营业执照", prop: "business_licence_pic_url" }
+                },
+                [
+                  _c("image-upload", {
+                    attrs: { limit: 1 },
+                    model: {
+                      value: _vm.form.business_licence_pic_url,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "business_licence_pic_url", $$v)
+                      },
+                      expression: "form.business_licence_pic_url"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { label: "合作状态", prop: "status" } },
+                [
+                  _c(
+                    "el-select",
+                    {
+                      attrs: { placeholder: "" },
+                      model: {
+                        value: _vm.form.status,
+                        callback: function($$v) {
+                          _vm.$set(_vm.form, "status", $$v)
+                        },
+                        expression: "form.status"
+                      }
+                    },
+                    [
+                      _c("el-option", {
+                        attrs: { label: "正常合作中", value: 1 }
+                      }),
+                      _vm._v(" "),
+                      _c("el-option", { attrs: { label: "已冻结", value: 2 } }),
+                      _vm._v(" "),
+                      _c("el-option", {
+                        attrs: { label: "停止合作", value: 3 }
+                      })
+                    ],
+                    1
+                  )
                 ],
                 1
               ),

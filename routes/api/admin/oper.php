@@ -9,4 +9,3 @@ Route::get('/opers/all', 'OperController@getAllList');
 Route::post('/oper/add', 'OperController@add');
 Route::post('/oper/edit', 'OperController@edit');
 Route::post('/oper/changeStatus', 'OperController@changeStatus');
-Route::post('/oper/del', 'OperController@del');

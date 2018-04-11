@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Oper\OperAccount;
 use App\Result;
@@ -47,16 +48,30 @@ class OperAccountController extends Controller
      */
     public function add()
     {
+
         $this->validate(request(), [
-            'name' => 'required',
+            'oper_id' => 'required|integer|min:1',
+            'account' => 'required',
+            'password' => 'required|min:6',
         ]);
-        $oper_account = new OperAccount();
-        $oper_account->name = request('name');
-        $oper_account->status = request('status', 1);
+        $account = OperAccount::where('oper_id', request('id'))->first();
+        if(!empty($account)){
+            throw new BaseResponseException('账户已存在, 不能重复创建');
+        }
+        // 查询账号是否重复
+        if(!empty(OperAccount::where('account', request('account'))->first())){
+            throw new BaseResponseException('账号重复, 请更换账号');
+        }
+        $account = new OperAccount();
 
-        $oper_account->save();
+        $account->account = request('account');
+        $account->oper_id = request('oper_id');
+        $salt = str_random();
+        $account->salt = $salt;
+        $account->password = OperAccount::genPassword(request('password'), $salt);
+        $account->save();
 
-        return Result::success($oper_account);
+        return Result::success($account);
     }
 
     /**
@@ -66,11 +81,14 @@ class OperAccountController extends Controller
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
-            'name' => 'required',
+            'oper_id' => 'required|integer|min:1',
+            'password' => 'required|min:6',
         ]);
         $oper_account = OperAccount::findOrFail(request('id'));
-        $oper_account->name = request('name');
-        $oper_account->status = request('status', 1);
+        $oper_account->oper_id = request('oper_id');
+        $salt = str_random();
+        $oper_account->salt = $salt;
+        $oper_account->password = OperAccount::genPassword(request('password'), $salt);
 
         $oper_account->save();
 
@@ -93,19 +111,5 @@ class OperAccountController extends Controller
         return Result::success($oper_account);
     }
 
-    /**
-     * 删除
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
-     */
-    public function del()
-    {
-        $this->validate(request(), [
-            'id' => 'required|integer|min:1',
-        ]);
-        $oper_account = OperAccount::findOrFail(request('id'));
-        $oper_account->delete();
-        return Result::success($oper_account);
-    }
 
 }

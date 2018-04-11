@@ -5,23 +5,17 @@
                 <el-form-item prop="name" label="运营中心名称">
                     <el-input v-model="form.name"/>
                 </el-form-item>
-                <el-form-item prop="status" label="状态">
-                    <el-radio-group v-model="form.status">
-                        <el-radio :label="1">正常</el-radio>
-                        <el-radio :label="2">禁用</el-radio>
-                    </el-radio-group>
-                </el-form-item>
                 <el-form-item prop="contacter" label="负责人">
                     <el-input v-model="form.contacter" placeholder=""/>
                 </el-form-item>
                 <el-form-item prop="tel" label="联系电话">
                     <el-input v-model="form.tel" placeholder=""/>
                 </el-form-item>
-                <el-form-item prop="area" label="城市">
+                <el-form-item prop="selectAreas" label="城市">
                     <el-cascader
                             :options="areas"
                             :props="{value: 'area_id', label: 'name', children: 'sub'}"
-                            v-model="form.area">
+                            v-model="form.selectAreas">
                     </el-cascader>
                 </el-form-item>
                 <el-form-item prop="address" label="详细地址">
@@ -47,7 +41,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="发票税点" prop="invoice_tax_rate">
-                    <el-input v-model="form.invoice_tax_rate" placeholder=""/>
+                    <el-input-number v-model="form.invoice_tax_rate" placeholder=""/>
                 </el-form-item>
                 <el-form-item label="结款周期" prop="settlement_cycle_type">
                     <el-select v-model="form.settlement_cycle_type" placeholder="">
@@ -75,7 +69,17 @@
                     <el-input v-model="form.bank_code" placeholder=""/>
                 </el-form-item>
                 <el-form-item label="开户许可证" prop="licence_pic_url">
-                    <image-upload v-model="form.licence_pic_url"/>
+                    <image-upload v-model="form.licence_pic_url" :limit="1"/>
+                </el-form-item>
+                <el-form-item label="营业执照" prop="business_licence_pic_url">
+                    <image-upload v-model="form.business_licence_pic_url" :limit="1"/>
+                </el-form-item>
+                <el-form-item label="合作状态" prop="status">
+                    <el-select v-model="form.status" placeholder="">
+                        <el-option label="正常合作中" :value="1"/>
+                        <el-option label="已冻结" :value="2"/>
+                        <el-option label="停止合作" :value="3"/>
+                    </el-select>
                 </el-form-item>
 
                 <el-form-item>
@@ -91,6 +95,23 @@
     let defaultForm = {
         name: '',
         status: 1,
+        contacter: '',
+        tel: '',
+        selectAreas: [],
+        address: '',
+        email: '',
+        legal_name: '',
+        legal_id_card: '',
+        invoice_type: 1,
+        invoice_tax_rate: '',
+        settlement_cycle_type: 1,
+        bank_card_no: '',
+        sub_bank_name: '',
+        bank_open_name: '',
+        bank_open_address: '',
+        bank_code: '',
+        licence_pic_url: '',
+        business_licence_pic_url: '',
     };
     export default {
         name: 'oper-form',
@@ -106,28 +127,32 @@
                 formRules: {
                     name: [
                         {required: true, message: '名称不能为空'}
+                    ],
+                    selectAreas: [
+                        {required: true, type: 'array', message: '地区不能为空' }
                     ]
                 },
                 areas: [],
                 invoiceTypes: [
-                    {label: 1, value: '增值税普票'},
-                    {label: 2, value: '增值税专票'},
-                    {label: 3, value: '国税普票'},
-                    {label: 0, value: '其他'},
+                    {value: 1, label: '增值税普票'},
+                    {value: 2, label: '增值税专票'},
+                    {value: 3, label: '国税普票'},
+                    {value: 0, label: '其他'},
                 ],
                 settlementCycles: [
-                    {label: 1, value: '周结'},
-                    {label: 2, value: '半月结'},
-                    {label: 3, value: '月结'},
-                    {label: 4, value: '半年结'},
-                    {label: 5, value: '年结'},
+                    {value: 1, label: '周结'},
+                    {value: 2, label: '半月结'},
+                    {value: 3, label: '月结'},
+                    {value: 4, label: '半年结'},
+                    {value: 5, label: '年结'},
                 ],
             }
         },
         methods: {
             initForm(){
                 if(this.data){
-                    this.form = deepCopy(this.data)
+                    this.form = deepCopy(this.data);
+                    this.form.selectAreas = [this.data.province_id, this.data.city_id];
                 }else {
                     this.form = deepCopy(defaultForm)
                 }
@@ -139,10 +164,9 @@
                 this.$refs.form.validate(valid => {
                     if(valid){
                         let data = deepCopy(this.form);
+                        data.province_id = data.selectAreas[0];
+                        data.city_id = data.selectAreas[1];
                         this.$emit('save', data);
-                        setTimeout(() => {
-                            this.$refs.form.resetFields();
-                        }, 500)
                     }
                 })
 

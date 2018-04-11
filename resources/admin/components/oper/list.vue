@@ -4,17 +4,14 @@
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="name" label="运营中心名称"/>
-            <el-table-column prop="contacter" label="联系人" />
-            <el-table-column prop="status" label="状态">
+            <el-table-column prop="contacter" label="负责人" />
+            <el-table-column prop="tel" label="联系电话" />
+            <el-table-column prop="status" label="合作状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.status === 2" class="c-danger">禁用</span>
+                    <span v-if="scope.row.status === 1" class="c-green">正常合作中</span>
+                    <span v-else-if="scope.row.status === 2" class="c-warning">已冻结</span>
+                    <span v-else-if="scope.row.status === 3" class="c-danger">停止合作</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="created_at" label="添加时间">
-                <template slot-scope="scope">
-                    {{scope.row.created_at.substr(0, 10)}}
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="250px">
@@ -22,7 +19,9 @@
                     <oper-item-options
                             :scope="scope"
                             @change="itemChanged"
-                            @refresh="getList"/>
+                            @refresh="getList"
+                            @genAccountSuccess="genAccountSuccess"
+                    />
                 </template>
             </el-table-column>
         </el-table>
@@ -89,6 +88,9 @@
             itemChanged(index, data){
                 this.list.splice(index, 1, data)
             },
+            genAccountSuccess(scope, account){
+                this.list[scope.$index].account = account;
+            }
         },
         created(){
             this.getList();
