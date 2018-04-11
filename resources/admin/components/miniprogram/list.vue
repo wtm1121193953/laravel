@@ -1,28 +1,27 @@
 <template>
-    <page title="运营中心管理" v-loading="isLoading">
-        <el-button class="fr" type="primary" @click="add">添加运营中心</el-button>
+    <page title="小程序配置管理" v-loading="isLoading">
+        <el-button class="fr" type="primary" @click="add">添加小程序配置</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
-            <el-table-column prop="name" label="运营中心名称"/>
-            <el-table-column prop="contacter" label="负责人" />
-            <el-table-column prop="tel" label="联系电话" />
-            <el-table-column prop="status" label="合作状态">
+            <el-table-column prop="name" label="小程序配置名称"/>
+            <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1" class="c-green">正常合作中</span>
-                    <span v-else-if="scope.row.status === 2" class="c-warning">已冻结</span>
-                    <span v-else-if="scope.row.status === 3" class="c-danger">停止合作</span>
+                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
+                    <span v-else-if="scope.row.status === 2" class="c-danger">禁用</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="350px">
+            <el-table-column prop="created_at" label="添加时间">
                 <template slot-scope="scope">
-                    <oper-item-options
+                    {{scope.row.created_at.substr(0, 10)}}
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="250px">
+                <template slot-scope="scope">
+                    <miniprogram-item-options
                             :scope="scope"
                             @change="itemChanged"
-                            @refresh="getList"
-                            @accountChanged="accountChanged"
-                            @miniprogramChanged="miniprogramChanged"
-                    />
+                            @refresh="getList"/>
                 </template>
             </el-table-column>
         </el-table>
@@ -34,8 +33,8 @@
                 :page-size="15"
                 :total="total"/>
 
-        <el-dialog title="添加运营中心" :visible.sync="isAdd">
-            <oper-form
+        <el-dialog title="添加小程序配置" :visible.sync="isAdd">
+            <miniprogram-form
                     @cancel="isAdd = false"
                     @save="doAdd"/>
         </el-dialog>
@@ -45,11 +44,11 @@
 <script>
     import api from '../../../assets/js/api'
 
-    import OperItemOptions from './oper-item-options'
-    import OperForm from './oper-form'
+    import MiniprogramItemOptions from './miniprogram-item-options'
+    import MiniprogramForm from './miniprogram-form'
 
     export default {
-        name: "oper-list",
+        name: "miniprogram-list",
         data(){
             return {
                 isAdd: false,
@@ -66,7 +65,7 @@
         },
         methods: {
             getList(){
-                api.get('/opers', this.query).then(data => {
+                api.get('/miniprograms', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                 })
@@ -79,7 +78,7 @@
             },
             doAdd(data){
                 this.isLoading = true;
-                api.post('/oper/add', data).then(() => {
+                api.post('/miniprogram/add', data).then(() => {
                     this.isAdd = false;
                     this.getList();
                 }).finally(() => {
@@ -88,27 +87,14 @@
             },
             itemChanged(index, data){
                 this.list.splice(index, 1, data)
-                this.getList();
             },
-            accountChanged(scope, account){
-                let row = this.list[scope.$index];
-                row.account = account;
-                this.list.splice(scope.$index, 1, row);
-                this.getList();
-            },
-            miniprogramChanged(scope, minprogram){
-                let row = this.list[scope.$index];
-                row.account = minprogram;
-                this.list.splice(scope.$index, 1, row);
-                this.getList();
-            }
         },
         created(){
             this.getList();
         },
         components: {
-            OperItemOptions,
-            OperForm,
+            MiniprogramItemOptions,
+            MiniprogramForm,
         }
     }
 </script>

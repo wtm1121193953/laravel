@@ -1901,11 +1901,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 var defaultForm = {
     name: '',
     appid: '',
-    secret: ''
+    secret: '',
+    mch_id: ''
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: 'miniprogram-form',
@@ -1919,7 +1923,8 @@ var defaultForm = {
             formRules: {
                 name: [{ required: true, message: '名称不能为空' }],
                 appid: [{ required: true, message: 'App ID 名称不能为空' }],
-                secret: [{ required: true, message: 'App Secret 不能为空' }]
+                secret: [{ required: true, message: 'App Secret 不能为空' }],
+                mch_id: [{ required: true, message: '微信支付商户号 不能为空' }]
             }
         };
     },
@@ -2358,14 +2363,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
     }, _defineProperty(_methods, 'itemChanged', function itemChanged(index, data) {
         this.list.splice(index, 1, data);
+        this.getList();
     }), _defineProperty(_methods, 'accountChanged', function accountChanged(scope, account) {
         var row = this.list[scope.$index];
         row.account = account;
         this.list.splice(scope.$index, 1, row);
+        this.getList();
     }), _defineProperty(_methods, 'miniprogramChanged', function miniprogramChanged(scope, minprogram) {
         var row = this.list[scope.$index];
         row.account = minprogram;
         this.list.splice(scope.$index, 1, row);
+        this.getList();
     }), _methods),
     created: function created() {
         this.getList();
@@ -14604,7 +14612,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14679,7 +14687,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -41808,6 +41816,23 @@ var render = function() {
                         _vm.$set(_vm.form, "secret", $$v)
                       },
                       expression: "form.secret"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { prop: "mch_id", label: "微信支付商户号" } },
+                [
+                  _c("el-input", {
+                    model: {
+                      value: _vm.form.mch_id,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "mch_id", $$v)
+                      },
+                      expression: "form.mch_id"
                     }
                   })
                 ],

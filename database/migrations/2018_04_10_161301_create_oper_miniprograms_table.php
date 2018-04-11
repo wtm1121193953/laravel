@@ -19,6 +19,7 @@ class CreateOperMiniprogramsTable extends Migration
             $table->string('name')->default('')->comment('小程序名称');
             $table->string('appid')->default('')->comment('小程序appid');
             $table->string('secret')->default('')->comment('小程序secret');
+            $table->string('mch_id')->default('')->comment('微信支付商户号');
             $table->timestamps();
 
             $table->comment = '运营中心小程序配置表';
