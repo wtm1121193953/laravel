@@ -9,6 +9,7 @@
 namespace App\Modules\Area;
 
 
+use App\Support\Utils;
 use Illuminate\Support\Facades\Cache;
 
 class AreaService
@@ -28,17 +29,7 @@ class AreaService
 
     public static function convertAreaToTree($list, $pid = 0, $tier=3)
     {
-        $tier --;
-        $tree = [];
-        foreach ($list as &$item) {
-            if($item->parent_id == $pid){
-                if($tier > 0){
-                    $sub = self::convertAreaToTree($list, $item->area_id, $tier);
-                    $item->sub = $sub;
-                }
-                $tree[] = $item;
-            }
-        }
+        $tree = Utils::convertListToTree($list, $pid, $tier, 'parent_id', 'area_id');
         return $tree;
     }
 }
