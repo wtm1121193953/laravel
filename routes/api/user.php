@@ -11,4 +11,6 @@ Route::prefix('user')
 
         Route::post('login', 'LoginController@login');
 
+        Route::get('area/tree', 'AreaController@getTree');
+
     });

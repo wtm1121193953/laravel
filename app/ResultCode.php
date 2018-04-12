@@ -17,12 +17,13 @@ class ResultCode
 
     const API_NOT_FOUND = 10000; // 接口不存在
     const PARAMS_INVALID = 10001; // 参数不合法
-    const NO_PERMISSION = 10002; // 参数不合法
+    const NO_PERMISSION = 10002; // 无权限操作
 
     const UNLOGIN = 10003;  // 未登录
     const ACCOUNT_NOT_FOUND = 10004; // 账号不存在
     const ACCOUNT_PASSWORD_ERROR = 10005;  // 账号密码错误
     const ACCOUNT_EXISTS = 10006;  // 账号已存在
+    const TOKEN_INVALID = 10007;  // token无效
 
     const DB_QUERY_FAIL = 10010;  // 数据库查询失败
     const DB_INSERT_FAIL = 10011;   // 数据库插入失败
@@ -49,4 +50,7 @@ class ResultCode
     const WECHAT_CERT_NOT_READABLE     = 70003; // 车企微信公众号支付证书不可读
     const WECHAT_CERT_KEY_NOT_FOUND    = 70004; // 车企微信公众号支付证书密钥不存在
     const WECHAT_CERT_KEY_NOT_READABLE = 70005; // 车企微信公众号支付证书密钥不可读
+
+    const WECHAT_OPEN_ID_NOT_FOUND = 70010; // 微信openId不存在
+    const WECHAT_APPID_INVALID = 70011; // 微信appid不存在
 }

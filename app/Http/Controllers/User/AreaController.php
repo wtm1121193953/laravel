@@ -2,24 +2,23 @@
 /**
  * Created by PhpStorm.
  * User: Administrator
- * Date: 2018/4/11
- * Time: 15:54
+ * Date: 2018/4/12
+ * Time: 0:43
  */
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\User;
 
+
+use App\Http\Controllers\Controller;
 use App\Modules\Area\AreaService;
 use App\Result;
 
-class AreaController
+class AreaController extends Controller
 {
-    /**
-     * 获取树形地区表
-     */
+
     public function getTree()
     {
         $tier = request('tier', 3);
         return Result::success(['list' => AreaService::getAsTree($tier)]);
     }
-
 }
