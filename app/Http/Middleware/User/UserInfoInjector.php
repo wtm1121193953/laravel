@@ -4,6 +4,7 @@ namespace App\Http\Middleware\User;
 
 use App\Modules\User\User;
 use Closure;
+use Illuminate\Support\Facades\App;
 
 /**
  * 注入用户信息, 可能不存在
@@ -24,6 +25,10 @@ class UserInfoInjector
         $openId = $request->get('current_open_id');
         $user = User::where('open_id', $openId)->first();
         if($user){
+            $request->attributes->add(['current_user' => $user]);
+        }
+        if(App::environment() === 'local'){
+            $user = User::firstOrFail();
             $request->attributes->add(['current_user' => $user]);
         }
         return $next($request);

@@ -18,4 +18,9 @@ Route::prefix('user')
         Route::get('merchants', 'MerchantController@getList');
         Route::get('merchant/goods', 'MerchantController@getGoods');
 
+        Route::get('orders', 'OrderController@getList');
+        Route::get('order/detail', 'OrderController@detail');
+        Route::get('order/add', 'OrderController@add');
+//        Route::get('order/pay', 'OrderController@pay');
+
     });

@@ -40,5 +40,10 @@ class MockTableDataSeeder extends Seeder
 
         // 填充商品数据
         factory(\App\Modules\Goods\Goods::class, 50)->create();
+
+        // 模拟用户数据
+        factory(\App\Modules\User\User::class)->create();
+        // 模拟订单数据
+
     }
 }

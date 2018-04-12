@@ -1,14 +1,13 @@
 <?php
 /**
  * A helper file for Laravel 5, to provide autocomplete information to your IDE
- * Generated for Laravel 5.5.33 on 2018-02-02.
+ * Generated for Laravel 5.6.12 on 2018-04-12 21:55:22.
+ *
+ * This file should not be included in your code, only analyzed by your IDE!
  *
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  * @see https://github.com/barryvdh/laravel-ide-helper
  */
-namespace  {
-    exit("This file should not be included, only analyzed by your IDE");
-}
 
 namespace Illuminate\Support\Facades { 
 
@@ -319,7 +318,7 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
-         * Determine if we are running in the console.
+         * Determine if the application is running in the console.
          *
          * @return bool 
          * @static 
@@ -330,7 +329,7 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
-         * Determine if we are running unit tests.
+         * Determine if the application is running unit tests.
          *
          * @return bool 
          * @static 
@@ -719,40 +718,6 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
-         * Define a callback to be used to configure Monolog.
-         *
-         * @param callable $callback
-         * @return $this 
-         * @static 
-         */ 
-        public static function configureMonologUsing($callback)
-        {
-            return \Illuminate\Foundation\Application::configureMonologUsing($callback);
-        }
-        
-        /**
-         * Determine if the application has a custom Monolog configurator.
-         *
-         * @return bool 
-         * @static 
-         */ 
-        public static function hasMonologConfigurator()
-        {
-            return \Illuminate\Foundation\Application::hasMonologConfigurator();
-        }
-        
-        /**
-         * Get the custom Monolog configurator for the application.
-         *
-         * @return callable 
-         * @static 
-         */ 
-        public static function getMonologConfigurator()
-        {
-            return \Illuminate\Foundation\Application::getMonologConfigurator();
-        }
-        
-        /**
          * Get the current application locale.
          *
          * @return string 
@@ -922,7 +887,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Bind a callback to resolve with Container::call.
          *
-         * @param string $method
+         * @param array|string $method
          * @param \Closure $callback
          * @return void 
          * @static 
@@ -1648,7 +1613,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Get the currently authenticated user.
          *
-         * @return \App\User|null 
+         * @return \App\Modules\User\User|null 
          * @static 
          */ 
         public static function user()
@@ -1683,7 +1648,7 @@ namespace Illuminate\Support\Facades {
          * Log the given user ID into the application without sessions or cookies.
          *
          * @param mixed $id
-         * @return \App\User|false 
+         * @return \App\Modules\User\User|false 
          * @static 
          */ 
         public static function onceUsingId($id)
@@ -1747,7 +1712,7 @@ namespace Illuminate\Support\Facades {
          *
          * @param mixed $id
          * @param bool $remember
-         * @return \App\User|false 
+         * @return \App\Modules\User\User|false 
          * @static 
          */ 
         public static function loginUsingId($id, $remember = false)
@@ -1794,7 +1759,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Get the last user we attempted to authenticate.
          *
-         * @return \App\User 
+         * @return \App\Modules\User\User 
          * @static 
          */ 
         public static function getLastAttempted()
@@ -1896,7 +1861,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Return the currently cached user.
          *
-         * @return \App\User|null 
+         * @return \App\Modules\User\User|null 
          * @static 
          */ 
         public static function getUser()
@@ -1942,7 +1907,7 @@ namespace Illuminate\Support\Facades {
         /**
          * Determine if the current user is authenticated.
          *
-         * @return \App\User 
+         * @return \App\Modules\User\User 
          * @throws \Illuminate\Auth\AuthenticationException
          * @static 
          */ 
@@ -2146,6 +2111,32 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
+         * Register a component alias directive.
+         *
+         * @param string $path
+         * @param string $alias
+         * @return void 
+         * @static 
+         */ 
+        public static function component($path, $alias = null)
+        {
+            \Illuminate\View\Compilers\BladeCompiler::component($path, $alias);
+        }
+        
+        /**
+         * Register an include alias directive.
+         *
+         * @param string $path
+         * @param string $alias
+         * @return void 
+         * @static 
+         */ 
+        public static function include($path, $alias = null)
+        {
+            \Illuminate\View\Compilers\BladeCompiler::include($path, $alias);
+        }
+        
+        /**
          * Register a handler for custom directives.
          *
          * @param string $name
@@ -2182,14 +2173,25 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
-         * Set the echo format to double encode entities.
+         * Set the "echo" format to double encode entities.
          *
          * @return void 
          * @static 
          */ 
-        public static function doubleEncode()
+        public static function withDoubleEncoding()
         {
-            \Illuminate\View\Compilers\BladeCompiler::doubleEncode();
+            \Illuminate\View\Compilers\BladeCompiler::withDoubleEncoding();
+        }
+        
+        /**
+         * Set the "echo" format to not double encode entities.
+         *
+         * @return void 
+         * @static 
+         */ 
+        public static function withoutDoubleEncoding()
+        {
+            \Illuminate\View\Compilers\BladeCompiler::withoutDoubleEncoding();
         }
         
         /**
@@ -2596,8 +2598,8 @@ namespace Illuminate\Support\Facades {
          * @param string $key The key of the item to store.
          * @param mixed $value The value of the item to store, must be serializable.
          * @param null|int|\DateInterval $ttl Optional. The TTL value of this item. If no value is sent and
-         *                                     the driver supports TTL then the library may set a default value
-         *                                     for it or let the driver take care of that.
+         *                                      the driver supports TTL then the library may set a default value
+         *                                      for it or let the driver take care of that.
          * @return bool True on success and false on failure.
          * @throws \Psr\SimpleCache\InvalidArgumentException
          *   MUST be thrown if the $key string is not a legal value.
@@ -2626,8 +2628,8 @@ namespace Illuminate\Support\Facades {
          *
          * @param \Psr\SimpleCache\iterable $values A list of key => value pairs for a multiple-set operation.
          * @param null|int|\DateInterval $ttl Optional. The TTL value of this item. If no value is sent and
-         *                                      the driver supports TTL then the library may set a default value
-         *                                      for it or let the driver take care of that.
+         *                                       the driver supports TTL then the library may set a default value
+         *                                       for it or let the driver take care of that.
          * @return bool True on success and false on failure.
          * @throws \Psr\SimpleCache\InvalidArgumentException
          *   MUST be thrown if $values is neither an array nor a Traversable,
@@ -3139,14 +3141,14 @@ namespace Illuminate\Support\Facades {
          * @param int $minutes
          * @param string $path
          * @param string $domain
-         * @param bool $secure
+         * @param bool|null $secure
          * @param bool $httpOnly
          * @param bool $raw
          * @param string|null $sameSite
          * @return \Symfony\Component\HttpFoundation\Cookie 
          * @static 
          */ 
-        public static function make($name, $value, $minutes = 0, $path = null, $domain = null, $secure = false, $httpOnly = true, $raw = false, $sameSite = null)
+        public static function make($name, $value, $minutes = 0, $path = null, $domain = null, $secure = null, $httpOnly = true, $raw = false, $sameSite = null)
         {
             return \Illuminate\Cookie\CookieJar::make($name, $value, $minutes, $path, $domain, $secure, $httpOnly, $raw, $sameSite);
         }
@@ -3158,14 +3160,14 @@ namespace Illuminate\Support\Facades {
          * @param string $value
          * @param string $path
          * @param string $domain
-         * @param bool $secure
+         * @param bool|null $secure
          * @param bool $httpOnly
          * @param bool $raw
          * @param string|null $sameSite
          * @return \Symfony\Component\HttpFoundation\Cookie 
          * @static 
          */ 
-        public static function forever($name, $value, $path = null, $domain = null, $secure = false, $httpOnly = true, $raw = false, $sameSite = null)
+        public static function forever($name, $value, $path = null, $domain = null, $secure = null, $httpOnly = true, $raw = false, $sameSite = null)
         {
             return \Illuminate\Cookie\CookieJar::forever($name, $value, $path, $domain, $secure, $httpOnly, $raw, $sameSite);
         }
@@ -5131,17 +5133,50 @@ namespace Illuminate\Support\Facades {
     class Hash {
         
         /**
+         * Create an instance of the Bcrypt hash Driver.
+         *
+         * @return \Illuminate\Hashing\BcryptHasher 
+         * @static 
+         */ 
+        public static function createBcryptDriver()
+        {
+            return \Illuminate\Hashing\HashManager::createBcryptDriver();
+        }
+        
+        /**
+         * Create an instance of the Argon2 hash Driver.
+         *
+         * @return \Illuminate\Hashing\ArgonHasher 
+         * @static 
+         */ 
+        public static function createArgonDriver()
+        {
+            return \Illuminate\Hashing\HashManager::createArgonDriver();
+        }
+        
+        /**
+         * Get information about the given hashed value.
+         *
+         * @param string $hashedValue
+         * @return array 
+         * @static 
+         */ 
+        public static function info($hashedValue)
+        {
+            return \Illuminate\Hashing\HashManager::info($hashedValue);
+        }
+        
+        /**
          * Hash the given value.
          *
          * @param string $value
          * @param array $options
          * @return string 
-         * @throws \RuntimeException
          * @static 
          */ 
         public static function make($value, $options = array())
         {
-            return \Illuminate\Hashing\BcryptHasher::make($value, $options);
+            return \Illuminate\Hashing\HashManager::make($value, $options);
         }
         
         /**
@@ -5155,7 +5190,7 @@ namespace Illuminate\Support\Facades {
          */ 
         public static function check($value, $hashedValue, $options = array())
         {
-            return \Illuminate\Hashing\BcryptHasher::check($value, $hashedValue, $options);
+            return \Illuminate\Hashing\HashManager::check($value, $hashedValue, $options);
         }
         
         /**
@@ -5168,19 +5203,57 @@ namespace Illuminate\Support\Facades {
          */ 
         public static function needsRehash($hashedValue, $options = array())
         {
-            return \Illuminate\Hashing\BcryptHasher::needsRehash($hashedValue, $options);
+            return \Illuminate\Hashing\HashManager::needsRehash($hashedValue, $options);
         }
         
         /**
-         * Set the default password work factor.
+         * Get the default driver name.
          *
-         * @param int $rounds
+         * @return string 
+         * @static 
+         */ 
+        public static function getDefaultDriver()
+        {
+            return \Illuminate\Hashing\HashManager::getDefaultDriver();
+        }
+        
+        /**
+         * Get a driver instance.
+         *
+         * @param string $driver
+         * @return mixed 
+         * @static 
+         */ 
+        public static function driver($driver = null)
+        {
+            //Method inherited from \Illuminate\Support\Manager            
+            return \Illuminate\Hashing\HashManager::driver($driver);
+        }
+        
+        /**
+         * Register a custom driver creator Closure.
+         *
+         * @param string $driver
+         * @param \Closure $callback
          * @return $this 
          * @static 
          */ 
-        public static function setRounds($rounds)
+        public static function extend($driver, $callback)
         {
-            return \Illuminate\Hashing\BcryptHasher::setRounds($rounds);
+            //Method inherited from \Illuminate\Support\Manager            
+            return \Illuminate\Hashing\HashManager::extend($driver, $callback);
+        }
+        
+        /**
+         * Get all of the created "drivers".
+         *
+         * @return array 
+         * @static 
+         */ 
+        public static function getDrivers()
+        {
+            //Method inherited from \Illuminate\Support\Manager            
+            return \Illuminate\Hashing\HashManager::getDrivers();
         }
          
     }
@@ -5444,6 +5517,18 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
+         * Set the loaded translation groups.
+         *
+         * @param array $loaded
+         * @return void 
+         * @static 
+         */ 
+        public static function setLoaded($loaded)
+        {
+            \Illuminate\Translation\Translator::setLoaded($loaded);
+        }
+        
+        /**
          * Set the parsed value of a key.
          *
          * @param string $key
@@ -5603,9 +5688,82 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
-         * Log a message to the logs.
+         * Create a new, on-demand aggregate logger instance.
          *
-         * @param string $level
+         * @param array $channels
+         * @param string|null $channel
+         * @return \Psr\Log\LoggerInterface 
+         * @static 
+         */ 
+        public static function stack($channels, $channel = null)
+        {
+            return \Illuminate\Log\LogManager::stack($channels, $channel);
+        }
+        
+        /**
+         * Get a log channel instance.
+         *
+         * @param string|null $channel
+         * @return mixed 
+         * @static 
+         */ 
+        public static function channel($channel = null)
+        {
+            return \Illuminate\Log\LogManager::channel($channel);
+        }
+        
+        /**
+         * Get a log driver instance.
+         *
+         * @param string|null $driver
+         * @return mixed 
+         * @static 
+         */ 
+        public static function driver($driver = null)
+        {
+            return \Illuminate\Log\LogManager::driver($driver);
+        }
+        
+        /**
+         * Get the default log driver name.
+         *
+         * @return string 
+         * @static 
+         */ 
+        public static function getDefaultDriver()
+        {
+            return \Illuminate\Log\LogManager::getDefaultDriver();
+        }
+        
+        /**
+         * Set the default log driver name.
+         *
+         * @param string $name
+         * @return void 
+         * @static 
+         */ 
+        public static function setDefaultDriver($name)
+        {
+            \Illuminate\Log\LogManager::setDefaultDriver($name);
+        }
+        
+        /**
+         * Register a custom driver creator Closure.
+         *
+         * @param string $driver
+         * @param \Closure $callback
+         * @return $this 
+         * @static 
+         */ 
+        public static function extend($driver, $callback)
+        {
+            return \Illuminate\Log\LogManager::extend($driver, $callback);
+        }
+        
+        /**
+         * Logs with an arbitrary level.
+         *
+         * @param mixed $level
          * @param string $message
          * @param array $context
          * @return void 
@@ -5613,122 +5771,7 @@ namespace Illuminate\Support\Facades {
          */ 
         public static function log($level, $message, $context = array())
         {
-            \Illuminate\Log\Writer::log($level, $message, $context);
-        }
-        
-        /**
-         * Dynamically pass log calls into the writer.
-         *
-         * @param string $level
-         * @param string $message
-         * @param array $context
-         * @return void 
-         * @static 
-         */ 
-        public static function write($level, $message, $context = array())
-        {
-            \Illuminate\Log\Writer::write($level, $message, $context);
-        }
-        
-        /**
-         * Register a file log handler.
-         *
-         * @param string $path
-         * @param string $level
-         * @return void 
-         * @static 
-         */ 
-        public static function useFiles($path, $level = 'debug')
-        {
-            \Illuminate\Log\Writer::useFiles($path, $level);
-        }
-        
-        /**
-         * Register a daily file log handler.
-         *
-         * @param string $path
-         * @param int $days
-         * @param string $level
-         * @return void 
-         * @static 
-         */ 
-        public static function useDailyFiles($path, $days = 0, $level = 'debug')
-        {
-            \Illuminate\Log\Writer::useDailyFiles($path, $days, $level);
-        }
-        
-        /**
-         * Register a Syslog handler.
-         *
-         * @param string $name
-         * @param string $level
-         * @param mixed $facility
-         * @return \Psr\Log\LoggerInterface 
-         * @static 
-         */ 
-        public static function useSyslog($name = 'laravel', $level = 'debug', $facility = 8)
-        {
-            return \Illuminate\Log\Writer::useSyslog($name, $level, $facility);
-        }
-        
-        /**
-         * Register an error_log handler.
-         *
-         * @param string $level
-         * @param int $messageType
-         * @return void 
-         * @static 
-         */ 
-        public static function useErrorLog($level = 'debug', $messageType = 0)
-        {
-            \Illuminate\Log\Writer::useErrorLog($level, $messageType);
-        }
-        
-        /**
-         * Register a new callback handler for when a log event is triggered.
-         *
-         * @param \Closure $callback
-         * @return void 
-         * @throws \RuntimeException
-         * @static 
-         */ 
-        public static function listen($callback)
-        {
-            \Illuminate\Log\Writer::listen($callback);
-        }
-        
-        /**
-         * Get the underlying Monolog instance.
-         *
-         * @return \Monolog\Logger 
-         * @static 
-         */ 
-        public static function getMonolog()
-        {
-            return \Illuminate\Log\Writer::getMonolog();
-        }
-        
-        /**
-         * Get the event dispatcher instance.
-         *
-         * @return \Illuminate\Contracts\Events\Dispatcher 
-         * @static 
-         */ 
-        public static function getEventDispatcher()
-        {
-            return \Illuminate\Log\Writer::getEventDispatcher();
-        }
-        
-        /**
-         * Set the event dispatcher instance.
-         *
-         * @param \Illuminate\Contracts\Events\Dispatcher $dispatcher
-         * @return void 
-         * @static 
-         */ 
-        public static function setEventDispatcher($dispatcher)
-        {
-            \Illuminate\Log\Writer::setEventDispatcher($dispatcher);
+            \Illuminate\Log\LogManager::log($level, $message, $context);
         }
          
     }
@@ -5796,6 +5839,19 @@ namespace Illuminate\Support\Facades {
         public static function bcc($users)
         {
             return \Illuminate\Mail\Mailer::bcc($users);
+        }
+        
+        /**
+         * Send a new message with only an HTML part.
+         *
+         * @param string $html
+         * @param mixed $callback
+         * @return void 
+         * @static 
+         */ 
+        public static function html($html, $callback)
+        {
+            \Illuminate\Mail\Mailer::html($html, $callback);
         }
         
         /**
@@ -6715,6 +6771,46 @@ namespace Illuminate\Support\Facades {
          
     }
 
+    class Redis {
+        
+        /**
+         * Get a Redis connection by name.
+         *
+         * @param string|null $name
+         * @return \Illuminate\Redis\Connections\Connection 
+         * @static 
+         */ 
+        public static function connection($name = null)
+        {
+            return \Illuminate\Redis\RedisManager::connection($name);
+        }
+        
+        /**
+         * Resolve the given connection by name.
+         *
+         * @param string|null $name
+         * @return \Illuminate\Redis\Connections\Connection 
+         * @throws \InvalidArgumentException
+         * @static 
+         */ 
+        public static function resolve($name = null)
+        {
+            return \Illuminate\Redis\RedisManager::resolve($name);
+        }
+        
+        /**
+         * Return all of the created connections.
+         *
+         * @return array 
+         * @static 
+         */ 
+        public static function connections()
+        {
+            return \Illuminate\Redis\RedisManager::connections();
+        }
+         
+    }
+
     class Request {
         
         /**
@@ -6981,6 +7077,19 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
+         * Create a new request instance from the given Laravel request.
+         *
+         * @param \Illuminate\Http\Request $from
+         * @param \Illuminate\Http\Request|null $to
+         * @return static 
+         * @static 
+         */ 
+        public static function createFrom($from, $to = null)
+        {
+            return \Illuminate\Http\Request::createFrom($from, $to);
+        }
+        
+        /**
          * Create an Illuminate request from a Symfony instance.
          *
          * @param \Symfony\Component\HttpFoundation\Request $request
@@ -7019,6 +7128,17 @@ namespace Illuminate\Support\Facades {
         public static function session()
         {
             return \Illuminate\Http\Request::session();
+        }
+        
+        /**
+         * Get the session associated with the request.
+         *
+         * @return \Illuminate\Session\Store|null 
+         * @static 
+         */ 
+        public static function getSession()
+        {
+            return \Illuminate\Http\Request::getSession();
         }
         
         /**
@@ -7198,7 +7318,7 @@ namespace Illuminate\Support\Facades {
          * @param array $cookies The COOKIE parameters
          * @param array $files The FILES parameters
          * @param array $server The SERVER parameters
-         * @param string|resource $content The raw body data
+         * @param string|resource|null $content The raw body data
          * @static 
          */ 
         public static function initialize($query = array(), $request = array(), $attributes = array(), $cookies = array(), $files = array(), $server = array(), $content = null)
@@ -7231,7 +7351,7 @@ namespace Illuminate\Support\Facades {
          * @param array $cookies The request cookies ($_COOKIE)
          * @param array $files The request files ($_FILES)
          * @param array $server The server parameters ($_SERVER)
-         * @param string|resource $content The raw body data
+         * @param string|resource|null $content The raw body data
          * @return static 
          * @static 
          */ 
@@ -7281,10 +7401,10 @@ namespace Illuminate\Support\Facades {
          * @throws \InvalidArgumentException When $trustedHeaderSet is invalid
          * @static 
          */ 
-        public static function setTrustedProxies($proxies)
+        public static function setTrustedProxies($proxies, $trustedHeaderSet)
         {
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::setTrustedProxies($proxies);
+            return \Illuminate\Http\Request::setTrustedProxies($proxies, $trustedHeaderSet);
         }
         
         /**
@@ -7335,46 +7455,6 @@ namespace Illuminate\Support\Facades {
         {
             //Method inherited from \Symfony\Component\HttpFoundation\Request            
             return \Illuminate\Http\Request::getTrustedHosts();
-        }
-        
-        /**
-         * Sets the name for trusted headers.
-         * 
-         * The following header keys are supported:
-         * 
-         *  * Request::HEADER_CLIENT_IP:    defaults to X-Forwarded-For   (see getClientIp())
-         *  * Request::HEADER_CLIENT_HOST:  defaults to X-Forwarded-Host  (see getHost())
-         *  * Request::HEADER_CLIENT_PORT:  defaults to X-Forwarded-Port  (see getPort())
-         *  * Request::HEADER_CLIENT_PROTO: defaults to X-Forwarded-Proto (see getScheme() and isSecure())
-         *  * Request::HEADER_FORWARDED:    defaults to Forwarded         (see RFC 7239)
-         * 
-         * Setting an empty value allows to disable the trusted header for the given key.
-         *
-         * @param string $key The header key
-         * @param string $value The header name
-         * @throws \InvalidArgumentException
-         * @deprecated since version 3.3, to be removed in 4.0. Use the $trustedHeaderSet argument of the Request::setTrustedProxies() method instead.
-         * @static 
-         */ 
-        public static function setTrustedHeaderName($key, $value)
-        {
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::setTrustedHeaderName($key, $value);
-        }
-        
-        /**
-         * Gets the trusted proxy header name.
-         *
-         * @param string $key The header key
-         * @return string The header name
-         * @throws \InvalidArgumentException
-         * @deprecated since version 3.3, to be removed in 4.0. Use the Request::getTrustedHeaderSet() method instead.
-         * @static 
-         */ 
-        public static function getTrustedHeaderName($key)
-        {
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getTrustedHeaderName($key);
         }
         
         /**
@@ -7445,18 +7525,6 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
-         * Gets the Session.
-         *
-         * @return \Symfony\Component\HttpFoundation\SessionInterface|null The session
-         * @static 
-         */ 
-        public static function getSession()
-        {
-            //Method inherited from \Symfony\Component\HttpFoundation\Request            
-            return \Illuminate\Http\Request::getSession();
-        }
-        
-        /**
          * Whether the request contains a Session which was started in one of the
          * previous requests.
          *
@@ -7524,10 +7592,6 @@ namespace Illuminate\Support\Facades {
          * header value is a comma+space separated list of IP addresses, the left-most
          * being the original client, and each successive proxy that passed the request
          * adding the IP address where it received the request from.
-         * 
-         * If your reverse proxy uses a different header name than "X-Forwarded-For",
-         * ("Client-Ip" for instance), configure it via the $trustedHeaderSet
-         * argument of the Request::setTrustedProxies() method instead.
          *
          * @return string|null The client IP address
          * @see getClientIps()
@@ -7628,10 +7692,6 @@ namespace Illuminate\Support\Facades {
          * when trusted proxies were set via "setTrustedProxies()".
          * 
          * The "X-Forwarded-Port" header must contain the client port.
-         * 
-         * If your reverse proxy uses a different header name than "X-Forwarded-Port",
-         * configure it via via the $trustedHeaderSet argument of the
-         * Request::setTrustedProxies() method instead.
          *
          * @return int|string can be a string if fetched from the server bag
          * @static 
@@ -7792,10 +7852,6 @@ namespace Illuminate\Support\Facades {
          * when trusted proxies were set via "setTrustedProxies()".
          * 
          * The "X-Forwarded-Proto" header must contain the protocol: "https" or "http".
-         * 
-         * If your reverse proxy uses a different header name than "X-Forwarded-Proto"
-         * ("SSL_HTTPS" for instance), configure it via the $trustedHeaderSet
-         * argument of the Request::setTrustedProxies() method instead.
          *
          * @return bool 
          * @static 
@@ -7813,10 +7869,6 @@ namespace Illuminate\Support\Facades {
          * when trusted proxies were set via "setTrustedProxies()".
          * 
          * The "X-Forwarded-Host" header must contain the client host name.
-         * 
-         * If your reverse proxy uses a different header name than "X-Forwarded-Host",
-         * configure it via the $trustedHeaderSet argument of the
-         * Request::setTrustedProxies() method instead.
          *
          * @return string 
          * @throws SuspiciousOperationException when the host name is invalid or not trusted
@@ -8253,7 +8305,7 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
-         * Determine if the current request is asking for JSON in return.
+         * Determine if the current request is asking for JSON.
          *
          * @return bool 
          * @static 
@@ -8285,6 +8337,17 @@ namespace Illuminate\Support\Facades {
         public static function prefers($contentTypes)
         {
             return \Illuminate\Http\Request::prefers($contentTypes);
+        }
+        
+        /**
+         * Determine if the current request accepts any content type.
+         *
+         * @return bool 
+         * @static 
+         */ 
+        public static function acceptsAnyContentType()
+        {
+            return \Illuminate\Http\Request::acceptsAnyContentType();
         }
         
         /**
@@ -8456,11 +8519,11 @@ namespace Illuminate\Support\Facades {
         /**
          * Determine if the request contains any of the given inputs.
          *
-         * @param mixed $key
+         * @param string|array $key
          * @return bool 
          * @static 
          */ 
-        public static function hasAny($keys = null)
+        public static function hasAny($keys)
         {
             return \Illuminate\Http\Request::hasAny($keys);
         }
@@ -8475,6 +8538,18 @@ namespace Illuminate\Support\Facades {
         public static function filled($key)
         {
             return \Illuminate\Http\Request::filled($key);
+        }
+        
+        /**
+         * Determine if the request contains a non-empty value for any of the given inputs.
+         *
+         * @param string|array $keys
+         * @return bool 
+         * @static 
+         */ 
+        public static function anyFilled($keys)
+        {
+            return \Illuminate\Http\Request::anyFilled($keys);
         }
         
         /**
@@ -8503,9 +8578,9 @@ namespace Illuminate\Support\Facades {
         /**
          * Retrieve an input item from the request.
          *
-         * @param string $key
+         * @param string|null $key
          * @param string|array|null $default
-         * @return string|array 
+         * @return string|array|null 
          * @static 
          */ 
         public static function input($key = null, $default = null)
@@ -8670,6 +8745,16 @@ namespace Illuminate\Support\Facades {
         {
             return \Illuminate\Http\Request::validate($rules, $params);
         }
+        
+        /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function hasValidSignature()
+        {
+            return \Illuminate\Http\Request::hasValidSignature();
+        }
          
     }
 
@@ -8750,10 +8835,25 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
+         * Return a new streamed response as a file download from the application.
+         *
+         * @param \Closure $callback
+         * @param string|null $name
+         * @param array $headers
+         * @param string|null $disposition
+         * @return \Symfony\Component\HttpFoundation\StreamedResponse 
+         * @static 
+         */ 
+        public static function streamDownload($callback, $name = null, $headers = array(), $disposition = 'attachment')
+        {
+            return \Illuminate\Routing\ResponseFactory::streamDownload($callback, $name, $headers, $disposition);
+        }
+        
+        /**
          * Create a new file download response.
          *
          * @param \SplFileInfo|string $file
-         * @param string $name
+         * @param string|null $name
          * @param array $headers
          * @param string|null $disposition
          * @return \Symfony\Component\HttpFoundation\BinaryFileResponse 
@@ -10525,6 +10625,18 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
+         * Create an instance of the sftp driver.
+         *
+         * @param array $config
+         * @return \Illuminate\Filesystem\FilesystemAdapter 
+         * @static 
+         */ 
+        public static function createSftpDriver($config)
+        {
+            return \Illuminate\Filesystem\FilesystemManager::createSftpDriver($config);
+        }
+        
+        /**
          * Create an instance of the Amazon S3 driver.
          *
          * @param array $config
@@ -11125,6 +11237,46 @@ namespace Illuminate\Support\Facades {
         }
         
         /**
+         * Create a signed route URL for a named route.
+         *
+         * @param string $name
+         * @param array $parameters
+         * @param \DateTimeInterface|int $expiration
+         * @return string 
+         * @static 
+         */ 
+        public static function signedRoute($name, $parameters = array(), $expiration = null)
+        {
+            return \Illuminate\Routing\UrlGenerator::signedRoute($name, $parameters, $expiration);
+        }
+        
+        /**
+         * Create a temporary signed route URL for a named route.
+         *
+         * @param string $name
+         * @param \DateTimeInterface|int $expiration
+         * @param array $parameters
+         * @return string 
+         * @static 
+         */ 
+        public static function temporarySignedRoute($name, $expiration, $parameters = array())
+        {
+            return \Illuminate\Routing\UrlGenerator::temporarySignedRoute($name, $expiration, $parameters);
+        }
+        
+        /**
+         * Determine if the given request has a valid signature.
+         *
+         * @param \Illuminate\Http\Request $request
+         * @return bool 
+         * @static 
+         */ 
+        public static function hasValidSignature($request)
+        {
+            return \Illuminate\Routing\UrlGenerator::hasValidSignature($request);
+        }
+        
+        /**
          * Get the URL to a named route.
          *
          * @param string $name
@@ -11331,6 +11483,18 @@ namespace Illuminate\Support\Facades {
         public static function setSessionResolver($sessionResolver)
         {
             return \Illuminate\Routing\UrlGenerator::setSessionResolver($sessionResolver);
+        }
+        
+        /**
+         * Set the encryption key resolver.
+         *
+         * @param callable $keyResolver
+         * @return $this 
+         * @static 
+         */ 
+        public static function setKeyResolver($keyResolver)
+        {
+            return \Illuminate\Routing\UrlGenerator::setKeyResolver($keyResolver);
         }
         
         /**
@@ -12383,12 +12547,562 @@ namespace Mews\Captcha\Facades {
          * Generate captcha image html tag
          *
          * @param null $config
+         * @param array $attrs HTML attributes supplied to the image tag where key is the attribute
+         * and the value is the attribute value
          * @return string 
          * @static 
          */ 
-        public static function img($config = null)
+        public static function img($config = null, $attrs = array())
         {
-            return \Mews\Captcha\Captcha::img($config);
+            return \Mews\Captcha\Captcha::img($config, $attrs);
+        }
+         
+    }
+ 
+}
+
+namespace Barryvdh\Debugbar { 
+
+    class Facade {
+        
+        /**
+         * Enable the Debugbar and boot, if not already booted.
+         *
+         * @static 
+         */ 
+        public static function enable()
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::enable();
+        }
+        
+        /**
+         * Boot the debugbar (add collectors, renderer and listener)
+         *
+         * @static 
+         */ 
+        public static function boot()
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::boot();
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function shouldCollect($name, $default = false)
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::shouldCollect($name, $default);
+        }
+        
+        /**
+         * Adds a data collector
+         *
+         * @param \Barryvdh\Debugbar\DataCollectorInterface $collector
+         * @throws DebugBarException
+         * @return $this 
+         * @static 
+         */ 
+        public static function addCollector($collector)
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::addCollector($collector);
+        }
+        
+        /**
+         * Handle silenced errors
+         *
+         * @param $level
+         * @param $message
+         * @param string $file
+         * @param int $line
+         * @param array $context
+         * @throws \ErrorException
+         * @static 
+         */ 
+        public static function handleError($level, $message, $file = '', $line = 0, $context = array())
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::handleError($level, $message, $file, $line, $context);
+        }
+        
+        /**
+         * Starts a measure
+         *
+         * @param string $name Internal name, used to stop the measure
+         * @param string $label Public name
+         * @static 
+         */ 
+        public static function startMeasure($name, $label = null)
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::startMeasure($name, $label);
+        }
+        
+        /**
+         * Stops a measure
+         *
+         * @param string $name
+         * @static 
+         */ 
+        public static function stopMeasure($name)
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::stopMeasure($name);
+        }
+        
+        /**
+         * Adds an exception to be profiled in the debug bar
+         *
+         * @param \Exception $e
+         * @deprecated in favor of addThrowable
+         * @static 
+         */ 
+        public static function addException($e)
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::addException($e);
+        }
+        
+        /**
+         * Adds an exception to be profiled in the debug bar
+         *
+         * @param \Exception $e
+         * @static 
+         */ 
+        public static function addThrowable($e)
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::addThrowable($e);
+        }
+        
+        /**
+         * Returns a JavascriptRenderer for this instance
+         *
+         * @param string $baseUrl
+         * @param string $basePathng
+         * @return \Barryvdh\Debugbar\JavascriptRenderer 
+         * @static 
+         */ 
+        public static function getJavascriptRenderer($baseUrl = null, $basePath = null)
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::getJavascriptRenderer($baseUrl, $basePath);
+        }
+        
+        /**
+         * Modify the response and inject the debugbar (or data in headers)
+         *
+         * @param \Symfony\Component\HttpFoundation\Request $request
+         * @param \Symfony\Component\HttpFoundation\Response $response
+         * @return \Symfony\Component\HttpFoundation\Response 
+         * @static 
+         */ 
+        public static function modifyResponse($request, $response)
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::modifyResponse($request, $response);
+        }
+        
+        /**
+         * Check if the Debugbar is enabled
+         *
+         * @return boolean 
+         * @static 
+         */ 
+        public static function isEnabled()
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::isEnabled();
+        }
+        
+        /**
+         * Collects the data from the collectors
+         *
+         * @return array 
+         * @static 
+         */ 
+        public static function collect()
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::collect();
+        }
+        
+        /**
+         * Injects the web debug toolbar into the given Response.
+         *
+         * @param \Symfony\Component\HttpFoundation\Response $response A Response instance
+         * Based on https://github.com/symfony/WebProfilerBundle/blob/master/EventListener/WebDebugToolbarListener.php
+         * @static 
+         */ 
+        public static function injectDebugbar($response)
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::injectDebugbar($response);
+        }
+        
+        /**
+         * Disable the Debugbar
+         *
+         * @static 
+         */ 
+        public static function disable()
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::disable();
+        }
+        
+        /**
+         * Adds a measure
+         *
+         * @param string $label
+         * @param float $start
+         * @param float $end
+         * @static 
+         */ 
+        public static function addMeasure($label, $start, $end)
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::addMeasure($label, $start, $end);
+        }
+        
+        /**
+         * Utility function to measure the execution of a Closure
+         *
+         * @param string $label
+         * @param \Closure $closure
+         * @static 
+         */ 
+        public static function measure($label, $closure)
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::measure($label, $closure);
+        }
+        
+        /**
+         * Collect data in a CLI request
+         *
+         * @return array 
+         * @static 
+         */ 
+        public static function collectConsole()
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::collectConsole();
+        }
+        
+        /**
+         * Adds a message to the MessagesCollector
+         * 
+         * A message can be anything from an object to a string
+         *
+         * @param mixed $message
+         * @param string $label
+         * @static 
+         */ 
+        public static function addMessage($message, $label = 'info')
+        {
+            return \Barryvdh\Debugbar\LaravelDebugbar::addMessage($message, $label);
+        }
+        
+        /**
+         * Checks if a data collector has been added
+         *
+         * @param string $name
+         * @return boolean 
+         * @static 
+         */ 
+        public static function hasCollector($name)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::hasCollector($name);
+        }
+        
+        /**
+         * Returns a data collector
+         *
+         * @param string $name
+         * @return \DebugBar\DataCollectorInterface 
+         * @throws DebugBarException
+         * @static 
+         */ 
+        public static function getCollector($name)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::getCollector($name);
+        }
+        
+        /**
+         * Returns an array of all data collectors
+         *
+         * @return \DebugBar\array[DataCollectorInterface] 
+         * @static 
+         */ 
+        public static function getCollectors()
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::getCollectors();
+        }
+        
+        /**
+         * Sets the request id generator
+         *
+         * @param \DebugBar\RequestIdGeneratorInterface $generator
+         * @return $this 
+         * @static 
+         */ 
+        public static function setRequestIdGenerator($generator)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::setRequestIdGenerator($generator);
+        }
+        
+        /**
+         * 
+         *
+         * @return \DebugBar\RequestIdGeneratorInterface 
+         * @static 
+         */ 
+        public static function getRequestIdGenerator()
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::getRequestIdGenerator();
+        }
+        
+        /**
+         * Returns the id of the current request
+         *
+         * @return string 
+         * @static 
+         */ 
+        public static function getCurrentRequestId()
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::getCurrentRequestId();
+        }
+        
+        /**
+         * Sets the storage backend to use to store the collected data
+         *
+         * @param \DebugBar\StorageInterface $storage
+         * @return $this 
+         * @static 
+         */ 
+        public static function setStorage($storage = null)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::setStorage($storage);
+        }
+        
+        /**
+         * 
+         *
+         * @return \DebugBar\StorageInterface 
+         * @static 
+         */ 
+        public static function getStorage()
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::getStorage();
+        }
+        
+        /**
+         * Checks if the data will be persisted
+         *
+         * @return boolean 
+         * @static 
+         */ 
+        public static function isDataPersisted()
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::isDataPersisted();
+        }
+        
+        /**
+         * Sets the HTTP driver
+         *
+         * @param \DebugBar\HttpDriverInterface $driver
+         * @return $this 
+         * @static 
+         */ 
+        public static function setHttpDriver($driver)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::setHttpDriver($driver);
+        }
+        
+        /**
+         * Returns the HTTP driver
+         * 
+         * If no http driver where defined, a PhpHttpDriver is automatically created
+         *
+         * @return \DebugBar\HttpDriverInterface 
+         * @static 
+         */ 
+        public static function getHttpDriver()
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::getHttpDriver();
+        }
+        
+        /**
+         * Returns collected data
+         * 
+         * Will collect the data if none have been collected yet
+         *
+         * @return array 
+         * @static 
+         */ 
+        public static function getData()
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::getData();
+        }
+        
+        /**
+         * Returns an array of HTTP headers containing the data
+         *
+         * @param string $headerName
+         * @param integer $maxHeaderLength
+         * @return array 
+         * @static 
+         */ 
+        public static function getDataAsHeaders($headerName = 'phpdebugbar', $maxHeaderLength = 4096, $maxTotalHeaderLength = 250000)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::getDataAsHeaders($headerName, $maxHeaderLength, $maxTotalHeaderLength);
+        }
+        
+        /**
+         * Sends the data through the HTTP headers
+         *
+         * @param bool $useOpenHandler
+         * @param string $headerName
+         * @param integer $maxHeaderLength
+         * @return $this 
+         * @static 
+         */ 
+        public static function sendDataInHeaders($useOpenHandler = null, $headerName = 'phpdebugbar', $maxHeaderLength = 4096)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::sendDataInHeaders($useOpenHandler, $headerName, $maxHeaderLength);
+        }
+        
+        /**
+         * Stacks the data in the session for later rendering
+         *
+         * @static 
+         */ 
+        public static function stackData()
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::stackData();
+        }
+        
+        /**
+         * Checks if there is stacked data in the session
+         *
+         * @return boolean 
+         * @static 
+         */ 
+        public static function hasStackedData()
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::hasStackedData();
+        }
+        
+        /**
+         * Returns the data stacked in the session
+         *
+         * @param boolean $delete Whether to delete the data in the session
+         * @return array 
+         * @static 
+         */ 
+        public static function getStackedData($delete = true)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::getStackedData($delete);
+        }
+        
+        /**
+         * Sets the key to use in the $_SESSION array
+         *
+         * @param string $ns
+         * @return $this 
+         * @static 
+         */ 
+        public static function setStackDataSessionNamespace($ns)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::setStackDataSessionNamespace($ns);
+        }
+        
+        /**
+         * Returns the key used in the $_SESSION array
+         *
+         * @return string 
+         * @static 
+         */ 
+        public static function getStackDataSessionNamespace()
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::getStackDataSessionNamespace();
+        }
+        
+        /**
+         * Sets whether to only use the session to store stacked data even
+         * if a storage is enabled
+         *
+         * @param boolean $enabled
+         * @return $this 
+         * @static 
+         */ 
+        public static function setStackAlwaysUseSessionStorage($enabled = true)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::setStackAlwaysUseSessionStorage($enabled);
+        }
+        
+        /**
+         * Checks if the session is always used to store stacked data
+         * even if a storage is enabled
+         *
+         * @return boolean 
+         * @static 
+         */ 
+        public static function isStackAlwaysUseSessionStorage()
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::isStackAlwaysUseSessionStorage();
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function offsetSet($key, $value)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::offsetSet($key, $value);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function offsetGet($key)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::offsetGet($key);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function offsetExists($key)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::offsetExists($key);
+        }
+        
+        /**
+         * 
+         *
+         * @static 
+         */ 
+        public static function offsetUnset($key)
+        {
+            //Method inherited from \DebugBar\DebugBar            
+            return \Barryvdh\Debugbar\LaravelDebugbar::offsetUnset($key);
         }
          
     }
@@ -13197,6 +13911,20 @@ namespace  {
             }
          
             /**
+             * Add a subselect expression to the query.
+             *
+             * @param \Closure|\Illuminate\Database\Query\Builder|string $query
+             * @param string $as
+             * @return \Illuminate\Database\Query\Builder|static 
+             * @throws \InvalidArgumentException
+             * @static 
+             */ 
+            public static function selectSub($query, $as)
+            {    
+                return \Illuminate\Database\Query\Builder::selectSub($query, $as);
+            }
+         
+            /**
              * Add a new "raw" select expression to the query.
              *
              * @param string $expression
@@ -13210,7 +13938,7 @@ namespace  {
             }
          
             /**
-             * Add a subselect expression to the query.
+             * Makes "from" fetch from a subquery.
              *
              * @param \Closure|\Illuminate\Database\Query\Builder|string $query
              * @param string $as
@@ -13218,9 +13946,22 @@ namespace  {
              * @throws \InvalidArgumentException
              * @static 
              */ 
-            public static function selectSub($query, $as)
+            public static function fromSub($query, $as)
             {    
-                return \Illuminate\Database\Query\Builder::selectSub($query, $as);
+                return \Illuminate\Database\Query\Builder::fromSub($query, $as);
+            }
+         
+            /**
+             * Add a raw from clause to the query.
+             *
+             * @param string $expression
+             * @param mixed $bindings
+             * @return \Illuminate\Database\Query\Builder|static 
+             * @static 
+             */ 
+            public static function fromRaw($expression, $bindings = array())
+            {    
+                return \Illuminate\Database\Query\Builder::fromRaw($expression, $bindings);
             }
          
             /**
@@ -13377,6 +14118,21 @@ namespace  {
             public static function mergeWheres($wheres, $bindings)
             {    
                 \Illuminate\Database\Query\Builder::mergeWheres($wheres, $bindings);
+            }
+         
+            /**
+             * Prepare the value and operator for a where clause.
+             *
+             * @param string $value
+             * @param string $operator
+             * @param bool $useDefault
+             * @return array 
+             * @throws \InvalidArgumentException
+             * @static 
+             */ 
+            public static function prepareValueAndOperator($value, $operator, $useDefault = false)
+            {    
+                return \Illuminate\Database\Query\Builder::prepareValueAndOperator($value, $operator, $useDefault);
             }
          
             /**
@@ -13630,12 +14386,12 @@ namespace  {
              *
              * @param string $column
              * @param string $operator
-             * @param int $value
+             * @param mixed $value
              * @param string $boolean
              * @return \Illuminate\Database\Query\Builder|static 
              * @static 
              */ 
-            public static function whereTime($column, $operator, $value, $boolean = 'and')
+            public static function whereTime($column, $operator, $value = null, $boolean = 'and')
             {    
                 return \Illuminate\Database\Query\Builder::whereTime($column, $operator, $value, $boolean);
             }
@@ -13645,11 +14401,11 @@ namespace  {
              *
              * @param string $column
              * @param string $operator
-             * @param int $value
+             * @param mixed $value
              * @return \Illuminate\Database\Query\Builder|static 
              * @static 
              */ 
-            public static function orWhereTime($column, $operator, $value)
+            public static function orWhereTime($column, $operator, $value = null)
             {    
                 return \Illuminate\Database\Query\Builder::orWhereTime($column, $operator, $value);
             }
@@ -13670,6 +14426,20 @@ namespace  {
             }
          
             /**
+             * Add an "or where day" statement to the query.
+             *
+             * @param string $column
+             * @param string $operator
+             * @param mixed $value
+             * @return \Illuminate\Database\Query\Builder|static 
+             * @static 
+             */ 
+            public static function orWhereDay($column, $operator, $value = null)
+            {    
+                return \Illuminate\Database\Query\Builder::orWhereDay($column, $operator, $value);
+            }
+         
+            /**
              * Add a "where month" statement to the query.
              *
              * @param string $column
@@ -13685,6 +14455,20 @@ namespace  {
             }
          
             /**
+             * Add an "or where month" statement to the query.
+             *
+             * @param string $column
+             * @param string $operator
+             * @param mixed $value
+             * @return \Illuminate\Database\Query\Builder|static 
+             * @static 
+             */ 
+            public static function orWhereMonth($column, $operator, $value = null)
+            {    
+                return \Illuminate\Database\Query\Builder::orWhereMonth($column, $operator, $value);
+            }
+         
+            /**
              * Add a "where year" statement to the query.
              *
              * @param string $column
@@ -13697,6 +14481,20 @@ namespace  {
             public static function whereYear($column, $operator, $value = null, $boolean = 'and')
             {    
                 return \Illuminate\Database\Query\Builder::whereYear($column, $operator, $value, $boolean);
+            }
+         
+            /**
+             * Add an "or where year" statement to the query.
+             *
+             * @param string $column
+             * @param string $operator
+             * @param mixed $value
+             * @return \Illuminate\Database\Query\Builder|static 
+             * @static 
+             */ 
+            public static function orWhereYear($column, $operator, $value = null)
+            {    
+                return \Illuminate\Database\Query\Builder::orWhereYear($column, $operator, $value);
             }
          
             /**
@@ -13800,6 +14598,35 @@ namespace  {
             public static function addWhereExistsQuery($query, $boolean = 'and', $not = false)
             {    
                 return \Illuminate\Database\Query\Builder::addWhereExistsQuery($query, $boolean, $not);
+            }
+         
+            /**
+             * Adds a where condition using row values.
+             *
+             * @param array $columns
+             * @param string $operator
+             * @param array $values
+             * @param string $boolean
+             * @return $this 
+             * @static 
+             */ 
+            public static function whereRowValues($columns, $operator, $values, $boolean = 'and')
+            {    
+                return \Illuminate\Database\Query\Builder::whereRowValues($columns, $operator, $values, $boolean);
+            }
+         
+            /**
+             * Adds a or where condition using row values.
+             *
+             * @param array $columns
+             * @param string $operator
+             * @param array $values
+             * @return $this 
+             * @static 
+             */ 
+            public static function orWhereRowValues($columns, $operator, $values)
+            {    
+                return \Illuminate\Database\Query\Builder::orWhereRowValues($columns, $operator, $values);
             }
          
             /**
@@ -14501,6 +15328,8 @@ namespace  {
 
     class Redirect extends \Illuminate\Support\Facades\Redirect {}
 
+    class Redis extends \Illuminate\Support\Facades\Redis {}
+
     class Request extends \Illuminate\Support\Facades\Request {}
 
     class Response extends \Illuminate\Support\Facades\Response {}
@@ -14522,6 +15351,8 @@ namespace  {
     class Image extends \Intervention\Image\Facades\Image {}
 
     class Captcha extends \Mews\Captcha\Facades\Captcha {}
+
+    class Debugbar extends \Barryvdh\Debugbar\Facade {}
  
 }
 
