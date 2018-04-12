@@ -11,14 +11,20 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantCategory;
+use App\Result;
 use App\Support\Utils;
+use Illuminate\Support\Facades\Cache;
 
 class MerchantCategoryController extends Controller
 {
-    public function getList()
+    public function getTree()
     {
-        $list = MerchantCategory::where('status', 1)->get();
-        $tree = Utils::convertListToTree($list);
-        return $tree;
+        $tree = Cache::get('merchant_category_tree');
+        if(!$tree){
+            $list = MerchantCategory::where('status', 1)->get();
+            $tree = Utils::convertListToTree($list);
+            Cache::forever('merchant_category_tree', $tree);
+        }
+        return Result::success(['list' => $tree]);
     }
 }

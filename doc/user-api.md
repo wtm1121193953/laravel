@@ -131,6 +131,7 @@ token (wxLogin接口除外)
             id: id,
             area_id: 地区ID,
             name: 地区名,
+            parent_id: 父级地区ID
             sub: [
               子地区列表, 有下级时存在, 结构同父级结构
             ]
@@ -141,14 +142,80 @@ token (wxLogin接口除外)
 
 
 
+- [ ] 根据经纬度获取所在城市(最后做)
+
+      //  
+
 #### 商家模块
 
 
 - [ ] 获取商家类别列表
 
+      接口地址: GET `/merchant/categories/tree`
+
+      返回:
+
+      ```
+      data: {
+        list: [
+          {
+            id: id,
+            pid: 父id,
+            name: 分类名,
+            icon: 图标 url,
+            status: 状态 (只返回状态正常的分类),
+            sub: [
+              子分类列表
+            ]
+          }
+        ]
+      }
+      ```
+
+      ​
+
 - [ ] 获取商家列表 (关键字搜索, 附近商家等)
+
+      接口地址: GET `/merchants`
+
+      参数: 
+
+      ```
+      keyword: 搜索关键字
+      merchant_category_id: 商家类别ID,
+      lng: 用户当前经度
+      lat: 用户当前纬度
+      ```
+
+
+      返回
+
+      ```
+      data: {
+        list: [
+          {
+            id: 商家id,
+            merchant_category_id: 商家分类ID,
+            name: 商家名,
+            status: 状态(只返回状态正常的商家),
+            lng: 商家所在位置经度,
+            lat: 商家所在位置纬度,
+            address: 详细地址,
+            province: 所在省份,
+            province_id: 省份ID,
+            city: 城市,
+            city_id: 城市ID,
+            area: 县区,
+            area_id: 县区ID,
+          }
+        ]
+      }
+      ```
+
+      ​
+
+      ​
 
 - [ ] ​
 
       ​
-

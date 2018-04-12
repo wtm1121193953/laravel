@@ -2,9 +2,9 @@
 
 namespace App\Modules\Merchant;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class Merchant extends Model
+class Merchant extends BaseModel
 {
     //
 }

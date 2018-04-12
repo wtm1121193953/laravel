@@ -30,3 +30,4 @@ Route::post('/upload/image', 'UploadController@image');
 Route::group([], base_path('routes/api/admin.php'));
 Route::group([], base_path('routes/api/oper.php'));
 Route::group([], base_path('routes/api/merchant.php'));
+Route::group([], base_path('routes/api/user.php'));

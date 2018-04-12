@@ -22,6 +22,7 @@ class CreateMerchantsTable extends Migration
             $table->decimal('lng', 15, 12)->default(0)->comment('商家所在经度');
             $table->decimal('lat', 15, 12)->default(0)->comment('商家所在纬度');
             $table->string('address')->default('')->comment('商家地址');
+            $table->string('province')->default('')->comment('所在省份');
             $table->integer('province_id')->default(0)->comment('所在省份Id');
             $table->string('city')->default('')->comment('所在城市');
             $table->integer('city_id')->default(0)->comment('所在城市Id');
