@@ -2239,7 +2239,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this3 = this;
 
             var data = this.scope.row;
-            this.$confirm('\u786E\u5B9A\u8981\u5220\u9664xxxxxxx ' + data.name + ' \u5417? ', '温馨提示', { type: 'warning' }).then(function () {
+            this.$confirm('\u786E\u5B9A\u8981\u5220\u9664\u5546\u6237 ' + data.name + ' \u5417? ', '温馨提示', { type: 'warning' }).then(function () {
                 _this3.$emit('before-request');
                 __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/oper_account/del', { id: data.id }).then(function () {
                     _this3.$emit('refresh');
@@ -39845,7 +39845,7 @@ var render = function() {
           expression: "isLoading"
         }
       ],
-      attrs: { title: "xxxxxxx管理" }
+      attrs: { title: "商户管理" }
     },
     [
       _c(
@@ -39855,7 +39855,7 @@ var render = function() {
           attrs: { type: "primary" },
           on: { click: _vm.add }
         },
-        [_vm._v("添加xxxxxxx")]
+        [_vm._v("添加商户")]
       ),
       _vm._v(" "),
       _c(
@@ -39864,9 +39864,7 @@ var render = function() {
         [
           _c("el-table-column", { attrs: { prop: "id", label: "ID" } }),
           _vm._v(" "),
-          _c("el-table-column", {
-            attrs: { prop: "name", label: "xxxxxxx名称" }
-          }),
+          _c("el-table-column", { attrs: { prop: "name", label: "商户名称" } }),
           _vm._v(" "),
           _c("el-table-column", {
             attrs: { prop: "status", label: "状态" },
@@ -39947,7 +39945,7 @@ var render = function() {
       _c(
         "el-dialog",
         {
-          attrs: { title: "添加xxxxxxx", visible: _vm.isAdd },
+          attrs: { title: "添加商户", visible: _vm.isAdd },
           on: {
             "update:visible": function($event) {
               _vm.isAdd = $event
@@ -41035,7 +41033,7 @@ var render = function() {
             [
               _c(
                 "el-form-item",
-                { attrs: { prop: "name", label: "xxxxxxx名称" } },
+                { attrs: { prop: "name", label: "商户名称" } },
                 [
                   _c("el-input", {
                     model: {
@@ -41705,7 +41703,7 @@ var render = function() {
       _c(
         "el-dialog",
         {
-          attrs: { title: "编辑xxxxxxx信息", visible: _vm.isEdit },
+          attrs: { title: "编辑商户信息", visible: _vm.isEdit },
           on: {
             "update:visible": function($event) {
               _vm.isEdit = $event

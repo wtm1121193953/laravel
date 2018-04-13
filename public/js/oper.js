@@ -837,6 +837,376 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/oper/components/merchant/list.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_item_options__ = __webpack_require__("./resources/oper/components/merchant/merchant-item-options.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_item_options___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__merchant_item_options__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__merchant_form__ = __webpack_require__("./resources/oper/components/merchant/merchant-form.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__merchant_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__merchant_form__);
+var _methods;
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    name: "merchant-list",
+    data: function data() {
+        return {
+            isAdd: false,
+            isLoading: false,
+            query: {
+                page: 1
+            },
+            list: [],
+            total: 0
+        };
+    },
+
+    computed: {},
+    methods: (_methods = {
+        getList: function getList() {
+            var _this = this;
+
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchants', this.query).then(function (data) {
+                _this.list = data.list;
+                _this.total = data.total;
+            });
+        },
+        itemChanged: function itemChanged(index, data) {
+            this.list.splice(index, 1, data);
+        },
+        add: function add() {
+            this.isAdd = true;
+        },
+        doAdd: function doAdd(data) {
+            var _this2 = this;
+
+            this.isLoading = true;
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/add', data).then(function () {
+                _this2.isAdd = false;
+                _this2.getList();
+            }).finally(function () {
+                _this2.isLoading = false;
+            });
+        }
+    }, _defineProperty(_methods, 'itemChanged', function itemChanged(index, data) {
+        this.list.splice(index, 1, data);
+    }), _defineProperty(_methods, 'accountChanged', function accountChanged(scope, account) {
+        var row = this.list[scope.$index];
+        row.account = account;
+        this.list.splice(scope.$index, 1, row);
+        this.getList();
+    }), _methods),
+    created: function created() {
+        this.getList();
+    },
+
+    components: {
+        MerchantItemOptions: __WEBPACK_IMPORTED_MODULE_1__merchant_item_options___default.a,
+        MerchantForm: __WEBPACK_IMPORTED_MODULE_2__merchant_form___default.a
+    }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/oper/components/merchant/merchant-form.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+var defaultForm = {
+    name: '',
+    status: 1
+};
+/* harmony default export */ __webpack_exports__["default"] = ({
+    name: 'merchant-form',
+    props: {
+        data: Object
+    },
+    computed: {},
+    data: function data() {
+        return {
+            form: deepCopy(defaultForm),
+            formRules: {
+                name: [{ required: true, message: '名称不能为空' }]
+            }
+        };
+    },
+
+    methods: {
+        initForm: function initForm() {
+            if (this.data) {
+                this.form = deepCopy(this.data);
+            } else {
+                this.form = deepCopy(defaultForm);
+            }
+        },
+        cancel: function cancel() {
+            this.$emit('cancel');
+        },
+        save: function save() {
+            var _this = this;
+
+            this.$refs.form.validate(function (valid) {
+                if (valid) {
+                    var data = deepCopy(_this.form);
+                    _this.$emit('save', data);
+                }
+            });
+        }
+    },
+    created: function created() {
+        this.initForm();
+    },
+
+    watch: {
+        data: function data() {
+            this.initForm();
+        }
+    },
+    components: {}
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/oper/components/merchant/merchant-item-options.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_form__ = __webpack_require__("./resources/oper/components/merchant/merchant-form.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__merchant_form__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    name: "merchant-item-options",
+    props: {
+        scope: { type: Object, required: true }
+    },
+    data: function data() {
+        return {
+            isEdit: false,
+            showCreateAccountDialog: false,
+            accountForm: {
+                account: '',
+                password: ''
+            },
+            accountFormRules: {
+                account: [{ required: true, message: '账号名不能为空' }],
+                password: [{ required: true, min: 6, message: '密码不能为空且不能少于6位' }]
+            },
+            showModifyAccountDialog: false,
+            accountModifyPasswordForm: {
+                password: ''
+            },
+            accountModifyFormRules: {
+                password: [{ required: true, min: 6, message: '密码不能为空且不能少于6位' }]
+            }
+        };
+    },
+
+    computed: {},
+    methods: {
+        edit: function edit() {
+            this.isEdit = true;
+        },
+        doEdit: function doEdit(data) {
+            var _this = this;
+
+            this.$emit('before-request');
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/edit', data).then(function (data) {
+                _this.isEdit = false;
+                _this.$emit('change', _this.scope.$index, data);
+            }).finally(function () {
+                _this.$emit('after-request');
+            });
+        },
+        changeStatus: function changeStatus() {
+            var _this2 = this;
+
+            var status = this.scope.row.status === 1 ? 2 : 1;
+            this.$emit('before-request');
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/changeStatus', { id: this.scope.row.id, status: status }).then(function (data) {
+                _this2.scope.row.status = status;
+                _this2.$emit('change', _this2.scope.$index, data);
+            }).finally(function () {
+                _this2.$emit('after-request');
+            });
+        },
+        createAccount: function createAccount() {
+            var _this3 = this;
+
+            var data = this.accountForm;
+            data.merchant_id = this.scope.row.id;
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/createAccount', data).then(function (data) {
+                _this3.$alert('创建账户成功');
+                _this3.showCreateAccountDialog = false;
+                _this3.$emit('accountChanged', _this3.scope, data);
+            });
+        },
+        modifyAccount: function modifyAccount() {
+            var _this4 = this;
+
+            var data = this.accountModifyPasswordForm;
+            data.id = this.scope.row.account.id;
+            data.merchant_id = this.scope.row.id;
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/editAccount', data).then(function (data) {
+                _this4.$alert('修改密码成功');
+                _this4.showModifyAccountDialog = false;
+                _this4.$emit('accountChanged', _this4.scope, data);
+            });
+        }
+    },
+    components: {
+        MerchantForm: __WEBPACK_IMPORTED_MODULE_1__merchant_form___default.a
+    }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/oper/components/page.vue":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -12164,6 +12534,21 @@ exports.push([module.i, "\n.fade-enter-active[data-v-09ed5088],\n.fade-leave-act
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0afe599c\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/components/merchant/merchant-form.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-38caf058\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/App.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -12173,6 +12558,21 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 // module
 exports.push([module.i, "\n.bounce-enter-active {\n    animation: bounce-in .5s;\n}\n.bounce-leave-active {\n    animation: bounce-out .2s;\n}\n@keyframes bounce-in {\n0% {\n        transform: scale(0);\n}\n50% {\n        transform: scale(1.05);\n}\n100% {\n        transform: scale(1);\n}\n}\n@keyframes bounce-out {\n0% {\n        transform: scale(1);\n}\n50% {\n        transform: scale(0.95);\n}\n100% {\n        transform: scale(0);\n}\n}\nbody {\n    margin: 0;\n    padding: 0;\n    font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;\n    font-weight: 400;\n    -webkit-font-smoothing: antialiased;\n}\n#app {\n    position: absolute;\n    top: 0;\n    bottom: 0;\n    width: 100%;\n}\n.el-submenu [class^=fa] {\n    vertical-align: baseline;\n    margin-right: 10px;\n}\n.el-menu-item [class^=fa] {\n    vertical-align: baseline;\n    margin-right: 10px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-39f1bb5c\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/components/merchant/merchant-item-options.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -12233,6 +12633,21 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 // module
 exports.push([module.i, "\n.menu[data-v-87604c50]:not(.el-menu--collapse){\n    width: 200px;\n    min-height: 400px;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8aed94b6\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/components/merchant/list.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -36379,6 +36794,116 @@ if (false) {
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-0afe599c\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/oper/components/merchant/merchant-form.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "el-row",
+    [
+      _c(
+        "el-col",
+        { attrs: { span: 22 } },
+        [
+          _c(
+            "el-form",
+            {
+              ref: "form",
+              attrs: {
+                model: _vm.form,
+                "label-width": "120px",
+                rules: _vm.formRules
+              },
+              nativeOn: {
+                submit: function($event) {
+                  $event.preventDefault()
+                }
+              }
+            },
+            [
+              _c(
+                "el-form-item",
+                { attrs: { prop: "name", label: "商户名称" } },
+                [
+                  _c("el-input", {
+                    model: {
+                      value: _vm.form.name,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "name", $$v)
+                      },
+                      expression: "form.name"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { prop: "status", label: "状态" } },
+                [
+                  _c(
+                    "el-radio-group",
+                    {
+                      model: {
+                        value: _vm.form.status,
+                        callback: function($$v) {
+                          _vm.$set(_vm.form, "status", $$v)
+                        },
+                        expression: "form.status"
+                      }
+                    },
+                    [
+                      _c("el-radio", { attrs: { label: 1 } }, [_vm._v("正常")]),
+                      _vm._v(" "),
+                      _c("el-radio", { attrs: { label: 2 } }, [_vm._v("禁用")])
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                [
+                  _c("el-button", { on: { click: _vm.cancel } }, [
+                    _vm._v("取消")
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "el-button",
+                    { attrs: { type: "primary" }, on: { click: _vm.save } },
+                    [_vm._v("保存")]
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-0afe599c", module.exports)
+  }
+}
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-38caf058\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/oper/App.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -36400,6 +36925,290 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-38caf058", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-39f1bb5c\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/oper/components/merchant/merchant-item-options.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _c("el-button", { attrs: { type: "text" }, on: { click: _vm.edit } }, [
+        _vm._v("编辑")
+      ]),
+      _vm._v(" "),
+      _c(
+        "el-button",
+        { attrs: { type: "text" }, on: { click: _vm.changeStatus } },
+        [_vm._v(_vm._s(_vm.scope.row.status === 1 ? "冻结" : "解冻"))]
+      ),
+      _vm._v(" "),
+      !_vm.scope.row.account
+        ? _c(
+            "el-button",
+            {
+              attrs: { type: "text" },
+              on: {
+                click: function($event) {
+                  _vm.showCreateAccountDialog = true
+                }
+              }
+            },
+            [_vm._v("生成账户")]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.scope.row.account
+        ? _c(
+            "el-button",
+            {
+              attrs: { type: "text" },
+              on: {
+                click: function($event) {
+                  _vm.showModifyAccountDialog = true
+                }
+              }
+            },
+            [_vm._v("修改账户密码")]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "el-dialog",
+        {
+          attrs: { title: "编辑商户信息", visible: _vm.isEdit },
+          on: {
+            "update:visible": function($event) {
+              _vm.isEdit = $event
+            }
+          }
+        },
+        [
+          _c("merchant-form", {
+            attrs: { data: _vm.scope.row },
+            on: {
+              cancel: function($event) {
+                _vm.isEdit = false
+              },
+              save: _vm.doEdit
+            }
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "el-dialog",
+        {
+          attrs: {
+            title: "创建运营中心账户",
+            visible: _vm.showCreateAccountDialog
+          },
+          on: {
+            "update:visible": function($event) {
+              _vm.showCreateAccountDialog = $event
+            }
+          }
+        },
+        [
+          _c(
+            "el-row",
+            [
+              _c(
+                "el-col",
+                { attrs: { span: 16 } },
+                [
+                  _c(
+                    "el-form",
+                    {
+                      attrs: {
+                        size: "mini",
+                        model: _vm.accountForm,
+                        rules: _vm.accountFormRules,
+                        "label-width": "150px"
+                      }
+                    },
+                    [
+                      _c(
+                        "el-form-item",
+                        { attrs: { label: "账户名", prop: "account" } },
+                        [
+                          _c("el-input", {
+                            attrs: { placeholder: "请输入账户" },
+                            model: {
+                              value: _vm.accountForm.account,
+                              callback: function($$v) {
+                                _vm.$set(_vm.accountForm, "account", $$v)
+                              },
+                              expression: "accountForm.account"
+                            }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "el-form-item",
+                        { attrs: { label: "密码", prop: "password" } },
+                        [
+                          _c("el-input", {
+                            attrs: {
+                              type: "password",
+                              placeholder: "请输入密码"
+                            },
+                            model: {
+                              value: _vm.accountForm.password,
+                              callback: function($$v) {
+                                _vm.$set(_vm.accountForm, "password", $$v)
+                              },
+                              expression: "accountForm.password"
+                            }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "el-form-item",
+                        [
+                          _c(
+                            "el-button",
+                            {
+                              attrs: { type: "primary" },
+                              on: { click: _vm.createAccount }
+                            },
+                            [_vm._v("确定")]
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _vm.scope.row.account
+        ? _c(
+            "el-dialog",
+            {
+              attrs: {
+                title: "修改账户密码",
+                visible: _vm.showModifyAccountDialog
+              },
+              on: {
+                "update:visible": function($event) {
+                  _vm.showModifyAccountDialog = $event
+                }
+              }
+            },
+            [
+              _c(
+                "el-row",
+                [
+                  _c(
+                    "el-col",
+                    { attrs: { span: 16 } },
+                    [
+                      _c(
+                        "el-form",
+                        {
+                          attrs: {
+                            size: "mini",
+                            model: _vm.accountModifyPasswordForm,
+                            rules: _vm.accountModifyFormRules,
+                            "label-width": "150px"
+                          }
+                        },
+                        [
+                          _c(
+                            "el-form-item",
+                            { attrs: { label: "账户名", prop: "account" } },
+                            [
+                              _c("div", [
+                                _vm._v(_vm._s(_vm.scope.row.account.account))
+                              ])
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            { attrs: { label: "密码", prop: "password" } },
+                            [
+                              _c("el-input", {
+                                attrs: {
+                                  type: "password",
+                                  placeholder: "请输入密码"
+                                },
+                                model: {
+                                  value: _vm.accountModifyPasswordForm.password,
+                                  callback: function($$v) {
+                                    _vm.$set(
+                                      _vm.accountModifyPasswordForm,
+                                      "password",
+                                      $$v
+                                    )
+                                  },
+                                  expression:
+                                    "accountModifyPasswordForm.password"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            [
+                              _c(
+                                "el-button",
+                                {
+                                  attrs: { type: "primary" },
+                                  on: { click: _vm.modifyAccount }
+                                },
+                                [_vm._v("确定")]
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        : _vm._e()
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-39f1bb5c", module.exports)
   }
 }
 
@@ -36650,6 +37459,185 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-87604c50", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-8aed94b6\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/oper/components/merchant/list.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "page",
+    {
+      directives: [
+        {
+          name: "loading",
+          rawName: "v-loading",
+          value: _vm.isLoading,
+          expression: "isLoading"
+        }
+      ],
+      attrs: { title: "商户管理" }
+    },
+    [
+      _c(
+        "el-button",
+        {
+          staticClass: "fr",
+          attrs: { type: "primary" },
+          on: { click: _vm.add }
+        },
+        [_vm._v("添加商户")]
+      ),
+      _vm._v(" "),
+      _c(
+        "el-table",
+        { attrs: { data: _vm.list, stripe: "" } },
+        [
+          _c("el-table-column", {
+            attrs: { prop: "created_at", label: "添加时间" }
+          }),
+          _vm._v(" "),
+          _c("el-table-column", { attrs: { prop: "id", label: "ID" } }),
+          _vm._v(" "),
+          _c("el-table-column", { attrs: { prop: "name", label: "商户名称" } }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { prop: "categoryPath", label: "行业" },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function(scope) {
+                  return _vm._l(scope.row.categoryPath, function(item) {
+                    return _c("span", { key: item.id }, [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(item.name) +
+                          "\n                "
+                      )
+                    ])
+                  })
+                }
+              }
+            ])
+          }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { prop: "city", label: "城市" },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function(scope) {
+                  return [
+                    _c("span", [_vm._v(" " + _vm._s(scope.row.city) + " ")]),
+                    _vm._v(" "),
+                    _c("span", [_vm._v(" " + _vm._s(scope.row.area) + " ")])
+                  ]
+                }
+              }
+            ])
+          }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { prop: "status", label: "状态" },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function(scope) {
+                  return [
+                    scope.row.status === 1
+                      ? _c("span", { staticClass: "c-green" }, [_vm._v("正常")])
+                      : scope.row.status === 2
+                        ? _c("span", { staticClass: "c-danger" }, [
+                            _vm._v("已冻结")
+                          ])
+                        : _c("span", [
+                            _vm._v("未知 (" + _vm._s(scope.row.status) + ")")
+                          ])
+                  ]
+                }
+              }
+            ])
+          }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { label: "操作", width: "250px" },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function(scope) {
+                  return [
+                    _c("merchant-item-options", {
+                      attrs: { scope: scope },
+                      on: {
+                        change: _vm.itemChanged,
+                        accountChanged: _vm.accountChanged,
+                        refresh: _vm.getList
+                      }
+                    })
+                  ]
+                }
+              }
+            ])
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("el-pagination", {
+        staticClass: "fr m-t-20",
+        attrs: {
+          layout: "total, prev, pager, next",
+          "current-page": _vm.query.page,
+          "page-size": 15,
+          total: _vm.total
+        },
+        on: {
+          "update:currentPage": function($event) {
+            _vm.$set(_vm.query, "page", $event)
+          },
+          "current-change": _vm.getList
+        }
+      }),
+      _vm._v(" "),
+      _c(
+        "el-dialog",
+        {
+          attrs: { title: "添加商户", visible: _vm.isAdd },
+          on: {
+            "update:visible": function($event) {
+              _vm.isAdd = $event
+            }
+          }
+        },
+        [
+          _c("merchant-form", {
+            on: {
+              cancel: function($event) {
+                _vm.isAdd = false
+              },
+              save: _vm.doAdd
+            }
+          })
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-8aed94b6", module.exports)
   }
 }
 
@@ -36948,6 +37936,33 @@ if(false) {
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0afe599c\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/components/merchant/merchant-form.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0afe599c\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/components/merchant/merchant-form.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("0087b7c8", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0afe599c\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./merchant-form.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0afe599c\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./merchant-form.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-38caf058\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/App.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -36965,6 +37980,33 @@ if(false) {
  if(!content.locals) {
    module.hot.accept("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-38caf058\",\"scoped\":false,\"hasInlineConfig\":true}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue", function() {
      var newContent = require("!!../../node_modules/css-loader/index.js!../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-38caf058\",\"scoped\":false,\"hasInlineConfig\":true}!../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./App.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-39f1bb5c\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/components/merchant/merchant-item-options.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-39f1bb5c\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/components/merchant/merchant-item-options.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("1f72b487", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-39f1bb5c\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./merchant-item-options.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-39f1bb5c\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./merchant-item-options.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -37073,6 +38115,33 @@ if(false) {
  if(!content.locals) {
    module.hot.accept("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-87604c50\",\"scoped\":true,\"hasInlineConfig\":true}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./leftMenu.vue", function() {
      var newContent = require("!!../../../node_modules/css-loader/index.js!../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-87604c50\",\"scoped\":true,\"hasInlineConfig\":true}!../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./leftMenu.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8aed94b6\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/components/merchant/list.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8aed94b6\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/components/merchant/list.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("36c20c81", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8aed94b6\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./list.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8aed94b6\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./list.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -40205,6 +41274,162 @@ module.exports = Component.exports
 
 /***/ }),
 
+/***/ "./resources/oper/components/merchant/list.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-8aed94b6\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/components/merchant/list.vue")
+}
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/oper/components/merchant/list.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-8aed94b6\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/oper/components/merchant/list.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-8aed94b6"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\oper\\components\\merchant\\list.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-8aed94b6", Component.options)
+  } else {
+    hotAPI.reload("data-v-8aed94b6", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/oper/components/merchant/merchant-form.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-0afe599c\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/components/merchant/merchant-form.vue")
+}
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/oper/components/merchant/merchant-form.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-0afe599c\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/oper/components/merchant/merchant-form.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-0afe599c"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\oper\\components\\merchant\\merchant-form.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-0afe599c", Component.options)
+  } else {
+    hotAPI.reload("data-v-0afe599c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/oper/components/merchant/merchant-item-options.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-39f1bb5c\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/components/merchant/merchant-item-options.vue")
+}
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/oper/components/merchant/merchant-item-options.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-39f1bb5c\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/oper/components/merchant/merchant-item-options.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-39f1bb5c"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\oper\\components\\merchant\\merchant-item-options.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-39f1bb5c", Component.options)
+  } else {
+    hotAPI.reload("data-v-39f1bb5c", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
 /***/ "./resources/oper/components/page.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -40427,6 +41652,11 @@ var globalOptions = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_404_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__components_404_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_welcome_vue__ = __webpack_require__("./resources/oper/components/welcome.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_welcome_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__components_welcome_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__merchant__ = __webpack_require__("./resources/oper/routes/merchant.js");
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+
+
 
 
 
@@ -40436,7 +41666,7 @@ var globalOptions = {
 /**
  *
  */
-var routes = [{ path: '/login', component: __WEBPACK_IMPORTED_MODULE_0__components_login_vue___default.a, name: 'Login' }, {
+var routes = [{ path: '/login', component: __WEBPACK_IMPORTED_MODULE_0__components_login_vue___default.a, name: 'Login' }].concat(_toConsumableArray(__WEBPACK_IMPORTED_MODULE_5__merchant__["a" /* default */]), [{
     path: '/',
     component: __WEBPACK_IMPORTED_MODULE_2__components_home_vue___default.a,
     children: [
@@ -40449,8 +41679,31 @@ var routes = [{ path: '/login', component: __WEBPACK_IMPORTED_MODULE_0__componen
 },
 
 // 拦截所有无效的页面到错误页面
-{ path: '*', component: __WEBPACK_IMPORTED_MODULE_3__components_404_vue___default.a, name: 'GlobalErrorPage' }];
+{ path: '*', component: __WEBPACK_IMPORTED_MODULE_3__components_404_vue___default.a, name: 'GlobalErrorPage' }]);
 /* harmony default export */ __webpack_exports__["a"] = (routes);
+
+/***/ }),
+
+/***/ "./resources/oper/routes/merchant.js":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_home__ = __webpack_require__("./resources/oper/components/home.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_home___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__components_home__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_merchant_list_vue__ = __webpack_require__("./resources/oper/components/merchant/list.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_merchant_list_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_merchant_list_vue__);
+
+
+
+
+/**
+ * category 模块
+ */
+/* harmony default export */ __webpack_exports__["a"] = ([{
+    path: '/',
+    component: __WEBPACK_IMPORTED_MODULE_0__components_home___default.a,
+    children: [{ path: '/merchants', component: __WEBPACK_IMPORTED_MODULE_1__components_merchant_list_vue___default.a, name: 'MerchantList' }]
+}]);
 
 /***/ }),
 

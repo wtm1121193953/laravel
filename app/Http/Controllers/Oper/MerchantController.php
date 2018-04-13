@@ -50,6 +50,11 @@ class MerchantController extends Controller
         ]);
     }
 
+    private function fillMerchantInfoFromRequest(Merchant $merchant)
+    {
+        $merchant->name = request('name');
+    }
+
     /**
      * 添加数据
      */
@@ -61,6 +66,8 @@ class MerchantController extends Controller
         $merchant = new Merchant();
         $merchant->name = request('name');
         $merchant->status = request('status', 1);
+
+        $this->fillMerchantInfoFromRequest($merchant);
 
         $merchant->save();
 

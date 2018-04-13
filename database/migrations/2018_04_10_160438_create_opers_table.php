@@ -30,7 +30,7 @@ class CreateOpersTable extends Migration
             $table->string('address')->default('')->comment('详细地址');
             $table->string('email')->default('')->comment('邮箱');
             $table->string('legal_name')->default('')->comment('法人姓名');
-            $table->string('legal_id_card')->default('')->comment('法人身份证');
+            $table->string('legal_id_card')->default('')->comment('法人身份证号');
             $table->tinyInteger('invoice_type')->default(0)->comment('发票类型 0-其他 1-增值税普票 2-增值税专票 3-国税普票');
             $table->decimal('invoice_tax_rate', 4, 2)->default(0)->comment('发票税点');
             $table->tinyInteger('settlement_cycle_type')->default(1)->comment('结款周期 1-周结 2-半月结 3-月结 4-半年结 5-年结');
