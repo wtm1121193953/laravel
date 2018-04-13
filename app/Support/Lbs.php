@@ -9,6 +9,7 @@
 namespace App\Support;
 
 use App\Modules\Area\Area;
+use Illuminate\Support\Facades\Redis;
 
 
 /**
@@ -43,6 +44,47 @@ class Lbs
             'province' => $province->name,
             'province_id' => $province->area_id,
         ];
+    }
+
+    public static function merchantGpsAdd($merchantId, $lng, $lat)
+    {
+        Redis::geoadd('location:merchant', $lng, $lat, $merchantId);
+    }
+
+    /**
+     * 返回用户与商户的距离
+     * @param $merchantId
+     * @param $userId
+     * @param $userLng
+     * @param $userLat
+     * @param string $unit 单位, 取值: m, km 默认: m(米)
+     * @return null|int
+     */
+    public static function getDistanceOfMerchant($merchantId, $userId, $userLng, $userLat, $unit = 'm')
+    {
+        $userGpsKey = 'computed_user_' . $userId;
+        Redis::geoadd('location:merchant', $userLng, $userLat, $userGpsKey);
+        $distance = Redis::geodist('location:merchant', $merchantId, $userGpsKey, $unit);
+        return intval($distance);
+    }
+
+    /**
+     * 根据经纬度获取最近的商家距离
+     * @param $lng
+     * @param $lat
+     * @param int $radius 距离, 单位: 米
+     * @param string $sort
+     * @return array 返回数据的键为商家ID, 值为距离
+     */
+    public static function getNearlyMerchantDistanceByGps($lng, $lat, $radius = 3000, $sort = 'asc')
+    {
+        $result = Redis::georadius('location:merchant', $lng, $lat, $radius, 'm', 'WITHDIST', 1, $sort);
+
+        $arr = [];
+        foreach ($result as $item) {
+            $arr[$item[0]] = $item[1];
+        }
+        return $arr;
     }
 
 }

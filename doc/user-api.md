@@ -182,10 +182,12 @@ token (wxLogin接口除外)
   参数: 
 
   ```
+  city_id: 城市ID
   keyword: 搜索关键字
   merchant_category_id: 商家类别ID,
   lng: 用户当前经度
   lat: 用户当前纬度
+  radius: 范围, 范围参数只有在经纬度信息存在时才有效, 当传递范围参数时, 会获取用户位置所指定范围内的商家并根据距离排序
   page: 获取的页数
   ```
 
@@ -210,6 +212,7 @@ token (wxLogin接口除外)
         city_id: 城市ID,
         area: 县区,
         area_id: 县区ID,
+        distance: 距离, 当传递经纬度信息时才存在
       }
     ]
   } 
