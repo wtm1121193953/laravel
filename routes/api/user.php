@@ -24,7 +24,8 @@ Route::prefix('user')
 
         Route::get('orders', 'OrderController@getList');
         Route::get('order/detail', 'OrderController@detail');
-        Route::get('order/add', 'OrderController@add');
+        Route::any('order/add', 'OrderController@add');
+        Route::any('order/refund', 'OrderController@refund');
 //        Route::get('order/pay', 'OrderController@pay');
 
     });
