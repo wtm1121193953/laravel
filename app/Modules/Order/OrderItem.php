@@ -2,9 +2,9 @@
 
 namespace App\Modules\Order;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class OrderItem extends Model
+class OrderItem extends BaseModel
 {
     //
 }

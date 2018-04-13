@@ -34,16 +34,4 @@ class MerchantController extends Controller
         return Result::success(['list' => $data->items(), 'total' => $data->total()]);
     }
 
-    public function getGoods()
-    {
-        $this->validate(request(), [
-            'merchant_id' => 'required|integer|min:1',
-        ]);
-        $merchant_id = request('merchant_id');
-        $list = Goods::where('merchant_id', $merchant_id)->get();
-        $list->each(function ($item) {
-            $item->pic_list = explode(',', $item);
-        });
-        return Result::success(['list' => $list]);
-    }
 }

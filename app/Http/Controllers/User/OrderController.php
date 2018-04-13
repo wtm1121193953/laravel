@@ -9,11 +9,13 @@
 namespace App\Http\Controllers\User;
 
 
+use App\Http\Controllers\Controller;
 use App\Modules\Order\Order;
+use App\Modules\Order\OrderItem;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
-class OrderController
+class OrderController extends Controller
 {
 
     public function getList()
@@ -26,9 +28,26 @@ class OrderController
             })
             ->orderByDesc('id')
             ->paginate();
+        $data->each(function ($item) {
+            $item->items = OrderItem::where('order_id', $item->id)->get();
+        });
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
+
+    public function add()
+    {
+        return Result::success();
+    }
+
+    public function detail(){
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $detail = Order::where('id', request('id'))->first();
+        $detail->items = OrderItem::where('order_id', $detail->id)->get();
+        return Result::success($detail);
     }
 }

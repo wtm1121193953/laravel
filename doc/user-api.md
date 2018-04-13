@@ -68,7 +68,7 @@ token (wxLogin接口除外)
       ```
       data: {
         token: 用户令牌,
-        userInfo: 用户信息, 微信openId已绑定用户的情况下返回
+        userInfo: 用户信息, 微信openId已绑定用户的情况下返回, 测试时code传值为user时返回用户信息
       }
       ```
 
@@ -150,98 +150,112 @@ token (wxLogin接口除外)
 
 - [ ] 获取商家类别列表
 
-      接口地址: GET `/merchant/categories/tree`
+  接口地址: GET `/merchant/categories/tree`
 
-      返回:
+  返回:
 
-      ```
-      data: {
-        list: [
-          {
-            id: id,
-            pid: 父id,
-            name: 分类名,
-            icon: 图标 url,
-            status: 状态 (只返回状态正常的分类),
-            sub: [
-              子分类列表
-            ]
-          }
+  ```
+  data: {
+    list: [
+      {
+        id: id,
+        pid: 父id,
+        name: 分类名,
+        icon: 图标 url,
+        status: 状态 (只返回状态正常的分类),
+        sub: [
+          子分类列表
         ]
       }
-      ```
+    ]
+  }
+  ```
 
-      ​
+  ​
 
 - [ ] 获取商家列表 (关键字搜索, 附近商家等)
 
-      接口地址: GET `/merchants`
+  接口地址: GET `/merchants`
 
-      参数: 
+  参数: 
 
-      ```
-      keyword: 搜索关键字
-      merchant_category_id: 商家类别ID,
-      lng: 用户当前经度
-      lat: 用户当前纬度
-      page: 获取的页数
-      ```
+  ```
+  keyword: 搜索关键字
+  merchant_category_id: 商家类别ID,
+  lng: 用户当前经度
+  lat: 用户当前纬度
+  page: 获取的页数
+  ```
 
 
-      返回
+  返回
 
-      ```
-      data: {
-        total: 总记录数,
-        list: [
-          {
-            id: 商家id,
-            oper_id: 运营中心ID
-            merchant_category_id: 商家分类ID,
-            name: 商家名,
-            status: 状态(只返回状态正常的商家),
-            lng: 商家所在位置经度,
-            lat: 商家所在位置纬度,
-            address: 详细地址,
-            province: 所在省份,
-            province_id: 省份ID,
-            city: 城市,
-            city_id: 城市ID,
-            area: 县区,
-            area_id: 县区ID,
-          }
-        ]
-      }
-      ```
+    ```
+    data: {
+      total: 总记录数,
+      list: [
+        {
+          id: 商家id,
+          oper_id: 运营中心ID
+          merchant_category_id: 商家分类ID,
+          name: 商家名,
+          status: 状态(只返回状态正常的商家),
+          lng: 商家所在位置经度,
+          lat: 商家所在位置纬度,
+          address: 详细地址,
+          province: 所在省份,
+          province_id: 省份ID,
+          city: 城市,
+          city_id: 城市ID,
+          area: 县区,
+          area_id: 县区ID,
+        }
+      ]
+    } 
+    ```
 
-#### 
+
 
 
 - [ ] 商品列表
 
-      接口地址: GET `/merchant/goods`
+  接口地址: GET `/goods`
 
-      参数: `merchant_id` 商家ID
+  参数: `merchant_id` 商家ID
 
-      返回
+  返回
 
-      ```
-      data: {
-        list: [
-          {
-            id: 商品ID,
-            oper_id: 运营中心ID
-            merchant_id: 商家ID,
-            name: 商品名,
-            desc: 商品描述,
-            price; 商品价格,
-            pic: 商品默认图,
-            pic_list: 商品小图列表, 数组
-            status: 状态 1-上架 2-下架
-          }
-        ]
+  ```
+  data: {
+    list: [
+      {
+        id: 商品ID,
+        oper_id: 运营中心ID
+        merchant_id: 商家ID,
+        name: 商品名,
+        desc: 商品描述,
+        price; 商品价格,
+        pic: 商品默认图,
+        pic_list: 商品小图列表, 数组
+        status: 状态 1-上架 2-下架
       }
-      ```
+    ]
+  }
+  ```
+
+- [ ] 商品详情
+
+  接口地址: GET `/goods/detail`
+
+  参数: id 商品ID
+
+  返回
+
+  ```
+  同商品列表中的每一项
+  ```
+
+  ​
 
 
 
@@ -250,23 +264,42 @@ token (wxLogin接口除外)
 
 - [ ] 订单列表
 
-      接口地址: GET `/orders`
+  接口地址: GET `/orders`
 
-      参数:
+  参数:
 
-      ```
-      status: 状态
-      ```
+  ```
+  status: 状态
+  ```
 
-      返回
+  返回
 
-      ```
+  ```
+  data: {
+      total: 总订单数,
+      list: [
+          {
+              id: 订单ID,
+              oper_id: 运营中心ID,
+              order_no: 订单号,
+              user_id: 用户ID,
+              user_name: 用户名,
+              merchant_id: 商家ID,
+              merchant_name: 商家名,
+              goods_id: 商品ID,
+              goods_name: 商品名,
+              goods_pic: 商品图片,
+              price: 商家价格,
+              status: 状态 1-未支付 2-已取消 3-已关闭 (超时自动关闭) 4-已付款  6-已退款 7-已完成 (不可退款),
+              
+          }
+      ]
+  }
+  ```
 
-      ```
+  ​
 
-      ​
-
-      ​
+  ​
 
 - [ ] 下单接口
 
@@ -274,4 +307,4 @@ token (wxLogin接口除外)
 
 - [ ] ​
 
-      ​
+      
