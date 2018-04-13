@@ -42,8 +42,17 @@ class MockTableDataSeeder extends Seeder
         factory(\App\Modules\Goods\Goods::class, 50)->create();
 
         // 模拟用户数据
-        factory(\App\Modules\User\User::class)->create();
+        \App\Modules\User\User::create([
+            'id' => 1,
+            'name' => 'mock user',
+            'mobile' => '13800138000',
+        ]);
+        \App\Modules\User\UserOpenIdMapping::create([
+            'oper_id' => 1,
+            'user_id' => 1,
+            'open_id' => 'mock open id',
+        ]);
         // 模拟订单数据
-
+        factory(\App\Modules\Order\Order::class, 25)->create();
     }
 }

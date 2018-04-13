@@ -19,6 +19,8 @@ class CreateUserOpenIdMappingsTable extends Migration
             $table->integer('user_id')->index()->default(0)->comment('用户ID');
             $table->string('open_id')->index()->default('')->comment('关联的微信小程序openId');
             $table->timestamps();
+
+            $table->comment = '用户与openId关联关系表';
         });
     }
 

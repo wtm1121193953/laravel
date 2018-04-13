@@ -19,7 +19,8 @@ class CreateGoodsTable extends Migration
             $table->integer('merchant_id')->index()->default(0)->comment('商家ID');
             $table->string('name')->default('')->comment('商品名');
             $table->string('desc')->default('')->comment('商品描述');
-            $table->decimal('price')->index()->default(0)->comment('商品价格');
+            $table->decimal('origin_price')->index()->default(0)->comment('商品价格');
+            $table->decimal('price')->index()->default(0)->comment('商品售价');
             $table->string('pic', 500)->default('')->comment('商品默认图');
             $table->string('pic_list', 5000)->default('')->comment('商品小图列表 (逗号分隔字符串)');
             $table->string('ext_attr', 5000)->default('')->comment('商品扩展属性, 如: [name: 重量, value: 5kg]');
