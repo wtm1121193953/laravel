@@ -9,13 +9,12 @@
 namespace App\Http\Controllers\User;
 
 
-use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Sms\SmsVerifyCode;
 use App\Modules\User\User;
+use App\Modules\User\UserOpenIdMapping;
 use App\Result;
-use App\ResultCode;
 use Carbon\Carbon;
 
 class LoginController extends Controller
@@ -48,11 +47,24 @@ class LoginController extends Controller
             $user = new User();
             $user->oper_id = request()->get('current_oper')->id;
             $user->mobile = $mobile;
-            $user->open_id = request()->get('current_open_id');
             $user->save();
         }else {
             $user->open_id = request()->get('current_open_id');
             $user->save();
+        }
+        // 保存用户与openId的映射关系
+        $openId = request()->get('current_open_id');
+        $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
+        if($userOpenIdMapping){
+            $userOpenIdMapping->user_id = $user->id;
+            $userOpenIdMapping->oper_id = request()->get('current_oper')->id;
+            $userOpenIdMapping->save();
+        }else {
+            $userOpenIdMapping = new UserOpenIdMapping();
+            $userOpenIdMapping->oper_id = request()->get('current_oper')->id;
+            $userOpenIdMapping->open_id = $openId;
+            $userOpenIdMapping->user_id = $user->id;
+            $userOpenIdMapping->save();
         }
         return Result::success([
             'userInfo' => $user

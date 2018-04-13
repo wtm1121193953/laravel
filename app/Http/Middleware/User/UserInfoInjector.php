@@ -3,6 +3,7 @@
 namespace App\Http\Middleware\User;
 
 use App\Modules\User\User;
+use App\Modules\User\UserOpenIdMapping;
 use Closure;
 use Illuminate\Support\Facades\App;
 
@@ -23,8 +24,9 @@ class UserInfoInjector
     public function handle($request, Closure $next)
     {
         $openId = $request->get('current_open_id');
-        $user = User::where('open_id', $openId)->first();
-        if($user){
+        $userId = UserOpenIdMapping::where('open_id', $openId)->value('user_id');
+        if($userId){
+            $user = UserOpenIdMapping::findOrFail($userId);
             $request->attributes->add(['current_user' => $user]);
         }
         if(App::environment() === 'local'){

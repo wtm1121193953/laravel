@@ -39,10 +39,10 @@ token (wxLogin接口除外)
 >
 > ```
 > 步骤:
-> 1. token获取: 调用 wx.login, 获取code及appid, 然后请求 /wxLogin 接口, 获取token, 并缓存在本地
+> 1. token获取: 调用 wx.login, 获取code, 然后请求 /wxLogin 接口 (通过user agent 获取appid), 获取token, 并缓存在本地
 > 2. 绑定openId 到账户: 通过 /login 接口, 将用户手机号(即用户实际账号)与openId相关联
 > 流程:
-> 首次进入小程序后, 首先 获取token, 然后 绑定openId 到账户
+> 首次进入小程序后, 首先 获取token, 然后 登陆时绑定openId 到账户
 > 每次进入小程序, 首先获取本地token缓存, 若不存在则 获取token , 获取后若不存在用户信息,则需要登录(即步骤2)
 > 后续操作:
 > 若收到后台返回的状态码为 10007 和 70010 , 则需要执行步骤1
@@ -60,8 +60,7 @@ token (wxLogin接口除外)
       参数: 
 
       ```
-      code wx.login 获取到的code, wx.login需要使用withCredentials选项获取
-      appid wx.login 获取到的appid, 用于区分运营中心
+      code wx.login 获取到的code
       ```
 
       返回值: 
@@ -185,6 +184,7 @@ token (wxLogin接口除外)
       merchant_category_id: 商家类别ID,
       lng: 用户当前经度
       lat: 用户当前纬度
+      page: 获取的页数
       ```
 
 
@@ -192,9 +192,11 @@ token (wxLogin接口除外)
 
       ```
       data: {
+        total: 总记录数,
         list: [
           {
             id: 商家id,
+            oper_id: 运营中心ID
             merchant_category_id: 商家分类ID,
             name: 商家名,
             status: 状态(只返回状态正常的商家),
@@ -212,9 +214,45 @@ token (wxLogin接口除外)
       }
       ```
 
-      ​
+#### 
 
-      ​
+
+- [ ] 商品列表
+
+      接口地址: GET `/merchant/goods`
+
+      参数: `merchant_id` 商家ID
+
+      返回
+
+      ```
+      data: {
+        list: [
+          {
+            id: 商品ID,
+            oper_id: 运营中心ID
+            merchant_id: 商家ID,
+            name: 商品名,
+            desc: 商品描述,
+            price; 商品价格,
+            pic: 商品默认图,
+            pic_list: 商品小图列表, 数组
+            status: 状态 1-上架 2-下架
+          }
+        ]
+      }
+      ```
+
+
+
+####  订单模块
+
+
+- [ ] 订单列表
+
+- [ ] 下单接口
+
+- [ ] 退款接口
 
 - [ ] ​
 
