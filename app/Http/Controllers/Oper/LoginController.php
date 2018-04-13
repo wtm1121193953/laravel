@@ -9,7 +9,10 @@
 namespace App\Http\Controllers\Oper;
 
 
+use App\Exceptions\AccountNotFoundException;
+use App\Exceptions\PasswordErrorException;
 use App\Http\Controllers\Controller;
+use App\Modules\Oper\OperAccount;
 use App\Result;
 
 class LoginController extends Controller
@@ -20,8 +23,30 @@ class LoginController extends Controller
      */
     public function login()
     {
-        // todo
-        return Result::success();
+        $this->validate(request(), [
+            'username' => 'required',
+            'password' => 'required|between:6,30',
+            'verifyCode' => 'required|captcha'
+        ]);
+        $user = OperAccount::where('account', request('username'))->first();
+        if(empty($user)){
+            throw new AccountNotFoundException();
+        }
+        if(OperAccount::genPassword(request('password'), $user['salt']) != $user['password']){
+            throw new PasswordErrorException();
+        }
+
+        session([
+            config('oper.user_session') => $user,
+        ]);
+
+        return Result::success([
+            'user' => $user,
+            'menus' => [
+                [ 'id' => 1, 'name' => '商户管理', 'level' => 1, 'url' => '/oper/merchants',],
+                [ 'id' => 2, 'name' => '财务管理', 'level' => 1, 'url' => '/oper/settlements',],
+            ]
+        ]);
     }
 
 }

@@ -28,6 +28,15 @@ class MockTableDataSeeder extends Seeder
             'secret' => 'mock secret',
             'mch_id' => 'mock mch_id',
         ]);
+        // 模拟运营中心用户
+        $salt = str_random();
+        \App\Modules\Oper\OperAccount::create([
+            'oper_id' =>1,
+            'name' => 'oper account name',
+            'account' => 'oper',
+            'salt' => $salt,
+            'password' => \App\Modules\Oper\OperAccount::genPassword('123456', $salt),
+        ]);
 
         // 填充商家分类数据
         factory(\App\Modules\Merchant\MerchantCategory::class, 20)->create([
@@ -37,6 +46,16 @@ class MockTableDataSeeder extends Seeder
 
         // 填充商家数据
         factory(\App\Modules\Merchant\Merchant::class, 100)->create();
+        // 模拟商家账户
+        $salt = str_random();
+        \App\Modules\Merchant\MerchantAccount::create([
+            'oper_id' => 1,
+            'merchant_id' => 1,
+            'name' => 'merchant account name',
+            'account' => 'merchant',
+            'salt' => $salt,
+            'password' => \App\Modules\Merchant\MerchantAccount::genPassword('123456', $salt),
+        ]);
 
         // 填充商品数据
         factory(\App\Modules\Goods\Goods::class, 50)->create();

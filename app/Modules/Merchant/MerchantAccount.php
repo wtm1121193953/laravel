@@ -2,9 +2,11 @@
 
 namespace App\Modules\Merchant;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
+use App\Modules\User\GenPassword;
 
-class MerchantAccount extends Model
+class MerchantAccount extends BaseModel
 {
+    use GenPassword;
     //
 }

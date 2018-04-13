@@ -21,7 +21,7 @@ class OperLoginFilter
 
     // 不需要登录的url列表
     protected $publicUrls = [
-        'api/admin/login',
+        'api/oper/login',
     ];
 
     /**

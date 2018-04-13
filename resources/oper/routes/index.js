@@ -4,12 +4,16 @@ import Home from '../components/home.vue'
 import ErrorPage from '../components/404.vue'
 import welcome from '../components/welcome.vue'
 
+import merchant from './merchant'
+
 /**
  *
  */
 const routes = [
 
     {path: '/login', component: Login, name: 'Login'},
+
+    ...merchant,
 
     {
         path: '/',

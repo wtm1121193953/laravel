@@ -26,7 +26,7 @@
         status: 1,
     };
     export default {
-        name: 'oper-account-form',
+        name: 'merchant-form',
         props: {
             data: Object,
         },
@@ -59,9 +59,6 @@
                     if(valid){
                         let data = deepCopy(this.form);
                         this.$emit('save', data);
-                        setTimeout(() => {
-                            this.$refs.form.resetFields();
-                        }, 500)
                     }
                 })
 

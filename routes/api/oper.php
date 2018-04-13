@@ -11,4 +11,5 @@ Route::prefix('oper')
 
         Route::post('login', 'LoginController@login');
 
+        Route::group([], base_path('routes/api/oper/merchant.php'));
     });
