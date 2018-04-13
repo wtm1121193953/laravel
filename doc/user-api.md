@@ -303,7 +303,7 @@ token (wxLogin接口除外)
 
 - [ ] 订单详情
 
-    地址: POST `/order/detail`
+    地址: GET`/order/detail`
     参数
 
   ```
