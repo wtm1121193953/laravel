@@ -55,7 +55,8 @@ class MerchantController extends Controller
             })
             ->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
                 // 如果范围存在, 按距离搜索, 并按距离排序
-                $query->where('id', 'in', array_keys($distances));
+//                dd(array_keys($distances));
+                $query->whereIn('id', array_keys($distances));
             });
         if($lng && $lat && $radius){
             // 如果是按距离搜索, 需要在程序中排序
@@ -63,6 +64,7 @@ class MerchantController extends Controller
             $total = $query->count();
             $list = $allList->map(function ($item) use ($distances) {
                 $item->distance = isset($distances[$item->id]) ? $distances[$item->id] : 10000;
+                return $item;
             })
                 ->sortBy('distance')->values()
                 ->forPage(request('page', 1), 15);

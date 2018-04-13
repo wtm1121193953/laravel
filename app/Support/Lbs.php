@@ -9,6 +9,8 @@
 namespace App\Support;
 
 use App\Modules\Area\Area;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 
 
@@ -46,9 +48,24 @@ class Lbs
         ];
     }
 
-    public static function merchantGpsAdd($merchantId, $lng, $lat)
+    /**
+     * 添加商家GPS信息, 可批量添加
+     * @param $id int|Collection|array[{merchantId, lng, lat}]
+     * @param $lng
+     * @param $lat
+     */
+    public static function merchantGpsAdd($id, $lng=null, $lat=null)
     {
-        Redis::geoadd('location:merchant', $lng, $lat, $merchantId);
+        if(is_array($id) || $id instanceof Collection){
+            $params = [];
+            foreach ($id as $item) {
+                $params[] = [$item->lng, $item->lat, $item->id];
+            }
+            $params = array_flatten($params);
+        }else {
+            $params = [$lng, $lat, $id];
+        }
+        Redis::geoadd('location:merchant', ...$params);
     }
 
     /**
@@ -78,11 +95,11 @@ class Lbs
      */
     public static function getNearlyMerchantDistanceByGps($lng, $lat, $radius = 3000, $sort = 'asc')
     {
-        $result = Redis::georadius('location:merchant', $lng, $lat, $radius, 'm', 'WITHDIST', 1, $sort);
+        $result = Redis::georadius('location:merchant', $lng, $lat, $radius, 'm', 'WITHDIST', $sort);
 
         $arr = [];
         foreach ($result as $item) {
-            $arr[$item[0]] = $item[1];
+            $arr[$item[0]] = intval($item[1]);
         }
         return $arr;
     }
