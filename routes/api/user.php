@@ -15,6 +15,7 @@ Route::prefix('user')
         Route::post('login', 'LoginController@login');
 
         Route::get('area/tree', 'AreaController@getTree');
+        Route::get('area/getByGps', 'AreaController@getAreaByGps');
 
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
         Route::get('merchants', 'MerchantController@getList');
