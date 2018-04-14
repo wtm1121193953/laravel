@@ -18,7 +18,7 @@ class UserOpenIdInjector
 {
     // 不需要注入openId的路径
     protected $publicUrls = [
-        '/api/user/wxLogin',
+        'api/user/wxLogin',
     ];
 
     /**
