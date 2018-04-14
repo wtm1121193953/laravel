@@ -28,7 +28,7 @@ class CurrentOperInjector
     {
         $userAgent = $request->userAgent();
         $header = $request->header();
-        Log::info('$header: ' . $header);
+        Log::info('$header: ', $header);
         if(App::environment() === 'local'){
             $operId = 1;
         }else {
