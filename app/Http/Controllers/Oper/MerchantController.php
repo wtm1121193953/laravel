@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Oper;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Area\Area;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantCategory;
@@ -52,7 +53,45 @@ class MerchantController extends Controller
 
     private function fillMerchantInfoFromRequest(Merchant $merchant)
     {
+        $merchant->oper_id = request()->get('current_user')->oper_id;
+        $merchant->merchant_category_id = request('merchant_category_id');
         $merchant->name = request('name');
+        $merchant->brand = request('brand','');
+        $merchant->region = request('region');
+        $merchant->province = Area::where('area_id', request('province_id'))->value('name');
+        $merchant->province_id = request('province_id');
+        $merchant->city = Area::where('area_id', request('city_id'))->value('name');
+        $merchant->city_id = request('city_id');
+        $merchant->area = Area::where('area_id', request('area_id'))->value('name');
+        $merchant->area_id = request('area_id');
+        $merchant->business_time = request('business_time');
+        $merchant->logo = request('logo','');
+        $merchant->desc_pic = request('desc_pic','');
+        $merchant->desc = request('desc','');
+        $merchant->invoice_title = request('invoice_title','');
+        $merchant->invoice_no = request('invoice_no','');
+        $merchant->status = request('status', 1);
+        $merchant->lng = request('lng',0);            //todo
+        $merchant->lat = request('lat',0);            //todo
+        $merchant->address = request('address','');
+        $merchant->contacter = request('contacter','');
+        $merchant->contacter_phone = request('contacter_phone','');
+        $merchant->settlement_cycle_type = request('settlement_cycle_type');
+        $merchant->settlement_rate = request('settlement_rate');
+        $merchant->business_licence_pic_url = request('business_licence_pic_url','');
+        $merchant->organization_code = request('organization_code','');
+        $merchant->tax_cert_pic_url = request('tax_cert_pic_url','');
+        $merchant->legal_id_card_pic_a = request('legal_id_card_pic_a','');
+        $merchant->legal_id_card_pic_b = request('legal_id_card_pic_b','');
+        $merchant->contract_pic_url = request('contract_pic_url','');
+        $merchant->licence_pic_url = request('licence_pic_url','');
+        $merchant->hygienic_licence_pic_url = request('hygienic_licence_pic_url','');
+        $merchant->agreement_pic_url = request('agreement_pic_url','');
+        $merchant->bank_card_type = request('bank_card_type');
+        $merchant->bank_open_name = request('bank_open_name','');
+        $merchant->bank_card_no = request('bank_card_no','');
+        $merchant->sub_bank_name = request('sub_bank_name','');
+        $merchant->bank_open_address = request('bank_open_address','');
     }
 
     /**
@@ -62,10 +101,10 @@ class MerchantController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required',
+            'merchant_category_id' => 'required',
+            'business_licence_pic_url' => 'required',
         ]);
         $merchant = new Merchant();
-        $merchant->name = request('name');
-        $merchant->status = request('status', 1);
 
         $this->fillMerchantInfoFromRequest($merchant);
 
@@ -82,10 +121,12 @@ class MerchantController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
             'name' => 'required',
+            'merchant_category_id' => 'required',
+            'business_licence_pic_url' => 'required',
         ]);
         $merchant = Merchant::findOrFail(request('id'));
-        $merchant->name = request('name');
-        $merchant->status = request('status', 1);
+
+        $this->fillMerchantInfoFromRequest($merchant);
 
         $merchant->save();
 

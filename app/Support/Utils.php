@@ -20,7 +20,9 @@ class Utils
             if($item->{$pidKey} == $pid){
                 if(is_null($tier) || $tier > 0){
                     $sub = self::convertListToTree($list, $item->{$idKey}, $tier, $pidKey, $idKey);
-                    $item->sub = $sub;
+                    if(count($sub) > 0){
+                        $item->sub = $sub;
+                    }
                 }
                 $tree[] = $item;
             }

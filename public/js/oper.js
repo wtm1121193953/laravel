@@ -847,10 +847,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_item_options___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__merchant_item_options__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__merchant_form__ = __webpack_require__("./resources/oper/components/merchant/merchant-form.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__merchant_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__merchant_form__);
-var _methods;
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -926,7 +922,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
 
     computed: {},
-    methods: (_methods = {
+    methods: {
         getList: function getList() {
             var _this = this;
 
@@ -936,7 +932,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             });
         },
         itemChanged: function itemChanged(index, data) {
-            this.list.splice(index, 1, data);
+            this.getList();
         },
         add: function add() {
             this.isAdd = true;
@@ -951,15 +947,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             }).finally(function () {
                 _this2.isLoading = false;
             });
+        },
+        accountChanged: function accountChanged(scope, account) {
+            var row = this.list[scope.$index];
+            row.account = account;
+            this.list.splice(scope.$index, 1, row);
+            this.getList();
         }
-    }, _defineProperty(_methods, 'itemChanged', function itemChanged(index, data) {
-        this.list.splice(index, 1, data);
-    }), _defineProperty(_methods, 'accountChanged', function accountChanged(scope, account) {
-        var row = this.list[scope.$index];
-        row.account = account;
-        this.list.splice(scope.$index, 1, row);
-        this.getList();
-    }), _methods),
+    },
     created: function created() {
         this.getList();
     },
@@ -977,6 +972,154 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -1000,9 +1143,42 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
+
 var defaultForm = {
     name: '',
-    status: 1
+    brand: '',
+    region: 1,
+    merchant_category: [],
+    area: [],
+    business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
+    logo: '',
+    desc_pic: '',
+    desc: '',
+    invoice_title: '',
+    invoice_no: '',
+    status: 1,
+    // lng_and_lat: '',
+    address: '',
+    contacter: '',
+    contacter_phone: '',
+
+    settlement_cycle_type: 1,
+    settlement_rate: '',
+    business_licence_pic_url: '',
+    organization_code: '',
+    tax_cert_pic_url: '',
+    legal_id_card_pic_a: '',
+    legal_id_card_pic_b: '',
+    contract_pic_url: '',
+    licence_pic_url: '',
+    hygienic_licence_pic_url: '',
+    agreement_pic_url: '',
+    bank_card_type: 1,
+    bank_open_name: '',
+    bank_card_no: '',
+    sub_bank_name: '',
+    bank_open_address: ''
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: 'merchant-form',
@@ -1013,16 +1189,42 @@ var defaultForm = {
     data: function data() {
         return {
             form: deepCopy(defaultForm),
+            categoryOptions: [],
+            areaOptions: [],
             formRules: {
-                name: [{ required: true, message: '名称不能为空' }]
+                name: [{ required: true, message: '名称不能为空' }],
+                merchant_category: [{ required: true, message: '所属行业不能为空' }],
+                business_licence_pic_url: [{ required: true, message: '营业执照不能为空' }],
+                area: [{ required: true, message: '省/市/区不能为空' }]
             }
         };
     },
 
     methods: {
         initForm: function initForm() {
+            var _this = this;
+
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('merchant/categories/tree').then(function (data) {
+                _this.categoryOptions = data.list;
+            });
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('area/tree').then(function (data) {
+                _this.areaOptions = data.list;
+            });
+
+            console.log('data', this.data);
             if (this.data) {
                 this.form = deepCopy(this.data);
+                var merchant_category_array = [];
+                this.data.categoryPath.forEach(function (item) {
+                    merchant_category_array.unshift(parseInt(item.id));
+                });
+                this.form.merchant_category = merchant_category_array;
+                this.form.area = [parseInt(this.data.province_id), parseInt(this.data.city_id), parseInt(this.data.area_id)];
+                this.form.business_time = ['1970-01-01 ' + JSON.parse(this.data.business_time)[0], '1970-01-01 ' + JSON.parse(this.data.business_time)[1]];
+                this.form.region = parseInt(this.data.region);
+                this.form.settlement_cycle_type = parseInt(this.data.settlement_cycle_type);
+                this.form.status = parseInt(this.data.status);
+                this.form.bank_card_type = parseInt(this.data.bank_card_type);
             } else {
                 this.form = deepCopy(defaultForm);
             }
@@ -1031,12 +1233,22 @@ var defaultForm = {
             this.$emit('cancel');
         },
         save: function save() {
-            var _this = this;
+            var _this2 = this;
 
             this.$refs.form.validate(function (valid) {
                 if (valid) {
-                    var data = deepCopy(_this.form);
-                    _this.$emit('save', data);
+                    var data = deepCopy(_this2.form);
+                    if (_this2.data && _this2.data.id) {
+                        data.id = _this2.data.id;
+                    }
+
+                    data.merchant_category_id = data.merchant_category[data.merchant_category.length - 1];
+                    data.province_id = data.area[0];
+                    data.city_id = data.area[1];
+                    data.area_id = data.area[2];
+                    data.business_time = JSON.stringify([new Date(data.business_time[0]).format('hh:mm:ss'), new Date(data.business_time[1]).format('hh:mm:ss')]);
+
+                    _this2.$emit('save', data);
                 }
             });
         }
@@ -12542,7 +12754,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n.title[data-v-0afe599c] {\n    font-weight: 600;\n    line-height: 50px;\n}\n", ""]);
 
 // exports
 
@@ -12647,7 +12859,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -36806,7 +37018,7 @@ var render = function() {
     [
       _c(
         "el-col",
-        { attrs: { span: 22 } },
+        { attrs: { span: 24 } },
         [
           _c(
             "el-form",
@@ -36814,7 +37026,7 @@ var render = function() {
               ref: "form",
               attrs: {
                 model: _vm.form,
-                "label-width": "120px",
+                "label-width": "150px",
                 rules: _vm.formRules
               },
               nativeOn: {
@@ -36824,42 +37036,209 @@ var render = function() {
               }
             },
             [
-              _c(
-                "el-form-item",
-                { attrs: { prop: "name", label: "商户名称" } },
-                [
-                  _c("el-input", {
-                    model: {
-                      value: _vm.form.name,
-                      callback: function($$v) {
-                        _vm.$set(_vm.form, "name", $$v)
-                      },
-                      expression: "form.name"
-                    }
-                  })
-                ],
-                1
-              ),
+              _c("el-col", [
+                _c("div", { staticClass: "title" }, [_vm._v("商家基本信息:")])
+              ]),
               _vm._v(" "),
               _c(
-                "el-form-item",
-                { attrs: { prop: "status", label: "状态" } },
+                "el-col",
+                { attrs: { span: 11 } },
                 [
                   _c(
-                    "el-radio-group",
-                    {
-                      model: {
-                        value: _vm.form.status,
-                        callback: function($$v) {
-                          _vm.$set(_vm.form, "status", $$v)
-                        },
-                        expression: "form.status"
-                      }
-                    },
+                    "el-form-item",
+                    { attrs: { prop: "name", label: "商户名称" } },
                     [
-                      _c("el-radio", { attrs: { label: 1 } }, [_vm._v("正常")]),
-                      _vm._v(" "),
-                      _c("el-radio", { attrs: { label: 2 } }, [_vm._v("禁用")])
+                      _c("el-input", {
+                        model: {
+                          value: _vm.form.name,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "name", $$v)
+                          },
+                          expression: "form.name"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "brand", label: "商家品牌" } },
+                    [
+                      _c("el-input", {
+                        model: {
+                          value: _vm.form.brand,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "brand", $$v)
+                          },
+                          expression: "form.brand"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "region", label: "运营地区" } },
+                    [
+                      _c(
+                        "el-select",
+                        {
+                          attrs: { placeholder: "请选择" },
+                          model: {
+                            value: _vm.form.region,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "region", $$v)
+                            },
+                            expression: "form.region"
+                          }
+                        },
+                        [
+                          _c("el-option", {
+                            attrs: { label: "中国", value: 1 }
+                          }),
+                          _vm._v(" "),
+                          _c("el-option", {
+                            attrs: { label: "美国", value: 2 }
+                          }),
+                          _vm._v(" "),
+                          _c("el-option", {
+                            attrs: { label: "韩国", value: 3 }
+                          }),
+                          _vm._v(" "),
+                          _c("el-option", {
+                            attrs: { label: "香港", value: 4 }
+                          })
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "merchant_category", label: "所属行业" } },
+                    [
+                      _c("el-cascader", {
+                        attrs: {
+                          options: _vm.categoryOptions,
+                          props: {
+                            value: "id",
+                            label: "name",
+                            children: "sub"
+                          }
+                        },
+                        model: {
+                          value: _vm.form.merchant_category,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "merchant_category", $$v)
+                          },
+                          expression: "form.merchant_category"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "area", label: "省/市/区" } },
+                    [
+                      _c("el-cascader", {
+                        attrs: {
+                          options: _vm.areaOptions,
+                          props: {
+                            value: "area_id",
+                            label: "name",
+                            children: "sub"
+                          }
+                        },
+                        model: {
+                          value: _vm.form.area,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "area", $$v)
+                          },
+                          expression: "form.area"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "business_time", label: "营业时间" } },
+                    [
+                      _c("el-time-picker", {
+                        attrs: {
+                          "is-range": "",
+                          "range-separator": "至",
+                          "start-placeholder": "开始时间",
+                          "end-placeholder": "结束时间",
+                          placeholder: "选择时间范围"
+                        },
+                        model: {
+                          value: _vm.form.business_time,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "business_time", $$v)
+                          },
+                          expression: "form.business_time"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "logo", label: "商家logo" } },
+                    [
+                      _c("image-upload", {
+                        model: {
+                          value: _vm.form.logo,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "logo", $$v)
+                          },
+                          expression: "form.logo"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "desc_pic", label: "商家介绍图片" } },
+                    [
+                      _c("image-upload", {
+                        model: {
+                          value: _vm.form.desc_pic,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "desc_pic", $$v)
+                          },
+                          expression: "form.desc_pic"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "desc", label: "商家介绍" } },
+                    [
+                      _c("el-input", {
+                        attrs: { type: "textarea", rows: 5 },
+                        model: {
+                          value: _vm.form.desc,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "desc", $$v)
+                          },
+                          expression: "form.desc"
+                        }
+                      })
                     ],
                     1
                   )
@@ -36868,16 +37247,519 @@ var render = function() {
               ),
               _vm._v(" "),
               _c(
-                "el-form-item",
+                "el-col",
+                { attrs: { span: 11 } },
                 [
-                  _c("el-button", { on: { click: _vm.cancel } }, [
-                    _vm._v("取消")
-                  ]),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "invoice_title", label: "发票抬头" } },
+                    [
+                      _c("el-input", {
+                        model: {
+                          value: _vm.form.invoice_title,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "invoice_title", $$v)
+                          },
+                          expression: "form.invoice_title"
+                        }
+                      })
+                    ],
+                    1
+                  ),
                   _vm._v(" "),
                   _c(
-                    "el-button",
-                    { attrs: { type: "primary" }, on: { click: _vm.save } },
-                    [_vm._v("保存")]
+                    "el-form-item",
+                    { attrs: { prop: "invoice_no", label: "发票编号" } },
+                    [
+                      _c("el-input", {
+                        model: {
+                          value: _vm.form.invoice_no,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "invoice_no", $$v)
+                          },
+                          expression: "form.invoice_no"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "status", label: "商户状态" } },
+                    [
+                      _c(
+                        "el-radio-group",
+                        {
+                          model: {
+                            value: _vm.form.status,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "status", $$v)
+                            },
+                            expression: "form.status"
+                          }
+                        },
+                        [
+                          _c("el-radio", { attrs: { label: 1 } }, [
+                            _vm._v("正常")
+                          ]),
+                          _vm._v(" "),
+                          _c("el-radio", { attrs: { label: 2 } }, [
+                            _vm._v("禁用")
+                          ])
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("el-form-item", { attrs: { label: "商户位置" } }),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "address", label: "详细地址" } },
+                    [
+                      _c("el-input", {
+                        model: {
+                          value: _vm.form.address,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "address", $$v)
+                          },
+                          expression: "form.address"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "contacter", label: "负责人姓名" } },
+                    [
+                      _c("el-input", {
+                        model: {
+                          value: _vm.form.contacter,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "contacter", $$v)
+                          },
+                          expression: "form.contacter"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: {
+                        prop: "contacter_phone",
+                        label: "负责人联系方式"
+                      }
+                    },
+                    [
+                      _c("el-input", {
+                        model: {
+                          value: _vm.form.contacter_phone,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "contacter_phone", $$v)
+                          },
+                          expression: "form.contacter_phone"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c("el-col", [
+                _c("div", { staticClass: "title" }, [_vm._v("商务信息:")])
+              ]),
+              _vm._v(" "),
+              _c(
+                "el-col",
+                { attrs: { span: 11 } },
+                [
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: {
+                        prop: "settlement_cycle_type",
+                        label: "结算周期"
+                      }
+                    },
+                    [
+                      _c(
+                        "el-select",
+                        {
+                          attrs: { placeholder: "请选择" },
+                          model: {
+                            value: _vm.form.settlement_cycle_type,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "settlement_cycle_type", $$v)
+                            },
+                            expression: "form.settlement_cycle_type"
+                          }
+                        },
+                        [
+                          _c("el-option", {
+                            attrs: { label: "周节", value: 1 }
+                          }),
+                          _vm._v(" "),
+                          _c("el-option", {
+                            attrs: { label: "半月结", value: 2 }
+                          }),
+                          _vm._v(" "),
+                          _c("el-option", {
+                            attrs: { label: "月结", value: 3 }
+                          }),
+                          _vm._v(" "),
+                          _c("el-option", {
+                            attrs: { label: "半年结", value: 4 }
+                          }),
+                          _vm._v(" "),
+                          _c("el-option", {
+                            attrs: { label: "年结", value: 5 }
+                          })
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "settlement_rate", label: "分利比例" } },
+                    [
+                      _c("el-input-number", {
+                        model: {
+                          value: _vm.form.settlement_rate,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "settlement_rate", $$v)
+                          },
+                          expression: "form.settlement_rate"
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("div", [_vm._v("返利百分比,如20%请填写20")])
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: {
+                        prop: "business_licence_pic_url",
+                        label: "营业执照（必填）"
+                      }
+                    },
+                    [
+                      _c("image-upload", {
+                        model: {
+                          value: _vm.form.business_licence_pic_url,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "business_licence_pic_url", $$v)
+                          },
+                          expression: "form.business_licence_pic_url"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: {
+                        prop: "organization_code",
+                        label: "组织机构代码"
+                      }
+                    },
+                    [
+                      _c("el-input", {
+                        model: {
+                          value: _vm.form.organization_code,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "organization_code", $$v)
+                          },
+                          expression: "form.organization_code"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: { prop: "tax_cert_pic_url", label: "税务登记证" }
+                    },
+                    [
+                      _c("image-upload", {
+                        model: {
+                          value: _vm.form.tax_cert_pic_url,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "tax_cert_pic_url", $$v)
+                          },
+                          expression: "form.tax_cert_pic_url"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: {
+                        prop: "legal_id_card_pic_a",
+                        label: "法人身份证正面"
+                      }
+                    },
+                    [
+                      _c("image-upload", {
+                        model: {
+                          value: _vm.form.legal_id_card_pic_a,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "legal_id_card_pic_a", $$v)
+                          },
+                          expression: "form.legal_id_card_pic_a"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: {
+                        prop: "legal_id_card_pic_b",
+                        label: "法人身份证反面"
+                      }
+                    },
+                    [
+                      _c("image-upload", {
+                        model: {
+                          value: _vm.form.legal_id_card_pic_b,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "legal_id_card_pic_b", $$v)
+                          },
+                          expression: "form.legal_id_card_pic_b"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "contract_pic_url", label: "合同" } },
+                    [
+                      _c("image-upload", {
+                        model: {
+                          value: _vm.form.contract_pic_url,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "contract_pic_url", $$v)
+                          },
+                          expression: "form.contract_pic_url"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "licence_pic_url", label: "开户许可证" } },
+                    [
+                      _c("image-upload", {
+                        model: {
+                          value: _vm.form.licence_pic_url,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "licence_pic_url", $$v)
+                          },
+                          expression: "form.licence_pic_url"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: {
+                        prop: "hygienic_licence_pic_url",
+                        label: "卫生许可证"
+                      }
+                    },
+                    [
+                      _c("image-upload", {
+                        model: {
+                          value: _vm.form.hygienic_licence_pic_url,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "hygienic_licence_pic_url", $$v)
+                          },
+                          expression: "form.hygienic_licence_pic_url"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "agreement_pic_url", label: "协议文件" } },
+                    [
+                      _c("image-upload", {
+                        model: {
+                          value: _vm.form.agreement_pic_url,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "agreement_pic_url", $$v)
+                          },
+                          expression: "form.agreement_pic_url"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-col",
+                { attrs: { span: 11 } },
+                [
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "bank_card_type", label: "类型" } },
+                    [
+                      _c(
+                        "el-radio-group",
+                        {
+                          model: {
+                            value: _vm.form.bank_card_type,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "bank_card_type", $$v)
+                            },
+                            expression: "form.bank_card_type"
+                          }
+                        },
+                        [
+                          _c("el-radio", { attrs: { label: 1 } }, [
+                            _vm._v("公司")
+                          ]),
+                          _vm._v(" "),
+                          _c("el-radio", { attrs: { label: 2 } }, [
+                            _vm._v("个人")
+                          ])
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "bank_open_name", label: "银行开户名" } },
+                    [
+                      _c("el-input", {
+                        model: {
+                          value: _vm.form.bank_open_name,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "bank_open_name", $$v)
+                          },
+                          expression: "form.bank_open_name"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "bank_card_no", label: "公司银行账号" } },
+                    [
+                      _c("el-input", {
+                        model: {
+                          value: _vm.form.bank_card_no,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "bank_card_no", $$v)
+                          },
+                          expression: "form.bank_card_no"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "sub_bank_name", label: "开户支行名称" } },
+                    [
+                      _c("el-input", {
+                        model: {
+                          value: _vm.form.sub_bank_name,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "sub_bank_name", $$v)
+                          },
+                          expression: "form.sub_bank_name"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: {
+                        prop: "bank_open_address",
+                        label: "开户支行地址"
+                      }
+                    },
+                    [
+                      _c("el-input", {
+                        model: {
+                          value: _vm.form.bank_open_address,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "bank_open_address", $$v)
+                          },
+                          expression: "form.bank_open_address"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-col",
+                [
+                  _c(
+                    "el-form-item",
+                    [
+                      _c("el-button", { on: { click: _vm.cancel } }, [
+                        _vm._v("取消")
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "el-button",
+                        { attrs: { type: "primary" }, on: { click: _vm.save } },
+                        [_vm._v("保存")]
+                      )
+                    ],
+                    1
                   )
                 ],
                 1
@@ -36983,7 +37865,7 @@ var render = function() {
       _c(
         "el-dialog",
         {
-          attrs: { title: "编辑商户信息", visible: _vm.isEdit },
+          attrs: { title: "编辑商户信息", width: "70%", visible: _vm.isEdit },
           on: {
             "update:visible": function($event) {
               _vm.isEdit = $event
@@ -37608,7 +38490,7 @@ var render = function() {
       _c(
         "el-dialog",
         {
-          attrs: { title: "添加商户", visible: _vm.isAdd },
+          attrs: { title: "添加商户", width: "70%", visible: _vm.isAdd },
           on: {
             "update:visible": function($event) {
               _vm.isAdd = $event
