@@ -26,7 +26,7 @@ class CreateSettlementsTable extends Migration
             $table->decimal('real_amount')->comment('商家实际收到的金额');
 
             // 打款信息
-            $table->decimal('real_amount')->comment('商家实际收到的金额');
+            $table->string('bank_open_name')->default('')->comment('银行开户名');
             $table->string('bank_open_name')->default('')->comment('银行开户名');
             $table->string('bank_card_no')->default('')->comment('银行账号');
             $table->string('sub_bank_name')->default('')->comment('开户支行名称');
@@ -34,6 +34,8 @@ class CreateSettlementsTable extends Migration
             $table->string('pay_pic_url')->default('')->comment('回款单图片');
 
             // 发票信息
+            $table->string('invoice_title')->default('')->comment('发票抬头');
+            $table->string('invoice_no')->default('')->comment('发票税号');
             $table->tinyInteger('invoice_type')->default(1)->comment('发票类型 1-电子发票 2-纸质发票');
             $table->string('invoice_pic_url')->default('')->comment('发票图片地址  电子发票有效');
             $table->string('logistics_name')->default('')->comment('发票邮寄物流公司  纸质发票有效');
