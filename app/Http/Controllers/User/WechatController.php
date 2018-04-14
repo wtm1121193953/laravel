@@ -39,13 +39,14 @@ class WechatController extends Controller
         $app = WechatService::getWechatMiniAppForOper(request()->get('current_oper')->id);
         $result = $app->auth->session($code);
         if(is_string($result)) $result = json_decode($result, 1);
-        Log::info('wxLogin 返回', $result);
+        Log::alert('wxLogin 返回', $result);
         // 绑定用户openId到token
         $token = str_random(32);
-        Cache::add('open_id_for_token_' . $token, $result['openid']);
+//        Cache::add('open_id_for_token_' . $token, $result['openid']);
 
         return Result::success([
             'token' => $token,
+            'result' => $result,
         ]);
     }
 }
