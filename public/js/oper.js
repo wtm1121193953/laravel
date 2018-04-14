@@ -40863,14 +40863,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_vue_router__ = __webpack_require__("./node_modules/vue-router/dist/vue-router.esm.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_element_ui__ = __webpack_require__("./node_modules/element-ui/lib/element-ui.common.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_element_ui___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_element_ui__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_page__ = __webpack_require__("./resources/oper/components/page.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__components_page___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__components_page__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__assets_components_upload_image_upload__ = __webpack_require__("./resources/assets/components/upload/image-upload.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__assets_components_upload_image_upload___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__assets_components_upload_image_upload__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__quill_editor_plugin__ = __webpack_require__("./resources/oper/quill-editor-plugin.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__App_vue__ = __webpack_require__("./resources/oper/App.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__App_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_12__App_vue__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_vue_amap__ = __webpack_require__("./node_modules/vue-amap/dist/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_vue_amap___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_vue_amap__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_page__ = __webpack_require__("./resources/oper/components/page.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__components_page___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__components_page__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__assets_components_upload_image_upload__ = __webpack_require__("./resources/assets/components/upload/image-upload.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__assets_components_upload_image_upload___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10__assets_components_upload_image_upload__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__quill_editor_plugin__ = __webpack_require__("./resources/oper/quill-editor-plugin.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__App_vue__ = __webpack_require__("./resources/oper/App.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__App_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_13__App_vue__);
 
 
 
@@ -40913,19 +40915,30 @@ __WEBPACK_IMPORTED_MODULE_3_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_6_vue_
 __WEBPACK_IMPORTED_MODULE_3_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_7_element_ui___default.a);
 
 
-__WEBPACK_IMPORTED_MODULE_3_vue___default.a.component('page', __WEBPACK_IMPORTED_MODULE_8__components_page___default.a);
+__WEBPACK_IMPORTED_MODULE_3_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_8_vue_amap___default.a);
+window.VueAMap = __WEBPACK_IMPORTED_MODULE_8_vue_amap___default.a;
+console.log(__WEBPACK_IMPORTED_MODULE_8_vue_amap___default.a);
+__WEBPACK_IMPORTED_MODULE_8_vue_amap___default.a.initAMapApiLoader({
+    key: '315bde9730e45b8b095517d052361f11',
+    plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],
+    // 默认高德 sdk 版本为 1.4.4
+    v: '1.4.4'
+});
+
+
+__WEBPACK_IMPORTED_MODULE_3_vue___default.a.component('page', __WEBPACK_IMPORTED_MODULE_9__components_page___default.a);
 
 // single image upload
 
-__WEBPACK_IMPORTED_MODULE_3_vue___default.a.component(__WEBPACK_IMPORTED_MODULE_9__assets_components_upload_image_upload___default.a.name, __WEBPACK_IMPORTED_MODULE_9__assets_components_upload_image_upload___default.a);
+__WEBPACK_IMPORTED_MODULE_3_vue___default.a.component(__WEBPACK_IMPORTED_MODULE_10__assets_components_upload_image_upload___default.a.name, __WEBPACK_IMPORTED_MODULE_10__assets_components_upload_image_upload___default.a);
 
 
-__WEBPACK_IMPORTED_MODULE_3_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_10__quill_editor_plugin__["a" /* default */].VueQuillEditor, __WEBPACK_IMPORTED_MODULE_10__quill_editor_plugin__["a" /* default */].globalOptions);
+__WEBPACK_IMPORTED_MODULE_3_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_11__quill_editor_plugin__["a" /* default */].VueQuillEditor, __WEBPACK_IMPORTED_MODULE_11__quill_editor_plugin__["a" /* default */].globalOptions);
 
 window.baseApiUrl = '/api/oper/';
 
-window.api = __WEBPACK_IMPORTED_MODULE_11__assets_js_api__["a" /* default */];
-__WEBPACK_IMPORTED_MODULE_3_vue___default.a.prototype.$api = __WEBPACK_IMPORTED_MODULE_11__assets_js_api__["a" /* default */];
+window.api = __WEBPACK_IMPORTED_MODULE_12__assets_js_api__["a" /* default */];
+__WEBPACK_IMPORTED_MODULE_3_vue___default.a.prototype.$api = __WEBPACK_IMPORTED_MODULE_12__assets_js_api__["a" /* default */];
 
 
 new __WEBPACK_IMPORTED_MODULE_3_vue___default.a({
@@ -40933,7 +40946,7 @@ new __WEBPACK_IMPORTED_MODULE_3_vue___default.a({
     template: '<App/>',
     router: router,
     store: __WEBPACK_IMPORTED_MODULE_4__store__["a" /* default */],
-    components: { App: __WEBPACK_IMPORTED_MODULE_12__App_vue___default.a
+    components: { App: __WEBPACK_IMPORTED_MODULE_13__App_vue___default.a
         // render: h => h(Login)
     } }).$mount('#app');
 

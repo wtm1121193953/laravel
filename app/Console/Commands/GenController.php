@@ -46,7 +46,7 @@ class GenController extends Command
 //        $title = $this->ask('功能描述[中文名]:');
         $module = $this->ask('所属模块(admin|oper|merchant|user)', 'admin');
         if(php_uname('s') == 'Windows NT'){
-            $title = '商户';
+            $title = 'xxxxxx';
             $this->info("功能描述[中文名]: 请自行到文件中将[$title]替换为对应的中文名");
         }else {
             $title = $this->ask('功能描述[中文名]:');

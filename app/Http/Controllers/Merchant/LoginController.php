@@ -2,25 +2,23 @@
 /**
  * Created by PhpStorm.
  * User: Administrator
- * Date: 2018/4/11
- * Time: 0:08
+ * Date: 2018/4/14
+ * Time: 14:58
  */
 
-namespace App\Http\Controllers\Oper;
+namespace App\Http\Controllers\Merchant;
 
 
 use App\Exceptions\AccountNotFoundException;
 use App\Exceptions\PasswordErrorException;
+use App\Exceptions\UnloginException;
 use App\Http\Controllers\Controller;
-use App\Modules\Oper\OperAccount;
+use App\Modules\Merchant\MerchantAccount;
 use App\Result;
 
 class LoginController extends Controller
 {
 
-    /**
-     * 登陆接口
-     */
     public function login()
     {
         $this->validate(request(), [
@@ -28,16 +26,16 @@ class LoginController extends Controller
             'password' => 'required|between:6,30',
             'verifyCode' => 'required|captcha'
         ]);
-        $user = OperAccount::where('account', request('username'))->first();
+        $user = MerchantAccount::where('account', request('username'))->first();
         if(empty($user)){
             throw new AccountNotFoundException();
         }
-        if(OperAccount::genPassword(request('password'), $user['salt']) != $user['password']){
+        if(MerchantAccount::genPassword(request('password'), $user['salt']) != $user['password']){
             throw new PasswordErrorException();
         }
 
         session([
-            config('oper.user_session') => $user,
+            config('merchant.user_session') => $user,
         ]);
 
         return Result::success([
@@ -49,8 +47,9 @@ class LoginController extends Controller
     private function getMenus()
     {
         return [
-            [ 'id' => 1, 'name' => '商户管理', 'level' => 1, 'url' => '/oper/merchants',],
-            [ 'id' => 2, 'name' => '财务管理', 'level' => 1, 'url' => '/oper/settlements',],
+            [ 'id' => 1, 'name' => '商品管理', 'level' => 1, 'url' => '/merchant/goods',],
+            [ 'id' => 2, 'name' => '订单管理', 'level' => 1, 'url' => '/merchant/orders',],
+            [ 'id' => 3, 'name' => '财务管理', 'level' => 1, 'url' => '/merchant/settlements',],
         ];
     }
 

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\{studlyModuleName};
+namespace App\Http\Controllers\Merchant;
 
 
 use App\Http\Controllers\Controller;
-use {modelClass};
+use App\Modules\Goods\Goods;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
-class {studlyName}Controller extends Controller
+class GoodsController extends Controller
 {
 
     /**
@@ -17,7 +17,7 @@ class {studlyName}Controller extends Controller
     public function getList()
     {
         $status = request('status');
-        $data = {modelClassName}::when($status, function (Builder $query) use ($status){
+        $data = Goods::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })->orderBy('id', 'desc')->paginate();
 
@@ -33,7 +33,7 @@ class {studlyName}Controller extends Controller
     public function getAllList()
     {
         $status = request('status');
-        $list = {modelClassName}::when($status, function (Builder $query) use ($status){
+        $list = Goods::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })->orderBy('id', 'desc')->get();
 
@@ -50,13 +50,13 @@ class {studlyName}Controller extends Controller
         $this->validate(request(), [
             'name' => 'required',
         ]);
-        ${name} = new {modelClassName}();
-        ${name}->name = request('name');
-        ${name}->status = request('status', 1);
+        $goods = new Goods();
+        $goods->name = request('name');
+        $goods->status = request('status', 1);
 
-        ${name}->save();
+        $goods->save();
 
-        return Result::success(${name});
+        return Result::success($goods);
     }
 
     /**
@@ -68,13 +68,13 @@ class {studlyName}Controller extends Controller
             'id' => 'required|integer|min:1',
             'name' => 'required',
         ]);
-        ${name} = {modelClassName}::findOrFail(request('id'));
-        ${name}->name = request('name');
-        ${name}->status = request('status', 1);
+        $goods = Goods::findOrFail(request('id'));
+        $goods->name = request('name');
+        $goods->status = request('status', 1);
 
-        ${name}->save();
+        $goods->save();
 
-        return Result::success(${name});
+        return Result::success($goods);
     }
 
     /**
@@ -86,11 +86,11 @@ class {studlyName}Controller extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer',
         ]);
-        ${name} = {modelClassName}::findOrFail(request('id'));
-        ${name}->status = request('status');
+        $goods = Goods::findOrFail(request('id'));
+        $goods->status = request('status');
 
-        ${name}->save();
-        return Result::success(${name});
+        $goods->save();
+        return Result::success($goods);
     }
 
     /**
@@ -103,9 +103,9 @@ class {studlyName}Controller extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        ${name} = {modelClassName}::findOrFail(request('id'));
-        ${name}->delete();
-        return Result::success(${name});
+        $goods = Goods::findOrFail(request('id'));
+        $goods->delete();
+        return Result::success($goods);
     }
 
 }
