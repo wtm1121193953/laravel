@@ -32,6 +32,10 @@ class CreateOrdersTable extends Migration
             $table->timestamp('pay_time')->nullable()->comment('付款时间');
             $table->decimal('refund_price')->default(0)->comment('退款金额');
             $table->timestamp('refund_time')->nullable()->comment('退款时间');
+
+            $table->tinyInteger('settlement_status')->index()->default(0)->comment('结算状态 1-未结算 2-已结算');
+            $table->integer('settlement_id')->index()->default(0)->comment('结算ID');
+
             $table->timestamps();
             $table->softDeletes();
 
