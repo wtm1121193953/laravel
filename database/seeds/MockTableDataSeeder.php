@@ -23,9 +23,9 @@ class MockTableDataSeeder extends Seeder
         ]);
         \App\Modules\Oper\OperMiniprogram::create([
             'oper_id' => 1,
-            'name' => 'mock miniprogram name ',
-            'appid' => 'mock appid',
-            'secret' => 'mock secret',
+            'name' => '大千生活',
+            'appid' => 'wx1abb4cf60ffea6c9',
+            'secret' => 'f8f1ee6243170330a21105d7c3712143',
             'mch_id' => 'mock mch_id',
         ]);
         // 模拟运营中心用户
