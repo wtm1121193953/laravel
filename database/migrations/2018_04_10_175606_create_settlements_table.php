@@ -17,7 +17,30 @@ class CreateSettlementsTable extends Migration
             $table->increments('id');
             $table->integer('oper_id')->index()->comment('所属运营中心ID');
             $table->integer('merchant_id')->index()->comment('商家ID');
-            $table->decimal('amount')->comment('结算金额');
+            $table->decimal('start_date')->comment('结算开始日期');
+            $table->decimal('end_date')->comment('结算结束日期');
+            $table->tinyInteger('settlement_cycle_type')->comment('结算周期类型 1-周结 2-半月结 3-月结 4-半年结 5-年结');
+            $table->decimal('settlement_rate', 4, 2)->comment('结算费率');
+            $table->decimal('amount')->comment('结算总金额');
+            $table->decimal('charge_amount')->comment('手续费');
+            $table->decimal('real_amount')->comment('商家实际收到的金额');
+
+            // 打款信息
+            $table->decimal('real_amount')->comment('商家实际收到的金额');
+            $table->string('bank_open_name')->default('')->comment('银行开户名');
+            $table->string('bank_card_no')->default('')->comment('银行账号');
+            $table->string('sub_bank_name')->default('')->comment('开户支行名称');
+            $table->string('bank_open_address')->default('')->comment('开户支行地址');
+            $table->string('pay_pic_url')->default('')->comment('回款单图片');
+
+            // 发票信息
+            $table->tinyInteger('invoice_type')->default(1)->comment('发票类型 1-电子发票 2-纸质发票');
+            $table->string('invoice_pic_url')->default('')->comment('发票图片地址  电子发票有效');
+            $table->string('logistics_name')->default('')->comment('发票邮寄物流公司  纸质发票有效');
+            $table->string('logistics_no')->default('')->comment('发票邮寄物流单号  纸质发票有效');
+
+            $table->tinyInteger('status')->default(1)->comment('状态 1-审核中 2-已打款');
+
             $table->timestamps();
         });
     }
