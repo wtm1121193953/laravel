@@ -71,7 +71,7 @@
                 })
             },
             itemChanged(index, data){
-                this.list.splice(index, 1, data)
+                this.getList();
             },
             add(){
                 this.isAdd = true;
@@ -84,9 +84,6 @@
                 }).finally(() => {
                     this.isLoading = false;
                 })
-            },
-            itemChanged(index, data){
-                this.list.splice(index, 1, data)
             },
         },
         created(){

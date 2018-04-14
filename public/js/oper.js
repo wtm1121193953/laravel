@@ -37311,6 +37311,7 @@ var render = function() {
                     { attrs: { prop: "logo", label: "商家logo" } },
                     [
                       _c("image-upload", {
+                        attrs: { limit: 1 },
                         model: {
                           value: _vm.form.logo,
                           callback: function($$v) {
@@ -37328,6 +37329,7 @@ var render = function() {
                     { attrs: { prop: "desc_pic", label: "商家介绍图片" } },
                     [
                       _c("image-upload", {
+                        attrs: { limit: 1 },
                         model: {
                           value: _vm.form.desc_pic,
                           callback: function($$v) {
@@ -37627,6 +37629,7 @@ var render = function() {
                     },
                     [
                       _c("image-upload", {
+                        attrs: { limit: 1 },
                         model: {
                           value: _vm.form.business_licence_pic_url,
                           callback: function($$v) {
@@ -37668,6 +37671,7 @@ var render = function() {
                     },
                     [
                       _c("image-upload", {
+                        attrs: { limit: 1 },
                         model: {
                           value: _vm.form.tax_cert_pic_url,
                           callback: function($$v) {
@@ -37690,6 +37694,7 @@ var render = function() {
                     },
                     [
                       _c("image-upload", {
+                        attrs: { limit: 1 },
                         model: {
                           value: _vm.form.legal_id_card_pic_a,
                           callback: function($$v) {
@@ -37712,6 +37717,7 @@ var render = function() {
                     },
                     [
                       _c("image-upload", {
+                        attrs: { limit: 1 },
                         model: {
                           value: _vm.form.legal_id_card_pic_b,
                           callback: function($$v) {
@@ -37729,6 +37735,7 @@ var render = function() {
                     { attrs: { prop: "contract_pic_url", label: "合同" } },
                     [
                       _c("image-upload", {
+                        attrs: { limit: 1 },
                         model: {
                           value: _vm.form.contract_pic_url,
                           callback: function($$v) {
@@ -37746,6 +37753,7 @@ var render = function() {
                     { attrs: { prop: "licence_pic_url", label: "开户许可证" } },
                     [
                       _c("image-upload", {
+                        attrs: { limit: 1 },
                         model: {
                           value: _vm.form.licence_pic_url,
                           callback: function($$v) {
@@ -37768,6 +37776,7 @@ var render = function() {
                     },
                     [
                       _c("image-upload", {
+                        attrs: { limit: 1 },
                         model: {
                           value: _vm.form.hygienic_licence_pic_url,
                           callback: function($$v) {
@@ -37785,6 +37794,7 @@ var render = function() {
                     { attrs: { prop: "agreement_pic_url", label: "协议文件" } },
                     [
                       _c("image-upload", {
+                        attrs: { limit: 1 },
                         model: {
                           value: _vm.form.agreement_pic_url,
                           callback: function($$v) {
