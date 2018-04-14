@@ -11,6 +11,8 @@ import UserList from '../components/auth/user/list.vue'
 import goods from './goods'
 import oper from './oper'
 import oper_accounts from './oper_account'
+import merchant from './merchant'
+
 /**
  *
  */
@@ -33,6 +35,7 @@ const routes = [
     ...goods,
     ...oper,
     ...oper_accounts,
+    ...merchant,
 
     {
         path: '/',

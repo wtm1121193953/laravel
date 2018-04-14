@@ -35,9 +35,11 @@ class MerchantController extends Controller
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
         }
 
-        $query = Merchant::when($city_id, function(Builder $query) use ($city_id){
-            $query->where('city_id', $city_id);
-        })
+        $query = Merchant::where('status', 1)
+            ->where('audit_status', Merchant::AUDIT_STATUS_SUCCESS)
+            ->when($city_id, function(Builder $query) use ($city_id){
+                $query->where('city_id', $city_id);
+            })
             ->when(!$merchant_category_id && $keyword, function(Builder $query) use ($keyword){
                 // 不传商家类别id且关键字存在时, 若关键字等同于类别, 则搜索该类别以及携带该关键字的商家
                 $category = MerchantCategory::where('name', $keyword)->first();

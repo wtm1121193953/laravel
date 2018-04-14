@@ -3,8 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Modules\Merchant\Merchant;
+use App\Modules\Wechat\WechatService;
 use App\Support\Lbs;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 class Test extends Command
@@ -51,5 +53,8 @@ class Test extends Command
         //
         preg_match('/servicewechat.com\/(wx[\d0-9a-zA-Z]*)\/.*/', 'https://servicewechat.com/wx1abb4cf60ffea6c9/devtools/page-frame.html', $matches);
         dump($matches);
+        $app = WechatService::getWechatMiniAppForOper(1);
+        $result = $app->auth->session('');
+        dump($result);
     }
 }

@@ -11,8 +11,12 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Modules\User\User;
+use App\Modules\User\UserOpenIdMapping;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class WechatController extends Controller
 {
@@ -23,16 +27,33 @@ class WechatController extends Controller
      */
     public function login()
     {
-        return Result::success([
-            'token' => str_random(),
-            'userInfo' => request('code') == 'user' ? User::find(1) : null,
-        ]);
+        if(App::environment() === 'local'){
+            return Result::success([
+                'token' => str_random(),
+                'userInfo' => request('code') == 'user' ? User::find(1) : null,
+            ]);
+        }
         $this->validate(request(), [
             'code' => 'required'
         ]);
         $code = request('code', '');
         $app = WechatService::getWechatMiniAppForOper(request()->get('current_oper')->id);
-        $reuslt = $app->auth->session($code);
-        return Result::success($reuslt);
+        $result = $app->auth->session($code);
+        if(is_string($result)) $result = json_decode($result, 1);
+        Log::info('wxLogin 返回', $result);
+        $openid = $result['openid'];
+        // 绑定用户openId到token
+        $token = str_random(32);
+        Cache::add('open_id_for_token_' . $token, $openid, 60 * 24 * 30);
+        // 获取用户信息
+        $userId = UserOpenIdMapping::where('open_id', $openid)->value('user_id');
+        if($userId){
+            $user = User::findOrFail($userId);
+        }
+
+        return Result::success([
+            'token' => $token,
+            'user' => $user ?? null,
+        ]);
     }
 }

@@ -45,7 +45,7 @@ class GenVuePage extends Command
 
         // laravel 命令行输入中文报错, 还没找到解决办法
         if(php_uname('s') == 'Windows NT'){
-            $title = '商户';
+            $title = 'xxxxxx';
             $this->info("功能描述[中文名]: 请自行到生成的文件中将[$title]替换为对应的中文名");
         }else {
             $title = $this->ask('功能描述[中文名]:');

@@ -20,10 +20,12 @@ trait GenCode
      * @param $title string 标题名(中文名)
      * @param $name string 名称
      * @param $pluralName string 复数形式名称
+     * @param $module
      * @return array
      */
-    private function getVariable($title, $name, $pluralName)
+    private function getVariable($title, $name, $pluralName, $module)
     {
+        $studlyModuleName = studly_case($module);
         $studlyName = studly_case($name);
         $listApi = "/{$pluralName}";
         $allListApi = "/{$pluralName}/all";
@@ -35,6 +37,7 @@ trait GenCode
             '{title}' => $title,
             '{name}' => $name,
             '{studlyName}' => $studlyName,
+            '{studlyModuleName}' => $studlyModuleName,
             '{listApi}' => $listApi,
             '{allListApi}' => $allListApi,
             '{addApi}' => $addApi,
@@ -66,11 +69,12 @@ trait GenCode
      * @param $pluralName string 复数形式名称
      * @param $modelClass string 模型类名
      * @param $force bool 是否强制写入
+     * @param string $module
      * @return array
      */
     public function genPhpCode($title, $name, $pluralName, $modelClass, $force = false, $module='admin')
     {
-        $variable = $this->getVariable($title, $name, $pluralName);
+        $variable = $this->getVariable($title, $name, $pluralName, $module);
 
         $studlyName = $variable['{studlyName}'];
         $variable['{modelClass}'] = $modelClass;
@@ -110,7 +114,7 @@ trait GenCode
      */
     public function genVueCode($title, $name, $pluralName, $force=false, $module='admin'){
 
-        $variable = $this->getVariable($title, $name, $pluralName);
+        $variable = $this->getVariable($title, $name, $pluralName, $module);
 
         // 输出 vue 模板文件
         $templateOutputPath = resource_path($module . '/components/' . $name);

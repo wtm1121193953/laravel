@@ -37,7 +37,18 @@ window.router = router
 Vue.use(VueRouter)
 
 import ElementUI from 'element-ui'
-Vue.use(ElementUI)
+Vue.use(ElementUI);
+
+import VueAMap from 'vue-amap'
+Vue.use(VueAMap);
+window.VueAMap = VueAMap;
+console.log(VueAMap);
+VueAMap.initAMapApiLoader({
+    key: '315bde9730e45b8b095517d052361f11',
+    plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],
+    // 默认高德 sdk 版本为 1.4.4
+    v: '1.4.4'
+});
 
 import page from './components/page'
 Vue.component('page', page)

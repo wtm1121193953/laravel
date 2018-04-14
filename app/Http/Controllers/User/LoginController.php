@@ -34,7 +34,7 @@ class LoginController extends Controller
         $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
             ->where('verify_code', $verifyCode)
             ->where('status', 1)
-            ->where('expire_time', '<', Carbon::now())
+            ->where('expire_time', '>', Carbon::now())
             ->first();
         if(empty($verifyCodeRecord)){
             throw new ParamInvalidException('验证码错误');

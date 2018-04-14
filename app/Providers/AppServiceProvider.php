@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Debugbar;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -16,6 +17,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // 设置默认字符长度, 不然执行 php artisan migrate 时会报错
         Schema::defaultStringLength(191);
+        Debugbar::disable();
     }
 
     /**

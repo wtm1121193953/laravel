@@ -35,7 +35,7 @@ class CurrentOperInjector
             // 从 referer 中获取appid
             if($referer[0] &&
                 $referer = $referer[0] &&
-                preg_match('servicewechat.com/(wx[\d0-9a-zA-Z]*)/.*', $referer, $matches)
+                preg_match('/servicewechat.com\/(wx[\d0-9a-zA-Z]*)\/.*/', $referer, $matches)
             ){
                 $appid = $matches[1];
             }else {
