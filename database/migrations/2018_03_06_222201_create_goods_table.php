@@ -25,7 +25,6 @@ class CreateGoodsTable extends Migration
             $table->date('end_date')->nullable()->comment('商品有效期结束日期');
             $table->string('pic', 500)->default('')->comment('商品默认图');
             $table->string('pic_list', 5000)->default('')->comment('商品图片列表 (逗号分隔字符串)');
-            $table->string('desc', 1000)->default('')->comment('商品简介');
             $table->string('buy_info', 1000)->default('')->comment('购买须知');
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-上架 2-下架');
             $table->string('ext_attr', 5000)->default('')->comment('商品扩展属性, 如: [name: 重量, value: 5kg]');
