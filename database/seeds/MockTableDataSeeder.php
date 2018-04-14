@@ -69,7 +69,7 @@ class MockTableDataSeeder extends Seeder
         \App\Modules\User\UserOpenIdMapping::create([
             'oper_id' => 1,
             'user_id' => 1,
-            'openid' => 'mock open id',
+            'open_id' => 'mock open id',
         ]);
         // 模拟订单数据
         factory(\App\Modules\Order\Order::class, 25)->create();
