@@ -36,5 +36,8 @@
         "vue-quill-editor": "^3.0.5",
         "vue-router": "^2.8.1",
         "vuex": "^3.0.1"
+    },
+    "dependencies": {
+        "vue-amap": "^0.5.4"
     }
 }

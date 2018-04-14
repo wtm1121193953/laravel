@@ -84,6 +84,7 @@ mix.extract([
     'vue',
     'vue-router',
     'element-ui',
+    'vue-amap',
     // 'vue-echarts-v3',
     // 'vue-quill-editor'
 ]);
