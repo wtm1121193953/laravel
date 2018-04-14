@@ -47,7 +47,7 @@ class MerchantController extends Controller
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
-            'audit_status' => 'required|integer|range:1,2',
+            'audit_status' => 'required|integer|in:1,2',
         ]);
         $merchant = Merchant::findOrFail(request('id'));
         $merchant->audit_status = request('audit_status');

@@ -85,6 +85,7 @@
             audit(scope, status){
                 api.post('/merchant/audit', {id: scope.row.id, audit_status: status}).then(data => {
                     this.$alert(status === 1 ? '审核通过' : '审核不通过');
+                    this.getList();
                 })
             }
         },
