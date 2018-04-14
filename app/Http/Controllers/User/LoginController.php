@@ -16,7 +16,6 @@ use App\Modules\User\User;
 use App\Modules\User\UserOpenIdMapping;
 use App\Result;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {

@@ -18,7 +18,7 @@ class CreateSmsVerifyCodesTable extends Migration
             $table->string('mobile', 11)->index()->comment('手机号');
             $table->string('verify_code')->index()->comment('验证码');
             $table->tinyInteger('type')->index()->comment('验证码类型 1-登陆/注册验证码');
-            $table->timestamp('expire_time')->comment('超时时间');
+            $table->dateTime('expire_time')->comment('超时时间');
             $table->tinyInteger('status')->default(1)->index()->comment('状态 1-有效 2-无效');
             $table->timestamps();
         });
