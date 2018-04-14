@@ -11,5 +11,9 @@ Route::prefix('oper')
 
         Route::post('login', 'LoginController@login');
 
+        Route::get('area/tree', 'AreaController@getTree');
+
+        Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
+
         Route::group([], base_path('routes/api/oper/merchant.php'));
     });

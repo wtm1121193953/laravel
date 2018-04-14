@@ -1,19 +1,17 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/4/12
- * Time: 14:26
+ * User: admin
+ * Date: 2018/4/14
+ * Time: 15:53
  */
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\Oper;
 
 
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantCategory;
 use App\Result;
-use App\Support\Utils;
-use Illuminate\Support\Facades\Cache;
 
 class MerchantCategoryController extends Controller
 {

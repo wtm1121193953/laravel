@@ -81,6 +81,12 @@ return [
         'responses' => [
             'array' => '请求参数必须是数组',
         ],
+        'merchant_category_id' => [
+            'required' => '所属行业不能为空',
+        ],
+        'business_licence_pic_url' => [
+            'required' => '营业执照不能为空',
+        ],
     ],
 
     /*

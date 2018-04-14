@@ -44,7 +44,7 @@
                 :page-size="15"
                 :total="total"/>
 
-        <el-dialog title="添加商户" :visible.sync="isAdd">
+        <el-dialog title="添加商户" width="70%" :visible.sync="isAdd">
             <merchant-form
                     @cancel="isAdd = false"
                     @save="doAdd"/>
@@ -82,7 +82,7 @@
                 })
             },
             itemChanged(index, data){
-                this.list.splice(index, 1, data)
+                this.getList();
             },
             add(){
                 this.isAdd = true;
@@ -95,9 +95,6 @@
                 }).finally(() => {
                     this.isLoading = false;
                 })
-            },
-            itemChanged(index, data){
-                this.list.splice(index, 1, data)
             },
             accountChanged(scope, account){
                 let row = this.list[scope.$index];

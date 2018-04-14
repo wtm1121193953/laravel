@@ -6,7 +6,7 @@
         <el-button v-if="!scope.row.account" type="text" @click="showCreateAccountDialog = true">生成账户</el-button>
         <el-button v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改账户密码</el-button>
 
-        <el-dialog title="编辑商户信息" :visible.sync="isEdit">
+        <el-dialog title="编辑商户信息" width="70%" :visible.sync="isEdit">
             <merchant-form
                     :data="scope.row"
                     @cancel="isEdit = false"
