@@ -1,5 +1,89 @@
 webpackJsonp([1],{
 
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/components/amap/amap-choose-point.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_amap__ = __webpack_require__("./node_modules/vue-amap/dist/index.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_amap___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue_amap__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+var amapManager = new __WEBPACK_IMPORTED_MODULE_0_vue_amap__["AMapManager"]();
+/* harmony default export */ __webpack_exports__["default"] = ({
+    name: "amap-choose-point",
+    props: {
+        width: { type: String, default: '100%' },
+        height: { type: String, default: '100%' },
+        center: { type: Array, default: function _default() {
+                return [114.047667, 22.555086];
+            } },
+        city: { type: String, default: '深圳市' },
+        value: { type: Array, default: null }
+    },
+    data: function data() {
+        var _this = this;
+
+        return {
+            searchOption: {},
+            mapId: '',
+            amapManager: amapManager,
+            events: {
+                init: function init(o) {},
+                'moveend': function moveend() {},
+                'zoomchange': function zoomchange() {},
+                'click': function click(e) {
+                    console.log(e);
+                    var position = e.lnglat;
+                    _this.markerPosition = [position.lng, position.lat];
+                }
+            },
+            markerPosition: null
+        };
+    },
+
+    methods: {
+        onSearchResult: function onSearchResult(pois) {
+            console.log(pois);
+            if (pois.length > 0) {
+                this.markerPosition = [pois[0].lng, pois[0].lat];
+                this.center = deepCopy(this.markerPosition);
+            }
+        },
+        sureChoose: function sureChoose() {
+            this.$emit('input', this.markerPosition);
+            this.$emit('select', this.markerPosition);
+        }
+    },
+    created: function created() {
+        this.mapId = '' + Math.random();
+        if (this.value) {
+            this.markerPosition = this.value;
+        }
+    },
+    mounted: function mounted() {
+        var _this2 = this;
+
+        if (this.city) {
+            setTimeout(function () {
+                _this2.amapManager.getMap().setCity(_this2.city);
+            }, 800);
+        }
+    }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/components/img/preview-dialog.vue":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -973,6 +1057,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point__ = __webpack_require__("./resources/assets/components/amap/amap-choose-point.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point__);
 //
 //
 //
@@ -1142,6 +1228,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+
 
 
 
@@ -1158,7 +1249,7 @@ var defaultForm = {
     invoice_title: '',
     invoice_no: '',
     status: 1,
-    // lng_and_lat: '',
+    lng_and_lat: null,
     address: '',
     contacter: '',
     contacter_phone: '',
@@ -1191,6 +1282,7 @@ var defaultForm = {
             form: deepCopy(defaultForm),
             categoryOptions: [],
             areaOptions: [],
+            isShow: false,
             formRules: {
                 name: [{ required: true, message: '名称不能为空' }],
                 merchant_category: [{ required: true, message: '所属行业不能为空' }],
@@ -1211,7 +1303,6 @@ var defaultForm = {
                 _this.areaOptions = data.list;
             });
 
-            console.log('data', this.data);
             if (this.data) {
                 this.form = deepCopy(this.data);
                 var merchant_category_array = [];
@@ -1220,7 +1311,8 @@ var defaultForm = {
                 });
                 this.form.merchant_category = merchant_category_array;
                 this.form.area = [parseInt(this.data.province_id), parseInt(this.data.city_id), parseInt(this.data.area_id)];
-                this.form.business_time = ['1970-01-01 ' + JSON.parse(this.data.business_time)[0], '1970-01-01 ' + JSON.parse(this.data.business_time)[1]];
+                this.form.business_time = this.data.business_time ? ['1970-01-01 ' + JSON.parse(this.data.business_time)[0], '1970-01-01 ' + JSON.parse(this.data.business_time)[1]] : [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')];
+                this.form.lng_and_lat = [this.data.lng, this.data.lat];
                 this.form.region = parseInt(this.data.region);
                 this.form.settlement_cycle_type = parseInt(this.data.settlement_cycle_type);
                 this.form.status = parseInt(this.data.status);
@@ -1247,10 +1339,16 @@ var defaultForm = {
                     data.city_id = data.area[1];
                     data.area_id = data.area[2];
                     data.business_time = JSON.stringify([new Date(data.business_time[0]).format('hh:mm:ss'), new Date(data.business_time[1]).format('hh:mm:ss')]);
+                    data.lng = data.lng_and_lat[0];
+                    data.lat = data.lng_and_lat[1];
 
                     _this2.$emit('save', data);
                 }
             });
+        },
+        selectMap: function selectMap(data) {
+            this.isShow = false;
+            this.form.lng_and_lat = data;
         }
     },
     created: function created() {
@@ -1262,7 +1360,9 @@ var defaultForm = {
             this.initForm();
         }
     },
-    components: {}
+    components: {
+        AmapChoosePoint: __WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point___default.a
+    }
 });
 
 /***/ }),
@@ -12830,6 +12930,21 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 // module
 exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-86914dc6\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/amap/amap-choose-point.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.map-container[data-v-86914dc6] {\n    position: relative;\n}\n.search-box[data-v-86914dc6] {\n    position: absolute;\n    top: 10px;\n    left: 20px;\n}\n.sure-button[data-v-86914dc6] {\n    position: absolute;\n    bottom: 10px;\n    right: 20px;\n}\n", ""]);
 
 // exports
 
@@ -37314,7 +37429,59 @@ var render = function() {
                     1
                   ),
                   _vm._v(" "),
-                  _c("el-form-item", { attrs: { label: "商户位置" } }),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "lng_and_lat", label: "商户位置" } },
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.form.lng_and_lat) +
+                          "\n                    "
+                      ),
+                      _c(
+                        "el-button",
+                        {
+                          on: {
+                            click: function($event) {
+                              _vm.isShow = true
+                            }
+                          }
+                        },
+                        [_vm._v("更换地理位置")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "el-dialog",
+                        {
+                          attrs: {
+                            title: "更换地理位置",
+                            visible: _vm.isShow,
+                            modal: false
+                          },
+                          on: {
+                            "update:visible": function($event) {
+                              _vm.isShow = $event
+                            }
+                          }
+                        },
+                        [
+                          _c("amap-choose-point", {
+                            attrs: { width: "100%", height: "500px" },
+                            on: { select: _vm.selectMap },
+                            model: {
+                              value: _vm.form.lng_and_lat,
+                              callback: function($$v) {
+                                _vm.$set(_vm.form, "lng_and_lat", $$v)
+                              },
+                              expression: "form.lng_and_lat"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  ),
                   _vm._v(" "),
                   _c(
                     "el-form-item",
@@ -38266,6 +38433,77 @@ if (false) {
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-86914dc6\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/components/amap/amap-choose-point.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "map-container",
+      style: { width: _vm.width, height: _vm.height }
+    },
+    [
+      _c("el-amap-search-box", {
+        staticClass: "search-box",
+        attrs: {
+          "search-option": _vm.searchOption,
+          "on-search-result": _vm.onSearchResult
+        }
+      }),
+      _vm._v(" "),
+      _c(
+        "el-amap",
+        {
+          ref: "map",
+          attrs: {
+            "amap-manager": _vm.amapManager,
+            vid: "map-vid-" + _vm.mapId,
+            center: _vm.center,
+            events: _vm.events
+          }
+        },
+        [
+          _vm.markerPosition
+            ? _c("el-amap-marker", {
+                attrs: {
+                  vid: "amap-marker-vid-" + _vm.mapId,
+                  position: _vm.markerPosition
+                }
+              })
+            : _vm._e()
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "el-button",
+        {
+          staticClass: "sure-button",
+          attrs: { type: "primary", size: "small" },
+          on: { click: _vm.sureChoose }
+        },
+        [_vm._v("确定")]
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-86914dc6", module.exports)
+  }
+}
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-87604c50\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/components/leftMenu.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -38970,6 +39208,33 @@ if(false) {
  if(!content.locals) {
    module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./image-upload.vue", function() {
      var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./image-upload.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-86914dc6\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/amap/amap-choose-point.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-86914dc6\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/amap/amap-choose-point.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("a7580596", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-86914dc6\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./amap-choose-point.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-86914dc6\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./amap-choose-point.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -40328,6 +40593,58 @@ var index_esm = {
 
 
 /* harmony default export */ __webpack_exports__["a"] = (index_esm);
+
+
+/***/ }),
+
+/***/ "./resources/assets/components/amap/amap-choose-point.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-86914dc6\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/amap/amap-choose-point.vue")
+}
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/components/amap/amap-choose-point.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-86914dc6\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/components/amap/amap-choose-point.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-86914dc6"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\components\\amap\\amap-choose-point.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-86914dc6", Component.options)
+  } else {
+    hotAPI.reload("data-v-86914dc6", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
 
 
 /***/ }),

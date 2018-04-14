@@ -52,7 +52,7 @@
             },
             sureChoose(){
                 this.$emit('input', this.markerPosition);
-                this.$emit('choose', this.markerPosition);
+                this.$emit('select', this.markerPosition);
             }
         },
         created(){

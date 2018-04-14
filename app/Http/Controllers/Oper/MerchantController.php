@@ -71,8 +71,8 @@ class MerchantController extends Controller
         $merchant->invoice_title = request('invoice_title','');
         $merchant->invoice_no = request('invoice_no','');
         $merchant->status = request('status', 1);
-        $merchant->lng = request('lng',0);            //todo
-        $merchant->lat = request('lat',0);            //todo
+        $merchant->lng = request('lng',0);
+        $merchant->lat = request('lat',0);
         $merchant->address = request('address','');
         $merchant->contacter = request('contacter','');
         $merchant->contacter_phone = request('contacter_phone','');

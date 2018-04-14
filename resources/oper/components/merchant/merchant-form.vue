@@ -75,8 +75,12 @@
                             <el-radio :label="2">禁用</el-radio>
                         </el-radio-group>
                     </el-form-item>
-                    <el-form-item label="商户位置">
-
+                    <el-form-item prop="lng_and_lat" label="商户位置">
+                        {{form.lng_and_lat}}
+                        <el-button @click="isShow = true">更换地理位置</el-button>
+                        <el-dialog title="更换地理位置" :visible.sync="isShow" :modal="false">
+                            <amap-choose-point width="100%" height="500px" v-model="form.lng_and_lat" @select="selectMap"></amap-choose-point>
+                        </el-dialog>
                     </el-form-item>
                     <el-form-item prop="address" label="详细地址">
                         <el-input v-model="form.address"></el-input>
@@ -169,6 +173,7 @@
 </template>
 <script>
     import api from '../../../assets/js/api';
+    import AmapChoosePoint from '../../../assets/components/amap/amap-choose-point';
 
     let defaultForm = {
         name: '',
@@ -183,7 +188,7 @@
         invoice_title: '',
         invoice_no: '',
         status: 1,
-        // lng_and_lat: '',
+        lng_and_lat: null,
         address: '',
         contacter: '',
         contacter_phone: '',
@@ -218,6 +223,7 @@
                 form: deepCopy(defaultForm),
                 categoryOptions: [],
                 areaOptions: [],
+                isShow: false,
                 formRules: {
                     name: [
                         {required: true, message: '名称不能为空'}
@@ -243,7 +249,6 @@
                     this.areaOptions = data.list;
                 })
 
-                console.log('data', this.data);
                 if(this.data){
                     this.form = deepCopy(this.data)
                     let merchant_category_array = [];
@@ -252,7 +257,8 @@
                     })
                     this.form.merchant_category = merchant_category_array;
                     this.form.area = [parseInt(this.data.province_id), parseInt(this.data.city_id), parseInt(this.data.area_id)];
-                    this.form.business_time = ['1970-01-01 '+JSON.parse(this.data.business_time)[0], '1970-01-01 '+JSON.parse(this.data.business_time)[1]];
+                    this.form.business_time = this.data.business_time ? ['1970-01-01 '+JSON.parse(this.data.business_time)[0], '1970-01-01 '+JSON.parse(this.data.business_time)[1]] : [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')];
+                    this.form.lng_and_lat = [this.data.lng, this.data.lat];
                     this.form.region = parseInt(this.data.region);
                     this.form.settlement_cycle_type = parseInt(this.data.settlement_cycle_type);
                     this.form.status = parseInt(this.data.status);
@@ -277,11 +283,17 @@
                         data.city_id = data.area[1];
                         data.area_id = data.area[2];
                         data.business_time = JSON.stringify([new Date(data.business_time[0]).format('hh:mm:ss'), new Date(data.business_time[1]).format('hh:mm:ss')]);
+                        data.lng = data.lng_and_lat[0];
+                        data.lat = data.lng_and_lat[1];
 
                         this.$emit('save', data);
                     }
                 })
 
+            },
+            selectMap(data) {
+                this.isShow = false;
+                this.form.lng_and_lat = data;
             }
         },
         created(){
@@ -293,6 +305,7 @@
             }
         },
         components: {
+            AmapChoosePoint,
         }
     }
 </script>
