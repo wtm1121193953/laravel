@@ -61,7 +61,7 @@ class CreateMerchantsTable extends Migration
             $table->string('sub_bank_name')->default('')->comment('开户支行名称');
             $table->string('bank_open_address')->default('')->comment('开户支行地址');
 
-            $table->tinyInteger('audit_status')->default(1)->comment('商户资料审核状态 0-未审核 1-已审核 2-审核不通过');
+            $table->tinyInteger('audit_status')->default(0)->comment('商户资料审核状态 0-未审核 1-已审核 2-审核不通过');
 
             $table->timestamps();
 
