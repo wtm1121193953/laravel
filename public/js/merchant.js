@@ -367,9 +367,46 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 var defaultForm = {
     name: '',
+    market_price: 0,
+    price: 0,
+    start_date: '',
+    end_date: '',
+    pic: '',
+    desc: '',
+    buy_info: '',
     status: 1
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -382,15 +419,21 @@ var defaultForm = {
         return {
             form: deepCopy(defaultForm),
             formRules: {
-                name: [{ required: true, message: '名称不能为空' }]
+                name: [{ required: true, message: '名称不能为空' }],
+                market_price: [{ required: true, message: '市场价不能为空' }],
+                price: [{ required: true, message: '销售价不能为空' }]
             }
         };
     },
 
     methods: {
+        handlerChange: function handlerChange(a, b) {
+            console.log('change', JSON.parse(JSON.stringify(this.form.dateRange)), a, b);
+        },
         initForm: function initForm() {
             if (this.data) {
                 this.form = deepCopy(this.data);
+                console.log('init form ', JSON.parse(JSON.stringify(this.form)));
             } else {
                 this.form = deepCopy(defaultForm);
             }
@@ -404,6 +447,17 @@ var defaultForm = {
             this.$refs.form.validate(function (valid) {
                 if (valid) {
                     var data = deepCopy(_this.form);
+                    if (_this.data && _this.data.id) {
+                        data.id = _this.data.id;
+                    }
+                    if (!data.start_date || !data.end_date) {
+                        _this.$message.error('时间不能为空');
+                        return;
+                    }
+                    if (data.start_date > data.end_date) {
+                        _this.$message.error('开始时间不能大于结束时间');
+                        return;
+                    }
                     _this.$emit('save', data);
                 }
             });
@@ -521,8 +575,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__goods_item_options___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__goods_item_options__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__goods_form__ = __webpack_require__("./resources/merchant/components/goods/goods-form.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__goods_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__goods_form__);
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -587,7 +639,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
 
     computed: {},
-    methods: _defineProperty({
+    methods: {
         getList: function getList() {
             var _this = this;
 
@@ -597,7 +649,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             });
         },
         itemChanged: function itemChanged(index, data) {
-            this.list.splice(index, 1, data);
+            this.getList();
         },
         add: function add() {
             this.isAdd = true;
@@ -613,9 +665,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 _this2.isLoading = false;
             });
         }
-    }, 'itemChanged', function itemChanged(index, data) {
-        this.list.splice(index, 1, data);
-    }),
+    },
     created: function created() {
         this.getList();
     },
@@ -12454,7 +12504,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -12606,7 +12656,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -37506,6 +37556,131 @@ var render = function() {
                         _vm.$set(_vm.form, "name", $$v)
                       },
                       expression: "form.name"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { prop: "market_price", label: "市场价" } },
+                [
+                  _c("el-input-number", {
+                    model: {
+                      value: _vm.form.market_price,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "market_price", $$v)
+                      },
+                      expression: "form.market_price"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { prop: "price", label: "销售价" } },
+                [
+                  _c("el-input-number", {
+                    model: {
+                      value: _vm.form.price,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "price", $$v)
+                      },
+                      expression: "form.price"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { label: "有效期" } },
+                [
+                  _c("el-date-picker", {
+                    attrs: {
+                      type: "date",
+                      placeholder: "选择开始日期",
+                      "value-format": "yyyy-MM-dd"
+                    },
+                    model: {
+                      value: _vm.form.start_date,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "start_date", $$v)
+                      },
+                      expression: "form.start_date"
+                    }
+                  }),
+                  _vm._v("\n                -\n                "),
+                  _c("el-date-picker", {
+                    attrs: {
+                      type: "date",
+                      placeholder: "选择结束日期",
+                      "value-format": "yyyy-MM-dd"
+                    },
+                    model: {
+                      value: _vm.form.end_date,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "end_date", $$v)
+                      },
+                      expression: "form.end_date"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { prop: "pic", label: "产品详情图" } },
+                [
+                  _c("image-upload", {
+                    attrs: { limit: 1 },
+                    model: {
+                      value: _vm.form.pic,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "pic", $$v)
+                      },
+                      expression: "form.pic"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { prop: "desc", label: "商品简介" } },
+                [
+                  _c("el-input", {
+                    attrs: { type: "textarea" },
+                    model: {
+                      value: _vm.form.desc,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "desc", $$v)
+                      },
+                      expression: "form.desc"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { prop: "buy_info", label: "购买须知" } },
+                [
+                  _c("el-input", {
+                    attrs: { type: "textarea" },
+                    model: {
+                      value: _vm.form.buy_info,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "buy_info", $$v)
+                      },
+                      expression: "form.buy_info"
                     }
                   })
                 ],

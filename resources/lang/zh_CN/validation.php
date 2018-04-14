@@ -87,6 +87,12 @@ return [
         'business_licence_pic_url' => [
             'required' => '营业执照不能为空',
         ],
+        'market_price' => [
+            'required' => '市场价格不能为空',
+        ],
+        'price' => [
+            'required' => '销售价格不能为空',
+        ],
     ],
 
     /*

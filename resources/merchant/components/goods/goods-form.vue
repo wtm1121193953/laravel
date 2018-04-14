@@ -5,6 +5,36 @@
                 <el-form-item prop="name" label="商品名称">
                     <el-input v-model="form.name"/>
                 </el-form-item>
+                <el-form-item prop="market_price" label="市场价">
+                    <el-input-number v-model="form.market_price"></el-input-number>
+                </el-form-item>
+                <el-form-item prop="price" label="销售价">
+                    <el-input-number v-model="form.price"></el-input-number>
+                </el-form-item>
+                <el-form-item label="有效期">
+                    <el-date-picker
+                            v-model="form.start_date"
+                            type="date"
+                            placeholder="选择开始日期"
+                            value-format="yyyy-MM-dd">
+                    </el-date-picker>
+                    -
+                    <el-date-picker
+                            v-model="form.end_date"
+                            type="date"
+                            placeholder="选择结束日期"
+                            value-format="yyyy-MM-dd">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item prop="pic" label="产品详情图">
+                    <image-upload v-model="form.pic" :limit="1"></image-upload>
+                </el-form-item>
+                <el-form-item prop="desc" label="商品简介">
+                    <el-input v-model="form.desc" type="textarea"></el-input>
+                </el-form-item>
+                <el-form-item prop="buy_info" label="购买须知">
+                    <el-input v-model="form.buy_info" type="textarea"></el-input>
+                </el-form-item>
                 <el-form-item prop="status" label="状态">
                     <el-radio-group v-model="form.status">
                         <el-radio :label="1">正常</el-radio>
@@ -23,6 +53,13 @@
 <script>
     let defaultForm = {
         name: '',
+        market_price: 0,
+        price: 0,
+        start_date: '',
+        end_date: '',
+        pic: '',
+        desc: '',
+        buy_info: '',
         status: 1,
     };
     export default {
@@ -39,14 +76,24 @@
                 formRules: {
                     name: [
                         {required: true, message: '名称不能为空'}
-                    ]
+                    ],
+                    market_price: [
+                        {required: true, message: '市场价不能为空'}
+                    ],
+                    price: [
+                        {required: true, message: '销售价不能为空'}
+                    ],
                 },
             }
         },
         methods: {
+            handlerChange(a, b){
+                console.log('change', JSON.parse(JSON.stringify(this.form.dateRange)), a, b)
+            },
             initForm(){
                 if(this.data){
-                    this.form = deepCopy(this.data)
+                    this.form = deepCopy(this.data);
+                    console.log('init form ', JSON.parse(JSON.stringify(this.form)))
                 }else {
                     this.form = deepCopy(defaultForm)
                 }
@@ -58,6 +105,17 @@
                 this.$refs.form.validate(valid => {
                     if(valid){
                         let data = deepCopy(this.form);
+                        if(this.data && this.data.id){
+                            data.id = this.data.id;
+                        }
+                        if(!data.start_date || !data.end_date){
+                            this.$message.error('时间不能为空');
+                            return;
+                        }
+                        if(data.start_date > data.end_date){
+                            this.$message.error('开始时间不能大于结束时间');
+                            return;
+                        }
                         this.$emit('save', data);
                     }
                 })

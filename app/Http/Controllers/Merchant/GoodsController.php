@@ -49,9 +49,20 @@ class GoodsController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required',
+            'market_price' => 'required',
+            'price' => 'required',
         ]);
         $goods = new Goods();
+        $goods->oper_id = request()->get('current_user')->oper_id;
+        $goods->merchant_id = request()->get('current_user')->merchant_id;
         $goods->name = request('name');
+        $goods->market_price = request('market_price', 0);
+        $goods->price = request('price', 0);
+        $goods->start_date = request('start_date');
+        $goods->end_date = request('end_date');
+        $goods->pic = request('pic', '');
+        $goods->desc = request('desc', '');
+        $goods->buy_info = request('buy_info', '');
         $goods->status = request('status', 1);
 
         $goods->save();
@@ -67,9 +78,20 @@ class GoodsController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
             'name' => 'required',
+            'market_price' => 'required',
+            'price' => 'required',
         ]);
         $goods = Goods::findOrFail(request('id'));
+        $goods->oper_id = request()->get('current_user')->oper_id;
+        $goods->merchant_id = request()->get('current_user')->merchant_id;
         $goods->name = request('name');
+        $goods->market_price = request('market_price', 0);
+        $goods->price = request('price', 0);
+        $goods->start_date = request('start_date');
+        $goods->end_date = request('end_date');
+        $goods->pic = request('pic', '');
+        $goods->desc = request('desc', '');
+        $goods->buy_info = request('buy_info', '');
         $goods->status = request('status', 1);
 
         $goods->save();

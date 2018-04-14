@@ -53,10 +53,10 @@
                         </el-time-picker>
                     </el-form-item>
                     <el-form-item prop="logo" label="商家logo">
-                        <image-upload v-model="form.logo"></image-upload>
+                        <image-upload v-model="form.logo" :limit="1"></image-upload>
                     </el-form-item>
                     <el-form-item prop="desc_pic" label="商家介绍图片">
-                        <image-upload v-model="form.desc_pic"></image-upload>
+                        <image-upload v-model="form.desc_pic" :limit="1"></image-upload>
                     </el-form-item>
                     <el-form-item prop="desc" label="商家介绍">
                         <el-input type="textarea" :rows="5" v-model="form.desc"></el-input>
@@ -112,31 +112,31 @@
                         <div>返利百分比,如20%请填写20</div>
                     </el-form-item>
                     <el-form-item prop="business_licence_pic_url" label="营业执照（必填）">
-                        <image-upload v-model="form.business_licence_pic_url"></image-upload>
+                        <image-upload v-model="form.business_licence_pic_url" :limit="1"></image-upload>
                     </el-form-item>
                     <el-form-item prop="organization_code" label="组织机构代码">
                         <el-input v-model="form.organization_code"></el-input>
                     </el-form-item>
                     <el-form-item prop="tax_cert_pic_url" label="税务登记证">
-                        <image-upload v-model="form.tax_cert_pic_url"></image-upload>
+                        <image-upload v-model="form.tax_cert_pic_url" :limit="1"></image-upload>
                     </el-form-item>
                     <el-form-item prop="legal_id_card_pic_a" label="法人身份证正面">
-                        <image-upload v-model="form.legal_id_card_pic_a"></image-upload>
+                        <image-upload v-model="form.legal_id_card_pic_a" :limit="1"></image-upload>
                     </el-form-item>
                     <el-form-item prop="legal_id_card_pic_b" label="法人身份证反面">
-                        <image-upload v-model="form.legal_id_card_pic_b"></image-upload>
+                        <image-upload v-model="form.legal_id_card_pic_b" :limit="1"></image-upload>
                     </el-form-item>
                     <el-form-item prop="contract_pic_url" label="合同">
-                        <image-upload v-model="form.contract_pic_url"></image-upload>
+                        <image-upload v-model="form.contract_pic_url" :limit="1"></image-upload>
                     </el-form-item>
                     <el-form-item prop="licence_pic_url" label="开户许可证">
-                        <image-upload v-model="form.licence_pic_url"></image-upload>
+                        <image-upload v-model="form.licence_pic_url" :limit="1"></image-upload>
                     </el-form-item>
                     <el-form-item prop="hygienic_licence_pic_url" label="卫生许可证">
-                        <image-upload v-model="form.hygienic_licence_pic_url"></image-upload>
+                        <image-upload v-model="form.hygienic_licence_pic_url" :limit="1"></image-upload>
                     </el-form-item>
                     <el-form-item prop="agreement_pic_url" label="协议文件">
-                        <image-upload v-model="form.agreement_pic_url"></image-upload>
+                        <image-upload v-model="form.agreement_pic_url" :limit="1"></image-upload>
                     </el-form-item>
                 </el-col>
                 <el-col :span="11">
