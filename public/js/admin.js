@@ -42977,7 +42977,12 @@ var render = function() {
         [
           _c("merchant-detail", {
             attrs: { data: _vm.currentMerchant },
-            on: { change: _vm.getList }
+            on: {
+              change: function() {
+                _vm.getList()
+                _vm.showDetail = false
+              }
+            }
           })
         ],
         1

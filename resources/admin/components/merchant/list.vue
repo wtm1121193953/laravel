@@ -45,7 +45,7 @@
                 :total="total"/>
 
         <el-dialog :visible.sync="showDetail" width="70%" title="商户详情">
-            <merchant-detail :data="currentMerchant" @change="getList"/>
+            <merchant-detail :data="currentMerchant" @change="() => {getList(); showDetail = false;}"/>
         </el-dialog>
     </page>
 </template>

@@ -22,5 +22,15 @@ $factory->define(\App\Modules\Merchant\Merchant::class, function (Faker $faker) 
         'city_id' => $city->area_id,
         'area' => $area->name,
         'area_id' => $area->area_id,
+        'logo' => $faker->imageUrl(),
+        'desc_pic' => $faker->imageUrl(),
+        'business_licence_pic_url' => $faker->imageUrl(),
+        'tax_cert_pic_url' => $faker->imageUrl(),
+        'legal_id_card_pic_a' => $faker->imageUrl(),
+        'legal_id_card_pic_b' => $faker->imageUrl(),
+        'contract_pic_url' => $faker->imageUrl(),
+        'licence_pic_url' => $faker->imageUrl(),
+        'hygienic_licence_pic_url' => $faker->imageUrl(),
+        'agreement_pic_url' => $faker->imageUrl(),
     ];
 });

@@ -10,9 +10,9 @@ Route::prefix('user')
     ->middleware('user')->group(function (){
 
         Route::any('wxLogin', 'WechatController@login');
+        Route::any('sms/verify_code', 'SmsController@sendVerifyCode');
 
-        Route::post('sms/verify_code', 'SmsController@sendVerifyCode');
-        Route::post('login', 'LoginController@login');
+        Route::any('login', 'LoginController@login');
 
         Route::get('area/tree', 'AreaController@getTree');
         Route::get('area/getByGps', 'AreaController@getAreaByGps');
