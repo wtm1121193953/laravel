@@ -23,7 +23,6 @@ class AppServiceProvider extends ServiceProvider
 
         // 记录数据库操作日志
         DB::listen(function ($query) {
-            dd($query->sql, $query->bindings, $query->time);
             Log::debug('sql操作', [
                 'sql' => $query->sql,
                 'bindings' => $query->bindings,
