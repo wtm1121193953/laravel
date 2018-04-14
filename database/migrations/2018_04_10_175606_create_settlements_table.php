@@ -17,8 +17,9 @@ class CreateSettlementsTable extends Migration
             $table->increments('id');
             $table->integer('oper_id')->index()->comment('所属运营中心ID');
             $table->integer('merchant_id')->index()->comment('商家ID');
-            $table->decimal('start_date')->comment('结算开始日期');
-            $table->decimal('end_date')->comment('结算结束日期');
+            $table->date('settlement_date')->index()->comment('结算日期');
+            $table->date('start_date')->comment('结算订单开始日期');
+            $table->date('end_date')->comment('结算订单结束日期');
             $table->tinyInteger('settlement_cycle_type')->comment('结算周期类型 1-周结 2-半月结 3-月结 4-半年结 5-年结');
             $table->decimal('settlement_rate', 4, 2)->comment('结算费率');
             $table->decimal('amount')->comment('结算总金额');

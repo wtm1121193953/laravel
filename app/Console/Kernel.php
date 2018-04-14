@@ -2,6 +2,12 @@
 
 namespace App\Console;
 
+use App\Jobs\SettlementHalfMonthly;
+use App\Jobs\SettlementHalfYearly;
+use App\Jobs\SettlementMonthly;
+use App\Jobs\SettlementJob;
+use App\Jobs\SettlementYearly;
+use App\Modules\Merchant\Merchant;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -26,6 +32,23 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        // 周结
+        $schedule->job(new SettlementJob(Merchant::SETTLE_WEEKLY))
+            ->weeklyOn(1);
+        // 半月结
+        $schedule->job(new SettlementJob(Merchant::SETTLE_HALF_MONTHLY))
+            ->monthlyOn(1);
+        $schedule->job(new SettlementJob(Merchant::SETTLE_HALF_MONTHLY))
+            ->monthlyOn(16);
+        // 月结
+        $schedule->job(new SettlementJob(Merchant::SETTLE_MONTHLY))
+            ->monthly();
+        // 半年结
+        $schedule->job(new SettlementJob(Merchant::SETTLE_HALF_YEARLY))
+            ->cron('0 0 1 1,7 *');
+        // 年结
+        $schedule->job(new SettlementJob(Merchant::SETTLE_YEARLY))
+            ->yearly();
     }
 
     /**
