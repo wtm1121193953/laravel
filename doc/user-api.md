@@ -143,7 +143,29 @@ token (wxLogin接口除外)
 
 - [ ] 根据经纬度获取所在城市
 
-      //  
+  接口地址: GET `/area/getByGps`
+
+  参数:
+
+  ```
+  lng: 经度
+  lat: 纬度
+  ```
+
+  返回
+
+  ```
+  data: {
+      province: 省份名,
+      province_id: 省份ID, 对应地区信息里里面的area_id
+      city: 城市名,
+      city_id: 城市ID,
+      area: 县区名称,
+      area_id: 县区ID
+  }
+  ```
+
+  ​
 
 #### 商家模块
 

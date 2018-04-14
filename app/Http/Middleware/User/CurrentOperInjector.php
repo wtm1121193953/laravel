@@ -8,6 +8,7 @@ use App\Modules\Oper\OperMiniprogram;
 use App\ResultCode;
 use Closure;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 注入当前小程序所属的运营中心
@@ -26,6 +27,7 @@ class CurrentOperInjector
     public function handle($request, Closure $next)
     {
         $userAgent = $request->userAgent();
+        Log::info('user agent: ' . $userAgent);
         if(App::environment() === 'local'){
             $operId = 1;
         }else {
