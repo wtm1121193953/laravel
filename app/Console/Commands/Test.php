@@ -46,8 +46,10 @@ class Test extends Command
 
 //        dump(Redis::geodist('location:merchant', 1, 5, 'km'));
 //        dump($result = Redis::georadius('location:merchant', 114.002176, 22.664525, 6, 'km', 'WITHDIST', 'asc', 'count',  2));
-        dump(Lbs::getNearlyMerchantDistanceByGps(114.101585,22.471113, 200000));
+//        dump(Lbs::getNearlyMerchantDistanceByGps(114.101585,22.471113, 200000));
 //        dump(Merchant::all()->sortByDesc('id')->forPage(2, 3)->values());
         //
+        preg_match('/servicewechat.com\/(wx[\d0-9a-zA-Z]*)\/.*/', 'https://servicewechat.com/wx1abb4cf60ffea6c9/devtools/page-frame.html', $matches);
+        dump($matches);
     }
 }
