@@ -37,6 +37,6 @@ class GoodsCreated implements ShouldQueue
      */
     public function handle()
     {
-        // 添加索引
+        // 添加全文搜索索引
     }
 }

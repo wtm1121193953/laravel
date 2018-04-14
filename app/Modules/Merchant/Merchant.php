@@ -20,4 +20,14 @@ class Merchant extends BaseModel
      */
     const AUDIT_STATUS_FAIL = 2;
 
+    /**
+     * 结算类型
+     */
+    const SETTLE_WEEKLY = 1; // 周结
+    const SETTLE_HALF_MONTHLY = 2; // 半月结
+    const SETTLE_MONTHLY = 3; // 月结
+    const SETTLE_HALF_YEARLY = 4; // 半年结
+    const SETTLE_YEARLY = 5; // 年结
+
+
 }
