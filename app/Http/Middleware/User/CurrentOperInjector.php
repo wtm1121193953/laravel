@@ -27,7 +27,8 @@ class CurrentOperInjector
     public function handle($request, Closure $next)
     {
         $userAgent = $request->userAgent();
-        Log::info('user agent: ' . $userAgent);
+        $header = $request->header();
+        Log::info('$header: ' . $header);
         if(App::environment() === 'local'){
             $operId = 1;
         }else {
