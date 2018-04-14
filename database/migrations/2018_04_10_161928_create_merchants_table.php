@@ -32,7 +32,7 @@ class CreateMerchantsTable extends Migration
             $table->string('desc_pic')->default('')->comment('商家介绍图片');
             $table->string('desc')->default('')->comment('商家介绍');
             $table->string('invoice_title')->default('')->comment('发票抬头');
-            $table->string('invoice_no')->default('')->comment('发票编号');
+            $table->string('invoice_no')->default('')->comment('发票税号');
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-正常 2-禁用');
             $table->decimal('lng', 15, 12)->default(0)->comment('商家所在经度');
             $table->decimal('lat', 15, 12)->default(0)->comment('商家所在纬度');
