@@ -89,21 +89,22 @@ class OrderController extends Controller
 
 
         $payApp = WechatService::getWechatPayAppForOper($oper->id);
-        $unifyResult = $payApp->order->unify([
+        $data = [
             'body' => $order->goods_name,
             'out_trade_no' => $order->orderNo,
             'total_fee' => $order->pay_price,
 //            'total_fee' => $order->pay_price * 100,
             'trade_type' => 'JSAPI',
             'openid' => $order->open_id,
-        ]);
+        ];
+        $unifyResult = $payApp->order->unify($data);
         if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
             $order->open_id = $unifyResult->openid;
             $order->save();
         }else {
             Log::error('微信统一下单失败', [
-                'order' => $order->toArray(),
                 'payConfig' => $payApp->getConfig(),
+                'data' => $data,
                 'result' => $unifyResult,
             ]);
             throw new BaseResponseException('微信统一下单失败');
