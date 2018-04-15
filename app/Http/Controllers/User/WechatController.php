@@ -50,4 +50,12 @@ class WechatController extends Controller
             'userInfo' => $user ?? null,
         ]);
     }
+
+    /**
+     * 支付通知接口, 用于接收微信的通知
+     */
+    public function payNotify()
+    {
+
+    }
 }

@@ -67,9 +67,9 @@ class OrderController extends Controller
         $order->oper_id = $oper->id;
         $order->order_no = Order::genOrderNo();
         $order->user_id = $user->id;
-        $order->user_name = $user->name;
+        $order->user_name = $user->name ?? '';
         $order->merchant_id = $merchant->id;
-        $order->merchant_name = $merchant->name;
+        $order->merchant_name = $merchant->name ?? '';
         $order->goods_id = $goodsId;
         $order->goods_name = $goods->name;
         $order->goods_pic = $goods->pic;
@@ -80,20 +80,20 @@ class OrderController extends Controller
 
         $order->save();
 
-        // 生成核销码
-        $items = [];
-        for ($i = 0; $i < $number; $i ++){
-            $orderItem = new OrderItem();
-            $orderItem->oper_id = $oper->id;
-            $orderItem->merchant_id = $merchant->id;
-            $orderItem->order_id = $order->id;
-            $orderItem->verify_code = OrderItem::createVerifyCode($merchant->id);
-            $orderItem->status = 1;
-            $orderItem->save();
-            $items[] = $orderItem;
-        }
 
         if(App::environment() === 'local'){
+            // 生成核销码, 线上需要放到支付成功通知中
+            $items = [];
+            for ($i = 0; $i < $number; $i ++){
+                $orderItem = new OrderItem();
+                $orderItem->oper_id = $oper->id;
+                $orderItem->merchant_id = $merchant->id;
+                $orderItem->order_id = $order->id;
+                $orderItem->verify_code = OrderItem::createVerifyCode($merchant->id);
+                $orderItem->status = 1;
+                $orderItem->save();
+                $items[] = $orderItem;
+            }
             $order->status = Order::STATUS_PAID;
             $order->save();
         }
