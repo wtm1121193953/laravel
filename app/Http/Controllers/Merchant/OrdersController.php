@@ -17,7 +17,8 @@ class OrdersController extends Controller
 {
     public function getList()
     {
-        $data = Order::orderBy('id', 'desc')->paginate();
+        $data = Order::where('merchant_id', request()->get('current_user')->merchant_id)
+                ->orderBy('id', 'desc')->paginate();
 
         return Result::success([
             'list' => $data->items(),
