@@ -68,6 +68,8 @@
                 api.get('/goods', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+
+                    this.list['status'] = parseInt(this.list['status']);
                 })
             },
             itemChanged(index, data){

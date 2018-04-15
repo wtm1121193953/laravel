@@ -12,4 +12,5 @@ Route::prefix('merchant')
         Route::post('login', 'LoginController@login');
 
         Route::group([], base_path('routes/api/merchant/goods.php'));
+        Route::group([], base_path('routes/api/merchant/orders.php'));
     });
