@@ -108,11 +108,6 @@ class OrderController extends Controller
                 'data' => $data,
                 'result' => $unifyResult,
             ]);
-            return Result::success([
-                'payConfig' => $payApp->getConfig(),
-                'data' => $data,
-                'result' => $unifyResult,
-            ]);
             throw new BaseResponseException('微信统一下单失败');
         }
 
