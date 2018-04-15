@@ -88,7 +88,11 @@ class MerchantController extends Controller
         $list->each(function ($item) {
             $category = MerchantCategory::find($item->merchant_category_id);
             $item->merchantCategoryName = $category->name;
-            $item->avg_amount = 200;
+            // 最低消费
+            $lowestAmount = Goods::where('merchant_id', $item->id)->orderBy('price')->value('price');
+            if($lowestAmount > 0){
+                $item->lowestAmount = 200;
+            }
         });
 
         return Result::success(['list' => $list, 'total' => $total]);
