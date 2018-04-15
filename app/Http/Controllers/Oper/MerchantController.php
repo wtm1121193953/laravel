@@ -11,6 +11,7 @@ use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantCategory;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Request;
 
 class MerchantController extends Controller
 {
@@ -18,12 +19,15 @@ class MerchantController extends Controller
     /**
      * 获取列表 (分页)
      */
-    public function getList()
+    public function getList(Request $request)
     {
         $status = request('status');
-        $data = Merchant::when($status, function (Builder $query) use ($status){
-            $query->where('status', $status);
-        })->orderBy('id', 'desc')->paginate();
+        $data = Merchant::where('oper_id', $request->get('current_user')->oper_id)
+            ->when($status, function (Builder $query) use ($status){
+                $query->where('status', $status);
+            })
+            ->orderBy('id', 'desc')
+            ->paginate();
 
         $data->each(function ($item){
             $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
