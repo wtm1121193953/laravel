@@ -229,6 +229,7 @@ token (wxLogin接口除外)
         id: 商家id,
         oper_id: 运营中心ID
         merchant_category_id: 商家分类ID,
+        merchantCategoryName: 商家分类名,
         name: 商家名,
         brand: 品牌,
         region: 运营地区/大区 1-中国 2-美国 3-韩国 4-香港
@@ -241,6 +242,7 @@ token (wxLogin接口除外)
         area_id: 县区ID,
         lng: 商家所在位置经度,
         lat: 商家所在位置纬度,
+        business_time: 商家营业时间 数组格式:[开始时间, 结束时间], 如: ['10:30:00', '18:30:00'],
         logo: 商家logo
         desc_pic: 商家描述图片
         desc: 商家介绍
@@ -248,9 +250,30 @@ token (wxLogin接口除外)
         contacter_phone: 负责人联系方式
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在
+        lowestAmount: 最低消费金额
       }
     ]
   } 
+  ```
+
+
+
+- [ ] 商户详情
+
+  接口地址: GET `/merchant/detail`
+
+  参数: 
+
+  ```
+  id: 商户ID
+  lng: 用户所在经度,
+  lat: 用户所在纬度
+  ```
+
+  返回
+
+  ```
+  同商户列表返回的字段
   ```
 
   ​
@@ -273,10 +296,15 @@ token (wxLogin接口除外)
           merchant_id: 商家ID,
           name: 商品名,
           desc: 商品描述,
+          market_price: 市场价(商品原价),
           price; 商品价格,
+          start_date: 商品有效期开始日期,
+          end_date: 商品有效期结束日期,
           pic: 商品默认图,
           pic_list: 商品小图列表, 数组
-          status: 状态 1-上架 2-下架
+          buy_info: 购买须知,
+          status: 状态 1-上架 2-下架,
+          sell_number: 商品已售数量,
         }
       ]
     }
@@ -329,8 +357,21 @@ token (wxLogin接口除外)
                 goods_id: 商品ID,
                 goods_name: 商品名,
                 goods_pic: 商品图片,
-                price: 商家价格,
+                price: 商家单价,
+                buy_number: 购买数量,
+                pay_price: 支付金额,
+                pay_time: 支付时间,
+                refund_price: 退款金额,
+                refund_time: 退款时间,
                 status: 状态 1-未支付 2-已取消 3-已关闭 (超时自动关闭) 4-已付款  6-已退款 7-已完成 (不可退款),
+                items: 核销码列表(已支付及之后的状态才存在) [
+                    {
+                        id: 核销码ID,
+                        order_id: 订单ID,
+                        verify_code: 核销码,
+                        status: 状态 1-未核销, 2-已核销 3-已退款,
+                    }
+                ]
                 
             }
         ]
