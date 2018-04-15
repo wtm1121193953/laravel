@@ -17,7 +17,8 @@ class GoodsController extends Controller
     public function getList()
     {
         $status = request('status');
-        $data = Goods::when($status, function (Builder $query) use ($status){
+        $data = Goods::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })->orderBy('id', 'desc')->paginate();
 
@@ -33,7 +34,8 @@ class GoodsController extends Controller
     public function getAllList()
     {
         $status = request('status');
-        $list = Goods::when($status, function (Builder $query) use ($status){
+        $list = Goods::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })->orderBy('id', 'desc')->get();
 
@@ -81,7 +83,9 @@ class GoodsController extends Controller
             'market_price' => 'required',
             'price' => 'required',
         ]);
-        $goods = Goods::findOrFail(request('id'));
+        $goods = Goods::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->where('id', request('id'))
+            ->firstOrFail();
         $goods->oper_id = request()->get('current_user')->oper_id;
         $goods->merchant_id = request()->get('current_user')->merchant_id;
         $goods->name = request('name');
@@ -108,7 +112,9 @@ class GoodsController extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer',
         ]);
-        $goods = Goods::findOrFail(request('id'));
+        $goods = Goods::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->where('id', request('id'))
+            ->firstOrFail();
         $goods->status = request('status');
 
         $goods->save();
@@ -125,7 +131,9 @@ class GoodsController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $goods = Goods::findOrFail(request('id'));
+        $goods = Goods::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->where('id', request('id'))
+            ->firstOrFail();
         $goods->delete();
         return Result::success($goods);
     }
