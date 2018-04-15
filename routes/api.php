@@ -24,6 +24,9 @@ Route::any('test', function(){
 
 Route::post('/upload/image', 'UploadController@image');
 
+// 微信支付回调
+Route::any('/pay/notify', 'PayController@notify');
+
 /**
  * 加载后台接口路由
  */

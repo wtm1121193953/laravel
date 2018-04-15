@@ -50,9 +50,9 @@ class WechatService
             'cert_path'          => 'path/to/your/cert.pem', // XXX: 绝对路径！！！！
             'key_path'           => 'path/to/your/key',      // XXX: 绝对路径！！！！
 
-            'notify_url'         => '默认的订单回调地址',     // 你也可以在下单时单独设置来想覆盖它
+            'notify_url' => request()->getSchemeAndHttpHost() . '/api/pay/notify',     // 你也可以在下单时单独设置来想覆盖它
         ];
 
-        $app = Factory::payment($config);
+        return Factory::payment($config);
     }
 }

@@ -14,6 +14,9 @@
                 <el-form-item prop="mch_id" label="微信支付商户号">
                     <el-input v-model="form.mch_id"/>
                 </el-form-item>
+                <el-form-item prop="key" label="微信支付密钥">
+                    <el-input v-model="form.key"/>
+                </el-form-item>
                 <el-form-item>
                     <el-button @click="cancel">取消</el-button>
                     <el-button type="primary" @click="save">保存</el-button>
@@ -29,6 +32,7 @@
         appid: '',
         secret: '',
         mch_id: '',
+        key: '',
     };
     export default {
         name: 'miniprogram-form',
@@ -53,6 +57,9 @@
                     ],
                     mch_id: [
                         {required: true, message: '微信支付商户号 不能为空'}
+                    ],
+                    key: [
+                        {required: true, message: '微信支付密钥 不能为空'}
                     ],
                 },
             }

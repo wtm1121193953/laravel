@@ -15,9 +15,11 @@ use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
+use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -50,6 +52,10 @@ class OrderController extends Controller
         return Result::success($detail);
     }
 
+    /**
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     */
     public function add()
     {
         $this->validate(request(), [
@@ -69,6 +75,7 @@ class OrderController extends Controller
         $order->oper_id = $oper->id;
         $order->order_no = Order::genOrderNo();
         $order->user_id = $user->id;
+        $order->open_id = request()->get('current_open_id');
         $order->user_name = $user->name ?? '';
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->name ?? '';
@@ -80,8 +87,26 @@ class OrderController extends Controller
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $goods->price * $number;
 
-        $order->save();
 
+        $payApp = WechatService::getWechatPayAppForOper($oper->id);
+        $result = $payApp->order->unify([
+            'body' => $order->goods_name,
+            'out_trade_no' => $order->orderNo,
+            'total_fee' => $order->pay_price,
+//            'total_fee' => $order->pay_price * 100,
+            'trade_type' => 'JSAPI',
+            'openid' => $order->open_id,
+        ]);
+        if($result['return_code'] === 'SUCCESS' && array_get($result, 'result_code') === 'SUCCESS'){
+            $order->open_id = $result->openid;
+            $order->save();
+        }else {
+            Log::error('微信统一下单失败', [
+                'order' => $order->toArray(),
+                'result' => $result,
+            ]);
+            throw new BaseResponseException('微信统一下单失败');
+        }
 
         if(App::environment() === 'local'){
             // 生成核销码, 线上需要放到支付成功通知中
