@@ -11,7 +11,7 @@ use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantCategory;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 
 class MerchantController extends Controller
 {
