@@ -53,10 +53,11 @@ class OrderController extends Controller
     }
 
     /**
+     * 订单创建
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    public function add()
+    public function buy()
     {
         $this->validate(request(), [
             'goods_id' => 'required|integer|min:1',
