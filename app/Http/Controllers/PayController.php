@@ -11,6 +11,7 @@ namespace App\Http\Controllers;
 
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
+use App\Modules\Order\OrderPay;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Support\Carbon;
@@ -51,7 +52,7 @@ class PayController extends Controller
      * @param $transactionId
      * @return bool
      */
-    private function paySuccess($orderNo, $transactionId)
+    private function paySuccess($orderNo, $transactionId, $totalFee)
     {
         // 处理订单支付成功逻辑
         $order = Order::where('order_no', $orderNo)->firstOrFail();
@@ -65,7 +66,7 @@ class PayController extends Controller
             $order->save();
 
             // 生成核销码, 线上需要放到支付成功通知中
-            for ($i = 0; $i < $order->number; $i ++){
+            for ($i = 0; $i < $order->buy_number; $i ++){
                 $orderItem = new OrderItem();
                 $orderItem->oper_id = $order->oper_id;
                 $orderItem->merchant_id = $order->merchant_id;
@@ -75,6 +76,13 @@ class PayController extends Controller
                 $orderItem->save();
             }
             // 生成订单支付记录
+            $orderPay = new OrderPay();
+            $orderPay->order_id = $order->id;
+            $orderPay->order_no = $orderNo;
+            $orderPay->transaction_no = $transactionId;
+            $orderPay->amount = $totalFee * 1.0 / 100;
+            $orderPay->save();
+
             return true;
         }else if($order->status == Order::STATUS_PAID){
             // 已经支付成功了
