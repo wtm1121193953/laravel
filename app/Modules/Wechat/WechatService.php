@@ -43,7 +43,7 @@ class WechatService
         $config = [
             // 必要配置
             'app_id' => $miniProgram->appid,
-            'mch_id'             => 'your-mch-id',
+            'mch_id'             => $miniProgram->mch_id,
             'key'                => 'key-for-signature',   // API 密钥
 
             // 如需使用敏感接口（如退款、发送红包等）需要配置 API 证书路径(登录商户平台下载 API 证书)

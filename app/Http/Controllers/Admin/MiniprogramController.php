@@ -77,12 +77,14 @@ class MiniprogramController extends Controller
             'name' => 'required',
             'appid' => 'required',
             'secret' => 'required',
+            'mch_id' => 'required',
         ]);
         $miniprogram = OperMiniprogram::findOrFail(request('id'));
         $miniprogram->oper_id = request('oper_id');
         $miniprogram->name = request('name');
         $miniprogram->appid = request('appid', '');
         $miniprogram->secret = request('secret', '');
+        $miniprogram->mch_id = request('mch_id', '');
 
         $miniprogram->save();
 
