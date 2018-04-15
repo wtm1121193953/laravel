@@ -129,7 +129,12 @@ class OrderController extends Controller
             $order->save();
         }
 
-        return Result::success($payApp->jssdk->sdkConfig($unifyResult['prepay_id']));
+        $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+
+        return Result::success([
+            'order_no' => $orderNo,
+            'sdk_config' => $sdkConfig
+        ]);
     }
 
     /**

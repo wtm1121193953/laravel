@@ -352,6 +352,7 @@ token (wxLogin接口除外)
                 order_no: 订单号,
                 user_id: 用户ID,
                 user_name: 用户名,
+                notify_mobile: 用户通知手机号,
                 merchant_id: 商家ID,
                 merchant_name: 商家名,
                 goods_id: 商品ID,
@@ -400,7 +401,7 @@ token (wxLogin接口除外)
 
 - [ ] 下单接口
 
-  地址: POST `/order/add`
+  地址: POST `/order/buy`
 
   参数
 
@@ -414,12 +415,15 @@ token (wxLogin接口除外)
 
   ```
     data: {
-    	orderInfo: {
-          同订单列表中的每一项
-    	},
-      wxPayParams: {
-          微信下单参数  -- 暂时还没有
-      }
+    	order_no: 订单号,
+    	sdk_config: 调起微信支付配置 {
+          appId: appid,
+          nonceStr: 随机字符串,
+          package: package,
+          signType: signType,
+          paySign: 支付签名,
+          timestamp: 时间戳,
+    	}
     }
   ```
 
