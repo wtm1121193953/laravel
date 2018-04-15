@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\SettlementJob;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Wechat\WechatService;
 use App\Support\Lbs;
@@ -43,6 +44,8 @@ class Test extends Command
      */
     public function handle()
     {
+        SettlementJob::dispatch(1);
+        die;
         dd(Carbon::now()->format('Y-m-d'));
         $end = Carbon::now()->subDay()->endOfDay();
         $start = Carbon::now()->subWeek()->startOfDay();

@@ -1602,6 +1602,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__settlement_detail__ = __webpack_require__("./resources/oper/components/settlements/settlement-detail.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__settlement_detail___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__settlement_detail__);
 //
 //
 //
@@ -1611,6 +1613,36 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -1618,14 +1650,34 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     data: function data() {
         return {
             isLoading: false,
-            list: []
+            isShowSettlementDetail: false,
+            list: [],
+            query: {
+                page: 1
+            },
+            total: 0,
+            orders: {}
         };
     },
 
-    methods: {},
-    created: function created() {},
+    methods: {
+        getList: function getList() {
+            var _this = this;
 
-    components: {}
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/settlements', this.query).then(function (data) {
+                console.log(data);
+                _this.list = data.list;
+                _this.total = data.total;
+            });
+        }
+    },
+    created: function created() {
+        this.getList();
+    },
+
+    components: {
+        SettlementDetail: __WEBPACK_IMPORTED_MODULE_1__settlement_detail___default.a
+    }
 });
 
 /***/ }),
@@ -38035,13 +38087,111 @@ var render = function() {
         { attrs: { data: _vm.list, stripe: "" } },
         [
           _c("el-table-column", {
-            attrs: { prop: "merchant_name", label: "结算商户" }
+            attrs: { prop: "merchant_name", label: "结算商户", align: "center" }
           }),
           _vm._v(" "),
           _c("el-table-column", {
-            attrs: { prop: "created_at", label: "结算时间" }
+            attrs: {
+              prop: "settlement_date",
+              label: "结算时间",
+              align: "center"
+            }
+          }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: {
+              prop: "settlement_cycle",
+              label: "结算周期",
+              align: "center"
+            },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function(scope) {
+                  return [
+                    _vm._v(
+                      "\n                " +
+                        _vm._s(scope.row.start_date) +
+                        " 至 " +
+                        _vm._s(scope.row.end_date) +
+                        "\n            "
+                    )
+                  ]
+                }
+              }
+            ])
+          }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { prop: "amount", label: "订单金额", align: "center" }
+          }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { prop: "settlement_rate", label: "利率", align: "center" }
+          }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { prop: "real_amount", label: "结算金额", align: "center" }
+          }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { prop: "status", label: "结算状态", align: "center" }
+          }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { label: "操作", width: "300px", align: "center" },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function(scope) {
+                  return [
+                    _c("el-button", { attrs: { type: "text" } }, [
+                      _vm._v("审核订单")
+                    ]),
+                    _vm._v(" "),
+                    _c("el-button", { attrs: { type: "text" } }, [
+                      _vm._v("上传发票")
+                    ]),
+                    _vm._v(" "),
+                    _c("el-button", { attrs: { type: "text" } }, [
+                      _vm._v("确认打款")
+                    ])
+                  ]
+                }
+              }
+            ])
           })
         ],
+        1
+      ),
+      _vm._v(" "),
+      _c("el-pagination", {
+        staticClass: "fr m-t-20",
+        attrs: {
+          layout: "total, prev, pager, next",
+          "current-page": _vm.query.page,
+          "page-size": 15,
+          total: _vm.total
+        },
+        on: {
+          "update:currentPage": function($event) {
+            _vm.$set(_vm.query, "page", $event)
+          },
+          "current-change": _vm.getList
+        }
+      }),
+      _vm._v(" "),
+      _c(
+        "el-dialog",
+        {
+          attrs: { title: "结算详情", visible: _vm.isShowSettlementDetail },
+          on: {
+            "update:visible": function($event) {
+              _vm.isShowSettlementDetail = $event
+            }
+          }
+        },
+        [_c("settlement-detail", { attrs: { scope: _vm.orders } })],
         1
       )
     ],
@@ -42927,6 +43077,37 @@ if (false) {(function () {
     disposed = true
   })
 })()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/oper/components/settlements/settlement-detail.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = null
+/* template */
+var __vue_template__ = null
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\oper\\components\\settlements\\settlement-detail.vue"
 
 module.exports = Component.exports
 

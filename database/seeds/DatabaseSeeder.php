@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminAuthRuleTableSeeder::class);
         $this->call(AdminUserTableSeeder::class);
         $this->call(AreaTableSeeder::class);
+        $this->call(MerchantCategoryTableSeeder::class);
 
         // 模拟数据填充
 //        if(App::environment('local')){

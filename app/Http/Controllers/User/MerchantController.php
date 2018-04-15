@@ -100,4 +100,29 @@ class MerchantController extends Controller
         return Result::success(['list' => $list, 'total' => $total]);
     }
 
+    /**
+     * 获取商户详情
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function detail()
+    {
+        $id = request('id');
+        $lng = request('lng');
+        $lat = request('lat');
+
+        $detail = Merchant::findOrFail($id);
+        $detail->distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), $lng, $lat);
+        // 格式化距离
+        $detail->distance = $detail->distance >= 1000 ? (number_format($detail->distance / 1000, 1) . '千米') : ($detail->distance . '米');
+        $category = MerchantCategory::find($detail->merchant_category_id);
+        $detail->merchantCategoryName = $category->name;
+        // 最低消费
+        $lowestAmount = Goods::where('merchant_id', $id)->orderBy('price')->value('price');
+        if($lowestAmount > 0){
+            $detail->lowestAmount = 200;
+        }
+
+        return Result::success(['list' => $detail]);
+    }
+
 }

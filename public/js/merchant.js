@@ -37508,7 +37508,7 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("el-table-column", {
-            attrs: { label: "详情" },
+            attrs: { label: "操作" },
             scopedSlots: _vm._u([
               {
                 key: "default",
