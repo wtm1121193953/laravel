@@ -84,6 +84,7 @@ class MerchantController extends Controller
         }
 
         // 补充商家其他信息
+        $list = collect($list);
         $list->each(function ($item) {
             $category = MerchantCategory::find($item->merchant_category_id);
             $item->merchantCategoryName = $category->name;
