@@ -53,7 +53,7 @@ class WechatController extends Controller
 
         return Result::success([
             'token' => $token,
-            'user' => $user ?? null,
+            'userInfo' => $user ?? null,
         ]);
     }
 }
