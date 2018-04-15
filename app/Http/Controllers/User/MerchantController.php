@@ -83,6 +83,13 @@ class MerchantController extends Controller
             $total = $data->total();
         }
 
+        // 补充商家其他信息
+        $list->each(function ($item) {
+            $category = MerchantCategory::find($item->merchant_category_id);
+            $item->merchantCategoryName = $category->name;
+            $item->avg_amount = 200;
+        });
+
         return Result::success(['list' => $list, 'total' => $total]);
     }
 

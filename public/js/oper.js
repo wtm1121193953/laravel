@@ -38727,7 +38727,7 @@ var render = function() {
                               _vm._v("审核不通过")
                             ])
                           : scope.row.audit_status === 3
-                            ? _c("span", { staticClass: "c-danger" }, [
+                            ? _c("span", { staticClass: "c-warning" }, [
                                 _vm._v("重新提交审核中")
                               ])
                             : _c("span", [
