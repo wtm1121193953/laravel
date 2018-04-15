@@ -103,7 +103,7 @@ class OrderController extends Controller
         }else {
             Log::error('微信统一下单失败', [
                 'order' => $order->toArray(),
-                'payApp' => $payApp,
+                'payConfig' => $payApp->getConfig(),
                 'result' => $unifyResult,
             ]);
             throw new BaseResponseException('微信统一下单失败');
