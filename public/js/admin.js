@@ -1934,6 +1934,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -15020,7 +15021,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42890,7 +42891,7 @@ var render = function() {
                 fn: function(scope) {
                   return [
                     scope.row.audit_status === 0
-                      ? _c("span", { staticClass: "c-gray" }, [
+                      ? _c("span", { staticClass: "c-warning" }, [
                           _vm._v("待审核")
                         ])
                       : scope.row.audit_status === 1
@@ -42901,11 +42902,17 @@ var render = function() {
                           ? _c("span", { staticClass: "c-danger" }, [
                               _vm._v("审核不通过")
                             ])
-                          : _c("span", [
-                              _vm._v(
-                                "未知 (" + _vm._s(scope.row.audit_status) + ")"
-                              )
-                            ])
+                          : scope.row.audit_status === 3
+                            ? _c("span", { staticClass: "c-warning" }, [
+                                _vm._v("待审核(重新提交)")
+                              ])
+                            : _c("span", [
+                                _vm._v(
+                                  "未知 (" +
+                                    _vm._s(scope.row.audit_status) +
+                                    ")"
+                                )
+                              ])
                   ]
                 }
               }

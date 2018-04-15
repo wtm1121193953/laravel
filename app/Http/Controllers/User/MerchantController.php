@@ -16,6 +16,7 @@ use App\Modules\Merchant\MerchantCategory;
 use App\Result;
 use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
+use Psy\Util\Json;
 
 class MerchantController extends Controller
 {
@@ -86,6 +87,7 @@ class MerchantController extends Controller
         // 补充商家其他信息
         $list = collect($list);
         $list->each(function ($item) {
+            if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
             // 格式化距离
             $item->distance = $item->distance >= 1000 ? (number_format($item->distance / 1000, 1) . '千米') : ($item->distance . '米');
             $category = MerchantCategory::find($item->merchant_category_id);
@@ -111,6 +113,7 @@ class MerchantController extends Controller
         $lat = request('lat');
 
         $detail = Merchant::findOrFail($id);
+        if($detail->business_time) $detail->business_time = json_decode($detail->business_time, 1);
         $detail->distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), $lng, $lat);
         // 格式化距离
         $detail->distance = $detail->distance >= 1000 ? (number_format($detail->distance / 1000, 1) . '千米') : ($detail->distance . '米');

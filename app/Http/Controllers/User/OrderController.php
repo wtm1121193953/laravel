@@ -79,6 +79,7 @@ class OrderController extends Controller
         $order->user_id = $user->id;
         $order->open_id = request()->get('current_open_id');
         $order->user_name = $user->name ?? '';
+        $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->name ?? '';
         $order->goods_id = $goodsId;
@@ -128,7 +129,12 @@ class OrderController extends Controller
             $order->save();
         }
 
-        return Result::success($payApp->jssdk->sdkConfig($unifyResult['prepay_id']));
+        $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+
+        return Result::success([
+            'order_no' => $orderNo,
+            'sdk_config' => $sdkConfig
+        ]);
     }
 
     /**
