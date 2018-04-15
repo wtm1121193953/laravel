@@ -5,6 +5,7 @@ import ErrorPage from '../components/404.vue'
 import welcome from '../components/welcome.vue'
 
 import merchant from './merchant'
+import settlements from './settlements'
 
 /**
  *
@@ -14,6 +15,7 @@ const routes = [
     {path: '/login', component: Login, name: 'Login'},
 
     ...merchant,
+    ...settlements,
 
     {
         path: '/',

@@ -36,7 +36,7 @@ class CreateSettlementsTable extends Migration
             // 发票信息
             $table->string('invoice_title')->default('')->comment('发票抬头');
             $table->string('invoice_no')->default('')->comment('发票税号');
-            $table->tinyInteger('invoice_type')->default(1)->comment('发票类型 1-电子发票 2-纸质发票');
+            $table->tinyInteger('invoice_type')->default(1)->comment('发票类型 0-未上传 1-电子发票 2-纸质发票');
             $table->string('invoice_pic_url')->default('')->comment('发票图片地址  电子发票有效');
             $table->string('logistics_name')->default('')->comment('发票邮寄物流公司  纸质发票有效');
             $table->string('logistics_no')->default('')->comment('发票邮寄物流单号  纸质发票有效');

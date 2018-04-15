@@ -59,12 +59,15 @@
         },
         methods: {
             getList() {
+                this.isLoading = true;
                 api.get('/orders', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
 
                     this.list['status'] = parseInt(this.list['status']);
                     this.list['created_at'] = new Date(this.list['created_at']).format('yyyy-MM-dd hh:mm:ss');
+
+                    this.isLoading = false;
                 })
             },
             showDetail(scope) {
