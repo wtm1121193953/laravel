@@ -37564,7 +37564,10 @@ var render = function() {
                       _c(
                         "el-select",
                         {
-                          attrs: { placeholder: "请选择" },
+                          attrs: {
+                            disabled: !!_vm.data,
+                            placeholder: "请选择"
+                          },
                           model: {
                             value: _vm.form.settlement_cycle_type,
                             callback: function($$v) {
@@ -37575,7 +37578,7 @@ var render = function() {
                         },
                         [
                           _c("el-option", {
-                            attrs: { label: "周节", value: 1 }
+                            attrs: { label: "周结", value: 1 }
                           }),
                           _vm._v(" "),
                           _c("el-option", {

@@ -99,8 +99,8 @@
                 <el-col :span="11">
 
                     <el-form-item prop="settlement_cycle_type" label="结算周期">
-                        <el-select v-model="form.settlement_cycle_type" placeholder="请选择">
-                            <el-option label="周节" :value="1"></el-option>
+                        <el-select :disabled="!!data" v-model="form.settlement_cycle_type" placeholder="请选择">
+                            <el-option label="周结" :value="1"></el-option>
                             <el-option label="半月结" :value="2"></el-option>
                             <el-option label="月结" :value="3"></el-option>
                             <el-option label="半年结" :value="4"></el-option>
