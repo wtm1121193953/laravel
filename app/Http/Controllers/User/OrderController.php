@@ -72,8 +72,9 @@ class OrderController extends Controller
         $oper = request()->get('current_oper');
 
         $order = new Order();
+        $orderNo = Order::genOrderNo();
         $order->oper_id = $oper->id;
-        $order->order_no = Order::genOrderNo();
+        $order->order_no = $orderNo;
         $order->user_id = $user->id;
         $order->open_id = request()->get('current_open_id');
         $order->user_name = $user->name ?? '';
@@ -91,7 +92,7 @@ class OrderController extends Controller
         $payApp = WechatService::getWechatPayAppForOper($oper->id);
         $data = [
             'body' => $order->goods_name,
-            'out_trade_no' => $order->orderNo,
+            'out_trade_no' => $orderNo,
             'total_fee' => $order->pay_price,
 //            'total_fee' => $order->pay_price * 100,
             'trade_type' => 'JSAPI',
