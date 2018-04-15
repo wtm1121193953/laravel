@@ -38717,21 +38717,19 @@ var render = function() {
                       ? _c("span", { staticClass: "c-warning" }, [
                           _vm._v("待审核")
                         ])
-                      : _vm._e(),
-                    _vm._v(" "),
-                    scope.row.audit_status === 1
-                      ? _c("span", { staticClass: "c-green" }, [
-                          _vm._v("审核通过")
-                        ])
-                      : scope.row.audit_status === 2
-                        ? _c("span", { staticClass: "c-danger" }, [
-                            _vm._v("审核不通过")
+                      : scope.row.audit_status === 1
+                        ? _c("span", { staticClass: "c-green" }, [
+                            _vm._v("审核通过")
                           ])
-                        : _c("span", [
-                            _vm._v(
-                              "未知 (" + _vm._s(scope.row.audit_status) + ")"
-                            )
-                          ])
+                        : scope.row.audit_status === 2
+                          ? _c("span", { staticClass: "c-danger" }, [
+                              _vm._v("审核不通过")
+                            ])
+                          : _c("span", [
+                              _vm._v(
+                                "未知 (" + _vm._s(scope.row.audit_status) + ")"
+                              )
+                            ])
                   ]
                 }
               }
