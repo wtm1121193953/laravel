@@ -19,7 +19,7 @@ $factory->define(\App\Modules\Merchant\Merchant::class, function (Faker $faker) 
         'province' => $province->name,
         'province_id' => $province->area_id,
         'city' => '深圳市',
-        'city_id' => 518000,
+        'city_id' => 440300,
         'area' => $area->name,
         'area_id' => $area->area_id,
         'logo' => $faker->imageUrl(),
