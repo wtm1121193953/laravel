@@ -34,7 +34,7 @@ class CreateOrdersTable extends Migration
             $table->dateTime('refund_time')->nullable()->comment('退款时间');
             $table->dateTime('finish_time')->index()->nullable()->comment('结束时间, 即核销时间');
 
-            $table->tinyInteger('settlement_status')->index()->default(0)->comment('结算状态 1-未结算 2-已结算');
+            $table->tinyInteger('settlement_status')->index()->default(1)->comment('结算状态 1-未结算 2-已结算');
             $table->integer('settlement_id')->index()->default(0)->comment('结算ID');
 
             $table->timestamps();
