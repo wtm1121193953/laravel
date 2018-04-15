@@ -55,43 +55,49 @@ token (wxLogin接口除外)
 
 - [ ] 微信登陆接口
 
-      接口地址 `POST`  `/wxLogin`
+  接口地址 `POST`  `/wxLogin`
 
-      参数: 
+  参数: 
 
-      ```
-      code wx.login 获取到的code
-      ```
+  ```
+  code wx.login 获取到的code
+  ```
 
-      返回值: 
+  返回值: 
 
-      ```
-      data: {
-        token: 用户令牌,
-        userInfo: 用户信息, 微信openId已绑定用户的情况下返回, 测试时code传值为user时返回用户信息
-      }
-      ```
+  ```
+  data: {
+    token: 用户令牌,
+    userInfo: 用户信息, 微信openId已绑定用户的情况下返回, 测试时code传值为user时返回用户信息: {
+        name: 用户名称
+        mobile: 手机号
+    }
+  }
+  ```
 
 
 
 - [ ] 登陆接口(绑定手机号)
 
-      接口地址: `POST` `/login`
+  接口地址: `POST` `/login`
 
-      参数:
+  参数:
 
-      ```
-      mobile 手机号
-      verify_code 验证码
-      ```
+  ```
+  mobile 手机号
+  verify_code 验证码
+  ```
 
-      返回值
+  返回值
 
-      ```
-      data: {
-        userInfo: 用户信息
-      }
-      ```
+  ```
+  data: {
+    userInfo: 用户信息 {
+        name: 用户名称,
+        mobile: 手机号
+    }
+  }
+  ```
 
 
 
@@ -224,9 +230,8 @@ token (wxLogin接口除外)
         oper_id: 运营中心ID
         merchant_category_id: 商家分类ID,
         name: 商家名,
-        status: 状态(只返回状态正常的商家),
-        lng: 商家所在位置经度,
-        lat: 商家所在位置纬度,
+        brand: 品牌,
+        region: 运营地区/大区 1-中国 2-美国 3-韩国 4-香港
         address: 详细地址,
         province: 所在省份,
         province_id: 省份ID,
@@ -234,6 +239,14 @@ token (wxLogin接口除外)
         city_id: 城市ID,
         area: 县区,
         area_id: 县区ID,
+        lng: 商家所在位置经度,
+        lat: 商家所在位置纬度,
+        logo: 商家logo
+        desc_pic: 商家描述图片
+        desc: 商家介绍
+        contacter: 联系人姓名
+        contacter_phone: 负责人联系方式
+        status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在
       }
     ]
