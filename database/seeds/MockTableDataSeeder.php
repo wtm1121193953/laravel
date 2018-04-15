@@ -38,12 +38,6 @@ class MockTableDataSeeder extends Seeder
             'password' => \App\Modules\Oper\OperAccount::genPassword('123456', $salt),
         ]);
 
-        // 填充商家分类数据
-        factory(\App\Modules\Merchant\MerchantCategory::class, 20)->create([
-            'pid' => 0
-        ]);
-        factory(\App\Modules\Merchant\MerchantCategory::class, 100)->create();
-
         // 填充商家数据
         factory(\App\Modules\Merchant\Merchant::class, 100)->create();
         // 模拟商家账户
