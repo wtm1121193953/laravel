@@ -87,7 +87,7 @@ class MerchantController extends Controller
         $list = collect($list);
         $list->each(function ($item) {
             // 格式化距离
-            $item->distance = $item->distance >= 1000 ? ($item->distance / 1000 . '千米') : ($item->distance . '米');
+            $item->distance = $item->distance >= 1000 ? (number_format($item->distance / 1000, 1) . '千米') : ($item->distance . '米');
             $category = MerchantCategory::find($item->merchant_category_id);
             $item->merchantCategoryName = $category->name;
             // 最低消费
