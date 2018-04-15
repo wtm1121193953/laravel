@@ -36,6 +36,10 @@ class WechatController extends Controller
         if(is_string($result)) $result = json_decode($result, 1);
         Log::info('wxLogin 返回', $result);
         $openid = $result['openid'];
+        Log::info('获取到openId', [
+            'openId' => $openid,
+            'oper' => request()->get('current_oper')->toArray()
+        ]);
         // 绑定用户openId到token
         $token = str_random(32);
         Cache::add('open_id_for_token_' . $token, $openid, 60 * 24 * 30);
