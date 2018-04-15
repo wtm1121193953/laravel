@@ -7,6 +7,7 @@ use App\Http\Middleware\AdminPermissionAuthenticate;
 use App\Http\Middleware\Merchant\MerchantLoginFilter;
 use App\Http\Middleware\Oper\OperLoginFilter;
 use App\Http\Middleware\User\CurrentOperInjector;
+use App\Http\Middleware\User\MockMiniprogramEnv;
 use App\Http\Middleware\User\UserInfoInjector;
 use App\Http\Middleware\User\UserOpenIdInjector;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
@@ -69,6 +70,7 @@ class Kernel extends HttpKernel
 
         // user 用户端接口中间件
         'user' => [
+            MockMiniprogramEnv::class,
             CurrentOperInjector::class,
             UserOpenIdInjector::class,
             UserInfoInjector::class,

@@ -28,25 +28,21 @@ class CurrentOperInjector
     {
         $referer = $request->header('referer');
 
-        if(App::environment() === 'local'){
-            $operId = 1;
+        // 从 referer 中获取appid
+        if($referer[0] &&
+            $referer = $referer[0] &&
+            preg_match('/servicewechat.com\/(wx[\d0-9a-zA-Z]*)\/.*/', $referer, $matches)
+        ){
+            $appid = $matches[1];
         }else {
-
-            // 从 referer 中获取appid
-            if($referer[0] &&
-                $referer = $referer[0] &&
-                preg_match('/servicewechat.com\/(wx[\d0-9a-zA-Z]*)\/.*/', $referer, $matches)
-            ){
-                $appid = $matches[1];
-            }else {
-                $appid = 'wx1abb4cf60ffea6c9';
-            }
-
-            $operId = OperMiniprogram::where('appid', $appid)->value('oper_id');
-            if(empty($operId)){
-                throw new BaseResponseException('微信小程序appid错误', ResultCode::WECHAT_APPID_INVALID);
-            }
+            $appid = 'wx1abb4cf60ffea6c9';
         }
+
+        $operId = OperMiniprogram::where('appid', $appid)->value('oper_id');
+        if(empty($operId)){
+            throw new BaseResponseException('微信小程序appid错误', ResultCode::WECHAT_APPID_INVALID);
+        }
+
         $oper = Oper::findOrFail($operId);
         $request->attributes->add(['current_oper' => $oper]);
         return $next($request);

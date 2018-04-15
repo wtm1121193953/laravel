@@ -27,12 +27,6 @@ class WechatController extends Controller
      */
     public function login()
     {
-        if(App::environment() === 'local'){
-            return Result::success([
-                'token' => str_random(),
-                'userInfo' => request('code') == 'user' ? User::find(1) : null,
-            ]);
-        }
         $this->validate(request(), [
             'code' => 'required'
         ]);

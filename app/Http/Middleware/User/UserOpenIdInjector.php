@@ -30,20 +30,16 @@ class UserOpenIdInjector
      */
     public function handle($request, Closure $next)
     {
-        if(App::environment() == 'local'){
-            $request->attributes->add(['current_open_id' => 'mock open id']);
-        }else {
-            if(!in_array($request->path(), $this->publicUrls)){
-                $token = $request->get('token');
-                if(empty($token)){
-                    throw new TokenInvalidException();
-                }
-                $openId = Cache::get('open_id_for_token_' . $token);
-                if(empty($openId)){
-                    throw new HasNotOpenIdException();
-                }
-                $request->attributes->add(['current_open_id' => $openId]);
+        if(!in_array($request->path(), $this->publicUrls)){
+            $token = $request->get('token');
+            if(empty($token)){
+                throw new TokenInvalidException();
             }
+            $openId = Cache::get('open_id_for_token_' . $token);
+            if(empty($openId)){
+                throw new HasNotOpenIdException();
+            }
+            $request->attributes->add(['current_open_id' => $openId]);
         }
 
         return $next($request);
