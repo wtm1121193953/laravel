@@ -49,4 +49,10 @@ class SettlementController extends Controller
             'total' => $data->total(),
         ]);
     }
+
+    public function updateInvoice()
+    {
+        $id = request('id');
+        $settlement = new Settlement();
+    }
 }

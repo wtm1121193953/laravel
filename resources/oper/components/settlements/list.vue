@@ -36,12 +36,12 @@
                 :total="total"
         ></el-pagination>
 
-        <el-dialog title="结算详情" :visible.sync="isShowSettlementDetail">
+        <el-dialog :visible.sync="isShowSettlementDetail">
             <settlement-detail :scope="settlement"></settlement-detail>
         </el-dialog>
 
-        <el-dialog title="发票详情" :visible.sync="isShowInvoice">
-            <invoice :scope="settlement"></invoice>
+        <el-dialog :visible.sync="isShowInvoice">
+            <invoice :scope="settlement" @cancel="isShowInvoice = false" @save="addInvoice"></invoice>
         </el-dialog>
     </page>
 </template>
@@ -81,6 +81,9 @@
             uploadInvoice(scope) {
                 this.isShowInvoice = true;
                 this.settlement = scope.row;
+            },
+            addInvoice() {
+
             }
         },
         created() {

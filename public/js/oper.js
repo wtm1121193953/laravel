@@ -1611,6 +1611,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1621,14 +1640,46 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     data: function data() {
         return {
             form: {
-                invoice_type: 1
+                id: 0,
+                invoice_type: 1,
+                invoice_pic_url: '',
+                logistics_name: '',
+                logistics_no: ''
             },
-            invoice_type: 0
+            invoice_type: 0, //数据库中的发票状态
+            disable: false
         };
     },
 
-    methods: {},
-    created: function created() {}
+    methods: {
+        cancel: function cancel() {
+            this.$emit('cancel');
+        },
+        save: function save() {
+            var _this = this;
+
+            if (this.form.invoice_type == 1) {
+                if (!this.invoice_pic_url) {
+                    this.$message.error('请添加电子发票');
+                }
+            } else {
+                if (!this.logistics_name || !this.logistics_no) {
+                    this.$message.error('请填写物流公司和物流单号');
+                }
+            }
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/updateInvoice', this.form).then(function (data) {
+                _this.$emit('save');
+            });
+        }
+    },
+    created: function created() {
+        this.form.id = parseInt(this.scope.id);
+        this.invoice_type = parseInt(this.scope.invoice_type);
+        if (parseInt(this.invoice_type) !== 0) {
+            this.disable = true;
+            this.form.invoice_type = this.invoice_type;
+        }
+    }
 });
 
 /***/ }),
@@ -1729,7 +1780,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         uploadInvoice: function uploadInvoice(scope) {
             this.isShowInvoice = true;
             this.settlement = scope.row;
-        }
+        },
+        addInvoice: function addInvoice() {}
     },
     created: function created() {
         this.getList();
@@ -13146,7 +13198,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -38385,7 +38437,7 @@ var render = function() {
       _c(
         "el-dialog",
         {
-          attrs: { title: "结算详情", visible: _vm.isShowSettlementDetail },
+          attrs: { visible: _vm.isShowSettlementDetail },
           on: {
             "update:visible": function($event) {
               _vm.isShowSettlementDetail = $event
@@ -38399,14 +38451,24 @@ var render = function() {
       _c(
         "el-dialog",
         {
-          attrs: { title: "发票详情", visible: _vm.isShowInvoice },
+          attrs: { visible: _vm.isShowInvoice },
           on: {
             "update:visible": function($event) {
               _vm.isShowInvoice = $event
             }
           }
         },
-        [_c("invoice", { attrs: { scope: _vm.settlement } })],
+        [
+          _c("invoice", {
+            attrs: { scope: _vm.settlement },
+            on: {
+              cancel: function($event) {
+                _vm.isShowInvoice = false
+              },
+              save: _vm.addInvoice
+            }
+          })
+        ],
         1
       )
     ],
@@ -38826,43 +38888,136 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("page", [
-    _c(
-      "div",
-      [
-        _c(
-          "el-radio",
-          {
-            attrs: { label: "1", border: "" },
-            model: {
-              value: _vm.form.invoice_type,
-              callback: function($$v) {
-                _vm.$set(_vm.form, "invoice_type", $$v)
-              },
-              expression: "form.invoice_type"
-            }
-          },
-          [_vm._v("上传电子发票")]
-        ),
-        _vm._v(" "),
-        _c(
-          "el-radio",
-          {
-            attrs: { label: "2", border: "" },
-            model: {
-              value: _vm.form.invoice_type,
-              callback: function($$v) {
-                _vm.$set(_vm.form, "invoice_type", $$v)
-              },
-              expression: "form.invoice_type"
-            }
-          },
-          [_vm._v("寄送纸质发票")]
-        )
-      ],
-      1
-    )
-  ])
+  return _c(
+    "page",
+    { attrs: { title: "发票详情" } },
+    [
+      _c(
+        "div",
+        [
+          _c(
+            "el-radio",
+            {
+              attrs: { label: 1, border: "", disabled: _vm.disable },
+              model: {
+                value: _vm.form.invoice_type,
+                callback: function($$v) {
+                  _vm.$set(_vm.form, "invoice_type", $$v)
+                },
+                expression: "form.invoice_type"
+              }
+            },
+            [_vm._v("上传电子发票")]
+          ),
+          _vm._v(" "),
+          _c(
+            "el-radio",
+            {
+              attrs: { label: 2, border: "", disabled: _vm.disable },
+              model: {
+                value: _vm.form.invoice_type,
+                callback: function($$v) {
+                  _vm.$set(_vm.form, "invoice_type", $$v)
+                },
+                expression: "form.invoice_type"
+              }
+            },
+            [_vm._v("寄送纸质发票")]
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "el-col",
+        { staticStyle: { "margin-top": "20px" } },
+        [
+          parseInt(_vm.form.invoice_type) === 1
+            ? _c(
+                "el-form",
+                [
+                  _c(
+                    "el-form-item",
+                    { attrs: { label: "上传电子发票：" } },
+                    [
+                      _c("image-upload", {
+                        model: {
+                          value: _vm.form.invoice_pic_url,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "invoice_pic_url", $$v)
+                          },
+                          expression: "form.invoice_pic_url"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            : _c(
+                "el-form",
+                { attrs: { "label-width": "70px" } },
+                [
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "logistics_name", label: "物流公司" } },
+                    [
+                      _c("el-input", {
+                        staticStyle: { width: "400px" },
+                        model: {
+                          value: _vm.form.logistics_name,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "logistics_name", $$v)
+                          },
+                          expression: "form.logistics_name"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "logistics_no", label: "物流单号" } },
+                    [
+                      _c("el-input", {
+                        staticStyle: { width: "400px" },
+                        model: {
+                          value: _vm.form.logistics_no,
+                          callback: function($$v) {
+                            _vm.$set(_vm.form, "logistics_no", $$v)
+                          },
+                          expression: "form.logistics_no"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "fl" },
+            [
+              _c("el-button", { on: { click: _vm.cancel } }, [_vm._v("取消")]),
+              _vm._v(" "),
+              _c(
+                "el-button",
+                { attrs: { type: "primary" }, on: { click: _vm.save } },
+                [_vm._v("保存")]
+              )
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -39337,6 +39492,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "page",
+    { attrs: { title: "结算详情" } },
     [
       _c(
         "el-table",
