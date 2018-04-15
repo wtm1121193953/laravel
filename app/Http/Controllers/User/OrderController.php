@@ -15,6 +15,8 @@ use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
+use App\Modules\Order\OrderPay;
+use App\Modules\Order\OrderRefund;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -138,6 +140,7 @@ class OrderController extends Controller
 
     /**
      * 订单退款
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function refund()
     {
@@ -149,11 +152,26 @@ class OrderController extends Controller
         if($order->status != Order::STATUS_PAID){
             throw new BaseResponseException('订单状态不允许退款');
         }
-        // todo 发起微信支付退款
-        if(true){ // 微信退款成功
+        // 查询支付记录
+        $orderPay = OrderPay::where('order_id', $order->id)->firstOrFail();
+        // 生成退款单
+        $orderRefund = new OrderRefund();
+        $orderRefund->order_id = $order->id;
+        $orderRefund->order_no = $order->order_no;
+        $orderRefund->amount = $orderPay->amount;
+        $orderRefund->save();
+        // 发起微信支付退款
+        $payApp = WechatService::getWechatPayAppForOper(request()->get('current_oper')->id);
+        $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->id, $orderPay->amount, $orderPay->amount);
+        if($result['return_code'] === 'SUCCESS' && array_get($result, 'result_code') === 'SUCCESS'){
+            // 微信退款成功
+            $orderRefund->refund_id = $result['refund_id'];
+            $orderRefund->status = 2;
+            $orderRefund->save();
+
             $order->status = Order::STATUS_REFUNDED;
             $order->save();
         }
-        return Result::success($order);
+        return Result::success($orderRefund);
     }
 }

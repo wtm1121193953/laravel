@@ -17,7 +17,8 @@ class CreateOrderRefundsTable extends Migration
             $table->increments('id');
             $table->integer('order_id')->index()->comment('订单ID');
             $table->string('order_no', 100)->index()->comment('订单号');
-            $table->decimal('price')->comment('退款金额');
+            $table->decimal('amount')->comment('退款金额');
+            $table->string('refund_id')->index()->comment('微信退款单号');
             $table->tinyInteger('status')->default(1)->index()->comment('退款状态 1-未退款 2-已退款');
             $table->timestamps();
 
