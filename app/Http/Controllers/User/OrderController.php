@@ -89,7 +89,7 @@ class OrderController extends Controller
 
 
         $payApp = WechatService::getWechatPayAppForOper($oper->id);
-        $result = $payApp->order->unify([
+        $unifyResult = $payApp->order->unify([
             'body' => $order->goods_name,
             'out_trade_no' => $order->orderNo,
             'total_fee' => $order->pay_price,
@@ -97,13 +97,13 @@ class OrderController extends Controller
             'trade_type' => 'JSAPI',
             'openid' => $order->open_id,
         ]);
-        if($result['return_code'] === 'SUCCESS' && array_get($result, 'result_code') === 'SUCCESS'){
-            $order->open_id = $result->openid;
+        if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
+            $order->open_id = $unifyResult->openid;
             $order->save();
         }else {
             Log::error('微信统一下单失败', [
                 'order' => $order->toArray(),
-                'result' => $result,
+                'result' => $unifyResult,
             ]);
             throw new BaseResponseException('微信统一下单失败');
         }
@@ -125,7 +125,7 @@ class OrderController extends Controller
             $order->save();
         }
 
-        return Result::success($order);
+        return Result::success($payApp->jssdk->sdkConfig($unifyResult['prepay_id']));
     }
 
     /**
