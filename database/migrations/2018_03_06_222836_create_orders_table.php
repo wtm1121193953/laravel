@@ -18,9 +18,9 @@ class CreateOrdersTable extends Migration
             $table->integer('oper_id')->index()->comment('运营中心ID');
             $table->string('order_no', 100)->index()->comment('订单号');
             $table->integer('user_id')->index()->comment('购买用户ID');
-            $table->integer('open_id')->default('')->comment('支付用户的微信open_id');
+            $table->string('open_id')->default('')->comment('支付用户的微信open_id');
             $table->string('user_name')->default('')->comment('购买用户名');
-            $table->string('notify_mobile')->default('')->comment('通知用户手机号');
+            $table->string('notify_mobile')->default('')->comment('用户通知手机号');
             $table->integer('merchant_id')->index()->default(0)->comment('商家ID');
             $table->string('merchant_name')->default('')->comment('商家名');
             $table->integer('goods_id')->index()->default(0)->comment('商品ID');

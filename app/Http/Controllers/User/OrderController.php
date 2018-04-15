@@ -79,6 +79,7 @@ class OrderController extends Controller
         $order->user_id = $user->id;
         $order->open_id = request()->get('current_open_id');
         $order->user_name = $user->name ?? '';
+        $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->name ?? '';
         $order->goods_id = $goodsId;
