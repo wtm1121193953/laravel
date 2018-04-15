@@ -19,7 +19,7 @@ class MerchantController extends Controller
 
     public function getList()
     {
-        $data = Merchant::paginate();
+        $data = Merchant::orderByDesc('id')->paginate();
 
         $data->each(function ($item){
             $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
