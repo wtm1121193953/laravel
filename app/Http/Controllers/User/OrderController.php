@@ -59,7 +59,9 @@ class OrderController extends Controller
         $goodsId = request('goods_id');
         $number = request('number', 1);
         $goods = Goods::findOrFail($goodsId);
+
         $user = request()->get('current_user');
+
         $merchant = Merchant::findOrFail($goods->merchant_id);
         $oper = request()->get('current_oper');
 
@@ -98,7 +100,6 @@ class OrderController extends Controller
             $order->save();
         }
 
-        $order->items = $items;
         return Result::success($order);
     }
 
