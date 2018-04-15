@@ -19,6 +19,10 @@ class Merchant extends BaseModel
      * 审核不通过
      */
     const AUDIT_STATUS_FAIL = 2;
+    /**
+     * 重新提交审核
+     */
+    const AUDIT_STATUS_RESUBMIT = 3;
 
     /**
      * 结算类型

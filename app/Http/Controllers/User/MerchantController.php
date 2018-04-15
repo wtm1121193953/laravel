@@ -36,7 +36,7 @@ class MerchantController extends Controller
         }
 
         $query = Merchant::where('status', 1)
-//            ->where('audit_status', Merchant::AUDIT_STATUS_SUCCESS)
+            ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT])
             ->when($city_id, function(Builder $query) use ($city_id){
                 $query->where('city_id', $city_id);
             })

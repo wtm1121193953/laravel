@@ -132,7 +132,11 @@ class MerchantController extends Controller
 
         $this->fillMerchantInfoFromRequest($merchant);
 
-        $merchant->audit_status = 0;
+        if($merchant->audit_status == Merchant::AUDIT_STATUS_SUCCESS){
+            $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
+        }else {
+            $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+        }
 
         $merchant->save();
 
