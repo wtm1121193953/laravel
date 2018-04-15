@@ -18,8 +18,8 @@ class DatabaseSeeder extends Seeder
         $this->call(AreaTableSeeder::class);
 
         // 模拟数据填充
-        if(App::environment('local')){
+//        if(App::environment('local')){
             $this->call(MockTableDataSeeder::class);
-        }
+//        }
     }
 }
