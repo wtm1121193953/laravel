@@ -2948,6 +2948,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2977,7 +2988,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             accountModifyFormRules: {
                 password: [{ required: true, min: 6, message: '密码不能为空且不能少于6位' }]
             },
-            editMiniprogramDialog: false
+            editMiniprogramDialog: false,
+            showUploadCertDialog: false,
+            certUploadUrl: '/api/admin/miniprogram/uploadCert'
         };
     },
 
@@ -3055,6 +3068,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     _this5.isLoading = false;
                 });
             }
+        },
+        uploadCert: function uploadCert() {
+            this.showUploadCertDialog = true;
         }
     },
     created: function created() {},
@@ -15036,7 +15052,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42181,7 +42197,7 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("el-table-column", {
-            attrs: { label: "操作", width: "350px" },
+            attrs: { label: "操作", width: "450px" },
             scopedSlots: _vm._u([
               {
                 key: "default",
@@ -43099,6 +43115,14 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
+      _vm.scope.row.miniprogram
+        ? _c(
+            "el-button",
+            { attrs: { type: "text" }, on: { click: _vm.uploadCert } },
+            [_vm._v("上传支付证书")]
+          )
+        : _vm._e(),
+      _vm._v(" "),
       _c(
         "el-dialog",
         {
@@ -43343,7 +43367,48 @@ var render = function() {
             ],
             1
           )
-        : _vm._e()
+        : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "el-dialog",
+        {
+          attrs: { visible: _vm.showUploadCertDialog, title: "上传支付证书" },
+          on: {
+            "update:visible": function($event) {
+              _vm.showUploadCertDialog = $event
+            }
+          }
+        },
+        [
+          _c(
+            "el-form",
+            { attrs: { "label-width": "150px", size: "small" } },
+            [
+              _c(
+                "el-form-item",
+                { attrs: { label: "上传支付证书" } },
+                [
+                  _c(
+                    "el-upload",
+                    {
+                      attrs: {
+                        "list-type": "text",
+                        action: _vm.certUploadUrl,
+                        limit: 1
+                      }
+                    },
+                    [_c("el-button", [_vm._v("上传证书")])],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      )
     ],
     1
   )
