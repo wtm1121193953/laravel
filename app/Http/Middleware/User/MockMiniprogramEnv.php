@@ -41,8 +41,8 @@ class MockMiniprogramEnv
                 'token' => $token
             ]);
             // 绑定token与openId的关联
-            $openid = 'mock_open_id';
-            Cache::add('open_id_for_token_' . $token, $openid, 60 * 24 * 30);
+            if(! $openid = $request->get('open_id')) $openid = 'mock_open_id';
+            Cache::put('open_id_for_token_' . $token, $openid, 60 * 24 * 30);
 
         }
         return $next($request);

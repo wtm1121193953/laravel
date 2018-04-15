@@ -38,7 +38,7 @@ class WechatController extends Controller
         $openid = $result['openid'];
         // 绑定用户openId到token
         $token = str_random(32);
-        Cache::add('open_id_for_token_' . $token, $openid, 60 * 24 * 30);
+        Cache::put('open_id_for_token_' . $token, $openid, 60 * 24 * 30);
         // 获取用户信息
         $userId = UserOpenIdMapping::where('open_id', $openid)->value('user_id');
         if($userId){

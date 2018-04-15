@@ -53,10 +53,11 @@ class OrderController extends Controller
     }
 
     /**
+     * 订单创建
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    public function add()
+    public function buy()
     {
         $this->validate(request(), [
             'goods_id' => 'required|integer|min:1',
@@ -72,8 +73,9 @@ class OrderController extends Controller
         $oper = request()->get('current_oper');
 
         $order = new Order();
+        $orderNo = Order::genOrderNo();
         $order->oper_id = $oper->id;
-        $order->order_no = Order::genOrderNo();
+        $order->order_no = $orderNo;
         $order->user_id = $user->id;
         $order->open_id = request()->get('current_open_id');
         $order->user_name = $user->name ?? '';
@@ -89,21 +91,21 @@ class OrderController extends Controller
 
 
         $payApp = WechatService::getWechatPayAppForOper($oper->id);
-        $unifyResult = $payApp->order->unify([
+        $data = [
             'body' => $order->goods_name,
-            'out_trade_no' => $order->orderNo,
+            'out_trade_no' => $orderNo,
             'total_fee' => $order->pay_price,
 //            'total_fee' => $order->pay_price * 100,
             'trade_type' => 'JSAPI',
             'openid' => $order->open_id,
-        ]);
+        ];
+        $unifyResult = $payApp->order->unify($data);
         if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
-            $order->open_id = $unifyResult->openid;
             $order->save();
         }else {
             Log::error('微信统一下单失败', [
-                'order' => $order->toArray(),
                 'payConfig' => $payApp->getConfig(),
+                'data' => $data,
                 'result' => $unifyResult,
             ]);
             throw new BaseResponseException('微信统一下单失败');
