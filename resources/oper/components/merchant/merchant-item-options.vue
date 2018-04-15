@@ -1,7 +1,7 @@
 <template>
     <!-- 商户列表项操作 -->
     <div>
-        <el-button type="text" @click="edit">编辑</el-button>
+        <el-button type="text" @click="edit">重新提交资料</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '冻结' : '解冻'}}</el-button>
         <el-button v-if="!scope.row.account" type="text" @click="showCreateAccountDialog = true">生成账户</el-button>
         <el-button v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改账户密码</el-button>

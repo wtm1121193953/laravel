@@ -132,6 +132,8 @@ class MerchantController extends Controller
 
         $this->fillMerchantInfoFromRequest($merchant);
 
+        $merchant->audit_status = 0;
+
         $merchant->save();
 
         return Result::success($merchant);

@@ -19,11 +19,19 @@
                     <span> {{ scope.row.area }} </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="status" label="状态">
+            <el-table-column prop="status" label="商户状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>
                     <span v-else-if="scope.row.status === 2" class="c-danger">已冻结</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="audit_status" label="审核状态">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
+                    <span v-if="scope.row.audit_status === 1" class="c-green">审核通过</span>
+                    <span v-else-if="scope.row.audit_status === 2" class="c-danger">审核不通过</span>
+                    <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="250px">

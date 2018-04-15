@@ -985,6 +985,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -12974,7 +12982,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -38003,7 +38011,7 @@ var render = function() {
     "div",
     [
       _c("el-button", { attrs: { type: "text" }, on: { click: _vm.edit } }, [
-        _vm._v("编辑")
+        _vm._v("重新提交资料")
       ]),
       _vm._v(" "),
       _c(
@@ -38677,7 +38685,7 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("el-table-column", {
-            attrs: { prop: "status", label: "状态" },
+            attrs: { prop: "status", label: "商户状态" },
             scopedSlots: _vm._u([
               {
                 key: "default",
@@ -38691,6 +38699,38 @@ var render = function() {
                           ])
                         : _c("span", [
                             _vm._v("未知 (" + _vm._s(scope.row.status) + ")")
+                          ])
+                  ]
+                }
+              }
+            ])
+          }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { prop: "audit_status", label: "审核状态" },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function(scope) {
+                  return [
+                    scope.row.audit_status === 0
+                      ? _c("span", { staticClass: "c-warning" }, [
+                          _vm._v("待审核")
+                        ])
+                      : _vm._e(),
+                    _vm._v(" "),
+                    scope.row.audit_status === 1
+                      ? _c("span", { staticClass: "c-green" }, [
+                          _vm._v("审核通过")
+                        ])
+                      : scope.row.audit_status === 2
+                        ? _c("span", { staticClass: "c-danger" }, [
+                            _vm._v("审核不通过")
+                          ])
+                        : _c("span", [
+                            _vm._v(
+                              "未知 (" + _vm._s(scope.row.audit_status) + ")"
+                            )
                           ])
                   ]
                 }
