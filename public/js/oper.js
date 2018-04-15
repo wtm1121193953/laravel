@@ -1348,8 +1348,10 @@ var defaultForm = {
                     data.city_id = data.area[1];
                     data.area_id = data.area[2];
                     data.business_time = JSON.stringify([new Date(data.business_time[0]).format('hh:mm:ss'), new Date(data.business_time[1]).format('hh:mm:ss')]);
-                    data.lng = data.lng_and_lat[0];
-                    data.lat = data.lng_and_lat[1];
+                    if (data.lng_and_lat) {
+                        data.lng = data.lng_and_lat[0];
+                        data.lat = data.lng_and_lat[1];
+                    }
 
                     _this2.$emit('save', data);
                 }
