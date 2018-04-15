@@ -101,7 +101,6 @@ class OrderController extends Controller
         ];
         $unifyResult = $payApp->order->unify($data);
         if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
-            $order->open_id = $unifyResult['openid'];
             $order->save();
         }else {
             Log::error('微信统一下单失败', [
