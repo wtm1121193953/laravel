@@ -87,13 +87,9 @@
             }
         },
         methods: {
-            handlerChange(a, b){
-                console.log('change', JSON.parse(JSON.stringify(this.form.dateRange)), a, b)
-            },
             initForm(){
                 if(this.data){
                     this.form = deepCopy(this.data);
-                    console.log('init form ', JSON.parse(JSON.stringify(this.form)))
                 }else {
                     this.form = deepCopy(defaultForm)
                 }
