@@ -35,6 +35,7 @@ class LoginController extends Controller
         if(OperAccount::genPassword(request('password'), $user['salt']) != $user['password']){
             throw new PasswordErrorException();
         }
+        $user->username = $user->username ?? $user->account;
 
         session([
             config('oper.user_session') => $user,
