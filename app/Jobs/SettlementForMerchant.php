@@ -6,6 +6,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Modules\Settlement\Settlement;
 use Illuminate\Bus\Queueable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -81,12 +82,15 @@ class SettlementForMerchant implements ShouldQueue
             ->where('settlement_status', 1)
             ->where('status', Order::STATUS_FINISHED)
             ->whereBetween('finish_time', [$this->start, $this->end])
-            ->chunk(1000, function (Order $item) use ($merchant, $settlement){
-                $settlement->amount += $item->pay_price;
+            ->chunk(1000, function (Collection $orders) use ($merchant, $settlement){
+                $orders->each(function($item) use ($merchant, $settlement){
 
-                $item->settlement_status = 2;
-                $item->settlement_id = $settlement->id;
-                $item->save();
+                    $settlement->amount += $item->pay_price;
+
+                    $item->settlement_status = 2;
+                    $item->settlement_id = $settlement->id;
+                    $item->save();
+                });
             });
 
         $settlement->charge_amount = $settlement->amount * 1.0 * $settlement->settlement_rate / 100;

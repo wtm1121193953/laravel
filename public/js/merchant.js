@@ -642,8 +642,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/goods', this.query).then(function (data) {
                 _this.list = data.list;
                 _this.total = data.total;
-
-                _this.list['status'] = parseInt(_this.list['status']);
             });
         },
         itemChanged: function itemChanged(index, data) {
@@ -1307,9 +1305,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/orders', this.query).then(function (data) {
                 _this.list = data.list;
                 _this.total = data.total;
-
-                _this.list['status'] = parseInt(_this.list['status']);
-                _this.list['created_at'] = new Date(_this.list['created_at']).format('yyyy-MM-dd hh:mm:ss');
 
                 _this.isLoading = false;
             });
@@ -12659,7 +12654,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -12751,7 +12746,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -36582,9 +36577,9 @@ var render = function() {
                 key: "default",
                 fn: function(scope) {
                   return [
-                    scope.row.status === 1
+                    parseInt(scope.row.status) === 1
                       ? _c("span", { staticClass: "c-green" }, [_vm._v("正常")])
-                      : scope.row.status === 2
+                      : parseInt(scope.row.status) === 2
                         ? _c("span", { staticClass: "c-danger" }, [
                             _vm._v("禁用")
                           ])
@@ -37480,19 +37475,19 @@ var render = function() {
                 key: "default",
                 fn: function(scope) {
                   return [
-                    scope.row.status === 1
+                    parseInt(scope.row.status) === 1
                       ? _c("span", [_vm._v("未支付")])
-                      : scope.row.status === 2
+                      : parseInt(scope.row.status) === 2
                         ? _c("span", [_vm._v("已取消")])
-                        : scope.row.status === 3
+                        : parseInt(scope.row.status) === 3
                           ? _c("span", [_vm._v("已关闭[超时自动关闭]")])
-                          : scope.row.status === 4
+                          : parseInt(scope.row.status) === 4
                             ? _c("span", [_vm._v("已支付")])
-                            : scope.row.status === 5
+                            : parseInt(scope.row.status) === 5
                               ? _c("span", [_vm._v("退款中[保留状态]")])
-                              : scope.row.status === 6
+                              : parseInt(scope.row.status) === 6
                                 ? _c("span", [_vm._v("已退款")])
-                                : scope.row.status === 7
+                                : parseInt(scope.row.status) === 7
                                   ? _c("span", [_vm._v("已完成[不可退款]")])
                                   : _c("span", [
                                       _vm._v(

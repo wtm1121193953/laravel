@@ -6,8 +6,8 @@
             <el-table-column prop="name" label="商品名称"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.status === 2" class="c-danger">禁用</span>
+                    <span v-if="parseInt(scope.row.status) === 1" class="c-green">正常</span>
+                    <span v-else-if="parseInt(scope.row.status) === 2" class="c-danger">禁用</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
@@ -68,8 +68,6 @@
                 api.get('/goods', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
-
-                    this.list['status'] = parseInt(this.list['status']);
                 })
             },
             itemChanged(index, data){

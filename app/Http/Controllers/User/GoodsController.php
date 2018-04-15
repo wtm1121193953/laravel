@@ -25,6 +25,7 @@ class GoodsController extends Controller
         $list = Goods::where('merchant_id', $merchant_id)->get();
         $list->each(function ($item) {
             $item->pic_list = explode(',', $item->pic_list);
+            $item->sell_number = 200;     //TODO 没有这个字段，目前供测试使用
         });
         return Result::success(['list' => $list]);
     }
@@ -37,6 +38,7 @@ class GoodsController extends Controller
 
         $detail = Goods::findOrFail(request('id'));
         $detail->pic_list = explode(',', $detail->pic_list);
+        $detail->sell_number = 200;     //TODO 没有这个字段，目前供测试使用
 
         return Result::success($detail);
     }
