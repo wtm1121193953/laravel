@@ -12,7 +12,9 @@ namespace App\Http\Controllers;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Wechat\WechatService;
+use App\Result;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
 class PayController extends Controller
@@ -24,42 +26,15 @@ class PayController extends Controller
      */
     public function notify()
     {
+        if(App::environment() === 'local' || request()->get('mock')){
+            $this->paySuccess(request('order_no'), 'mock transaction id');
+            return Result::success('模拟支付成功');
+        }
         $app = WechatService::getWechatPayAppForOper(1);
         $response = $app->handlePaidNotify(function ($message, $fail){
             if($message['return_code'] === 'SUCCESS' && array_get($message, 'result_code') === 'SUCCESS'){
-                // 处理订单支付成功逻辑
                 $orderNo = $message['out_trade_no'];
-                $order = Order::where('order_no', $orderNo)->firstOrFail();
-
-                if($order->status === Order::STATUS_UN_PAY
-                    || $order->status === Order::STATUS_CANCEL
-                    || $order->status === Order::STATUS_CLOSED
-                ){
-                    $order->pay_time = Carbon::now(); // 更新支付时间为当前时间
-                    $order->status = Order::STATUS_PAID;
-                    $order->save();
-
-                    // 生成核销码, 线上需要放到支付成功通知中
-                    for ($i = 0; $i < $order->number; $i ++){
-                        $orderItem = new OrderItem();
-                        $orderItem->oper_id = $order->oper_id;
-                        $orderItem->merchant_id = $order->merchant_id;
-                        $orderItem->order_id = $order->id;
-                        $orderItem->verify_code = OrderItem::createVerifyCode($order->merchant_id);
-                        $orderItem->status = 1;
-                        $orderItem->save();
-                    }
-                    return true;
-                }else if($order->status == Order::STATUS_PAID){
-                    // 已经支付成功了
-                    return true;
-                }else if($order->status == Order::STATUS_REFUNDING
-                    || $order->status === Order::STATUS_REFUNDED
-                    || $order->status === Order::STATUS_FINISHED
-                ){
-                    // 订单已退款或已完成
-                    return true;
-                }
+                $this->paySuccess($orderNo, $message['transaction_id']);
             } else {
                 return $fail('通信失败，请稍后再通知我');
             }
@@ -68,5 +43,48 @@ class PayController extends Controller
             return false;
         });
         return $response;
+    }
+
+    /**
+     * 支付成功
+     * @param $orderNo
+     * @param $transactionId
+     * @return bool
+     */
+    private function paySuccess($orderNo, $transactionId)
+    {
+        // 处理订单支付成功逻辑
+        $order = Order::where('order_no', $orderNo)->firstOrFail();
+
+        if($order->status === Order::STATUS_UN_PAY
+            || $order->status === Order::STATUS_CANCEL
+            || $order->status === Order::STATUS_CLOSED
+        ){
+            $order->pay_time = Carbon::now(); // 更新支付时间为当前时间
+            $order->status = Order::STATUS_PAID;
+            $order->save();
+
+            // 生成核销码, 线上需要放到支付成功通知中
+            for ($i = 0; $i < $order->number; $i ++){
+                $orderItem = new OrderItem();
+                $orderItem->oper_id = $order->oper_id;
+                $orderItem->merchant_id = $order->merchant_id;
+                $orderItem->order_id = $order->id;
+                $orderItem->verify_code = OrderItem::createVerifyCode($order->merchant_id);
+                $orderItem->status = 1;
+                $orderItem->save();
+            }
+            // 生成订单支付记录
+            return true;
+        }else if($order->status == Order::STATUS_PAID){
+            // 已经支付成功了
+            return true;
+        }else if($order->status == Order::STATUS_REFUNDING
+            || $order->status === Order::STATUS_REFUNDED
+            || $order->status === Order::STATUS_FINISHED
+        ){
+            // 订单已退款或已完成
+            return true;
+        }
     }
 }
