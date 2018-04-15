@@ -53,6 +53,7 @@ class MiniprogramController extends Controller
             'appid' => 'required',
             'secret' => 'required',
             'mch_id' => 'required',
+            'key' => 'required',
         ]);
         $miniprogram = new OperMiniprogram();
         $miniprogram->oper_id = request('oper_id');
@@ -60,6 +61,7 @@ class MiniprogramController extends Controller
         $miniprogram->appid = request('appid', '');
         $miniprogram->secret = request('secret', '');
         $miniprogram->mch_id = request('mch_id', '');
+        $miniprogram->key = request('key', '');
 
         $miniprogram->save();
 
@@ -77,12 +79,16 @@ class MiniprogramController extends Controller
             'name' => 'required',
             'appid' => 'required',
             'secret' => 'required',
+            'mch_id' => 'required',
+            'key' => 'required',
         ]);
         $miniprogram = OperMiniprogram::findOrFail(request('id'));
         $miniprogram->oper_id = request('oper_id');
         $miniprogram->name = request('name');
         $miniprogram->appid = request('appid', '');
         $miniprogram->secret = request('secret', '');
+        $miniprogram->mch_id = request('mch_id', '');
+        $miniprogram->key = request('key', '');
 
         $miniprogram->save();
 

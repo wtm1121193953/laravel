@@ -33,6 +33,7 @@ class LoginController extends Controller
         if(MerchantAccount::genPassword(request('password'), $user['salt']) != $user['password']){
             throw new PasswordErrorException();
         }
+        $user->username = $user->username ?? $user->account;
 
         session([
             config('merchant.user_session') => $user,

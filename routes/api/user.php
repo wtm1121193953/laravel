@@ -3,6 +3,7 @@
  * 运营中心接口路由
  */
 
+use App\Http\Middleware\User\UserLoginFilter;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('user')
@@ -24,10 +25,10 @@ Route::prefix('user')
         Route::get('goods', 'GoodsController@getList');
         Route::get('goods/detail', 'GoodsController@detail');
 
-        Route::get('orders', 'OrderController@getList');
-        Route::get('order/detail', 'OrderController@detail');
-        Route::any('order/add', 'OrderController@add');
-        Route::any('order/refund', 'OrderController@refund');
+        Route::get('orders', 'OrderController@getList')->middleware(UserLoginFilter::class);
+        Route::get('order/detail', 'OrderController@detail')->middleware(UserLoginFilter::class);
+        Route::any('order/add', 'OrderController@add')->middleware(UserLoginFilter::class);
+        Route::any('order/refund', 'OrderController@refund')->middleware(UserLoginFilter::class);
 //        Route::get('order/pay', 'OrderController@pay');
 
     });

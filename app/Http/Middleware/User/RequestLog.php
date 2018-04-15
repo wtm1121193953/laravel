@@ -23,7 +23,7 @@ class RequestLog
                 $attributes[$key] = $attribute->toArray();
             }
         }
-        Log::info('request', [
+        Log::info('request ' . $request->fullUrl(), [
             'header' => $request->header(),
             'params' => $request->all(),
             'attributes' => $attributes,

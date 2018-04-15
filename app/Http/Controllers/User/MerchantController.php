@@ -45,15 +45,15 @@ class MerchantController extends Controller
                 $category = MerchantCategory::where('name', $keyword)->first();
                 if($category){
                     $query->where('merchant_category_id', $category->id)
-                        ->orWhere('keyword', 'like', "%$keyword%");
+                        ->orWhere('name', 'like', "%$keyword%");
                 }else {
-                    $query->where('keyword', 'like', "%$keyword%");
+                    $query->where('name', 'like', "%$keyword%");
                 }
             })
             ->when($merchant_category_id && $keyword, function(Builder $query) use ($merchant_category_id, $keyword){
                 // 如果传了类别及关键字, 则类别和关键字都搜索
                 $query->where('merchant_category_id', $merchant_category_id)
-                    ->where('keyword', 'like', "%$keyword%");
+                    ->where('name', 'like', "%$keyword%");
             })
             ->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
                 // 如果范围存在, 按距离搜索, 并按距离排序

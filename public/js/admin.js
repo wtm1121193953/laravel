@@ -2202,12 +2202,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 var defaultForm = {
     name: '',
     appid: '',
     secret: '',
-    mch_id: ''
+    mch_id: '',
+    key: ''
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: 'miniprogram-form',
@@ -2222,7 +2226,8 @@ var defaultForm = {
                 name: [{ required: true, message: '名称不能为空' }],
                 appid: [{ required: true, message: 'App ID 名称不能为空' }],
                 secret: [{ required: true, message: 'App Secret 不能为空' }],
-                mch_id: [{ required: true, message: '微信支付商户号 不能为空' }]
+                mch_id: [{ required: true, message: '微信支付商户号 不能为空' }],
+                key: [{ required: true, message: '微信支付密钥 不能为空' }]
             }
         };
     },
@@ -15000,7 +15005,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42748,6 +42753,23 @@ var render = function() {
                         _vm.$set(_vm.form, "mch_id", $$v)
                       },
                       expression: "form.mch_id"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { prop: "key", label: "微信支付密钥" } },
+                [
+                  _c("el-input", {
+                    model: {
+                      value: _vm.form.key,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "key", $$v)
+                      },
+                      expression: "form.key"
                     }
                   })
                 ],

@@ -3,6 +3,7 @@
 namespace App\Http\Middleware\User;
 
 
+use App\Modules\Oper\OperMiniprogram;
 use Closure;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
@@ -27,8 +28,12 @@ class MockMiniprogramEnv
         if(App::environment() === 'local' || $request->get('mock')){
 
             // 注入 referer
+            if(!$request->get('oper_id')
+                || !$appid = OperMiniprogram::where('oper_id', $request->get('oper_id'))->value('appid')){
+                $appid = 'wx1abb4cf60ffea6c9';
+            }
             $request->headers->add([
-                'referer' => 'https://servicewechat.com/wx1abb4cf60ffea6c9/xxxxx'
+                'referer' => "https://servicewechat.com/$appid/xxxxx"
             ]);
             // 注入token
             $token = 'mock_token';
