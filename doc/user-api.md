@@ -417,7 +417,8 @@ token (wxLogin接口除外)
   ```
     data: {
     	order_no: 订单号,
-    	sdk_config: 调起微信支付配置 {
+    	isOperSelf: 是否归属于当前小程序的运营中心
+    	sdk_config: 调起微信支付配置, isOperSelf 为1时存在 {
           appId: appid,
           nonceStr: 随机字符串,
           package: package,

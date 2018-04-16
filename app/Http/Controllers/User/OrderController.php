@@ -165,6 +165,10 @@ class OrderController extends Controller
             throw new BaseResponseException('订单状态异常');
         }
 
+        if($order->oper_id !== request()->get('current_oper')->id){
+            throw new BaseResponseException('该订单不是当前运营中心的订单');
+        }
+
         $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
         $data = [
             'body' => $order->goods_name,
