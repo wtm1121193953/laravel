@@ -44,8 +44,15 @@ class Test extends Command
      */
     public function handle()
     {
+        $app = WechatService::getWechatMiniAppForOper(3);
+        $response = $app->app_code->getUnlimit('{goods_id:52}', [
+            'page' => 'pages/product/buynow'
+        ]);
+        $filename = $response->saveAs(storage_path('app/public/miniprogram/app_code'), "3_52.png");
+        dump(asset('storage/miniprogram/app_code/' . $filename));
+        dd();
         SettlementJob::dispatch(1);
-        die;
+        dd();
         dd(Carbon::now()->format('Y-m-d'));
         $end = Carbon::now()->subDay()->endOfDay();
         $start = Carbon::now()->subWeek()->startOfDay();
