@@ -86,7 +86,8 @@ class MerchantController extends Controller
 
         // 补充商家其他信息
         $list = collect($list);
-        $list->each(function ($item) {
+        $currentOperId = request()->get('current_oper')->id;
+        $list->each(function ($item) use ($currentOperId) {
             if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
             // 格式化距离
             $item->distance = $item->distance >= 1000 ? (number_format($item->distance / 1000, 1) . '千米') : ($item->distance . '米');
@@ -97,6 +98,8 @@ class MerchantController extends Controller
             if($lowestAmount > 0){
                 $item->lowestAmount = 200;
             }
+            // 判断商户是否是当前小程序关联运营中心下的商户
+            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
         });
 
         return Result::success(['list' => $list, 'total' => $total]);
@@ -124,6 +127,9 @@ class MerchantController extends Controller
         if($lowestAmount > 0){
             $detail->lowestAmount = 200;
         }
+        $currentOperId = request()->get('current_oper')->id;
+        // 判断商户是否是当前小程序关联运营中心下的商户
+        $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
 
         return Result::success(['list' => $detail]);
     }

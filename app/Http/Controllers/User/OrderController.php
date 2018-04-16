@@ -36,8 +36,11 @@ class OrderController extends Controller
             })
             ->orderByDesc('id')
             ->paginate();
-        $data->each(function ($item) {
+        $currentOperId = request()->get('current_oper')->id;
+        $data->each(function ($item) use ($currentOperId) {
             $item->items = OrderItem::where('order_id', $item->id)->get();
+            // 判断商户是否是当前小程序关联运营中心下的商户
+            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
         });
         return Result::success([
             'list' => $data->items(),
@@ -51,6 +54,9 @@ class OrderController extends Controller
         ]);
         $detail = Order::where('order_no', request('order_no'))->firstOrFail();
         $detail->items = OrderItem::where('order_id', $detail->id)->get();
+        $currentOperId = request()->get('current_oper')->id;
+        // 判断商户是否是当前小程序关联运营中心下的商户
+        $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
         return Result::success($detail);
     }
 
