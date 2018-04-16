@@ -2948,6 +2948,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2977,7 +2997,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             accountModifyFormRules: {
                 password: [{ required: true, min: 6, message: '密码不能为空且不能少于6位' }]
             },
-            editMiniprogramDialog: false
+            editMiniprogramDialog: false,
+            showUploadCertDialog: false,
+            certUploadUrl: '/api/admin/miniprogram/uploadCert'
         };
     },
 
@@ -3054,6 +3076,34 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 }).finally(function () {
                     _this5.isLoading = false;
                 });
+            }
+        },
+        uploadCert: function uploadCert() {
+            this.showUploadCertDialog = true;
+        },
+        handleCertUploadSuccess: function handleCertUploadSuccess(res, file, fileList) {
+            if (res && res.code === 0) {
+                file.name = file.url = res.data.path;
+                this.$emit('miniprogramChanged', this.scope, data);
+            } else {
+                fileList.forEach(function (item, index) {
+                    if (item === file) {
+                        fileList.splice(index, 1);
+                    }
+                });
+                this.$message.error(res.message || '文件上传失败');
+            }
+        },
+        beforeCertUpload: function beforeCertUpload(file) {
+            var imgTypes = ['application/x-zip-compressed'];
+            var size = file.size;
+            if (imgTypes.indexOf(file.type) < 0) {
+                this.$message.error('只能上传 zip 格式的文件');
+                return false;
+            }
+            if (size > 2 * 1024 * 1024) {
+                this.$message.error('上传的文件不能大于2M');
+                return false;
             }
         }
     },
@@ -3335,6 +3385,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 
@@ -3371,7 +3423,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         limit: { type: Number },
         disabled: { type: Boolean, default: false },
         listType: { type: String, default: 'picture-card' },
-        preview: { type: Boolean, default: false }
+        preview: { type: Boolean, default: false },
+        data: { type: Object, default: function _default() {} }
     },
     mixins: [__WEBPACK_IMPORTED_MODULE_1_element_ui_src_mixins_emitter__["a" /* default */]],
     data: function data() {
@@ -3433,6 +3486,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 }
                 this.$emit('success');
             } else {
+                fileList.forEach(function (item, index) {
+                    if (item === file) {
+                        fileList.splice(index, 1);
+                    }
+                });
                 this.$message.error(res.message || '文件上传失败');
                 this.$emit('fail');
             }
@@ -14961,7 +15019,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -15036,7 +15094,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42181,7 +42239,7 @@ var render = function() {
           }),
           _vm._v(" "),
           _c("el-table-column", {
-            attrs: { label: "操作", width: "350px" },
+            attrs: { label: "操作", width: "450px" },
             scopedSlots: _vm._u([
               {
                 key: "default",
@@ -42489,10 +42547,18 @@ var render = function() {
             "on-remove": _vm.handleRemove,
             disabled: _vm.disabled,
             limit: _vm.limit,
+            data: _vm.data,
             "on-exceed": _vm.onExceed
           }
         },
-        [_c("i", { staticClass: "el-icon-plus" })]
+        [
+          !_vm.$slots.default
+            ? _c("i", { staticClass: "el-icon-plus" })
+            : _vm._e(),
+          _vm._v(" "),
+          _vm._t("default")
+        ],
+        2
       ),
       _vm._v(" "),
       _c("img-preview-dialog", {
@@ -43099,6 +43165,14 @@ var render = function() {
         ]
       ),
       _vm._v(" "),
+      _vm.scope.row.miniprogram
+        ? _c(
+            "el-button",
+            { attrs: { type: "text" }, on: { click: _vm.uploadCert } },
+            [_vm._v("上传支付证书")]
+          )
+        : _vm._e(),
+      _vm._v(" "),
       _c(
         "el-dialog",
         {
@@ -43332,6 +43406,69 @@ var render = function() {
                             1
                           )
                         ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.scope.row.miniprogram
+        ? _c(
+            "el-dialog",
+            {
+              attrs: {
+                visible: _vm.showUploadCertDialog,
+                title: "上传支付证书"
+              },
+              on: {
+                "update:visible": function($event) {
+                  _vm.showUploadCertDialog = $event
+                }
+              }
+            },
+            [
+              _c(
+                "el-form",
+                { attrs: { "label-width": "150px", size: "small" } },
+                [
+                  _c(
+                    "el-form-item",
+                    { attrs: { label: "上传支付证书" } },
+                    [
+                      _c(
+                        "el-upload",
+                        {
+                          attrs: {
+                            "list-type": "text",
+                            action: _vm.certUploadUrl,
+                            limit: 1,
+                            data: {
+                              miniprogramId: _vm.scope.row.miniprogram.id
+                            },
+                            "on-success": _vm.handleCertUploadSuccess,
+                            "before-upload": _vm.beforeCertUpload,
+                            "file-list": _vm.scope.row.miniprogram.cert_zip_path
+                              ? [
+                                  {
+                                    name:
+                                      _vm.scope.row.miniprogram.cert_zip_path,
+                                    url: _vm.scope.row.miniprogram.cert_zip_path
+                                  }
+                                ]
+                              : [],
+                            "on-exceed": function() {
+                              _vm.$message.error("请先删除当前文件再上传")
+                            }
+                          }
+                        },
+                        [_c("el-button", [_vm._v("上传证书")])],
                         1
                       )
                     ],

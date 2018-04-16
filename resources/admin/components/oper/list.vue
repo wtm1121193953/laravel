@@ -14,7 +14,7 @@
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="350px">
+            <el-table-column label="操作" width="450px">
                 <template slot-scope="scope">
                     <oper-item-options
                             :scope="scope"

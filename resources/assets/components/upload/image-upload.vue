@@ -11,9 +11,11 @@
                 :on-remove="handleRemove"
                 :disabled="disabled"
                 :limit="limit"
+                :data="data"
                 :on-exceed="onExceed"
         >
-            <i class="el-icon-plus"></i>
+            <i v-if="!$slots.default" class="el-icon-plus"></i>
+            <slot/>
         </el-upload>
         <img-preview-dialog :url="previewImage" :visible.sync="isShow"/>
     </div>
@@ -56,6 +58,7 @@
             disabled: {type: Boolean, default: false},
             listType: {type: String, default: 'picture-card'},
             preview: {type: Boolean, default: false},
+            data: {type: Object, default: () => {}}
         },
         mixins: [emitter],
         data(){
@@ -119,6 +122,11 @@
                     }
                     this.$emit('success')
                 }else{
+                    fileList.forEach(function (item, index) {
+                        if(item === file){
+                            fileList.splice(index, 1)
+                        }
+                    })
                     this.$message.error(res.message || '文件上传失败');
                     this.$emit('fail')
                 }

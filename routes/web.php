@@ -30,5 +30,18 @@ Route::get('/merchant', function () {
     return view('merchant');
 });
 
+Route::get('/test/h5', function(){
+    $app = \App\Modules\Wechat\WechatService::getWechatMiniAppForOper(3);
+    $response = $app->app_code->getUnlimit('id=52', [
+        'page' => 'pages/severs/index/index',
+        'width' => 300,
+    ]);
+    $filename = $response->saveAs(storage_path('app/public/miniprogram/app_code'), "3_52.png");
+    dump(asset('storage/miniprogram/app_code/' . $filename));
+    return view('test_h5', [
+        'app_code_url' => asset('storage/miniprogram/app_code/' . $filename)
+    ]);
+});
+
 
 Route::post('/upload/image', 'UploadController@image');

@@ -28,14 +28,14 @@ class PayController extends Controller
     public function notify()
     {
         if(App::environment() === 'local' || request()->get('mock')){
-            $this->paySuccess(request('order_no'), 'mock transaction id');
+            $this->paySuccess(request('order_no'), 'mock transaction id', 0);
             return Result::success('模拟支付成功');
         }
         $app = WechatService::getWechatPayAppForOper(1);
         $response = $app->handlePaidNotify(function ($message, $fail){
             if($message['return_code'] === 'SUCCESS' && array_get($message, 'result_code') === 'SUCCESS'){
                 $orderNo = $message['out_trade_no'];
-                $this->paySuccess($orderNo, $message['transaction_id']);
+                $this->paySuccess($orderNo, $message['transaction_id'], $message['total_fee']);
             } else {
                 return $fail('通信失败，请稍后再通知我');
             }
@@ -50,6 +50,7 @@ class PayController extends Controller
      * 支付成功
      * @param $orderNo
      * @param $transactionId
+     * @param $totalFee
      * @return bool
      */
     private function paySuccess($orderNo, $transactionId, $totalFee)

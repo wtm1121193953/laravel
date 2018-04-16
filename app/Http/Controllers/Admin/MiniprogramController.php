@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Oper\OperMiniprogram;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage;
 
 class MiniprogramController extends Controller
 {
@@ -124,6 +126,40 @@ class MiniprogramController extends Controller
         $miniprogram = OperMiniprogram::findOrFail(request('id'));
         $miniprogram->delete();
         return Result::success($miniprogram);
+    }
+
+    public function uploadCert()
+    {
+        $this->validate(request(), [
+            'miniprogramId' => 'required|integer|min:1',
+            'file' => 'required|file'
+        ]);
+        $miniprogramId = request('miniprogramId');
+        $miniprogram = OperMiniprogram::where('id', $miniprogramId)->firstOrFail();
+
+        $file = request()->file('file');
+        if($file->extension() !== 'zip'){
+            throw new BaseResponseException('请上传zip格式的证书文件');
+        }
+
+        $path = $file->storeAs(OperMiniprogram::getCertDir($miniprogram->mch_id), 'cert.zip');
+
+        // 解压缩文件
+        $zip = new \ZipArchive();
+        if($zip->open(Storage::path($path)) !== true){
+            throw new BaseResponseException('解压缩文件错误');
+        }
+        $zip->extractTo(OperMiniprogram::getAbsoluteCertDir($miniprogram->mch_id));
+        $zip->close();
+
+        // 修改miniprogram中的证书路径
+        $miniprogram->cert_zip_path = $path;
+        $miniprogram->save();
+
+
+        return Result::success([
+            'path' => $path
+        ]);
     }
 
 }

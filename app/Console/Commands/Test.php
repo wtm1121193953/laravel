@@ -6,6 +6,7 @@ use App\Jobs\SettlementJob;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Wechat\WechatService;
 use App\Support\Lbs;
+use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -41,11 +42,29 @@ class Test extends Command
      * Execute the console command.
      *
      * @return mixed
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function handle()
     {
+        $app = WechatService::getWechatMiniAppForOper(3);
+        $response = $app->app_code->getUnlimit('id=52', [
+            'page' => 'pages/severs/index/index',
+            'width' => 500,
+            'auto_color' => true
+        ]);
+        $filename = $response->save(storage_path('app/public/miniprogram/app_code'));
+        dump(asset('storage/miniprogram/app_code/' . $filename));
+        $response = $app->app_code->get('pages/product/buynow?id=52', [
+            'width' => 600,
+            //...
+        ]);
+        // 保存小程序码到文件
+        $filename = $response->save(storage_path('app/public/miniprogram/app_code'));
+        dump(asset('storage/miniprogram/app_code/' . $filename));
+        dd();
         SettlementJob::dispatch(1);
-        die;
+        dd();
         dd(Carbon::now()->format('Y-m-d'));
         $end = Carbon::now()->subDay()->endOfDay();
         $start = Carbon::now()->subWeek()->startOfDay();

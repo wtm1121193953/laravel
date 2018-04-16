@@ -26,7 +26,7 @@ class UserInfoInjector
         $openId = $request->get('current_open_id');
         $userId = UserOpenIdMapping::where('open_id', $openId)->value('user_id');
         if($userId){
-            $user = UserOpenIdMapping::findOrFail($userId);
+            $user = User::findOrFail($userId);
             $request->attributes->add(['current_user' => $user]);
         }
         if(App::environment() === 'local'){

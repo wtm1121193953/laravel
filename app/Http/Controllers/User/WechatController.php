@@ -51,11 +51,4 @@ class WechatController extends Controller
         ]);
     }
 
-    /**
-     * 支付通知接口, 用于接收微信的通知
-     */
-    public function payNotify()
-    {
-
-    }
 }

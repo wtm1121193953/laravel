@@ -225,6 +225,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 
@@ -261,7 +263,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         limit: { type: Number },
         disabled: { type: Boolean, default: false },
         listType: { type: String, default: 'picture-card' },
-        preview: { type: Boolean, default: false }
+        preview: { type: Boolean, default: false },
+        data: { type: Object, default: function _default() {} }
     },
     mixins: [__WEBPACK_IMPORTED_MODULE_1_element_ui_src_mixins_emitter__["a" /* default */]],
     data: function data() {
@@ -323,6 +326,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 }
                 this.$emit('success');
             } else {
+                fileList.forEach(function (item, index) {
+                    if (item === file) {
+                        fileList.splice(index, 1);
+                    }
+                });
                 this.$message.error(res.message || '文件上传失败');
                 this.$emit('fail');
             }
@@ -1348,8 +1356,10 @@ var defaultForm = {
                     data.city_id = data.area[1];
                     data.area_id = data.area[2];
                     data.business_time = JSON.stringify([new Date(data.business_time[0]).format('hh:mm:ss'), new Date(data.business_time[1]).format('hh:mm:ss')]);
-                    data.lng = data.lng_and_lat[0];
-                    data.lat = data.lng_and_lat[1];
+                    if (data.lng_and_lat) {
+                        data.lng = data.lng_and_lat[0];
+                        data.lat = data.lng_and_lat[1];
+                    }
 
                     _this2.$emit('save', data);
                 }
@@ -13228,7 +13238,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -39087,10 +39097,18 @@ var render = function() {
             "on-remove": _vm.handleRemove,
             disabled: _vm.disabled,
             limit: _vm.limit,
+            data: _vm.data,
             "on-exceed": _vm.onExceed
           }
         },
-        [_c("i", { staticClass: "el-icon-plus" })]
+        [
+          !_vm.$slots.default
+            ? _c("i", { staticClass: "el-icon-plus" })
+            : _vm._e(),
+          _vm._v(" "),
+          _vm._t("default")
+        ],
+        2
       ),
       _vm._v(" "),
       _c("img-preview-dialog", {
