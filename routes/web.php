@@ -35,7 +35,7 @@ Route::get('/test/h5', function(){
     $response = $app->app_code->getUnlimit('{goods_id:52}', [
         'page' => 'pages/product/buynow'
     ]);
-    $filename = $response->saveAs(storage_path('public/miniprogram/app_code'), "3_52.png");
+    $filename = $response->saveAs(storage_path('app/public/miniprogram/app_code'), "3_52.png");
     dump(asset('miniprogram/app_code/' . $filename));
     return view('test_h5', [
         'app_code_url' => asset('miniprogram/app_code/' . $filename)
