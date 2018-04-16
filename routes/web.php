@@ -38,7 +38,7 @@ Route::get('/test/h5', function(){
     $filename = $response->saveAs(storage_path('public/miniprogram/app_code'), "3_52.png");
     dump($filename);
     return view('test_h5', [
-        'filename' => $filename
+        'app_code_url' => asset('miniprogram/app_code/' . $filename)
     ]);
 });
 
