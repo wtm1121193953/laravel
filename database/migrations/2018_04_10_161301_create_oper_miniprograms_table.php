@@ -19,6 +19,7 @@ class CreateOperMiniprogramsTable extends Migration
             $table->string('name')->default('')->comment('小程序名称');
             $table->string('appid')->default('')->comment('小程序appid');
             $table->string('secret')->default('')->comment('小程序secret');
+            $table->string('verify_file_path')->default('')->comment('业务域名验证文件路径, 示例值: "/F2aDABHkQT.txt"');
             $table->string('mch_id')->default('')->comment('微信支付商户号');
             $table->string('key')->default('')->comment('微信支付密钥');
             $table->string('cert_zip_path')->default('')->comment('支付证书zip路径');

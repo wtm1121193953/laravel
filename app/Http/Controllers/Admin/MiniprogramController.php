@@ -64,6 +64,7 @@ class MiniprogramController extends Controller
         $miniprogram->secret = request('secret', '');
         $miniprogram->mch_id = request('mch_id', '');
         $miniprogram->key = request('key', '');
+        $miniprogram->verify_file_path = request('verify_file_path', '');
 
         $miniprogram->save();
 
@@ -91,6 +92,7 @@ class MiniprogramController extends Controller
         $miniprogram->secret = request('secret', '');
         $miniprogram->mch_id = request('mch_id', '');
         $miniprogram->key = request('key', '');
+        $miniprogram->verify_file_path = request('verify_file_path', '');
 
         $miniprogram->save();
 
@@ -162,4 +164,24 @@ class MiniprogramController extends Controller
         ]);
     }
 
+    /**
+     * 上传服务器校验文件
+     */
+    public function uploadVerifyFile()
+    {
+        $file = request()->file('file');
+
+        if($file->getClientOriginalExtension() !== 'txt'){
+            throw new BaseResponseException('必须为txt格式文件');
+        }
+
+        $filename = $file->getClientOriginalName();
+        $content = file_get_contents($file->path());
+
+        file_put_contents(public_path($filename), $content);
+
+        return Result::success([
+            'path' => '/' . $filename
+        ]);
+    }
 }
