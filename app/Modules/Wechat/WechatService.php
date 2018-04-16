@@ -36,6 +36,11 @@ class WechatService
         return Factory::miniProgram($config);
     }
 
+    /**
+     * 获取微信支付的 EasyWechat App
+     * @param $operId
+     * @return \EasyWeChat\Payment\Application
+     */
     public static function getWechatPayAppForOper($operId)
     {
         $miniProgram = OperMiniprogram::where('oper_id', $operId)->firstOrFail();
@@ -54,5 +59,25 @@ class WechatService
         ];
 
         return Factory::payment($config);
+    }
+
+    /**
+     * @param $operId
+     * @param $scene
+     * @param string $page
+     * @param int $width
+     * @return string
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     */
+    public static function genMiniprogramAppCodeUrl($operId, $scene, $page='pages/index/index', $width=375)
+    {
+        $app = WechatService::getWechatMiniAppForOper($operId);
+        $response = $app->app_code->getUnlimit($scene, [
+            'page' => $page,
+            'width' => $width,
+        ]);
+        $filename = $response->save(storage_path('app/public/miniprogram/app_code'));
+
+        return asset('storage/miniprogram/app_code/' . $filename);
     }
 }

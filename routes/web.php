@@ -11,6 +11,9 @@
 |
 */
 
+use App\Exceptions\BaseResponseException;
+use App\Modules\Wechat\WechatService;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -30,16 +33,16 @@ Route::get('/merchant', function () {
     return view('merchant');
 });
 
-Route::get('/test/h5', function(){
-    $app = \App\Modules\Wechat\WechatService::getWechatMiniAppForOper(3);
-    $response = $app->app_code->getUnlimit('id=52', [
-        'page' => 'pages/severs/index/index',
-        'width' => 300,
-    ]);
-    $filename = $response->saveAs(storage_path('app/public/miniprogram/app_code'), "3_52.png");
-    dump(asset('storage/miniprogram/app_code/' . $filename));
-    return view('test_h5', [
-        'app_code_url' => asset('storage/miniprogram/app_code/' . $filename)
+Route::get('/miniprogram_bridge/pay', function(){
+    $targetOperId = request('targetOperId');
+    if(empty($targetOperId)) throw new BaseResponseException('targetOperId不能为空');
+    $scene = request('scene');
+    if(empty($scene)) throw new BaseResponseException('scene不能为空');
+    $page = request('page', 'pages/severs/index/index');
+
+    $appCodeUrl = WechatService::genMiniprogramAppCodeUrl($targetOperId, $scene, $page);
+    return view('miniprogram_bridge.pay', [
+        'app_code_url' => $appCodeUrl
     ]);
 });
 

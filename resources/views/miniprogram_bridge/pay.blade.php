@@ -8,7 +8,7 @@
     <title>Document</title>
 </head>
 <body>
- <h1>这是一个小程序h5测试页面</h1>
- <img src="{{ $app_code_url }}" alt="">
+<h1>这是一个小程序h5测试页面</h1>
+<img src="{{ $app_code_url }}" alt="">
 </body>
 </html>
