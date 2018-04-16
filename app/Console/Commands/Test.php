@@ -46,19 +46,19 @@ class Test extends Command
     public function handle()
     {
         $app = WechatService::getWechatMiniAppForOper(3);
-        $response = $app->app_code->getUnlimit('{goods_id:52}', [
+        $response = $app->app_code->getUnlimit('{id:52}', [
             'page' => 'pages/product/buynow',
             'width' => 500,
             'auto_color' => true
         ]);
         $filename = $response->save(storage_path('app/public/miniprogram/app_code'));
         dump(asset('storage/miniprogram/app_code/' . $filename));
-        $response = $app->app_code->get('path/to/page', [
+        $response = $app->app_code->get('pages/product/buynow?id=52', [
             'width' => 600,
             //...
         ]);
         // 保存小程序码到文件
-        $filename = $response->save('/path/to/directory');
+        $filename = $response->save(storage_path('app/public/miniprogram/app_code'));
         dump(asset('storage/miniprogram/app_code/' . $filename));
         dd();
         SettlementJob::dispatch(1);
