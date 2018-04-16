@@ -1028,6 +1028,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this = this;
 
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchants', this.query).then(function (data) {
+                console.log(data);
                 _this.list = data.list;
                 _this.total = data.total;
             });
@@ -1272,7 +1273,7 @@ var defaultForm = {
     contacter_phone: '',
 
     settlement_cycle_type: 1,
-    settlement_rate: '',
+    settlement_rate: 0,
     business_licence_pic_url: '',
     organization_code: '',
     tax_cert_pic_url: '',
@@ -1301,10 +1302,24 @@ var defaultForm = {
             areaOptions: [],
             isShow: false,
             formRules: {
-                name: [{ required: true, message: '名称不能为空' }],
-                merchant_category: [{ required: true, message: '所属行业不能为空' }],
+                name: [{ required: true, message: '商家名称不能为空' }],
+                merchant_category: [{ type: 'array', required: true, message: '所属行业不能为空' }],
+                logo: [{ required: true, message: '商家logo不能为空' }],
+                desc_pic: [{ required: true, message: '商家介绍图片不能为空' }],
+                desc: [{ required: true, message: '商家介绍不能为空' }],
+                settlement_rate: [{
+                    validator: function validator(rule, value, callback) {
+                        if (value === '') {
+                            callback(new Error('分利比例不能为空'));
+                        } else {
+                            callback();
+                        }
+                    }
+                }],
                 business_licence_pic_url: [{ required: true, message: '营业执照不能为空' }],
-                area: [{ required: true, message: '省/市/区不能为空' }]
+                lng_and_lat: [{ required: true, message: '商户位置不能为空' }],
+                area: [{ type: 'array', required: true, message: '省/市/区不能为空' }]
+
             }
         };
     },
@@ -1323,9 +1338,12 @@ var defaultForm = {
             if (this.data) {
                 this.form = deepCopy(this.data);
                 var merchant_category_array = [];
-                this.data.categoryPath.forEach(function (item) {
-                    merchant_category_array.unshift(parseInt(item.id));
-                });
+                if (this.data.merchant_category_id) {
+                    this.data.categoryPath.forEach(function (item) {
+                        merchant_category_array.unshift(parseInt(item.id));
+                    });
+                }
+
                 this.form.merchant_category = merchant_category_array;
                 this.form.area = [parseInt(this.data.province_id), parseInt(this.data.city_id), parseInt(this.data.area_id)];
                 this.form.business_time = this.data.business_time ? ['1970-01-01 ' + JSON.parse(this.data.business_time)[0], '1970-01-01 ' + JSON.parse(this.data.business_time)[1]] : [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')];
@@ -1334,6 +1352,7 @@ var defaultForm = {
                 this.form.settlement_cycle_type = parseInt(this.data.settlement_cycle_type);
                 this.form.status = parseInt(this.data.status);
                 this.form.bank_card_type = parseInt(this.data.bank_card_type);
+                console.log(this.form);
             } else {
                 this.form = deepCopy(defaultForm);
             }
@@ -1347,11 +1366,12 @@ var defaultForm = {
             this.$refs.form.validate(function (valid) {
                 if (valid) {
                     var data = deepCopy(_this2.form);
+
                     if (_this2.data && _this2.data.id) {
                         data.id = _this2.data.id;
                     }
 
-                    data.merchant_category_id = data.merchant_category[data.merchant_category.length - 1];
+                    data.merchant_category_id = data.merchant_category.length != 0 ? data.merchant_category[data.merchant_category.length - 1] : 0;
                     data.province_id = data.area[0];
                     data.city_id = data.area[1];
                     data.area_id = data.area[2];
@@ -13399,7 +13419,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -38048,6 +38068,7 @@ var render = function() {
                     { attrs: { prop: "settlement_rate", label: "分利比例" } },
                     [
                       _c("el-input-number", {
+                        attrs: { min: 0, max: 100 },
                         model: {
                           value: _vm.form.settlement_rate,
                           callback: function($$v) {
@@ -38306,7 +38327,7 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "el-form-item",
-                    { attrs: { prop: "bank_card_no", label: "公司银行账号" } },
+                    { attrs: { prop: "bank_card_no", label: "银行账号" } },
                     [
                       _c("el-input", {
                         model: {
@@ -38690,13 +38711,22 @@ var render = function() {
         _vm._v("重新提交资料")
       ]),
       _vm._v(" "),
-      _c(
-        "el-button",
-        { attrs: { type: "text" }, on: { click: _vm.changeStatus } },
-        [_vm._v(_vm._s(_vm.scope.row.status === 1 ? "冻结" : "解冻"))]
-      ),
+      parseInt(_vm.scope.row.audit_status) !== 0 &&
+      parseInt(_vm.scope.row.audit_status) !== 2
+        ? _c(
+            "el-button",
+            { attrs: { type: "text" }, on: { click: _vm.changeStatus } },
+            [
+              _vm._v(
+                _vm._s(parseInt(_vm.scope.row.status) === 1 ? "冻结" : "解冻")
+              )
+            ]
+          )
+        : _vm._e(),
       _vm._v(" "),
-      !_vm.scope.row.account
+      !_vm.scope.row.account &&
+      parseInt(_vm.scope.row.audit_status) !== 0 &&
+      parseInt(_vm.scope.row.audit_status) !== 2
         ? _c(
             "el-button",
             {
@@ -39637,19 +39667,19 @@ var render = function() {
                 key: "default",
                 fn: function(scope) {
                   return [
-                    scope.row.audit_status === 0
+                    parseInt(scope.row.audit_status) === 0
                       ? _c("span", { staticClass: "c-warning" }, [
                           _vm._v("待审核")
                         ])
-                      : scope.row.audit_status === 1
+                      : parseInt(scope.row.audit_status) === 1
                         ? _c("span", { staticClass: "c-green" }, [
                             _vm._v("审核通过")
                           ])
-                        : scope.row.audit_status === 2
+                        : parseInt(scope.row.audit_status) === 2
                           ? _c("span", { staticClass: "c-danger" }, [
                               _vm._v("审核不通过")
                             ])
-                          : scope.row.audit_status === 3
+                          : parseInt(scope.row.audit_status) === 3
                             ? _c("span", { staticClass: "c-warning" }, [
                                 _vm._v("重新提交审核中")
                               ])

@@ -30,7 +30,9 @@ class MerchantController extends Controller
             ->paginate();
 
         $data->each(function ($item){
-            $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
+            if ($item->merchant_category_id){
+                $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
+            }
             $item->account = MerchantAccount::where('merchant_id', $item->id)->first();
         });
 
@@ -58,16 +60,16 @@ class MerchantController extends Controller
     private function fillMerchantInfoFromRequest(Merchant $merchant)
     {
         $merchant->oper_id = request()->get('current_user')->oper_id;
-        $merchant->merchant_category_id = request('merchant_category_id');
+        $merchant->merchant_category_id = request('merchant_category_id', 0);
         $merchant->name = request('name');
         $merchant->brand = request('brand','');
         $merchant->region = request('region');
-        $merchant->province = Area::where('area_id', request('province_id'))->value('name');
-        $merchant->province_id = request('province_id');
-        $merchant->city = Area::where('area_id', request('city_id'))->value('name');
-        $merchant->city_id = request('city_id');
-        $merchant->area = Area::where('area_id', request('area_id'))->value('name');
-        $merchant->area_id = request('area_id');
+        $merchant->province = request('province_id') ? Area::where('area_id', request('province_id'))->value('name') : '';
+        $merchant->province_id = request('province_id', 0);
+        $merchant->city = request('city_id') ? Area::where('area_id', request('city_id'))->value('name') : '';
+        $merchant->city_id = request('city_id', 0);
+        $merchant->area = request('area_id') ? Area::where('area_id', request('area_id'))->value('name') : '';
+        $merchant->area_id = request('area_id', 0);
         $merchant->business_time = request('business_time');
         $merchant->logo = request('logo','');
         $merchant->desc_pic = request('desc_pic','');

@@ -28,10 +28,10 @@
             </el-table-column>
             <el-table-column prop="audit_status" label="审核状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
-                    <span v-else-if="scope.row.audit_status === 1" class="c-green">审核通过</span>
-                    <span v-else-if="scope.row.audit_status === 2" class="c-danger">审核不通过</span>
-                    <span v-else-if="scope.row.audit_status === 3" class="c-warning">重新提交审核中</span>
+                    <span v-if="parseInt(scope.row.audit_status) === 0" class="c-warning">待审核</span>
+                    <span v-else-if="parseInt(scope.row.audit_status) === 1" class="c-green">审核通过</span>
+                    <span v-else-if="parseInt(scope.row.audit_status) === 2" class="c-danger">审核不通过</span>
+                    <span v-else-if="parseInt(scope.row.audit_status) === 3" class="c-warning">重新提交审核中</span>
                     <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
             </el-table-column>
@@ -86,6 +86,7 @@
         methods: {
             getList(){
                 api.get('/merchants', this.query).then(data => {
+                    console.log(data);
                     this.list = data.list;
                     this.total = data.total;
                 })

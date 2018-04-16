@@ -104,7 +104,7 @@
         legal_id_card: '',
         invoice_type: 1,
         invoice_tax_rate: '',
-        settlement_cycle_type: 1,
+        settlement_cycle_type: 2,
         bank_card_no: '',
         sub_bank_name: '',
         bank_open_name: '',
@@ -140,7 +140,7 @@
                     {value: 0, label: '其他'},
                 ],
                 settlementCycles: [
-                    {value: 1, label: '周结'},
+                    // {value: 1, label: '周结'},
                     {value: 2, label: '半月结'},
                     {value: 3, label: '月结'},
                     {value: 4, label: '半年结'},
