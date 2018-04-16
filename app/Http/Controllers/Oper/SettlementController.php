@@ -53,6 +53,24 @@ class SettlementController extends Controller
     public function updateInvoice()
     {
         $id = request('id');
-        $settlement = new Settlement();
+        $settlement = Settlement::findOrFail($id);
+        $settlement->invoice_type = request('invoice_type', 0);
+        $settlement->invoice_pic_url = request('invoice_pic_url', '');
+        $settlement->logistics_name = request('logistics_name', '');
+        $settlement->logistics_no = request('logistics_no', '');
+        $settlement->save();
+
+        return Result::success($settlement);
+    }
+
+    public function updatePayPicUrl()
+    {
+        $id = request('id');
+        $settlement = Settlement::findOrFail($id);
+        $settlement->pay_pic_url = request('pay_pic_url', '');
+        $settlement->status = 2;
+        $settlement->save();
+
+        return Result::success($settlement);
     }
 }

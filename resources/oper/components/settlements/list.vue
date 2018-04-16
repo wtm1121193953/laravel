@@ -21,8 +21,8 @@
             <el-table-column label="操作" width="300px" align="center">
                 <template slot-scope="scope">
                     <el-button type="text" @click="showOrders(scope)">审核订单</el-button>
-                    <el-button type="text" @click="uploadInvoice(scope)">上传发票</el-button>
-                    <el-button type="text">确认打款</el-button>
+                    <el-button type="text" v-if="parseInt(scope.row.status) === 1" @click="uploadInvoice(scope)">上传发票</el-button>
+                    <el-button type="text" v-if="parseInt(scope.row.status) === 1" @click="payMoney(scope)">确认打款</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -43,6 +43,10 @@
         <el-dialog :visible.sync="isShowInvoice">
             <invoice :scope="settlement" @cancel="isShowInvoice = false" @save="addInvoice"></invoice>
         </el-dialog>
+
+        <el-dialog :visible.sync="isShowPayMoney">
+            <pay-money :scope="settlement" @cancel="isShowPayMoney = false" @save="addPayPicUrl"></pay-money>
+        </el-dialog>
     </page>
 </template>
 
@@ -50,6 +54,7 @@
     import api from '../../../assets/js/api'
     import SettlementDetail from './settlement-detail'
     import Invoice from './invoice'
+    import PayMoney from './pay-money'
 
     export default {
         data() {
@@ -57,6 +62,7 @@
                 isLoading: false,
                 isShowSettlementDetail: false,
                 isShowInvoice: false,
+                isShowPayMoney: false,
                 list: [],
                 query: {
                     page: 1,
@@ -83,7 +89,20 @@
                 this.settlement = scope.row;
             },
             addInvoice() {
-
+                this.isShowInvoice = false;
+                this.getList();
+            },
+            payMoney(scope) {
+                if(parseInt(scope.row.invoice_type) === 0){
+                    this.$message.error('请先上传发票');
+                    return false;
+                }
+                this.isShowPayMoney = true;
+                this.settlement = scope.row;
+            },
+            addPayPicUrl() {
+                this.isShowPayMoney = false;
+                this.getList();
             }
         },
         created() {
@@ -92,6 +111,7 @@
         components: {
             SettlementDetail,
             Invoice,
+            PayMoney,
         }
     }
 </script>

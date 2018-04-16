@@ -52,15 +52,18 @@
             },
             save() {
                 if (this.form.invoice_type == 1){
-                    if (!this.invoice_pic_url){
+                    if (!this.form.invoice_pic_url){
                         this.$message.error('请添加电子发票');
+                        return false;
                     }
                 } else{
-                    if (!this.logistics_name || !this.logistics_no){
+                    if (!this.form.logistics_name || !this.form.logistics_no){
                         this.$message.error('请填写物流公司和物流单号');
+                        return false;
                     }
                 }
                 api.post('/updateInvoice', this.form).then(data => {
+                    this.$message.success('上传发票成功');
                     this.$emit('save');
                 })
             }
@@ -71,6 +74,9 @@
             if(parseInt(this.invoice_type) !== 0){
                 this.disable = true;
                 this.form.invoice_type = this.invoice_type;
+                this.form.invoice_pic_url = this.scope.invoice_pic_url;
+                this.form.logistics_name = this.scope.logistics_name;
+                this.form.logistics_no = this.scope.logistics_no;
             }
         }
     }
