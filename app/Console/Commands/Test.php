@@ -49,7 +49,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $app = WechatService::getWechatMiniAppForOper(2);
+        $app = WechatService::getWechatMiniAppForOper(3);
         $token = $app->access_token->getToken();
         $url = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=' . $token['access_token'];
         $client = new Client();
