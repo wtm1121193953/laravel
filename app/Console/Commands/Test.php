@@ -42,29 +42,14 @@ class Test extends Command
      * Execute the console command.
      *
      * @return mixed
-     * @throws \EasyWeChat\Kernel\Exceptions\HttpException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function handle()
     {
         $app = WechatService::getWechatMiniAppForOper(3);
-        $token = $app->access_token->getToken();
-        $url = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=' . $token['access_token'];
-        $client = new Client();
-        $response = $client->post($url, [
-            'body' => json_encode([
-                'scene' => '111',
-                'page' => 'pages/severs/index/index',
-                'width' => 500,
-                'auto_color' => true
-            ]),
-        ]);
-        dd($response->getBody()->getContents());
-
-        $response = $app->app_code->getUnlimit('{id:52}', [
-            'page' => 'pages/product/buynow',
+        $response = $app->app_code->getUnlimit('id=52', [
+            'page' => 'pages/severs/index/index',
             'width' => 500,
             'auto_color' => true
         ]);
