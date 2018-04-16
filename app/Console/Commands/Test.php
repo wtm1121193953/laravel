@@ -47,7 +47,9 @@ class Test extends Command
     {
         $app = WechatService::getWechatMiniAppForOper(3);
         $response = $app->app_code->getUnlimit('{goods_id:52}', [
-            'page' => 'pages/product/buynow'
+            'page' => 'pages/product/buynow',
+            'width' => 500,
+            'auto_color' => true
         ]);
         $filename = $response->save(storage_path('app/public/miniprogram/app_code'), str_random(5) . '.png');
         dump(asset('storage/miniprogram/app_code/' . $filename));
