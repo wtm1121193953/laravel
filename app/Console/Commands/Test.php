@@ -54,13 +54,14 @@ class Test extends Command
         $url = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=' . $token['access_token'];
         $client = new Client();
         $response = $client->post($url, [
-            'form_params' => [
+            'body' => json_encode([
+                'scene' => '{id:52}',
                 'page' => 'pages/product/buynow',
                 'width' => 500,
                 'auto_color' => true
-            ],
+            ]),
         ]);
-        dd($response);
+        dd($response->getBody()->getContents());
 
         $response = $app->app_code->getUnlimit('{id:52}', [
             'page' => 'pages/product/buynow',
