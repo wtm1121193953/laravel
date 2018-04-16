@@ -224,7 +224,9 @@ class OrderController extends Controller
         $orderRefund->save();
         // 发起微信支付退款
         $payApp = WechatService::getWechatPayAppForOper(request()->get('current_oper')->id);
-        $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->id, $orderPay->amount, $orderPay->amount);
+        $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->id, $orderPay->amount, $orderPay->amount, [
+            'refund_desc' => '用户发起退款',
+        ]);
         Log::debug('请求微信退款结果:', [
             'result' => $result,
             'params' => [$orderPay->transaction_no, $orderRefund->id, $orderPay->amount, $orderPay->amount]
