@@ -251,6 +251,7 @@ token (wxLogin接口除外)
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在
         lowestAmount: 最低消费金额
+        isOperSelf: 是否归属于当前小程序的运营中心
       }
     ]
   } 
@@ -373,7 +374,7 @@ token (wxLogin接口除外)
                         status: 状态 1-未核销, 2-已核销 3-已退款,
                     }
                 ]
-                
+                isOperSelf: 是否归属于当前小程序的运营中心
             }
         ]
     } 
