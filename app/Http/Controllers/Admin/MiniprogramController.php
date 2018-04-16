@@ -142,15 +142,14 @@ class MiniprogramController extends Controller
             throw new BaseResponseException('请上传zip格式的证书文件');
         }
 
-        $path = $file->storeAs("wxPayCert/$miniprogram->mch_id", 'cert.zip');
+        $path = $file->storeAs(OperMiniprogram::getCertDir($miniprogram->mch_id), 'cert.zip');
 
         // 解压缩文件
         $zip = new \ZipArchive();
-        $absolutePath = storage_path('app/' . $path);
-        if($zip->open($absolutePath) !== true){
+        if($zip->open(Storage::path($path)) !== true){
             throw new BaseResponseException('解压缩文件错误');
         }
-        $zip->extractTo(dirname($absolutePath));
+        $zip->extractTo(OperMiniprogram::getAbsoluteCertDir($miniprogram->mch_id));
         $zip->close();
 
         // 修改miniprogram中的证书路径

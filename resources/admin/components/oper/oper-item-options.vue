@@ -69,6 +69,7 @@
                             :on-success="handleCertUploadSuccess"
                             :before-upload="beforeCertUpload"
                             :file-list="scope.row.miniprogram.cert_zip_path ? [{name: scope.row.miniprogram.cert_zip_path, url: scope.row.miniprogram.cert_zip_path}] : []"
+                            :on-exceed="() => {$message.error('请先删除当前文件再上传')}"
                     >
                         <el-button>上传证书</el-button>
                     </el-upload>
