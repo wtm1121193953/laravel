@@ -10,9 +10,10 @@ namespace App\Http\Controllers\Merchant;
 
 
 use App\Exceptions\AccountNotFoundException;
+use App\Exceptions\NoPermissionException;
 use App\Exceptions\PasswordErrorException;
-use App\Exceptions\UnloginException;
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Result;
 
@@ -33,6 +34,14 @@ class LoginController extends Controller
         if(MerchantAccount::genPassword(request('password'), $user['salt']) != $user['password']){
             throw new PasswordErrorException();
         }
+        if($user->status != 1){
+            throw new NoPermissionException('账号已被禁用');
+        }
+        $merchant = Merchant::findOrFail($user->merchant_id);
+        if($merchant->status != 1){
+            throw new NoPermissionException('商户已被冻结');
+        }
+
         $user->username = $user->username ?? $user->account;
 
         session([

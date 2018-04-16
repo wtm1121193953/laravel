@@ -38,7 +38,7 @@ class LoginController extends Controller
             throw new PasswordErrorException();
         }
         if($user->status != 1){
-            throw new NoPermissionException('账号已被冻结');
+            throw new NoPermissionException('账号已被禁用');
         }
         // 检查运营中心是否被冻结
         $oper = Oper::findOrFail($user->oper_id);
