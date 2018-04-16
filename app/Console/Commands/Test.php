@@ -6,6 +6,7 @@ use App\Jobs\SettlementJob;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Wechat\WechatService;
 use App\Support\Lbs;
+use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -41,11 +42,26 @@ class Test extends Command
      * Execute the console command.
      *
      * @return mixed
+     * @throws \EasyWeChat\Kernel\Exceptions\HttpException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function handle()
     {
         $app = WechatService::getWechatMiniAppForOper(3);
+        $token = $app->access_token->getToken();
+        $url = 'https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=' . $token['access_token'];
+        $client = new Client();
+        $response = $client->post($url, [
+            'form_params' => [
+                'page' => 'pages/product/buynow',
+                'width' => 500,
+                'auto_color' => true
+            ],
+        ]);
+        dd($response);
+
         $response = $app->app_code->getUnlimit('{id:52}', [
             'page' => 'pages/product/buynow',
             'width' => 500,
