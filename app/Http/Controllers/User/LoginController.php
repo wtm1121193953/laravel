@@ -42,8 +42,8 @@ class LoginController extends Controller
         $verifyCodeRecord->status = 2;
         $verifyCodeRecord->save();
 
-        // 验证通过, 绑定openId到当前用户
-        if(! $user = request()->get('current_user')){
+        // 验证通过, 查询当前用户是否存在
+        if(! $user = User::where('mobile', $mobile)->first()){
             $user = new User();
             $user->mobile = $mobile;
             $user->save();
