@@ -9,6 +9,6 @@
 </head>
 <body>
  <h1>这是一个小程序h5测试页面</h1>
- <img src="https://o2o.niucha.ren/storage/image/item/FGrSC9LkQ6P7q9PUM8WHzPoboKgrx24trtDGqyY3.png" alt="">
+ <img src="https://developers.weixin.qq.com/miniprogram/dev/image/devtools2/mydev/mydev-qrcode.jpg?t=2018412" alt="">
 </body>
 </html>
