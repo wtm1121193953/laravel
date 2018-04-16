@@ -32,8 +32,9 @@ Route::get('/merchant', function () {
 
 Route::get('/test/h5', function(){
     $app = \App\Modules\Wechat\WechatService::getWechatMiniAppForOper(3);
-    $response = $app->app_code->getUnlimit('{goods_id:52}', [
-        'page' => 'pages/product/buynow'
+    $response = $app->app_code->getUnlimit('id=52', [
+        'page' => 'pages/severs/index/index',
+        'width' => 500,
     ]);
     $filename = $response->saveAs(storage_path('app/public/miniprogram/app_code'), "3_52.png");
     dump(asset('storage/miniprogram/app_code/' . $filename));
