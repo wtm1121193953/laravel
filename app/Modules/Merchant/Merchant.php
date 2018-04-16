@@ -3,6 +3,7 @@
 namespace App\Modules\Merchant;
 
 use App\BaseModel;
+use App\Events\MerchantSaved;
 
 class Merchant extends BaseModel
 {

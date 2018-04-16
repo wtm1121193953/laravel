@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Modules\Merchant\Merchant;
+use App\Observers\MerchantObserver;
 use Debugbar;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -28,10 +30,10 @@ class AppServiceProvider extends ServiceProvider
                 'bindings' => $query->bindings,
                 'time' => $query->time,
             ]);
-            // $query->sql
-            // $query->bindings
-            // $query->time
         });
+
+        // 商户模型操作监听
+        Merchant::observe(MerchantObserver::class);
     }
 
     /**
