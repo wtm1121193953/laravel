@@ -264,7 +264,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         disabled: { type: Boolean, default: false },
         listType: { type: String, default: 'picture-card' },
         preview: { type: Boolean, default: false },
-        data: { type: Object, default: {} }
+        data: { type: Object, default: function _default() {} }
     },
     mixins: [__WEBPACK_IMPORTED_MODULE_1_element_ui_src_mixins_emitter__["a" /* default */]],
     data: function data() {

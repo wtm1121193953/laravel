@@ -61,14 +61,17 @@
         <el-dialog v-if="scope.row.miniprogram" :visible.sync="showUploadCertDialog" title="上传支付证书">
             <el-form label-width="150px" size="small">
                 <el-form-item label="上传支付证书">
-                    <image-upload
+                    <el-upload
                             list-type="text"
                             :action="certUploadUrl"
                             :limit="1"
                             :data="{miniprogramId: scope.row.miniprogram.id}"
+                            :on-success="handleCertUploadSuccess"
+                            :before-upload="beforeCertUpload"
+                            :file-list="scope.row.miniprogram.cert_zip_path ? [{name: scope.row.miniprogram.cert_zip_path, url: scope.row.miniprogram.cert_zip_path}] : []"
                     >
                         <el-button>上传证书</el-button>
-                    </image-upload>
+                    </el-upload>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -112,7 +115,7 @@
                 },
                 editMiniprogramDialog: false,
                 showUploadCertDialog: false,
-                certUploadUrl: '/api/admin/miniprogram/uploadCert'
+                certUploadUrl: '/api/admin/miniprogram/uploadCert',
             }
         },
         computed: {
@@ -184,7 +187,33 @@
             },
             uploadCert(){
                 this.showUploadCertDialog = true;
-            }
+            },
+
+            handleCertUploadSuccess(res, file, fileList) {
+                if(res && res.code === 0){
+                    file.name = file.url = res.data.path;
+                }else  {
+                    fileList.forEach(function (item, index) {
+                        if(item === file){
+                            fileList.splice(index, 1)
+                        }
+                    });
+                    this.$message.error(res.message || '文件上传失败');
+                }
+            },
+            beforeCertUpload(file) {
+                let imgTypes = ['application/x-zip-compressed'];
+                let size = file.size;
+                if(imgTypes.indexOf(file.type) < 0){
+                    this.$message.error('只能上传 zip 格式的文件');
+                    return false;
+                }
+                if(size > 2 * 1024 * 1024){
+                    this.$message.error('上传的文件不能大于2M');
+                    return false;
+                }
+                this.$emit('before')
+            },
         },
         created(){
         },

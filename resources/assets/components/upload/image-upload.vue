@@ -58,7 +58,7 @@
             disabled: {type: Boolean, default: false},
             listType: {type: String, default: 'picture-card'},
             preview: {type: Boolean, default: false},
-            data: {type: Object, default: {}}
+            data: {type: Object, default: () => {}}
         },
         mixins: [emitter],
         data(){

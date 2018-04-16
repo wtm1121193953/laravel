@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Oper\OperMiniprogram;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Storage;
 
 class MiniprogramController extends Controller
 {
@@ -142,7 +143,24 @@ class MiniprogramController extends Controller
         }
 
         $path = $file->storeAs("wxPayCert/$miniprogram->mch_id", 'cert.zip');
-        dd($path);
+
+        // 解压缩文件
+        $zip = new \ZipArchive();
+        $absolutePath = storage_path('app/' . $path);
+        if($zip->open($absolutePath) !== true){
+            throw new BaseResponseException('解压缩文件错误');
+        }
+        $zip->extractTo(dirname($absolutePath));
+        $zip->close();
+
+        // 修改miniprogram中的证书路径
+        $miniprogram->cert_zip_path = $path;
+        $miniprogram->save();
+
+
+        return Result::success([
+            'path' => $path
+        ]);
     }
 
 }

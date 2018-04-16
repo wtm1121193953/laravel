@@ -2964,6 +2964,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 
@@ -3076,6 +3079,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         uploadCert: function uploadCert() {
             this.showUploadCertDialog = true;
+        },
+        handleCertUploadSuccess: function handleCertUploadSuccess(res, file, fileList) {
+            if (res && res.code === 0) {
+                file.name = file.url = res.data.path;
+            } else {
+                fileList.forEach(function (item, index) {
+                    if (item === file) {
+                        fileList.splice(index, 1);
+                    }
+                });
+                this.$message.error(res.message || '文件上传失败');
+            }
+        },
+        beforeCertUpload: function beforeCertUpload(file) {
+            var imgTypes = ['application/x-zip-compressed'];
+            var size = file.size;
+            if (imgTypes.indexOf(file.type) < 0) {
+                this.$message.error('只能上传 zip 格式的文件');
+                return false;
+            }
+            if (size > 2 * 1024 * 1024) {
+                this.$message.error('上传的文件不能大于2M');
+                return false;
+            }
+            this.$emit('before');
         }
     },
     created: function created() {},
@@ -3395,7 +3423,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         disabled: { type: Boolean, default: false },
         listType: { type: String, default: 'picture-card' },
         preview: { type: Boolean, default: false },
-        data: { type: Object, default: {} }
+        data: { type: Object, default: function _default() {} }
     },
     mixins: [__WEBPACK_IMPORTED_MODULE_1_element_ui_src_mixins_emitter__["a" /* default */]],
     data: function data() {
@@ -15065,7 +15093,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -43414,7 +43442,7 @@ var render = function() {
                     { attrs: { label: "上传支付证书" } },
                     [
                       _c(
-                        "image-upload",
+                        "el-upload",
                         {
                           attrs: {
                             "list-type": "text",
@@ -43422,7 +43450,18 @@ var render = function() {
                             limit: 1,
                             data: {
                               miniprogramId: _vm.scope.row.miniprogram.id
-                            }
+                            },
+                            "on-success": _vm.handleCertUploadSuccess,
+                            "before-upload": _vm.beforeCertUpload,
+                            "file-list": _vm.scope.row.miniprogram.cert_zip_path
+                              ? [
+                                  {
+                                    name:
+                                      _vm.scope.row.miniprogram.cert_zip_path,
+                                    url: _vm.scope.row.miniprogram.cert_zip_path
+                                  }
+                                ]
+                              : []
                           }
                         },
                         [_c("el-button", [_vm._v("上传证书")])],
