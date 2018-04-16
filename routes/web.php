@@ -30,5 +30,9 @@ Route::get('/merchant', function () {
     return view('merchant');
 });
 
+Route::get('/test/h5', function(){
+    return view('test_h5');
+});
+
 
 Route::post('/upload/image', 'UploadController@image');
