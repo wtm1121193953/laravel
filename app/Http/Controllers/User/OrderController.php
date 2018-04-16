@@ -139,6 +139,64 @@ class OrderController extends Controller
     }
 
     /**
+     * 立即付款
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     */
+    public function pay()
+    {
+        $this->validate(request(), [
+            'order_no' => 'required'
+        ]);
+        $orderNo = request('order_no');
+        $order = Order::where('order_no', $orderNo)->firstOrFail();
+
+        $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
+        $data = [
+            'body' => $order->goods_name,
+            'out_trade_no' => $orderNo,
+            'total_fee' => $order->pay_price * 100,
+            'trade_type' => 'JSAPI',
+            'openid' => $order->open_id,
+        ];
+
+        $unifyResult = $payApp->order->unify($data);
+        if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
+            $order->save();
+        }else {
+            Log::error('微信统一下单失败', [
+                'payConfig' => $payApp->getConfig(),
+                'data' => $data,
+                'result' => $unifyResult,
+            ]);
+            throw new BaseResponseException('微信统一下单失败');
+        }
+
+        if(App::environment() === 'local'){
+            // 生成核销码, 线上需要放到支付成功通知中
+            $items = [];
+            for ($i = 0; $i < $order->buy_number; $i ++){
+                $orderItem = new OrderItem();
+                $orderItem->oper_id = $order->oper_id;
+                $orderItem->merchant_id = $order->merchant_id;
+                $orderItem->order_id = $order->id;
+                $orderItem->verify_code = OrderItem::createVerifyCode($order->merchant_id);
+                $orderItem->status = 1;
+                $orderItem->save();
+                $items[] = $orderItem;
+            }
+            $order->status = Order::STATUS_PAID;
+            $order->save();
+        }
+
+        $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+
+        return Result::success([
+            'order_no' => $orderNo,
+            'sdk_config' => $sdkConfig
+        ]);
+    }
+
+    /**
      * 订单退款
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
