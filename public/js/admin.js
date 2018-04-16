@@ -3083,6 +3083,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         handleCertUploadSuccess: function handleCertUploadSuccess(res, file, fileList) {
             if (res && res.code === 0) {
                 file.name = file.url = res.data.path;
+                this.$emit('miniprogramChanged', this.scope, data);
             } else {
                 fileList.forEach(function (item, index) {
                     if (item === file) {
@@ -3103,7 +3104,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 this.$message.error('上传的文件不能大于2M');
                 return false;
             }
-            this.$emit('before');
         }
     },
     created: function created() {},
