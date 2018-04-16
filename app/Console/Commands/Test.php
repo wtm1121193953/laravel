@@ -55,8 +55,8 @@ class Test extends Command
         $client = new Client();
         $response = $client->post($url, [
             'body' => json_encode([
-                'scene' => 'id=52',
-                'page' => 'pages/product/buynow',
+                'scene' => '',
+                'page' => 'pages/severs/index/index',
                 'width' => 500,
                 'auto_color' => true
             ]),
