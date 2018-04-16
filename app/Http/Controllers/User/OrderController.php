@@ -227,10 +227,6 @@ class OrderController extends Controller
         $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->id, $orderPay->amount, $orderPay->amount, [
             'refund_desc' => '用户发起退款',
         ]);
-        Log::debug('请求微信退款结果:', [
-            'result' => $result,
-            'params' => [$orderPay->transaction_no, $orderRefund->id, $orderPay->amount, $orderPay->amount]
-        ]);
         if($result['return_code'] === 'SUCCESS' && array_get($result, 'result_code') === 'SUCCESS'){
             // 微信退款成功
             $orderRefund->refund_id = $result['refund_id'];
@@ -239,9 +235,18 @@ class OrderController extends Controller
 
             $order->status = Order::STATUS_REFUNDED;
             $order->save();
+            return Result::success($orderRefund);
         }else {
-
+            Log::error('微信退款失败 :', [
+                'result' => $result,
+                'params' => [
+                    '$orderPay->transaction_no' => $orderPay->transaction_no,
+                    '$orderRefund->id' => $orderRefund->id,
+                    '$orderPay->amount' => $orderPay->amount,
+                    'refundAmount' => $orderPay->amount
+                ]
+            ]);
+            throw new BaseResponseException('微信退款失败');
         }
-        return Result::success($orderRefund);
     }
 }
