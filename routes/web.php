@@ -40,7 +40,7 @@ Route::get('/miniprogram_bridge/pay', function(){
     if(empty($scene)) throw new BaseResponseException('scene不能为空');
     $page = request('page', 'pages/severs/index/index');
 
-    $appCodeUrl = WechatService::genMiniprogramAppCodeUrl($targetOperId, $scene, $page);
+    $appCodeUrl = WechatService::genMiniprogramAppCodeUrl($targetOperId, $targetOperId . '-' . $scene, $page);
     return view('miniprogram_bridge.pay', [
         'app_code_url' => $appCodeUrl
     ]);
