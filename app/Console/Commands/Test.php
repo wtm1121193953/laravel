@@ -41,6 +41,7 @@ class Test extends Command
      * Execute the console command.
      *
      * @return mixed
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function handle()
     {
@@ -48,7 +49,7 @@ class Test extends Command
         $response = $app->app_code->getUnlimit('{goods_id:52}', [
             'page' => 'pages/product/buynow'
         ]);
-        $filename = $response->saveAs(storage_path('app/public/miniprogram/app_code'), "3_52.png");
+        $filename = $response->save(storage_path('app/public/miniprogram/app_code'), str_random(5) . '.png');
         dump(asset('storage/miniprogram/app_code/' . $filename));
         dd();
         SettlementJob::dispatch(1);
