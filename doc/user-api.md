@@ -458,6 +458,18 @@ token (wxLogin接口除外)
   }
   ```
 
-  ​
+
+
+- [ ] 小程序间跳转h5
+
+  地址: H5页面 https://o2o.niucha.ren/miniprogram_bridge/pay
+
+  参数
+
+  ```
+  targetOperId: 要跳转的目标小程序运营中心ID, 商户/订单/商品信息里面都有
+  scene: 场景值, 在目标页面通过onLoad获取, 获取到的场景值会统一加上 'targetOperId-' 前缀, 已防止场景值重复
+  page: 目标页面地址, 必须是小程序已发布的页面, 目前默认 pages/severs/index/index
+  ```
 
   ​

@@ -10,8 +10,10 @@ namespace App\Http\Controllers\Oper;
 
 
 use App\Exceptions\AccountNotFoundException;
+use App\Exceptions\NoPermissionException;
 use App\Exceptions\PasswordErrorException;
 use App\Http\Controllers\Controller;
+use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperAccount;
 use App\Result;
 
@@ -35,6 +37,15 @@ class LoginController extends Controller
         if(OperAccount::genPassword(request('password'), $user['salt']) != $user['password']){
             throw new PasswordErrorException();
         }
+        if($user->status != 1){
+            throw new NoPermissionException('账号已被禁用');
+        }
+        // 检查运营中心是否被冻结
+        $oper = Oper::findOrFail($user->oper_id);
+        if($oper->status != 1){
+            throw new NoPermissionException('运营中心已被冻结');
+        }
+
         $user->username = $user->username ?? $user->account;
 
         session([

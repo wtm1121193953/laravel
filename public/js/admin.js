@@ -2206,11 +2206,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 var defaultForm = {
     name: '',
     appid: '',
     secret: '',
+    verify_file_path: '',
     mch_id: '',
     key: ''
 };
@@ -2229,7 +2241,8 @@ var defaultForm = {
                 secret: [{ required: true, message: 'App Secret 不能为空' }],
                 mch_id: [{ required: true, message: '微信支付商户号 不能为空' }],
                 key: [{ required: true, message: '微信支付密钥 不能为空' }]
-            }
+            },
+            verifyFileUploadUrl: '/api/admin/miniprogram/uploadVerifyFile'
         };
     },
 
@@ -2253,6 +2266,30 @@ var defaultForm = {
                     _this.$emit('save', data);
                 }
             });
+        },
+        handleVerifyFileUploadSuccess: function handleVerifyFileUploadSuccess(res, file, fileList) {
+            if (res && res.code === 0) {
+                this.form.verify_file_path = res.data.path;
+            } else {
+                fileList.forEach(function (item, index) {
+                    if (item === file) {
+                        fileList.splice(index, 1);
+                    }
+                });
+                this.$message.error(res.message || '文件上传失败');
+            }
+        },
+        beforeVerifyFileUpload: function beforeVerifyFileUpload(file) {
+            var imgTypes = ['text/plain'];
+            var size = file.size;
+            if (imgTypes.indexOf(file.type) < 0) {
+                this.$message.error('请上传 txt 格式的验证文件');
+                return false;
+            }
+            if (size > 2 * 1024 * 1024) {
+                this.$message.error('上传的文件不能大于2M');
+                return false;
+            }
         }
     },
     created: function created() {
@@ -15066,7 +15103,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42807,6 +42844,40 @@ var render = function() {
                       expression: "form.secret"
                     }
                   })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                {
+                  attrs: { prop: "verify_file_path", label: "业务域名验证文件" }
+                },
+                [
+                  _c(
+                    "el-upload",
+                    {
+                      attrs: {
+                        action: _vm.verifyFileUploadUrl,
+                        limit: 1,
+                        "on-success": _vm.handleVerifyFileUploadSuccess,
+                        "before-upload": _vm.beforeVerifyFileUpload,
+                        "file-list": _vm.form.verify_file_path
+                          ? [
+                              {
+                                name: _vm.form.verify_file_path,
+                                url: _vm.form.verify_file_path
+                              }
+                            ]
+                          : [],
+                        "on-exceed": function() {
+                          _vm.$message.error("请先删除当前文件再上传")
+                        }
+                      }
+                    },
+                    [_c("el-button", [_vm._v("上传文件")])],
+                    1
+                  )
                 ],
                 1
               ),

@@ -11,6 +11,17 @@
                 <el-form-item prop="secret" label="小程序App Secret">
                     <el-input v-model="form.secret"/>
                 </el-form-item>
+                <el-form-item prop="verify_file_path" label="业务域名验证文件">
+                    <el-upload
+                            :action="verifyFileUploadUrl"
+                            :limit="1"
+                            :on-success="handleVerifyFileUploadSuccess"
+                            :before-upload="beforeVerifyFileUpload"
+                            :file-list="form.verify_file_path ? [{name: form.verify_file_path, url: form.verify_file_path}] : []"
+                            :on-exceed="() => {$message.error('请先删除当前文件再上传')}">
+                        <el-button>上传文件</el-button>
+                    </el-upload>
+                </el-form-item>
                 <el-form-item prop="mch_id" label="微信支付商户号">
                     <el-input v-model="form.mch_id"/>
                 </el-form-item>
@@ -31,6 +42,7 @@
         name: '',
         appid: '',
         secret: '',
+        verify_file_path: '',
         mch_id: '',
         key: '',
     };
@@ -62,6 +74,7 @@
                         {required: true, message: '微信支付密钥 不能为空'}
                     ],
                 },
+                verifyFileUploadUrl: '/api/admin/miniprogram/uploadVerifyFile'
             }
         },
         methods: {
@@ -82,8 +95,32 @@
                         this.$emit('save', data);
                     }
                 })
+            },
 
-            }
+            handleVerifyFileUploadSuccess(res, file, fileList) {
+                if(res && res.code === 0){
+                    this.form.verify_file_path = res.data.path;
+                }else  {
+                    fileList.forEach(function (item, index) {
+                        if(item === file){
+                            fileList.splice(index, 1)
+                        }
+                    });
+                    this.$message.error(res.message || '文件上传失败');
+                }
+            },
+            beforeVerifyFileUpload(file) {
+                let imgTypes = ['text/plain'];
+                let size = file.size;
+                if(imgTypes.indexOf(file.type) < 0){
+                    this.$message.error('请上传 txt 格式的验证文件');
+                    return false;
+                }
+                if(size > 2 * 1024 * 1024){
+                    this.$message.error('上传的文件不能大于2M');
+                    return false;
+                }
+            },
         },
         created(){
             this.initForm();
