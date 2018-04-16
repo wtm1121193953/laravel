@@ -251,6 +251,7 @@ token (wxLogin接口除外)
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在
         lowestAmount: 最低消费金额
+        isOperSelf: 是否归属于当前小程序的运营中心
       }
     ]
   } 
@@ -373,7 +374,7 @@ token (wxLogin接口除外)
                         status: 状态 1-未核销, 2-已核销 3-已退款,
                     }
                 ]
-                
+                isOperSelf: 是否归属于当前小程序的运营中心
             }
         ]
     } 
@@ -416,7 +417,8 @@ token (wxLogin接口除外)
   ```
     data: {
     	order_no: 订单号,
-    	sdk_config: 调起微信支付配置 {
+    	isOperSelf: 是否归属于当前小程序的运营中心
+    	sdk_config: 调起微信支付配置, isOperSelf 为1时存在 {
           appId: appid,
           nonceStr: 随机字符串,
           package: package,
@@ -444,7 +446,16 @@ token (wxLogin接口除外)
   返回
 
   ```
-  同订单列表中的每一项
+  data: {
+      id: 16,
+      order_id: 893846835,
+      order_no: "O20180415222010166615",
+      amount: "0.01",
+      updated_at: "2018-04-16 19:30:45",
+      created_at: "2018-04-16 19:30:44",
+      refund_id: "50000206712018041604196575582",
+      status: 2
+  }
   ```
 
   ​

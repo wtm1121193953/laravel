@@ -36,8 +36,11 @@ class OrderController extends Controller
             })
             ->orderByDesc('id')
             ->paginate();
-        $data->each(function ($item) {
+        $currentOperId = request()->get('current_oper')->id;
+        $data->each(function ($item) use ($currentOperId) {
             $item->items = OrderItem::where('order_id', $item->id)->get();
+            // 判断商户是否是当前小程序关联运营中心下的商户
+            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
         });
         return Result::success([
             'list' => $data->items(),
@@ -51,6 +54,9 @@ class OrderController extends Controller
         ]);
         $detail = Order::where('order_no', request('order_no'))->firstOrFail();
         $detail->items = OrderItem::where('order_id', $detail->id)->get();
+        $currentOperId = request()->get('current_oper')->id;
+        // 判断商户是否是当前小程序关联运营中心下的商户
+        $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
         return Result::success($detail);
     }
 
@@ -91,26 +97,32 @@ class OrderController extends Controller
         $order->buy_number = $number;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $goods->price * $number;
+        $order->save();
 
-
-        $payApp = WechatService::getWechatPayAppForOper($merchant->oper_id);
-        $data = [
-            'body' => $order->goods_name,
-            'out_trade_no' => $orderNo,
-            'total_fee' => $order->pay_price * 100,
-            'trade_type' => 'JSAPI',
-            'openid' => $order->open_id,
-        ];
-        $unifyResult = $payApp->order->unify($data);
-        if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
-            $order->save();
+        $isOperSelf = $merchant->oper_id === $oper->id ? 1 : 0;
+        if($isOperSelf == 1) {
+            $payApp = WechatService::getWechatPayAppForOper($merchant->oper_id);
+            $data = [
+                'body' => $order->goods_name,
+                'out_trade_no' => $orderNo,
+                'total_fee' => $order->pay_price * 100,
+                'trade_type' => 'JSAPI',
+                'openid' => $order->open_id,
+            ];
+            $unifyResult = $payApp->order->unify($data);
+            if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
+                $order->save();
+            }else {
+                Log::error('微信统一下单失败', [
+                    'payConfig' => $payApp->getConfig(),
+                    'data' => $data,
+                    'result' => $unifyResult,
+                ]);
+                throw new BaseResponseException('微信统一下单失败');
+            }
+            $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
         }else {
-            Log::error('微信统一下单失败', [
-                'payConfig' => $payApp->getConfig(),
-                'data' => $data,
-                'result' => $unifyResult,
-            ]);
-            throw new BaseResponseException('微信统一下单失败');
+            $sdkConfig = null;
         }
 
         if(App::environment() === 'local'){
@@ -130,10 +142,9 @@ class OrderController extends Controller
             $order->save();
         }
 
-        $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
-
         return Result::success([
             'order_no' => $orderNo,
+            'isOperSelf' => $isOperSelf,
             'sdk_config' => $sdkConfig
         ]);
     }
@@ -152,6 +163,10 @@ class OrderController extends Controller
 
         if($order->status != Order::STATUS_UN_PAY){
             throw new BaseResponseException('订单状态异常');
+        }
+
+        if($order->oper_id !== request()->get('current_oper')->id){
+            throw new BaseResponseException('该订单不是当前运营中心的订单');
         }
 
         $payApp = WechatService::getWechatPayAppForOper($order->oper_id);

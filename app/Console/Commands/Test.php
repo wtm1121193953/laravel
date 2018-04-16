@@ -47,43 +47,8 @@ class Test extends Command
      */
     public function handle()
     {
-        $app = WechatService::getWechatMiniAppForOper(3);
-        $response = $app->app_code->getUnlimit('id=52', [
-            'page' => 'pages/severs/index/index',
-            'width' => 500,
-            'auto_color' => true
-        ]);
-        $filename = $response->save(storage_path('app/public/miniprogram/app_code'));
-        dump(asset('storage/miniprogram/app_code/' . $filename));
-        $response = $app->app_code->get('pages/product/buynow?id=52', [
-            'width' => 600,
-            //...
-        ]);
-        // 保存小程序码到文件
-        $filename = $response->save(storage_path('app/public/miniprogram/app_code'));
-        dump(asset('storage/miniprogram/app_code/' . $filename));
-        dd();
         SettlementJob::dispatch(1);
         dd();
-        dd(Carbon::now()->format('Y-m-d'));
-        $end = Carbon::now()->subDay()->endOfDay();
-        $start = Carbon::now()->subWeek()->startOfDay();
-        $start = Carbon::now()->startOfMonth();
-        $end = Carbon::now()->startOfMonth()->addDays(14)->endOfDay();
-        $start = Carbon::now()->subMonth()->startOfMonth()->addDays(15);
-        $end = Carbon::now()->subMonth()->endOfMonth();
-        $start = Carbon::now()->subMonth()->startOfMonth();
-        $end = Carbon::now()->subMonth()->endOfMonth();
-        $start = Carbon::now()->startOfYear();
-        $end = Carbon::now()->startOfYear()->addMonths(5)->endOfMonth();
-        $start = Carbon::now()->subYear()->startOfYear()->addMonths(6)->startOfMonth();
-        $end = Carbon::now()->subYear()->endOfYear();
-        $start = Carbon::now()->subYear()->startOfYear();
-        $end = Carbon::now()->subYear()->endOfYear();
-        dd($start, $end);
-        dd(Carbon::now()->day, Carbon::now()->startOfMonth()->addDays(14)->endOfDay());
-        dump(Carbon::now()->subDay()->endOfDay());
-        dd(Carbon::now()->subWeek()->startOfDay());
 //        Redis::geoadd('location:merchant', 113.99531, 22.709883, 1);
 //        Redis::geoadd('location:merchant', 114.002176, 22.663525, 2);
 //        Redis::geoadd('location:merchant', 114.002176, 22.664525, 3);
