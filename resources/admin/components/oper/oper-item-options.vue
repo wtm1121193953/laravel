@@ -58,12 +58,17 @@
             </el-row>
         </el-dialog>
 
-        <el-dialog :visible.sync="showUploadCertDialog" title="上传支付证书">
+        <el-dialog v-if="scope.row.miniprogram" :visible.sync="showUploadCertDialog" title="上传支付证书">
             <el-form label-width="150px" size="small">
                 <el-form-item label="上传支付证书">
-                    <el-upload list-type="text" :action="certUploadUrl" :limit="1">
+                    <image-upload
+                            list-type="text"
+                            :action="certUploadUrl"
+                            :limit="1"
+                            :data="{miniprogramId: scope.row.miniprogram.id}"
+                    >
                         <el-button>上传证书</el-button>
-                    </el-upload>
+                    </image-upload>
                 </el-form-item>
             </el-form>
         </el-dialog>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Oper\OperMiniprogram;
 use App\Result;
@@ -124,6 +125,24 @@ class MiniprogramController extends Controller
         $miniprogram = OperMiniprogram::findOrFail(request('id'));
         $miniprogram->delete();
         return Result::success($miniprogram);
+    }
+
+    public function uploadCert()
+    {
+        $this->validate(request(), [
+            'miniprogramId' => 'required|integer|min:1',
+            'file' => 'required|file'
+        ]);
+        $miniprogramId = request('miniprogramId');
+        $miniprogram = OperMiniprogram::where('id', $miniprogramId)->firstOrFail();
+
+        $file = request()->file('file');
+        if($file->extension() !== 'zip'){
+            throw new BaseResponseException('请上传zip格式的证书文件');
+        }
+
+        $path = $file->storeAs("wxPayCert/$miniprogram->mch_id", 'cert.zip');
+        dd($path);
     }
 
 }
