@@ -93,7 +93,7 @@ class OrderController extends Controller
         $order->pay_price = $goods->price * $number;
 
 
-        $payApp = WechatService::getWechatPayAppForOper($oper->id);
+        $payApp = WechatService::getWechatPayAppForOper($merchant->oper_id);
         $data = [
             'body' => $order->goods_name,
             'out_trade_no' => $orderNo,
@@ -149,6 +149,10 @@ class OrderController extends Controller
         ]);
         $orderNo = request('order_no');
         $order = Order::where('order_no', $orderNo)->firstOrFail();
+
+        if($order->status != Order::STATUS_UN_PAY){
+            throw new BaseResponseException('订单状态异常');
+        }
 
         $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
         $data = [
