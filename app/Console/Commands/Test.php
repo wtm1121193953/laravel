@@ -51,7 +51,14 @@ class Test extends Command
             'width' => 500,
             'auto_color' => true
         ]);
-        $filename = $response->save(storage_path('app/public/miniprogram/app_code'), str_random(5) . '.png');
+        $filename = $response->save(storage_path('app/public/miniprogram/app_code'));
+        dump(asset('storage/miniprogram/app_code/' . $filename));
+        $response = $app->app_code->get('path/to/page', [
+            'width' => 600,
+            //...
+        ]);
+        // 保存小程序码到文件
+        $filename = $response->save('/path/to/directory');
         dump(asset('storage/miniprogram/app_code/' . $filename));
         dd();
         SettlementJob::dispatch(1);
