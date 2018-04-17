@@ -11,14 +11,14 @@
                         <el-input v-model="form.name"/>
                     </el-form-item>
                     <el-form-item prop="brand" label="商家品牌">
-                        <el-input v-model="form.brand"></el-input>
+                        <el-input v-model="form.brand"/>
                     </el-form-item>
                     <el-form-item prop="region" label="运营地区">
                         <el-select v-model="form.region" placeholder="请选择">
-                            <el-option label="中国" :value="1"></el-option>
-                            <el-option label="美国" :value="2"></el-option>
-                            <el-option label="韩国" :value="3"></el-option>
-                            <el-option label="香港" :value="4"></el-option>
+                            <el-option label="中国" :value="1"/>
+                            <el-option label="美国" :value="2"/>
+                            <el-option label="韩国" :value="3"/>
+                            <el-option label="香港" :value="4"/>
                         </el-select>
                     </el-form-item>
                     <el-form-item prop="merchant_category" label="所属行业">
@@ -54,22 +54,22 @@
                         </el-time-picker>
                     </el-form-item>
                     <el-form-item prop="logo" label="商家logo">
-                        <image-upload v-model="form.logo" :limit="1"></image-upload>
+                        <image-upload v-model="form.logo" :limit="1"/>
                     </el-form-item>
                     <el-form-item prop="desc_pic" label="商家介绍图片">
-                        <image-upload v-model="form.desc_pic" :limit="1"></image-upload>
+                        <image-upload v-model="form.desc_pic" :limit="1"/>
                     </el-form-item>
                     <el-form-item prop="desc" label="商家介绍">
-                        <el-input type="textarea" :rows="5" v-model="form.desc"></el-input>
+                        <el-input type="textarea" :rows="5" v-model="form.desc"/>
                     </el-form-item>
                 </el-col>
                 <!--商家基本信息右侧块-->
                 <el-col :span="11">
                     <el-form-item prop="invoice_title" label="发票抬头">
-                        <el-input v-model="form.invoice_title"></el-input>
+                        <el-input v-model="form.invoice_title"/>
                     </el-form-item>
                     <el-form-item prop="invoice_no" label="发票编号">
-                        <el-input v-model="form.invoice_no"></el-input>
+                        <el-input v-model="form.invoice_no"/>
                     </el-form-item>
                     <el-form-item prop="status" label="商户状态">
                         <el-radio-group v-model="form.status">
@@ -81,17 +81,17 @@
                         {{form.lng_and_lat}}
                         <el-button @click="isShow = true">更换地理位置</el-button>
                         <el-dialog title="更换地理位置" :visible.sync="isShow" :modal="false">
-                            <amap-choose-point width="100%" height="500px" v-model="form.lng_and_lat" @select="selectMap"></amap-choose-point>
+                            <amap-choose-point width="100%" height="500px" v-model="form.lng_and_lat" @select="selectMap"/>
                         </el-dialog>
                     </el-form-item>
                     <el-form-item prop="address" label="详细地址">
-                        <el-input v-model="form.address"></el-input>
+                        <el-input v-model="form.address"/>
                     </el-form-item>
                     <el-form-item prop="contacter" label="负责人姓名">
-                        <el-input v-model="form.contacter"></el-input>
+                        <el-input v-model="form.contacter"/>
                     </el-form-item>
                     <el-form-item prop="contacter_phone" label="负责人联系方式">
-                        <el-input v-model="form.contacter_phone"></el-input>
+                        <el-input v-model="form.contacter_phone"/>
                     </el-form-item>
                 </el-col>
 
@@ -152,16 +152,16 @@
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item prop="bank_open_name" label="银行开户名">
-                        <el-input v-model="form.bank_open_name"></el-input>
+                        <el-input v-model="form.bank_open_name"/>
                     </el-form-item>
                     <el-form-item prop="bank_card_no" label="银行账号">
-                        <el-input v-model="form.bank_card_no"></el-input>
+                        <el-input v-model="form.bank_card_no"/>
                     </el-form-item>
                     <el-form-item prop="sub_bank_name" label="开户支行名称">
-                        <el-input v-model="form.sub_bank_name"></el-input>
+                        <el-input v-model="form.sub_bank_name"/>
                     </el-form-item>
                     <el-form-item prop="bank_open_address" label="开户支行地址">
-                        <el-input v-model="form.bank_open_address"></el-input>
+                        <el-input v-model="form.bank_open_address"/>
                     </el-form-item>
                 </el-col>
                 <el-col>
