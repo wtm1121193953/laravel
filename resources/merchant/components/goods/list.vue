@@ -35,6 +35,7 @@
 
         <el-dialog title="添加商品" :visible.sync="isAdd">
             <goods-form
+                    ref="addForm"
                     @cancel="isAdd = false"
                     @save="doAdd"/>
         </el-dialog>
@@ -80,6 +81,7 @@
                 this.isLoading = true;
                 api.post('/goods/add', data).then(() => {
                     this.isAdd = false;
+                    this.$refs.addForm.resetForm();
                     this.getList();
                 }).finally(() => {
                     this.isLoading = false;

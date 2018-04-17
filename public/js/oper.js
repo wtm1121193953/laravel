@@ -351,28 +351,36 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         onExceed: function onExceed() {
             this.$message.warning('\u6700\u591A\u53EA\u80FD\u4E0A\u4F20' + this.limit + '\u5F20\u56FE\u7247');
+        },
+        initFileList: function initFileList() {
+            var _this = this;
+
+            var value = [];
+            if (typeof this.value === 'string') {
+                this.valueType = 'string';
+                if (this.value) {
+                    value = this.value.split(',');
+                }
+            } else {
+                this.valueType = 'array';
+                value = this.value || [];
+            }
+            value.forEach(function (item) {
+                _this.fileList.push({
+                    url: item
+                });
+            });
         }
     },
     created: function created() {
-        var _this = this;
-
-        var value = [];
-        if (typeof this.value === 'string') {
-            this.valueType = 'string';
-            if (this.value) {
-                value = this.value.split(',');
-            }
-        } else {
-            this.valueType = 'array';
-            value = this.value || [];
-        }
-        value.forEach(function (item) {
-            _this.fileList.push({
-                url: item
-            });
-        });
+        this.initFileList();
     },
 
+    watch: {
+        value: function value(val) {
+            this.initFileList();
+        }
+    },
     components: {
         ImgPreviewDialog: __WEBPACK_IMPORTED_MODULE_0__img_preview_dialog___default.a
     }
@@ -13376,7 +13384,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 

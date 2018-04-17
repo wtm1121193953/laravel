@@ -147,24 +147,33 @@
             },
             onExceed(){
                 this.$message.warning(`最多只能上传${this.limit}张图片`)
+            },
+            initFileList(){
+
+                let value = [];
+                if(typeof this.value === 'string'){
+                    this.valueType = 'string';
+                    if(this.value){
+                        value = this.value.split(',')
+                    }
+                }else {
+                    this.valueType = 'array';
+                    value = this.value || [];
+                }
+                value.forEach(item => {
+                    this.fileList.push({
+                        url: item
+                    })
+                })
             }
         },
         created(){
-            let value = [];
-            if(typeof this.value === 'string'){
-                this.valueType = 'string';
-                if(this.value){
-                    value = this.value.split(',')
-                }
-            }else {
-                this.valueType = 'array';
-                value = this.value || [];
+            this.initFileList()
+        },
+        watch: {
+            value (val){
+                this.initFileList()
             }
-            value.forEach(item => {
-                this.fileList.push({
-                    url: item
-                })
-            })
         },
         components: {
             ImgPreviewDialog

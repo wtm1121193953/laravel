@@ -6,10 +6,10 @@
                     <el-input v-model="form.name"/>
                 </el-form-item>
                 <el-form-item prop="market_price" label="市场价">
-                    <el-input-number v-model="form.market_price"></el-input-number>
+                    <el-input-number v-model="form.market_price"/>
                 </el-form-item>
                 <el-form-item prop="price" label="销售价">
-                    <el-input-number v-model="form.price"></el-input-number>
+                    <el-input-number v-model="form.price"/>
                 </el-form-item>
                 <el-form-item label="有效期">
                     <el-date-picker
@@ -27,13 +27,13 @@
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item prop="pic" label="产品详情图">
-                    <image-upload v-model="form.pic" :limit="1"></image-upload>
+                    <image-upload v-model="form.pic" :limit="1"/>
                 </el-form-item>
                 <el-form-item prop="desc" label="商品简介">
-                    <el-input v-model="form.desc" type="textarea"></el-input>
+                    <el-input v-model="form.desc" type="textarea"/>
                 </el-form-item>
                 <el-form-item prop="buy_info" label="购买须知">
-                    <el-input v-model="form.buy_info" type="textarea"></el-input>
+                    <el-input v-model="form.buy_info" type="textarea"/>
                 </el-form-item>
                 <el-form-item prop="status" label="状态">
                     <el-radio-group v-model="form.status">
@@ -94,7 +94,14 @@
                     this.form = deepCopy(defaultForm)
                 }
             },
+            resetForm(){
+                this.form.start_date = '';
+                this.form.end_date = '';
+                this.$refs.form.resetFields();
+                console.log(this.form)
+            },
             cancel(){
+                console.log(this.form)
                 this.$emit('cancel');
             },
             save(){
