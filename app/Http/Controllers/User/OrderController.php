@@ -93,6 +93,7 @@ class OrderController extends Controller
         $order->goods_id = $goodsId;
         $order->goods_name = $goods->name;
         $order->goods_pic = $goods->pic;
+        $order->goods_thumb_url = $goods->thumb_url;
         $order->price = $goods->price;
         $order->buy_number = $number;
         $order->status = Order::STATUS_UN_PAY;

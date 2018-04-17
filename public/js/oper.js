@@ -227,6 +227,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -321,6 +322,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     this.fileList = fileList;
                     this.emitInput();
                 } else {
+                    fileList.forEach(function (item, index) {
+                        if (item === file) {
+                            fileList.splice(index, 1);
+                        }
+                    });
                     this.$message.error('请上传图片尺寸为' + width + 'px*' + height + 'px且大小不能超过2MB的图片');
                     return false;
                 }
@@ -351,28 +357,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         onExceed: function onExceed() {
             this.$message.warning('\u6700\u591A\u53EA\u80FD\u4E0A\u4F20' + this.limit + '\u5F20\u56FE\u7247');
+        },
+        initFileList: function initFileList() {
+            var _this = this;
+
+            var value = [];
+            if (typeof this.value === 'string') {
+                this.valueType = 'string';
+                if (this.value) {
+                    value = this.value.split(',');
+                }
+            } else {
+                this.valueType = 'array';
+                value = this.value || [];
+            }
+            this.fileList = [];
+            value.forEach(function (item) {
+                _this.fileList.push({
+                    url: item
+                });
+            });
         }
     },
     created: function created() {
-        var _this = this;
-
-        var value = [];
-        if (typeof this.value === 'string') {
-            this.valueType = 'string';
-            if (this.value) {
-                value = this.value.split(',');
-            }
-        } else {
-            this.valueType = 'array';
-            value = this.value || [];
-        }
-        value.forEach(function (item) {
-            _this.fileList.push({
-                url: item
-            });
-        });
+        this.initFileList();
     },
 
+    watch: {
+        value: function value(val) {
+            this.initFileList();
+        }
+    },
     components: {
         ImgPreviewDialog: __WEBPACK_IMPORTED_MODULE_0__img_preview_dialog___default.a
     }
@@ -1002,6 +1017,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -1028,7 +1044,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this = this;
 
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchants', this.query).then(function (data) {
-                console.log(data);
                 _this.list = data.list;
                 _this.total = data.total;
             });
@@ -1045,6 +1060,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.isLoading = true;
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/add', data).then(function () {
                 _this2.isAdd = false;
+                _this2.$refs.addForm.resetForm();
                 _this2.getList();
             }).finally(function () {
                 _this2.isLoading = false;
@@ -1077,6 +1093,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point__ = __webpack_require__("./resources/assets/components/amap/amap-choose-point.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point__);
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -1304,10 +1326,10 @@ var defaultForm = {
             formRules: {
                 name: [{ required: true, message: '商家名称不能为空' }],
                 merchant_category: [{ type: 'array', required: true, message: '所属行业不能为空' }],
-                logo: [{ required: true, message: '商家logo不能为空' }],
+                logo: [{ required: true, message: '商家logo不能为空', trigger: 'change' }],
                 desc_pic: [{ required: true, message: '商家介绍图片不能为空' }],
                 desc: [{ required: true, message: '商家介绍不能为空' }],
-                settlement_rate: [{
+                settlement_rate: [{ required: true, message: '分利比例不能为空' }, {
                     validator: function validator(rule, value, callback) {
                         if (value === '') {
                             callback(new Error('分利比例不能为空'));
@@ -1318,8 +1340,9 @@ var defaultForm = {
                 }],
                 business_licence_pic_url: [{ required: true, message: '营业执照不能为空' }],
                 lng_and_lat: [{ required: true, message: '商户位置不能为空' }],
-                area: [{ type: 'array', required: true, message: '省/市/区不能为空' }]
-
+                area: [{ type: 'array', required: true, message: '省/市/区不能为空' }],
+                contacter_phone: [{ required: true, message: '客服电话不能为空' }],
+                business_time: [{ type: 'array', required: true, message: '营业时间不能为空' }]
             }
         };
     },
@@ -1352,13 +1375,15 @@ var defaultForm = {
                 this.form.settlement_cycle_type = parseInt(this.data.settlement_cycle_type);
                 this.form.status = parseInt(this.data.status);
                 this.form.bank_card_type = parseInt(this.data.bank_card_type);
-                console.log(this.form);
             } else {
                 this.form = deepCopy(defaultForm);
             }
         },
         cancel: function cancel() {
             this.$emit('cancel');
+        },
+        resetForm: function resetForm() {
+            this.$refs.form.resetFields();
         },
         save: function save() {
             var _this2 = this;
@@ -1591,9 +1616,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         /**
          * 数组元素 可以是一个字符串, 也可以是一个对象, 对象时包含字段为name和path
          */
-        breadcrumbs: { type: Array, default: function _default() {
-                return [];
-            } }
+        breadcrumbs: { type: Object, default: function _default() {} }
     },
     methods: {
         toPath: function toPath(path) {
@@ -13366,7 +13389,7 @@ exports.push([module.i, "\n.page-container {\n    font-size: 20px;\n    text-ali
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue":
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
@@ -13374,7 +13397,22 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n.upload-fulled .el-upload--picture-card {\n    display: none;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=1!./resources/assets/components/upload/image-upload.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -13389,7 +13427,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n.map-container[data-v-86914dc6] {\n    position: relative;\n}\n.search-box[data-v-86914dc6] {\n    position: absolute;\n    top: 10px;\n    left: 20px;\n}\n.sure-button[data-v-86914dc6] {\n    position: absolute;\n    bottom: 10px;\n    right: 20px;\n}\n", ""]);
+exports.push([module.i, "\n.map-container[data-v-86914dc6] {\n    position: relative;\n}\n.search-box[data-v-86914dc6] {\n    position: absolute;\n    top: 10px;\n    left: 20px;\n}\n.sure-button[data-v-86914dc6] {\n    position: absolute;\n    top: 12px;\n    left: 400px;\n}\n", ""]);
 
 // exports
 
@@ -13419,7 +13457,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -37771,7 +37809,7 @@ var render = function() {
                     { attrs: { prop: "logo", label: "商家logo" } },
                     [
                       _c("image-upload", {
-                        attrs: { limit: 1 },
+                        attrs: { width: 190, height: 190, limit: 1 },
                         model: {
                           value: _vm.form.logo,
                           callback: function($$v) {
@@ -37779,7 +37817,9 @@ var render = function() {
                           },
                           expression: "form.logo"
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _c("div", [_vm._v("图片尺寸: 190 px * 190 px")])
                     ],
                     1
                   ),
@@ -37789,7 +37829,7 @@ var render = function() {
                     { attrs: { prop: "desc_pic", label: "商家介绍图片" } },
                     [
                       _c("image-upload", {
-                        attrs: { limit: 1 },
+                        attrs: { width: 750, height: 526, limit: 1 },
                         model: {
                           value: _vm.form.desc_pic,
                           callback: function($$v) {
@@ -37797,7 +37837,9 @@ var render = function() {
                           },
                           expression: "form.desc_pic"
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _c("div", [_vm._v("图片尺寸: 750 px * 526 px")])
                     ],
                     1
                   ),
@@ -37981,12 +38023,7 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "el-form-item",
-                    {
-                      attrs: {
-                        prop: "contacter_phone",
-                        label: "负责人联系方式"
-                      }
-                    },
+                    { attrs: { prop: "contacter_phone", label: "客服电话" } },
                     [
                       _c("el-input", {
                         model: {
@@ -38784,7 +38821,7 @@ var render = function() {
         "el-dialog",
         {
           attrs: {
-            title: "创建运营中心账户",
+            title: "创建商户账号",
             visible: _vm.showCreateAccountDialog
           },
           on: {
@@ -39360,6 +39397,7 @@ var render = function() {
         "el-upload",
         {
           staticClass: "uploader",
+          class: { "upload-fulled": _vm.fileList.length >= _vm.limit },
           attrs: {
             action: _vm.action,
             "list-type": _vm.listType,
@@ -39458,7 +39496,7 @@ var render = function() {
         "el-button",
         {
           staticClass: "sure-button",
-          attrs: { type: "primary", size: "small" },
+          attrs: { type: "primary" },
           on: { click: _vm.sureChoose }
         },
         [_vm._v("确定")]
@@ -39748,6 +39786,7 @@ var render = function() {
         },
         [
           _c("merchant-form", {
+            ref: "addForm",
             on: {
               cancel: function($event) {
                 _vm.isAdd = false
@@ -40355,23 +40394,50 @@ if(false) {
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue":
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue");
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue");
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("2d62cf19", content, false, {});
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("0f3f59b0", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./image-upload.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./image-upload.vue");
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./image-upload.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./image-upload.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=1!./resources/assets/components/upload/image-upload.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=1!./resources/assets/components/upload/image-upload.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("75622d78", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=1!./image-upload.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=1!./image-upload.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -41950,7 +42016,8 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue")
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue")
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=1!./resources/assets/components/upload/image-upload.vue")
 }
 var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
 /* script */

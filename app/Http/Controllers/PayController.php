@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Modules\Oper\OperMiniprogram;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
@@ -27,11 +28,23 @@ class PayController extends Controller
      */
     public function notify()
     {
+
         if(App::environment() === 'local' || request()->get('mock')){
             $this->paySuccess(request('order_no'), 'mock transaction id', 0);
             return Result::success('模拟支付成功');
         }
-        $app = WechatService::getWechatPayAppForOper(1);
+        $str = request()->getContent();
+        $xml = simplexml_load_string($str);
+        // 获取appid
+        foreach ($xml->children() as $child) {
+            if(strtolower($child->getName()) == 'appid'){
+                $appid = $child . '';
+            }
+        }
+        // 获取appid对应的运营中心小程序
+        $miniprogram = OperMiniprogram::where('appid', $appid)->first();
+
+        $app = WechatService::getWechatPayAppForOper($miniprogram);
         $response = $app->handlePaidNotify(function ($message, $fail){
             if($message['return_code'] === 'SUCCESS' && array_get($message, 'result_code') === 'SUCCESS'){
                 $orderNo = $message['out_trade_no'];

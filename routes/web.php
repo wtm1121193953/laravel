@@ -12,6 +12,8 @@
 */
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
+use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 
 Route::get('/', function () {
@@ -36,11 +38,24 @@ Route::get('/merchant', function () {
 Route::get('/miniprogram_bridge/pay', function(){
     $targetOperId = request('targetOperId');
     if(empty($targetOperId)) throw new BaseResponseException('targetOperId不能为空');
-    $scene = request('scene');
-    if(empty($scene)) throw new BaseResponseException('scene不能为空');
+    $orderNo = request('orderNo');
+    if(empty($orderNo)) throw new ParamInvalidException('订单号不能为空');
+    $userId = request('userId');
+    if(empty($userId)) throw new ParamInvalidException('用户ID不能为空');
+
     $page = request('page', 'pages/severs/index/index');
 
-    $appCodeUrl = WechatService::genMiniprogramAppCodeUrl($targetOperId, $targetOperId . '-' . $scene, $page);
+    $scene = new MiniprogramScene();
+    $scene->oper_id = $targetOperId;
+    $scene->page = $page;
+    $scene->type = 1;
+    $scene->payload = json_encode([
+        'order_no' => $orderNo,
+        'user_id' => $userId
+    ]);
+    $scene->save();
+
+    $appCodeUrl = WechatService::genMiniprogramAppCodeUrl($targetOperId, $scene->id, $page);
 
 //    $appCodeUrl = 'https://o2o.niucha.ren/storage/miniprogram/app_code/_3-id=52.jpg';
     return view('miniprogram_bridge.pay', [

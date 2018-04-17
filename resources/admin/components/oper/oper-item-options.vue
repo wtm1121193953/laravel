@@ -124,6 +124,11 @@
         },
         methods: {
             edit(){
+                router.push({
+                    path: '/oper/edit',
+                    query: {id: this.scope.row.id}
+                })
+                return;
                 this.isEdit = true;
             },
             doEdit(data){

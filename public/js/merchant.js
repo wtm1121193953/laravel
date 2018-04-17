@@ -143,6 +143,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -237,6 +238,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     this.fileList = fileList;
                     this.emitInput();
                 } else {
+                    fileList.forEach(function (item, index) {
+                        if (item === file) {
+                            fileList.splice(index, 1);
+                        }
+                    });
                     this.$message.error('请上传图片尺寸为' + width + 'px*' + height + 'px且大小不能超过2MB的图片');
                     return false;
                 }
@@ -267,28 +273,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         onExceed: function onExceed() {
             this.$message.warning('\u6700\u591A\u53EA\u80FD\u4E0A\u4F20' + this.limit + '\u5F20\u56FE\u7247');
+        },
+        initFileList: function initFileList() {
+            var _this = this;
+
+            var value = [];
+            if (typeof this.value === 'string') {
+                this.valueType = 'string';
+                if (this.value) {
+                    value = this.value.split(',');
+                }
+            } else {
+                this.valueType = 'array';
+                value = this.value || [];
+            }
+            this.fileList = [];
+            value.forEach(function (item) {
+                _this.fileList.push({
+                    url: item
+                });
+            });
         }
     },
     created: function created() {
-        var _this = this;
-
-        var value = [];
-        if (typeof this.value === 'string') {
-            this.valueType = 'string';
-            if (this.value) {
-                value = this.value.split(',');
-            }
-        } else {
-            this.valueType = 'array';
-            value = this.value || [];
-        }
-        value.forEach(function (item) {
-            _this.fileList.push({
-                url: item
-            });
-        });
+        this.initFileList();
     },
 
+    watch: {
+        value: function value(val) {
+            this.initFileList();
+        }
+    },
     components: {
         ImgPreviewDialog: __WEBPACK_IMPORTED_MODULE_0__img_preview_dialog___default.a
     }
@@ -405,6 +420,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 var defaultForm = {
     name: '',
@@ -413,6 +431,7 @@ var defaultForm = {
     start_date: '',
     end_date: '',
     pic: '',
+    thumb_url: '',
     desc: '',
     buy_info: '',
     status: 1
@@ -429,7 +448,9 @@ var defaultForm = {
             formRules: {
                 name: [{ required: true, message: '名称不能为空' }],
                 market_price: [{ required: true, message: '市场价不能为空' }],
-                price: [{ required: true, message: '销售价不能为空' }]
+                price: [{ required: true, message: '销售价不能为空' }],
+                thumb_url: [{ required: true, message: '缩略图不能为空' }],
+                pic: [{ required: true, message: '详情图不能为空' }]
             }
         };
     },
@@ -442,7 +463,14 @@ var defaultForm = {
                 this.form = deepCopy(defaultForm);
             }
         },
+        resetForm: function resetForm() {
+            this.form.start_date = '';
+            this.form.end_date = '';
+            this.$refs.form.resetFields();
+            console.log(this.form);
+        },
         cancel: function cancel() {
+            console.log(this.form);
             this.$emit('cancel');
         },
         save: function save() {
@@ -622,6 +650,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -664,6 +693,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.isLoading = true;
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/goods/add', data).then(function () {
                 _this2.isAdd = false;
+                _this2.$refs.addForm.resetForm();
                 _this2.getList();
             }).finally(function () {
                 _this2.isLoading = false;
@@ -1414,9 +1444,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         /**
          * 数组元素 可以是一个字符串, 也可以是一个对象, 对象时包含字段为name和path
          */
-        breadcrumbs: { type: Array, default: function _default() {
-                return [];
-            } }
+        breadcrumbs: { type: Object, default: function _default() {} }
     },
     methods: {
         toPath: function toPath(path) {
@@ -12929,7 +12957,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -12998,7 +13026,7 @@ exports.push([module.i, "\n.fade-enter-active[data-v-5cc98bb6],\n.fade-leave-act
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue":
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
@@ -13006,7 +13034,22 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n.upload-fulled .el-upload--picture-card {\n    display: none;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=1!./resources/assets/components/upload/image-upload.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -13111,7 +13154,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -37306,6 +37349,7 @@ var render = function() {
         },
         [
           _c("goods-form", {
+            ref: "addForm",
             on: {
               cancel: function($event) {
                 _vm.isAdd = false
@@ -38033,6 +38077,7 @@ var render = function() {
         "el-upload",
         {
           staticClass: "uploader",
+          class: { "upload-fulled": _vm.fileList.length >= _vm.limit },
           attrs: {
             action: _vm.action,
             "list-type": _vm.listType,
@@ -38799,10 +38844,28 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "el-form-item",
+                { attrs: { prop: "thumb_url", label: "产品缩略图" } },
+                [
+                  _c("image-upload", {
+                    attrs: { width: 190, height: 190, limit: 1 },
+                    model: {
+                      value: _vm.form.thumb_url,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "thumb_url", $$v)
+                      },
+                      expression: "form.thumb_url"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
                 { attrs: { prop: "pic", label: "产品详情图" } },
                 [
                   _c("image-upload", {
-                    attrs: { limit: 1 },
+                    attrs: { width: 750, height: 526, limit: 1 },
                     model: {
                       value: _vm.form.pic,
                       callback: function($$v) {
@@ -38820,7 +38883,7 @@ var render = function() {
                 { attrs: { prop: "desc", label: "商品简介" } },
                 [
                   _c("el-input", {
-                    attrs: { type: "textarea" },
+                    attrs: { autosize: { minRows: 2 }, type: "textarea" },
                     model: {
                       value: _vm.form.desc,
                       callback: function($$v) {
@@ -38838,7 +38901,7 @@ var render = function() {
                 { attrs: { prop: "buy_info", label: "购买须知" } },
                 [
                   _c("el-input", {
-                    attrs: { type: "textarea" },
+                    attrs: { autosize: { minRows: 2 }, type: "textarea" },
                     model: {
                       value: _vm.form.buy_info,
                       callback: function($$v) {
@@ -39103,23 +39166,50 @@ if(false) {
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue":
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue");
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue");
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("2d62cf19", content, false, {});
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("0f3f59b0", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
  if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./image-upload.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./image-upload.vue");
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./image-upload.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./image-upload.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=1!./resources/assets/components/upload/image-upload.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=1!./resources/assets/components/upload/image-upload.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("75622d78", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=1!./image-upload.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=1!./image-upload.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -40646,7 +40736,8 @@ module.exports = Component.exports
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue")
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/upload/image-upload.vue")
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-82eb6868\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=1!./resources/assets/components/upload/image-upload.vue")
 }
 var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
 /* script */

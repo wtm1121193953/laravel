@@ -5,19 +5,20 @@
                 <el-col>
                     <div class="title">商家基本信息:</div>
                 </el-col>
+                <!--商家基本信息左侧块-->
                 <el-col :span="11">
                     <el-form-item prop="name" label="商户名称">
                         <el-input v-model="form.name"/>
                     </el-form-item>
                     <el-form-item prop="brand" label="商家品牌">
-                        <el-input v-model="form.brand"></el-input>
+                        <el-input v-model="form.brand"/>
                     </el-form-item>
                     <el-form-item prop="region" label="运营地区">
                         <el-select v-model="form.region" placeholder="请选择">
-                            <el-option label="中国" :value="1"></el-option>
-                            <el-option label="美国" :value="2"></el-option>
-                            <el-option label="韩国" :value="3"></el-option>
-                            <el-option label="香港" :value="4"></el-option>
+                            <el-option label="中国" :value="1"/>
+                            <el-option label="美国" :value="2"/>
+                            <el-option label="韩国" :value="3"/>
+                            <el-option label="香港" :value="4"/>
                         </el-select>
                     </el-form-item>
                     <el-form-item prop="merchant_category" label="所属行业">
@@ -53,21 +54,24 @@
                         </el-time-picker>
                     </el-form-item>
                     <el-form-item prop="logo" label="商家logo">
-                        <image-upload v-model="form.logo" :limit="1"></image-upload>
+                        <image-upload :width="190" :height="190" v-model="form.logo" :limit="1"/>
+                        <div>图片尺寸: 190 px * 190 px</div>
                     </el-form-item>
                     <el-form-item prop="desc_pic" label="商家介绍图片">
-                        <image-upload v-model="form.desc_pic" :limit="1"></image-upload>
+                        <image-upload :width="750" :height="526" v-model="form.desc_pic" :limit="1"/>
+                        <div>图片尺寸: 750 px * 526 px</div>
                     </el-form-item>
                     <el-form-item prop="desc" label="商家介绍">
-                        <el-input type="textarea" :rows="5" v-model="form.desc"></el-input>
+                        <el-input type="textarea" :rows="5" v-model="form.desc"/>
                     </el-form-item>
                 </el-col>
+                <!--商家基本信息右侧块-->
                 <el-col :span="11">
                     <el-form-item prop="invoice_title" label="发票抬头">
-                        <el-input v-model="form.invoice_title"></el-input>
+                        <el-input v-model="form.invoice_title"/>
                     </el-form-item>
                     <el-form-item prop="invoice_no" label="发票编号">
-                        <el-input v-model="form.invoice_no"></el-input>
+                        <el-input v-model="form.invoice_no"/>
                     </el-form-item>
                     <el-form-item prop="status" label="商户状态">
                         <el-radio-group v-model="form.status">
@@ -79,66 +83,68 @@
                         {{form.lng_and_lat}}
                         <el-button @click="isShow = true">更换地理位置</el-button>
                         <el-dialog title="更换地理位置" :visible.sync="isShow" :modal="false">
-                            <amap-choose-point width="100%" height="500px" v-model="form.lng_and_lat" @select="selectMap"></amap-choose-point>
+                            <amap-choose-point width="100%" height="500px" v-model="form.lng_and_lat" @select="selectMap"/>
                         </el-dialog>
                     </el-form-item>
                     <el-form-item prop="address" label="详细地址">
-                        <el-input v-model="form.address"></el-input>
+                        <el-input v-model="form.address"/>
                     </el-form-item>
                     <el-form-item prop="contacter" label="负责人姓名">
-                        <el-input v-model="form.contacter"></el-input>
+                        <el-input v-model="form.contacter"/>
                     </el-form-item>
-                    <el-form-item prop="contacter_phone" label="负责人联系方式">
-                        <el-input v-model="form.contacter_phone"></el-input>
+                    <el-form-item prop="contacter_phone" label="客服电话">
+                        <el-input v-model="form.contacter_phone"/>
                     </el-form-item>
                 </el-col>
 
                 <el-col>
                     <div class="title">商务信息:</div>
                 </el-col>
+                <!--商务信息左侧块-->
                 <el-col :span="11">
 
                     <el-form-item prop="settlement_cycle_type" label="结算周期">
                         <el-select :disabled="!!data" v-model="form.settlement_cycle_type" placeholder="请选择">
-                            <el-option label="周结" :value="1"></el-option>
-                            <el-option label="半月结" :value="2"></el-option>
-                            <el-option label="月结" :value="3"></el-option>
-                            <el-option label="半年结" :value="4"></el-option>
-                            <el-option label="年结" :value="5"></el-option>
+                            <el-option label="周结" :value="1"/>
+                            <el-option label="半月结" :value="2"/>
+                            <el-option label="月结" :value="3"/>
+                            <el-option label="半年结" :value="4"/>
+                            <el-option label="年结" :value="5"/>
                         </el-select>
                     </el-form-item>
                     <el-form-item prop="settlement_rate" label="分利比例">
-                        <el-input-number v-model="form.settlement_rate" :min="0" :max="100"></el-input-number>
+                        <el-input-number v-model="form.settlement_rate" :min="0" :max="100"/>
                         <div>返利百分比,如20%请填写20</div>
                     </el-form-item>
                     <el-form-item prop="business_licence_pic_url" label="营业执照（必填）">
-                        <image-upload v-model="form.business_licence_pic_url" :limit="1"></image-upload>
+                        <image-upload v-model="form.business_licence_pic_url" :limit="1"/>
                     </el-form-item>
                     <el-form-item prop="organization_code" label="组织机构代码">
-                        <el-input v-model="form.organization_code"></el-input>
+                        <el-input v-model="form.organization_code"/>
                     </el-form-item>
                     <el-form-item prop="tax_cert_pic_url" label="税务登记证">
-                        <image-upload v-model="form.tax_cert_pic_url" :limit="1"></image-upload>
+                        <image-upload v-model="form.tax_cert_pic_url" :limit="1"/>
                     </el-form-item>
                     <el-form-item prop="legal_id_card_pic_a" label="法人身份证正面">
-                        <image-upload v-model="form.legal_id_card_pic_a" :limit="1"></image-upload>
+                        <image-upload v-model="form.legal_id_card_pic_a" :limit="1"/>
                     </el-form-item>
                     <el-form-item prop="legal_id_card_pic_b" label="法人身份证反面">
-                        <image-upload v-model="form.legal_id_card_pic_b" :limit="1"></image-upload>
+                        <image-upload v-model="form.legal_id_card_pic_b" :limit="1"/>
                     </el-form-item>
                     <el-form-item prop="contract_pic_url" label="合同">
-                        <image-upload v-model="form.contract_pic_url" :limit="1"></image-upload>
+                        <image-upload v-model="form.contract_pic_url" :limit="1"/>
                     </el-form-item>
                     <el-form-item prop="licence_pic_url" label="开户许可证">
-                        <image-upload v-model="form.licence_pic_url" :limit="1"></image-upload>
+                        <image-upload v-model="form.licence_pic_url" :limit="1"/>
                     </el-form-item>
                     <el-form-item prop="hygienic_licence_pic_url" label="卫生许可证">
-                        <image-upload v-model="form.hygienic_licence_pic_url" :limit="1"></image-upload>
+                        <image-upload v-model="form.hygienic_licence_pic_url" :limit="1"/>
                     </el-form-item>
                     <el-form-item prop="agreement_pic_url" label="协议文件">
-                        <image-upload v-model="form.agreement_pic_url" :limit="1"></image-upload>
+                        <image-upload v-model="form.agreement_pic_url" :limit="1"/>
                     </el-form-item>
                 </el-col>
+                <!--商务信息右侧块-->
                 <el-col :span="11">
 
                     <el-form-item prop="bank_card_type" label="类型">
@@ -148,16 +154,16 @@
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item prop="bank_open_name" label="银行开户名">
-                        <el-input v-model="form.bank_open_name"></el-input>
+                        <el-input v-model="form.bank_open_name"/>
                     </el-form-item>
                     <el-form-item prop="bank_card_no" label="银行账号">
-                        <el-input v-model="form.bank_card_no"></el-input>
+                        <el-input v-model="form.bank_card_no"/>
                     </el-form-item>
                     <el-form-item prop="sub_bank_name" label="开户支行名称">
-                        <el-input v-model="form.sub_bank_name"></el-input>
+                        <el-input v-model="form.sub_bank_name"/>
                     </el-form-item>
                     <el-form-item prop="bank_open_address" label="开户支行地址">
-                        <el-input v-model="form.bank_open_address"></el-input>
+                        <el-input v-model="form.bank_open_address"/>
                     </el-form-item>
                 </el-col>
                 <el-col>
@@ -232,7 +238,7 @@
                         {type: 'array', required: true, message: '所属行业不能为空'}
                     ],
                     logo: [
-                        {required: true, message: '商家logo不能为空'}
+                        {required: true, message: '商家logo不能为空', trigger: 'change'}
                     ],
                     desc_pic: [
                         {required: true, message: '商家介绍图片不能为空'}
@@ -241,6 +247,7 @@
                         {required: true, message: '商家介绍不能为空'}
                     ],
                     settlement_rate: [
+                        {required: true, message: '分利比例不能为空'},
                         {
                             validator(rule, value, callback){
                                 if(value === ''){
@@ -255,12 +262,17 @@
                         {required: true, message: '营业执照不能为空'},
                     ],
                     lng_and_lat: [
-                        {required: true, message: '商户位置不能为空'}
+                        {required: true, message: '商户位置不能为空'},
                     ],
                     area: [
-                        {type: 'array', required: true, message: '省/市/区不能为空'}
+                        {type: 'array', required: true, message: '省/市/区不能为空'},
                     ],
-
+                    contacter_phone: [
+                        {required: true, message: '客服电话不能为空'},
+                    ],
+                    business_time: [
+                        {type: 'array', required: true, message: '营业时间不能为空'},
+                    ]
                 },
             }
         },
@@ -290,7 +302,6 @@
                     this.form.settlement_cycle_type = parseInt(this.data.settlement_cycle_type);
                     this.form.status = parseInt(this.data.status);
                     this.form.bank_card_type = parseInt(this.data.bank_card_type);
-                    console.log(this.form);
                 }else {
                     this.form = deepCopy(defaultForm)
                 }
@@ -298,11 +309,13 @@
             cancel(){
                 this.$emit('cancel');
             },
+            resetForm(){
+                this.$refs.form.resetFields();
+            },
             save(){
                 this.$refs.form.validate(valid => {
                     if(valid){
                         let data = deepCopy(this.form);
-
 
                         if(this.data && this.data.id){
                             data.id = this.data.id;
@@ -321,7 +334,6 @@
                         this.$emit('save', data);
                     }
                 })
-
             },
             selectMap(data) {
                 this.isShow = false;

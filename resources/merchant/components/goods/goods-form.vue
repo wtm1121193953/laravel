@@ -6,10 +6,10 @@
                     <el-input v-model="form.name"/>
                 </el-form-item>
                 <el-form-item prop="market_price" label="市场价">
-                    <el-input-number v-model="form.market_price"></el-input-number>
+                    <el-input-number v-model="form.market_price"/>
                 </el-form-item>
                 <el-form-item prop="price" label="销售价">
-                    <el-input-number v-model="form.price"></el-input-number>
+                    <el-input-number v-model="form.price"/>
                 </el-form-item>
                 <el-form-item label="有效期">
                     <el-date-picker
@@ -26,14 +26,17 @@
                             value-format="yyyy-MM-dd">
                     </el-date-picker>
                 </el-form-item>
+                <el-form-item prop="thumb_url" label="产品缩略图">
+                    <image-upload :width="190" :height="190" v-model="form.thumb_url" :limit="1"/>
+                </el-form-item>
                 <el-form-item prop="pic" label="产品详情图">
-                    <image-upload v-model="form.pic" :limit="1"></image-upload>
+                    <image-upload :width="750" :height="526" v-model="form.pic" :limit="1"/>
                 </el-form-item>
                 <el-form-item prop="desc" label="商品简介">
-                    <el-input v-model="form.desc" type="textarea"></el-input>
+                    <el-input v-model="form.desc" :autosize="{minRows: 2}" type="textarea"/>
                 </el-form-item>
                 <el-form-item prop="buy_info" label="购买须知">
-                    <el-input v-model="form.buy_info" type="textarea"></el-input>
+                    <el-input v-model="form.buy_info" :autosize="{minRows: 2}" type="textarea"/>
                 </el-form-item>
                 <el-form-item prop="status" label="状态">
                     <el-radio-group v-model="form.status">
@@ -58,6 +61,7 @@
         start_date: '',
         end_date: '',
         pic: '',
+        thumb_url: '',
         desc: '',
         buy_info: '',
         status: 1,
@@ -83,6 +87,12 @@
                     price: [
                         {required: true, message: '销售价不能为空'}
                     ],
+                    thumb_url: [
+                        {required: true, message: '缩略图不能为空'}
+                    ],
+                    pic: [
+                        {required: true, message: '详情图不能为空'}
+                    ],
                 },
             }
         },
@@ -94,7 +104,14 @@
                     this.form = deepCopy(defaultForm)
                 }
             },
+            resetForm(){
+                this.form.start_date = '';
+                this.form.end_date = '';
+                this.$refs.form.resetFields();
+                console.log(this.form)
+            },
             cancel(){
+                console.log(this.form)
                 this.$emit('cancel');
             },
             save(){

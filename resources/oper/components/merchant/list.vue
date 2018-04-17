@@ -55,6 +55,7 @@
 
         <el-dialog title="添加商户" width="70%" :visible.sync="isAdd">
             <merchant-form
+                    ref="addForm"
                     @cancel="isAdd = false"
                     @save="doAdd"/>
         </el-dialog>
@@ -86,7 +87,6 @@
         methods: {
             getList(){
                 api.get('/merchants', this.query).then(data => {
-                    console.log(data);
                     this.list = data.list;
                     this.total = data.total;
                 })
@@ -101,6 +101,7 @@
                 this.isLoading = true;
                 api.post('/merchant/add', data).then(() => {
                     this.isAdd = false;
+                    this.$refs.addForm.resetForm();
                     this.getList();
                 }).finally(() => {
                     this.isLoading = false;

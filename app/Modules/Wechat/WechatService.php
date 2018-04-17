@@ -43,7 +43,11 @@ class WechatService
      */
     public static function getWechatPayAppForOper($operId)
     {
-        $miniProgram = OperMiniprogram::where('oper_id', $operId)->firstOrFail();
+        if($operId instanceof OperMiniprogram){
+            $miniProgram = $operId;
+        }else {
+            $miniProgram = OperMiniprogram::where('oper_id', $operId)->firstOrFail();
+        }
 
         $config = [
             // 必要配置

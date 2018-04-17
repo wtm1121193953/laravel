@@ -36,6 +36,17 @@ class OperController extends Controller
         ]);
     }
 
+    public function detail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $oper = Oper::findOrFail(request('id'));
+        $oper->account = OperAccount::where('oper_id', $oper->id)->first() ?: null;
+        $oper->miniprogram = OperMiniprogram::where('oper_id', $oper->id)->first() ?: null;
+        return Result::success($oper);
+    }
+
     /**
      * 获取全部列表
      */
@@ -58,6 +69,8 @@ class OperController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required',
+            'province_id' => 'required',
+            'city_id' => 'required',
         ]);
         $oper = new Oper();
         $oper->name = request('name');
@@ -76,7 +89,7 @@ class OperController extends Controller
         $oper->legal_id_card = request('legal_id_card', '');
         $oper->invoice_type = request('invoice_type', 0);
         $oper->invoice_tax_rate = request('invoice_tax_rate', 0);
-        $oper->settlement_cycle_type = request('settlement_cycle_type', 1);
+//        $oper->settlement_cycle_type = request('settlement_cycle_type', 1);
         $oper->bank_card_no = request('bank_card_no', '');
         $oper->sub_bank_name = request('sub_bank_name', '');
         $oper->bank_open_name = request('bank_open_name', '');
@@ -118,7 +131,7 @@ class OperController extends Controller
         $oper->legal_id_card = request('legal_id_card', '');
         $oper->invoice_type = request('invoice_type', 0);
         $oper->invoice_tax_rate = request('invoice_tax_rate', 0);
-        $oper->settlement_cycle_type = request('settlement_cycle_type', 1);
+//        $oper->settlement_cycle_type = request('settlement_cycle_type', 1);
         $oper->bank_card_no = request('bank_card_no', '');
         $oper->sub_bank_name = request('sub_bank_name', '');
         $oper->bank_open_name = request('bank_open_name', '');

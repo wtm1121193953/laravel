@@ -26,7 +26,7 @@
             /**
              * 数组元素 可以是一个字符串, 也可以是一个对象, 对象时包含字段为name和path
              */
-            breadcrumbs: {type: Array, default: () => [] },
+            breadcrumbs: {type: Object, default: () => {} },
         },
         methods: {
             toPath(path){

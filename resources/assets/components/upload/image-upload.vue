@@ -13,6 +13,7 @@
                 :limit="limit"
                 :data="data"
                 :on-exceed="onExceed"
+                :class="{'upload-fulled' : fileList.length >= limit}"
         >
             <i v-if="!$slots.default" class="el-icon-plus"></i>
             <slot/>
@@ -117,6 +118,11 @@
                         this.fileList = fileList;
                         this.emitInput();
                     } else {
+                        fileList.forEach(function (item, index) {
+                            if(item === file){
+                                fileList.splice(index, 1)
+                            }
+                        })
                         this.$message.error('请上传图片尺寸为' + width + 'px*' + height + 'px且大小不能超过2MB的图片')
                         return false;
                     }
@@ -147,24 +153,34 @@
             },
             onExceed(){
                 this.$message.warning(`最多只能上传${this.limit}张图片`)
+            },
+            initFileList(){
+
+                let value = [];
+                if(typeof this.value === 'string'){
+                    this.valueType = 'string';
+                    if(this.value){
+                        value = this.value.split(',')
+                    }
+                }else {
+                    this.valueType = 'array';
+                    value = this.value || [];
+                }
+                this.fileList = [];
+                value.forEach(item => {
+                    this.fileList.push({
+                        url: item
+                    })
+                })
             }
         },
         created(){
-            let value = [];
-            if(typeof this.value === 'string'){
-                this.valueType = 'string';
-                if(this.value){
-                    value = this.value.split(',')
-                }
-            }else {
-                this.valueType = 'array';
-                value = this.value || [];
+            this.initFileList()
+        },
+        watch: {
+            value (val){
+                this.initFileList()
             }
-            value.forEach(item => {
-                this.fileList.push({
-                    url: item
-                })
-            })
         },
         components: {
             ImgPreviewDialog
@@ -172,6 +188,11 @@
     }
 </script>
 
-<style scoped>
+<style>
+    .upload-fulled .el-upload--picture-card {
+        display: none;
+    }
+</style>
 
+<style scoped>
 </style>
