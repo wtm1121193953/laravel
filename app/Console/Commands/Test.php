@@ -48,6 +48,12 @@ class Test extends Command
      */
     public function handle()
     {
+        SettlementJob::dispatch(Merchant::SETTLE_WEEKLY);
+        SettlementJob::dispatch(Merchant::SETTLE_HALF_MONTHLY);
+        SettlementJob::dispatch(Merchant::SETTLE_MONTHLY);
+        SettlementJob::dispatch(Merchant::SETTLE_HALF_YEARLY);
+        SettlementJob::dispatch(Merchant::SETTLE_YEARLY);
+        dd();
         dd(new \Illuminate\Support\Carbon(Factory::create()->dateTimeBetween('-7 days')->format('Y-m-d H:i:s')));
         dd(Factory::create()->dateTimeBetween('-7 days')->format('YmdHis'));
         SettlementJob::dispatch(1);
