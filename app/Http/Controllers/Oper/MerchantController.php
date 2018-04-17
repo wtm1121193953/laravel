@@ -229,4 +229,13 @@ class MerchantController extends Controller
 
         return Result::success($account);
     }
+
+    public function getMerchantById()
+    {
+        $id = request('id');
+        $merchant = Merchant::findOrFail($id);
+        $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
+        $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
+        return Result::success($merchant);
+    }
 }

@@ -6,13 +6,6 @@
         <el-button v-if="!scope.row.account && parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="showCreateAccountDialog = true">生成账户</el-button>
         <el-button v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改账户密码</el-button>
 
-        <el-dialog title="编辑商户信息" width="70%" :visible.sync="isEdit">
-            <merchant-form
-                    :data="scope.row"
-                    @cancel="isEdit = false"
-                    @save="doEdit"/>
-        </el-dialog>
-
 
         <el-dialog title="创建商户账号" :visible.sync="showCreateAccountDialog">
             <el-row>
@@ -63,7 +56,6 @@
         },
         data(){
             return {
-                isEdit: false,
                 showCreateAccountDialog: false,
                 accountForm: {
                     account: '',
@@ -93,15 +85,12 @@
         },
         methods: {
             edit(){
-                this.isEdit = true;
-            },
-            doEdit(data){
-                this.$emit('before-request')
-                api.post('/merchant/edit', data).then((data) => {
-                    this.isEdit = false;
-                    this.$emit('change', this.scope.$index, data)
-                }).finally(() => {
-                    this.$emit('after-request')
+                router.push({
+                    path: '/merchants/form',
+                    query: {
+                        type: 'edit',
+                        merchant_id: this.scope.row.id,
+                    }
                 })
             },
             changeStatus(){

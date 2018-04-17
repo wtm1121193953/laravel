@@ -52,13 +52,6 @@
                 @current-change="getList"
                 :page-size="15"
                 :total="total"/>
-
-        <el-dialog title="添加商户" width="70%" :visible.sync="isAdd">
-            <merchant-form
-                    ref="addForm"
-                    @cancel="isAdd = false"
-                    @save="doAdd"/>
-        </el-dialog>
     </page>
 </template>
 
@@ -72,7 +65,6 @@
         name: "merchant-list",
         data(){
             return {
-                isAdd: false,
                 isLoading: false,
                 query: {
                     page: 1,
@@ -95,17 +87,12 @@
                 this.getList();
             },
             add(){
-                this.isAdd = true;
-            },
-            doAdd(data){
-                this.isLoading = true;
-                api.post('/merchant/add', data).then(() => {
-                    this.isAdd = false;
-                    this.$refs.addForm.resetForm();
-                    this.getList();
-                }).finally(() => {
-                    this.isLoading = false;
-                })
+                router.push({
+                    path: '/merchants/form',
+                    query: {
+                        type: 'add'
+                    }
+                });
             },
             accountChanged(scope, account){
                 let row = this.list[scope.$index];
