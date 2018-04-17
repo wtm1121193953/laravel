@@ -262,12 +262,17 @@
                         {required: true, message: '营业执照不能为空'},
                     ],
                     lng_and_lat: [
-                        {required: true, message: '商户位置不能为空'}
+                        {required: true, message: '商户位置不能为空'},
                     ],
                     area: [
-                        {type: 'array', required: true, message: '省/市/区不能为空'}
+                        {type: 'array', required: true, message: '省/市/区不能为空'},
                     ],
-
+                    contacter_phone: [
+                        {required: true, message: '客服电话不能为空'},
+                    ],
+                    business_time: [
+                        {type: 'array', required: true, message: '营业时间不能为空'},
+                    ]
                 },
             }
         },
@@ -308,7 +313,6 @@
                 this.$refs.form.validate(valid => {
                     if(valid){
                         let data = deepCopy(this.form);
-
 
                         if(this.data && this.data.id){
                             data.id = this.data.id;
