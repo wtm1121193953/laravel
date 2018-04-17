@@ -37723,27 +37723,9 @@ var render = function() {
                     "el-menu-item",
                     {
                       staticClass: "top-menu-item",
-                      attrs: { index: "refresh-rules" }
-                    },
-                    [_vm._v("刷新权限")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-menu-item",
-                    {
-                      staticClass: "top-menu-item",
                       attrs: { index: "theme-setting" }
                     },
                     [_vm._v("主题设置")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-menu-item",
-                    {
-                      staticClass: "top-menu-item",
-                      attrs: { index: "modify-password" }
-                    },
-                    [_vm._v("修改密码")]
                   ),
                   _vm._v(" "),
                   _c(

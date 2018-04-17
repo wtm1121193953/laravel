@@ -28,9 +28,9 @@
             >
                 <el-submenu index="options" :show-timeout="100" style="float: right;">
                     <template slot="title">{{username}} <i class="fa fa-user" aria-hidden="true"></i></template>
-                    <el-menu-item index="refresh-rules" class="top-menu-item">刷新权限</el-menu-item>
+                    <!--<el-menu-item index="refresh-rules" class="top-menu-item">刷新权限</el-menu-item>-->
                     <el-menu-item index="theme-setting" class="top-menu-item">主题设置</el-menu-item>
-                    <el-menu-item index="modify-password" class="top-menu-item">修改密码</el-menu-item>
+                    <!--<el-menu-item index="modify-password" class="top-menu-item">修改密码</el-menu-item>-->
                     <el-menu-item index="logout" class="top-menu-item">退出</el-menu-item>
                 </el-submenu>
             </el-menu>
