@@ -169,7 +169,7 @@
             getTitleAndLogo() {
                 document.title = this.projectName + ' - ' + this.systemName
                 this.logo_type = 2
-                this.logo = this.projectName
+                this.logo = this.systemName
             },
             ...mapMutations([
                 'setTheme',

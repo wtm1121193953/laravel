@@ -884,7 +884,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
         getTitleAndLogo: function getTitleAndLogo() {
             document.title = this.projectName + ' - ' + this.systemName;
             this.logo_type = 2;
-            this.logo = this.projectName;
+            this.logo = this.systemName;
         }
     }, Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["d" /* mapMutations */])(['setTheme']), Object(__WEBPACK_IMPORTED_MODULE_2_vuex__["b" /* mapActions */])(['resetTheme', 'setThemeByName']), {
         resetTheme: function resetTheme() {
