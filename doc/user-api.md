@@ -201,7 +201,7 @@ token (wxLogin接口除外)
 - [ ] 获取商家类别列表
 
     接口地址: GET `/merchant/categories/tree`
-
+    
     返回:
 
   ```
@@ -305,9 +305,9 @@ token (wxLogin接口除外)
 - [ ] 商品列表
 
     接口地址: GET `/goods`
-
+    
     参数: `merchant_id` 商家ID
-
+    
     返回
 
   ```
@@ -323,6 +323,7 @@ token (wxLogin接口除外)
           price; 商品价格,
           start_date: 商品有效期开始日期,
           end_date: 商品有效期结束日期,
+          thumb_url: 商品缩略图,
           pic: 商品默认图,
           pic_list: 商品小图列表, 数组
           buy_info: 购买须知,
@@ -339,9 +340,9 @@ token (wxLogin接口除外)
 - [ ] 商品详情
 
     接口地址: GET `/goods/detail`
-
+    
     参数: id 商品ID
-
+    
     返回
 
   ```
@@ -381,6 +382,7 @@ token (wxLogin接口除外)
                 goods_id: 商品ID,
                 goods_name: 商品名,
                 goods_pic: 商品图片,
+                goods_thumb_url: 商品缩略图,
                 price: 商家单价,
                 buy_number: 购买数量,
                 pay_price: 支付金额,
