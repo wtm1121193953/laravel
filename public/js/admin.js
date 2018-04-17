@@ -2832,7 +2832,7 @@ var defaultForm = {
     status: 1,
     contacter: '',
     tel: '',
-    selectAreas: [],
+    selectAreas: null,
     address: '',
     email: '',
     legal_name: '',
