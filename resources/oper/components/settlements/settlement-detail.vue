@@ -1,10 +1,10 @@
 <template>
     <page title="结算详情">
         <el-table :data="list" stripe>
-            <el-table-column prop="created_at" label="创建时间" align="center"></el-table-column>
-            <el-table-column prop="order_no" label="订单号" align="center"></el-table-column>
-            <el-table-column prop="goods_name" label="商品名称" align="center"></el-table-column>
-            <el-table-column prop="pay_price" label="总价" align="center"></el-table-column>
+            <el-table-column prop="created_at" label="创建时间" align="center"/>
+            <el-table-column prop="order_no" label="订单号" align="center"/>
+            <el-table-column prop="goods_name" label="商品名称" align="center"/>
+            <el-table-column prop="pay_price" label="总价" align="center"/>
             <el-table-column prop="status" label="订单状态" align="center">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.status) === 1">未支付</span>
@@ -26,7 +26,7 @@
                 @current-change="getSettlementOrders"
                 :page-size="15"
                 :total="total"
-        ></el-pagination>
+        />
     </page>
 </template>
 
@@ -43,8 +43,8 @@
                 list: [],
                 query: {
                     page: 1,
-                    settlement_id: this.scope.id,
-                    merchant_id: this.scope.merchant_id,
+                    settlement_id: 0,
+                    merchant_id: 0,
                 },
                 total: 0,
             }
@@ -55,10 +55,23 @@
                     this.list = data.list;
                     this.total = data.total;
                 })
+            },
+            init(){
+                this.query.settlement_id = this.scope.id;
+                this.query.merchant_id = this.scope.merchant_id;
             }
         },
         created() {
+            this.init();
             this.getSettlementOrders();
+        },
+        watch: {
+            scope: {
+                deep: true,
+                handler(){
+                    this.init();
+                }
+            }
         }
     }
 </script>
