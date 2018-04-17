@@ -16,6 +16,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Result;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
@@ -52,6 +53,12 @@ class LoginController extends Controller
             'user' => $user,
             'menus' => $this->getMenus(),
         ]);
+    }
+
+    public function logout()
+    {
+        Session::flush();
+        return Result::success();
     }
 
     private function getMenus()

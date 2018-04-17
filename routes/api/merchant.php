@@ -10,6 +10,7 @@ Route::prefix('merchant')
     ->middleware('merchant')->group(function (){
 
         Route::post('login', 'LoginController@login');
+        Route::post('logout', 'LoginController@logout');
 
         Route::group([], base_path('routes/api/merchant/goods.php'));
         Route::group([], base_path('routes/api/merchant/orders.php'));

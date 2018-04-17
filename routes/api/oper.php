@@ -10,6 +10,7 @@ Route::prefix('oper')
     ->middleware('oper')->group(function (){
 
         Route::post('login', 'LoginController@login');
+        Route::post('logout', 'LoginController@logout');
 
         Route::get('area/tree', 'AreaController@getTree');
 
