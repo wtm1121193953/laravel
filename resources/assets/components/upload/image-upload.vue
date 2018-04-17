@@ -13,6 +13,7 @@
                 :limit="limit"
                 :data="data"
                 :on-exceed="onExceed"
+                :class="{'upload-fulled' : fileList.length >= limit}"
         >
             <i v-if="!$slots.default" class="el-icon-plus"></i>
             <slot/>
@@ -160,6 +161,7 @@
                     this.valueType = 'array';
                     value = this.value || [];
                 }
+                this.fileList = [];
                 value.forEach(item => {
                     this.fileList.push({
                         url: item
@@ -181,6 +183,11 @@
     }
 </script>
 
-<style scoped>
+<style>
+    .upload-fulled .el-upload--picture-card {
+        display: none;
+    }
+</style>
 
+<style scoped>
 </style>
