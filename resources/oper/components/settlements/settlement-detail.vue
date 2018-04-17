@@ -59,11 +59,11 @@
             init(){
                 this.query.settlement_id = this.scope.id;
                 this.query.merchant_id = this.scope.merchant_id;
+                console.log(this.query)
             }
         },
         created() {
             this.init();
-            console.log(this.query)
             this.getSettlementOrders();
         },
         watch: {
