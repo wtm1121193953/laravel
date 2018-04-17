@@ -34,12 +34,6 @@
                 :page-size="15"
                 :total="total"/>
 
-        <el-dialog title="添加运营中心" :visible.sync="isAdd">
-            <oper-form
-                    ref="addForm"
-                    @cancel="isAdd = false"
-                    @save="doAdd"/>
-        </el-dialog>
     </page>
 </template>
 
@@ -53,7 +47,6 @@
         name: "oper-list",
         data(){
             return {
-                isAdd: false,
                 isLoading: false,
                 query: {
                     page: 1,
@@ -76,17 +69,7 @@
                 this.list.splice(index, 1, data)
             },
             add(){
-                this.isAdd = true;
-            },
-            doAdd(data){
-                this.isLoading = true;
-                api.post('/oper/add', data).then(() => {
-                    this.$refs.addForm.resetForm();
-                    this.isAdd = false;
-                    this.getList();
-                }).finally(() => {
-                    this.isLoading = false;
-                })
+                router.push('/oper/add')
             },
             itemChanged(index, data){
                 this.list.splice(index, 1, data)

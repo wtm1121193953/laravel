@@ -1396,9 +1396,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         /**
          * 数组元素 可以是一个字符串, 也可以是一个对象, 对象时包含字段为name和path
          */
-        breadcrumbs: { type: Array, default: function _default() {
-                return [];
-            } }
+        breadcrumbs: { type: Object, default: function _default() {} }
     },
     methods: {
         toPath: function toPath(path) {

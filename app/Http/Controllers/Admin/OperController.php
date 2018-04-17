@@ -36,6 +36,17 @@ class OperController extends Controller
         ]);
     }
 
+    public function detail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $oper = Oper::findOrFail(request('id'));
+        $oper->account = OperAccount::where('oper_id', $oper->id)->first() ?: null;
+        $oper->miniprogram = OperMiniprogram::where('oper_id', $oper->id)->first() ?: null;
+        return Result::success($oper);
+    }
+
     /**
      * 获取全部列表
      */
@@ -58,6 +69,8 @@ class OperController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required',
+            'province_id' => 'required',
+            'city_id' => 'required',
         ]);
         $oper = new Oper();
         $oper->name = request('name');
