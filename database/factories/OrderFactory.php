@@ -8,17 +8,19 @@ $factory->define(\App\Modules\Order\Order::class, function (Faker $faker) {
 //    $opers = \App\Modules\Oper\Oper::all();
     $oper = \App\Modules\Oper\Oper::find(1);
     $merchants = \App\Modules\Merchant\Merchant::where('oper_id', $oper->id)->get();
-    $merchant = \App\Modules\Merchant\Merchant::find(1);
+    $merchant = $merchants->random();
     $goodsList = \App\Modules\Goods\Goods::where('merchant_id', $merchant->id)->get();
     $goods = $goodsList->random();
     $userOpenIdMappings = \App\Modules\User\UserOpenIdMapping::where('oper_id', $oper->id)->get();
-    $user = \App\Modules\User\User::find($userOpenIdMappings->random()->user_id);
+    $userOpenIdMapping = $userOpenIdMappings->random();
+    $user = \App\Modules\User\User::find($userOpenIdMapping->user_id);
     $createTime = $faker->dateTimeBetween('-7 days');
     return [
         //
         'oper_id' => $oper->id,
         'order_no' => 'O' . $createTime->format('YmdHis') . rand(100000, 999999),
         'user_id' => $user->id,
+        'open_id' => $userOpenIdMapping->open_id,
         'user_name' => $user->name || '',
         'notify_mobile' => $user->mobile,
         'merchant_id' => $merchant->id,
