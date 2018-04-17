@@ -14,7 +14,7 @@
         </el-dialog>
 
 
-        <el-dialog title="创建运营中心账户" :visible.sync="showCreateAccountDialog">
+        <el-dialog title="创建商户账号" :visible.sync="showCreateAccountDialog">
             <el-row>
                 <el-col :span="16">
                     <el-form size="mini" :model="accountForm" :rules="accountFormRules" label-width="150px">
