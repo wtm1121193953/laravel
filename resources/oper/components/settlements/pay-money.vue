@@ -64,8 +64,11 @@
             this.initForm();
         },
         watch: {
-            scope(){
-                this.initForm();
+            scope:{
+                deep: true,
+                handler(){
+                    this.initForm();
+                }
             }
         }
     }
