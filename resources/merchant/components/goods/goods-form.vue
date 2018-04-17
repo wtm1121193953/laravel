@@ -30,10 +30,10 @@
                     <image-upload v-model="form.pic" :limit="1"/>
                 </el-form-item>
                 <el-form-item prop="desc" label="商品简介">
-                    <el-input v-model="form.desc" type="textarea"/>
+                    <el-input v-model="form.desc" :autosize="{minRows: 2}" type="textarea"/>
                 </el-form-item>
                 <el-form-item prop="buy_info" label="购买须知">
-                    <el-input v-model="form.buy_info" type="textarea"/>
+                    <el-input v-model="form.buy_info" :autosize="{minRows: 2}" type="textarea"/>
                 </el-form-item>
                 <el-form-item prop="status" label="状态">
                     <el-radio-group v-model="form.status">

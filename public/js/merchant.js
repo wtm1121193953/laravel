@@ -38692,7 +38692,7 @@ var render = function() {
                 { attrs: { prop: "desc", label: "商品简介" } },
                 [
                   _c("el-input", {
-                    attrs: { type: "textarea" },
+                    attrs: { autosize: { minRows: 2 }, type: "textarea" },
                     model: {
                       value: _vm.form.desc,
                       callback: function($$v) {
@@ -38710,7 +38710,7 @@ var render = function() {
                 { attrs: { prop: "buy_info", label: "购买须知" } },
                 [
                   _c("el-input", {
-                    attrs: { type: "textarea" },
+                    attrs: { autosize: { minRows: 2 }, type: "textarea" },
                     model: {
                       value: _vm.form.buy_info,
                       callback: function($$v) {

@@ -38794,7 +38794,7 @@ var render = function() {
         "el-dialog",
         {
           attrs: {
-            title: "创建运营中心账户",
+            title: "创建商户账号",
             visible: _vm.showCreateAccountDialog
           },
           on: {
