@@ -23,6 +23,7 @@ class MerchantController extends Controller
 
         $data->each(function ($item){
             $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
+            $item->business_time = json_decode($item->business_time, 1);
         });
 
         return Result::success([
@@ -37,6 +38,8 @@ class MerchantController extends Controller
             'id' => 'required|integer|min:1'
         ]);
         $merchant = Merchant::findOrFail(request('id'));
+        $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
+        $merchant->business_time = json_decode($merchant->business_time, 1);
         return Result::success($merchant);
     }
 
