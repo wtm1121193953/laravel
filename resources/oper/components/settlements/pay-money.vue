@@ -50,12 +50,23 @@
                 }
                 api.post('/updatePayPicUrl', this.form).then(data => {
                     this.$message.success('上传回款单成功');
+                    this.$refs.form.resetFields();
+                    this.form.pay_pic_url = '';
                     this.$emit('save');
                 })
+            },
+            initForm(){
+                this.form.id = parseInt(this.scope.id);
+                this.form.pay_pic_url = this.scope.pay_pic_url;
             }
         },
         created() {
-            this.form.id = parseInt(this.scope.id);
+            this.initForm();
+        },
+        watch: {
+            scope(){
+                this.initForm();
+            }
         }
     }
 </script>
