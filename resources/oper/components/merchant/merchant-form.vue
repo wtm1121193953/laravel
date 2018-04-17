@@ -309,6 +309,9 @@
             cancel(){
                 this.$emit('cancel');
             },
+            resetForm(){
+                this.$refs.form.resetFields();
+            },
             save(){
                 this.$refs.form.validate(valid => {
                     if(valid){
@@ -331,7 +334,6 @@
                         this.$emit('save', data);
                     }
                 })
-
             },
             selectMap(data) {
                 this.isShow = false;
