@@ -26,10 +26,23 @@ class AreaService
         return $tree;
     }
 
+    public static function getCityListGroupByFirstLetter()
+    {
+//        $list = Cache::get('cities_group_by_first_letter');
+        if(empty($list)){
+            $list = Area::where('path', 2)->orderBy('first_letter')->get();
+            $list = $list->each(function ($item){
+                $item->name = str_replace('市', '', $item->name);
+            })->groupBy('first_letter')->toArray();
+            Cache::forever('cities_group_by_first_letter', $list);
+        }
+        return $list;
+    }
 
     public static function convertAreaToTree($list, $pid = 0, $tier=3)
     {
         $tree = Utils::convertListToTree($list, $pid, $tier, 'parent_id', 'area_id');
         return $tree;
     }
+
 }
