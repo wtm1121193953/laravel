@@ -21,6 +21,7 @@ $factory->define(\App\Modules\Order\Order::class, function (Faker $faker) {
         'goods_id' => $goods->id,
         'goods_name' => $goods->name,
         'goods_pic' => $goods->pic,
+        'goods_thumb_url' => $goods->thumb_url,
         'price' => $goods->price,
         'buy_number' => $number,
         'status' => 1,
