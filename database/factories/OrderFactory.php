@@ -4,28 +4,34 @@ use Faker\Generator as Faker;
 
 $factory->define(\App\Modules\Order\Order::class, function (Faker $faker) {
     $number = rand(1, 13);
-    $id = $faker->unique()->randomNumber();
-    factory(\App\Modules\Order\OrderItem::class, $number)->create([
-        'order_id' => $id,
-    ]);
-    $goods = \App\Modules\Goods\Goods::find(1);
+
+//    $opers = \App\Modules\Oper\Oper::all();
+    $oper = \App\Modules\Oper\Oper::find(1);
+    $merchants = \App\Modules\Merchant\Merchant::where('oper_id', $oper->id)->get();
+    $merchant = \App\Modules\Merchant\Merchant::find(1);
+    $goodsList = \App\Modules\Goods\Goods::where('merchant_id', $merchant->id)->get();
+    $goods = $goodsList->random();
+    $userOpenIdMappings = \App\Modules\User\UserOpenIdMapping::where('oper_id', $oper->id)->get();
+    $user = \App\Modules\User\User::find($userOpenIdMappings->random()->user_id);
+    $createTime = $faker->dateTimeBetween('-7 days');
     return [
         //
-        'id' => $id,
-        'oper_id' => 1,
-        'order_no' => 'O' . $faker->date('YmdHis') . rand(100000, 999999),
-        'user_id' => 1,
-        'user_name' => 'mock user',
-        'merchant_id' => 1,
-        'merchant_name' => 'mock merchant',
+        'oper_id' => $oper->id,
+        'order_no' => 'O' . $createTime->format('YmdHis') . rand(100000, 999999),
+        'user_id' => $user->id,
+        'user_name' => $user->name || '',
+        'notify_mobile' => $user->mobile,
+        'merchant_id' => $merchant->id,
+        'merchant_name' => $merchant->name,
         'goods_id' => $goods->id,
         'goods_name' => $goods->name,
         'goods_pic' => $goods->pic,
         'goods_thumb_url' => $goods->thumb_url,
         'price' => $goods->price,
         'buy_number' => $number,
-        'status' => 1,
+        'status' => 4,
         'pay_price' => $goods->price * $number,
-        'pay_time' => $faker->dateTime(),
+        'pay_time' => (new \Illuminate\Support\Carbon($createTime->format('Y-m-d H:i:s')))->addMinutes(6),
+        'created_at' => $createTime,
     ];
 });

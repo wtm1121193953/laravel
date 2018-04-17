@@ -6,6 +6,7 @@ use App\Jobs\SettlementJob;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Wechat\WechatService;
 use App\Support\Lbs;
+use Faker\Factory;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -47,6 +48,8 @@ class Test extends Command
      */
     public function handle()
     {
+        dd(new \Illuminate\Support\Carbon(Factory::create()->dateTimeBetween('-7 days')->format('Y-m-d H:i:s')));
+        dd(Factory::create()->dateTimeBetween('-7 days')->format('YmdHis'));
         SettlementJob::dispatch(1);
         dd();
 //        Redis::geoadd('location:merchant', 113.99531, 22.709883, 1);
