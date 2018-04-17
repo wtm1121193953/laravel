@@ -23,7 +23,8 @@ class CreateGoodsTable extends Migration
             $table->decimal('price')->index()->default(0)->comment('商品售价');
             $table->date('start_date')->nullable()->comment('商品有效期开始日期');
             $table->date('end_date')->nullable()->comment('商品有效期结束日期');
-            $table->string('pic', 500)->default('')->comment('商品默认图');
+            $table->string('thumb_url', 500)->default('')->comment('商品缩略图');
+            $table->string('pic', 500)->default('')->comment('商品主图');
             $table->string('pic_list', 5000)->default('')->comment('商品图片列表 (逗号分隔字符串)');
             $table->string('buy_info', 1000)->default('')->comment('购买须知');
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-上架 2-下架');

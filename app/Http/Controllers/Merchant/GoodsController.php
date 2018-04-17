@@ -63,6 +63,7 @@ class GoodsController extends Controller
         $goods->start_date = request('start_date');
         $goods->end_date = request('end_date');
         $goods->pic = request('pic', '');
+        $goods->thumb_url = request('thumb_url', '');
         $goods->desc = request('desc', '');
         $goods->buy_info = request('buy_info', '');
         $goods->status = request('status', 1);
@@ -94,6 +95,7 @@ class GoodsController extends Controller
         $goods->start_date = request('start_date');
         $goods->end_date = request('end_date');
         $goods->pic = request('pic', '');
+        $goods->thumb_url = request('thumb_url', '');
         $goods->desc = request('desc', '');
         $goods->buy_info = request('buy_info', '');
         $goods->status = request('status', 1);

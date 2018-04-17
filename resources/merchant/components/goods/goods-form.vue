@@ -26,8 +26,11 @@
                             value-format="yyyy-MM-dd">
                     </el-date-picker>
                 </el-form-item>
+                <el-form-item prop="thumb_url" label="产品缩略图">
+                    <image-upload :width="190" :height="190" v-model="form.thumb_url" :limit="1"/>
+                </el-form-item>
                 <el-form-item prop="pic" label="产品详情图">
-                    <image-upload v-model="form.pic" :limit="1"/>
+                    <image-upload :width="750" :height="526" v-model="form.pic" :limit="1"/>
                 </el-form-item>
                 <el-form-item prop="desc" label="商品简介">
                     <el-input v-model="form.desc" :autosize="{minRows: 2}" type="textarea"/>
@@ -58,6 +61,7 @@
         start_date: '',
         end_date: '',
         pic: '',
+        thumb_url: '',
         desc: '',
         buy_info: '',
         status: 1,

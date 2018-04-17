@@ -420,6 +420,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 var defaultForm = {
     name: '',
@@ -428,6 +431,7 @@ var defaultForm = {
     start_date: '',
     end_date: '',
     pic: '',
+    thumb_url: '',
     desc: '',
     buy_info: '',
     status: 1
@@ -13102,7 +13106,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -38694,10 +38698,28 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "el-form-item",
+                { attrs: { prop: "thumb_url", label: "产品缩略图" } },
+                [
+                  _c("image-upload", {
+                    attrs: { width: 190, height: 190, limit: 1 },
+                    model: {
+                      value: _vm.form.thumb_url,
+                      callback: function($$v) {
+                        _vm.$set(_vm.form, "thumb_url", $$v)
+                      },
+                      expression: "form.thumb_url"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
                 { attrs: { prop: "pic", label: "产品详情图" } },
                 [
                   _c("image-upload", {
-                    attrs: { limit: 1 },
+                    attrs: { width: 750, height: 526, limit: 1 },
                     model: {
                       value: _vm.form.pic,
                       callback: function($$v) {

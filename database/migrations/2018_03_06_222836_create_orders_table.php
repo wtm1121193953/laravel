@@ -26,6 +26,7 @@ class CreateOrdersTable extends Migration
             $table->integer('goods_id')->index()->default(0)->comment('商品ID');
             $table->string('goods_name')->default('')->comment('商品名');
             $table->string('goods_pic', 500)->default('')->comment('商品图片');
+            $table->string('goods_thumb_url', 500)->default('')->comment('商品缩略图');
             $table->decimal('price')->default(0)->comment('商品单价');
             $table->integer('buy_number')->default(0)->comment('购买数量');
             $table->tinyInteger('status')->default(0)->comment('状态 1-未支付 2-已取消 3-已关闭 (超时自动关闭) 4-已支付 5-退款中[保留状态] 6-已退款 7-已完成 (不可退款)');
