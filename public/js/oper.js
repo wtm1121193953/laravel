@@ -2047,11 +2047,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         init: function init() {
             this.query.settlement_id = this.scope.id;
             this.query.merchant_id = this.scope.merchant_id;
+            console.log(this.query);
         }
     },
     created: function created() {
         this.init();
-        console.log(this.query);
         this.getSettlementOrders();
     },
 
