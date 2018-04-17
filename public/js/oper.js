@@ -2047,12 +2047,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         init: function init() {
             this.query.settlement_id = this.scope.id;
             this.query.merchant_id = this.scope.merchant_id;
-            console.log(this.query);
+            this.getSettlementOrders();
         }
     },
     created: function created() {
         this.init();
-        this.getSettlementOrders();
     },
 
     watch: {
@@ -13514,7 +13513,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
