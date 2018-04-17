@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
 
         // 模拟数据填充
 //        if(App::environment('local')){
-            $this->call(MockTableDataSeeder::class);
+//            $this->call(MockTableDataSeeder::class);
 //        }
     }
 }
