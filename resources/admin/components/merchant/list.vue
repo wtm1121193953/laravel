@@ -30,7 +30,7 @@
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
-                    <template v-if="scope.row.audit_status === 0">
+                    <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
                         <el-button type="text" @click="audit(scope, 1)">审核通过</el-button>
                         <el-button type="text" @click="audit(scope, 2)">审核不通过</el-button>
                     </template>
