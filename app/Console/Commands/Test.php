@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\SettlementForMerchant;
 use App\Jobs\SettlementJob;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Wechat\WechatService;
@@ -48,6 +49,8 @@ class Test extends Command
      */
     public function handle()
     {
+        SettlementForMerchant::dispatch(1, Carbon::now()->startOfMonth(), Carbon::now());
+        dd();
         SettlementJob::dispatch(Merchant::SETTLE_WEEKLY);
         SettlementJob::dispatch(Merchant::SETTLE_HALF_MONTHLY);
         SettlementJob::dispatch(Merchant::SETTLE_MONTHLY);
