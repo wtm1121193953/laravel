@@ -36,6 +36,7 @@
 
         <el-dialog title="添加运营中心" :visible.sync="isAdd">
             <oper-form
+                    ref="addForm"
                     @cancel="isAdd = false"
                     @save="doAdd"/>
         </el-dialog>
@@ -80,6 +81,7 @@
             doAdd(data){
                 this.isLoading = true;
                 api.post('/oper/add', data).then(() => {
+                    this.$refs.addForm.resetForm();
                     this.isAdd = false;
                     this.getList();
                 }).finally(() => {
