@@ -11,7 +11,7 @@
                 <el-form-item prop="price" label="销售价">
                     <el-input-number v-model="form.price"/>
                 </el-form-item>
-                <el-form-item label="有效期">
+                <el-form-item label="有效期" required>
                     <el-date-picker
                             v-model="form.start_date"
                             type="date"

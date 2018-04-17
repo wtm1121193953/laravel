@@ -38821,7 +38821,7 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "el-form-item",
-                { attrs: { label: "有效期" } },
+                { attrs: { label: "有效期", required: "" } },
                 [
                   _c("el-date-picker", {
                     attrs: {
