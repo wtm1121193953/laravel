@@ -7,15 +7,15 @@
         <el-col style="margin-top: 20px">
             <el-form v-if="parseInt(form.invoice_type) === 1" ref="form">
                 <el-form-item label="上传电子发票：">
-                    <image-upload v-model="form.invoice_pic_url"></image-upload>
+                    <image-upload v-model="form.invoice_pic_url"/>
                 </el-form-item>
             </el-form>
             <el-form label-width="70px" v-else ref="form">
                 <el-form-item prop="logistics_name" label="物流公司">
-                    <el-input v-model="form.logistics_name" style="width: 400px"></el-input>
+                    <el-input v-model="form.logistics_name" style="width: 400px"/>
                 </el-form-item>
                 <el-form-item prop="logistics_no" label="物流单号">
-                    <el-input v-model="form.logistics_no" style="width: 400px"></el-input>
+                    <el-input v-model="form.logistics_no" style="width: 400px"/>
                 </el-form-item>
             </el-form>
             <div class="fl">
@@ -28,6 +28,14 @@
 
 <script>
     import api from '../../../assets/js/api'
+
+    let defaultForm = {
+        id: 0,
+        invoice_type: 1,
+        invoice_pic_url: '',
+        logistics_name: '',
+        logistics_no: '',
+    };
 
     export default {
         props: {
@@ -70,6 +78,7 @@
                 })
             },
             initForm () {
+                this.form = deepCopy(defaultForm)
                 this.form.id = parseInt(this.scope.id);
                 this.invoice_type = parseInt(this.scope.invoice_type);
                 if(parseInt(this.invoice_type) !== 0){

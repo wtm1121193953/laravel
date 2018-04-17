@@ -1675,6 +1675,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
+var defaultForm = {
+    id: 0,
+    invoice_type: 1,
+    invoice_pic_url: '',
+    logistics_name: '',
+    logistics_no: ''
+};
+
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
         scope: { type: Object, required: true }
@@ -1719,6 +1727,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
         initForm: function initForm() {
+            this.form = deepCopy(defaultForm);
             this.form.id = parseInt(this.scope.id);
             this.invoice_type = parseInt(this.scope.invoice_type);
             if (parseInt(this.invoice_type) !== 0) {
@@ -13385,7 +13394,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -39090,6 +39099,7 @@ var render = function() {
     [
       _c(
         "el-form",
+        { ref: "form", attrs: { "label-width": "150px" } },
         [
           _c("el-form-item", { attrs: { label: "银行开户名：" } }, [
             _vm._v(

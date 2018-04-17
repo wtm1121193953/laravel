@@ -1,6 +1,6 @@
 <template>
     <page title="回款信息">
-        <el-form>
+        <el-form ref="form" label-width="150px">
             <el-form-item label="银行开户名：">
                 {{scope.bank_open_name}}
             </el-form-item>
@@ -14,7 +14,7 @@
                 {{scope.bank_open_address}}
             </el-form-item>
             <el-form-item label="回款单图片：">
-                <image-upload v-model="form.pay_pic_url"></image-upload>
+                <image-upload v-model="form.pay_pic_url"/>
             </el-form-item>
         </el-form>
         <div class="fl">

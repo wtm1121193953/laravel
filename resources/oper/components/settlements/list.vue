@@ -1,16 +1,16 @@
 <template>
     <page title="财务管理" v-loading="isLoading">
         <el-table :data="list" stripe>
-            <el-table-column prop="merchant_name" label="结算商户" align="center"></el-table-column>
-            <el-table-column prop="settlement_date" label="结算时间" align="center"></el-table-column>
+            <el-table-column prop="merchant_name" label="结算商户" align="center"/>
+            <el-table-column prop="settlement_date" label="结算时间" align="center"/>
             <el-table-column prop="settlement_cycle" label="结算周期" align="center">
                 <template slot-scope="scope">
                     {{scope.row.start_date}} 至 {{scope.row.end_date}}
                 </template>
             </el-table-column>
-            <el-table-column prop="amount" label="订单金额" align="center"></el-table-column>
-            <el-table-column prop="settlement_rate" label="利率" align="center"></el-table-column>
-            <el-table-column prop="real_amount" label="结算金额" align="center"></el-table-column>
+            <el-table-column prop="amount" label="订单金额" align="center"/>
+            <el-table-column prop="settlement_rate" label="利率" align="center"/>
+            <el-table-column prop="real_amount" label="结算金额" align="center"/>
             <el-table-column prop="status" label="结算状态" align="center">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.status) === 1">审核中</span>
@@ -34,18 +34,18 @@
                 @current-change="getList"
                 :page-size="15"
                 :total="total"
-        ></el-pagination>
+        />
 
         <el-dialog :visible.sync="isShowSettlementDetail">
-            <settlement-detail :scope="settlement"></settlement-detail>
+            <settlement-detail :scope="settlement"/>
         </el-dialog>
 
         <el-dialog :visible.sync="isShowInvoice">
-            <invoice :scope="settlement" @cancel="isShowInvoice = false" @save="addInvoice"></invoice>
+            <invoice :scope="settlement" @cancel="isShowInvoice = false" @save="addInvoice"/>
         </el-dialog>
 
         <el-dialog :visible.sync="isShowPayMoney">
-            <pay-money :scope="settlement" @cancel="isShowPayMoney = false" @save="addPayPicUrl"></pay-money>
+            <pay-money :scope="settlement" @cancel="isShowPayMoney = false" @save="addPayPicUrl"/>
         </el-dialog>
     </page>
 </template>
