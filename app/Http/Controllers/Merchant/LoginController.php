@@ -42,7 +42,7 @@ class LoginController extends Controller
             throw new NoPermissionException('商户已被冻结');
         }
 
-        $user->username = $user->username ?? $user->account;
+        $user->username = $merchant->name;
 
         session([
             config('merchant.user_session') => $user,
