@@ -46,14 +46,19 @@ class OrdersController extends Controller
             throw new BaseResponseException('该核销码已核销');
         }
 
-        OrderItem::where('order_id', $order_id)
-            ->where('merchant_id', request()->get('current_user')->merchant_id)
-            ->update(['status' => 2]);
+        if($order['status'] == Order::STATUS_PAID){
+            OrderItem::where('order_id', $order_id)
+                ->where('merchant_id', request()->get('current_user')->merchant_id)
+                ->update(['status' => 2]);
 
-        $order->status = Order::STATUS_FINISHED;
-        $order->finish_time = Carbon::now();
-        $order->save();
+            $order->status = Order::STATUS_FINISHED;
+            $order->finish_time = Carbon::now();
+            $order->save();
 
-        return Result::success($order);
+            return Result::success($order);
+        }else{
+            throw new BaseResponseException('该订单已退款，不能核销');
+        }
+
     }
 }
