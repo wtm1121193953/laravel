@@ -1028,7 +1028,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this = this;
 
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchants', this.query).then(function (data) {
-                console.log(data);
                 _this.list = data.list;
                 _this.total = data.total;
             });
@@ -1077,6 +1076,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point__ = __webpack_require__("./resources/assets/components/amap/amap-choose-point.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point__);
+//
+//
+//
+//
 //
 //
 //
@@ -1307,7 +1310,7 @@ var defaultForm = {
                 logo: [{ required: true, message: '商家logo不能为空' }],
                 desc_pic: [{ required: true, message: '商家介绍图片不能为空' }],
                 desc: [{ required: true, message: '商家介绍不能为空' }],
-                settlement_rate: [{
+                settlement_rate: [{ required: true, message: '分利比例不能为空' }, {
                     validator: function validator(rule, value, callback) {
                         if (value === '') {
                             callback(new Error('分利比例不能为空'));
@@ -1352,7 +1355,6 @@ var defaultForm = {
                 this.form.settlement_cycle_type = parseInt(this.data.settlement_cycle_type);
                 this.form.status = parseInt(this.data.status);
                 this.form.bank_card_type = parseInt(this.data.bank_card_type);
-                console.log(this.form);
             } else {
                 this.form = deepCopy(defaultForm);
             }
@@ -13419,7 +13421,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 

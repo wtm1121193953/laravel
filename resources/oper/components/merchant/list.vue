@@ -86,7 +86,6 @@
         methods: {
             getList(){
                 api.get('/merchants', this.query).then(data => {
-                    console.log(data);
                     this.list = data.list;
                     this.total = data.total;
                 })
