@@ -6,3 +6,5 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/orders', 'OrdersController@getList');
+
+Route::post('/verification', 'OrdersController@verification');

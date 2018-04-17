@@ -1261,7 +1261,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         };
     },
     created: function created() {
-        this.order = deepCopy(this.scope.row);
+        this.order = deepCopy(this.scope);
         this.order.status = ['', '未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成[不可退款]'][parseInt(this.order.status)];
         this.order.created_at = new Date(this.order.created_at).format('yyyy-MM-dd hh:mm:ss');
     }
@@ -1319,6 +1319,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1328,12 +1343,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             isLoading: false,
             isShow: false,
+            isShowItems: false,
             list: [],
             query: {
                 page: 1
             },
             total: 0,
-            order: {}
+            order: {},
+            verify_code: '',
+            verify_success: false,
+            verify_fail: false
         };
     },
 
@@ -1352,6 +1371,35 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         showDetail: function showDetail(scope) {
             this.order = scope;
             this.isShow = true;
+            this.isShowItems = false;
+        },
+        showItems: function showItems() {
+            this.isShowItems = true;
+            this.verify_success = false;
+            this.verify_fail = false;
+            this.verify_code = '';
+        },
+        verification: function verification() {
+            var _this2 = this;
+
+            this.verify_success = false;
+            this.verify_fail = false;
+            if (!this.verify_code) {
+                this.$message.error('请填写核销码');
+                return false;
+            }
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/verification', { verify_code: this.verify_code }, false).then(function (result) {
+                console.log(result);
+                if (result && parseInt(result.code) === 0) {
+                    _this2.order = result.data;
+                    console.log('order', _this2.order);
+                    _this2.verify_success = true;
+                } else {
+                    _this2.verify_code = '';
+                    _this2.verify_fail = true;
+                    _this2.$message.error(result.message);
+                }
+            });
         }
     },
     created: function created() {
@@ -13018,7 +13066,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -38102,6 +38150,22 @@ var render = function() {
     },
     [
       _c(
+        "el-col",
+        [
+          _c(
+            "el-button",
+            {
+              staticClass: "fr",
+              attrs: { type: "primary" },
+              on: { click: _vm.showItems }
+            },
+            [_vm._v("核销")]
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
         "el-table",
         { attrs: { data: _vm.list, stripe: "" } },
         [
@@ -38170,7 +38234,7 @@ var render = function() {
                         attrs: { type: "text" },
                         on: {
                           click: function($event) {
-                            _vm.showDetail(scope)
+                            _vm.showDetail(scope.row)
                           }
                         }
                       },
@@ -38212,6 +38276,88 @@ var render = function() {
           }
         },
         [_c("order-form", { attrs: { scope: _vm.order } })],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "el-dialog",
+        {
+          attrs: { title: "核销", visible: _vm.isShowItems, width: "30%" },
+          on: {
+            "update:visible": function($event) {
+              _vm.isShowItems = $event
+            }
+          }
+        },
+        [
+          _c("div", [_vm._v("(仅支持一次核销订单全部消费码)")]),
+          _vm._v(" "),
+          _c(
+            "el-row",
+            [
+              _c(
+                "el-col",
+                { attrs: { span: 16 } },
+                [
+                  _c("el-input", {
+                    attrs: { placeholder: "请输入消费码" },
+                    model: {
+                      value: _vm.verify_code,
+                      callback: function($$v) {
+                        _vm.verify_code = $$v
+                      },
+                      expression: "verify_code"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-col",
+                { attrs: { span: 7, offset: 1 } },
+                [
+                  _c(
+                    "el-button",
+                    {
+                      attrs: { type: "primary" },
+                      on: { click: _vm.verification }
+                    },
+                    [_vm._v("核销")]
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _vm.verify_success
+                ? _c(
+                    "div",
+                    [
+                      _vm._v("核销成功！"),
+                      _c(
+                        "el-button",
+                        {
+                          attrs: { type: "text" },
+                          on: {
+                            click: function($event) {
+                              _vm.showDetail(_vm.order)
+                            }
+                          }
+                        },
+                        [_vm._v("查看订单")]
+                      )
+                    ],
+                    1
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.verify_fail
+                ? _c("div", [_vm._v("核销失败！请检查消费码")])
+                : _vm._e()
+            ],
+            1
+          )
+        ],
         1
       )
     ],

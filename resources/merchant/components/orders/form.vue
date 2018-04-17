@@ -43,7 +43,7 @@
             }
         },
         created() {
-            this.order = deepCopy(this.scope.row);
+            this.order = deepCopy(this.scope);
             this.order.status = ['','未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成[不可退款]'][parseInt(this.order.status)];
             this.order.created_at = new Date(this.order.created_at).format('yyyy-MM-dd hh:mm:ss');
         }
