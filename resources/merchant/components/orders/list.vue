@@ -45,7 +45,7 @@
             <div>(仅支持一次核销订单全部消费码)</div>
             <el-row>
                 <el-col :span="16">
-                    <el-input placeholder="请输入消费码" @keyup.enter="verification" v-model="verify_code"/>
+                    <el-input placeholder="请输入消费码" @keyup.native.enter="verification" v-model="verify_code"/>
                 </el-col>
                 <el-col :span="7" :offset="1">
                     <el-button type="primary" ref="verifyInput" @click="verification">核销</el-button>
@@ -100,7 +100,7 @@
                 this.verify_code = '';
                 setTimeout(() => {
                     this.$refs.verifyInput.focus();
-                }, 300)
+                }, 1000)
             },
             verification(){
                 this.verify_success = false;

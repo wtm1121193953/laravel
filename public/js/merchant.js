@@ -1396,7 +1396,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.verify_code = '';
             setTimeout(function () {
                 _this2.$refs.verifyInput.focus();
-            }, 300);
+            }, 1000);
         },
         verification: function verification() {
             var _this3 = this;
@@ -38316,7 +38316,7 @@ var render = function() {
                 [
                   _c("el-input", {
                     attrs: { placeholder: "请输入消费码" },
-                    on: {
+                    nativeOn: {
                       keyup: function($event) {
                         if (
                           !("button" in $event) &&
