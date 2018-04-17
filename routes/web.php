@@ -34,7 +34,6 @@ Route::get('/merchant', function () {
 });
 
 Route::get('/miniprogram_bridge/pay', function(){
-    $appCodeUrl = 'https://o2o.niucha.ren/storage/miniprogram/app_code/_3-id=52.jpg';/*
     $targetOperId = request('targetOperId');
     if(empty($targetOperId)) throw new BaseResponseException('targetOperId不能为空');
     $scene = request('scene');
@@ -42,7 +41,8 @@ Route::get('/miniprogram_bridge/pay', function(){
     $page = request('page', 'pages/severs/index/index');
 
     $appCodeUrl = WechatService::genMiniprogramAppCodeUrl($targetOperId, $targetOperId . '-' . $scene, $page);
-    */
+
+//    $appCodeUrl = 'https://o2o.niucha.ren/storage/miniprogram/app_code/_3-id=52.jpg';
     return view('miniprogram_bridge.pay', [
         'app_code_url' => $appCodeUrl
     ]);
