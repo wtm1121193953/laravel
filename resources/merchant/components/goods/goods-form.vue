@@ -28,9 +28,11 @@
                 </el-form-item>
                 <el-form-item prop="thumb_url" label="产品缩略图">
                     <image-upload :width="190" :height="190" v-model="form.thumb_url" :limit="1"/>
+                    <div>图片尺寸: 190 px * 190 px</div>
                 </el-form-item>
                 <el-form-item prop="pic" label="产品详情图">
                     <image-upload :width="750" :height="526" v-model="form.pic" :limit="1"/>
+                    <div>图片尺寸: 750 px * 526 px</div>
                 </el-form-item>
                 <el-form-item prop="desc" label="商品简介">
                     <el-input v-model="form.desc" :autosize="{minRows: 2}" type="textarea"/>
