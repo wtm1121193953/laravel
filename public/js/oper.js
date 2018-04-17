@@ -1717,17 +1717,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.form.invoice_pic_url = '';
                 _this.$emit('save');
             });
+        },
+        initForm: function initForm() {
+            this.form.id = parseInt(this.scope.id);
+            this.invoice_type = parseInt(this.scope.invoice_type);
+            if (parseInt(this.invoice_type) !== 0) {
+                this.disable = true;
+                this.form.invoice_type = this.invoice_type;
+                this.form.invoice_pic_url = this.scope.invoice_pic_url;
+                this.form.logistics_name = this.scope.logistics_name;
+                this.form.logistics_no = this.scope.logistics_no;
+            }
         }
     },
     created: function created() {
-        this.form.id = parseInt(this.scope.id);
-        this.invoice_type = parseInt(this.scope.invoice_type);
-        if (parseInt(this.invoice_type) !== 0) {
-            this.disable = true;
-            this.form.invoice_type = this.invoice_type;
-            this.form.invoice_pic_url = this.scope.invoice_pic_url;
-            this.form.logistics_name = this.scope.logistics_name;
-            this.form.logistics_no = this.scope.logistics_no;
+        this.initForm();
+    },
+
+    watch: {
+        scope: function scope() {
+            this.initForm();
         }
     }
 });
@@ -1930,12 +1939,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/updatePayPicUrl', this.form).then(function (data) {
                 _this.$message.success('上传回款单成功');
+                _this.$refs.form.resetFields();
+                _this.form.pay_pic_url = '';
                 _this.$emit('save');
             });
+        },
+        initForm: function initForm() {
+            this.form.id = parseInt(this.scope.id);
+            this.form.pay_pic_url = this.scope.pay_pic_url;
         }
     },
     created: function created() {
-        this.form.id = parseInt(this.scope.id);
+        this.initForm();
+    },
+
+    watch: {
+        scope: function scope() {
+            this.initForm();
+        }
     }
 });
 
@@ -13328,7 +13349,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -13358,7 +13379,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
