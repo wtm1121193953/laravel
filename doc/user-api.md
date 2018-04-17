@@ -101,6 +101,36 @@ token (wxLogin接口除外)
 
 
 
+- [ ] 使用场景ID快捷登陆 (用于跳转到一个新的小程序时用户不需要重复登陆操作)
+
+  接口地址: POST `/loginWithSceneId`
+
+  参数: 
+
+  ```
+  token 通过wxLogin接口获取到的token
+  sceneId: 在onLoad中获取到的scene值
+  ```
+
+  返回
+
+  ```
+  data: {
+      userInfo: 用户信息 {
+          name: 用户名称,
+          mobile: 手机号,
+      },
+      payload: { 场景值所携带的数据
+      user_id: 用户ID,
+      order_no: 订单号
+      }
+  }
+  ```
+
+  ​
+
+
+
 - [ ] 短信接口
 
       接口地址: `POST`  `/sms/verify_code`
@@ -149,25 +179,25 @@ token (wxLogin接口除外)
 
 - [ ] 获取城市及热门城市列表
 
-  接口地址 GET `/area/cities/withHot`
-
-  参数: 无
-
-  返回
+    接口地址 GET `/area/cities/withHot`
+    参数: 无
+    返回
 
   ```
   data: {
-      热门: [
-          同地区列表的每一项, 没有sub元素
-      ],
-      A: [
-          同地区列表的每一项, 没有sub元素
-      ],
-      ...
-  }
+        热门: [
+            同地区列表的每一项, 没有sub元素
+          ],
+          A: [
+             同地区列表的每一项, 没有sub元素
+         ],
+        ...
+      }
   ```
 
   ​
+
+  
 
 - [ ] 根据经纬度获取所在城市
 
@@ -492,8 +522,16 @@ token (wxLogin接口除外)
 
   ```
   targetOperId: 要跳转的目标小程序运营中心ID, 商户/订单/商品信息里面都有
-  scene: 场景值, 在目标页面通过onLoad获取, 获取到的场景值会统一加上 'targetOperId-' 前缀, 已防止场景值重复
+  orderNo: 订单号,
+  userId: 当前用户ID,
   page: 目标页面地址, 必须是小程序已发布的页面, 目前默认 pages/severs/index/index
   ```
 
-  ​
+  返回
+
+```
+页面会生成一个小程序码, 用户扫码进入小程序指定页面, 可在onLoad中获取到scene值
+通过scene值请求接口登陆, 获取用户信息, 并调起支付
+```
+
+- [ ] sceneId快捷登陆接口
