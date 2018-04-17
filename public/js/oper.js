@@ -13424,7 +13424,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n.map-container[data-v-86914dc6] {\n    position: relative;\n}\n.search-box[data-v-86914dc6] {\n    position: absolute;\n    top: 10px;\n    left: 20px;\n}\n.sure-button[data-v-86914dc6] {\n    position: absolute;\n    bottom: 10px;\n    right: 20px;\n}\n", ""]);
+exports.push([module.i, "\n.map-container[data-v-86914dc6] {\n    position: relative;\n}\n.search-box[data-v-86914dc6] {\n    position: absolute;\n    top: 10px;\n    left: 20px;\n}\n.sure-button[data-v-86914dc6] {\n    position: absolute;\n    top: 12px;\n    left: 400px;\n}\n", ""]);
 
 // exports
 
@@ -39493,7 +39493,7 @@ var render = function() {
         "el-button",
         {
           staticClass: "sure-button",
-          attrs: { type: "primary", size: "small" },
+          attrs: { type: "primary" },
           on: { click: _vm.sureChoose }
         },
         [_vm._v("确定")]
