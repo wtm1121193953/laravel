@@ -16,6 +16,8 @@ Route::prefix('user')
         Route::any('login', 'LoginController@login');
 
         Route::get('area/tree', 'AreaController@getTree');
+        Route::get('area/cites/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
+        Route::get('area/cites/withHot', 'AreaController@getCitiesWithHot');
         Route::get('area/getByGps', 'AreaController@getAreaByGps');
 
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
