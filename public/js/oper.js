@@ -1713,6 +1713,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/updateInvoice', this.form).then(function (data) {
                 _this.$message.success('上传发票成功');
+                _this.$refs.form.resetFields();
                 _this.$emit('save');
             });
         }
@@ -13356,7 +13357,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -39255,6 +39256,7 @@ var render = function() {
           parseInt(_vm.form.invoice_type) === 1
             ? _c(
                 "el-form",
+                { ref: "form" },
                 [
                   _c(
                     "el-form-item",
@@ -39277,7 +39279,7 @@ var render = function() {
               )
             : _c(
                 "el-form",
-                { attrs: { "label-width": "70px" } },
+                { ref: "form", attrs: { "label-width": "70px" } },
                 [
                   _c(
                     "el-form-item",

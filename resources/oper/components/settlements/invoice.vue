@@ -5,12 +5,12 @@
             <el-radio v-model="form.invoice_type" :label="2" border :disabled="disable">寄送纸质发票</el-radio>
         </div>
         <el-col style="margin-top: 20px">
-            <el-form v-if="parseInt(form.invoice_type) === 1">
+            <el-form v-if="parseInt(form.invoice_type) === 1" ref="form">
                 <el-form-item label="上传电子发票：">
                     <image-upload v-model="form.invoice_pic_url"></image-upload>
                 </el-form-item>
             </el-form>
-            <el-form label-width="70px" v-else>
+            <el-form label-width="70px" v-else ref="form">
                 <el-form-item prop="logistics_name" label="物流公司">
                     <el-input v-model="form.logistics_name" style="width: 400px"></el-input>
                 </el-form-item>
@@ -64,6 +64,7 @@
                 }
                 api.post('/updateInvoice', this.form).then(data => {
                     this.$message.success('上传发票成功');
+                    this.$refs.form.resetFields();
                     this.$emit('save');
                 })
             }
