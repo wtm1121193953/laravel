@@ -1346,6 +1346,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 
@@ -1386,13 +1388,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.isShowItems = false;
         },
         showItems: function showItems() {
+            var _this2 = this;
+
             this.isShowItems = true;
             this.verify_success = false;
             this.verify_fail = false;
             this.verify_code = '';
+            setTimeout(function () {
+                _this2.$refs.verifyInput.focus();
+            }, 300);
         },
         verification: function verification() {
-            var _this2 = this;
+            var _this3 = this;
 
             this.verify_success = false;
             this.verify_fail = false;
@@ -1403,13 +1410,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/verification', { verify_code: this.verify_code }, false).then(function (result) {
                 console.log(result);
                 if (result && parseInt(result.code) === 0) {
-                    _this2.order = result.data;
-                    console.log('order', _this2.order);
-                    _this2.verify_success = true;
+                    _this3.order = result.data;
+                    console.log('order', _this3.order);
+                    _this3.verify_success = true;
                 } else {
-                    _this2.verify_code = '';
-                    _this2.verify_fail = true;
-                    _this2.$message.error(result.message);
+                    _this3.verify_code = '';
+                    _this3.verify_fail = true;
+                    _this3.$message.error(result.message);
                 }
             });
         }
@@ -13092,7 +13099,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -38309,6 +38316,23 @@ var render = function() {
                 [
                   _c("el-input", {
                     attrs: { placeholder: "请输入消费码" },
+                    on: {
+                      keyup: function($event) {
+                        if (
+                          !("button" in $event) &&
+                          _vm._k(
+                            $event.keyCode,
+                            "enter",
+                            13,
+                            $event.key,
+                            "Enter"
+                          )
+                        ) {
+                          return null
+                        }
+                        return _vm.verification($event)
+                      }
+                    },
                     model: {
                       value: _vm.verify_code,
                       callback: function($$v) {
@@ -38328,6 +38352,7 @@ var render = function() {
                   _c(
                     "el-button",
                     {
+                      ref: "verifyInput",
                       attrs: { type: "primary" },
                       on: { click: _vm.verification }
                     },

@@ -4,11 +4,11 @@
             <el-button type="primary" class="fr" @click="showItems">核销</el-button>
         </el-col>
         <el-table :data="list" stripe>
-            <el-table-column prop="id" label="ID"></el-table-column>
-            <el-table-column prop="created_at" label="创建时间"></el-table-column>
-            <el-table-column prop="order_no" label="订单号"></el-table-column>
-            <el-table-column prop="goods_name" label="商品名称"></el-table-column>
-            <el-table-column prop="pay_price" label="总价"></el-table-column>
+            <el-table-column prop="id" label="ID"/>
+            <el-table-column prop="created_at" label="创建时间"/>
+            <el-table-column prop="order_no" label="订单号"/>
+            <el-table-column prop="goods_name" label="商品名称"/>
+            <el-table-column prop="pay_price" label="总价"/>
             <el-table-column prop="status" label="订单状态">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.status) === 1">未支付</span>
@@ -29,24 +29,26 @@
         </el-table>
 
         <el-pagination
-            class="fr m-t-20"
-            layout="total, prev, pager, next"
-            :current-page.sync="query.page"
-            @current-change="getList"
-            :page-size="15"
-            :total="total"
-        ></el-pagination>
+                class="fr m-t-20"
+                layout="total, prev, pager, next"
+                :current-page.sync="query.page"
+                @current-change="getList"
+                :page-size="15"
+                :total="total"
+        />
 
         <el-dialog title="订单详情" :visible.sync="isShow">
-            <order-form :scope="order"></order-form>
+            <order-form :scope="order"/>
         </el-dialog>
 
         <el-dialog title="核销" :visible.sync="isShowItems" width="30%">
             <div>(仅支持一次核销订单全部消费码)</div>
             <el-row>
-                <el-col :span="16"><el-input placeholder="请输入消费码" v-model="verify_code"></el-input></el-col>
+                <el-col :span="16">
+                    <el-input placeholder="请输入消费码" @keyup.enter="verification" v-model="verify_code"/>
+                </el-col>
                 <el-col :span="7" :offset="1">
-                    <el-button type="primary" @click="verification">核销</el-button>
+                    <el-button type="primary" ref="verifyInput" @click="verification">核销</el-button>
                 </el-col>
                 <div v-if="verify_success">核销成功！<el-button type="text" @click="showDetail(order)">查看订单</el-button></div>
                 <div v-if="verify_fail">核销失败！请检查消费码</div>
@@ -96,6 +98,9 @@
                 this.verify_success = false;
                 this.verify_fail = false;
                 this.verify_code = '';
+                setTimeout(() => {
+                    this.$refs.verifyInput.focus();
+                }, 300)
             },
             verification(){
                 this.verify_success = false;
