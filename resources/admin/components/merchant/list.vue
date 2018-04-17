@@ -80,6 +80,11 @@
                 })
             },
             detail(scope){
+                router.push({
+                    path: '/merchant/detail',
+                    query: {id: scope.row.id},
+                })
+                return false;
                 this.showDetail = true;
                 this.currentMerchant = scope.row;
             },
