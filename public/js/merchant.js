@@ -1260,10 +1260,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             order: {}
         };
     },
+
+    methods: {
+        initOrder: function initOrder() {
+            this.order = deepCopy(this.scope);
+            this.order.status = ['', '未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成[不可退款]'][parseInt(this.order.status)];
+            this.order.created_at = new Date(this.order.created_at).format('yyyy-MM-dd hh:mm:ss');
+        }
+    },
     created: function created() {
-        this.order = deepCopy(this.scope);
-        this.order.status = ['', '未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成[不可退款]'][parseInt(this.order.status)];
-        this.order.created_at = new Date(this.order.created_at).format('yyyy-MM-dd hh:mm:ss');
+        this.initOrder();
+    },
+
+    watch: {
+        scope: function scope() {
+            this.initOrder();
+        }
     }
 });
 
@@ -13141,7 +13153,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 

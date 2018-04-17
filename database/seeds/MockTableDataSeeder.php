@@ -65,7 +65,5 @@ class MockTableDataSeeder extends Seeder
             'user_id' => 1,
             'open_id' => 'mock open id',
         ]);
-        // 模拟订单数据
-        factory(\App\Modules\Order\Order::class, 25)->create();
     }
 }
