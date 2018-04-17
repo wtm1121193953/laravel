@@ -121,8 +121,8 @@ token (wxLogin接口除外)
           mobile: 手机号,
       },
       payload: { 场景值所携带的数据
-      user_id: 用户ID,
-      order_no: 订单号
+          user_id: 用户ID,
+          order_no: 订单号
       }
   }
   ```
@@ -179,9 +179,11 @@ token (wxLogin接口除外)
 
 - [ ] 获取城市及热门城市列表
 
-    接口地址 GET `/area/cities/withHot`
-    参数: 无
-    返回
+  接口地址: GET `/area/cities/withHot`
+
+  参数: 无
+
+  返回
 
   ```
   data: {
