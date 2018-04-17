@@ -48,7 +48,7 @@ class SettlementForMerchant implements ShouldQueue
         $merchant = Merchant::findOrFail($this->merchantId);
         // 判断该周期是否已结算过, 若结算过则不再重复结算
         $settlement = Settlement::where('merchant_id', $this->merchantId)
-            ->where('settlement_date', Carbon::now())
+            ->where('settlement_date', Carbon::now()->format('Y-m-d'))
             ->first();
         if($settlement){
             Log::info('该周期已结算,跳过结算', [
