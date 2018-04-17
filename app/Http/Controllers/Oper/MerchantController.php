@@ -201,6 +201,7 @@ class MerchantController extends Controller
         }
         $account = new MerchantAccount();
 
+        $account->oper_id = request()->get('current_user')->oper_id;
         $account->account = request('account');
         $account->merchant_id = request('merchant_id');
         $salt = str_random();
