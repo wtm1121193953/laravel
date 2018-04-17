@@ -118,6 +118,11 @@
                         this.fileList = fileList;
                         this.emitInput();
                     } else {
+                        fileList.forEach(function (item, index) {
+                            if(item === file){
+                                fileList.splice(index, 1)
+                            }
+                        })
                         this.$message.error('请上传图片尺寸为' + width + 'px*' + height + 'px且大小不能超过2MB的图片')
                         return false;
                     }

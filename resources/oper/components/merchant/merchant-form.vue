@@ -54,10 +54,12 @@
                         </el-time-picker>
                     </el-form-item>
                     <el-form-item prop="logo" label="商家logo">
-                        <image-upload v-model="form.logo" :limit="1"/>
+                        <image-upload :width="190" :height="190" v-model="form.logo" :limit="1"/>
+                        <div>图片尺寸: 190 px * 190 px</div>
                     </el-form-item>
                     <el-form-item prop="desc_pic" label="商家介绍图片">
-                        <image-upload v-model="form.desc_pic" :limit="1"/>
+                        <image-upload :width="750" :height="526" v-model="form.desc_pic" :limit="1"/>
+                        <div>图片尺寸: 750 px * 526 px</div>
                     </el-form-item>
                     <el-form-item prop="desc" label="商家介绍">
                         <el-input type="textarea" :rows="5" v-model="form.desc"/>
@@ -236,7 +238,7 @@
                         {type: 'array', required: true, message: '所属行业不能为空'}
                     ],
                     logo: [
-                        {required: true, message: '商家logo不能为空'}
+                        {required: true, message: '商家logo不能为空', trigger: 'change'}
                     ],
                     desc_pic: [
                         {required: true, message: '商家介绍图片不能为空'}

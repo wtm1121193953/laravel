@@ -322,6 +322,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     this.fileList = fileList;
                     this.emitInput();
                 } else {
+                    fileList.forEach(function (item, index) {
+                        if (item === file) {
+                            fileList.splice(index, 1);
+                        }
+                    });
                     this.$message.error('请上传图片尺寸为' + width + 'px*' + height + 'px且大小不能超过2MB的图片');
                     return false;
                 }
@@ -1263,6 +1268,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 
@@ -1317,7 +1324,7 @@ var defaultForm = {
             formRules: {
                 name: [{ required: true, message: '商家名称不能为空' }],
                 merchant_category: [{ type: 'array', required: true, message: '所属行业不能为空' }],
-                logo: [{ required: true, message: '商家logo不能为空' }],
+                logo: [{ required: true, message: '商家logo不能为空', trigger: 'change' }],
                 desc_pic: [{ required: true, message: '商家介绍图片不能为空' }],
                 desc: [{ required: true, message: '商家介绍不能为空' }],
                 settlement_rate: [{ required: true, message: '分利比例不能为空' }, {
@@ -13401,7 +13408,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -37798,7 +37805,7 @@ var render = function() {
                     { attrs: { prop: "logo", label: "商家logo" } },
                     [
                       _c("image-upload", {
-                        attrs: { limit: 1 },
+                        attrs: { width: 190, height: 190, limit: 1 },
                         model: {
                           value: _vm.form.logo,
                           callback: function($$v) {
@@ -37806,7 +37813,9 @@ var render = function() {
                           },
                           expression: "form.logo"
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _c("div", [_vm._v("图片尺寸: 190 px * 190 px")])
                     ],
                     1
                   ),
@@ -37816,7 +37825,7 @@ var render = function() {
                     { attrs: { prop: "desc_pic", label: "商家介绍图片" } },
                     [
                       _c("image-upload", {
-                        attrs: { limit: 1 },
+                        attrs: { width: 750, height: 526, limit: 1 },
                         model: {
                           value: _vm.form.desc_pic,
                           callback: function($$v) {
@@ -37824,7 +37833,9 @@ var render = function() {
                           },
                           expression: "form.desc_pic"
                         }
-                      })
+                      }),
+                      _vm._v(" "),
+                      _c("div", [_vm._v("图片尺寸: 750 px * 526 px")])
                     ],
                     1
                   ),
