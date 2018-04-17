@@ -31,9 +31,8 @@ class AreaService
 //        $list = Cache::get('cities_group_by_first_letter');
         if(empty($list)){
             $list = Area::where('path', 2)->orderBy('first_letter')->get();
-            $list = $list->map(function ($item){
+            $list = $list->each(function ($item){
                 $item->name = str_replace('市', '', $item->name);
-                return $item->toArray();
             })->groupBy('first_letter')->toArray();
 //            $list = $list->groupBy('first_letter')->toArray();
             Cache::forever('cities_group_by_first_letter', $list);
