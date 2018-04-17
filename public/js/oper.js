@@ -2028,8 +2028,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             list: [],
             query: {
                 page: 1,
-                settlement_id: this.scope.id,
-                merchant_id: this.scope.merchant_id
+                settlement_id: 0,
+                merchant_id: 0
             },
             total: 0
         };
@@ -2043,10 +2043,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.list = data.list;
                 _this.total = data.total;
             });
+        },
+        init: function init() {
+            this.query.settlement_id = this.scope.id;
+            this.query.merchant_id = this.scope.merchant_id;
         }
     },
     created: function created() {
+        this.init();
         this.getSettlementOrders();
+    },
+
+    watch: {
+        scope: {
+            deep: true,
+            handler: function handler() {
+                this.init();
+            }
+        }
     }
 });
 
@@ -13499,7 +13513,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
