@@ -43,7 +43,7 @@
                 <el-form-item label="发票税点" prop="invoice_tax_rate">
                     <el-input-number v-model="form.invoice_tax_rate" placeholder=""/>
                 </el-form-item>
-                <el-form-item label="结款周期" prop="settlement_cycle_type">
+                <!--<el-form-item label="结款周期" prop="settlement_cycle_type">
                     <el-select v-model="form.settlement_cycle_type" placeholder="">
                         <el-option
                                 v-for="item in settlementCycles"
@@ -52,7 +52,7 @@
                                 :value="item.value">
                         </el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item>-->
                 <el-form-item label="公司账号" prop="bank_card_no">
                     <el-input v-model="form.bank_card_no" placeholder=""/>
                 </el-form-item>
@@ -104,7 +104,7 @@
         legal_id_card: '',
         invoice_type: 1,
         invoice_tax_rate: '',
-        settlement_cycle_type: 2,
+        // settlement_cycle_type: 2,
         bank_card_no: '',
         sub_bank_name: '',
         bank_open_name: '',
@@ -140,7 +140,7 @@
                     {value: 0, label: '其他'},
                 ],
                 settlementCycles: [
-                    // {value: 1, label: '周结'},
+                    {value: 1, label: '周结'},
                     {value: 2, label: '半月结'},
                     {value: 3, label: '月结'},
                     {value: 4, label: '半年结'},

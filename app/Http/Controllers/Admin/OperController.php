@@ -76,7 +76,7 @@ class OperController extends Controller
         $oper->legal_id_card = request('legal_id_card', '');
         $oper->invoice_type = request('invoice_type', 0);
         $oper->invoice_tax_rate = request('invoice_tax_rate', 0);
-        $oper->settlement_cycle_type = request('settlement_cycle_type', 1);
+//        $oper->settlement_cycle_type = request('settlement_cycle_type', 1);
         $oper->bank_card_no = request('bank_card_no', '');
         $oper->sub_bank_name = request('sub_bank_name', '');
         $oper->bank_open_name = request('bank_open_name', '');
@@ -118,7 +118,7 @@ class OperController extends Controller
         $oper->legal_id_card = request('legal_id_card', '');
         $oper->invoice_type = request('invoice_type', 0);
         $oper->invoice_tax_rate = request('invoice_tax_rate', 0);
-        $oper->settlement_cycle_type = request('settlement_cycle_type', 1);
+//        $oper->settlement_cycle_type = request('settlement_cycle_type', 1);
         $oper->bank_card_no = request('bank_card_no', '');
         $oper->sub_bank_name = request('sub_bank_name', '');
         $oper->bank_open_name = request('bank_open_name', '');

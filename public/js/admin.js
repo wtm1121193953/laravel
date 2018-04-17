@@ -2839,7 +2839,7 @@ var defaultForm = {
     legal_id_card: '',
     invoice_type: 1,
     invoice_tax_rate: '',
-    settlement_cycle_type: 2,
+    // settlement_cycle_type: 2,
     bank_card_no: '',
     sub_bank_name: '',
     bank_open_name: '',
@@ -2863,9 +2863,7 @@ var defaultForm = {
             },
             areas: [],
             invoiceTypes: [{ value: 1, label: '增值税普票' }, { value: 2, label: '增值税专票' }, { value: 3, label: '国税普票' }, { value: 0, label: '其他' }],
-            settlementCycles: [
-            // {value: 1, label: '周结'},
-            { value: 2, label: '半月结' }, { value: 3, label: '月结' }, { value: 4, label: '半年结' }, { value: 5, label: '年结' }]
+            settlementCycles: [{ value: 1, label: '周结' }, { value: 2, label: '半月结' }, { value: 3, label: '月结' }, { value: 4, label: '半年结' }, { value: 5, label: '年结' }]
         };
     },
 
@@ -44173,33 +44171,6 @@ var render = function() {
                       expression: "form.invoice_tax_rate"
                     }
                   })
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "el-form-item",
-                { attrs: { label: "结款周期", prop: "settlement_cycle_type" } },
-                [
-                  _c(
-                    "el-select",
-                    {
-                      attrs: { placeholder: "" },
-                      model: {
-                        value: _vm.form.settlement_cycle_type,
-                        callback: function($$v) {
-                          _vm.$set(_vm.form, "settlement_cycle_type", $$v)
-                        },
-                        expression: "form.settlement_cycle_type"
-                      }
-                    },
-                    _vm._l(_vm.settlementCycles, function(item) {
-                      return _c("el-option", {
-                        key: item.value,
-                        attrs: { label: item.label, value: item.value }
-                      })
-                    })
-                  )
                 ],
                 1
               ),
