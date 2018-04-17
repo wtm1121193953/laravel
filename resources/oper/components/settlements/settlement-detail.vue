@@ -63,6 +63,7 @@
         },
         created() {
             this.init();
+            console.log(this.query)
             this.getSettlementOrders();
         },
         watch: {
