@@ -34,7 +34,6 @@ class AreaService
             $list = $list->each(function ($item){
                 $item->name = str_replace('市', '', $item->name);
             })->groupBy('first_letter')->toArray();
-//            $list = $list->groupBy('first_letter')->toArray();
             Cache::forever('cities_group_by_first_letter', $list);
         }
         return $list;
