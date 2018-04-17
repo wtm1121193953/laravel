@@ -38019,12 +38019,7 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "el-form-item",
-                    {
-                      attrs: {
-                        prop: "contacter_phone",
-                        label: "负责人联系方式"
-                      }
-                    },
+                    { attrs: { prop: "contacter_phone", label: "客服电话" } },
                     [
                       _c("el-input", {
                         model: {

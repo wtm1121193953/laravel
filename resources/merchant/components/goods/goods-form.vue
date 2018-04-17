@@ -87,6 +87,12 @@
                     price: [
                         {required: true, message: '销售价不能为空'}
                     ],
+                    thumb_url: [
+                        {required: true, message: '缩略图不能为空'}
+                    ],
+                    pic: [
+                        {required: true, message: '详情图不能为空'}
+                    ],
                 },
             }
         },
