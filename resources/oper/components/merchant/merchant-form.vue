@@ -58,8 +58,8 @@
                             <image-upload :width="190" :height="190" v-model="form.logo" :limit="1"/>
                             <div>图片尺寸: 190 px * 190 px</div>
                         </el-form-item>
-                        <el-form-item prop="desc_pic" label="商家介绍图片">
-                            <image-upload :width="750" :height="526" v-model="form.desc_pic" :limit="1"/>
+                        <el-form-item prop="desc_pic_list" label="商家介绍图片">
+                            <image-upload :width="750" :height="526" v-model="form.desc_pic_list" :limit="6"/>
                             <div>图片尺寸: 750 px * 526 px</div>
                         </el-form-item>
                         <el-form-item prop="desc" label="商家介绍">
@@ -190,7 +190,7 @@
         area: [],
         business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
         logo: '',
-        desc_pic: '',
+        desc_pic_list: [],
         desc: '',
         invoice_title: '',
         invoice_no: '',
@@ -243,8 +243,8 @@
                     logo: [
                         {required: true, message: '商家logo不能为空', trigger: 'change'}
                     ],
-                    desc_pic: [
-                        {required: true, message: '商家介绍图片不能为空'}
+                    desc_pic_list: [
+                        {required: true, type: 'array', message: '商家介绍图片不能为空'}
                     ],
                     desc: [
                         {required: true, message: '商家介绍不能为空'}

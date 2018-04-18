@@ -1270,7 +1270,7 @@ var defaultForm = {
     area: [],
     business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
     logo: '',
-    desc_pic: '',
+    desc_pic_list: [],
     desc: '',
     invoice_title: '',
     invoice_no: '',
@@ -1315,7 +1315,7 @@ var defaultForm = {
                 name: [{ required: true, message: '商家名称不能为空' }],
                 merchant_category: [{ type: 'array', required: true, message: '所属行业不能为空' }],
                 logo: [{ required: true, message: '商家logo不能为空', trigger: 'change' }],
-                desc_pic: [{ required: true, message: '商家介绍图片不能为空' }],
+                desc_pic_list: [{ required: true, type: 'array', message: '商家介绍图片不能为空' }],
                 desc: [{ required: true, message: '商家介绍不能为空' }],
                 settlement_rate: [{ required: true, message: '分利比例不能为空' }, {
                     validator: function validator(rule, value, callback) {
@@ -37860,16 +37860,21 @@ var render = function() {
                       _vm._v(" "),
                       _c(
                         "el-form-item",
-                        { attrs: { prop: "desc_pic", label: "商家介绍图片" } },
+                        {
+                          attrs: {
+                            prop: "desc_pic_list",
+                            label: "商家介绍图片"
+                          }
+                        },
                         [
                           _c("image-upload", {
-                            attrs: { width: 750, height: 526, limit: 1 },
+                            attrs: { width: 750, height: 526, limit: 6 },
                             model: {
-                              value: _vm.form.desc_pic,
+                              value: _vm.form.desc_pic_list,
                               callback: function($$v) {
-                                _vm.$set(_vm.form, "desc_pic", $$v)
+                                _vm.$set(_vm.form, "desc_pic_list", $$v)
                               },
-                              expression: "form.desc_pic"
+                              expression: "form.desc_pic_list"
                             }
                           }),
                           _vm._v(" "),

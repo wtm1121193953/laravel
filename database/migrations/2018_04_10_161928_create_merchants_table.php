@@ -29,7 +29,8 @@ class CreateMerchantsTable extends Migration
             $table->integer('area_id')->index()->default(0)->comment('所在县区Id');
             $table->string('business_time')->default('')->comment('营业时间, json格式字符串 {startTime, endTime}');
             $table->string('logo')->default('')->comment('商家logo');
-            $table->string('desc_pic')->default('')->comment('商家介绍图片');
+            $table->string('desc_pic')->default('')->comment('商家介绍图片 [保留, 使用desc_pic_list]');
+            $table->string('desc_pic_list', 5000)->default('')->comment('商家介绍图片列表  多图, 使用逗号分隔 ');
             $table->string('desc')->default('')->comment('商家介绍');
             $table->string('invoice_title')->default('')->comment('发票抬头');
             $table->string('invoice_no')->default('')->comment('发票税号');

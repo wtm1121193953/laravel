@@ -33,6 +33,7 @@ class MerchantController extends Controller
             if ($item->merchant_category_id){
                 $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
             }
+            $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
             $item->account = MerchantAccount::where('merchant_id', $item->id)->first();
         });
 
@@ -73,6 +74,11 @@ class MerchantController extends Controller
         $merchant->business_time = request('business_time');
         $merchant->logo = request('logo','');
         $merchant->desc_pic = request('desc_pic','');
+        $descPicList = request('desc_pic_list', '');
+        if(is_array($descPicList)){
+            $descPicList = implode(',', $descPicList);
+        }
+        $merchant->desc_pic_list = $descPicList;
         $merchant->desc = request('desc','');
         $merchant->invoice_title = request('invoice_title','');
         $merchant->invoice_no = request('invoice_no','');
