@@ -106,6 +106,8 @@ class MerchantController extends Controller
             $lowestAmount = Goods::where('merchant_id', $item->id)->orderBy('price')->value('price');
             if($lowestAmount > 0){
                 $item->lowestAmount = $lowestAmount;
+            }else {
+                $item->lowestAmount = 0;
             }
             // 判断商户是否是当前小程序关联运营中心下的商户
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
@@ -136,6 +138,8 @@ class MerchantController extends Controller
         $lowestAmount = Goods::where('merchant_id', $id)->orderBy('price')->value('price');
         if($lowestAmount > 0){
             $detail->lowestAmount = $lowestAmount;
+        }else {
+            $detail->lowestAmount = 0;
         }
         $currentOperId = request()->get('current_oper')->id;
         // 判断商户是否是当前小程序关联运营中心下的商户
