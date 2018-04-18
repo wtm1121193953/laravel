@@ -33,6 +33,11 @@
         },
         methods: {
             edit(){
+                router.push({
+                    path: '/goods/edit',
+                    query: {id: this.scope.row.id}
+                });
+                return false;
                 this.isEdit = true;
             },
             doEdit(data){

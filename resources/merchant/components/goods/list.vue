@@ -75,6 +75,9 @@
                 this.getList();
             },
             add(){
+                router.push({
+                    path: '/goods/add',
+                });
                 this.isAdd = true;
             },
             doAdd(data){

@@ -32,6 +32,16 @@ class GoodsController extends Controller
         ]);
     }
 
+    public function detail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $goods = Goods::findOrFail($id);
+        return Result::success($goods);
+    }
+
     /**
      * 获取全部列表
      */

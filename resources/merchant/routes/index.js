@@ -7,6 +7,7 @@ import welcome from '../components/welcome.vue'
 import goods from './goods'
 import settlements from './settlements'
 
+import OrdersList from '../components/orders/list.vue'
 /**
  *
  */
@@ -16,6 +17,9 @@ const routes = [
 
     ...goods,
     ...settlements,
+
+    //订单管理列表
+    {path: '/orders', component: OrdersList, name: 'OrdersList'},
 
     {
         path: '/',
