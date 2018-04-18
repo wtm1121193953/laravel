@@ -26,7 +26,7 @@ class GoodsController extends Controller
         $merchant = Merchant::findOrFail($merchant_id);
         $list = Goods::where('merchant_id', $merchant_id)->get();
         $list->each(function ($item) use ($merchant) {
-            $item->pic_list = explode(',', $item->pic_list);
+            $item->pic_list = $item->pic_list ? explode(',', $item->pic_list) : [];
             $item->business_time = json_decode($merchant->business_time, 1);
         });
         return Result::success(['list' => $list]);
@@ -39,7 +39,7 @@ class GoodsController extends Controller
         ]);
 
         $detail = Goods::findOrFail(request('id'));
-        $detail->pic_list = explode(',', $detail->pic_list);
+        $detail->pic_list = $detail->pic_list ? explode(',', $detail->pic_list) : [];
         $merchant = Merchant::findOrFail($detail->merchant_id);
         $detail->business_time = json_decode($merchant->business_time, 1);
 
