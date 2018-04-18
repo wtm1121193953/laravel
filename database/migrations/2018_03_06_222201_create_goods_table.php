@@ -28,6 +28,7 @@ class CreateGoodsTable extends Migration
             $table->string('pic_list', 5000)->default('')->comment('商品图片列表 (逗号分隔字符串)');
             $table->string('buy_info', 1000)->default('')->comment('购买须知');
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-上架 2-下架');
+            $table->integer('sell_number')->default(0)->comment('已售数量');
             $table->string('ext_attr', 5000)->default('')->comment('商品扩展属性, 如: [name: 重量, value: 5kg]');
             $table->string('tags', 191)->index()->default('')->comment('商品标签');
             $table->timestamps();
