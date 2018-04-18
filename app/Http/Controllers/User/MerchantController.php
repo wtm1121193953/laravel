@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Setting\SettingService;
 use App\Result;
 use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,7 +37,14 @@ class MerchantController extends Controller
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
         }
 
-        $query = Merchant::where('status', 1)
+        $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
+
+        $currentOperId = request()->get('current_oper')->id;
+        $query = Merchant
+            ::when($merchantShareInMiniprogram == 1, function(Builder $query) use ($currentOperId) {
+                $query->where('oper_id', $currentOperId);
+            })
+            ->where('status', 1)
             ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT])
             ->when($city_id, function(Builder $query) use ($city_id){
                 $query->where('city_id', $city_id);
@@ -86,7 +94,6 @@ class MerchantController extends Controller
 
         // 补充商家其他信息
         $list = collect($list);
-        $currentOperId = request()->get('current_oper')->id;
         $list->each(function ($item) use ($currentOperId) {
             if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
             // 格式化距离
