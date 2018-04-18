@@ -91,7 +91,7 @@ class OrderController extends Controller
 
         $order = new Order();
         $orderNo = Order::genOrderNo();
-        $order->oper_id = $oper->id;
+        $order->oper_id = $merchant->oper_id;
         $order->order_no = $orderNo;
         $order->user_id = $user->id;
         $order->open_id = request()->get('current_open_id');
@@ -140,7 +140,7 @@ class OrderController extends Controller
             $items = [];
             for ($i = 0; $i < $number; $i ++){
                 $orderItem = new OrderItem();
-                $orderItem->oper_id = $oper->id;
+                $orderItem->oper_id = $merchant->oper_id;
                 $orderItem->merchant_id = $merchant->id;
                 $orderItem->order_id = $order->id;
                 $orderItem->verify_code = OrderItem::createVerifyCode($merchant->id);
@@ -155,7 +155,7 @@ class OrderController extends Controller
         if(request('scene') === 1){
             // 模拟生成sceneId并返回
             $scene = new MiniprogramScene();
-            $scene->oper_id = $oper->id;
+            $scene->oper_id = $merchant->oper_id;
             $scene->page = request('page', '');
             $scene->type = 1;
             $scene->payload = json_encode([
