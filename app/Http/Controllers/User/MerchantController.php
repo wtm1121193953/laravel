@@ -17,6 +17,7 @@ use App\Modules\Setting\SettingService;
 use App\Result;
 use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 use Psy\Util\Json;
 
 class MerchantController extends Controller
@@ -38,10 +39,12 @@ class MerchantController extends Controller
         }
 
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
+        Log::info('当前配置: ' . $merchantShareInMiniprogram);
 
         $currentOperId = request()->get('current_oper')->id;
         $query = Merchant
             ::when($merchantShareInMiniprogram == 1, function(Builder $query) use ($currentOperId) {
+                Log::info('进入oper_id过滤', ['oper_id', $currentOperId]);
                 $query->where('oper_id', $currentOperId);
             })
             ->where('status', 1)
