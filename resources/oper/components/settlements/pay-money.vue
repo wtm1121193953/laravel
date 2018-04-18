@@ -16,11 +16,11 @@
             <el-form-item label="回款单图片：">
                 <image-upload v-model="form.pay_pic_url"/>
             </el-form-item>
+            <el-form-item>
+                <el-button @click="cancel">取消</el-button>
+                <el-button type="primary" @click="save">保存</el-button>
+            </el-form-item>
         </el-form>
-        <div class="fl">
-            <el-button @click="cancel">取消</el-button>
-            <el-button type="primary" @click="save">保存</el-button>
-        </div>
     </page>
 </template>
 

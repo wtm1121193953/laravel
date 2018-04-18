@@ -39179,21 +39179,20 @@ var render = function() {
               })
             ],
             1
-          )
-        ],
-        1
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "fl" },
-        [
-          _c("el-button", { on: { click: _vm.cancel } }, [_vm._v("取消")]),
+          ),
           _vm._v(" "),
           _c(
-            "el-button",
-            { attrs: { type: "primary" }, on: { click: _vm.save } },
-            [_vm._v("保存")]
+            "el-form-item",
+            [
+              _c("el-button", { on: { click: _vm.cancel } }, [_vm._v("取消")]),
+              _vm._v(" "),
+              _c(
+                "el-button",
+                { attrs: { type: "primary" }, on: { click: _vm.save } },
+                [_vm._v("保存")]
+              )
+            ],
+            1
           )
         ],
         1
@@ -39390,25 +39389,26 @@ var render = function() {
                       })
                     ],
                     1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    [
+                      _c("el-button", { on: { click: _vm.cancel } }, [
+                        _vm._v("取消")
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "el-button",
+                        { attrs: { type: "primary" }, on: { click: _vm.save } },
+                        [_vm._v("保存")]
+                      )
+                    ],
+                    1
                   )
                 ],
                 1
-              ),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "fl" },
-            [
-              _c("el-button", { on: { click: _vm.cancel } }, [_vm._v("取消")]),
-              _vm._v(" "),
-              _c(
-                "el-button",
-                { attrs: { type: "primary" }, on: { click: _vm.save } },
-                [_vm._v("保存")]
               )
-            ],
-            1
-          )
         ],
         1
       )

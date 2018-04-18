@@ -17,11 +17,11 @@
                 <el-form-item prop="logistics_no" label="物流单号">
                     <el-input v-model="form.logistics_no" style="width: 400px"/>
                 </el-form-item>
+                <el-form-item>
+                    <el-button @click="cancel">取消</el-button>
+                    <el-button type="primary" @click="save">保存</el-button>
+                </el-form-item>
             </el-form>
-            <div class="fl">
-                <el-button @click="cancel">取消</el-button>
-                <el-button type="primary" @click="save">保存</el-button>
-            </div>
         </el-col>
     </page>
 </template>
