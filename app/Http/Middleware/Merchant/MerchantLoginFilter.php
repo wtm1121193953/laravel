@@ -22,6 +22,7 @@ class MerchantLoginFilter
     // 不需要登录的url列表
     protected $publicUrls = [
         'api/merchant/login',
+        'api/merchant/logout',
     ];
 
     /**

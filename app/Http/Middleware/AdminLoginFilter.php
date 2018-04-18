@@ -15,6 +15,7 @@ class AdminLoginFilter
     // 不需要登录的url列表
     protected $publicUrls = [
         'api/admin/login',
+        'api/admin/logout',
     ];
     /**
      * Handle an incoming request.
