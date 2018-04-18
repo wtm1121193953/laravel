@@ -14,6 +14,7 @@ Route::prefix('user')
         Route::any('sms/verify_code', 'SmsController@sendVerifyCode');
 
         Route::any('login', 'LoginController@login');
+        Route::any('loginWithSceneId', 'LoginController@loginWithSceneId');
 
         Route::get('area/tree', 'AreaController@getTree');
         Route::get('area/cites/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
