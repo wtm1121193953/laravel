@@ -1,8 +1,8 @@
 <template>
     <page title="发票详情">
         <div>
-            <el-radio v-model="form.invoice_type" :label="1" border :disabled="disable">上传电子发票</el-radio>
-            <el-radio v-model="form.invoice_type" :label="2" border :disabled="disable">寄送纸质发票</el-radio>
+            <el-radio v-model="form.invoice_type" :label="1" border :disabled="uploaded">上传电子发票</el-radio>
+            <el-radio v-model="form.invoice_type" :label="2" border :disabled="uploaded">寄送纸质发票</el-radio>
         </div>
         <el-col style="margin-top: 20px">
             <el-form label-width="150px" ref="form">
@@ -53,7 +53,7 @@
                     logistics_no: '',
                 },
                 invoice_type: 0,    //数据库中的发票状态
-                disable: false,
+                uploaded: false, // 是否已上传过发票
             }
         },
         methods: {
@@ -84,8 +84,8 @@
                 this.form.id = parseInt(this.scope.id);
                 this.invoice_type = parseInt(this.scope.invoice_type);
                 console.log(this.scope, this.invoice_type);
-                if(parseInt(this.invoice_type) === 1 || parseInt(this.invoice_type) === 2){
-                    this.disable = true;
+                this.uploaded = parseInt(this.invoice_type) === 1 || parseInt(this.invoice_type) === 2;
+                if( this.uploaded ){
                     this.form.invoice_type = this.invoice_type;
                     this.form.invoice_pic_url = this.scope.invoice_pic_url;
                     this.form.logistics_name = this.scope.logistics_name;

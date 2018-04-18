@@ -1699,7 +1699,7 @@ var defaultForm = {
                 logistics_no: ''
             },
             invoice_type: 0, //数据库中的发票状态
-            disable: false
+            uploaded: false // 是否已上传过发票
         };
     },
 
@@ -1733,8 +1733,8 @@ var defaultForm = {
             this.form.id = parseInt(this.scope.id);
             this.invoice_type = parseInt(this.scope.invoice_type);
             console.log(this.scope, this.invoice_type);
-            if (parseInt(this.invoice_type) === 1 || parseInt(this.invoice_type) === 2) {
-                this.disable = true;
+            this.uploaded = parseInt(this.invoice_type) === 1 || parseInt(this.invoice_type) === 2;
+            if (this.uploaded) {
                 this.form.invoice_type = this.invoice_type;
                 this.form.invoice_pic_url = this.scope.invoice_pic_url;
                 this.form.logistics_name = this.scope.logistics_name;
@@ -39296,7 +39296,7 @@ var render = function() {
           _c(
             "el-radio",
             {
-              attrs: { label: 1, border: "", disabled: _vm.disable },
+              attrs: { label: 1, border: "", disabled: _vm.uploaded },
               model: {
                 value: _vm.form.invoice_type,
                 callback: function($$v) {
@@ -39311,7 +39311,7 @@ var render = function() {
           _c(
             "el-radio",
             {
-              attrs: { label: 2, border: "", disabled: _vm.disable },
+              attrs: { label: 2, border: "", disabled: _vm.uploaded },
               model: {
                 value: _vm.form.invoice_type,
                 callback: function($$v) {
