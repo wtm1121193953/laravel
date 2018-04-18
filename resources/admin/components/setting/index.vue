@@ -2,6 +2,7 @@
     <page title="系统设置">
         <el-form v-model="form" label-width="150px">
             <el-form-item v-for="setting in settings"
+                          :key="setting.key"
                           :label="setting.name"
                           :prop="setting.key">
                 <template v-if="setting.key === 'merchant_share_in_miniprogram'">

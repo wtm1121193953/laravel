@@ -22,6 +22,10 @@ class GoodsController extends Controller
             $query->where('status', $status);
         })->orderBy('id', 'desc')->paginate();
 
+        $data->each(function($item){
+            $item->pic_list = explode(',', $item->pic_list);
+        });
+
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -63,6 +67,12 @@ class GoodsController extends Controller
         $goods->start_date = request('start_date');
         $goods->end_date = request('end_date');
         $goods->pic = request('pic', '');
+        $picList = request('pic_list', '');
+        if(is_array($picList)){
+            $picList = implode(',', $picList);
+        }
+        $goods->pic_list = $picList;
+
         $goods->thumb_url = request('thumb_url', '');
         $goods->desc = request('desc', '');
         $goods->buy_info = request('buy_info', '');
@@ -95,6 +105,12 @@ class GoodsController extends Controller
         $goods->start_date = request('start_date');
         $goods->end_date = request('end_date');
         $goods->pic = request('pic', '');
+        $picList = request('pic_list', '');
+        if(is_array($picList)){
+            $picList = implode(',', $picList);
+        }
+        $goods->pic_list = $picList;
+
         $goods->thumb_url = request('thumb_url', '');
         $goods->desc = request('desc', '');
         $goods->buy_info = request('buy_info', '');

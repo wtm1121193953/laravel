@@ -432,7 +432,7 @@ var defaultForm = {
     price: 0,
     start_date: '',
     end_date: '',
-    pic: '',
+    pic_list: '',
     thumb_url: '',
     desc: '',
     buy_info: '',
@@ -452,7 +452,7 @@ var defaultForm = {
                 market_price: [{ required: true, message: '市场价不能为空' }],
                 price: [{ required: true, message: '销售价不能为空' }],
                 thumb_url: [{ required: true, message: '缩略图不能为空' }],
-                pic: [{ required: true, message: '详情图不能为空' }]
+                pic_list: [{ required: true, message: '详情图不能为空' }]
             }
         };
     },
@@ -38899,16 +38899,16 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "el-form-item",
-                { attrs: { prop: "pic", label: "产品详情图" } },
+                { attrs: { prop: "pic_list", label: "产品详情图" } },
                 [
                   _c("image-upload", {
-                    attrs: { width: 750, height: 526, limit: 1 },
+                    attrs: { width: 750, height: 526, limit: 6 },
                     model: {
-                      value: _vm.form.pic,
+                      value: _vm.form.pic_list,
                       callback: function($$v) {
-                        _vm.$set(_vm.form, "pic", $$v)
+                        _vm.$set(_vm.form, "pic_list", $$v)
                       },
-                      expression: "form.pic"
+                      expression: "form.pic_list"
                     }
                   }),
                   _vm._v(" "),

@@ -30,8 +30,8 @@
                     <image-upload :width="190" :height="190" v-model="form.thumb_url" :limit="1"/>
                     <div>图片尺寸: 190 px * 190 px</div>
                 </el-form-item>
-                <el-form-item prop="pic" label="产品详情图">
-                    <image-upload :width="750" :height="526" v-model="form.pic" :limit="1"/>
+                <el-form-item prop="pic_list" label="产品详情图">
+                    <image-upload :width="750" :height="526" v-model="form.pic_list" :limit="6"/>
                     <div>图片尺寸: 750 px * 526 px</div>
                 </el-form-item>
                 <el-form-item prop="desc" label="商品简介">
@@ -62,7 +62,7 @@
         price: 0,
         start_date: '',
         end_date: '',
-        pic: '',
+        pic_list: '',
         thumb_url: '',
         desc: '',
         buy_info: '',
@@ -92,7 +92,7 @@
                     thumb_url: [
                         {required: true, message: '缩略图不能为空'}
                     ],
-                    pic: [
+                    pic_list: [
                         {required: true, message: '详情图不能为空'}
                     ],
                 },
