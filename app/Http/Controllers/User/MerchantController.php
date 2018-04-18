@@ -39,12 +39,10 @@ class MerchantController extends Controller
         }
 
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
-        Log::info('当前配置: ' . $merchantShareInMiniprogram);
 
         $currentOperId = request()->get('current_oper')->id;
         $query = Merchant
-            ::when($merchantShareInMiniprogram == 1, function(Builder $query) use ($currentOperId) {
-                Log::info('进入oper_id过滤', ['oper_id', $currentOperId]);
+            ::when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
                 $query->where('oper_id', $currentOperId);
             })
             ->where('status', 1)

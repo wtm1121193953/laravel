@@ -17,6 +17,7 @@ use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
+use App\Modules\Setting\SettingService;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
@@ -31,13 +32,20 @@ class OrderController extends Controller
     {
         $status = request('status');
         $user = request()->get('current_user');
-        $data = Order::where('user_id', $user->id)
+
+        $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
+
+        $currentOperId = request()->get('current_oper')->id;
+        $data = Order
+            ::where('user_id', $user->id)
+            ->when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
+                $query->where('oper_id', $currentOperId);
+            })
             ->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
             })
             ->orderByDesc('id')
             ->paginate();
-        $currentOperId = request()->get('current_oper')->id;
         $data->each(function ($item) use ($currentOperId) {
             $item->items = OrderItem::where('order_id', $item->id)->get();
             // 判断商户是否是当前小程序关联运营中心下的商户
