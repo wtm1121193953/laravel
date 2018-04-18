@@ -355,6 +355,7 @@ token (wxLogin接口除外)
           price; 商品价格,
           start_date: 商品有效期开始日期,
           end_date: 商品有效期结束日期,
+          business_time: 可用时间 数组格式:[开始时间, 结束时间], 如: ['10:30:00', '18:30:00'],
           thumb_url: 商品缩略图,
           pic: 商品默认图,
           pic_list: 商品小图列表, 数组
