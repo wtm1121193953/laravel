@@ -23,7 +23,7 @@ class GoodsController extends Controller
         })->orderBy('id', 'desc')->paginate();
 
         $data->each(function($item){
-            $item->pic_list = explode(',', $item->pic_list);
+            $item->pic_list = $item->pic_list ? explode(',', $item->pic_list) : [];
         });
 
         return Result::success([
@@ -39,6 +39,7 @@ class GoodsController extends Controller
         ]);
         $id = request('id');
         $goods = Goods::findOrFail($id);
+        $goods->pic_list = $goods->pic_list ? explode(',', $goods->pic_list) : [];
         return Result::success($goods);
     }
 
@@ -90,6 +91,7 @@ class GoodsController extends Controller
 
         $goods->save();
 
+        $goods->pic_list = $goods->pic_list ? explode(',', $goods->pic_list) : [];
         return Result::success($goods);
     }
 
@@ -127,6 +129,7 @@ class GoodsController extends Controller
         $goods->status = request('status', 1);
 
         $goods->save();
+        $goods->pic_list = $goods->pic_list ? explode(',', $goods->pic_list) : [];
 
         return Result::success($goods);
     }
