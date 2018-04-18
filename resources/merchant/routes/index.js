@@ -19,7 +19,13 @@ const routes = [
     ...settlements,
 
     //订单管理列表
-    {path: '/orders', component: OrdersList, name: 'OrdersList'},
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'orders', component: OrdersList, name: 'OrdersList'},
+        ]
+    },
 
     {
         path: '/',

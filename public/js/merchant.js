@@ -552,7 +552,7 @@ var defaultForm = {
     price: 0,
     start_date: '',
     end_date: '',
-    pic_list: '',
+    pic_list: [],
     thumb_url: '',
     desc: '',
     buy_info: '',
@@ -43529,7 +43529,11 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var routes = [{ path: '/login', component: __WEBPACK_IMPORTED_MODULE_0__components_login_vue___default.a, name: 'Login' }].concat(_toConsumableArray(__WEBPACK_IMPORTED_MODULE_5__goods__["a" /* default */]), _toConsumableArray(__WEBPACK_IMPORTED_MODULE_6__settlements__["a" /* default */]), [
 
 //订单管理列表
-{ path: '/orders', component: __WEBPACK_IMPORTED_MODULE_7__components_orders_list_vue___default.a, name: 'OrdersList' }, {
+{
+    path: '/',
+    component: __WEBPACK_IMPORTED_MODULE_2__components_home_vue___default.a,
+    children: [{ path: 'orders', component: __WEBPACK_IMPORTED_MODULE_7__components_orders_list_vue___default.a, name: 'OrdersList' }]
+}, {
     path: '/',
     component: __WEBPACK_IMPORTED_MODULE_2__components_home_vue___default.a,
     children: [

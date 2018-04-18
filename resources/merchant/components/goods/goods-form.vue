@@ -62,7 +62,7 @@
         price: 0,
         start_date: '',
         end_date: '',
-        pic_list: '',
+        pic_list: [],
         thumb_url: '',
         desc: '',
         buy_info: '',
