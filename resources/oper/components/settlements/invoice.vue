@@ -83,6 +83,7 @@
                 this.form = deepCopy(defaultForm)
                 this.form.id = parseInt(this.scope.id);
                 this.invoice_type = parseInt(this.scope.invoice_type);
+                console.log(this.scope, this.invoice_type);
                 if(parseInt(this.invoice_type) === 1 || parseInt(this.invoice_type) === 2){
                     this.disable = true;
                     this.form.invoice_type = this.invoice_type;

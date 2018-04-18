@@ -1672,6 +1672,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
 
 
 
@@ -1730,7 +1732,8 @@ var defaultForm = {
             this.form = deepCopy(defaultForm);
             this.form.id = parseInt(this.scope.id);
             this.invoice_type = parseInt(this.scope.invoice_type);
-            if (parseInt(this.invoice_type) !== 0) {
+            console.log(this.scope, this.invoice_type);
+            if (parseInt(this.invoice_type) === 1 || parseInt(this.invoice_type) === 2) {
                 this.disable = true;
                 this.form.invoice_type = this.invoice_type;
                 this.form.invoice_pic_url = this.scope.invoice_pic_url;
@@ -13412,7 +13415,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -39327,88 +39330,85 @@ var render = function() {
         "el-col",
         { staticStyle: { "margin-top": "20px" } },
         [
-          parseInt(_vm.form.invoice_type) === 1
-            ? _c(
-                "el-form",
-                { ref: "form" },
+          _c(
+            "el-form",
+            { ref: "form", attrs: { "label-width": "150px" } },
+            [
+              parseInt(_vm.form.invoice_type) === 1
+                ? [
+                    _c(
+                      "el-form-item",
+                      { attrs: { label: "上传电子发票：" } },
+                      [
+                        _c("image-upload", {
+                          model: {
+                            value: _vm.form.invoice_pic_url,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "invoice_pic_url", $$v)
+                            },
+                            expression: "form.invoice_pic_url"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ]
+                : [
+                    _c(
+                      "el-form-item",
+                      { attrs: { prop: "logistics_name", label: "物流公司" } },
+                      [
+                        _c("el-input", {
+                          staticStyle: { width: "400px" },
+                          model: {
+                            value: _vm.form.logistics_name,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "logistics_name", $$v)
+                            },
+                            expression: "form.logistics_name"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "el-form-item",
+                      { attrs: { prop: "logistics_no", label: "物流单号" } },
+                      [
+                        _c("el-input", {
+                          staticStyle: { width: "400px" },
+                          model: {
+                            value: _vm.form.logistics_no,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "logistics_no", $$v)
+                            },
+                            expression: "form.logistics_no"
+                          }
+                        })
+                      ],
+                      1
+                    )
+                  ],
+              _vm._v(" "),
+              _c(
+                "el-form-item",
                 [
+                  _c("el-button", { on: { click: _vm.cancel } }, [
+                    _vm._v("取消")
+                  ]),
+                  _vm._v(" "),
                   _c(
-                    "el-form-item",
-                    { attrs: { label: "上传电子发票：" } },
-                    [
-                      _c("image-upload", {
-                        model: {
-                          value: _vm.form.invoice_pic_url,
-                          callback: function($$v) {
-                            _vm.$set(_vm.form, "invoice_pic_url", $$v)
-                          },
-                          expression: "form.invoice_pic_url"
-                        }
-                      })
-                    ],
-                    1
+                    "el-button",
+                    { attrs: { type: "primary" }, on: { click: _vm.save } },
+                    [_vm._v("保存")]
                   )
                 ],
                 1
               )
-            : _c(
-                "el-form",
-                { ref: "form", attrs: { "label-width": "70px" } },
-                [
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "logistics_name", label: "物流公司" } },
-                    [
-                      _c("el-input", {
-                        staticStyle: { width: "400px" },
-                        model: {
-                          value: _vm.form.logistics_name,
-                          callback: function($$v) {
-                            _vm.$set(_vm.form, "logistics_name", $$v)
-                          },
-                          expression: "form.logistics_name"
-                        }
-                      })
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "logistics_no", label: "物流单号" } },
-                    [
-                      _c("el-input", {
-                        staticStyle: { width: "400px" },
-                        model: {
-                          value: _vm.form.logistics_no,
-                          callback: function($$v) {
-                            _vm.$set(_vm.form, "logistics_no", $$v)
-                          },
-                          expression: "form.logistics_no"
-                        }
-                      })
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    [
-                      _c("el-button", { on: { click: _vm.cancel } }, [
-                        _vm._v("取消")
-                      ]),
-                      _vm._v(" "),
-                      _c(
-                        "el-button",
-                        { attrs: { type: "primary" }, on: { click: _vm.save } },
-                        [_vm._v("保存")]
-                      )
-                    ],
-                    1
-                  )
-                ],
-                1
-              )
+            ],
+            2
+          )
         ],
         1
       )
