@@ -65,6 +65,10 @@ class MerchantController extends Controller
                 $query->where('merchant_category_id', $merchant_category_id)
                     ->where('name', 'like', "%$keyword%");
             })
+            ->when($merchant_category_id && empty($keyword), function(Builder $query) use ($merchant_category_id, $keyword){
+                // 如果只传了类别, 没有关键字
+                $query->where('merchant_category_id', $merchant_category_id);
+            })
             ->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
                 // 如果范围存在, 按距离搜索, 并按距离排序
 //                dd(array_keys($distances));
