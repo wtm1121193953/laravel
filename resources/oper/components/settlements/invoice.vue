@@ -5,18 +5,20 @@
             <el-radio v-model="form.invoice_type" :label="2" border :disabled="disable">寄送纸质发票</el-radio>
         </div>
         <el-col style="margin-top: 20px">
-            <el-form v-if="parseInt(form.invoice_type) === 1" ref="form">
-                <el-form-item label="上传电子发票：">
-                    <image-upload v-model="form.invoice_pic_url"/>
-                </el-form-item>
-            </el-form>
-            <el-form label-width="70px" v-else ref="form">
-                <el-form-item prop="logistics_name" label="物流公司">
-                    <el-input v-model="form.logistics_name" style="width: 400px"/>
-                </el-form-item>
-                <el-form-item prop="logistics_no" label="物流单号">
-                    <el-input v-model="form.logistics_no" style="width: 400px"/>
-                </el-form-item>
+            <el-form label-width="150px" ref="form">
+                <template v-if="parseInt(form.invoice_type) === 1">
+                    <el-form-item label="上传电子发票：">
+                        <image-upload v-model="form.invoice_pic_url"/>
+                    </el-form-item>
+                </template>
+                <template v-else>
+                    <el-form-item prop="logistics_name" label="物流公司">
+                        <el-input v-model="form.logistics_name" style="width: 400px"/>
+                    </el-form-item>
+                    <el-form-item prop="logistics_no" label="物流单号">
+                        <el-input v-model="form.logistics_no" style="width: 400px"/>
+                    </el-form-item>
+                </template>
                 <el-form-item>
                     <el-button @click="cancel">取消</el-button>
                     <el-button type="primary" @click="save">保存</el-button>
@@ -81,7 +83,7 @@
                 this.form = deepCopy(defaultForm)
                 this.form.id = parseInt(this.scope.id);
                 this.invoice_type = parseInt(this.scope.invoice_type);
-                if(parseInt(this.invoice_type) !== 0){
+                if(parseInt(this.invoice_type) === 1 || parseInt(this.invoice_type) === 2){
                     this.disable = true;
                     this.form.invoice_type = this.invoice_type;
                     this.form.invoice_pic_url = this.scope.invoice_pic_url;
