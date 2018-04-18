@@ -13,6 +13,8 @@ import oper from './oper'
 import oper_accounts from './oper_account'
 import merchant from './merchant'
 
+import Setting from '../components/setting'
+
 /**
  *
  */
@@ -28,6 +30,14 @@ const routes = [
             {path: 'rules', component: RuleList, name: 'RuleList'},
             {path: 'groups', component: GroupList, name: 'GroupList'},
             {path: 'users', component: UserList, name: 'UserList'},
+        ]
+    },
+    // 系统设置模块
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'setting', component: Setting, name: 'Setting'},
         ]
     },
 

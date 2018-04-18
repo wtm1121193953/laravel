@@ -39,6 +39,9 @@ Route::prefix('admin')
     Route::get('merchant/detail', 'MerchantController@detail');
     Route::post('merchant/audit', 'MerchantController@audit');
 
+    Route::get('settings', 'SettingController@getList');
+    Route::post('setting/edit', 'SettingController@edit');
+
     Route::group([], base_path('routes/api/admin/goods.php'));
     Route::group([], base_path('routes/api/admin/oper.php'));
     Route::group([], base_path('routes/api/admin/oper_account.php'));

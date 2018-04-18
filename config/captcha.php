@@ -2,7 +2,7 @@
 
 return [
 
-    'characters' => '123467890',
+    'characters' => '23467890',
 
     'default'   => [
         'length'    => 5,
