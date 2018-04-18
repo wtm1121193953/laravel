@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Modules\Goods\Goods;
 use App\Modules\Oper\OperMiniprogram;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
@@ -78,6 +79,9 @@ class PayController extends Controller
             $order->pay_time = Carbon::now(); // 更新支付时间为当前时间
             $order->status = Order::STATUS_PAID;
             $order->save();
+
+            // 添加商品已售数量
+            Goods::where('id', $order->goods_id)->increment('sell_number');
 
             // 生成核销码, 线上需要放到支付成功通知中
             for ($i = 0; $i < $order->buy_number; $i ++){
