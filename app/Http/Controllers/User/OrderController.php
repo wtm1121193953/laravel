@@ -17,6 +17,7 @@ use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
+use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -143,10 +144,24 @@ class OrderController extends Controller
             $order->save();
         }
 
+        if(request('scene') === 1){
+            // 模拟生成sceneId并返回
+            $scene = new MiniprogramScene();
+            $scene->oper_id = $oper->id;
+            $scene->page = request('page', '');
+            $scene->type = 1;
+            $scene->payload = json_encode([
+                'order_no' => $orderNo,
+                'user_id' => $user->id
+            ]);
+            $scene->save();
+        }
+
         return Result::success([
             'order_no' => $orderNo,
             'isOperSelf' => $isOperSelf,
-            'sdk_config' => $sdkConfig
+            'sdk_config' => $sdkConfig,
+            'sceneId' => isset($scene) ? $scene->id : '',
         ]);
     }
 
