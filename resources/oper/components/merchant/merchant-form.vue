@@ -244,7 +244,7 @@
                         {required: true, message: '商家logo不能为空', trigger: 'change'}
                     ],
                     desc_pic_list: [
-                        {required: true, type: 'array', message: '商家介绍图片不能为空'}
+                        {required: true, message: '商家介绍图片不能为空'}
                     ],
                     desc: [
                         {required: true, message: '商家介绍不能为空'}

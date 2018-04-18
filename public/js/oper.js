@@ -1315,7 +1315,7 @@ var defaultForm = {
                 name: [{ required: true, message: '商家名称不能为空' }],
                 merchant_category: [{ type: 'array', required: true, message: '所属行业不能为空' }],
                 logo: [{ required: true, message: '商家logo不能为空', trigger: 'change' }],
-                desc_pic_list: [{ required: true, type: 'array', message: '商家介绍图片不能为空' }],
+                desc_pic_list: [{ required: true, message: '商家介绍图片不能为空' }],
                 desc: [{ required: true, message: '商家介绍不能为空' }],
                 settlement_rate: [{ required: true, message: '分利比例不能为空' }, {
                     validator: function validator(rule, value, callback) {
