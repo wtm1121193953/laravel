@@ -83,7 +83,7 @@
                 this.form = deepCopy(defaultForm)
                 this.form.id = parseInt(this.scope.id);
                 this.invoice_type = parseInt(this.scope.invoice_type);
-                console.log(this.scope, this.invoice_type);
+
                 this.uploaded = parseInt(this.invoice_type) === 1 || parseInt(this.invoice_type) === 2;
                 if( this.uploaded ){
                     this.form.invoice_type = this.invoice_type;
