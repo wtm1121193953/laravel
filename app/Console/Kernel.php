@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\OrderExpired;
 use App\Jobs\SettlementHalfMonthly;
 use App\Jobs\SettlementHalfYearly;
 use App\Jobs\SettlementMonthly;
@@ -32,6 +33,13 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        /**
+         * 订单超时自动关闭
+         */
+        $schedule->job(OrderExpired::class)->hourly();
+        /**
+         * 结算任务
+         */
         // 周结
         $schedule->job(new SettlementJob(Merchant::SETTLE_WEEKLY))
             ->weeklyOn(1);
