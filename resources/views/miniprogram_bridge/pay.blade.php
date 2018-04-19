@@ -23,10 +23,18 @@
             border: 1px #ccc solid;
             padding: 5%;
         }
+        .error {
+            text-align: center;
+            margin-top: 30px;
+            color: #e34c37;
+        }
     </style>
 </head>
 <body>
 <div class="title">请您长按识别下图的小程序码进行支付</div>
+@if(isset($errorMsg))
+<div class="error">{{$errorMsg}}</div>
+@endif
 <img class="image" src="{{ $app_code_url }}" alt="">
 </body>
 </html>

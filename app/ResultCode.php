@@ -53,4 +53,5 @@ class ResultCode
 
     const WECHAT_OPEN_ID_NOT_FOUND = 70010; // 微信openId不存在
     const WECHAT_APPID_INVALID = 70011; // 微信appid不存在
+    const MINIPROGRAM_PAGE_NOT_EXIST = 70020; // 微信小程序页面不存在
 }

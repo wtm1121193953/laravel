@@ -10,6 +10,7 @@ namespace App\Modules\Wechat;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\MiniprogramPageNotExistException;
 use App\Modules\Oper\OperMiniprogram;
 use EasyWeChat\Factory;
 
@@ -81,7 +82,10 @@ class WechatService
             'page' => $page,
             'width' => $width,
         ]);
-        if(json_decode($response, 1)){
+        if($response = json_decode($response, 1)){
+            if($response['errcode'] == 41030){
+                throw new MiniprogramPageNotExistException();
+            }
             throw new BaseResponseException('小程序码生成失败' . $response);
         }
         $filename = $response->save(storage_path('app/public/miniprogram/app_code'));

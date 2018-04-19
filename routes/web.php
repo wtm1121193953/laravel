@@ -55,11 +55,17 @@ Route::get('/miniprogram_bridge/pay', function(){
     ]);
     $scene->save();
 
-    $appCodeUrl = WechatService::genMiniprogramAppCodeUrl($targetOperId, $scene->id, $page);
+    try{
+        $appCodeUrl = WechatService::genMiniprogramAppCodeUrl($targetOperId, $scene->id, $page);
+    }catch (\App\Exceptions\MiniprogramPageNotExistException $e){
+        $appCodeUrl = '';
+        $errorMsg = $e->getMessage();
+    }
 
 //    $appCodeUrl = 'https://o2o.niucha.ren/storage/miniprogram/app_code/_3-id=52.jpg';
     return view('miniprogram_bridge.pay', [
-        'app_code_url' => $appCodeUrl
+        'app_code_url' => $appCodeUrl,
+        'errorMsg' => $errorMsg ?? null,
     ]);
 });
 
