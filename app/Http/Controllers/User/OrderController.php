@@ -152,7 +152,7 @@ class OrderController extends Controller
             $order->save();
         }
 
-        if(request('scene') === 1){
+        if(request('scene') == 1){
             // 模拟生成sceneId并返回
             $scene = new MiniprogramScene();
             $scene->oper_id = $merchant->oper_id;
