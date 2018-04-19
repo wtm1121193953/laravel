@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\OrderExpired;
 use App\Jobs\SettlementForMerchant;
 use App\Jobs\SettlementJob;
 use App\Modules\Merchant\Merchant;
@@ -49,6 +50,8 @@ class Test extends Command
      */
     public function handle()
     {
+        OrderExpired::dispatch();
+        dd();
         SettlementForMerchant::dispatch(1, Carbon::now()->startOfMonth(), Carbon::now());
         dd();
         SettlementJob::dispatch(Merchant::SETTLE_WEEKLY);
