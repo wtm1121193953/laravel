@@ -79,7 +79,7 @@ class LoginController extends Controller
         if($scene->type != 1){
             throw new BaseResponseException('场景类型不匹配');
         }
-        $payload = json_decode($scene, 1);
+        $payload = json_decode($scene->payload, 1);
         if(!$payload || !$payload['user_id'] || !$payload['order_no']){
             throw new BaseResponseException('payload数据错误');
         }
