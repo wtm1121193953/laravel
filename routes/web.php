@@ -59,7 +59,7 @@ Route::get('/miniprogram_bridge/pay', function(){
         $appCodeUrl = WechatService::genMiniprogramAppCodeUrl($targetOperId, $scene->id, $page);
     }catch (\App\Exceptions\MiniprogramPageNotExistException $e){
         $appCodeUrl = '';
-        $errorMsg = $e->getMessage();
+        $errorMsg = '小程序页面不存在或尚未发布';
     }
 
 //    $appCodeUrl = 'https://o2o.niucha.ren/storage/miniprogram/app_code/_3-id=52.jpg';
