@@ -50,6 +50,7 @@ class OrderController extends Controller
             $item->items = OrderItem::where('order_id', $item->id)->get();
             // 判断商户是否是当前小程序关联运营中心下的商户
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
+            $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
         });
         return Result::success([
             'list' => $data->items(),
