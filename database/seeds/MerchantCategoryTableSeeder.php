@@ -17,7 +17,7 @@ class MerchantCategoryTableSeeder extends Seeder
             '美食' => [
                 '生日蛋糕',
                 '甜点饮品',
-                '京才鲁菜',
+                '京菜鲁菜',
                 '自助餐',
                 '火锅',
                 '西餐',
@@ -148,7 +148,7 @@ class MerchantCategoryTableSeeder extends Seeder
             '母婴亲子' => [
                 '儿童摄影',
                 '儿童乐园',
-                '婴儿有用',
+                '婴儿游泳',
                 '幼儿教育',
                 '母婴护理',
                 '孕妇写真',
