@@ -12,6 +12,7 @@ namespace App\Http\Controllers\Oper;
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantCategory;
 use App\Result;
 
 /**
@@ -27,6 +28,13 @@ class MerchantPoolController extends Controller
         $data = Merchant::where('contract_status', Merchant::CONTRACT_STATUS_NO)
             ->orderBy('id', 'desc')
             ->paginate();
+
+        $data->each(function ($item){
+            if ($item->merchant_category_id){
+                $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
+            }
+            $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
+        });
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),

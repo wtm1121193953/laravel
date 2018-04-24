@@ -1,7 +1,7 @@
 <template>
     <page title="商户池" v-loading="isLoading">
         <!-- todo 调整商户与商户池页面逻辑 并在添加商户时可以从商户池中直接添加 -->
-        <el-button class="fr" type="primary" @click="add">添加商户</el-button>
+        <el-button class="fr" type="primary" @click="add">录入商户信息</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="id" label="ID"/>
@@ -79,7 +79,7 @@
         },
         methods: {
             getList(){
-                api.get('/merchants', this.query).then(data => {
+                api.get('/merchant/pool', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                 })

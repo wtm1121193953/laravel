@@ -134,6 +134,12 @@ class MerchantController extends Controller
 
         $this->fillMerchantInfoFromRequest($merchant);
 
+        // 商户组织机构代码不能重复
+        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->first();
+        if(!empty($existMerchant)) {
+            throw new BaseResponseException('商户组织机构代码已存在');
+        }
+
         $merchant->save();
 
         return Result::success($merchant);
@@ -164,6 +170,12 @@ class MerchantController extends Controller
         $merchant = Merchant::findOrFail(request('id'));
 
         $this->fillMerchantInfoFromRequest($merchant);
+
+        // 商户组织机构代码不能重复
+        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->offset(1)->first();
+        if(!empty($existMerchant)) {
+            throw new BaseResponseException('商户组织机构代码已存在');
+        }
 
         if($merchant->audit_status == Merchant::AUDIT_STATUS_SUCCESS
             || $merchant->audit_status == Merchant::AUDIT_STATUS_RESUBMIT){

@@ -19,6 +19,6 @@ Route::post('/merchant/editAccount', 'MerchantController@editAccount');
 
 Route::get('/merchant/addFromMerchantPool', 'MerchantController@addFromMerchantPool');
 
-Route::get('/merchantPool/getList', 'MerchantPoolController@getList');
-Route::get('/merchantPool/add', 'MerchantPoolController@add');
-Route::get('/merchantPool/edit', 'MerchantPoolController@edit');
+Route::get('/merchant/pool', 'MerchantPoolController@getList');
+Route::get('/merchant/pool/add', 'MerchantPoolController@add');
+Route::get('/merchant/pool/edit', 'MerchantPoolController@edit');
