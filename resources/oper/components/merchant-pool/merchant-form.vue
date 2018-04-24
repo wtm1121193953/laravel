@@ -1,5 +1,6 @@
 <template>
     <page :title="title" :breadcrumbs="{商户管理: '/merchants'}">
+        <!-- todo 调整商户与商户池表单字段 -->
         <el-row>
             <el-col :span="24">
                 <el-form :model="form" label-width="150px" :rules="formRules" ref="form" @submit.native.prevent>
@@ -289,7 +290,7 @@
                 })
 
                 if(this.$route.query.type == 'edit'){
-                    this.title = '修改商户';
+                    this.title = '修改商户池';
                     this.merchant_id = this.$route.query.merchant_id;
                     api.get('/merchant/getMerchantById', {id: this.merchant_id}).then(data => {
                         this.form = data;
@@ -311,7 +312,7 @@
                     })
 
                 }else {
-                    this.title = '添加商户';
+                    this.title = '添加商户池';
                     this.form = deepCopy(defaultForm)
                 }
             },
