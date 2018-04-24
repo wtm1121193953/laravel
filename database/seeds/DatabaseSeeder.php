@@ -19,9 +19,5 @@ class DatabaseSeeder extends Seeder
         $this->call(AreaTableSeeder::class);
         $this->call(MerchantCategoryTableSeeder::class);
 
-        // 模拟数据填充
-//        if(App::environment('local')){
-//            $this->call(MockTableDataSeeder::class);
-//        }
     }
 }
