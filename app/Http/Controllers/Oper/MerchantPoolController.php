@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Oper;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Result;
@@ -32,12 +33,66 @@ class MerchantPoolController extends Controller
         ]);
     }
 
+    private function fillMerchantInfoFromRequest(Merchant $merchant)
+    {
+        // todo 整理添加商户池中商户信息需要的字段
+        $merchant->oper_id = request()->get('current_user')->oper_id;
+        $merchant->merchant_category_id = request('merchant_category_id', 0);
+        $merchant->name = request('name');
+        $merchant->brand = request('brand','');
+        $merchant->region = request('region');
+        $merchant->province = request('province_id') ? Area::where('area_id', request('province_id'))->value('name') : '';
+        $merchant->province_id = request('province_id', 0);
+        $merchant->city = request('city_id') ? Area::where('area_id', request('city_id'))->value('name') : '';
+        $merchant->city_id = request('city_id', 0);
+        $merchant->area = request('area_id') ? Area::where('area_id', request('area_id'))->value('name') : '';
+        $merchant->area_id = request('area_id', 0);
+        $merchant->business_time = request('business_time');
+        $merchant->logo = request('logo','');
+        $merchant->desc_pic = request('desc_pic','');
+        $descPicList = request('desc_pic_list', '');
+        if(is_array($descPicList)){
+            $descPicList = implode(',', $descPicList);
+        }
+        $merchant->desc_pic_list = $descPicList;
+        $merchant->desc = request('desc','');
+        $merchant->invoice_title = request('invoice_title','');
+        $merchant->invoice_no = request('invoice_no','');
+        $merchant->status = request('status', 1);
+        $merchant->lng = request('lng',0);
+        $merchant->lat = request('lat',0);
+        $merchant->address = request('address','');
+        $merchant->contacter = request('contacter','');
+        $merchant->contacter_phone = request('contacter_phone','');
+        $merchant->settlement_cycle_type = request('settlement_cycle_type');
+        $merchant->settlement_rate = request('settlement_rate');
+        $merchant->business_licence_pic_url = request('business_licence_pic_url','');
+        $merchant->organization_code = request('organization_code','');
+        $merchant->tax_cert_pic_url = request('tax_cert_pic_url','');
+        $merchant->legal_id_card_pic_a = request('legal_id_card_pic_a','');
+        $merchant->legal_id_card_pic_b = request('legal_id_card_pic_b','');
+        $merchant->contract_pic_url = request('contract_pic_url','');
+        $merchant->licence_pic_url = request('licence_pic_url','');
+        $merchant->hygienic_licence_pic_url = request('hygienic_licence_pic_url','');
+        $merchant->agreement_pic_url = request('agreement_pic_url','');
+        $merchant->bank_card_type = request('bank_card_type');
+        $merchant->bank_open_name = request('bank_open_name','');
+        $merchant->bank_card_no = request('bank_card_no','');
+        $merchant->sub_bank_name = request('sub_bank_name','');
+        $merchant->bank_open_address = request('bank_open_address','');
+    }
+
     /**
      * 添加商户池中的商户信息, 即商户的contract_status为2 并且该商户没有所属运营中心
      */
     public function add()
     {
+        throw new BaseResponseException('等待完成');
         // todo
+        $merchant = new Merchant();
+        $this->fillMerchantInfoFromRequest($merchant);
+        $merchant->save();
+        return Result::success($merchant);
     }
 
     /**
@@ -45,6 +100,15 @@ class MerchantPoolController extends Controller
      */
     public function edit()
     {
+        throw new BaseResponseException('等待完成');
         // todo
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $id = request('id');
+        $merchant = Merchant::findOrFail($id);
+        $this->fillMerchantInfoFromRequest($merchant);
+        $merchant->save();
+        return Result::success($merchant);
     }
 }

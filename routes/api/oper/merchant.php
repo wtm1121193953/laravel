@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/merchants', 'MerchantController@getList');
 Route::get('/merchants/all', 'MerchantController@getAllList');
+Route::get('/merchant/detail', 'MerchantController@detail');
+Route::get('/merchant/getMerchantById', 'MerchantController@detail');
 Route::post('/merchant/add', 'MerchantController@add');
 Route::post('/merchant/edit', 'MerchantController@edit');
 Route::post('/merchant/changeStatus', 'MerchantController@changeStatus');
@@ -14,4 +16,9 @@ Route::post('/merchant/changeStatus', 'MerchantController@changeStatus');
 Route::post('/merchant/createAccount', 'MerchantController@createAccount');
 Route::post('/merchant/editAccount', 'MerchantController@editAccount');
 
-Route::get('/merchant/getMerchantById', 'MerchantController@getMerchantById');
+
+Route::get('/merchant/addFromMerchantPool', 'MerchantController@addFromMerchantPool');
+
+Route::get('/merchantPool/getList', 'MerchantPoolController@getList');
+Route::get('/merchantPool/add', 'MerchantPoolController@add');
+Route::get('/merchantPool/edit', 'MerchantPoolController@edit');

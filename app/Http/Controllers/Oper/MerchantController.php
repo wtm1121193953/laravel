@@ -63,6 +63,15 @@ class MerchantController extends Controller
         ]);
     }
 
+    public function detail()
+    {
+        $id = request('id');
+        $merchant = Merchant::findOrFail($id);
+        $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
+        $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
+        return Result::success($merchant);
+    }
+
     private function fillMerchantInfoFromRequest(Merchant $merchant)
     {
         $merchant->oper_id = request()->get('current_user')->oper_id;
@@ -135,7 +144,9 @@ class MerchantController extends Controller
      */
     public function addFromMerchantPool()
     {
+        throw new BaseResponseException('等待完成');
         $merchantId = request('id');
+        $merchant = Merchant::findOrFail($merchantId);
         // todo
     }
 
@@ -251,12 +262,4 @@ class MerchantController extends Controller
         return Result::success($account);
     }
 
-    public function getMerchantById()
-    {
-        $id = request('id');
-        $merchant = Merchant::findOrFail($id);
-        $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
-        $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
-        return Result::success($merchant);
-    }
 }
