@@ -18,11 +18,14 @@ class MerchantController extends Controller
 
     /**
      * 获取列表 (分页)
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function getList(Request $request)
     {
         $status = request('status');
         $data = Merchant::where('oper_id', $request->get('current_user')->oper_id)
+            ->where('contract_status', Merchant::CONTRACT_STATUS_YES)
             ->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
             })
@@ -49,9 +52,11 @@ class MerchantController extends Controller
     public function getAllList()
     {
         $status = request('status');
-        $list = Merchant::when($status, function (Builder $query) use ($status){
-            $query->where('status', $status);
-        })->orderBy('id', 'desc')->get();
+        $list = Merchant::where('oper_id', request()->get('current_user')->oper_id)
+            ->where('contract_status', Merchant::CONTRACT_STATUS_YES)
+            ->when($status, function (Builder $query) use ($status){
+                $query->where('status', $status);
+            })->orderBy('id', 'desc')->get();
 
         return Result::success([
             'list' => $list,
@@ -123,6 +128,15 @@ class MerchantController extends Controller
         $merchant->save();
 
         return Result::success($merchant);
+    }
+
+    /**
+     * 从商户池添加商户, 即补充商户池中商户的合同信息
+     */
+    public function addFromMerchantPool()
+    {
+        $merchantId = request('id');
+        // todo
     }
 
     /**
