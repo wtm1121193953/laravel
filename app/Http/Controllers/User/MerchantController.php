@@ -45,6 +45,7 @@ class MerchantController extends Controller
             ::when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
                 $query->where('oper_id', $currentOperId);
             })
+            ->where('contract_status', Merchant::CONTRACT_STATUS_YES)
             ->where('status', 1)
             ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT])
             ->when($city_id, function(Builder $query) use ($city_id){
