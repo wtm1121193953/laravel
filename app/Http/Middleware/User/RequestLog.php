@@ -4,6 +4,7 @@ namespace App\Http\Middleware\User;
 
 use Closure;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 class RequestLog
@@ -23,6 +24,7 @@ class RequestLog
                 $attributes[$key] = $attribute->toArray();
             }
         }
+        /** @var Response $response */
         $response = $next($request);
         Log::info('request listen ', [
             'request' => [
@@ -32,7 +34,10 @@ class RequestLog
                 'attributes' => $attributes,
                 'session' => $request->session()->all(),
             ],
-            'response' => $response,
+            'response' => [
+                'headers' => $response->headers->all(),
+                'content' => $response->getContent(),
+            ]
         ]);
         return $response;
     }
