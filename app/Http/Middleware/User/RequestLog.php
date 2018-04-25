@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware\User;
 
+use App\Support\Utils;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Response;
@@ -26,19 +27,7 @@ class RequestLog
         }
         /** @var Response $response */
         $response = $next($request);
-        Log::info('request listen ', [
-            'request' => [
-                'fullUrl' => $request->fullUrl(),
-                'header' => $request->header(),
-                'params' => $request->all(),
-                'attributes' => $attributes,
-                'session' => $request->session()->all(),
-            ],
-            'response' => [
-                'headers' => $response->headers->all(),
-                'content' => $response->getContent(),
-            ]
-        ]);
+        Log::info('request listen ', Utils::getRequestContext($request));
         return $response;
     }
 }

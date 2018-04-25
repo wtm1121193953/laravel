@@ -9,6 +9,9 @@
 namespace App\Support;
 
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+
 class Utils
 {
 
@@ -28,5 +31,22 @@ class Utils
             }
         }
         return $tree;
+    }
+
+    public static function getRequestContext(Request $request)
+    {
+        $attributes = $request->attributes->all();
+        foreach ($attributes as $key => $attribute) {
+            if($attribute instanceof Model){
+                $attributes[$key] = $attribute->toArray();
+            }
+        }
+        return [
+            'fullUrl' => $request->fullUrl(),
+            'header' => $request->header(),
+            'params' => $request->all(),
+            'attributes' => $attributes,
+            'session' => $request->session()->all(),
+        ];
     }
 }

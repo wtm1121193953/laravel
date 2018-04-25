@@ -26,4 +26,14 @@ class Result
             'timestamp' => time(),
         ]);
     }
+
+    public static function error($code, $message, $data = [])
+    {
+        return response([
+            'code'    => $code,
+            'message' => $message,
+            'data'    => $data,
+            'timestamp' => time(),
+        ]);
+    }
 }

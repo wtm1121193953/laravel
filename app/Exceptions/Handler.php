@@ -2,10 +2,13 @@
 
 namespace App\Exceptions;
 
+use App\Result;
 use App\ResultCode;
+use App\Support\Utils;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -84,18 +87,17 @@ class Handler extends ExceptionHandler
             return response(['code' => ResultCode::API_NOT_FOUND, 'message' => '接口不存在', 'timestamp' => time()]);
         }else if($exception instanceof ModelNotFoundException){
             $message = '数据不存在: ' . $exception->getModel() . ' -> [ ' . implode(',', $exception->getIds()) . ']';
-            $exception = new BaseResponseException($message, ResultCode::DB_QUERY_FAIL);
+            $response = Result::error($message, ResultCode::DB_QUERY_FAIL);
+
         }else if($exception instanceof ValidationException){
             $errors = array_map(function(&$value){
                 return implode('|', $value);
             }, $exception->errors());
-            $exception = new ParamInvalidException(implode('|', $errors));
+            $response = Result::error(ResultCode::PARAMS_INVALID, implode('|', $errors));
         }else if($exception instanceof MethodNotAllowedHttpException){
-            $exception = new BaseResponseException('不允许的请求方法', ResultCode::UNKNOWN);
-        }
-
-        if($exception instanceof BaseResponseException){
-            return $exception->getResponse();
+            $response = Result::error(ResultCode::UNKNOWN, '不允许的请求方法');
+        }else if($exception instanceof BaseResponseException){
+            $response = $exception->getResponse();
         }else {
             // 转换为json
             if(!$request->ajax() && !$request->wantsJson()){
@@ -104,5 +106,14 @@ class Handler extends ExceptionHandler
             return parent::render($request, $exception);
         }
 
+        Log::error('error handler listen', [
+            'request' => Utils::getRequestContext($request),
+            'response' => [
+                'statusCode' => $response->getStatusCode(),
+                'content' => json_decode($response->getContent()),
+                'headers' => $response->headers->all(),
+            ]
+        ]);
+        return $response;
     }
 }
