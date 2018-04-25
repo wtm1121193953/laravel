@@ -110,8 +110,8 @@ class Handler extends ExceptionHandler
             'request' => Utils::getRequestContext($request),
             'response' => [
                 'statusCode' => $response->getStatusCode(),
-                'content' => json_decode($response->getContent()),
                 'headers' => $response->headers->all(),
+                'content' => json_decode($response->getContent(), 1),
             ]
         ]);
         return $response;
