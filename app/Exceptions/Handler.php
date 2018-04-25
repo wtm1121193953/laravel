@@ -106,7 +106,7 @@ class Handler extends ExceptionHandler
             return parent::render($request, $exception);
         }
 
-        Log::error('error handler listen', [
+        Log::error('exception handler listen', [
             'request' => Utils::getRequestContext($request),
             'response' => [
                 'statusCode' => $response->getStatusCode(),
