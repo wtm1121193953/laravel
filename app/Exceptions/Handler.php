@@ -105,7 +105,7 @@ class Handler extends ExceptionHandler
             return parent::render($request, $exception);
         }
         $result = json_decode($response->getContent(), 1);
-        if(!in_array($result['code'], [ResultCode::PARAMS_INVALID ])){
+        if(!in_array($result['code'], [ResultCode::PARAMS_INVALID, ])){
             Log::error('exception handler listen', [
                 'request' => Utils::getRequestContext($request),
                 'response' => [
