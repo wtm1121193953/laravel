@@ -107,8 +107,8 @@ class Handler extends ExceptionHandler
         $result = json_decode($response->getContent(), 1);
         if(
             !in_array($result['code'], [
-                ResultCode::PARAMS_INVALID,
-                ResultCode::UNLOGIN,
+//                ResultCode::PARAMS_INVALID,
+//                ResultCode::UNLOGIN,
             ])
         ){
             Log::error('exception handler listen', [
