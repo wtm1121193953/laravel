@@ -17,7 +17,7 @@ use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/merchant');
 });
 
 // 后端页面
