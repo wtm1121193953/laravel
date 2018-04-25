@@ -23,12 +23,16 @@ class RequestLog
                 $attributes[$key] = $attribute->toArray();
             }
         }
-        Log::info('request ' . $request->fullUrl(), [
-            'header' => $request->header(),
-            'params' => $request->all(),
-            'attributes' => $attributes,
-            'session' => $request->session()->all()
+        $response = $next($request);
+        Log::info('request listen' . $request->fullUrl(), [
+            'request' => [
+                'header' => $request->header(),
+                'params' => $request->all(),
+                'attributes' => $attributes,
+                'session' => $request->session()->all(),
+            ],
+            'response' => $response->getContent(),
         ]);
-        return $next($request);
+        return $response;
     }
 }
