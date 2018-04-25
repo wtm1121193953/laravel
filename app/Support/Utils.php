@@ -42,6 +42,7 @@ class Utils
             }
         }
         return [
+            'ip' => $request->ip(),
             'fullUrl' => $request->fullUrl(),
             'header' => $request->header(),
             'params' => $request->all(),
