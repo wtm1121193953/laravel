@@ -88,7 +88,6 @@ class Handler extends ExceptionHandler
         }else if($exception instanceof ModelNotFoundException){
             $message = '数据不存在: ' . $exception->getModel() . ' -> [ ' . implode(',', $exception->getIds()) . ']';
             $response = Result::error($message, ResultCode::DB_QUERY_FAIL);
-
         }else if($exception instanceof ValidationException){
             $errors = array_map(function(&$value){
                 return implode('|', $value);
@@ -105,15 +104,18 @@ class Handler extends ExceptionHandler
             }
             return parent::render($request, $exception);
         }
+        $result = json_decode($response->getContent(), 1);
+        if(!in_array($result['code'], [ResultCode::PARAMS_INVALID ])){
+            Log::error('exception handler listen', [
+                'request' => Utils::getRequestContext($request),
+                'response' => [
+                    'statusCode' => $response->getStatusCode(),
+                    'headers' => $response->headers->all(),
+                    'content' => json_decode($response->getContent(), 1),
+                ]
+            ]);
+        }
 
-        Log::error('exception handler listen', [
-            'request' => Utils::getRequestContext($request),
-            'response' => [
-                'statusCode' => $response->getStatusCode(),
-                'headers' => $response->headers->all(),
-                'content' => json_decode($response->getContent(), 1),
-            ]
-        ]);
         return $response;
     }
 }
