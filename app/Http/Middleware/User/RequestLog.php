@@ -25,9 +25,7 @@ class RequestLog
                 $attributes[$key] = $attribute->toArray();
             }
         }
-        /** @var Response $response */
-        $response = $next($request);
         Log::info('request listen ', Utils::getRequestContext($request));
-        return $response;
+        return $next($request);
     }
 }
