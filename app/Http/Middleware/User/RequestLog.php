@@ -24,8 +24,9 @@ class RequestLog
             }
         }
         $response = $next($request);
-        Log::info('request listen' . $request->fullUrl(), [
+        Log::info('request listen ', [
             'request' => [
+                'fullUrl' => $request->fullUrl(),
                 'header' => $request->header(),
                 'params' => $request->all(),
                 'attributes' => $attributes,
