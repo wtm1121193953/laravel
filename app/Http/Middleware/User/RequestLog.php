@@ -31,7 +31,7 @@ class RequestLog
                 'attributes' => $attributes,
                 'session' => $request->session()->all(),
             ],
-            'response' => $response->getContent(),
+            'response' => $response,
         ]);
         return $response;
     }
