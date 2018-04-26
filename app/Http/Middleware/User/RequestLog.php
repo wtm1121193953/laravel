@@ -2,8 +2,10 @@
 
 namespace App\Http\Middleware\User;
 
+use App\Support\Utils;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 class RequestLog
@@ -23,12 +25,7 @@ class RequestLog
                 $attributes[$key] = $attribute->toArray();
             }
         }
-        Log::info('request ' . $request->fullUrl(), [
-            'header' => $request->header(),
-            'params' => $request->all(),
-            'attributes' => $attributes,
-            'session' => $request->session()->all()
-        ]);
+        Log::info('request listen ', Utils::getRequestContext($request));
         return $next($request);
     }
 }
