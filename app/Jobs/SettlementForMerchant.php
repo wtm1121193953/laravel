@@ -44,7 +44,6 @@ class SettlementForMerchant implements ShouldQueue
      */
     public function handle()
     {
-        // todo 查询商家结算周期内的所有订单并统计
         $merchant = Merchant::findOrFail($this->merchantId);
         // 判断该周期是否已结算过, 若结算过则不再重复结算
         $settlement = Settlement::where('merchant_id', $this->merchantId)
@@ -59,6 +58,7 @@ class SettlementForMerchant implements ShouldQueue
             ]);
             return ;
         }
+        // 先生成结算单, 以便于结算时在订单中保存结算信息
         $settlement = new Settlement();
         $settlement->oper_id = $merchant->oper_id;
         $settlement->merchant_id = $this->merchantId;
@@ -78,6 +78,7 @@ class SettlementForMerchant implements ShouldQueue
         $settlement->real_amount = 0;
         $settlement->save();
 
+        // 查询商家结算周期内的所有订单并统计
         Order::where('merchant_id', $this->merchantId)
             ->where('settlement_status', 1)
             ->where('status', Order::STATUS_FINISHED)
