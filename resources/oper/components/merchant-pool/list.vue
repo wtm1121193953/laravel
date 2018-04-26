@@ -60,7 +60,7 @@
     import api from '../../../assets/js/api'
 
     import MerchantItemOptions from './merchant-item-options'
-    import MerchantForm from './merchant-form'
+    import MerchantForm from './merchant-pool-form'
 
     export default {
         name: "merchant-list",
@@ -89,10 +89,7 @@
             },
             add(){
                 router.push({
-                    path: '/merchants/form',
-                    query: {
-                        type: 'add'
-                    }
+                    path: '/merchant/pool/add',
                 });
             },
             accountChanged(scope, account){

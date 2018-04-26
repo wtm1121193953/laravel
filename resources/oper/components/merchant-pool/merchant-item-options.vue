@@ -48,7 +48,7 @@
 
 <script>
     import api from '../../../assets/js/api'
-    import MerchantForm from './merchant-form'
+    import MerchantForm from './merchant-pool-form'
 
     export default {
         name: "merchant-item-options",

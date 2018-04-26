@@ -71,7 +71,7 @@ class LoginController extends Controller
             [ 'id' => 1, 'name' => '商户管理', 'level' => 1, 'url' => '', 'sub' =>
                 [
                     [ 'id' => 2, 'name' => '我的商户', 'level' => 2, 'url' => '/oper/merchants', 'pid' => 1,],
-                    [ 'id' => 3, 'name' => '商户池', 'level' => 2, 'url' => '/oper/merchant-pool', 'pid' => 1,],
+                    [ 'id' => 3, 'name' => '商户池', 'level' => 2, 'url' => '/oper/merchant/pool', 'pid' => 1,],
                 ]
             ],
 
