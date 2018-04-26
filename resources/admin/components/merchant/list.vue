@@ -33,6 +33,7 @@
                     <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
                         <el-button type="text" @click="audit(scope, 1)">审核通过</el-button>
                         <el-button type="text" @click="audit(scope, 2)">审核不通过</el-button>
+                        <el-button type="text" @click="audit(scope, 3)">打回到商户池</el-button>
                     </template>
                 </template>
             </el-table-column>
@@ -90,7 +91,7 @@
             },
             audit(scope, status){
                 api.post('/merchant/audit', {id: scope.row.id, audit_status: status}).then(data => {
-                    this.$alert(status === 1 ? '审核通过' : '审核不通过');
+                    this.$alert(['', '审核通过', '审核不通过', '审核不通过并打回到商户池'][status] + ' 操作成功');
                     this.getList();
                 })
             }

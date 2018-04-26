@@ -1633,7 +1633,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this = this;
 
             this.isLoading = true;
-            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/edit', data).then(function () {
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/addFromMerchantPool', data).then(function () {
                 _this.isLoading = false;
                 _this.$message.success('保存成功');
                 router.push('/merchants');

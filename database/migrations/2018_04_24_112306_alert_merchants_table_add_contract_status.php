@@ -15,8 +15,8 @@ class AlertMerchantsTableAddContractStatus extends Migration
     {
         //
         Schema::table('merchants', function (Blueprint $table) {
+            $table->integer('auditing_oper_id')->default(0)->comment('当前提交审核的运营中心ID, 为0时才会出现在商户池中');
             $table->integer('creator_oper_id')->default(0)->comment('录入资料的运营中心ID');
-            $table->tinyInteger('contract_status')->default(1)->comment('合同签订状态 1-已签订 2-未签订 (未签订合同的商家只有资料, 没有后续操作, 且没有所属运营中心)');
         });
     }
 
@@ -29,7 +29,7 @@ class AlertMerchantsTableAddContractStatus extends Migration
     {
         //
         Schema::table('merchants', function (Blueprint $table) {
-            $table->dropColumn(['entry_oper_id', 'contract_status']);
+            $table->dropColumn(['creator_oper_id', 'auditing_oper_id']);
         });
     }
 }

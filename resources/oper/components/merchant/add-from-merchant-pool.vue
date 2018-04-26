@@ -27,7 +27,7 @@
         methods: {
             doEdit(data){
                 this.isLoading = true;
-                api.post('/merchant/edit', data).then(() => {
+                api.post('/merchant/addFromMerchantPool', data).then(() => {
                     this.isLoading = false;
                     this.$message.success('保存成功');
                     router.push('/merchants');

@@ -16,7 +16,6 @@ Route::post('/merchant/changeStatus', 'MerchantController@changeStatus');
 Route::post('/merchant/createAccount', 'MerchantController@createAccount');
 Route::post('/merchant/editAccount', 'MerchantController@editAccount');
 
-
 Route::get('/merchant/addFromMerchantPool', 'MerchantController@addFromMerchantPool');
 
 Route::get('/merchant/pool', 'MerchantPoolController@getList');
