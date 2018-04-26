@@ -127,6 +127,9 @@ class MerchantController extends Controller
      */
     public function detail()
     {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
         $id = request('id');
         $lng = request('lng');
         $lat = request('lat');
