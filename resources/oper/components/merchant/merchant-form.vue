@@ -82,8 +82,8 @@
                         </el-form-item>
                         <el-form-item prop="lng_and_lat" label="商户位置">
                             {{form.lng_and_lat}}
-                            <el-button @click="isShow = true">更换地理位置</el-button>
-                            <el-dialog title="更换地理位置" :visible.sync="isShow" :modal="false">
+                            <el-button @click="isShowMap = true">更换地理位置</el-button>
+                            <el-dialog title="更换地理位置" :visible.sync="isShowMap" :modal="false">
                                 <amap-choose-point width="100%" height="500px" v-model="form.lng_and_lat" @select="selectMap"/>
                             </el-dialog>
                         </el-form-item>
@@ -230,9 +230,7 @@
                 form: deepCopy(defaultForm),
                 categoryOptions: [],
                 areaOptions: [],
-                isShow: false,
-                title: '',
-                merchant_id: '',
+                isShowMap: false,
                 formRules: {
                     name: [
                         {required: true, message: '商家名称不能为空'}
@@ -287,36 +285,30 @@
                 api.get('area/tree').then(data => {
                     this.areaOptions = data.list;
                 })
+                if(this.data){
+                    let data = this.data;
+                    this.form = deepCopy(data)
+                    let merchant_category_array = [];
+                    if(data.merchant_category_id){
+                        data.categoryPath.forEach(function (item) {
+                            merchant_category_array.unshift(parseInt(item.id));
+                        })
+                    }
 
-                if(this.$route.query.type == 'edit'){
-                    this.title = '修改商户';
-                    this.merchant_id = this.$route.query.merchant_id;
-                    api.get('/merchant/getMerchantById', {id: this.merchant_id}).then(data => {
-                        this.form = data;
-                        let merchant_category_array = [];
-                        if(data.merchant_category_id){
-                            data.categoryPath.forEach(function (item) {
-                                merchant_category_array.unshift(parseInt(item.id));
-                            })
-                        }
-
-                        this.form.merchant_category = merchant_category_array;
-                        this.form.area = [parseInt(data.province_id), parseInt(data.city_id), parseInt(data.area_id)];
-                        this.form.business_time = data.business_time ? ['1970-01-01 '+JSON.parse(data.business_time)[0], '1970-01-01 '+JSON.parse(data.business_time)[1]] : [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')];
-                        this.form.lng_and_lat = [data.lng, data.lat];
-                        this.form.region = parseInt(data.region);
-                        this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
-                        this.form.status = parseInt(data.status);
-                        this.form.bank_card_type = parseInt(data.bank_card_type);
-                    })
-
+                    this.form.merchant_category = merchant_category_array;
+                    this.form.area = [parseInt(data.province_id), parseInt(data.city_id), parseInt(data.area_id)];
+                    this.form.business_time = data.business_time ? ['1970-01-01 '+JSON.parse(data.business_time)[0], '1970-01-01 '+JSON.parse(data.business_time)[1]] : [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')];
+                    this.form.lng_and_lat = [data.lng, data.lat];
+                    this.form.region = parseInt(data.region);
+                    this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
+                    this.form.status = parseInt(data.status);
+                    this.form.bank_card_type = parseInt(data.bank_card_type);
                 }else {
-                    this.title = '添加商户';
-                    this.form = deepCopy(defaultForm)
+                    this.form = deepCopy(defaultForm);
                 }
             },
             cancel(){
-                router.push('/merchants');
+                this.$emit('cancel')
             },
             resetForm(){
                 this.$refs.form.resetFields();
@@ -340,22 +332,12 @@
                             data.lat = data.lng_and_lat[1];
                         }
 
-                        if(this.merchant_id){
-                            api.post('/merchant/edit', data).then((data) => {
-                                router.push('/merchants');
-                                this.resetForm();
-                            })
-                        }else{
-                            api.post('/merchant/add', data).then(() => {
-                                router.push('/merchants');
-                                this.resetForm();
-                            })
-                        }
+                        this.$emit('save', data);
                     }
                 })
             },
             selectMap(data) {
-                this.isShow = false;
+                this.isShowMap = false;
                 this.form.lng_and_lat = data;
             }
         },

@@ -41,10 +41,23 @@ class MerchantPoolController extends Controller
         ]);
     }
 
+    public function detail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $merchant = Merchant::findOrFail($id);
+        if ($merchant->merchant_category_id){
+            $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
+        }
+        $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : [];
+        return Result::success($merchant);
+    }
+
     private function fillMerchantInfoFromRequest(Merchant $merchant)
     {
         // todo 整理添加商户池中商户信息需要的字段
-        $merchant->oper_id = request()->get('current_user')->oper_id;
         $merchant->merchant_category_id = request('merchant_category_id', 0);
         $merchant->name = request('name');
         $merchant->brand = request('brand','');
@@ -95,10 +108,17 @@ class MerchantPoolController extends Controller
      */
     public function add()
     {
-        throw new BaseResponseException('等待完成');
-        // todo
         $merchant = new Merchant();
         $this->fillMerchantInfoFromRequest($merchant);
+
+        // 商户组织机构代码不能重复
+        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->first();
+        if(!empty($existMerchant)) {
+            throw new BaseResponseException('商户组织机构代码已存在');
+        }
+
+        $merchant->creator_oper_id = request()->get('current_user')->oper_id;
+        $merchant->contract_status = Merchant::CONTRACT_STATUS_NO;
         $merchant->save();
         return Result::success($merchant);
     }
@@ -108,13 +128,18 @@ class MerchantPoolController extends Controller
      */
     public function edit()
     {
-        throw new BaseResponseException('等待完成');
-        // todo
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
         $id = request('id');
         $merchant = Merchant::findOrFail($id);
+
+        // 商户组织机构代码不能重复
+        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->offset(1)->first();
+        if(!empty($existMerchant)) {
+            throw new BaseResponseException('商户组织机构代码已存在');
+        }
+
         $this->fillMerchantInfoFromRequest($merchant);
         $merchant->save();
         return Result::success($merchant);

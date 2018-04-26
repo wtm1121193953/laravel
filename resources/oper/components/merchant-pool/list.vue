@@ -79,7 +79,9 @@
         },
         methods: {
             getList(){
+                this.isLoading = true;
                 api.get('/merchant/pool', this.query).then(data => {
+                    this.isLoading = false;
                     this.list = data.list;
                     this.total = data.total;
                 })

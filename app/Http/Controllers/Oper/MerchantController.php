@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Oper;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Area\Area;
 use App\Modules\Merchant\Merchant;
@@ -74,7 +75,6 @@ class MerchantController extends Controller
 
     private function fillMerchantInfoFromRequest(Merchant $merchant)
     {
-        $merchant->oper_id = request()->get('current_user')->oper_id;
         $merchant->merchant_category_id = request('merchant_category_id', 0);
         $merchant->name = request('name');
         $merchant->brand = request('brand','');
@@ -134,6 +134,9 @@ class MerchantController extends Controller
 
         $this->fillMerchantInfoFromRequest($merchant);
 
+        $merchant->oper_id = request()->get('current_user')->oper_id;
+        $merchant->creator_oper_id = request()->get('current_user')->oper_id;
+
         // 商户组织机构代码不能重复
         $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->first();
         if(!empty($existMerchant)) {
@@ -150,10 +153,19 @@ class MerchantController extends Controller
      */
     public function addFromMerchantPool()
     {
-        throw new BaseResponseException('等待完成');
+//        throw new BaseResponseException('等待完成');
         $merchantId = request('id');
         $merchant = Merchant::findOrFail($merchantId);
-        // todo
+        $currentOperId = request()->get('current_user')->oper_id;
+        if($merchant->oper_id != $currentOperId){
+            throw new ParamInvalidException('该商户已被其他运营中心认领');
+        }
+        // 补充合同信息
+        $merchant->contract_pic_url = request('contract_pic_url','');
+        $merchant->oper_id = $currentOperId;
+        // todo 补充其他信息
+        $merchant->save();
+        return Result::success('操作成功', $merchant);
     }
 
     /**
@@ -167,7 +179,9 @@ class MerchantController extends Controller
             'merchant_category_id' => 'required',
             'business_licence_pic_url' => 'required',
         ]);
-        $merchant = Merchant::findOrFail(request('id'));
+        $merchant = Merchant::where('id', request('id'))
+            ->where('oper_id', request()->get('current_user')->oper_id)
+            ->firstOrFail();
 
         $this->fillMerchantInfoFromRequest($merchant);
 

@@ -1,7 +1,9 @@
 
 import Home from '../components/home'
 import MerchantList from '../components/merchant/list.vue'
-import MerchantForm from '../components/merchant/merchant-form.vue'
+import MerchantAdd from '../components/merchant/add.vue'
+import MerchantEdit from '../components/merchant/edit.vue'
+import MerchantAddFromPool from '../components/merchant/add-from-merchant-pool.vue'
 
 import MerchantPool from '../components/merchant-pool/list'
 import MerchantPoolAdd from '../components/merchant-pool/add'
@@ -16,7 +18,9 @@ export default [
         component: Home,
         children: [
             {path: '/merchants', component: MerchantList, name: 'MerchantList'},
-            {path: '/merchants/form', component: MerchantForm, name: 'MerchantForm'},
+            {path: '/merchant/add', component: MerchantAdd, name: 'MerchantAdd'},
+            {path: '/merchant/edit', component: MerchantEdit, name: 'MerchantEdit'},
+            {path: '/merchant/add-from-merchant-pool', component: MerchantAddFromPool, name: 'MerchantAddFromPool'},
 
             {path: '/merchant/pool', component: MerchantPool, name: 'MerchantPool'},
             {path: '/merchant/pool/add', component: MerchantPoolAdd, name: 'MerchantPoolAdd'},

@@ -86,10 +86,9 @@
         methods: {
             edit(){
                 router.push({
-                    path: '/merchants/form',
+                    path: '/merchant/edit',
                     query: {
-                        type: 'edit',
-                        merchant_id: this.scope.row.id,
+                        id: this.scope.row.id,
                     }
                 })
             },

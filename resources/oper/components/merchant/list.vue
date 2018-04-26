@@ -1,6 +1,14 @@
 <template>
     <page title="商户管理" v-loading="isLoading">
-        <el-button class="fr" type="primary" @click="add">添加商户</el-button>
+        <el-dropdown class="fr" @command="addBtnClick" trigger="click">
+            <el-button type="primary">
+                添加商户<i class="el-icon-arrow-down el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="add">直接添加</el-dropdown-item>
+                <el-dropdown-item command="from-pool">从商户池添加</el-dropdown-item>
+            </el-dropdown-menu>
+        </el-dropdown>
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="id" label="ID"/>
@@ -78,7 +86,9 @@
         },
         methods: {
             getList(){
+                this.isLoading = true;
                 api.get('/merchants', this.query).then(data => {
+                    this.isLoading = false;
                     this.list = data.list;
                     this.total = data.total;
                 })
@@ -86,13 +96,15 @@
             itemChanged(index, data){
                 this.getList();
             },
+            addBtnClick(command){
+                if(command === 'add'){
+                    this.add()
+                }else {
+                    this.$menu.change('/merchant/pool')
+                }
+            },
             add(){
-                router.push({
-                    path: '/merchants/form',
-                    query: {
-                        type: 'add'
-                    }
-                });
+                router.push('/merchant/add');
             },
             accountChanged(scope, account){
                 let row = this.list[scope.$index];
