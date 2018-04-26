@@ -75,7 +75,6 @@
             }
         },
         computed: {
-
         },
         methods: {
             getList(){

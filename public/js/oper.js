@@ -1041,7 +1041,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this2 = this;
 
             this.isLoading = true;
-            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchant/pool/detail').then(function (data) {
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchant/pool/detail', { id: this.id }).then(function (data) {
                 _this2.isLoading = false;
                 _this2.merchant = data;
             });
@@ -1195,8 +1195,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_pool_form__ = __webpack_require__("./resources/oper/components/merchant-pool/merchant-pool-form.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_pool_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__merchant_pool_form__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuex__ = __webpack_require__("./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__merchant_pool_form__ = __webpack_require__("./resources/oper/components/merchant-pool/merchant-pool-form.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__merchant_pool_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__merchant_pool_form__);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 //
 //
 //
@@ -1206,6 +1209,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+
 
 
 
@@ -1219,7 +1223,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {};
     },
 
-    computed: {},
+    computed: _extends({}, Object(__WEBPACK_IMPORTED_MODULE_1_vuex__["e" /* mapState */])(['user'])),
     methods: {
         edit: function edit() {
             router.push({
@@ -1239,7 +1243,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         }
     },
     components: {
-        MerchantForm: __WEBPACK_IMPORTED_MODULE_1__merchant_pool_form___default.a
+        MerchantForm: __WEBPACK_IMPORTED_MODULE_2__merchant_pool_form___default.a
     }
 });
 
@@ -1594,13 +1598,69 @@ var defaultForm = {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_form__ = __webpack_require__("./resources/oper/components/merchant/merchant-form.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__merchant_form__);
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
-    name: "add-from-merchant-pool"
+    name: "add-from-merchant-pool",
+    components: {
+        MerchantForm: __WEBPACK_IMPORTED_MODULE_1__merchant_form___default.a
+    },
+    data: function data() {
+        return {
+            isLoading: false,
+            id: null,
+            merchant: null
+        };
+    },
+
+    methods: {
+        doEdit: function doEdit(data) {
+            var _this = this;
+
+            this.isLoading = true;
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/edit', data).then(function () {
+                _this.isLoading = false;
+                _this.$message.success('保存成功');
+                router.push('/merchants');
+            });
+        },
+        getDetail: function getDetail() {
+            var _this2 = this;
+
+            this.isLoading = true;
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchant/detail', { id: this.id }).then(function (data) {
+                _this2.isLoading = false;
+                _this2.merchant = data;
+            });
+        },
+        cancel: function cancel() {
+            router.push('/merchants');
+        }
+    },
+    created: function created() {
+        this.id = this.$route.query.id;
+        if (!this.id) {
+            this.$message.error('id不能为空');
+            router.push('/merchants');
+            return false;
+        }
+        this.getDetail();
+    }
 });
 
 /***/ }),
@@ -1703,7 +1763,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this2 = this;
 
             this.isLoading = true;
-            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchant/detail').then(function (data) {
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchant/detail', { id: this.id }).then(function (data) {
                 _this2.isLoading = false;
                 _this2.merchant = data;
             });
@@ -14221,7 +14281,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14386,7 +14446,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14431,7 +14491,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -40266,9 +40326,13 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("el-button", { attrs: { type: "text" }, on: { click: _vm.edit } }, [
-        _vm._v("修改资料")
-      ]),
+      _vm.user.oper_id === _vm.scope.row.creator_oper_id
+        ? _c(
+            "el-button",
+            { attrs: { type: "text" }, on: { click: _vm.edit } },
+            [_vm._v("修改资料")]
+          )
+        : _vm._e(),
       _vm._v(" "),
       _c(
         "el-button",
@@ -40793,7 +40857,7 @@ var render = function() {
           expression: "isLoading"
         }
       ],
-      attrs: { title: "商户管理" }
+      attrs: { title: "我的商户" }
     },
     [
       _c(
@@ -40813,12 +40877,12 @@ var render = function() {
             "el-dropdown-menu",
             { attrs: { slot: "dropdown" }, slot: "dropdown" },
             [
-              _c("el-dropdown-item", { attrs: { command: "add" } }, [
-                _vm._v("直接添加")
-              ]),
-              _vm._v(" "),
               _c("el-dropdown-item", { attrs: { command: "from-pool" } }, [
                 _vm._v("从商户池添加")
+              ]),
+              _vm._v(" "),
+              _c("el-dropdown-item", { attrs: { command: "add" } }, [
+                _vm._v("添加新商户")
               ])
             ],
             1
@@ -42205,7 +42269,29 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div")
+  return _c(
+    "page",
+    {
+      attrs: { title: "编辑商户信息", breadcrumbs: { 我的商户: "/merchants" } }
+    },
+    [
+      _vm.merchant
+        ? _c("merchant-form", {
+            directives: [
+              {
+                name: "loading",
+                rawName: "v-loading",
+                value: _vm.isLoading,
+                expression: "isLoading"
+              }
+            ],
+            attrs: { data: _vm.merchant },
+            on: { cancel: _vm.cancel, save: _vm.doEdit }
+          })
+        : _vm._e()
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

@@ -1,12 +1,12 @@
 <template>
-    <page title="商户管理" v-loading="isLoading">
+    <page title="我的商户" v-loading="isLoading">
         <el-dropdown class="fr" @command="addBtnClick" trigger="click">
             <el-button type="primary">
                 添加商户<i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="add">直接添加</el-dropdown-item>
                 <el-dropdown-item command="from-pool">从商户池添加</el-dropdown-item>
+                <el-dropdown-item command="add">添加新商户</el-dropdown-item>
             </el-dropdown-menu>
         </el-dropdown>
         <el-table :data="list" stripe>

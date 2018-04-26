@@ -35,7 +35,7 @@
             },
             getDetail(){
                 this.isLoading = true;
-                api.get('/merchant/detail').then(data => {
+                api.get('/merchant/detail', {id: this.id}).then(data => {
                     this.isLoading = false;
                     this.merchant = data;
                 })

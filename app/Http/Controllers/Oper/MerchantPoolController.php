@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Oper;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
@@ -133,6 +134,9 @@ class MerchantPoolController extends Controller
         ]);
         $id = request('id');
         $merchant = Merchant::findOrFail($id);
+        if($merchant->creator_oper_id != request()->get('current_user')->oper_id){
+            throw new ParamInvalidException('不能修改其他运营中心录入的商户资料');
+        }
 
         // 商户组织机构代码不能重复
         $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->offset(1)->first();
