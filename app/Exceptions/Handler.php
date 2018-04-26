@@ -87,7 +87,7 @@ class Handler extends ExceptionHandler
             return response(['code' => ResultCode::API_NOT_FOUND, 'message' => '接口不存在', 'timestamp' => time()]);
         }else if($exception instanceof ModelNotFoundException){
             $message = '数据不存在: ' . $exception->getModel() . ' -> [ ' . implode(',', $exception->getIds()) . ']';
-            $response = Result::error($message, ResultCode::DB_QUERY_FAIL);
+            $response = Result::error(ResultCode::DB_QUERY_FAIL, $message);
         }else if($exception instanceof ValidationException){
             $errors = array_map(function(&$value){
                 return implode('|', $value);
@@ -109,6 +109,7 @@ class Handler extends ExceptionHandler
             !in_array($result['code'], [
                 ResultCode::PARAMS_INVALID,
                 ResultCode::UNLOGIN,
+                ResultCode::TOKEN_INVALID,
             ])
         ){
             Log::error('exception handler listen', [
