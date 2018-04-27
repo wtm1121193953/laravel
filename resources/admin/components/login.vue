@@ -252,7 +252,7 @@
     }
 </script>
 
-<style>
+<style scoped>
     .verify-pos {
         position: absolute;
         right: 100px;

@@ -46,7 +46,7 @@ class CreateMerchantsTable extends Migration
             $table->decimal('settlement_rate', 4, 2)->default(0)->comment('分利比例(结算时的费率)');
 
             $table->string('business_licence_pic_url')->default('')->comment('营业执照');
-            $table->string('organization_code')->default('')->comment('组织机构代码');
+            $table->string('organization_code')->default('')->comment('组织机构代码, 即营业执照代码');
             $table->string('tax_cert_pic_url')->default('')->comment('税务登记证');
             $table->string('legal_id_card_pic_a')->default('')->comment('法人身份证正面');
             $table->string('legal_id_card_pic_b')->default('')->comment('法人身份证反面');

@@ -26,7 +26,11 @@ class MerchantController extends Controller
     {
         $status = request('status');
         $data = Merchant::where('oper_id', $request->get('current_user')->oper_id)
-            ->where('contract_status', Merchant::CONTRACT_STATUS_YES)
+            ->where(function (Builder $query){
+                $currentOperId = request()->get('current_user')->oper_id;
+                $query->where('oper_id', $currentOperId)
+                    ->orWhere('audit_oper_id', $currentOperId);
+            })
             ->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
             })
@@ -137,10 +141,10 @@ class MerchantController extends Controller
         $merchant->oper_id = request()->get('current_user')->oper_id;
         $merchant->creator_oper_id = request()->get('current_user')->oper_id;
 
-        // 商户组织机构代码不能重复
+        // 商户营业执照代码不能重复
         $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->first();
         if(!empty($existMerchant)) {
-            throw new BaseResponseException('商户组织机构代码已存在');
+            throw new BaseResponseException('商户营业执照代码已存在');
         }
 
         $merchant->save();
@@ -185,10 +189,10 @@ class MerchantController extends Controller
 
         $this->fillMerchantInfoFromRequest($merchant);
 
-        // 商户组织机构代码不能重复
+        // 商户营业执照代码不能重复
         $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->offset(1)->first();
         if(!empty($existMerchant)) {
-            throw new BaseResponseException('商户组织机构代码已存在');
+            throw new BaseResponseException('商户营业执照代码已存在');
         }
 
         if($merchant->audit_status == Merchant::AUDIT_STATUS_SUCCESS

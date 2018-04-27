@@ -120,7 +120,7 @@
                         <el-form-item prop="business_licence_pic_url" label="营业执照（必填）">
                             <image-upload v-model="form.business_licence_pic_url" :limit="1"/>
                         </el-form-item>
-                        <el-form-item prop="organization_code" label="组织机构代码">
+                        <el-form-item prop="organization_code" label="营业执照代码">
                             <el-input v-model="form.organization_code"/>
                         </el-form-item>
                         <el-form-item prop="tax_cert_pic_url" label="税务登记证">

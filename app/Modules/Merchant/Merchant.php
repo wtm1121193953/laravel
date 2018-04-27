@@ -26,15 +26,6 @@ class Merchant extends BaseModel
     const AUDIT_STATUS_RESUBMIT = 3;
 
     /**
-     * 未签订合同
-     */
-    const CONTRACT_STATUS_YES = 1;
-    /**
-     * 已签订合同
-     */
-    const CONTRACT_STATUS_NO = 2;
-
-    /**
      * 结算类型
      */
     const SETTLE_WEEKLY = 1; // 周结

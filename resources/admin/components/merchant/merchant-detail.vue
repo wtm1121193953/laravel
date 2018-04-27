@@ -71,7 +71,7 @@
                     <el-form-item label="营业执照">
                         <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button>
                     </el-form-item>
-                    <el-form-item label="组织机构代码">
+                    <el-form-item label="营业执照代码">
                         {{ data.organization_code}}
                     </el-form-item>
                     <el-form-item label="税务登记证">

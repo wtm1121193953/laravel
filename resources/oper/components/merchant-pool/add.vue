@@ -1,5 +1,5 @@
 <template>
-    <page title="录入商户信息" :breadcrumbs="{'商户池': '/merchant/pool'}">
+    <page title="录入商户" :breadcrumbs="{'商户池': '/merchant/pool'}">
         <merchant-pool-form v-loading="isLoading" @cancel="cancel" @save="doAdd"/>
     </page>
 </template>
