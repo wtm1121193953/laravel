@@ -1982,6 +1982,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -38588,7 +38589,7 @@ var render = function() {
       attrs: {
         model: _vm.form,
         size: "small",
-        "label-width": "150px",
+        "label-width": "120px",
         rules: _vm.formRules
       },
       nativeOn: {
@@ -38622,6 +38623,7 @@ var render = function() {
             ],
             1
           ),
+          _vm._v(" "),
           _c(
             "el-form-item",
             { attrs: { prop: "merchant_category", label: "所属行业" } },
@@ -38687,7 +38689,7 @@ var render = function() {
       _vm._v(" "),
       _c(
         "el-col",
-        { attrs: { span: 11 } },
+        { attrs: { span: 11, offset: 1 } },
         [
           _c(
             "el-form-item",
@@ -39235,7 +39237,7 @@ var render = function() {
       _vm._v(" "),
       _c(
         "el-col",
-        { attrs: { span: 11 } },
+        { attrs: { span: 11, offset: "1" } },
         [
           _c(
             "el-form-item",
@@ -39273,7 +39275,7 @@ var render = function() {
           _vm._v(" "),
           _c(
             "el-form-item",
-            { attrs: { prop: "contacter_phone", label: "客服电话" } },
+            { attrs: { prop: "service_phone", label: "客服电话" } },
             [
               _c("el-input", {
                 model: {
@@ -41309,7 +41311,7 @@ var render = function() {
               ref: "form",
               attrs: {
                 model: _vm.form,
-                "label-width": "150px",
+                "label-width": "120px",
                 size: "small",
                 rules: _vm.formRules
               },
@@ -41420,7 +41422,7 @@ var render = function() {
               _vm._v(" "),
               _c(
                 "el-col",
-                { attrs: { span: 11 } },
+                { attrs: { span: 11, offset: 1 } },
                 [
                   _c(
                     "el-form-item",

@@ -2,7 +2,7 @@
     <!-- todo 调整商户与商户池表单字段 -->
     <el-row>
         <el-col :span="24">
-            <el-form :model="form" label-width="150px" size="small" :rules="formRules" ref="form" @submit.native.prevent>
+            <el-form :model="form" label-width="120px" size="small" :rules="formRules" ref="form" @submit.native.prevent>
                 <el-col>
                     <div class="title">商户录入信息</div>
                 </el-col>
@@ -31,7 +31,7 @@
                 </el-col>
 
                 <!-- 商户录入信息右侧块 -->
-                <el-col :span="11">
+                <el-col :span="11" :offset="1">
                     <el-form-item prop="lng_and_lat" label="商户位置">
                         {{form.lng_and_lat}}
                         <el-button @click="isShowMap = true">选择位置</el-button>

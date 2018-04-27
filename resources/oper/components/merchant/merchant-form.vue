@@ -1,5 +1,5 @@
 <template>
-    <el-form :model="form" size="small" label-width="150px" :rules="formRules" ref="form" @submit.native.prevent>
+    <el-form :model="form" size="small" label-width="120px" :rules="formRules" ref="form" @submit.native.prevent>
         <el-col>
             <div class="title">商户录入信息</div>
         </el-col>
@@ -7,17 +7,18 @@
         <el-col :span="11">
             <el-form-item prop="name" label="商户名称">
                 <el-input v-model="form.name"/>
-            </el-form-item><el-form-item prop="merchant_category" label="所属行业">
-            <el-cascader
-                    :options="categoryOptions"
-                    :props="{
-                        value: 'id',
-                        label: 'name',
-                        children: 'sub',
-                    }"
-                    v-model="form.merchant_category">
-            </el-cascader>
-        </el-form-item>
+            </el-form-item>
+            <el-form-item prop="merchant_category" label="所属行业">
+                <el-cascader
+                        :options="categoryOptions"
+                        :props="{
+                            value: 'id',
+                            label: 'name',
+                            children: 'sub',
+                        }"
+                        v-model="form.merchant_category">
+                </el-cascader>
+            </el-form-item>
             <el-form-item prop="business_licence_pic_url" label="营业执照">
                 <image-upload v-model="form.business_licence_pic_url" :limit="1"/>
             </el-form-item>
@@ -27,7 +28,7 @@
         </el-col>
 
         <!-- 商户录入信息右侧块 -->
-        <el-col :span="11">
+        <el-col :span="11" :offset="1">
             <el-form-item prop="lng_and_lat" label="商户位置">
                 {{form.lng_and_lat}}
                 <el-button @click="isShowMap = true">选择位置</el-button>
@@ -150,14 +151,14 @@
         </el-col>
 
         <!-- 商户激活信息右侧块 -->
-        <el-col :span="11">
+        <el-col :span="11" offset="1">
             <el-form-item prop="contacter" label="负责人姓名">
                 <el-input v-model="form.contacter"/>
             </el-form-item>
             <el-form-item prop="contacter_phone" label="负责人联系方式">
                 <el-input v-model="form.contacter_phone"/>
             </el-form-item>
-            <el-form-item prop="contacter_phone" label="客服电话">
+            <el-form-item prop="service_phone" label="客服电话">
                 <el-input v-model="form.service_phone"/>
             </el-form-item>
             <el-form-item prop="oper_salesman" label="运营中心业务人员姓名">

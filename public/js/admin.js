@@ -2189,6 +2189,28 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2212,11 +2234,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.currentPreviewImage = url;
             this.isShowPreviewImage = true;
         },
-        audit: function audit(status) {
+        audit: function audit(type) {
             var _this = this;
 
-            __WEBPACK_IMPORTED_MODULE_2__assets_js_api__["a" /* default */].post('/merchant/audit', { id: this.data.id, audit_status: status }).then(function (data) {
-                _this.$alert(status === 1 ? '审核通过' : '审核不通过');
+            __WEBPACK_IMPORTED_MODULE_2__assets_js_api__["a" /* default */].post('/merchant/audit', { id: this.data.id, type: type }).then(function (data) {
+                _this.$alert(['', '审核通过', '审核不通过', '打回商户池'][status] + ' 成功');
                 _this.$emit('change');
             });
         }
@@ -42088,10 +42110,16 @@ var render = function() {
         [
           _c(
             "el-form",
-            { attrs: { "label-width": "150px", "label-position": "left" } },
+            {
+              attrs: {
+                "label-width": "120px",
+                "label-position": "left",
+                size: "small"
+              }
+            },
             [
-              _c("div", { staticClass: "title" }, [
-                _vm._v("\n                商户基本信息:\n            ")
+              _c("el-col", [
+                _c("div", { staticClass: "title" }, [_vm._v("商户录入信息")])
               ]),
               _vm._v(" "),
               _c(
@@ -42106,29 +42134,7 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "el-form-item",
-                    { attrs: { prop: "brand", label: "品牌" } },
-                    [_vm._v(_vm._s(_vm.data.brand))]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "region", label: "运营地区" } },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(
-                            { 1: "中国", 2: "美国", 3: "韩国", 4: "香港" }[
-                              _vm.data.region
-                            ]
-                          ) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "categoryPath", label: "所属行业" } },
+                    { attrs: { prop: "merchant_category", label: "所属行业" } },
                     _vm._l(_vm.data.categoryPath, function(item) {
                       return _c("span", { key: item.id }, [
                         _vm._v(
@@ -42142,15 +42148,127 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "el-form-item",
+                    { attrs: { label: "营业执照" } },
+                    [
+                      _c(
+                        "el-button",
+                        {
+                          attrs: { type: "text" },
+                          on: {
+                            click: function($event) {
+                              _vm.previewImage(
+                                _vm.data.business_licence_pic_url
+                              )
+                            }
+                          }
+                        },
+                        [_vm._v("查看")]
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("el-form-item", { attrs: { label: "营业执照代码" } }, [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(_vm.data.organization_code) +
+                        "\n                "
+                    )
+                  ])
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-col",
+                { attrs: { span: 11, offset: 1 } },
+                [
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "location", label: "商户位置" } },
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.data.lng) +
+                          " , " +
+                          _vm._s(_vm.data.lat) +
+                          "\n                "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
                     { attrs: { prop: "area", label: "省市区" } },
                     [
                       _vm._v(
-                        _vm._s(_vm.data.privince) +
+                        "\n                    " +
+                          _vm._s(_vm.data.privince) +
                           " " +
                           _vm._s(_vm.data.city) +
                           " " +
-                          _vm._s(_vm.data.area)
+                          _vm._s(_vm.data.area) +
+                          "\n                "
                       )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "address", label: "详细地址" } },
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.data.address) +
+                          "\n                "
+                      )
+                    ]
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c("el-col", [
+                _c("div", { staticClass: "title" }, [_vm._v("商户激活信息")])
+              ]),
+              _vm._v(" "),
+              _c(
+                "el-col",
+                { attrs: { span: 11 } },
+                [
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "brand", label: "品牌" } },
+                    [_vm._v(_vm._s(_vm.data.brand))]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "invoice_title", label: "发票抬头" } },
+                    [_vm._v(_vm._s(_vm.data.invoice_title))]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "invoice_no", label: "发票编号" } },
+                    [_vm._v(_vm._s(_vm.data.invoice_no))]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "status", label: "商户状态" } },
+                    [
+                      _vm.data.status === 1
+                        ? _c("span", { staticClass: "c-green" }, [
+                            _vm._v("已启用")
+                          ])
+                        : _vm.data.status === 2
+                          ? _c("span", { staticClass: "c-danger" }, [
+                              _vm._v("已冻结")
+                            ])
+                          : _c("span", [
+                              _vm._v("未知 (" + _vm._s(_vm.data.status) + ")")
+                            ])
                     ]
                   ),
                   _vm._v(" "),
@@ -42159,9 +42277,11 @@ var render = function() {
                     { attrs: { prop: "business_time", label: "营业时间" } },
                     [
                       _vm._v(
-                        _vm._s(_vm.data.business_time[0]) +
+                        "\n                    " +
+                          _vm._s(_vm.data.business_time[0]) +
                           " 至 " +
-                          _vm._s(_vm.data.business_time[1])
+                          _vm._s(_vm.data.business_time[1]) +
+                          "\n                "
                       )
                     ]
                   ),
@@ -42206,137 +42326,8 @@ var render = function() {
                           "\n                "
                       )
                     ]
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "el-col",
-                { attrs: { span: 11 } },
-                [
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "invoice_title", label: "发票抬头" } },
-                    [_vm._v(_vm._s(_vm.data.invoice_title))]
                   ),
                   _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "invoice_no", label: "发票编号" } },
-                    [_vm._v(_vm._s(_vm.data.invoice_no))]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "status", label: "商户状态" } },
-                    [
-                      _vm.data.status === 1
-                        ? _c("span", { staticClass: "c-green" }, [
-                            _vm._v("已启用")
-                          ])
-                        : _vm.data.status === 2
-                          ? _c("span", { staticClass: "c-danger" }, [
-                              _vm._v("已冻结")
-                            ])
-                          : _c("span", [
-                              _vm._v("未知 (" + _vm._s(_vm.data.status) + ")")
-                            ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "audit_status", label: "审核状态" } },
-                    [
-                      _vm.data.audit_status === 0
-                        ? _c("span", { staticClass: "c-gray" }, [
-                            _vm._v("待审核")
-                          ])
-                        : _vm.data.audit_status === 1
-                          ? _c("span", { staticClass: "c-green" }, [
-                              _vm._v("审核通过")
-                            ])
-                          : _vm.data.audit_status === 2
-                            ? _c("span", { staticClass: "c-danger" }, [
-                                _vm._v("审核不通过")
-                              ])
-                            : _c("span", [
-                                _vm._v(
-                                  "未知 (" + _vm._s(_vm.data.audit_status) + ")"
-                                )
-                              ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "location", label: "商户位置" } },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.data.lng) +
-                          " , " +
-                          _vm._s(_vm.data.lat) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "address", label: "详细地址" } },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.data.address) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "contacter", label: "负责人姓名" } },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.data.contacter) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    {
-                      attrs: {
-                        prop: "contacter_phone",
-                        label: "负责人联系方式"
-                      }
-                    },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.data.contacter_phone) +
-                          "\n                "
-                      )
-                    ]
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c("el-col", [
-                _c("div", { staticClass: "title" }, [
-                  _vm._v("\n                    商务信息：\n                ")
-                ])
-              ]),
-              _vm._v(" "),
-              _c(
-                "el-col",
-                { attrs: { span: 11 } },
-                [
                   _c("el-form-item", { attrs: { label: "结算周期" } }, [
                     _vm._v(
                       "\n                    " +
@@ -42361,188 +42352,6 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { label: "营业执照" } },
-                    [
-                      _c(
-                        "el-button",
-                        {
-                          attrs: { type: "text" },
-                          on: {
-                            click: function($event) {
-                              _vm.previewImage(
-                                _vm.data.business_licence_pic_url
-                              )
-                            }
-                          }
-                        },
-                        [_vm._v("查看")]
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c("el-form-item", { attrs: { label: "营业执照代码" } }, [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(_vm.data.organization_code) +
-                        "\n                "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { label: "税务登记证" } },
-                    [
-                      _c(
-                        "el-button",
-                        {
-                          attrs: { type: "text" },
-                          on: {
-                            click: function($event) {
-                              _vm.previewImage(_vm.data.tax_cert_pic_url)
-                            }
-                          }
-                        },
-                        [_vm._v("查看")]
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { label: "法人身份证正反面" } },
-                    [
-                      _c("preview-img", {
-                        attrs: {
-                          url: _vm.data.legal_id_card_pic_a,
-                          width: "200px",
-                          height: "100px"
-                        }
-                      }),
-                      _vm._v(" "),
-                      _c("preview-img", {
-                        attrs: {
-                          url: _vm.data.legal_id_card_pic_b,
-                          width: "200px",
-                          height: "100px"
-                        }
-                      })
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { label: "税务登记证" } },
-                    [
-                      _c(
-                        "el-button",
-                        {
-                          attrs: { type: "text" },
-                          on: {
-                            click: function($event) {
-                              _vm.previewImage(_vm.data.tax_cert_pic_url)
-                            }
-                          }
-                        },
-                        [_vm._v("查看")]
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { label: "合同" } },
-                    [
-                      _c(
-                        "el-button",
-                        {
-                          attrs: { type: "text" },
-                          on: {
-                            click: function($event) {
-                              _vm.previewImage(_vm.data.contract_pic_url)
-                            }
-                          }
-                        },
-                        [_vm._v("查看")]
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { label: "开户许可证" } },
-                    [
-                      _c(
-                        "el-button",
-                        {
-                          attrs: { type: "text" },
-                          on: {
-                            click: function($event) {
-                              _vm.previewImage(_vm.data.licence_pic_url)
-                            }
-                          }
-                        },
-                        [_vm._v("查看")]
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { label: "卫生许可证" } },
-                    [
-                      _c(
-                        "el-button",
-                        {
-                          attrs: { type: "text" },
-                          on: {
-                            click: function($event) {
-                              _vm.previewImage(
-                                _vm.data.hygienic_licence_pic_url
-                              )
-                            }
-                          }
-                        },
-                        [_vm._v("查看")]
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { label: "协议文件（必填）" } },
-                    [
-                      _c(
-                        "el-button",
-                        {
-                          attrs: { type: "text" },
-                          on: {
-                            click: function($event) {
-                              _vm.previewImage(_vm.data.agreement_pic_url)
-                            }
-                          }
-                        },
-                        [_vm._v("查看")]
-                      )
-                    ],
-                    1
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "el-col",
-                { attrs: { span: 11 } },
-                [
                   _c("el-form-item", { attrs: { label: "银行账户类型" } }, [
                     _vm.data.bank_card_type === 1
                       ? _c("span", { staticClass: "c-gray" }, [_vm._v("公司")])
@@ -42583,7 +42392,235 @@ var render = function() {
                         _vm._s(_vm.data.bank_open_address) +
                         "\n                "
                     )
-                  ])
+                  ]),
+                  _vm._v(" "),
+                  _vm.data.bank_card_type == 1
+                    ? _c(
+                        "el-form-item",
+                        {
+                          attrs: {
+                            required: "",
+                            prop: "licence_pic_url",
+                            label: "开户许可证"
+                          }
+                        },
+                        [
+                          _c("preview-img", {
+                            attrs: {
+                              url: _vm.data.licence_pic_url,
+                              width: "100px",
+                              height: "100px"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.data.bank_card_type == 2
+                    ? _c(
+                        "el-form-item",
+                        {
+                          attrs: {
+                            required: "",
+                            label: "法人银行卡正面照",
+                            prop: "bank_card_pic_a"
+                          }
+                        },
+                        [
+                          _c("preview-img", {
+                            attrs: {
+                              url: _vm.data.bank_card_pic_a,
+                              width: "100px",
+                              height: "100px"
+                            }
+                          })
+                        ],
+                        1
+                      )
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { label: "法人身份证正反面" } },
+                    [
+                      _c("preview-img", {
+                        attrs: {
+                          url: _vm.data.legal_id_card_pic_a,
+                          width: "200px",
+                          height: "100px"
+                        }
+                      }),
+                      _vm._v(" "),
+                      _c("preview-img", {
+                        attrs: {
+                          url: _vm.data.legal_id_card_pic_b,
+                          width: "200px",
+                          height: "100px"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { label: "合同" } },
+                    [
+                      _c(
+                        "el-button",
+                        {
+                          attrs: { type: "text" },
+                          on: {
+                            click: function($event) {
+                              _vm.previewImage(_vm.data.contract_pic_url)
+                            }
+                          }
+                        },
+                        [_vm._v("查看")]
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: { prop: "other_card_pic_urls", label: "其他证件" }
+                    },
+                    [
+                      _vm._l(_vm.data.other_card_pic_urls, function(pic) {
+                        return [
+                          _c("preview-img", {
+                            attrs: { url: pic, width: "200px", height: "100px" }
+                          })
+                        ]
+                      })
+                    ],
+                    2
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-col",
+                { attrs: { span: 11, offset: "1" } },
+                [
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "contacter", label: "负责人姓名" } },
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.data.contacter) +
+                          "\n                "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: {
+                        prop: "contacter_phone",
+                        label: "负责人联系方式"
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.data.contacter_phone) +
+                          "\n                "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "service_phone", label: "客服电话" } },
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.data.service_phone) +
+                          "\n                "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: {
+                        prop: "oper_salesman",
+                        label: "运营中心业务人员姓名"
+                      }
+                    },
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.data.oper_salesman) +
+                          "\n                "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "site_acreage", label: "商户面积" } },
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.data.site_acreage) +
+                          " ㎡\n                "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
+                    {
+                      attrs: { prop: "employees_number", label: "商户员工人数" }
+                    },
+                    [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(_vm.data.employees_number) +
+                          "\n                "
+                      )
+                    ]
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-col",
+                { attrs: { span: 11, offset: 1 } },
+                [
+                  _c(
+                    "el-form-item",
+                    { attrs: { prop: "audit_status", label: "审核状态" } },
+                    [
+                      _vm.data.audit_status === 0
+                        ? _c("span", { staticClass: "c-gray" }, [
+                            _vm._v("待审核")
+                          ])
+                        : _vm.data.audit_status === 1
+                          ? _c("span", { staticClass: "c-green" }, [
+                              _vm._v("审核通过")
+                            ])
+                          : _vm.data.audit_status === 2
+                            ? _c("span", { staticClass: "c-danger" }, [
+                                _vm._v("审核不通过")
+                              ])
+                            : _c("span", [
+                                _vm._v(
+                                  "未知 (" + _vm._s(_vm.data.audit_status) + ")"
+                                )
+                              ])
+                    ]
+                  )
                 ],
                 1
               ),
@@ -42591,7 +42628,7 @@ var render = function() {
               _c(
                 "el-col",
                 [
-                  _vm.data.audit_status === 0
+                  _vm.data.audit_status == 0 || _vm.data.audit_status == 3
                     ? _c(
                         "el-form-item",
                         [
@@ -42619,7 +42656,22 @@ var render = function() {
                               }
                             },
                             [_vm._v("审核不通过")]
-                          )
+                          ),
+                          _vm._v(" "),
+                          _vm.data.audit_status != 3
+                            ? _c(
+                                "el-button",
+                                {
+                                  attrs: { type: "danger" },
+                                  on: {
+                                    click: function($event) {
+                                      _vm.audit(3)
+                                    }
+                                  }
+                                },
+                                [_vm._v("打回商户池")]
+                              )
+                            : _vm._e()
                         ],
                         1
                       )
@@ -43612,19 +43664,6 @@ var render = function() {
                               }
                             },
                             [_vm._v("审核不通过")]
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "el-button",
-                            {
-                              attrs: { type: "text" },
-                              on: {
-                                click: function($event) {
-                                  _vm.audit(scope, 3)
-                                }
-                              }
-                            },
-                            [_vm._v("打回到商户池")]
                           )
                         ]
                       : _vm._e()

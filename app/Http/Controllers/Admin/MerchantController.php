@@ -9,8 +9,10 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantCategory;
 use App\Result;
 
@@ -19,7 +21,7 @@ class MerchantController extends Controller
 
     public function getList()
     {
-        $data = Merchant::where('contract_status', Merchant::CONTRACT_STATUS_YES)
+        $data = Merchant::where('audit_oper_id', '>', 0)
             ->orderByDesc('id')->paginate();
 
         $data->each(function ($item){
@@ -45,6 +47,14 @@ class MerchantController extends Controller
     }
 
     /**
+     * 获取审核记录列表
+     */
+    public function getAuditList()
+    {
+        // todo
+    }
+
+    /**
      * 审核商户
      */
     public function audit()
@@ -53,9 +63,32 @@ class MerchantController extends Controller
             'id' => 'required|integer|min:1',
             'audit_status' => 'required|integer|in:1,2',
         ]);
-        $merchant = Merchant::findOrFail(request('id'));
-        $merchant->audit_status = request('audit_status');
+        $type = request('type');
+        $merchantId = request('id');
+
+        $merchant = Merchant::findOrFail($merchantId);
+        $merchantAudit = MerchantAudit::where('merchant_id', $merchantId)
+            ->where('oper_id', $merchant->audit_oper_id)
+            ->first();
+        if(empty($merchantAudit)){
+            // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
+            $merchantAudit = MerchantAudit::addRecord($merchantId, $merchant->audit_oper_id);
+        }
+
+        if($type == 3){
+            if($merchant->audit_status == 3){
+                throw new ParamInvalidException('当前商户时重新提交审核的商户, 不能打回到商户池');
+            }
+            $merchant->audit_status = Merchant::AUDIT_STATUS_FAIL;
+            // 打回商户池操作, 需要将商户信息中的audit_oper_id置空
+            $merchant->audit_oper_id = 0;
+            $merchantAudit->status = 4;
+        }else {
+            $merchant->audit_status = $type;
+            $merchantAudit->status = $type;
+        }
         $merchant->save();
+        $merchantAudit->save();
         return Result::success($merchant);
     }
 }
