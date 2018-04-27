@@ -28,16 +28,18 @@
             doEdit(data){
                 this.isLoading = true;
                 api.post('/merchant/pool/edit', data).then(() => {
-                    this.isLoading = false;
                     this.$message.success('保存成功');
                     router.push('/merchant/pool');
+                }).finally(() => {
+                    this.isLoading = false;
                 })
             },
             getDetail(){
                 this.isLoading = true;
                 api.get('/merchant/pool/detail', {id: this.id}).then(data => {
-                    this.isLoading = false;
                     this.merchant = data;
+                }).finally(() => {
+                    this.isLoading = false;
                 })
             },
             cancel(){

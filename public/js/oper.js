@@ -978,9 +978,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.isLoading = true;
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/pool/add', data).then(function () {
-                _this.isLoading = false;
                 _this.$message.success('保存成功');
                 router.push('/merchant/pool');
+            }).finally(function () {
+                _this.isLoading = false;
             });
         },
         cancel: function cancel() {
@@ -1032,9 +1033,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.isLoading = true;
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/pool/edit', data).then(function () {
-                _this.isLoading = false;
                 _this.$message.success('保存成功');
                 router.push('/merchant/pool');
+            }).finally(function () {
+                _this.isLoading = false;
             });
         },
         getDetail: function getDetail() {
@@ -1042,8 +1044,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.isLoading = true;
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchant/pool/detail', { id: this.id }).then(function (data) {
-                _this2.isLoading = false;
                 _this2.merchant = data;
+            }).finally(function () {
+                _this2.isLoading = false;
             });
         },
         cancel: function cancel() {
@@ -1634,9 +1637,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.isLoading = true;
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/addFromMerchantPool', data).then(function () {
-                _this.isLoading = false;
                 _this.$message.success('保存成功');
                 router.push('/merchants');
+            }).finally(function () {
+                _this.isLoading = false;
             });
         },
         getDetail: function getDetail() {
@@ -1644,8 +1648,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.isLoading = true;
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchant/detail', { id: this.id }).then(function (data) {
-                _this2.isLoading = false;
                 _this2.merchant = data;
+            }).finally(function () {
+                _this2.isLoading = false;
             });
         },
         cancel: function cancel() {
@@ -1700,9 +1705,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.isLoading = true;
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/add', data).then(function () {
-                _this.isLoading = false;
                 _this.$message.success('保存成功');
                 router.push('/merchants');
+            }).finally(function () {
+                _this.isLoading = false;
             });
         },
         cancel: function cancel() {
@@ -1754,9 +1760,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.isLoading = true;
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/edit', data).then(function () {
-                _this.isLoading = false;
                 _this.$message.success('保存成功');
                 router.push('/merchants');
+            }).finally(function () {
+                _this.isLoading = false;
             });
         },
         getDetail: function getDetail() {
@@ -1764,8 +1771,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
             this.isLoading = true;
             __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchant/detail', { id: this.id }).then(function (data) {
-                _this2.isLoading = false;
                 _this2.merchant = data;
+            }).finally(function () {
+                _this2.isLoading = false;
             });
         },
         cancel: function cancel() {
@@ -14191,7 +14199,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14266,7 +14274,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14311,7 +14319,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14341,7 +14349,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -14491,7 +14499,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 

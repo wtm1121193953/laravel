@@ -22,9 +22,10 @@
             doAdd(data){
                 this.isLoading = true;
                 api.post('/merchant/add', data).then(() => {
-                    this.isLoading = false;
                     this.$message.success('保存成功');
                     router.push('/merchants');
+                }).finally(() => {
+                    this.isLoading = false;
                 })
             },
             cancel(){
