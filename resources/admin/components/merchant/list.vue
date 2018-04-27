@@ -86,8 +86,6 @@
                     query: {id: scope.row.id},
                 })
                 return false;
-                this.showDetail = true;
-                this.currentMerchant = scope.row;
             },
             audit(scope, status){
                 api.post('/merchant/audit', {id: scope.row.id, audit_status: status}).then(data => {
