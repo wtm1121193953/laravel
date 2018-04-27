@@ -1,9 +1,19 @@
 <template>
     <page title="商户池" v-loading="isLoading">
-        <el-button class="fr" type="primary" @click="add">录入商户信息</el-button>
+        <el-col>
+            <el-form :model="query" inline size="small" class="fl" @submit.native.prevent>
+                <el-form-item>
+                    <el-input v-model="query.keyword" placeholder="请输入关键字搜索" @keyup.native.enter="search"/>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="search">搜索</el-button>
+                </el-form-item>
+            </el-form>
+            <el-button class="fr" type="primary" @click="add">录入商户信息</el-button>
+        </el-col>
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
-            <el-table-column prop="id" label=商户ID"/>
+            <el-table-column prop="id" label="商户ID" />
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="categoryPath" label="行业">
                 <template slot-scope="scope">
@@ -51,6 +61,7 @@
                 isLoading: false,
                 query: {
                     page: 1,
+                    keyword: '',
                 },
                 list: [],
                 total: 0,
@@ -66,6 +77,10 @@
                     this.list = data.list;
                     this.total = data.total;
                 })
+            },
+            search(){
+                this.query.page = 1;
+                this.getList();
             },
             itemChanged(index, data){
                 this.getList();

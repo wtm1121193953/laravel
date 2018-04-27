@@ -1190,6 +1190,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1202,7 +1212,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             isLoading: false,
             query: {
-                page: 1
+                page: 1,
+                keyword: ''
             },
             list: [],
             total: 0
@@ -1220,6 +1231,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.list = data.list;
                 _this.total = data.total;
             });
+        },
+        search: function search() {
+            this.query.page = 1;
+            this.getList();
         },
         itemChanged: function itemChanged(index, data) {
             this.getList();
@@ -14374,7 +14389,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -41099,13 +41114,80 @@ var render = function() {
     },
     [
       _c(
-        "el-button",
-        {
-          staticClass: "fr",
-          attrs: { type: "primary" },
-          on: { click: _vm.add }
-        },
-        [_vm._v("录入商户信息")]
+        "el-col",
+        [
+          _c(
+            "el-form",
+            {
+              staticClass: "fl",
+              attrs: { model: _vm.query, inline: "", size: "small" },
+              nativeOn: {
+                submit: function($event) {
+                  $event.preventDefault()
+                }
+              }
+            },
+            [
+              _c(
+                "el-form-item",
+                [
+                  _c("el-input", {
+                    attrs: { placeholder: "请输入关键字搜索" },
+                    nativeOn: {
+                      keyup: function($event) {
+                        if (
+                          !("button" in $event) &&
+                          _vm._k(
+                            $event.keyCode,
+                            "enter",
+                            13,
+                            $event.key,
+                            "Enter"
+                          )
+                        ) {
+                          return null
+                        }
+                        return _vm.search($event)
+                      }
+                    },
+                    model: {
+                      value: _vm.query.keyword,
+                      callback: function($$v) {
+                        _vm.$set(_vm.query, "keyword", $$v)
+                      },
+                      expression: "query.keyword"
+                    }
+                  })
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                [
+                  _c(
+                    "el-button",
+                    { attrs: { type: "primary" }, on: { click: _vm.search } },
+                    [_vm._v("搜索")]
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "el-button",
+            {
+              staticClass: "fr",
+              attrs: { type: "primary" },
+              on: { click: _vm.add }
+            },
+            [_vm._v("录入商户信息")]
+          )
+        ],
+        1
       ),
       _vm._v(" "),
       _c(
@@ -41116,7 +41198,8 @@ var render = function() {
             attrs: { prop: "created_at", label: "添加时间" }
           }),
           _vm._v(" "),
-          _vm._v('"/>\n        '),
+          _c("el-table-column", { attrs: { prop: "id", label: "商户ID" } }),
+          _vm._v(" "),
           _c("el-table-column", { attrs: { prop: "name", label: "商户名称" } }),
           _vm._v(" "),
           _c("el-table-column", {
