@@ -3,7 +3,7 @@ import Home from '../components/home'
 import MerchantList from '../components/merchant/list.vue'
 import MerchantAdd from '../components/merchant/add.vue'
 import MerchantEdit from '../components/merchant/edit.vue'
-import MerchantAddFromPool from '../components/merchant/add-from-merchant-pool.vue'
+import MerchantAddFromPool from '../components/merchant-pool/add-from-merchant-pool.vue'
 
 import MerchantPool from '../components/merchant-pool/list'
 import MerchantPoolAdd from '../components/merchant-pool/add'

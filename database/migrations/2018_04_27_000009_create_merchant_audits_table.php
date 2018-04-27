@@ -17,7 +17,7 @@ class CreateMerchantAuditsTable extends Migration
             $table->increments('id');
             $table->integer('merchant_id')->index()->comment('商户ID');
             $table->integer('oper_id')->index()->comment('提交审核的运营中心ID');
-            $table->tinyInteger('status')->index()->comment('状态 0-待审核 1-审核通过 2-审核不通过 3-重新提交审核');
+            $table->tinyInteger('status')->index()->default(0)->comment('状态 0-待审核 1-审核通过 2-审核不通过 3-重新提交审核');
             $table->timestamps();
 
             $table->comment = '商家审核记录表';

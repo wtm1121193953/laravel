@@ -12,7 +12,6 @@ namespace App\Http\Controllers\Oper;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
-use App\Modules\Area\Area;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
 use App\Result;
@@ -58,29 +57,6 @@ class MerchantPoolController extends Controller
         return Result::success($merchant);
     }
 
-    private function fillMerchantInfoFromRequest(Merchant $merchant)
-    {
-        // 商户基本信息
-        $merchant->merchant_category_id = request('merchant_category_id', 0);
-        $merchant->name = request('name');
-        $merchant->business_licence_pic_url = request('business_licence_pic_url','');
-        $merchant->organization_code = request('organization_code','');
-
-        // 位置信息
-        $provinceId = request('province_id', 0);
-        $cityId = request('city_id', 0);
-        $areaId = request('area_id', 0);
-        $merchant->province = $provinceId ? Area::getNameByAreaId($provinceId) : '';
-        $merchant->province_id = $provinceId;
-        $merchant->city = $cityId ? Area::getNameByAreaId($cityId) : '';
-        $merchant->city_id = $cityId;
-        $merchant->area = $areaId ? Area::getNameByAreaId($areaId) : '';
-        $merchant->area_id = $areaId;
-        $merchant->lng = request('lng',0);
-        $merchant->lat = request('lat',0);
-        $merchant->address = request('address','');
-    }
-
     /**
      * 基础表单验证, 用于添加及编辑
      */
@@ -108,7 +84,7 @@ class MerchantPoolController extends Controller
         $this->formValidate();
 
         $merchant = new Merchant();
-        $this->fillMerchantInfoFromRequest($merchant);
+        $merchant->fillMerchantPoolInfoFromRequest();
 
         // 商户营业执照代码不能重复
         $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->first();
@@ -135,7 +111,7 @@ class MerchantPoolController extends Controller
         if($merchant->creator_oper_id != request()->get('current_user')->oper_id){
             throw new ParamInvalidException('不能修改其他运营中心录入的商户资料');
         }
-        $this->fillMerchantInfoFromRequest($merchant);
+        $merchant->fillMerchantPoolInfoFromRequest();
 
         // 商户营业执照代码不能重复
         $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->offset(1)->first();

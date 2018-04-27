@@ -1,5 +1,5 @@
 <template>
-    <page title="编辑商户信息" :breadcrumbs="{'我的商户': '/merchants'}">
+    <page title="激活商户" :breadcrumbs="{'商户池': '/merchant/pool'}">
         <merchant-form
                 v-loading="isLoading"
                 v-if="merchant"
@@ -11,7 +11,7 @@
 
 <script>
     import api from '../../../assets/js/api'
-    import MerchantForm from './merchant-form'
+    import MerchantForm from '../merchant/merchant-form'
     export default {
         name: "add-from-merchant-pool",
         components: {
@@ -28,8 +28,8 @@
             doEdit(data){
                 this.isLoading = true;
                 api.post('/merchant/addFromMerchantPool', data).then(() => {
-                    this.$message.success('保存成功');
-                    router.push('/merchants');
+                    this.$message.success('提交成功');
+                    this.$menu.change('/merchants');
                 }).finally(() => {
                     this.isLoading = false;
                 })
@@ -43,14 +43,14 @@
                 })
             },
             cancel(){
-                router.push('/merchants');
+                router.push('/merchant/pool');
             }
         },
         created(){
             this.id = this.$route.query.id;
             if(!this.id){
                 this.$message.error('id不能为空');
-                router.push('/merchants');
+                router.push('/merchant/pool');
                 return false;
             }
             this.getDetail();

@@ -2,31 +2,27 @@
 
 namespace App\Http\Controllers\Oper;
 
-
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
-use App\Modules\Area\Area;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
+use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantCategory;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 
 class MerchantController extends Controller
 {
 
     /**
      * 获取列表 (分页)
-     * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
-    public function getList(Request $request)
+    public function getList()
     {
         $status = request('status');
-        $data = Merchant::where('oper_id', $request->get('current_user')->oper_id)
-            ->where(function (Builder $query){
+        $data = Merchant::where(function (Builder $query){
                 $currentOperId = request()->get('current_user')->oper_id;
                 $query->where('oper_id', $currentOperId)
                     ->orWhere('audit_oper_id', $currentOperId);
@@ -51,23 +47,6 @@ class MerchantController extends Controller
         ]);
     }
 
-    /**
-     * 获取全部列表
-     */
-    public function getAllList()
-    {
-        $status = request('status');
-        $list = Merchant::where('oper_id', request()->get('current_user')->oper_id)
-            ->where('contract_status', Merchant::CONTRACT_STATUS_YES)
-            ->when($status, function (Builder $query) use ($status){
-                $query->where('status', $status);
-            })->orderBy('id', 'desc')->get();
-
-        return Result::success([
-            'list' => $list,
-        ]);
-    }
-
     public function detail()
     {
         $id = request('id');
@@ -75,53 +54,6 @@ class MerchantController extends Controller
         $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
         $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
         return Result::success($merchant);
-    }
-
-    private function fillMerchantInfoFromRequest(Merchant $merchant)
-    {
-        $merchant->merchant_category_id = request('merchant_category_id', 0);
-        $merchant->name = request('name');
-        $merchant->brand = request('brand','');
-        $merchant->region = request('region');
-        $merchant->province = request('province_id') ? Area::where('area_id', request('province_id'))->value('name') : '';
-        $merchant->province_id = request('province_id', 0);
-        $merchant->city = request('city_id') ? Area::where('area_id', request('city_id'))->value('name') : '';
-        $merchant->city_id = request('city_id', 0);
-        $merchant->area = request('area_id') ? Area::where('area_id', request('area_id'))->value('name') : '';
-        $merchant->area_id = request('area_id', 0);
-        $merchant->business_time = request('business_time');
-        $merchant->logo = request('logo','');
-        $merchant->desc_pic = request('desc_pic','');
-        $descPicList = request('desc_pic_list', '');
-        if(is_array($descPicList)){
-            $descPicList = implode(',', $descPicList);
-        }
-        $merchant->desc_pic_list = $descPicList;
-        $merchant->desc = request('desc','');
-        $merchant->invoice_title = request('invoice_title','');
-        $merchant->invoice_no = request('invoice_no','');
-        $merchant->status = request('status', 1);
-        $merchant->lng = request('lng',0);
-        $merchant->lat = request('lat',0);
-        $merchant->address = request('address','');
-        $merchant->contacter = request('contacter','');
-        $merchant->contacter_phone = request('contacter_phone','');
-        $merchant->settlement_cycle_type = request('settlement_cycle_type');
-        $merchant->settlement_rate = request('settlement_rate');
-        $merchant->business_licence_pic_url = request('business_licence_pic_url','');
-        $merchant->organization_code = request('organization_code','');
-        $merchant->tax_cert_pic_url = request('tax_cert_pic_url','');
-        $merchant->legal_id_card_pic_a = request('legal_id_card_pic_a','');
-        $merchant->legal_id_card_pic_b = request('legal_id_card_pic_b','');
-        $merchant->contract_pic_url = request('contract_pic_url','');
-        $merchant->licence_pic_url = request('licence_pic_url','');
-        $merchant->hygienic_licence_pic_url = request('hygienic_licence_pic_url','');
-        $merchant->agreement_pic_url = request('agreement_pic_url','');
-        $merchant->bank_card_type = request('bank_card_type');
-        $merchant->bank_open_name = request('bank_open_name','');
-        $merchant->bank_card_no = request('bank_card_no','');
-        $merchant->sub_bank_name = request('sub_bank_name','');
-        $merchant->bank_open_address = request('bank_open_address','');
     }
 
     /**
@@ -135,16 +67,58 @@ class MerchantController extends Controller
             'business_licence_pic_url' => 'required',
         ]);
         $merchant = new Merchant();
+        $merchant->fillMerchantPoolInfoFromRequest();
+        $merchant->fillMerchantActiveInfoFromRequest();
 
-        $this->fillMerchantInfoFromRequest($merchant);
-
-        $merchant->oper_id = request()->get('current_user')->oper_id;
-        $merchant->creator_oper_id = request()->get('current_user')->oper_id;
+        // 补充商家创建者及审核提交者
+        $currentOperId = request()->get('current_user')->oper_id;
+        $merchant->audit_oper_id = $currentOperId;
+        $merchant->creator_oper_id = $currentOperId;
 
         // 商户营业执照代码不能重复
         $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->first();
         if(!empty($existMerchant)) {
             throw new BaseResponseException('商户营业执照代码已存在');
+        }
+        $merchant->save();
+
+        // 添加审核记录
+        MerchantAudit::addRecord($merchant->id, $currentOperId);
+
+        return Result::success($merchant);
+    }
+
+    /**
+     * 编辑
+     */
+    public function edit()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'name' => 'required',
+            'merchant_category_id' => 'required',
+            'business_licence_pic_url' => 'required',
+        ]);
+        $currentOperId = request()->get('current_user')->oper_id;
+        $merchant = Merchant::where('id', request('id'))
+            ->where('oper_id', $currentOperId)
+            ->firstOrFail();
+
+        $merchant->fillMerchantPoolInfoFromRequest();
+        $merchant->fillMerchantActiveInfoFromRequest();
+
+        // 商户营业执照代码不能重复
+        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->offset(1)->first();
+        if(!empty($existMerchant)) {
+            throw new BaseResponseException('商户营业执照代码已存在');
+        }
+
+        if($merchant->audit_status != Merchant::AUDIT_STATUS_AUDITING){
+            // 如果当前不是审核中, 则此次提交为重新提交审核
+            MerchantAudit::resubmit($merchant->id, $currentOperId);
+            $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
+        }else {
+            $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
         }
 
         $merchant->save();
@@ -160,51 +134,24 @@ class MerchantController extends Controller
 //        throw new BaseResponseException('等待完成');
         $merchantId = request('id');
         $merchant = Merchant::findOrFail($merchantId);
+        if($merchant->oper_id > 0){
+            throw new ParamInvalidException('该商户已不在商户池中');
+        }
         $currentOperId = request()->get('current_user')->oper_id;
-        if($merchant->oper_id != $currentOperId){
+        if($merchant->audit_oper_id > 0){
             throw new ParamInvalidException('该商户已被其他运营中心认领');
         }
-        // 补充合同信息
-        $merchant->contract_pic_url = request('contract_pic_url','');
-        $merchant->oper_id = $currentOperId;
-        // todo 补充其他信息
+
+        // 补充激活商户需要的信息
+        $merchant->fillMerchantActiveInfoFromRequest();
+        // 设置当前商户提交审核的运营中心
+        $merchant->audit_oper_id = $currentOperId;
+
         $merchant->save();
+        // 添加审核记录
+        MerchantAudit::addRecord($merchant->id, $currentOperId);
+
         return Result::success('操作成功', $merchant);
-    }
-
-    /**
-     * 编辑
-     */
-    public function edit()
-    {
-        $this->validate(request(), [
-            'id' => 'required|integer|min:1',
-            'name' => 'required',
-            'merchant_category_id' => 'required',
-            'business_licence_pic_url' => 'required',
-        ]);
-        $merchant = Merchant::where('id', request('id'))
-            ->where('oper_id', request()->get('current_user')->oper_id)
-            ->firstOrFail();
-
-        $this->fillMerchantInfoFromRequest($merchant);
-
-        // 商户营业执照代码不能重复
-        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->offset(1)->first();
-        if(!empty($existMerchant)) {
-            throw new BaseResponseException('商户营业执照代码已存在');
-        }
-
-        if($merchant->audit_status == Merchant::AUDIT_STATUS_SUCCESS
-            || $merchant->audit_status == Merchant::AUDIT_STATUS_RESUBMIT){
-            $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
-        }else {
-            $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
-        }
-
-        $merchant->save();
-
-        return Result::success($merchant);
     }
 
     /**
@@ -273,16 +220,18 @@ class MerchantController extends Controller
         return Result::success($account);
     }
 
+    /**
+     * 编辑商户账号信息, 即修改密码
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function editAccount()
     {
 
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
-            'merchant_id' => 'required|integer|min:1',
             'password' => 'required|min:6',
         ]);
         $account = MerchantAccount::findOrFail(request('id'));
-        $account->merchant_id = request('merchant_id');
         $salt = str_random();
         $account->salt = $salt;
         $account->password = MerchantAccount::genPassword(request('password'), $salt);
