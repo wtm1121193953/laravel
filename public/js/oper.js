@@ -2153,11 +2153,15 @@ var defaultForm = {
             return data;
         },
         validate: function validate(callback) {
-            this.$refs.form.validate(function (valid) {
-                if (valid) {
-                    callback();
-                }
-            });
+            if (this.readonly) {
+                callback();
+            } else {
+                this.$refs.form.validate(function (valid) {
+                    if (valid) {
+                        callback();
+                    }
+                });
+            }
         }
     },
     created: function created() {
@@ -2579,11 +2583,15 @@ var defaultForm = {
             return data;
         },
         validate: function validate(callback) {
-            this.$refs.form.validate(function (valid) {
-                if (valid) {
-                    callback();
-                }
-            });
+            if (this.readonly) {
+                callback();
+            } else {
+                this.$refs.form.validate(function (valid) {
+                    if (valid) {
+                        callback();
+                    }
+                });
+            }
         },
         selectMap: function selectMap(data) {
             this.isShowMap = false;

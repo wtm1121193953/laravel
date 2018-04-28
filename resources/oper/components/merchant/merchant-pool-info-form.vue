@@ -193,11 +193,15 @@
                 return data;
             },
             validate(callback){
-                this.$refs.form.validate((valid) => {
-                    if(valid){
-                        callback()
-                    }
-                })
+                if(this.readonly){
+                    callback()
+                }else {
+                    this.$refs.form.validate((valid) => {
+                        if(valid){
+                            callback()
+                        }
+                    })
+                }
             },
             selectMap(data) {
                 this.isShowMap = false;
