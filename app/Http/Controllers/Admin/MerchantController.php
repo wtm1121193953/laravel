@@ -80,7 +80,7 @@ class MerchantController extends Controller
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
-            'type' => 'required|integer|in:1,3',
+            'type' => 'required|integer|in:1,2,3',
         ]);
         //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
         $type = request('type');
