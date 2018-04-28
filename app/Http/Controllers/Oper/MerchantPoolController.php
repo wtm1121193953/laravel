@@ -29,7 +29,6 @@ class MerchantPoolController extends Controller
     {
         $keyword = request('keyword');
         $data = Merchant::where('audit_oper_id', 0)
-            ->where('audit_status', 0)
             ->when($keyword, function(Builder $query) use ($keyword){
                 $query->where('name', 'like', "%$keyword%");
             })
