@@ -42570,11 +42570,13 @@ var render = function() {
                 "el-col",
                 { attrs: { span: 11 } },
                 [
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "auditOperName", label: "运营中心" } },
-                    [_vm._v(_vm._s(_vm.data.auditOperName))]
-                  ),
+                  _vm.data.auditOperName
+                    ? _c(
+                        "el-form-item",
+                        { attrs: { prop: "auditOperName", label: "运营中心" } },
+                        [_vm._v(_vm._s(_vm.data.auditOperName))]
+                      )
+                    : _vm._e(),
                   _vm._v(" "),
                   _c(
                     "el-form-item",
