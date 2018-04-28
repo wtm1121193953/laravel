@@ -101,7 +101,7 @@ class MerchantController extends Controller
         ]);
         $currentOperId = request()->get('current_user')->oper_id;
         $merchant = Merchant::where('id', request('id'))
-            ->where('oper_id', $currentOperId)
+            ->where('audit_oper_id', $currentOperId)
             ->firstOrFail();
 
         $merchant->fillMerchantPoolInfoFromRequest();

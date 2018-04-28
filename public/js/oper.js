@@ -41046,7 +41046,7 @@ var render = function() {
                   attrs: { type: "primary" },
                   on: { click: _vm.add }
                 },
-                [_vm._v("添加商户")]
+                [_vm._v("录入并激活商户")]
               ),
               _vm._v(" "),
               _c(
