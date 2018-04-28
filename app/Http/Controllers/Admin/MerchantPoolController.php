@@ -12,6 +12,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Oper\Oper;
 use App\Result;
 
 class MerchantPoolController extends Controller
@@ -26,6 +27,7 @@ class MerchantPoolController extends Controller
             ->orderByDesc('id')->paginate();
         $data->each(function ($item){
             $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
+            $item->creatorOperName = Oper::where('id', $item->creator_oper_id)->value('name');
         });
 
         return Result::success([
@@ -41,6 +43,7 @@ class MerchantPoolController extends Controller
         ]);
         $merchant = Merchant::findOrFail(request('id'));
         $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
+        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
         return Result::success($merchant);
     }
 
