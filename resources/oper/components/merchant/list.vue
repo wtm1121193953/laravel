@@ -18,9 +18,9 @@
                     <el-table-column prop="name" label="商户名称"/>
                     <el-table-column prop="categoryPath" label="行业">
                         <template slot-scope="scope">
-                    <span v-for="item in scope.row.categoryPath" :key="item.id">
-                        {{ item.name }}
-                    </span>
+                            <span v-for="item in scope.row.categoryPath" :key="item.id">
+                                {{ item.name }}
+                            </span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="city" label="城市">

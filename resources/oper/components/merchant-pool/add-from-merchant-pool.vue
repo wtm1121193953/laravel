@@ -4,6 +4,7 @@
                 v-loading="isLoading"
                 v-if="merchant"
                 :data="merchant"
+                pool-info-readonly
                 @cancel="cancel"
                 @save="doEdit"/>
     </page>
