@@ -44362,6 +44362,19 @@ var render = function() {
                                       }
                                     },
                                     [_vm._v("审核不通过")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "el-button",
+                                    {
+                                      attrs: { type: "text" },
+                                      on: {
+                                        click: function($event) {
+                                          _vm.audit(scope, 3)
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("打回到商户池")]
                                   )
                                 ]
                               : _vm._e()
