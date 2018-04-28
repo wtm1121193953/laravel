@@ -78,6 +78,7 @@ class MerchantController extends Controller
             'id' => 'required|integer|min:1',
             'type' => 'required|integer|in:1,2',
         ]);
+        //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
         $type = request('type');
         $merchantId = request('id');
 
@@ -101,6 +102,11 @@ class MerchantController extends Controller
         }else {
             $merchant->audit_status = $type;
             $merchantAudit->status = $type;
+            if($type == 1){
+                // 如果审核通过, 补充商户所属运营中心ID
+                $currentOperId = request()->get('current_user')->oper_id;
+                $merchant->oper_id = $currentOperId;
+            }
         }
         $merchant->save();
         $merchantAudit->save();
