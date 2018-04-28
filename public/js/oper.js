@@ -1211,6 +1211,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1224,7 +1232,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             isLoading: false,
             query: {
                 page: 1,
-                keyword: ''
+                keyword: '',
+                isMine: ''
             },
             list: [],
             total: 0
@@ -14708,7 +14717,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -41104,21 +41113,26 @@ var render = function() {
                       {
                         key: "default",
                         fn: function(scope) {
-                          return [
-                            scope.row.status === 1
-                              ? _c("span", { staticClass: "c-green" }, [
-                                  _vm._v("正常")
-                                ])
-                              : scope.row.status === 2
-                                ? _c("span", { staticClass: "c-danger" }, [
-                                    _vm._v("已冻结")
-                                  ])
-                                : _c("span", [
-                                    _vm._v(
-                                      "未知 (" + _vm._s(scope.row.status) + ")"
-                                    )
-                                  ])
-                          ]
+                          return scope.row.audit_status == 1 ||
+                            scope.row.audit_status == 3
+                            ? [
+                                scope.row.status === 1
+                                  ? _c("span", { staticClass: "c-green" }, [
+                                      _vm._v("正常")
+                                    ])
+                                  : scope.row.status === 2
+                                    ? _c("span", { staticClass: "c-danger" }, [
+                                        _vm._v("已冻结")
+                                      ])
+                                    : _c("span", [
+                                        _vm._v(
+                                          "未知 (" +
+                                            _vm._s(scope.row.status) +
+                                            ")"
+                                        )
+                                      ])
+                              ]
+                            : undefined
                         }
                       }
                     ])
@@ -41367,7 +41381,7 @@ var render = function() {
                 "el-form-item",
                 [
                   _c("el-input", {
-                    attrs: { placeholder: "请输入关键字搜索" },
+                    attrs: { placeholder: "请输入商户名搜索" },
                     nativeOn: {
                       keyup: function($event) {
                         if (
@@ -41404,6 +41418,33 @@ var render = function() {
                     "el-button",
                     { attrs: { type: "primary" }, on: { click: _vm.search } },
                     [_vm._v("搜索")]
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { label: "", prop: "isMine" } },
+                [
+                  _c(
+                    "el-checkbox",
+                    {
+                      attrs: {
+                        "true-label": "1",
+                        "false-label": "0",
+                        border: ""
+                      },
+                      on: { change: _vm.search },
+                      model: {
+                        value: _vm.query.isMine,
+                        callback: function($$v) {
+                          _vm.$set(_vm.query, "isMine", $$v)
+                        },
+                        expression: "query.isMine"
+                      }
+                    },
+                    [_vm._v("我录入的商户")]
                   )
                 ],
                 1

@@ -14,6 +14,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Oper\Oper;
 use App\Result;
+use Illuminate\Database\Eloquent\Builder;
 
 class MerchantPoolController extends Controller
 {
@@ -23,8 +24,13 @@ class MerchantPoolController extends Controller
      */
     public function getList()
     {
+        $keyword = request('keyword');
         $data = Merchant::where('audit_oper_id', 0)
-            ->orderByDesc('id')->paginate();
+            ->when($keyword, function(Builder $query) use ($keyword){
+                $query->where('name', 'like', "%$keyword%");
+            })
+            ->orderByDesc('id')
+            ->paginate();
         $data->each(function ($item){
             $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
             $item->creatorOperName = Oper::where('id', $item->creator_oper_id)->value('name');
