@@ -29,8 +29,8 @@ class AlertMerchantsTableAddCreatorAndAuditOper extends Migration
 
         // 修改现有数据创建者运营中心ID与所属运营中心ID一直
         DB::table('merchants')->update(['creator_oper_id' => DB::raw('oper_id')]);
-        // 修改现有数据, 已审核过的商家审核者运营中心ID等于所属运营中心
-        Merchant::where('audit_status', '>', '0')->update(['audit_oper_id' => DB::raw('oper_id')]);
+        // 修改现有数据, 商户审核者运营中心ID等于所属运营中心
+        Merchant::where('audit_status', '>=', '0')->update(['audit_oper_id' => DB::raw('oper_id')]);
         // 修改现有数据, 未审核过的商家所属运营中心ID为0
         Merchant::where('audit_status', '=', '0')->update(['oper_id' => 0]);
         // 修改现有数据, 客服电话等同于负责人联系方式
