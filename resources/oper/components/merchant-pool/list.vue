@@ -88,7 +88,6 @@
                 })
             },
             search(){
-                console.log(this.query)
                 this.query.page = 1;
                 this.getList();
             },
