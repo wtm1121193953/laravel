@@ -28,9 +28,13 @@ class MerchantPoolController extends Controller
     public function getList()
     {
         $keyword = request('keyword');
+        $isMine = request('isMine');
         $data = Merchant::where('audit_oper_id', 0)
             ->when($keyword, function(Builder $query) use ($keyword){
                 $query->where('name', 'like', "%$keyword%");
+            })
+            ->when($isMine == 1, function(Builder $query) {
+                $query->where('creator_oper_id', request()->get('current_user')->oper_id);
             })
             ->orderBy('id', 'desc')
             ->paginate();
@@ -44,6 +48,7 @@ class MerchantPoolController extends Controller
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
+            'mine' => $isMine
         ]);
     }
 

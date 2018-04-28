@@ -3,10 +3,18 @@
         <el-col>
             <el-form :model="query" inline size="small" class="fl" @submit.native.prevent>
                 <el-form-item>
-                    <el-input v-model="query.keyword" placeholder="请输入关键字搜索" @keyup.native.enter="search"/>
+                    <el-input v-model="query.keyword" placeholder="请输入商户名搜索" @keyup.native.enter="search"/>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="search">搜索</el-button>
+                </el-form-item>
+                <el-form-item label="" prop="isMine">
+                    <el-checkbox
+                            v-model="query.isMine"
+                            true-label="1"
+                            false-label="0"
+                            border
+                            @change="search">我录入的商户</el-checkbox>
                 </el-form-item>
             </el-form>
             <el-button class="fr" type="primary" @click="add">录入商户信息</el-button>
@@ -62,6 +70,7 @@
                 query: {
                     page: 1,
                     keyword: '',
+                    isMine: '',
                 },
                 list: [],
                 total: 0,

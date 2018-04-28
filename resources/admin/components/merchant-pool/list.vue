@@ -1,5 +1,13 @@
 <template>
     <page title="商户池" v-loading="isLoading">
+        <el-form :model="query" inline size="small" class="fl" @submit.native.prevent>
+            <el-form-item>
+                <el-input v-model="query.keyword" placeholder="请输入商户名搜索" @keyup.native.enter="search"/>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="search">搜索</el-button>
+            </el-form-item>
+        </el-form>
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="id" label="ID"/>
@@ -46,6 +54,7 @@
                 isLoading: false,
                 query: {
                     page: 1,
+                    keyword: '',
                 },
                 list: [],
                 total: 0,
@@ -56,6 +65,10 @@
 
         },
         methods: {
+            search(){
+                this.query.page = 1;
+                this.getList();
+            },
             getList(){
                 api.get('/merchant/pool', this.query).then(data => {
                     this.list = data.list;
