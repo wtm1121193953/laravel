@@ -7,6 +7,7 @@
                 </el-col>
                 <!--商户录入信息左侧块-->
                 <el-col :span="11">
+                    <el-form-item prop="auditOperName" label="运营中心">{{data.auditOperName}}</el-form-item>
                     <el-form-item prop="name" label="商户名称">{{data.name}}</el-form-item>
                     <el-form-item prop="merchant_category" label="所属行业">
                         <span v-for="item in data.categoryPath" :key="item.id">

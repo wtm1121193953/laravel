@@ -28,6 +28,7 @@ class MerchantController extends Controller
         $data->each(function ($item){
             $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
             $item->business_time = json_decode($item->business_time, 1);
+            $item->auditOperName = Oper::where('id', $item->audit_oper_id)->value('name');
         });
 
         return Result::success([
@@ -44,6 +45,9 @@ class MerchantController extends Controller
         $merchant = Merchant::findOrFail(request('id'));
         $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
         $merchant->business_time = json_decode($merchant->business_time, 1);
+        $merchant->auditOperName = Oper::where('id', $merchant->audit_oper_id)->value('name');
+        $merchant->contract_pic_url = explode(',', $merchant->contract_pic_url);
+        $merchant->other_card_pic_urls = explode(',', $merchant->other_card_pic_urls);
         return Result::success($merchant);
     }
 
@@ -104,8 +108,7 @@ class MerchantController extends Controller
             $merchantAudit->status = $type;
             if($type == 1){
                 // 如果审核通过, 补充商户所属运营中心ID
-                $currentOperId = request()->get('current_user')->oper_id;
-                $merchant->oper_id = $currentOperId;
+                $merchant->oper_id = $merchant->audit_oper_id;
             }
         }
         $merchant->save();

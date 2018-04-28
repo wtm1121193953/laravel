@@ -5,7 +5,12 @@
         <img class="img" :src="url" width="100%" :width="width" :height="height" :alt="alt" @click="isShow=true">
         <el-dialog :title="title" :visible.sync="isShow">
             <div style="vertical-align: middle;text-align: center;">
-                <img style="max-width: 100%;max-height: 100%;" :src="url">
+                <el-carousel v-if="mutil" height="150px">
+                    <el-carousel-item v-for="item in url" :key="item">
+                        <img :src="item" alt="">
+                    </el-carousel-item>
+                </el-carousel>
+                <img v-else style="max-width: 100%;max-height: 100%;" :src="url">
             </div>
         </el-dialog>
     </div>
@@ -14,10 +19,15 @@
     export default {
         props: {
             title: {type: String, default: '图片预览'},
-            url: {type: String, required: true},
+            url: {type: String|Array, required: true},
             alt: {type: String, default: ''},
             width: {type: String, default: '100%'},
             height: {type: String, default: '100%'},
+        },
+        computed: {
+            mutil(){
+                return !(typeof url === 'string')
+            }
         },
         data: function(){
             return {

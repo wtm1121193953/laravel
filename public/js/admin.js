@@ -2208,6 +2208,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -2285,6 +2286,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_img_preview_dialog__ = __webpack_require__("./resources/assets/components/img/preview-dialog.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_img_preview_dialog___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__assets_components_img_preview_dialog__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
+//
 //
 //
 //
@@ -3814,14 +3816,24 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     props: {
         title: { type: String, default: '图片预览' },
-        url: { type: String, required: true },
+        url: { type: String | Array, required: true },
         alt: { type: String, default: '' },
         width: { type: String, default: '100%' },
         height: { type: String, default: '100%' }
+    },
+    computed: {
+        mutil: function mutil() {
+            return !(typeof url === 'string');
+        }
     },
     data: function data() {
         return {
@@ -15599,7 +15611,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -15749,7 +15761,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42544,6 +42556,12 @@ var render = function() {
                 [
                   _c(
                     "el-form-item",
+                    { attrs: { prop: "auditOperName", label: "运营中心" } },
+                    [_vm._v(_vm._s(_vm.data.auditOperName))]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "el-form-item",
                     { attrs: { prop: "name", label: "商户名称" } },
                     [_vm._v(_vm._s(_vm.data.name))]
                   ),
@@ -43253,11 +43271,22 @@ var render = function() {
               }
             },
             [
-              _c("img", {
-                staticStyle: { "max-width": "100%", "max-height": "100%" },
-                attrs: { src: _vm.url }
-              })
-            ]
+              _vm.mutil
+                ? _c(
+                    "el-carousel",
+                    { attrs: { height: "150px" } },
+                    _vm._l(_vm.url, function(item) {
+                      return _c("el-carousel-item", { key: item }, [
+                        _c("img", { attrs: { src: item, alt: "" } })
+                      ])
+                    })
+                  )
+                : _c("img", {
+                    staticStyle: { "max-width": "100%", "max-height": "100%" },
+                    attrs: { src: _vm.url }
+                  })
+            ],
+            1
           )
         ]
       )
@@ -44181,7 +44210,13 @@ var render = function() {
                     attrs: { prop: "created_at", label: "添加时间" }
                   }),
                   _vm._v(" "),
-                  _c("el-table-column", { attrs: { prop: "id", label: "ID" } }),
+                  _c("el-table-column", {
+                    attrs: { prop: "auditOperName", label: "运营中心" }
+                  }),
+                  _vm._v(" "),
+                  _c("el-table-column", {
+                    attrs: { prop: "id", label: "商户ID" }
+                  }),
                   _vm._v(" "),
                   _c("el-table-column", {
                     attrs: { prop: "name", label: "商户名称" }
