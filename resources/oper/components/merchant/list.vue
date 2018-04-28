@@ -11,7 +11,7 @@
                         <el-dropdown-item command="add">添加新商户</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>-->
-                <el-button class="fr" type="primary" @click="add">添加商户</el-button>
+                <el-button class="fr" type="primary" @click="add">录入并激活商户</el-button>
                 <el-table :data="list" stripe>
                     <el-table-column prop="created_at" label="添加时间"/>
                     <el-table-column prop="id" label="ID"/>
