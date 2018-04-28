@@ -31,7 +31,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="status" label="商户状态">
-                        <template slot-scope="scope">
+                        <template slot-scope="scope" v-if="scope.row.audit_status == 1 || scope.row.audit_status == 3">
                             <span v-if="scope.row.status === 1" class="c-green">正常</span>
                             <span v-else-if="scope.row.status === 2" class="c-danger">已冻结</span>
                             <span v-else>未知 ({{scope.row.status}})</span>

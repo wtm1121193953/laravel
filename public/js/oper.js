@@ -41104,21 +41104,26 @@ var render = function() {
                       {
                         key: "default",
                         fn: function(scope) {
-                          return [
-                            scope.row.status === 1
-                              ? _c("span", { staticClass: "c-green" }, [
-                                  _vm._v("正常")
-                                ])
-                              : scope.row.status === 2
-                                ? _c("span", { staticClass: "c-danger" }, [
-                                    _vm._v("已冻结")
-                                  ])
-                                : _c("span", [
-                                    _vm._v(
-                                      "未知 (" + _vm._s(scope.row.status) + ")"
-                                    )
-                                  ])
-                          ]
+                          return scope.row.audit_status == 1 ||
+                            scope.row.audit_status == 3
+                            ? [
+                                scope.row.status === 1
+                                  ? _c("span", { staticClass: "c-green" }, [
+                                      _vm._v("正常")
+                                    ])
+                                  : scope.row.status === 2
+                                    ? _c("span", { staticClass: "c-danger" }, [
+                                        _vm._v("已冻结")
+                                      ])
+                                    : _c("span", [
+                                        _vm._v(
+                                          "未知 (" +
+                                            _vm._s(scope.row.status) +
+                                            ")"
+                                        )
+                                      ])
+                              ]
+                            : undefined
                         }
                       }
                     ])
