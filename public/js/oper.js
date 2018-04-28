@@ -39311,7 +39311,7 @@ var render = function() {
             { attrs: { prop: "contract_pic_url", label: "合同" } },
             [
               _c("image-upload", {
-                attrs: { limit: 1 },
+                attrs: { limit: 10 },
                 model: {
                   value: _vm.form.contract_pic_url,
                   callback: function($$v) {
@@ -39329,6 +39329,7 @@ var render = function() {
             { attrs: { prop: "other_card_pic_urls", label: "其他证件" } },
             [
               _c("image-upload", {
+                attrs: { limit: 10 },
                 model: {
                   value: _vm.form.other_card_pic_urls,
                   callback: function($$v) {

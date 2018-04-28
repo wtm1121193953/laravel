@@ -142,11 +142,11 @@
             </el-form-item>
 
             <el-form-item prop="contract_pic_url" label="合同">
-                <image-upload v-model="form.contract_pic_url" :limit="1"/>
+                <image-upload v-model="form.contract_pic_url" :limit="10"/>
             </el-form-item>
 
             <el-form-item prop="other_card_pic_urls" label="其他证件">
-                <image-upload v-model="form.other_card_pic_urls"/>
+                <image-upload v-model="form.other_card_pic_urls" :limit="10"/>
             </el-form-item>
         </el-col>
 
