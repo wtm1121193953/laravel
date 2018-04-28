@@ -24,6 +24,10 @@ class Merchant extends BaseModel
      * 重新提交审核
      */
     const AUDIT_STATUS_RESUBMIT = 3;
+    /**
+     * 审核不通过并且打回到商户池, 审核记录中才有该状态, 商家信息中直接置位审核不通过
+     */
+    const AUDIT_STATUS_FAIL_TO_POOL = 4;
 
     /**
      * 结算类型

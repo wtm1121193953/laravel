@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Oper\Oper;
 use App\Result;
 
 class MerchantController extends Controller
@@ -51,7 +52,21 @@ class MerchantController extends Controller
      */
     public function getAuditList()
     {
-        // todo
+        $data = MerchantAudit::whereIn('status', [
+            Merchant::AUDIT_STATUS_SUCCESS,
+            Merchant::AUDIT_STATUS_FAIL,
+            Merchant::AUDIT_STATUS_FAIL_TO_POOL,
+        ])
+            ->orderByDesc('updated_at')
+            ->paginate();
+        $data->each(function($item) {
+            $item->merchantName = Merchant::where('id', $item->merchant_id)->value('name');
+            $item->operName = Oper::where('id', $item->oper_id)->value('name');
+        });
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
     }
 
     /**
@@ -61,7 +76,7 @@ class MerchantController extends Controller
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
-            'audit_status' => 'required|integer|in:1,2',
+            'type' => 'required|integer|in:1,2',
         ]);
         $type = request('type');
         $merchantId = request('id');
@@ -82,7 +97,7 @@ class MerchantController extends Controller
             $merchant->audit_status = Merchant::AUDIT_STATUS_FAIL;
             // 打回商户池操作, 需要将商户信息中的audit_oper_id置空
             $merchant->audit_oper_id = 0;
-            $merchantAudit->status = 4;
+            $merchantAudit->status = Merchant::AUDIT_STATUS_FAIL_TO_POOL;
         }else {
             $merchant->audit_status = $type;
             $merchantAudit->status = $type;

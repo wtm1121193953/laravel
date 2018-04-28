@@ -39,6 +39,8 @@ Route::prefix('admin')
     Route::get('merchant/detail', 'MerchantController@detail');
     Route::post('merchant/audit', 'MerchantController@audit');
 
+    Route::get('merchant/audit/list', 'MerchantController@getAuditList');
+
     Route::get('merchant/pool', 'MerchantPoolController@getList');
     Route::get('merchant/pool/detail', 'MerchantPoolController@detail');
 
