@@ -2215,6 +2215,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     name: 'merchant-form',
     props: {
         data: Object,
+        poolInfoData: Object,
+        activeInfoData: Object,
         poolInfoReadonly: { type: Boolean, default: false } // 商户录入信息是否只读
     },
     computed: {},
@@ -38441,7 +38443,7 @@ var render = function() {
                 expression: "isLoading"
               }
             ],
-            attrs: { data: _vm.merchant, "pool-info-readonly": "" },
+            attrs: { "pool-info-data": _vm.merchant, "pool-info-readonly": "" },
             on: { cancel: _vm.cancel, save: _vm.doEdit }
           })
         : _vm._e()
@@ -38919,12 +38921,15 @@ var render = function() {
     [
       _c("merchant-pool-info-form", {
         ref: "poolForm",
-        attrs: { data: _vm.data, readonly: _vm.poolInfoReadonly }
+        attrs: {
+          data: _vm.poolInfoData || _vm.data,
+          readonly: _vm.poolInfoReadonly
+        }
       }),
       _vm._v(" "),
       _c("merchant-active-info-form", {
         ref: "activeForm",
-        attrs: { data: _vm.data }
+        attrs: { data: _vm.activeInfoData || _vm.data }
       }),
       _vm._v(" "),
       _c(
