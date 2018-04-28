@@ -116,6 +116,8 @@ class MerchantController extends Controller
             }
             // 判断商户是否是当前小程序关联运营中心下的商户
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
+            // 兼容v1.0.0版客服电话字段
+            $item->contacter_phone = $item->service_phone;
         });
 
         return Result::success(['list' => $list, 'total' => $total]);
@@ -152,6 +154,8 @@ class MerchantController extends Controller
         $currentOperId = request()->get('current_oper')->id;
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        // 兼容v1.0.0版客服电话字段
+        $detail->contacter_phone = $detail->service_phone;
 
         return Result::success(['list' => $detail]);
     }
