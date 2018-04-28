@@ -37,7 +37,7 @@
                             <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
                                 <el-button type="text" @click="audit(scope, 1)">审核通过</el-button>
                                 <el-button type="text" @click="audit(scope, 2)">审核不通过</el-button>
-                                <el-button v-if="data.audit_status != 3" type="text" @click="audit(scope, 3)">打回到商户池</el-button>
+                                <el-button v-if="scope.row.audit_status != 3" type="text" @click="audit(scope, 3)">打回到商户池</el-button>
                             </template>
                         </template>
                     </el-table-column>

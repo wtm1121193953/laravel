@@ -44364,7 +44364,7 @@ var render = function() {
                                     [_vm._v("审核不通过")]
                                   ),
                                   _vm._v(" "),
-                                  _vm.data.audit_status != 3
+                                  scope.row.audit_status != 3
                                     ? _c(
                                         "el-button",
                                         {
