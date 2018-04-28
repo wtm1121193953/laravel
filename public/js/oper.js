@@ -1211,6 +1211,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 
@@ -1224,7 +1227,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             isLoading: false,
             query: {
                 page: 1,
-                keyword: ''
+                keyword: '',
+                isMine: ''
             },
             list: [],
             total: 0
@@ -1244,6 +1248,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
         search: function search() {
+            console.log(this.query);
             this.query.page = 1;
             this.getList();
         },
@@ -14708,7 +14713,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -41409,6 +41414,29 @@ var render = function() {
                     "el-button",
                     { attrs: { type: "primary" }, on: { click: _vm.search } },
                     [_vm._v("搜索")]
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                { attrs: { label: "", prop: "isMine" } },
+                [
+                  _c(
+                    "el-checkbox",
+                    {
+                      attrs: { "true-label": "1", "false-label": "0" },
+                      on: { change: _vm.search },
+                      model: {
+                        value: _vm.query.isMine,
+                        callback: function($$v) {
+                          _vm.$set(_vm.query, "isMine", $$v)
+                        },
+                        expression: "query.isMine"
+                      }
+                    },
+                    [_vm._v("我录入的")]
                   )
                 ],
                 1

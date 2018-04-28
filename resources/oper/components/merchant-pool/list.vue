@@ -8,6 +8,9 @@
                 <el-form-item>
                     <el-button type="primary" @click="search">搜索</el-button>
                 </el-form-item>
+                <el-form-item label="" prop="isMine">
+                    <el-checkbox v-model="query.isMine" true-label="1" false-label="0" @change="search">我录入的</el-checkbox>
+                </el-form-item>
             </el-form>
             <el-button class="fr" type="primary" @click="add">录入商户信息</el-button>
         </el-col>
@@ -62,6 +65,7 @@
                 query: {
                     page: 1,
                     keyword: '',
+                    isMine: '',
                 },
                 list: [],
                 total: 0,
@@ -79,6 +83,7 @@
                 })
             },
             search(){
+                console.log(this.query)
                 this.query.page = 1;
                 this.getList();
             },
