@@ -11,7 +11,7 @@
                     <span v-else-if="scope.row.status === 1" class="c-green">审核通过</span>
                     <span v-else-if="scope.row.status === 2" class="c-danger">审核不通过</span>
                     <span v-else-if="scope.row.status === 3" class="c-warning">待审核(重新提交)</span>
-                    <span v-else-if="scope.row.status === 4" class="c-warning">待审核(重新提交)</span>
+                    <span v-else-if="scope.row.status === 4" class="c-danger">已打回商户池</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>

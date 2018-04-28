@@ -40468,8 +40468,8 @@ var render = function() {
                                 _vm._v("待审核(重新提交)")
                               ])
                             : scope.row.status === 4
-                              ? _c("span", { staticClass: "c-warning" }, [
-                                  _vm._v("待审核(重新提交)")
+                              ? _c("span", { staticClass: "c-danger" }, [
+                                  _vm._v("已打回商户池")
                                 ])
                               : _c("span", [
                                   _vm._v(

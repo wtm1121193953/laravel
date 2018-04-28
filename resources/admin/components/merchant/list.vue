@@ -31,7 +31,7 @@
                             <span v-else>未知 ({{scope.row.audit_status}})</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="250px">
+                    <el-table-column label="操作" width="350px">
                         <template slot-scope="scope">
                             <el-button type="text" @click="detail(scope)">查看</el-button>
                             <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
