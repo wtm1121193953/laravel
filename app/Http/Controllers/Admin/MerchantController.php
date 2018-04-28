@@ -89,9 +89,6 @@ class MerchantController extends Controller
         $merchantId = request('id');
 
         $merchant = Merchant::findOrFail($merchantId);
-        if($merchant->oper_id > 0){
-            throw new ParamInvalidException('该商户已有所属运营中心, 不能打回商户池');
-        }
         $merchantAudit = MerchantAudit::where('merchant_id', $merchantId)
             ->where('oper_id', $merchant->audit_oper_id)
             ->first();
@@ -101,8 +98,8 @@ class MerchantController extends Controller
         }
 
         if($type == 3){
-            if($merchant->audit_status == 3){
-                throw new ParamInvalidException('当前商户时重新提交审核的商户, 不能打回到商户池');
+            if($merchant->oper_id > 0){
+                throw new ParamInvalidException('该商户已有所属运营中心, 不能打回商户池');
             }
             $merchant->audit_status = Merchant::AUDIT_STATUS_FAIL;
             // 打回商户池操作, 需要将商户信息中的audit_oper_id置空
