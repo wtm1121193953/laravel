@@ -3,7 +3,7 @@
         <el-col>
             <el-form :model="query" inline size="small" class="fl" @submit.native.prevent>
                 <el-form-item>
-                    <el-input v-model="query.keyword" placeholder="请输入关键字搜索" @keyup.native.enter="search"/>
+                    <el-input v-model="query.keyword" placeholder="请输入商户名搜索" @keyup.native.enter="search"/>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="search">搜索</el-button>
