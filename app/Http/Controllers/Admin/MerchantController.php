@@ -23,7 +23,7 @@ class MerchantController extends Controller
     public function getList()
     {
         $data = Merchant::where('audit_oper_id', '>', 0)
-            ->orderByDesc('id')->paginate();
+            ->orderByDesc('updated_at')->paginate();
 
         $data->each(function ($item){
             $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);

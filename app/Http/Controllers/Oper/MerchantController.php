@@ -30,7 +30,7 @@ class MerchantController extends Controller
             ->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
             })
-            ->orderBy('id', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->paginate();
 
         $data->each(function ($item){
