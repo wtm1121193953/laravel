@@ -3773,13 +3773,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "img-preview-dialog",
     props: {
         visible: { type: Boolean, default: false },
-        url: { type: String, required: true },
+        url: { type: String | Array, required: true },
         title: { type: String, default: '图片预览' }
+    },
+    computed: {
+        multi: function multi() {
+            return typeof this.url != 'string';
+        }
     },
     data: function data() {
         return {
@@ -3804,6 +3814,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 //
 //
 //
@@ -3831,8 +3843,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         height: { type: String, default: '100%' }
     },
     computed: {
-        mutil: function mutil() {
-            return !(typeof url === 'string');
+        multi: function multi() {
+            return typeof this.url != 'string';
         }
     },
     data: function data() {
@@ -3840,7 +3852,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             isShow: false
         };
     },
-    mounted: function mounted() {}
+    mounted: function mounted() {
+        if (this.debug) {
+            console.log(this.url, _typeof(this.url));
+        }
+    }
 });
 
 /***/ }),
@@ -15611,7 +15627,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -15806,7 +15822,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -42988,7 +43004,7 @@ var render = function() {
                       _vm._v(" "),
                       _c(
                         "el-col",
-                        { attrs: { span: 11, offset: "1" } },
+                        { attrs: { span: 11, offset: 1 } },
                         [
                           _c(
                             "el-form-item",
@@ -43271,10 +43287,9 @@ var render = function() {
               }
             },
             [
-              _vm.mutil
+              _vm.multi
                 ? _c(
                     "el-carousel",
-                    { attrs: { height: "150px" } },
                     _vm._l(_vm.url, function(item) {
                       return _c("el-carousel-item", { key: item }, [
                         _c("img", { attrs: { src: item, alt: "" } })
@@ -44894,11 +44909,21 @@ var render = function() {
         "div",
         { staticStyle: { "vertical-align": "middle", "text-align": "center" } },
         [
-          _c("img", {
-            staticStyle: { "max-width": "100%", "max-height": "100%" },
-            attrs: { src: _vm.url }
-          })
-        ]
+          _vm.multi
+            ? _c(
+                "el-carousel",
+                _vm._l(_vm.url, function(item) {
+                  return _c("el-carousel-item", { key: item }, [
+                    _c("img", { attrs: { src: item, alt: "" } })
+                  ])
+                })
+              )
+            : _c("img", {
+                staticStyle: { "max-width": "100%", "max-height": "100%" },
+                attrs: { src: _vm.url }
+              })
+        ],
+        1
       )
     ]
   )

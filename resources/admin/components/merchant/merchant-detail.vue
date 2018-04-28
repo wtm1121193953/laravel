@@ -110,7 +110,7 @@
                     </el-col>
 
                     <!-- 商户激活信息右侧块 -->
-                    <el-col :span="11" offset="1">
+                    <el-col :span="11" :offset="1">
                         <el-form-item prop="contacter" label="负责人姓名">
                             {{data.contacter}}
                         </el-form-item>

@@ -13,13 +13,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "img-preview-dialog",
     props: {
         visible: { type: Boolean, default: false },
-        url: { type: String, required: true },
+        url: { type: String | Array, required: true },
         title: { type: String, default: '图片预览' }
+    },
+    computed: {
+        multi: function multi() {
+            return typeof this.url != 'string';
+        }
     },
     data: function data() {
         return {
@@ -13321,7 +13331,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -38901,11 +38911,21 @@ var render = function() {
         "div",
         { staticStyle: { "vertical-align": "middle", "text-align": "center" } },
         [
-          _c("img", {
-            staticStyle: { "max-width": "100%", "max-height": "100%" },
-            attrs: { src: _vm.url }
-          })
-        ]
+          _vm.multi
+            ? _c(
+                "el-carousel",
+                _vm._l(_vm.url, function(item) {
+                  return _c("el-carousel-item", { key: item }, [
+                    _c("img", { attrs: { src: item, alt: "" } })
+                  ])
+                })
+              )
+            : _c("img", {
+                staticStyle: { "max-width": "100%", "max-height": "100%" },
+                attrs: { src: _vm.url }
+              })
+        ],
+        1
       )
     ]
   )

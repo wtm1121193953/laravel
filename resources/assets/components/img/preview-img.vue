@@ -5,7 +5,7 @@
         <img class="img" :src="url" width="100%" :width="width" :height="height" :alt="alt" @click="isShow=true">
         <el-dialog :title="title" :visible.sync="isShow">
             <div style="vertical-align: middle;text-align: center;">
-                <el-carousel v-if="mutil" height="150px">
+                <el-carousel v-if="multi">
                     <el-carousel-item v-for="item in url" :key="item">
                         <img :src="item" alt="">
                     </el-carousel-item>
@@ -25,8 +25,8 @@
             height: {type: String, default: '100%'},
         },
         computed: {
-            mutil(){
-                return !(typeof url === 'string')
+            multi(){
+                return (typeof this.url != 'string')
             }
         },
         data: function(){
@@ -35,7 +35,9 @@
             }
         },
         mounted: function(){
-
+            if(this.debug){
+                console.log(this.url, typeof this.url)
+            }
         }
     };
 </script>
