@@ -241,4 +241,22 @@ class MerchantController extends Controller
         return Result::success($account);
     }
 
+    public function getAuditList()
+    {
+        $data = MerchantAudit::where('oper_id', request()->get('current_user')->oper_id)
+            ->whereIn('status', [
+                Merchant::AUDIT_STATUS_SUCCESS,
+                Merchant::AUDIT_STATUS_FAIL,
+                Merchant::AUDIT_STATUS_FAIL_TO_POOL,
+            ])
+            ->orderByDesc('updated_at')
+            ->paginate();
+        $data->each(function($item) {
+            $item->merchantName = Merchant::where('id', $item->merchant_id)->value('name');
+        });
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
+    }
 }
