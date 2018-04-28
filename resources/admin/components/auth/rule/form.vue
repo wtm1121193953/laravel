@@ -78,10 +78,8 @@
                         url_all: '',
                         status: 1,
                         sort: 1,
-                        pid: this.pid || 0
+                        pid: this.pid > 0 ? parseInt(this.pid) : 0
                     }
-
-                    console.log(this.pid, this.form)
                 }
             },
             cancel(){
@@ -106,6 +104,9 @@
         },
         watch: {
             rule(val){
+                this.initForm();
+            },
+            pid(val){
                 this.initForm();
             }
         }

@@ -395,10 +395,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     url_all: '',
                     status: 1,
                     sort: 1,
-                    pid: this.pid || 0
+                    pid: this.pid > 0 ? parseInt(this.pid) : 0
                 };
-
-                console.log(this.pid, this.form);
             }
         },
         cancel: function cancel() {
@@ -425,6 +423,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     watch: {
         rule: function rule(val) {
+            this.initForm();
+        },
+        pid: function pid(val) {
             this.initForm();
         }
     }
@@ -1874,6 +1875,147 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/admin/components/merchant-pool/detail.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__merchant_merchant_detail__ = __webpack_require__("./resources/admin/components/merchant/merchant-detail.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__merchant_merchant_detail___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__merchant_merchant_detail__);
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    name: "detail",
+    data: function data() {
+        return {
+            id: null,
+            merchant: null
+        };
+    },
+
+    methods: {
+        merchantChange: function merchantChange() {
+            router.push({
+                path: '/merchant/pool'
+            });
+        },
+        getDetail: function getDetail() {
+            var _this = this;
+
+            api.get('merchant/pool/detail', { id: this.id }).then(function (data) {
+                _this.merchant = data;
+            });
+        }
+    },
+    created: function created() {
+        this.id = this.$route.query.id;
+        if (!this.id) {
+            this.$message.error('id不能为空');
+            return false;
+        }
+        this.getDetail();
+    },
+
+    components: {
+        MerchantDetail: __WEBPACK_IMPORTED_MODULE_0__merchant_merchant_detail___default.a
+    }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/admin/components/merchant-pool/list.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    name: "merchant-list",
+    data: function data() {
+        return {
+            showDetail: false,
+            isLoading: false,
+            query: {
+                page: 1
+            },
+            list: [],
+            total: 0,
+            currentMerchant: null
+        };
+    },
+
+    computed: {},
+    methods: {
+        getList: function getList() {
+            var _this = this;
+
+            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('/merchant/pool', this.query).then(function (data) {
+                _this.list = data.list;
+                _this.total = data.total;
+            });
+        },
+        detail: function detail(scope) {
+            router.push({
+                path: '/merchant/pool/detail',
+                query: { id: scope.row.id }
+            });
+            return false;
+        }
+    },
+    created: function created() {
+        this.getList();
+    },
+
+    components: {}
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/admin/components/merchant/detail.vue":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -2211,6 +2353,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -2219,7 +2365,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: 'merchant-detail',
     props: {
-        data: Object
+        data: Object,
+        type: String
     },
     computed: {},
     data: function data() {
@@ -15146,6 +15293,21 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30722b70\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/merchant-pool/detail.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-38719e5f\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/App.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15169,7 +15331,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -15366,6 +15528,21 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 // module
 exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-77f26afd\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/merchant-pool/list.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -39362,18 +39539,20 @@ var render = function() {
                       [_vm._v("编辑")]
                     ),
                     _vm._v(" "),
-                    _c(
-                      "el-button",
-                      {
-                        attrs: { type: "text" },
-                        on: {
-                          click: function($event) {
-                            _vm.addSubRule(scope)
-                          }
-                        }
-                      },
-                      [_vm._v("添加子权限")]
-                    ),
+                    scope.row.pid == 0
+                      ? _c(
+                          "el-button",
+                          {
+                            attrs: { type: "text" },
+                            on: {
+                              click: function($event) {
+                                _vm.addSubRule(scope)
+                              }
+                            }
+                          },
+                          [_vm._v("添加子权限")]
+                        )
+                      : _vm._e(),
                     _vm._v(" "),
                     scope.row.created_at
                       ? _c(
@@ -40403,6 +40582,39 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-2718a23f", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-30722b70\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/admin/components/merchant-pool/detail.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "page",
+    { attrs: { title: "商户详情", breadcrumbs: { 商户池: "/merchant/pool" } } },
+    [
+      _vm.merchant
+        ? _c("merchant-detail", {
+            attrs: { type: "poolOnly", data: _vm.merchant },
+            on: { change: _vm.merchantChange }
+          })
+        : _vm._e()
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-30722b70", module.exports)
   }
 }
 
@@ -42228,457 +42440,534 @@ var render = function() {
                 1
               ),
               _vm._v(" "),
-              _c("el-col", [
-                _c("div", { staticClass: "title" }, [_vm._v("商户激活信息")])
-              ]),
-              _vm._v(" "),
-              _c(
-                "el-col",
-                { attrs: { span: 11 } },
-                [
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "brand", label: "品牌" } },
-                    [_vm._v(_vm._s(_vm.data.brand))]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "invoice_title", label: "发票抬头" } },
-                    [_vm._v(_vm._s(_vm.data.invoice_title))]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "invoice_no", label: "发票编号" } },
-                    [_vm._v(_vm._s(_vm.data.invoice_no))]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "status", label: "商户状态" } },
+              _vm.type != "poolOnly"
+                ? _c(
+                    "el-col",
                     [
-                      _vm.data.status === 1
-                        ? _c("span", { staticClass: "c-green" }, [
-                            _vm._v("已启用")
-                          ])
-                        : _vm.data.status === 2
-                          ? _c("span", { staticClass: "c-danger" }, [
-                              _vm._v("已冻结")
-                            ])
-                          : _c("span", [
-                              _vm._v("未知 (" + _vm._s(_vm.data.status) + ")")
-                            ])
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "business_time", label: "营业时间" } },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.data.business_time[0]) +
-                          " 至 " +
-                          _vm._s(_vm.data.business_time[1]) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "logo", label: "商家logo" } },
-                    [
-                      _c("preview-img", {
-                        attrs: {
-                          url: _vm.data.logo,
-                          width: "50px",
-                          height: "50px"
-                        }
-                      })
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "desc_pic", label: "商家介绍图片" } },
-                    [
-                      _c("preview-img", {
-                        attrs: {
-                          url: _vm.data.desc_pic,
-                          width: "200px",
-                          height: "100px"
-                        }
-                      })
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "desc_pic", label: "商家介绍" } },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.data.desc) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c("el-form-item", { attrs: { label: "结算周期" } }, [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(
-                          {
-                            1: "周结",
-                            2: "半月结",
-                            3: "月结",
-                            4: "半年结",
-                            5: "年结"
-                          }[_vm.data.settlement_cycle_type]
-                        ) +
-                        "\n                "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("el-form-item", { attrs: { label: "分利比例" } }, [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(_vm.data.settlement_rate) +
-                        " %\n                "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("el-form-item", { attrs: { label: "银行账户类型" } }, [
-                    _vm.data.bank_card_type === 1
-                      ? _c("span", { staticClass: "c-gray" }, [_vm._v("公司")])
-                      : _vm._e(),
-                    _vm._v(" "),
-                    _vm.data.bank_card_type === 2
-                      ? _c("span", { staticClass: "c-green" }, [_vm._v("个人")])
-                      : _vm._e()
-                  ]),
-                  _vm._v(" "),
-                  _c("el-form-item", { attrs: { label: "开户名" } }, [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(_vm.data.bank_open_name) +
-                        "\n                "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("el-form-item", { attrs: { label: "银行账号" } }, [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(_vm.data.bank_card_no) +
-                        "\n                "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("el-form-item", { attrs: { label: "开户支行名称" } }, [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(_vm.data.sub_bank_name) +
-                        "\n                "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("el-form-item", { attrs: { label: "开户支行地址" } }, [
-                    _vm._v(
-                      "\n                    " +
-                        _vm._s(_vm.data.bank_open_address) +
-                        "\n                "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _vm.data.bank_card_type == 1
-                    ? _c(
-                        "el-form-item",
-                        {
-                          attrs: {
-                            required: "",
-                            prop: "licence_pic_url",
-                            label: "开户许可证"
-                          }
-                        },
-                        [
-                          _c("preview-img", {
-                            attrs: {
-                              url: _vm.data.licence_pic_url,
-                              width: "100px",
-                              height: "100px"
-                            }
-                          })
-                        ],
-                        1
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _vm.data.bank_card_type == 2
-                    ? _c(
-                        "el-form-item",
-                        {
-                          attrs: {
-                            required: "",
-                            label: "法人银行卡正面照",
-                            prop: "bank_card_pic_a"
-                          }
-                        },
-                        [
-                          _c("preview-img", {
-                            attrs: {
-                              url: _vm.data.bank_card_pic_a,
-                              width: "100px",
-                              height: "100px"
-                            }
-                          })
-                        ],
-                        1
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { label: "法人身份证正反面" } },
-                    [
-                      _c("preview-img", {
-                        attrs: {
-                          url: _vm.data.legal_id_card_pic_a,
-                          width: "200px",
-                          height: "100px"
-                        }
-                      }),
+                      _c("el-col", [
+                        _c("div", { staticClass: "title" }, [
+                          _vm._v("商户激活信息")
+                        ])
+                      ]),
                       _vm._v(" "),
-                      _c("preview-img", {
-                        attrs: {
-                          url: _vm.data.legal_id_card_pic_b,
-                          width: "200px",
-                          height: "100px"
-                        }
-                      })
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { label: "合同" } },
-                    [
                       _c(
-                        "el-button",
-                        {
-                          attrs: { type: "text" },
-                          on: {
-                            click: function($event) {
-                              _vm.previewImage(_vm.data.contract_pic_url)
-                            }
-                          }
-                        },
-                        [_vm._v("查看")]
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    {
-                      attrs: { prop: "other_card_pic_urls", label: "其他证件" }
-                    },
-                    [
-                      _vm._l(_vm.data.other_card_pic_urls, function(pic) {
-                        return [
-                          _c("preview-img", {
-                            attrs: { url: pic, width: "200px", height: "100px" }
-                          })
-                        ]
-                      })
-                    ],
-                    2
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "el-col",
-                { attrs: { span: 11, offset: "1" } },
-                [
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "contacter", label: "负责人姓名" } },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.data.contacter) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    {
-                      attrs: {
-                        prop: "contacter_phone",
-                        label: "负责人联系方式"
-                      }
-                    },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.data.contacter_phone) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "service_phone", label: "客服电话" } },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.data.service_phone) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    {
-                      attrs: {
-                        prop: "oper_salesman",
-                        label: "运营中心业务人员姓名"
-                      }
-                    },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.data.oper_salesman) +
-                          "\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "site_acreage", label: "商户面积" } },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.data.site_acreage) +
-                          " ㎡\n                "
-                      )
-                    ]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-form-item",
-                    {
-                      attrs: { prop: "employees_number", label: "商户员工人数" }
-                    },
-                    [
-                      _vm._v(
-                        "\n                    " +
-                          _vm._s(_vm.data.employees_number) +
-                          "\n                "
-                      )
-                    ]
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "el-col",
-                { attrs: { span: 11, offset: 1 } },
-                [
-                  _c(
-                    "el-form-item",
-                    { attrs: { prop: "audit_status", label: "审核状态" } },
-                    [
-                      _vm.data.audit_status === 0
-                        ? _c("span", { staticClass: "c-gray" }, [
-                            _vm._v("待审核")
-                          ])
-                        : _vm.data.audit_status === 1
-                          ? _c("span", { staticClass: "c-green" }, [
-                              _vm._v("审核通过")
-                            ])
-                          : _vm.data.audit_status === 2
-                            ? _c("span", { staticClass: "c-danger" }, [
-                                _vm._v("审核不通过")
-                              ])
-                            : _c("span", [
-                                _vm._v(
-                                  "未知 (" + _vm._s(_vm.data.audit_status) + ")"
-                                )
-                              ])
-                    ]
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "el-col",
-                [
-                  _vm.data.audit_status == 0 || _vm.data.audit_status == 3
-                    ? _c(
-                        "el-form-item",
+                        "el-col",
+                        { attrs: { span: 11 } },
                         [
                           _c(
-                            "el-button",
-                            {
-                              attrs: { type: "success" },
-                              on: {
-                                click: function($event) {
-                                  _vm.audit(1)
-                                }
-                              }
-                            },
-                            [_vm._v("审核通过")]
+                            "el-form-item",
+                            { attrs: { prop: "brand", label: "品牌" } },
+                            [_vm._v(_vm._s(_vm.data.brand))]
                           ),
                           _vm._v(" "),
                           _c(
-                            "el-button",
+                            "el-form-item",
                             {
-                              attrs: { type: "warning" },
-                              on: {
-                                click: function($event) {
-                                  _vm.audit(2)
-                                }
+                              attrs: {
+                                prop: "invoice_title",
+                                label: "发票抬头"
                               }
                             },
-                            [_vm._v("审核不通过")]
+                            [_vm._v(_vm._s(_vm.data.invoice_title))]
                           ),
                           _vm._v(" "),
-                          _vm.data.audit_status != 3
+                          _c(
+                            "el-form-item",
+                            {
+                              attrs: { prop: "invoice_no", label: "发票编号" }
+                            },
+                            [_vm._v(_vm._s(_vm.data.invoice_no))]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            { attrs: { prop: "status", label: "商户状态" } },
+                            [
+                              _vm.data.status === 1
+                                ? _c("span", { staticClass: "c-green" }, [
+                                    _vm._v("已启用")
+                                  ])
+                                : _vm.data.status === 2
+                                  ? _c("span", { staticClass: "c-danger" }, [
+                                      _vm._v("已冻结")
+                                    ])
+                                  : _c("span", [
+                                      _vm._v(
+                                        "未知 (" + _vm._s(_vm.data.status) + ")"
+                                      )
+                                    ])
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            {
+                              attrs: {
+                                prop: "business_time",
+                                label: "营业时间"
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.data.business_time[0]) +
+                                  " 至 " +
+                                  _vm._s(_vm.data.business_time[1]) +
+                                  "\n                    "
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            { attrs: { prop: "logo", label: "商家logo" } },
+                            [
+                              _c("preview-img", {
+                                attrs: {
+                                  url: _vm.data.logo,
+                                  width: "50px",
+                                  height: "50px"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            {
+                              attrs: { prop: "desc_pic", label: "商家介绍图片" }
+                            },
+                            [
+                              _c("preview-img", {
+                                attrs: {
+                                  url: _vm.data.desc_pic,
+                                  width: "200px",
+                                  height: "100px"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            { attrs: { prop: "desc_pic", label: "商家介绍" } },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.data.desc) +
+                                  "\n                    "
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c("el-form-item", { attrs: { label: "结算周期" } }, [
+                            _vm._v(
+                              "\n                        " +
+                                _vm._s(
+                                  {
+                                    1: "周结",
+                                    2: "半月结",
+                                    3: "月结",
+                                    4: "半年结",
+                                    5: "年结"
+                                  }[_vm.data.settlement_cycle_type]
+                                ) +
+                                "\n                    "
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("el-form-item", { attrs: { label: "分利比例" } }, [
+                            _vm._v(
+                              "\n                        " +
+                                _vm._s(_vm.data.settlement_rate) +
+                                " %\n                    "
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            { attrs: { label: "银行账户类型" } },
+                            [
+                              _vm.data.bank_card_type === 1
+                                ? _c("span", { staticClass: "c-gray" }, [
+                                    _vm._v("公司")
+                                  ])
+                                : _vm._e(),
+                              _vm._v(" "),
+                              _vm.data.bank_card_type === 2
+                                ? _c("span", { staticClass: "c-green" }, [
+                                    _vm._v("个人")
+                                  ])
+                                : _vm._e()
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c("el-form-item", { attrs: { label: "开户名" } }, [
+                            _vm._v(
+                              "\n                        " +
+                                _vm._s(_vm.data.bank_open_name) +
+                                "\n                    "
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("el-form-item", { attrs: { label: "银行账号" } }, [
+                            _vm._v(
+                              "\n                        " +
+                                _vm._s(_vm.data.bank_card_no) +
+                                "\n                    "
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            { attrs: { label: "开户支行名称" } },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.data.sub_bank_name) +
+                                  "\n                    "
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            { attrs: { label: "开户支行地址" } },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.data.bank_open_address) +
+                                  "\n                    "
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _vm.data.bank_card_type == 1
                             ? _c(
+                                "el-form-item",
+                                {
+                                  attrs: {
+                                    required: "",
+                                    prop: "licence_pic_url",
+                                    label: "开户许可证"
+                                  }
+                                },
+                                [
+                                  _c("preview-img", {
+                                    attrs: {
+                                      url: _vm.data.licence_pic_url,
+                                      width: "100px",
+                                      height: "100px"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _vm.data.bank_card_type == 2
+                            ? _c(
+                                "el-form-item",
+                                {
+                                  attrs: {
+                                    required: "",
+                                    label: "法人银行卡正面照",
+                                    prop: "bank_card_pic_a"
+                                  }
+                                },
+                                [
+                                  _c("preview-img", {
+                                    attrs: {
+                                      url: _vm.data.bank_card_pic_a,
+                                      width: "100px",
+                                      height: "100px"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            : _vm._e(),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            { attrs: { label: "法人身份证正反面" } },
+                            [
+                              _c("preview-img", {
+                                attrs: {
+                                  url: _vm.data.legal_id_card_pic_a,
+                                  width: "200px",
+                                  height: "100px"
+                                }
+                              }),
+                              _vm._v(" "),
+                              _c("preview-img", {
+                                attrs: {
+                                  url: _vm.data.legal_id_card_pic_b,
+                                  width: "200px",
+                                  height: "100px"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            { attrs: { label: "合同" } },
+                            [
+                              _c(
                                 "el-button",
                                 {
-                                  attrs: { type: "danger" },
+                                  attrs: { type: "text" },
                                   on: {
                                     click: function($event) {
-                                      _vm.audit(3)
+                                      _vm.previewImage(
+                                        _vm.data.contract_pic_url
+                                      )
                                     }
                                   }
                                 },
-                                [_vm._v("打回商户池")]
+                                [_vm._v("查看")]
                               )
-                            : _vm._e()
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            {
+                              attrs: {
+                                prop: "other_card_pic_urls",
+                                label: "其他证件"
+                              }
+                            },
+                            [
+                              _vm._l(_vm.data.other_card_pic_urls, function(
+                                pic
+                              ) {
+                                return [
+                                  _c("preview-img", {
+                                    attrs: {
+                                      url: pic,
+                                      width: "200px",
+                                      height: "100px"
+                                    }
+                                  })
+                                ]
+                              })
+                            ],
+                            2
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "el-col",
+                        { attrs: { span: 11, offset: "1" } },
+                        [
+                          _c(
+                            "el-form-item",
+                            {
+                              attrs: { prop: "contacter", label: "负责人姓名" }
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.data.contacter) +
+                                  "\n                    "
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            {
+                              attrs: {
+                                prop: "contacter_phone",
+                                label: "负责人联系方式"
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.data.contacter_phone) +
+                                  "\n                    "
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            {
+                              attrs: {
+                                prop: "service_phone",
+                                label: "客服电话"
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.data.service_phone) +
+                                  "\n                    "
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            {
+                              attrs: {
+                                prop: "oper_salesman",
+                                label: "运营中心业务人员姓名"
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.data.oper_salesman) +
+                                  "\n                    "
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            {
+                              attrs: { prop: "site_acreage", label: "商户面积" }
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.data.site_acreage) +
+                                  " ㎡\n                    "
+                              )
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "el-form-item",
+                            {
+                              attrs: {
+                                prop: "employees_number",
+                                label: "商户员工人数"
+                              }
+                            },
+                            [
+                              _vm._v(
+                                "\n                        " +
+                                  _vm._s(_vm.data.employees_number) +
+                                  "\n                    "
+                              )
+                            ]
+                          )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "el-col",
+                        { attrs: { span: 11, offset: 1 } },
+                        [
+                          _c(
+                            "el-form-item",
+                            {
+                              attrs: { prop: "audit_status", label: "审核状态" }
+                            },
+                            [
+                              _vm.data.audit_status === 0
+                                ? _c("span", { staticClass: "c-warning" }, [
+                                    _vm._v("待审核")
+                                  ])
+                                : _vm.data.audit_status === 1
+                                  ? _c("span", { staticClass: "c-green" }, [
+                                      _vm._v("审核通过")
+                                    ])
+                                  : _vm.data.audit_status === 2
+                                    ? _c("span", { staticClass: "c-danger" }, [
+                                        _vm._v("审核不通过")
+                                      ])
+                                    : _vm.data.audit_status === 3
+                                      ? _c(
+                                          "span",
+                                          { staticClass: "c-warning" },
+                                          [_vm._v("重新提交审核")]
+                                        )
+                                      : _c("span", [
+                                          _vm._v(
+                                            "未知 (" +
+                                              _vm._s(_vm.data.audit_status) +
+                                              ")"
+                                          )
+                                        ])
+                            ]
+                          )
                         ],
                         1
                       )
-                    : _vm._e()
-                ],
-                1
-              )
+                    ],
+                    1
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm.type != "poolOnly"
+                ? _c(
+                    "el-col",
+                    [
+                      _vm.data.audit_status == 0 || _vm.data.audit_status == 3
+                        ? _c(
+                            "el-form-item",
+                            [
+                              _c(
+                                "el-button",
+                                {
+                                  attrs: { type: "success" },
+                                  on: {
+                                    click: function($event) {
+                                      _vm.audit(1)
+                                    }
+                                  }
+                                },
+                                [_vm._v("审核通过")]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "el-button",
+                                {
+                                  attrs: { type: "warning" },
+                                  on: {
+                                    click: function($event) {
+                                      _vm.audit(2)
+                                    }
+                                  }
+                                },
+                                [_vm._v("审核不通过")]
+                              ),
+                              _vm._v(" "),
+                              _vm.data.audit_status != 3
+                                ? _c(
+                                    "el-button",
+                                    {
+                                      attrs: { type: "danger" },
+                                      on: {
+                                        click: function($event) {
+                                          _vm.audit(3)
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("打回商户池")]
+                                  )
+                                : _vm._e()
+                            ],
+                            1
+                          )
+                        : _vm._e()
+                    ],
+                    1
+                  )
+                : _vm._e()
             ],
             1
           ),
@@ -42910,6 +43199,134 @@ if (false) {
   module.hot.accept()
   if (module.hot.data) {
     require("vue-hot-reload-api")      .rerender("data-v-6e8a1390", module.exports)
+  }
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-77f26afd\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/admin/components/merchant-pool/list.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "page",
+    {
+      directives: [
+        {
+          name: "loading",
+          rawName: "v-loading",
+          value: _vm.isLoading,
+          expression: "isLoading"
+        }
+      ],
+      attrs: { title: "商户池" }
+    },
+    [
+      _c(
+        "el-table",
+        { attrs: { data: _vm.list, stripe: "" } },
+        [
+          _c("el-table-column", {
+            attrs: { prop: "created_at", label: "添加时间" }
+          }),
+          _vm._v(" "),
+          _c("el-table-column", { attrs: { prop: "id", label: "ID" } }),
+          _vm._v(" "),
+          _c("el-table-column", { attrs: { prop: "name", label: "商户名称" } }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { prop: "categoryPath", label: "行业" },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function(scope) {
+                  return _vm._l(scope.row.categoryPath, function(item) {
+                    return _c("span", { key: item.id }, [
+                      _vm._v(
+                        "\n                    " +
+                          _vm._s(item.name) +
+                          "\n                "
+                      )
+                    ])
+                  })
+                }
+              }
+            ])
+          }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { prop: "city", label: "城市" },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function(scope) {
+                  return [
+                    _c("span", [_vm._v(" " + _vm._s(scope.row.city) + " ")]),
+                    _vm._v(" "),
+                    _c("span", [_vm._v(" " + _vm._s(scope.row.area) + " ")])
+                  ]
+                }
+              }
+            ])
+          }),
+          _vm._v(" "),
+          _c("el-table-column", {
+            attrs: { label: "操作", width: "250px" },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function(scope) {
+                  return [
+                    _c(
+                      "el-button",
+                      {
+                        attrs: { type: "text" },
+                        on: {
+                          click: function($event) {
+                            _vm.detail(scope)
+                          }
+                        }
+                      },
+                      [_vm._v("查看")]
+                    )
+                  ]
+                }
+              }
+            ])
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c("el-pagination", {
+        staticClass: "fr m-t-20",
+        attrs: {
+          layout: "total, prev, pager, next",
+          "current-page": _vm.query.page,
+          "page-size": 15,
+          total: _vm.total
+        },
+        on: {
+          "update:currentPage": function($event) {
+            _vm.$set(_vm.query, "page", $event)
+          },
+          "current-change": _vm.getList
+        }
+      })
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-77f26afd", module.exports)
   }
 }
 
@@ -45060,6 +45477,33 @@ if(false) {
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30722b70\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/merchant-pool/detail.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30722b70\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/merchant-pool/detail.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("7a50b3f5", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30722b70\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./detail.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30722b70\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./detail.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-38719e5f\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/App.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -45455,6 +45899,33 @@ if(false) {
  if(!content.locals) {
    module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-6e8a1390\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./list.vue", function() {
      var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-6e8a1390\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./list.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-77f26afd\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/merchant-pool/list.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-77f26afd\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/merchant-pool/list.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("44723d8a", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-77f26afd\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./list.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-77f26afd\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./list.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -48035,6 +48506,110 @@ module.exports = Component.exports
 
 /***/ }),
 
+/***/ "./resources/admin/components/merchant-pool/detail.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-30722b70\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/merchant-pool/detail.vue")
+}
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/admin/components/merchant-pool/detail.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-30722b70\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/admin/components/merchant-pool/detail.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-30722b70"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\admin\\components\\merchant-pool\\detail.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-30722b70", Component.options)
+  } else {
+    hotAPI.reload("data-v-30722b70", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
+/***/ "./resources/admin/components/merchant-pool/list.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-77f26afd\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/admin/components/merchant-pool/list.vue")
+}
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/admin/components/merchant-pool/list.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-77f26afd\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/admin/components/merchant-pool/list.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-77f26afd"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\admin\\components\\merchant-pool\\list.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-77f26afd", Component.options)
+  } else {
+    hotAPI.reload("data-v-77f26afd", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
 /***/ "./resources/admin/components/merchant/detail.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -49031,6 +49606,13 @@ var routes = [{ path: '/login', component: __WEBPACK_IMPORTED_MODULE_0__componen
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_merchant_list_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__components_merchant_list_vue__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_merchant_detail__ = __webpack_require__("./resources/admin/components/merchant/detail.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_merchant_detail___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__components_merchant_detail__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_merchant_pool_list__ = __webpack_require__("./resources/admin/components/merchant-pool/list.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_merchant_pool_list___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__components_merchant_pool_list__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_merchant_pool_detail__ = __webpack_require__("./resources/admin/components/merchant-pool/detail.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_merchant_pool_detail___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4__components_merchant_pool_detail__);
+
+
+
 
 
 
@@ -49042,7 +49624,7 @@ var routes = [{ path: '/login', component: __WEBPACK_IMPORTED_MODULE_0__componen
 /* harmony default export */ __webpack_exports__["a"] = ([{
     path: '/',
     component: __WEBPACK_IMPORTED_MODULE_0__components_home___default.a,
-    children: [{ path: '/merchants', component: __WEBPACK_IMPORTED_MODULE_1__components_merchant_list_vue___default.a, name: 'MerchantList' }, { path: '/merchant/detail', component: __WEBPACK_IMPORTED_MODULE_2__components_merchant_detail___default.a, name: 'MerchantDetail' }]
+    children: [{ path: '/merchants', component: __WEBPACK_IMPORTED_MODULE_1__components_merchant_list_vue___default.a, name: 'MerchantList' }, { path: '/merchant/detail', component: __WEBPACK_IMPORTED_MODULE_2__components_merchant_detail___default.a, name: 'MerchantDetail' }, { path: '/merchant/pool', component: __WEBPACK_IMPORTED_MODULE_3__components_merchant_pool_list___default.a, name: 'MerchantPool' }, { path: '/merchant/pool/detail', component: __WEBPACK_IMPORTED_MODULE_4__components_merchant_pool_detail___default.a, name: 'MerchantPoolDetail' }]
 }]);
 
 /***/ }),

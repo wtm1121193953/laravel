@@ -40,9 +40,6 @@ class AdminService
         $tree = [];
         foreach ($rules as &$parent){
             if($parent['pid'] == 0){
-                if(!isset($rule2['sub'])){
-                    $rule2['sub'] = [];
-                }
                 $tree[] =& $parent;
             }
             foreach ($rules as &$sub){

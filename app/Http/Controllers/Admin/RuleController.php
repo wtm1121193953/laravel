@@ -65,6 +65,7 @@ class RuleController extends Controller
 
         $rule->name = request('name', '');
         $rule->pid = request('pid', 0);
+        $rule->level = $rule->pid == 0 ? 1 : 2;
         $rule->url = request('url', '');
         $rule->url_all = request('url_all', '');
         $rule->status = request('status', 1);
@@ -84,6 +85,7 @@ class RuleController extends Controller
 
         $rule->name = request('name', '');
         $rule->pid = request('pid', 0);
+        $rule->level = $rule->pid == 0 ? 1 : 2;
         $rule->url = request('url', '');
         $rule->url_all = request('url_all', '');
         $rule->status = request('status', 1);
