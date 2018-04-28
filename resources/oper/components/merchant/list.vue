@@ -2,15 +2,16 @@
     <page title="我的商户" v-loading="isLoading">
         <el-tabs v-model="activeTab" type="card" @tab-click="changeTab">
             <el-tab-pane label="我的商户" name="merchant">
-                <el-dropdown class="fr" @command="addBtnClick" trigger="click">
+                <!--<el-dropdown class="fr" @command="addBtnClick" trigger="click">
                     <el-button type="primary">
-                        添加商户<i class="el-icon-arrow-down el-icon--right"></i>
+                        添加商户<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item command="from-pool">从商户池添加</el-dropdown-item>
                         <el-dropdown-item command="add">添加新商户</el-dropdown-item>
                     </el-dropdown-menu>
-                </el-dropdown>
+                </el-dropdown>-->
+                <el-button class="fr" type="primary" @click="add">添加商户</el-button>
                 <el-table :data="list" stripe>
                     <el-table-column prop="created_at" label="添加时间"/>
                     <el-table-column prop="id" label="ID"/>

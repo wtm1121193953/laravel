@@ -1785,6 +1785,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -14459,7 +14460,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -39058,12 +39059,21 @@ var render = function() {
           _vm._v(" "),
           _c(
             "el-form-item",
-            { attrs: { prop: "settlement_cycle_type", label: "结算周期" } },
+            {
+              attrs: {
+                prop: "settlement_cycle_type",
+                required: "",
+                label: "结算周期"
+              }
+            },
             [
               _c(
                 "el-select",
                 {
-                  attrs: { disabled: !!_vm.data, placeholder: "请选择" },
+                  attrs: {
+                    disabled: !!_vm.data && _vm.data.audit_oper_id != 0,
+                    placeholder: "请选择"
+                  },
                   model: {
                     value: _vm.form.settlement_cycle_type,
                     callback: function($$v) {
@@ -39336,7 +39346,7 @@ var render = function() {
       _vm._v(" "),
       _c(
         "el-col",
-        { attrs: { span: 11, offset: "1" } },
+        { attrs: { span: 11, offset: 1 } },
         [
           _c(
             "el-form-item",
@@ -41019,38 +41029,13 @@ var render = function() {
             { attrs: { label: "我的商户", name: "merchant" } },
             [
               _c(
-                "el-dropdown",
+                "el-button",
                 {
                   staticClass: "fr",
-                  attrs: { trigger: "click" },
-                  on: { command: _vm.addBtnClick }
+                  attrs: { type: "primary" },
+                  on: { click: _vm.add }
                 },
-                [
-                  _c("el-button", { attrs: { type: "primary" } }, [
-                    _vm._v("\n                    添加商户"),
-                    _c("i", {
-                      staticClass: "el-icon-arrow-down el-icon--right"
-                    })
-                  ]),
-                  _vm._v(" "),
-                  _c(
-                    "el-dropdown-menu",
-                    { attrs: { slot: "dropdown" }, slot: "dropdown" },
-                    [
-                      _c(
-                        "el-dropdown-item",
-                        { attrs: { command: "from-pool" } },
-                        [_vm._v("从商户池添加")]
-                      ),
-                      _vm._v(" "),
-                      _c("el-dropdown-item", { attrs: { command: "add" } }, [
-                        _vm._v("添加新商户")
-                      ])
-                    ],
-                    1
-                  )
-                ],
-                1
+                [_vm._v("添加商户")]
               ),
               _vm._v(" "),
               _c(

@@ -93,8 +93,8 @@
             <el-form-item prop="desc" label="商家介绍">
                 <el-input type="textarea" :rows="5" v-model="form.desc"/>
             </el-form-item>
-            <el-form-item prop="settlement_cycle_type" label="结算周期">
-                <el-select :disabled="!!data" v-model="form.settlement_cycle_type" placeholder="请选择">
+            <el-form-item prop="settlement_cycle_type" required label="结算周期">
+                <el-select :disabled="!!data && data.audit_oper_id != 0" v-model="form.settlement_cycle_type" placeholder="请选择">
                     <el-option label="周结" :value="1"/>
                     <el-option label="半月结" :value="2"/>
                     <el-option label="月结" :value="3"/>
@@ -151,7 +151,7 @@
         </el-col>
 
         <!-- 商户激活信息右侧块 -->
-        <el-col :span="11" offset="1">
+        <el-col :span="11" :offset="1">
             <el-form-item prop="contacter" label="负责人姓名">
                 <el-input v-model="form.contacter"/>
             </el-form-item>
