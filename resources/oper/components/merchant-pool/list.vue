@@ -9,7 +9,12 @@
                     <el-button type="primary" @click="search">搜索</el-button>
                 </el-form-item>
                 <el-form-item label="" prop="isMine">
-                    <el-checkbox v-model="query.isMine" true-label="1" false-label="0" @change="search">我录入的</el-checkbox>
+                    <el-checkbox
+                            v-model="query.isMine"
+                            true-label="1"
+                            false-label="0"
+                            border
+                            @change="search">我录入的商户</el-checkbox>
                 </el-form-item>
             </el-form>
             <el-button class="fr" type="primary" @click="add">录入商户信息</el-button>
