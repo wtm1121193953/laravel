@@ -113,8 +113,8 @@ class MerchantController extends Controller
             throw new BaseResponseException('商户营业执照代码已存在');
         }
 
-        if($merchant->audit_status == Merchant::AUDIT_STATUS_SUCCESS){
-            // 如果当前商户已审核通过, 则此次提交为重新提交审核
+        if($merchant->oper_id > 0){
+            // 如果当前商户已有所属运营中心, 则此次提交为重新提交审核
             MerchantAudit::resubmit($merchant->id, $currentOperId);
             $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
         }else {

@@ -89,6 +89,9 @@ class MerchantController extends Controller
         $merchantId = request('id');
 
         $merchant = Merchant::findOrFail($merchantId);
+        if($merchant->oper_id > 0){
+            throw new ParamInvalidException('该商户已有所属运营中心, 不能打回商户池');
+        }
         $merchantAudit = MerchantAudit::where('merchant_id', $merchantId)
             ->where('oper_id', $merchant->audit_oper_id)
             ->first();
