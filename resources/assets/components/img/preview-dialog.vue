@@ -1,7 +1,12 @@
 <template>
     <el-dialog :title="title" :visible.sync="isShow">
         <div style="vertical-align: middle;text-align: center;">
-            <img style="max-width: 100%;max-height: 100%;" :src="url">
+            <el-carousel v-if="multi">
+                <el-carousel-item v-for="item in url" :key="item">
+                    <img :src="item" alt="">
+                </el-carousel-item>
+            </el-carousel>
+            <img v-else style="max-width: 100%;max-height: 100%;" :src="url">
         </div>
     </el-dialog>
 </template>
@@ -11,8 +16,13 @@
         name: "img-preview-dialog",
         props: {
             visible: {type: Boolean, default: false},
-            url: {type: String, required: true},
+            url: {type: String|Array, required: true},
             title: {type: String, default: '图片预览'}
+        },
+        computed: {
+            multi(){
+                return (typeof this.url != 'string')
+            },
         },
         data() {
             return {

@@ -30,7 +30,7 @@ class CreateMerchantsTable extends Migration
             $table->string('business_time')->default('')->comment('营业时间, json格式字符串 {startTime, endTime}');
             $table->string('logo')->default('')->comment('商家logo');
             $table->string('desc_pic')->default('')->comment('商家介绍图片 [保留, 使用desc_pic_list]');
-            $table->string('desc_pic_list', 5000)->default('')->comment('商家介绍图片列表  多图, 使用逗号分隔 ');
+            $table->string('desc_pic_list', 2000)->default('')->comment('商家介绍图片列表  多图, 使用逗号分隔 ');
             $table->string('desc')->default('')->comment('商家介绍');
             $table->string('invoice_title')->default('')->comment('发票抬头');
             $table->string('invoice_no')->default('')->comment('发票税号');
@@ -46,11 +46,11 @@ class CreateMerchantsTable extends Migration
             $table->decimal('settlement_rate', 4, 2)->default(0)->comment('分利比例(结算时的费率)');
 
             $table->string('business_licence_pic_url')->default('')->comment('营业执照');
-            $table->string('organization_code')->default('')->comment('组织机构代码');
+            $table->string('organization_code')->default('')->comment('组织机构代码, 即营业执照代码');
             $table->string('tax_cert_pic_url')->default('')->comment('税务登记证');
             $table->string('legal_id_card_pic_a')->default('')->comment('法人身份证正面');
             $table->string('legal_id_card_pic_b')->default('')->comment('法人身份证反面');
-            $table->string('contract_pic_url')->default('')->comment('合同照片');
+            $table->string('contract_pic_url', 2000)->default('')->comment('合同照片, 多张图片使用逗号分隔');
             $table->string('licence_pic_url')->default('')->comment('开户许可证');
             $table->string('hygienic_licence_pic_url')->default('')->comment('卫生许可证');
             $table->string('agreement_pic_url')->default('')->comment('协议文件');

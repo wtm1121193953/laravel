@@ -4,7 +4,7 @@
         <el-amap ref="map" :amap-manager="amapManager" :vid="'map-vid-' + mapId" :center="center" :events="events">
             <el-amap-marker v-if="markerPosition" :vid="'amap-marker-vid-' + mapId" :position="markerPosition"></el-amap-marker>
         </el-amap>
-        <el-button type="primary" @click="sureChoose" class="sure-button">确定</el-button>
+        <el-button type="primary" size="small" @click="sureChoose" class="sure-button">确定</el-button>
     </div>
 </template>
 
@@ -79,6 +79,7 @@
         position: absolute;
         top: 10px;
         left: 20px;
+        height: 35px;
     }
     .sure-button {
         position: absolute;

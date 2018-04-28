@@ -32,6 +32,6 @@ class CreateMiniprogramScenesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('miniprogram_app_codes');
+        Schema::dropIfExists('miniprogram_scenes');
     }
 }
