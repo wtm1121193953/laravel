@@ -146,6 +146,7 @@ class MerchantController extends Controller
         $merchant->fillMerchantActiveInfoFromRequest();
         // 设置当前商户提交审核的运营中心
         $merchant->audit_oper_id = $currentOperId;
+        $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
 
         $merchant->save();
         // 添加审核记录

@@ -32,13 +32,28 @@
                             <span v-else>未知 ({{scope.row.audit_status}})</span>
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" width="350px">
+                    <el-table-column label="操作" width="150px">
                         <template slot-scope="scope">
                             <el-button type="text" @click="detail(scope)">查看</el-button>
                             <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
-                                <el-button type="text" @click="audit(scope, 1)">审核通过</el-button>
-                                <el-button type="text" @click="audit(scope, 2)">审核不通过</el-button>
-                                <el-button v-if="scope.row.oper_id == 0" type="text" @click="audit(scope, 3)">打回到商户池</el-button>
+
+                                <el-dropdown trigger="click"
+                                             style="margin-left: 10px;"
+                                             @command="(command) => {audit(scope, command)}">
+                                    <el-button type="text">
+                                      审核商户 <i class="el-icon-arrow-down"></i>
+                                    </el-button>
+                                    <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item command="1">审核通过</el-dropdown-item>
+                                        <el-dropdown-item command="2">审核不通过</el-dropdown-item>
+                                        <el-dropdown-item
+                                                v-if="scope.row.oper_id == 0"
+                                                command="3">打回到商户池</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </el-dropdown>
+                                <!--<el-button type="text" @click="audit(scope, 1)">审核通过</el-button>-->
+                                <!--<el-button type="text" @click="audit(scope, 2)">审核不通过</el-button>-->
+                                <!--<el-button v-if="scope.row.oper_id == 0" type="text" @click="audit(scope, 3)">打回到商户池</el-button>-->
                             </template>
                         </template>
                     </el-table-column>
@@ -108,10 +123,13 @@
             },
             audit(scope, type){
                 //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
-                api.post('/merchant/audit', {id: scope.row.id, type: type}).then(data => {
-                    this.$alert(['', '审核通过', '审核不通过', '审核不通过并打回到商户池'][type] + ' 操作成功');
-                    this.getList();
-                })
+                let message = ['', '审核通过', '审核不通过', '打回到商户池'][type];
+                this.$confirm(`确定 ${message} 吗?`, scope.row.name).then(() => {
+                    api.post('/merchant/audit', {id: scope.row.id, type: type}).then(data => {
+                        this.$alert(message + ' 操作成功');
+                        this.getList();
+                    })
+                });
             }
         },
         created(){

@@ -1972,6 +1972,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1982,7 +1990,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             showDetail: false,
             isLoading: false,
             query: {
-                page: 1
+                page: 1,
+                keyword: ''
             },
             list: [],
             total: 0,
@@ -1992,6 +2001,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     computed: {},
     methods: {
+        search: function search() {
+            this.query.page = 1;
+            this.getList();
+        },
         getList: function getList() {
             var _this = this;
 
@@ -2211,6 +2224,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2260,9 +2288,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this2 = this;
 
             //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
-            __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/audit', { id: scope.row.id, type: type }).then(function (data) {
-                _this2.$alert(['', '审核通过', '审核不通过', '审核不通过并打回到商户池'][type] + ' 操作成功');
-                _this2.getList();
+            var message = ['', '审核通过', '审核不通过', '打回到商户池'][type];
+            this.$confirm('\u786E\u5B9A ' + message + ' \u5417?', scope.row.name).then(function () {
+                __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].post('/merchant/audit', { id: scope.row.id, type: type }).then(function (data) {
+                    _this2.$alert(message + ' 操作成功');
+                    _this2.getList();
+                });
             });
         }
     },
@@ -15674,7 +15705,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -15779,7 +15810,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -43478,6 +43509,61 @@ var render = function() {
     },
     [
       _c(
+        "el-form",
+        {
+          staticClass: "fl",
+          attrs: { model: _vm.query, inline: "", size: "small" },
+          nativeOn: {
+            submit: function($event) {
+              $event.preventDefault()
+            }
+          }
+        },
+        [
+          _c(
+            "el-form-item",
+            [
+              _c("el-input", {
+                attrs: { placeholder: "请输入商户名搜索" },
+                nativeOn: {
+                  keyup: function($event) {
+                    if (
+                      !("button" in $event) &&
+                      _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                    ) {
+                      return null
+                    }
+                    return _vm.search($event)
+                  }
+                },
+                model: {
+                  value: _vm.query.keyword,
+                  callback: function($$v) {
+                    _vm.$set(_vm.query, "keyword", $$v)
+                  },
+                  expression: "query.keyword"
+                }
+              })
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "el-form-item",
+            [
+              _c(
+                "el-button",
+                { attrs: { type: "primary" }, on: { click: _vm.search } },
+                [_vm._v("搜索")]
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
         "el-table",
         { attrs: { data: _vm.list, stripe: "" } },
         [
@@ -44326,7 +44412,7 @@ var render = function() {
                   }),
                   _vm._v(" "),
                   _c("el-table-column", {
-                    attrs: { label: "操作", width: "350px" },
+                    attrs: { label: "操作", width: "150px" },
                     scopedSlots: _vm._u([
                       {
                         key: "default",
@@ -44349,45 +44435,62 @@ var render = function() {
                             scope.row.audit_status === 3
                               ? [
                                   _c(
-                                    "el-button",
+                                    "el-dropdown",
                                     {
-                                      attrs: { type: "text" },
+                                      staticStyle: { "margin-left": "10px" },
+                                      attrs: { trigger: "click" },
                                       on: {
-                                        click: function($event) {
-                                          _vm.audit(scope, 1)
+                                        command: function(command) {
+                                          _vm.audit(scope, command)
                                         }
                                       }
                                     },
-                                    [_vm._v("审核通过")]
-                                  ),
-                                  _vm._v(" "),
-                                  _c(
-                                    "el-button",
-                                    {
-                                      attrs: { type: "text" },
-                                      on: {
-                                        click: function($event) {
-                                          _vm.audit(scope, 2)
-                                        }
-                                      }
-                                    },
-                                    [_vm._v("审核不通过")]
-                                  ),
-                                  _vm._v(" "),
-                                  scope.row.oper_id == 0
-                                    ? _c(
+                                    [
+                                      _c(
                                         "el-button",
+                                        { attrs: { type: "text" } },
+                                        [
+                                          _vm._v(
+                                            "\n                                  审核商户 "
+                                          ),
+                                          _c("i", {
+                                            staticClass: "el-icon-arrow-down"
+                                          })
+                                        ]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "el-dropdown-menu",
                                         {
-                                          attrs: { type: "text" },
-                                          on: {
-                                            click: function($event) {
-                                              _vm.audit(scope, 3)
-                                            }
-                                          }
+                                          attrs: { slot: "dropdown" },
+                                          slot: "dropdown"
                                         },
-                                        [_vm._v("打回到商户池")]
+                                        [
+                                          _c(
+                                            "el-dropdown-item",
+                                            { attrs: { command: "1" } },
+                                            [_vm._v("审核通过")]
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "el-dropdown-item",
+                                            { attrs: { command: "2" } },
+                                            [_vm._v("审核不通过")]
+                                          ),
+                                          _vm._v(" "),
+                                          scope.row.oper_id == 0
+                                            ? _c(
+                                                "el-dropdown-item",
+                                                { attrs: { command: "3" } },
+                                                [_vm._v("打回到商户池")]
+                                              )
+                                            : _vm._e()
+                                        ],
+                                        1
                                       )
-                                    : _vm._e()
+                                    ],
+                                    1
+                                  )
                                 ]
                               : _vm._e()
                           ]
