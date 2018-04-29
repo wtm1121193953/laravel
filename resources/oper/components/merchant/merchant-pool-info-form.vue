@@ -49,6 +49,7 @@
         <!-- 商户录入信息右侧块 -->
         <el-col v-if="!readonly" :span="11" :offset="1">
             <el-form-item prop="lng_and_lat" label="商户位置">
+                <qmap width="600px" height="600px"/>
                 {{form.lng_and_lat}}
                 <el-button @click="isShowMap = true">选择位置</el-button>
                 <el-dialog title="更换地理位置" :visible.sync="isShowMap" :modal="false">
@@ -92,6 +93,8 @@
     import api from '../../../assets/js/api';
     import AmapChoosePoint from '../../../assets/components/amap/amap-choose-point';
     import imgPreviewDialog from '../../../assets/components/img/preview-dialog'
+
+    import qmap from '../../../assets/components/qmap/qmap'
 
     let defaultForm = {
         /////// 商户录入信息
@@ -225,6 +228,7 @@
         components: {
             AmapChoosePoint,
             imgPreviewDialog,
+            qmap,
         }
     }
 </script>

@@ -43,7 +43,7 @@ var amapManager = new __WEBPACK_IMPORTED_MODULE_0_vue_amap__["AMapManager"]();
                 'moveend': function moveend() {},
                 'zoomchange': function zoomchange() {},
                 'click': function click(e) {
-                    console.log(e);
+                    // console.log(e);
                     var position = e.lnglat;
                     _this.markerPosition = [position.lng, position.lat];
                 }
@@ -54,7 +54,7 @@ var amapManager = new __WEBPACK_IMPORTED_MODULE_0_vue_amap__["AMapManager"]();
 
     methods: {
         onSearchResult: function onSearchResult(pois) {
-            console.log(pois);
+            // console.log(pois);
             if (pois.length > 0) {
                 this.markerPosition = [pois[0].lng, pois[0].lat];
                 this.center = deepCopy(this.markerPosition);
@@ -201,6 +201,58 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
                 router.push(_this.currentMenu);
             }
         });
+    }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/components/qmap/qmap.vue":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    name: "qmap",
+    props: {
+        width: String,
+        height: String
+    },
+    data: function data() {
+        return {
+            mapId: 'qmap_' + parseInt(Math.random() * 1000000)
+        };
+    },
+    created: function created() {},
+    mounted: function mounted() {
+        console.log(this.mapId, document.getElementById(this.mapId), document.getElementById('amap'));
+
+        window.initQmap = window.initQmap || function () {
+            var map = new qq.maps.Map(document.getElementById(this.mapId), {
+                center: new qq.maps.LatLng(39.916527, 116.397128), // 地图的中心地理坐标。
+                zoom: 10 // 地图的中心地理坐标。
+            });
+        };
+        if (typeof qq == 'undefined') {
+            var loadScript = function loadScript() {
+                var script = document.createElement("script");
+                script.type = "text/javascript";
+                script.src = "http://map.qq.com/api/js?v=2.exp&callback=initQmap";
+                document.body.appendChild(script);
+            };
+
+            loadScript();
+        }
     }
 });
 
@@ -1035,8 +1087,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_pool_form__ = __webpack_require__("./resources/oper/components/merchant-pool/merchant-pool-form.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_pool_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__merchant_pool_form__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_merchant_pool_info_form__ = __webpack_require__("./resources/oper/components/merchant/merchant-pool-info-form.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_merchant_pool_info_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__merchant_merchant_pool_info_form__);
 //
 //
 //
@@ -1049,7 +1101,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "merchant-pool-add",
     components: {
-        MerchantPoolForm: __WEBPACK_IMPORTED_MODULE_1__merchant_pool_form___default.a
+        MerchantPoolForm: __WEBPACK_IMPORTED_MODULE_1__merchant_merchant_pool_info_form___default.a
     },
     data: function data() {
         return {
@@ -1083,8 +1135,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_pool_form__ = __webpack_require__("./resources/oper/components/merchant-pool/merchant-pool-form.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_pool_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__merchant_pool_form__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_merchant_pool_info_form__ = __webpack_require__("./resources/oper/components/merchant/merchant-pool-info-form.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__merchant_merchant_pool_info_form___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__merchant_merchant_pool_info_form__);
 //
 //
 //
@@ -1102,7 +1154,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony default export */ __webpack_exports__["default"] = ({
     name: "merchant-pool-edit",
     components: {
-        MerchantPoolForm: __WEBPACK_IMPORTED_MODULE_1__merchant_pool_form___default.a
+        MerchantPoolForm: __WEBPACK_IMPORTED_MODULE_1__merchant_merchant_pool_info_form___default.a
     },
     data: function data() {
         return {
@@ -2414,6 +2466,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_components_img_preview_dialog__ = __webpack_require__("./resources/assets/components/img/preview-dialog.vue");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_components_img_preview_dialog___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__assets_components_img_preview_dialog__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__assets_components_qmap_qmap__ = __webpack_require__("./resources/assets/components/qmap/qmap.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__assets_components_qmap_qmap___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__assets_components_qmap_qmap__);
 //
 //
 //
@@ -2504,6 +2558,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+
+
 
 
 
@@ -2628,7 +2685,8 @@ var defaultForm = {
     },
     components: {
         AmapChoosePoint: __WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point___default.a,
-        imgPreviewDialog: __WEBPACK_IMPORTED_MODULE_2__assets_components_img_preview_dialog___default.a
+        imgPreviewDialog: __WEBPACK_IMPORTED_MODULE_2__assets_components_img_preview_dialog___default.a,
+        qmap: __WEBPACK_IMPORTED_MODULE_3__assets_components_qmap_qmap___default.a
     }
 });
 
@@ -14433,6 +14491,21 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 // module
 exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-353538da\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/qmap/qmap.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.container[data-v-353538da] {\n    width: 100%;\n    height: 100%;\n}\n", ""]);
 
 // exports
 
@@ -39272,6 +39345,35 @@ if (false) {
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-353538da\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/components/qmap/qmap.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _c("div", {
+      staticClass: "container",
+      style: { width: _vm.width, height: _vm.height },
+      attrs: { id: _vm.mapId }
+    }),
+    _vm._v(" "),
+    _c("div", { attrs: { id: "amap" } })
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-353538da", module.exports)
+  }
+}
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-38caf058\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/oper/App.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -42075,6 +42177,7 @@ var render = function() {
                 "el-form-item",
                 { attrs: { prop: "lng_and_lat", label: "商户位置" } },
                 [
+                  _c("qmap", { attrs: { width: "600px", height: "600px" } }),
                   _vm._v(
                     "\n            " +
                       _vm._s(_vm.form.lng_and_lat) +
@@ -42560,6 +42663,33 @@ if(false) {
  if(!content.locals) {
    module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-117c376a\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add.vue", function() {
      var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-117c376a\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-353538da\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/qmap/qmap.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-353538da\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/qmap/qmap.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("dff62ed8", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-353538da\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./qmap.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-353538da\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./qmap.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -44591,6 +44721,58 @@ module.exports = Component.exports
 
 /***/ }),
 
+/***/ "./resources/assets/components/qmap/qmap.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-353538da\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/qmap/qmap.vue")
+}
+var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
+/* script */
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/components/qmap/qmap.vue")
+/* template */
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-353538da\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/components/qmap/qmap.vue")
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-353538da"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources\\assets\\components\\qmap\\qmap.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-353538da", Component.options)
+  } else {
+    hotAPI.reload("data-v-353538da", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+
 /***/ "./resources/assets/components/upload/image-upload.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -45955,7 +46137,7 @@ __WEBPACK_IMPORTED_MODULE_3_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_7_elem
 
 __WEBPACK_IMPORTED_MODULE_3_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_8_vue_amap___default.a);
 window.VueAMap = __WEBPACK_IMPORTED_MODULE_8_vue_amap___default.a;
-console.log(__WEBPACK_IMPORTED_MODULE_8_vue_amap___default.a);
+// console.log(VueAMap);
 __WEBPACK_IMPORTED_MODULE_8_vue_amap___default.a.initAMapApiLoader({
     key: '315bde9730e45b8b095517d052361f11',
     plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],

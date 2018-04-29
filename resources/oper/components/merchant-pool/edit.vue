@@ -11,7 +11,7 @@
 
 <script>
     import api from '../../../assets/js/api'
-    import MerchantPoolForm from './merchant-pool-form'
+    import MerchantPoolForm from '../merchant/merchant-pool-info-form'
     export default {
         name: "merchant-pool-edit",
         components: {

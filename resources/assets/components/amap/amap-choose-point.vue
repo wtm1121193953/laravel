@@ -34,7 +34,7 @@
                     'zoomchange': () => {
                     },
                     'click': (e) => {
-                        console.log(e);
+                        // console.log(e);
                         let position = e.lnglat;
                         this.markerPosition = [position.lng, position.lat]
                     }
@@ -44,7 +44,7 @@
         },
         methods: {
             onSearchResult(pois){
-                console.log(pois);
+                // console.log(pois);
                 if (pois.length > 0) {
                     this.markerPosition = [pois[0].lng, pois[0].lat];
                     this.center = deepCopy(this.markerPosition);

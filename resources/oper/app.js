@@ -42,7 +42,7 @@ Vue.use(ElementUI);
 import VueAMap from 'vue-amap'
 Vue.use(VueAMap);
 window.VueAMap = VueAMap;
-console.log(VueAMap);
+// console.log(VueAMap);
 VueAMap.initAMapApiLoader({
     key: '315bde9730e45b8b095517d052361f11',
     plugin: ['AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],
