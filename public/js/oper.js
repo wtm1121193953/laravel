@@ -35,7 +35,9 @@ var amapManager = new __WEBPACK_IMPORTED_MODULE_0_vue_amap__["AMapManager"]();
         var _this = this;
 
         return {
-            searchOption: {},
+            searchOption: {
+                city: this.city
+            },
             mapId: '',
             amapManager: amapManager,
             events: {
@@ -206,11 +208,16 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/components/qmap/qmap.vue":
+/***/ "./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/components/qmap/qmap-choose-point.vue":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+//
+//
+//
 //
 //
 //
@@ -226,32 +233,147 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     name: "qmap",
     props: {
         width: String,
-        height: String
+        height: String,
+        cityName: { type: String, default: '深圳' },
+        center: { type: Array, default: function _default() {
+                return [22.555086, 114.047667];
+            } },
+        searchLimit: { type: Number, default: 1 },
+        searchable: { type: Boolean, default: true },
+        disabled: { type: Boolean, default: false }
     },
     data: function data() {
         return {
-            mapId: 'qmap_' + parseInt(Math.random() * 1000000)
+            map: null, // 地图实例
+            searchService: null, // 地图搜索服务实例
+            autoComplete: null, // 自动补全控件
+            infoWindow: null, // 信息窗体
+            markers: [],
+            keyword: '',
+            selectedPosition: []
         };
+    },
+
+    methods: {
+        resetLatlngBounds: function resetLatlngBounds() {
+            var latlngBounds = new qq.maps.LatLngBounds();
+            this.markers.forEach(function (marker) {
+                latlngBounds.extend(marker.getPosition());
+            });
+            this.map.fitBounds(latlngBounds);
+        },
+        searchComplete: function searchComplete(results) {
+            var _this = this;
+
+            var pois = results.detail.pois;
+            this.markers.forEach(function (marker) {
+                marker.setMap(null);
+            });
+            this.markers = [];
+
+            var _loop = function _loop(i, l) {
+                var poi = pois[i];
+                var marker = new qq.maps.Marker({
+                    map: _this.map,
+                    position: poi.latLng,
+                    draggable: !_this.disabled
+                });
+                marker.setTitle(i + 1);
+                // marker设置后设置infoWindow内容
+                qq.maps.event.addListener(marker, "click", function (e) {
+                    _this.infoWindow.setPosition(marker);
+                    _this.infoWindow.setContent('<div class="info-window-title">' + poi.name + '</div><div class="info-window-address">' + poi.address + '</div>');
+                    _this.infoWindow.open();
+                });
+                _this.markers.push(marker);
+                _this.selectedPosition = [marker.getPosition().getLng(), marker.getPosition().getLat()];
+            };
+
+            for (var i = 0, l = pois.length; i < l; i++) {
+                _loop(i, l);
+            }
+            this.resetLatlngBounds();
+            this.$emit('marker-change', this.markers);
+        },
+        addMarker: function addMarker(lnglat) {
+            var latLng = new qq.maps.LatLng(lnglat[0], lnglat[1]);
+            var marker = new qq.maps.Marker({
+                map: this.map,
+                position: latLng,
+                draggable: !this.disabled
+            });
+            this.markers.push(marker);
+            this.resetLatlngBounds();
+        }
     },
     created: function created() {},
     mounted: function mounted() {
-        console.log(this.mapId, document.getElementById(this.mapId), document.getElementById('amap'));
+        var _this2 = this;
 
-        window.initQmap = window.initQmap || function () {
-            var map = new qq.maps.Map(document.getElementById(this.mapId), {
-                center: new qq.maps.LatLng(39.916527, 116.397128), // 地图的中心地理坐标。
-                zoom: 10 // 地图的中心地理坐标。
+        var initQmap = function initQmap() {
+            // 初始化地图
+            var center = _this2.center;
+            _this2.map = new qq.maps.Map(_this2.$refs.mapContainer, {
+                center: new (Function.prototype.bind.apply(qq.maps.LatLng, [null].concat(_toConsumableArray(center))))(), // 地图的中心地理坐标。
+                zoom: 10, // 缩放级别
+                zoomControl: false, // 缩放控件
+                panControl: false, // 平移控件
+                mapTypeControl: false // 地图类型切换
             });
+            if (_this2.searchable) {
+                // 初始化搜索服务
+                var SearchOptions = {
+                    // map: this.map,
+                    complete: function complete(results) {
+                        _this2.searchComplete(results);
+                    },
+                    pageCapacity: _this2.searchLimit,
+                    location: _this2.cityName
+                };
+                _this2.searchService = new qq.maps.SearchService(SearchOptions);
+                // 初始化信息窗口
+                _this2.infoWindow = new qq.maps.InfoWindow({
+                    map: _this2.map,
+                    content: 'content',
+                    position: null
+                    // zIndex
+                });
+                // 初始化自动补全控件 腾讯地图的自动补全zindex为1, 且无法修改, 在弹框中显示不出来
+                _this2.autoComplete = new qq.maps.place.Autocomplete(_this2.$refs.autoComplete.$refs.input, {
+                    location: _this2.cityName
+                });
+                //添加监听事件
+                qq.maps.event.addListener(_this2.autoComplete, "confirm", function (res) {
+                    _this2.searchService.search(res.value);
+                });
+            }
         };
+        window.initQmap = window.initQmap || initQmap;
+
         if (typeof qq == 'undefined') {
             var loadScript = function loadScript() {
                 var script = document.createElement("script");
                 script.type = "text/javascript";
-                script.src = "http://map.qq.com/api/js?v=2.exp&callback=initQmap";
+                script.src = "http://map.qq.com/api/js?v=2.exp&libraries=place&callback=initQmap&key=V2IBZ-JCFKG-UPXQA-IZYP3-II5B6-UFFOR";
                 document.body.appendChild(script);
             };
 
             loadScript();
+        }
+    },
+
+    watch: {
+        center: function center(val) {
+            var _map;
+
+            (_map = this.map).setCenter.apply(_map, _toConsumableArray(val));
+        },
+        cityName: function cityName(val) {
+            this.searchService.setLocation(val);
+            this.autoComplete && this.autoComplete.dispose();
+            this.autoComplete = new qq.maps.place.Autocomplete(this.$refs.autoComplete.$refs.input, {
+                location: val
+            });
         }
     }
 });
@@ -2462,14 +2584,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__assets_js_api__ = __webpack_require__("./resources/assets/js/api.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point__ = __webpack_require__("./resources/assets/components/amap/amap-choose-point.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_components_img_preview_dialog__ = __webpack_require__("./resources/assets/components/img/preview-dialog.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_components_img_preview_dialog___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__assets_components_img_preview_dialog__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__assets_components_qmap_qmap__ = __webpack_require__("./resources/assets/components/qmap/qmap.vue");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__assets_components_qmap_qmap___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__assets_components_qmap_qmap__);
-//
-//
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_img_preview_dialog__ = __webpack_require__("./resources/assets/components/img/preview-dialog.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__assets_components_img_preview_dialog___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__assets_components_img_preview_dialog__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_components_qmap_qmap_choose_point__ = __webpack_require__("./resources/assets/components/qmap/qmap-choose-point.vue");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__assets_components_qmap_qmap_choose_point___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__assets_components_qmap_qmap_choose_point__);
 //
 //
 //
@@ -2561,7 +2679,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 
-
+// import AmapChoosePoint from '../../../assets/components/amap/amap-choose-point';
 
 
 
@@ -2591,7 +2709,6 @@ var defaultForm = {
             form: deepCopy(defaultForm),
             categoryOptions: [],
             areaOptions: [],
-            isShowMap: false,
             formRules: {
                 name: [{ required: true, message: '商家名称不能为空' }],
                 merchant_category: [{ type: 'array', required: true, message: '所属行业不能为空' }],
@@ -2661,19 +2778,22 @@ var defaultForm = {
                 });
             }
         },
-        selectMap: function selectMap(data) {
-            this.isShowMap = false;
-            this.form.lng_and_lat = data;
+        selectMap: function selectMap(markers) {
+            var _this = this;
+
+            markers.forEach(function (marker) {
+                _this.form.lng_and_lat = [marker.getPosition().getLng(), marker.getPosition().getLat()];
+            });
         }
     },
     created: function created() {
-        var _this = this;
+        var _this2 = this;
 
         __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('merchant/categories/tree').then(function (data) {
-            _this.categoryOptions = data.list;
+            _this2.categoryOptions = data.list;
         });
         __WEBPACK_IMPORTED_MODULE_0__assets_js_api__["a" /* default */].get('area/tree').then(function (data) {
-            _this.areaOptions = data.list;
+            _this2.areaOptions = data.list;
         });
         this.initForm();
     },
@@ -2684,9 +2804,8 @@ var defaultForm = {
         }
     },
     components: {
-        AmapChoosePoint: __WEBPACK_IMPORTED_MODULE_1__assets_components_amap_amap_choose_point___default.a,
-        imgPreviewDialog: __WEBPACK_IMPORTED_MODULE_2__assets_components_img_preview_dialog___default.a,
-        qmap: __WEBPACK_IMPORTED_MODULE_3__assets_components_qmap_qmap___default.a
+        QmapChoosePoint: __WEBPACK_IMPORTED_MODULE_2__assets_components_qmap_qmap_choose_point___default.a,
+        imgPreviewDialog: __WEBPACK_IMPORTED_MODULE_1__assets_components_img_preview_dialog___default.a
     }
 });
 
@@ -14497,21 +14616,6 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-353538da\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/qmap/qmap.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n.container[data-v-353538da] {\n    width: 100%;\n    height: 100%;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-38caf058\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/oper/App.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14806,6 +14910,36 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 // module
 exports.push([module.i, "\n.title[data-v-a23f6fb0] {\n    line-height: 60px;\n    text-align: left;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b84839c6\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=1!./resources/assets/components/qmap/qmap-choose-point.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.info-window-title {\n    font-size: 18px;\n    color: #5bb1fa;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b84839c6\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/qmap/qmap-choose-point.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.container[data-v-b84839c6] {\n    position: relative;\n}\n.search[data-v-b84839c6] {\n    position: absolute;\n    top: 10px;\n    left: 10px;\n    /*width: 100%;*/\n}\n", ""]);
 
 // exports
 
@@ -39345,35 +39479,6 @@ if (false) {
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-353538da\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/components/qmap/qmap.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", [
-    _c("div", {
-      staticClass: "container",
-      style: { width: _vm.width, height: _vm.height },
-      attrs: { id: _vm.mapId }
-    }),
-    _vm._v(" "),
-    _c("div", { attrs: { id: "amap" } })
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-353538da", module.exports)
-  }
-}
-
-/***/ }),
-
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-38caf058\",\"hasScoped\":false,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/oper/App.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -41942,6 +42047,54 @@ if (false) {
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-b84839c6\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/components/qmap/qmap-choose-point.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "container" }, [
+    _c("div", {
+      ref: "mapContainer",
+      style: { width: _vm.width, height: _vm.height }
+    }),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "search" },
+      [
+        _c("el-input", {
+          ref: "autoComplete",
+          attrs: {
+            placeholder: "请输入关键字",
+            "suffix-icon": "el-icon-search"
+          },
+          model: {
+            value: _vm.keyword,
+            callback: function($$v) {
+              _vm.keyword = $$v
+            },
+            expression: "keyword"
+          }
+        })
+      ],
+      1
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-b84839c6", module.exports)
+  }
+}
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-cd433110\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/components/img/preview-dialog.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -42177,53 +42330,21 @@ var render = function() {
                 "el-form-item",
                 { attrs: { prop: "lng_and_lat", label: "商户位置" } },
                 [
-                  _c("qmap", { attrs: { width: "600px", height: "600px" } }),
                   _vm._v(
                     "\n            " +
-                      _vm._s(_vm.form.lng_and_lat) +
-                      "\n            "
-                  ),
-                  _c(
-                    "el-button",
-                    {
-                      on: {
-                        click: function($event) {
-                          _vm.isShowMap = true
-                        }
-                      }
-                    },
-                    [_vm._v("选择位置")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "el-dialog",
-                    {
-                      attrs: {
-                        title: "更换地理位置",
-                        visible: _vm.isShowMap,
-                        modal: false
-                      },
-                      on: {
-                        "update:visible": function($event) {
-                          _vm.isShowMap = $event
-                        }
-                      }
-                    },
-                    [
-                      _c("amap-choose-point", {
-                        attrs: { width: "100%", height: "500px" },
-                        on: { select: _vm.selectMap },
-                        model: {
-                          value: _vm.form.lng_and_lat,
-                          callback: function($$v) {
-                            _vm.$set(_vm.form, "lng_and_lat", $$v)
-                          },
-                          expression: "form.lng_and_lat"
-                        }
-                      })
-                    ],
-                    1
+                      _vm._s(_vm.form.lng_and_lat || "请选择位置") +
+                      "\n        "
                   )
+                ]
+              ),
+              _vm._v(" "),
+              _c(
+                "el-form-item",
+                [
+                  _c("qmap-choose-point", {
+                    attrs: { width: "100%", height: "500px" },
+                    on: { "marker-change": _vm.selectMap }
+                  })
                 ],
                 1
               ),
@@ -42663,33 +42784,6 @@ if(false) {
  if(!content.locals) {
    module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-117c376a\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add.vue", function() {
      var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-117c376a\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./add.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-353538da\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/qmap/qmap.vue":
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-353538da\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/qmap/qmap.vue");
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("dff62ed8", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-353538da\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./qmap.vue", function() {
-     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-353538da\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./qmap.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -43230,6 +43324,60 @@ if(false) {
  if(!content.locals) {
    module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-a23f6fb0\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./merchant-pool-form.vue", function() {
      var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-a23f6fb0\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./merchant-pool-form.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b84839c6\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=1!./resources/assets/components/qmap/qmap-choose-point.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b84839c6\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=1!./resources/assets/components/qmap/qmap-choose-point.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("72814e51", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b84839c6\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=1!./qmap-choose-point.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b84839c6\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=1!./qmap-choose-point.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b84839c6\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/qmap/qmap-choose-point.vue":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b84839c6\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/qmap/qmap-choose-point.vue");
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/lib/addStylesClient.js")("037899aa", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b84839c6\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./qmap-choose-point.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b84839c6\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./qmap-choose-point.vue");
      if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
      update(newContent);
    });
@@ -44721,25 +44869,26 @@ module.exports = Component.exports
 
 /***/ }),
 
-/***/ "./resources/assets/components/qmap/qmap.vue":
+/***/ "./resources/assets/components/qmap/qmap-choose-point.vue":
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-353538da\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/qmap/qmap.vue")
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b84839c6\",\"scoped\":true,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=0!./resources/assets/components/qmap/qmap-choose-point.vue")
+  __webpack_require__("./node_modules/vue-loader/node_modules/vue-style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-b84839c6\",\"scoped\":false,\"hasInlineConfig\":true}!./node_modules/vue-loader/lib/selector.js?type=styles&index=1!./resources/assets/components/qmap/qmap-choose-point.vue")
 }
 var normalizeComponent = __webpack_require__("./node_modules/vue-loader/lib/component-normalizer.js")
 /* script */
-var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/components/qmap/qmap.vue")
+var __vue_script__ = __webpack_require__("./node_modules/babel-loader/lib/index.js?{\"cacheDirectory\":true,\"presets\":[[\"env\",{\"modules\":false,\"targets\":{\"browsers\":[\"> 2%\"],\"uglify\":true}}]],\"plugins\":[\"transform-object-rest-spread\",[\"transform-runtime\",{\"polyfill\":false,\"helpers\":false}]]}!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./resources/assets/components/qmap/qmap-choose-point.vue")
 /* template */
-var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-353538da\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/components/qmap/qmap.vue")
+var __vue_template__ = __webpack_require__("./node_modules/vue-loader/lib/template-compiler/index.js?{\"id\":\"data-v-b84839c6\",\"hasScoped\":true,\"buble\":{\"transforms\":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./resources/assets/components/qmap/qmap-choose-point.vue")
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
 var __vue_styles__ = injectStyle
 /* scopeId */
-var __vue_scopeId__ = "data-v-353538da"
+var __vue_scopeId__ = "data-v-b84839c6"
 /* moduleIdentifier (server only) */
 var __vue_module_identifier__ = null
 var Component = normalizeComponent(
@@ -44750,7 +44899,7 @@ var Component = normalizeComponent(
   __vue_scopeId__,
   __vue_module_identifier__
 )
-Component.options.__file = "resources\\assets\\components\\qmap\\qmap.vue"
+Component.options.__file = "resources\\assets\\components\\qmap\\qmap-choose-point.vue"
 
 /* hot reload */
 if (false) {(function () {
@@ -44759,9 +44908,9 @@ if (false) {(function () {
   if (!hotAPI.compatible) return
   module.hot.accept()
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-353538da", Component.options)
+    hotAPI.createRecord("data-v-b84839c6", Component.options)
   } else {
-    hotAPI.reload("data-v-353538da", Component.options)
+    hotAPI.reload("data-v-b84839c6", Component.options)
   }
   module.hot.dispose(function (data) {
     disposed = true

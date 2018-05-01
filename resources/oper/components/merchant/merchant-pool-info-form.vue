@@ -49,21 +49,19 @@
         <!-- 商户录入信息右侧块 -->
         <el-col v-if="!readonly" :span="11" :offset="1">
             <el-form-item prop="lng_and_lat" label="商户位置">
-                <qmap width="600px" height="600px"/>
-                {{form.lng_and_lat}}
-                <el-button @click="isShowMap = true">选择位置</el-button>
-                <el-dialog title="更换地理位置" :visible.sync="isShowMap" :modal="false">
-                    <amap-choose-point width="100%" height="500px" v-model="form.lng_and_lat" @select="selectMap"/>
-                </el-dialog>
+                {{form.lng_and_lat || '请选择位置'}}
+            </el-form-item>
+            <el-form-item>
+                <qmap-choose-point width="100%" height="500px" @marker-change="selectMap"/>
             </el-form-item>
             <el-form-item prop="area" label="省/市/区">
                 <el-cascader
                         :options="areaOptions"
                         :props="{
-                        value: 'area_id',
-                        label: 'name',
-                        children: 'sub',
-                    }"
+                            value: 'area_id',
+                            label: 'name',
+                            children: 'sub',
+                        }"
                         v-model="form.area">
                 </el-cascader>
             </el-form-item>
@@ -91,10 +89,10 @@
 </template>
 <script>
     import api from '../../../assets/js/api';
-    import AmapChoosePoint from '../../../assets/components/amap/amap-choose-point';
+    // import AmapChoosePoint from '../../../assets/components/amap/amap-choose-point';
     import imgPreviewDialog from '../../../assets/components/img/preview-dialog'
 
-    import qmap from '../../../assets/components/qmap/qmap'
+    import QmapChoosePoint from '../../../assets/components/qmap/qmap-choose-point'
 
     let defaultForm = {
         /////// 商户录入信息
@@ -123,7 +121,6 @@
                 form: deepCopy(defaultForm),
                 categoryOptions: [],
                 areaOptions: [],
-                isShowMap: false,
                 formRules: {
                     name: [
                         {required: true, message: '商家名称不能为空'}
@@ -206,9 +203,13 @@
                     })
                 }
             },
-            selectMap(data) {
-                this.isShowMap = false;
-                this.form.lng_and_lat = data;
+            selectMap(markers) {
+                markers.forEach(marker => {
+                    this.form.lng_and_lat = [
+                        marker.getPosition().getLng(),
+                        marker.getPosition().getLat(),
+                    ];
+                })
             }
         },
         created(){
@@ -226,9 +227,8 @@
             }
         },
         components: {
-            AmapChoosePoint,
+            QmapChoosePoint,
             imgPreviewDialog,
-            qmap,
         }
     }
 </script>

@@ -22,7 +22,9 @@
         },
         data(){
             return {
-                searchOption: {},
+                searchOption: {
+                    city: this.city,
+                },
                 mapId: '',
                 amapManager: amapManager,
                 events: {
