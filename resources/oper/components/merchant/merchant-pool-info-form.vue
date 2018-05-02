@@ -52,7 +52,7 @@
                 {{form.lng_and_lat || '请选择位置'}}
             </el-form-item>
             <el-form-item>
-                <qmap-choose-point width="100%" height="500px" @marker-change="selectMap"/>
+                <qmap-choose-point width="100%" height="500px" :shown-markers="[form.lng_and_lat]" @marker-change="selectMap"/>
             </el-form-item>
             <el-form-item prop="area" label="省/市/区">
                 <el-cascader

@@ -13,7 +13,7 @@
 
 <script>
     export default {
-        name: "qmap",
+        name: "qmap-choose-point",
         props: {
             width: String,
             height: String,
@@ -22,6 +22,7 @@
             searchLimit: {type:Number, default: 1},
             searchable: {type: Boolean, default: true},
             disabled: {type: Boolean, default: false},
+            shownMarkers: {type: Array},
         },
         data(){
             return {
@@ -68,13 +69,24 @@
                 this.resetLatlngBounds();
                 this.$emit('marker-change', this.markers);
             },
-            addMarker(lnglat){
-                let latLng = new qq.maps.LatLng(lnglat[0], lnglat[1]);
+            addMarkerByLnglat(lnglat){
+                let latLng = new qq.maps.LatLng(lnglat[1], lnglat[0]);
                 let marker = new qq.maps.Marker({
                     map: this.map,
                     position: latLng,
                     draggable: !this.disabled,
                 });
+                // marker设置后设置infoWindow内容
+                let geocoder = new qq.maps.Geocoder();
+                geocoder.getAddress(latLng);
+                geocoder.setComplete((result) => {
+                    qq.maps.event.addListener(marker, "click", (e) => {
+                        this.infoWindow.setPosition(marker)
+                        this.infoWindow.setContent(`<div class="info-window-address">${result.detail.address}</div>`)
+                        this.infoWindow.open();
+                    });
+                })
+
                 this.markers.push(marker);
                 this.resetLatlngBounds();
             },
@@ -118,6 +130,13 @@
                         this.searchService.search(res.value);
                     });
                 }
+                // 回显marker
+                if(this.shownMarkers){
+                    console.log(this.shownMarkers)
+                    this.shownMarkers.forEach(item => {
+                        this.addMarkerByLnglat(item);
+                    })
+                }
             };
             window.initQmap = window.initQmap || initQmap
 
@@ -129,9 +148,14 @@
                     document.body.appendChild(script);
                 }
                 loadScript();
+            }else {
+                initQmap();
             }
         },
         watch: {
+            shownMarkers(val){
+
+            },
             center(val){
                 this.map.setCenter(...val)
             },

@@ -230,7 +230,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 //
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    name: "qmap",
+    name: "qmap-choose-point",
     props: {
         width: String,
         height: String,
@@ -240,7 +240,8 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             } },
         searchLimit: { type: Number, default: 1 },
         searchable: { type: Boolean, default: true },
-        disabled: { type: Boolean, default: false }
+        disabled: { type: Boolean, default: false },
+        shownMarkers: { type: Array }
     },
     data: function data() {
         return {
@@ -295,56 +296,76 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             this.resetLatlngBounds();
             this.$emit('marker-change', this.markers);
         },
-        addMarker: function addMarker(lnglat) {
-            var latLng = new qq.maps.LatLng(lnglat[0], lnglat[1]);
+        addMarkerByLnglat: function addMarkerByLnglat(lnglat) {
+            var _this2 = this;
+
+            var latLng = new qq.maps.LatLng(lnglat[1], lnglat[0]);
             var marker = new qq.maps.Marker({
                 map: this.map,
                 position: latLng,
                 draggable: !this.disabled
             });
+            // marker设置后设置infoWindow内容
+            var geocoder = new qq.maps.Geocoder();
+            geocoder.getAddress(latLng);
+            geocoder.setComplete(function (result) {
+                qq.maps.event.addListener(marker, "click", function (e) {
+                    _this2.infoWindow.setPosition(marker);
+                    _this2.infoWindow.setContent('<div class="info-window-address">' + result.detail.address + '</div>');
+                    _this2.infoWindow.open();
+                });
+            });
+
             this.markers.push(marker);
             this.resetLatlngBounds();
         }
     },
     created: function created() {},
     mounted: function mounted() {
-        var _this2 = this;
+        var _this3 = this;
 
         var initQmap = function initQmap() {
             // 初始化地图
-            var center = _this2.center;
-            _this2.map = new qq.maps.Map(_this2.$refs.mapContainer, {
+            var center = _this3.center;
+            _this3.map = new qq.maps.Map(_this3.$refs.mapContainer, {
                 center: new (Function.prototype.bind.apply(qq.maps.LatLng, [null].concat(_toConsumableArray(center))))(), // 地图的中心地理坐标。
                 zoom: 10, // 缩放级别
                 zoomControl: false, // 缩放控件
                 panControl: false, // 平移控件
                 mapTypeControl: false // 地图类型切换
             });
-            if (_this2.searchable) {
+            if (_this3.searchable) {
                 // 初始化搜索服务
                 var SearchOptions = {
                     // map: this.map,
                     complete: function complete(results) {
-                        _this2.searchComplete(results);
+                        _this3.searchComplete(results);
                     },
-                    pageCapacity: _this2.searchLimit,
-                    location: _this2.cityName
+                    pageCapacity: _this3.searchLimit,
+                    location: _this3.cityName
                 };
-                _this2.searchService = new qq.maps.SearchService(SearchOptions);
+                _this3.searchService = new qq.maps.SearchService(SearchOptions);
                 // 初始化信息窗口
-                _this2.infoWindow = new qq.maps.InfoWindow({
-                    map: _this2.map,
+                _this3.infoWindow = new qq.maps.InfoWindow({
+                    map: _this3.map,
                     content: 'content',
                     position: null
                     // zIndex
                 });
                 // 初始化自动补全控件 腾讯地图的自动补全zindex为1, 且无法修改, 在弹框中显示不出来
-                _this2.autoComplete = new qq.maps.place.Autocomplete(_this2.$refs.autoComplete.$refs.input, {
-                    location: _this2.cityName
+                _this3.autoComplete = new qq.maps.place.Autocomplete(_this3.$refs.autoComplete.$refs.input, {
+                    location: _this3.cityName
                 });
                 //添加监听事件
-                qq.maps.event.addListener(_this2.autoComplete, "confirm", function (res) {
-                    _this2.searchService.search(res.value);
+                qq.maps.event.addListener(_this3.autoComplete, "confirm", function (res) {
+                    _this3.searchService.search(res.value);
+                });
+            }
+            // 回显marker
+            if (_this3.shownMarkers) {
+                console.log(_this3.shownMarkers);
+                _this3.shownMarkers.forEach(function (item) {
+                    _this3.addMarkerByLnglat(item);
                 });
             }
         };
@@ -359,10 +380,13 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             };
 
             loadScript();
+        } else {
+            initQmap();
         }
     },
 
     watch: {
+        shownMarkers: function shownMarkers(val) {},
         center: function center(val) {
             var _map;
 
@@ -42339,7 +42363,11 @@ var render = function() {
                 "el-form-item",
                 [
                   _c("qmap-choose-point", {
-                    attrs: { width: "100%", height: "500px" },
+                    attrs: {
+                      width: "100%",
+                      height: "500px",
+                      "shown-markers": [_vm.form.lng_and_lat]
+                    },
                     on: { "marker-change": _vm.selectMap }
                   })
                 ],
