@@ -155,7 +155,9 @@
             initForm(){
                 if(this.data){
                     let data = this.data;
-                    this.form = deepCopy(data);
+                    for (let key in defaultForm){
+                        this.form[key] = this.data[key];
+                    }
                     let merchant_category_array = [];
                     if(data.merchant_category_id){
                         data.categoryPath.forEach(function (item) {

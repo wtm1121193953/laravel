@@ -282,14 +282,9 @@
             initForm(){
                 if(this.data){
                     let data = this.data;
-                    this.form = deepCopy(data);
-                    let merchant_category_array = [];
-                    if(data.merchant_category_id){
-                        data.categoryPath.forEach(function (item) {
-                            merchant_category_array.unshift(parseInt(item.id));
-                        })
+                    for (let key in defaultForm){
+                        this.form[key] = this.data[key];
                     }
-
                     this.form.business_time = data.business_time ? ['1970-01-01 '+JSON.parse(data.business_time)[0], '1970-01-01 '+JSON.parse(data.business_time)[1]] : [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')];
                     this.form.region = parseInt(data.region);
                     this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
