@@ -286,6 +286,14 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                     _this.infoWindow.setContent('<div class="info-window-title">' + poi.name + '</div><div class="info-window-address">' + poi.address + '</div>');
                     _this.infoWindow.open();
                 });
+                // 设置marker拖拽操作
+                qq.maps.event.addListener(marker, 'dragend', function (e) {
+                    console.log(e, marker);
+                    // this.infoWindow.setPosition(marker);
+                    // this.infoWindow.open();
+                    // this.infoWindow.setContent(`<div class="info-window-title">${poi.name}</div><div class="info-window-address">${poi.address}</div>`)
+                    _this.$emit('marker-change', _this.markers);
+                });
                 _this.markers.push(marker);
                 _this.selectedPosition = [marker.getPosition().getLng(), marker.getPosition().getLat()];
             };
@@ -310,10 +318,21 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             geocoder.getAddress(latLng);
             geocoder.setComplete(function (result) {
                 qq.maps.event.addListener(marker, "click", function (e) {
+                    var poi = result.detail.nearPois[0] || {};
+                    var address = poi.address || result.detail.address;
+                    var title = poi.name || '';
                     _this2.infoWindow.setPosition(marker);
-                    _this2.infoWindow.setContent('<div class="info-window-address">' + result.detail.address + '</div>');
+                    _this2.infoWindow.setContent('<div class="info-window-title">' + title + '</div><div class="info-window-address">' + address + '</div>');
                     _this2.infoWindow.open();
                 });
+            });
+            // 设置marker拖拽操作
+            qq.maps.event.addListener(marker, 'dragend', function (e) {
+                console.log(e, marker);
+                // this.infoWindow.setPosition(marker);
+                // this.infoWindow.open();
+                // this.infoWindow.setContent(`<div class="info-window-title">${poi.name}</div><div class="info-window-address">${poi.address}</div>`)
+                _this2.$emit('marker-change', _this2.markers);
             });
 
             this.markers.push(marker);
@@ -334,7 +353,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
                 panControl: false, // 平移控件
                 mapTypeControl: false // 地图类型切换
             });
-            if (_this3.searchable) {
+            if (_this3.searchable && !_this3.disabled) {
                 // 初始化搜索服务
                 var SearchOptions = {
                     // map: this.map,
@@ -363,7 +382,6 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
             }
             // 回显marker
             if (_this3.shownMarkers) {
-                console.log(_this3.shownMarkers);
                 _this3.shownMarkers.forEach(function (item) {
                     _this3.addMarkerByLnglat(item);
                 });
@@ -2696,6 +2714,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 // import AmapChoosePoint from '../../../assets/components/amap/amap-choose-point';
@@ -2749,6 +2768,8 @@ var defaultForm = {
         initForm: function initForm() {
             if (this.data) {
                 var data = this.data;
+                data.lng = parseFloat(data.lng);
+                data.lat = parseFloat(data.lat);
                 for (var key in defaultForm) {
                     this.form[key] = this.data[key];
                 }
@@ -42081,27 +42102,29 @@ var render = function() {
       style: { width: _vm.width, height: _vm.height }
     }),
     _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "search" },
-      [
-        _c("el-input", {
-          ref: "autoComplete",
-          attrs: {
-            placeholder: "请输入关键字",
-            "suffix-icon": "el-icon-search"
-          },
-          model: {
-            value: _vm.keyword,
-            callback: function($$v) {
-              _vm.keyword = $$v
-            },
-            expression: "keyword"
-          }
-        })
-      ],
-      1
-    )
+    !_vm.disabled
+      ? _c(
+          "div",
+          { staticClass: "search" },
+          [
+            _c("el-input", {
+              ref: "autoComplete",
+              attrs: {
+                placeholder: "请输入关键字",
+                "suffix-icon": "el-icon-search"
+              },
+              model: {
+                value: _vm.keyword,
+                callback: function($$v) {
+                  _vm.keyword = $$v
+                },
+                expression: "keyword"
+              }
+            })
+          ],
+          1
+        )
+      : _vm._e()
   ])
 }
 var staticRenderFns = []
@@ -42428,12 +42451,19 @@ var render = function() {
                 [
                   _vm._v(
                     "\n            " +
-                      _vm._s(_vm.data.lng) +
-                      " , " +
-                      _vm._s(_vm.data.lat) +
-                      "\n        "
-                  )
-                ]
+                      _vm._s([_vm.data.lng, _vm.data.lat]) +
+                      "\n            "
+                  ),
+                  _c("qmap-choose-point", {
+                    attrs: {
+                      width: "100%",
+                      height: "500px",
+                      "shown-markers": [[_vm.data.lng, _vm.data.lat]],
+                      disabled: ""
+                    }
+                  })
+                ],
+                1
               ),
               _vm._v(" "),
               _c("el-form-item", { attrs: { prop: "area", label: "省市区" } }, [

@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div ref="mapContainer" :style="{width: width, height: height}"></div>
-        <div class="search">
+        <div class="search" v-if="!disabled">
             <el-input v-model="keyword"
                       ref="autoComplete"
                       placeholder="请输入关键字"
@@ -63,6 +63,14 @@
                         this.infoWindow.setContent(`<div class="info-window-title">${poi.name}</div><div class="info-window-address">${poi.address}</div>`)
                         this.infoWindow.open();
                     });
+                    // 设置marker拖拽操作
+                    qq.maps.event.addListener(marker, 'dragend', (e) => {
+                        console.log(e, marker);
+                        // this.infoWindow.setPosition(marker);
+                        // this.infoWindow.open();
+                        // this.infoWindow.setContent(`<div class="info-window-title">${poi.name}</div><div class="info-window-address">${poi.address}</div>`)
+                        this.$emit('marker-change', this.markers);
+                    });
                     this.markers.push(marker);
                     this.selectedPosition = [marker.getPosition().getLng(), marker.getPosition().getLat()]
                 }
@@ -81,11 +89,22 @@
                 geocoder.getAddress(latLng);
                 geocoder.setComplete((result) => {
                     qq.maps.event.addListener(marker, "click", (e) => {
+                        let poi = result.detail.nearPois[0] || {};
+                        let address = poi.address || result.detail.address;
+                        let title = poi.name || '';
                         this.infoWindow.setPosition(marker)
-                        this.infoWindow.setContent(`<div class="info-window-address">${result.detail.address}</div>`)
+                        this.infoWindow.setContent(`<div class="info-window-title">${title}</div><div class="info-window-address">${address}</div>`);
                         this.infoWindow.open();
                     });
-                })
+                });
+                // 设置marker拖拽操作
+                qq.maps.event.addListener(marker, 'dragend', (e) => {
+                    console.log(e, marker);
+                    // this.infoWindow.setPosition(marker);
+                    // this.infoWindow.open();
+                    // this.infoWindow.setContent(`<div class="info-window-title">${poi.name}</div><div class="info-window-address">${poi.address}</div>`)
+                    this.$emit('marker-change', this.markers);
+                });
 
                 this.markers.push(marker);
                 this.resetLatlngBounds();
@@ -105,7 +124,7 @@
                     panControl: false, // 平移控件
                     mapTypeControl: false, // 地图类型切换
                 });
-                if(this.searchable){
+                if(this.searchable && !this.disabled){
                     // 初始化搜索服务
                     let SearchOptions = {
                         // map: this.map,
@@ -132,7 +151,6 @@
                 }
                 // 回显marker
                 if(this.shownMarkers){
-                    console.log(this.shownMarkers)
                     this.shownMarkers.forEach(item => {
                         this.addMarkerByLnglat(item);
                     })

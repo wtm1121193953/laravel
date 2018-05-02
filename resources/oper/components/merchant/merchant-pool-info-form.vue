@@ -73,7 +73,8 @@
         <!-- 商户录入信息右侧块 只读 -->
         <el-col v-else :span="11" :offset="1">
             <el-form-item prop="location" label="商户位置">
-                {{data.lng}} , {{data.lat}}
+                {{[data.lng, data.lat]}}
+                <qmap-choose-point width="100%" height="500px" :shown-markers="[[data.lng, data.lat]]" disabled/>
             </el-form-item>
             <el-form-item prop="area" label="省市区">
                 {{data.privince}} {{data.city}} {{data.area}}
@@ -155,6 +156,8 @@
             initForm(){
                 if(this.data){
                     let data = this.data;
+                    data.lng = parseFloat(data.lng);
+                    data.lat = parseFloat(data.lat);
                     for (let key in defaultForm){
                         this.form[key] = this.data[key];
                     }
