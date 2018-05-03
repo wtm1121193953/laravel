@@ -44,7 +44,7 @@
                     <el-col :span="11">
                         <el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>
                         <el-form-item prop="invoice_title" label="发票抬头">{{data.invoice_title}}</el-form-item>
-                        <el-form-item prop="invoice_no" label="发票编号">{{data.invoice_no}}</el-form-item>
+                        <el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>
                         <el-form-item prop="status" label="商户状态">
                             <span v-if="data.status === 1" class="c-green">已启用</span>
                             <span v-else-if="data.status === 2" class="c-danger">已冻结</span>

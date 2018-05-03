@@ -12,7 +12,7 @@
             <el-form-item prop="invoice_title" label="发票抬头">
                 <el-input v-model="form.invoice_title"/>
             </el-form-item>
-            <el-form-item prop="invoice_no" label="发票编号">
+            <el-form-item prop="invoice_no" label="发票税号">
                 <el-input v-model="form.invoice_no"/>
             </el-form-item>
             <el-form-item prop="status" label="商户状态">
@@ -195,12 +195,12 @@
                 form: deepCopy(defaultForm),
                 formRules: {
                     /////// 商户激活信息
-                    invoice_title: [
+                    /*invoice_title: [
                         {required: true, message: '发票抬头 不能为空'},
                     ],
                     invoice_no: [
-                        {required: true, message: '发票编号 不能为空'},
-                    ],
+                        {required: true, message: '发票税号 不能为空'},
+                    ],*/
                     business_time: [
                         {type: 'array', required: true, message: '营业时间不能为空'},
                     ],
