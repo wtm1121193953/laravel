@@ -74,4 +74,18 @@ class Amap
         }
         return $result['regeocode'];
     }
+
+    public function getDistrict($keywords='中华人民共和国', $subdistrict=3)
+    {
+        $url = "$this->baseUrl/config/district";
+        $result = $this->get($url, [
+            'keywords' => $keywords,
+            'subdistrict' => $subdistrict,
+            'extensions' => 'base'
+        ]);
+        if($result['status'] != 1){
+            throw new BaseResponseException('高德地图api返回错误: ' . $result['info'] );
+        }
+        return $result['districts'];
+    }
 }

@@ -21,7 +21,7 @@ class CreateAreasTable extends Migration
             $table->tinyInteger('path')->default(1)->comment('路径，从1开始');
             $table->string('area_code', 4)->index()->comment('区号');
             $table->string('spell', 50)->index()->comment('拼音');
-            $table->string('letter', 10)->index()->comment('简拼');
+            $table->string('letter', 15)->index()->comment('简拼');
             $table->string('first_letter', 1)->index()->comment('首字母');
             $table->tinyInteger('status')->default(1)->index()->comment('状态 1-正常 2-禁用');
             $table->integer('parent_id')->default(0)->index()->comment('父ID，如果是省份，则父ID为0');
