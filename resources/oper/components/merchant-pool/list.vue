@@ -53,11 +53,16 @@
                 @current-change="getList"
                 :page-size="15"
                 :total="total"/>
+        <qmap width="100%" height="600px">
+            <qmap-marker v-model="marker" draggable/>
+        </qmap>
     </page>
 </template>
 
 <script>
     import api from '../../../assets/js/api'
+    import qmap from '../../../assets/components/qmap/qmap'
+    import qmapMarker from '../../../assets/components/qmap/qmap-marker'
 
     import MerchantPoolItemOptions from './merchant-pool-item-options'
     import MerchantForm from './merchant-pool-form'
@@ -66,6 +71,7 @@
         name: "merchant-list",
         data(){
             return {
+                marker: [114.05956, 22.54286],
                 isLoading: false,
                 query: {
                     page: 1,
@@ -112,6 +118,8 @@
         components: {
             MerchantPoolItemOptions,
             MerchantForm,
+            qmap,
+            qmapMarker,
         }
     }
 </script>
