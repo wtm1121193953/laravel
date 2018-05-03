@@ -152,7 +152,9 @@
                 // 回显marker
                 if(this.shownMarkers){
                     this.shownMarkers.forEach(item => {
-                        this.addMarkerByLnglat(item);
+                        if(item && item.length == 2){
+                            this.addMarkerByLnglat(item);
+                        }
                     })
                 }
             };
