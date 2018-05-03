@@ -4,8 +4,8 @@
         <el-col>
             <div class="title">商户录入信息</div>
         </el-col>
-        <!--商户录入信息左侧块-->
-        <el-col v-if="!readonly" :span="11">
+        <!--商户录入信息表单-->
+        <el-col v-if="!readonly" :span="16">
             <el-form-item prop="name" label="商户名称">
                 <el-input v-model="form.name"/>
             </el-form-item>
@@ -26,34 +26,13 @@
             <el-form-item prop="organization_code" label="营业执照代码">
                 <el-input v-model="form.organization_code"/>
             </el-form-item>
-        </el-col>
-
-        <!--商户录入信息左侧块 只读 -->
-        <el-col v-else :span="11">
-            <el-form-item prop="name" label="商户名称">
-                {{data.name}}
-            </el-form-item>
-            <el-form-item prop="merchant_category" label="所属行业">
-                <span v-for="item in data.categoryPath" :key="item.id">
-                    {{ data.name }}
-                </span>
-            </el-form-item>
-            <el-form-item label="营业执照">
-                <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button>
-            </el-form-item>
-            <el-form-item label="营业执照代码">
-                {{ data.organization_code}}
-            </el-form-item>
-        </el-col>
-
-        <!-- 商户录入信息右侧块 -->
-        <el-col v-if="!readonly" :span="11" :offset="1">
             <el-form-item prop="lng_and_lat" label="商户位置">
                 {{form.lng_and_lat || '请选择位置'}}
             </el-form-item>
             <el-form-item>
                 <qmap-choose-point width="100%" height="500px" :shown-markers="[form.lng_and_lat]" @marker-change="selectMap"/>
             </el-form-item>
+
             <el-form-item prop="area" label="省/市/区">
                 <el-cascader
                         :options="areaOptions"
@@ -70,8 +49,23 @@
             </el-form-item>
         </el-col>
 
-        <!-- 商户录入信息右侧块 只读 -->
-        <el-col v-else :span="11" :offset="1">
+        <!--商户录入信息左侧块 只读 -->
+        <el-col v-else :span="16">
+            <el-form-item prop="name" label="商户名称">
+                {{data.name}}
+            </el-form-item>
+            <el-form-item prop="merchant_category" label="所属行业">
+                <span v-for="item in data.categoryPath" :key="item.id">
+                    {{ data.name }}
+                </span>
+            </el-form-item>
+            <el-form-item label="营业执照">
+                <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button>
+            </el-form-item>
+            <el-form-item label="营业执照代码">
+                {{ data.organization_code}}
+            </el-form-item>
+
             <el-form-item prop="location" label="商户位置">
                 {{[data.lng, data.lat]}}
                 <qmap-choose-point width="100%" height="500px" :shown-markers="[[data.lng, data.lat]]" disabled/>
