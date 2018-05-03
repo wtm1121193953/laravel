@@ -82,8 +82,8 @@ class WechatService
             'page' => $page,
             'width' => $width,
         ]);
-        if($response = json_decode($response, 1)){
-            if($response['errcode'] == 41030){
+        if($json = json_decode($response, 1)){
+            if($json['errcode'] == 41030){
                 throw new MiniprogramPageNotExistException();
             }
             throw new BaseResponseException('小程序码生成失败' . $response);
