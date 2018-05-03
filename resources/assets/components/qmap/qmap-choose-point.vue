@@ -162,7 +162,7 @@
                 function loadScript() {
                     var script = document.createElement("script");
                     script.type = "text/javascript";
-                    script.src = "http://map.qq.com/api/js?v=2.exp&libraries=place&callback=initQmap&key=V2IBZ-JCFKG-UPXQA-IZYP3-II5B6-UFFOR";
+                    script.src = "https://map.qq.com/api/js?v=2.exp&libraries=place&callback=initQmap&key=V2IBZ-JCFKG-UPXQA-IZYP3-II5B6-UFFOR";
                     document.body.appendChild(script);
                 }
                 loadScript();
