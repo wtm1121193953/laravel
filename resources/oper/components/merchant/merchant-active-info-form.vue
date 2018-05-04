@@ -9,12 +9,12 @@
             <el-form-item prop="brand" label="品牌">
                 <el-input v-model="form.brand"/>
             </el-form-item>
-            <el-form-item prop="invoice_title" label="发票抬头">
+            <!--<el-form-item prop="invoice_title" label="发票抬头">
                 <el-input v-model="form.invoice_title"/>
             </el-form-item>
             <el-form-item prop="invoice_no" label="发票税号">
                 <el-input v-model="form.invoice_no"/>
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item prop="status" label="商户状态">
                 <el-radio-group v-model="form.status">
                     <el-radio :label="1">正常</el-radio>
@@ -131,8 +131,6 @@
     let defaultForm = {
         /////// 商户激活信息
         brand: '',
-        invoice_title: '',
-        invoice_no: '',
         status: 1,
         business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
         logo: '',
@@ -162,6 +160,8 @@
         employees_number: '',
 
         //////// 没有了的字段
+        invoice_title: '',
+        invoice_no: '',
         region: 1,
         tax_cert_pic_url: '',
         hygienic_licence_pic_url: '',
