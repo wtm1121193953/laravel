@@ -57,7 +57,7 @@ class LoginController extends Controller
 
     public function logout()
     {
-        Session::flush();
+        Session::forget(config('merchant.user_session'));
         return Result::success();
     }
 

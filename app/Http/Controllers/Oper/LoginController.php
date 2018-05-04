@@ -61,7 +61,7 @@ class LoginController extends Controller
 
     public function logout()
     {
-        Session::flush();
+        Session::forget(config('oper.user_session'));
         return Result::success();
     }
 
