@@ -66,9 +66,6 @@
         name: "merchant-list",
         data(){
             return {
-                markers: [],
-                keyword: '',
-
                 isLoading: false,
                 query: {
                     page: 1,
