@@ -19,24 +19,26 @@
         data(){
             return {
                 marker: null, // marker实例
-                infoWindow: null, // marker上的 infoWindow 实例
             }
         },
         computed: {
             map(){
                 return this.manager.getMap();
+            },
+            qmap(){
+                return this.map.qmap;
             }
         },
         methods: {
             init(){
                 // 初始化操作
-                if(!this.map){
+                if(!this.qmap){
                     // 如果地图尚未加载完成, 延迟100毫秒后再执行
                     setTimeout(() => {this.init()}, 100)
                 }else {
                     let latLng = new qq.maps.LatLng(this.value[1], this.value[0]);
                     this.marker = new qq.maps.Marker({
-                        map: this.map,
+                        map: this.qmap,
                         position: latLng,
                         draggable: this.draggable,
                     });
@@ -52,23 +54,22 @@
                         });
                     }
                     if(this.showInfoWindow){
-                        // 初始化信息窗口
-                        this.initInfoWindow();
+                        // 监听marker点击事件, 点击时展示信息窗口
+                        qq.maps.event.addListener(this.marker, "click", (e) => {
+                            // 点击时将当前标注置位最顶层
+                            let zindex = 0;
+                            this.manager.getMarkers().forEach(marker => {
+                                zindex = Math.max(marker.marker.getZIndex(), zindex)
+                            });
+                            this.marker.setZIndex(zindex + 1);
+                            this.changeInfoWindow();
+                        });
+                    }
+                    if(this.map.autoBoundsOnMarker){
+                        // 初始化成功重置地图边界
+                        this.map.resetLatlngBounds();
                     }
                 }
-            },
-            initInfoWindow(){
-                // 初始化信息窗口
-                this.infoWindow = new qq.maps.InfoWindow({
-                    map: this.map,
-                    content: 'content',
-                    position: this.marker,
-                    // zIndex
-                });
-                // 监听marker点击事件, 点击时展示信息窗口
-                qq.maps.event.addListener(this.marker, "click", (e) => {
-                    this.changeInfoWindow();
-                });
             },
             changeInfoWindow(){
                 // marker设置后设置infoWindow内容
@@ -78,13 +79,15 @@
                     let poi = result.detail.nearPois[0] || {};
                     let address = poi.address || result.detail.address;
                     let title = poi.name || '';
-                    this.infoWindow.setPosition(this.marker);
-                    this.infoWindow.setContent(`<div class="info-window-title">${title}</div><div class="info-window-address">${address}</div>`);
-                    this.infoWindow.open();
+                    this.map.infoWindow.setPosition(this.marker);
+                    this.map.infoWindow.setContent(`<div class="info-window-title">${title}</div><div class="info-window-address">${address}</div>`);
+                    this.map.infoWindow.open();
                 });
             }
         },
         created(){
+            // 将marker加入到qmap-manager中管理
+            this.manager.addMarker(this);
             this.init();
         },
         watch: {

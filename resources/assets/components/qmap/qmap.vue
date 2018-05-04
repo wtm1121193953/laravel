@@ -19,12 +19,14 @@
             zoom: { type: Number, default: 10}, // 缩放级别, 默认为10
             zoomControl: {type: Boolean, default: false}, // 是否启用缩放控件, 默认不使用
             panControl: {type: Boolean, default: false}, // 是否使用平移控件, 默认不使用
+            autoBoundsOnMarker: {type: Boolean, default: true}, // 是否在设置marker后重置地图边界
         },
         data(){
             let manager = new QmapManager();
             return {
                 manager: manager, // 地图组件管理容器, 用于通过依赖注入的方式调用其他组件
-                map: null, // 腾讯地图实例
+                qmap: null, // 腾讯地图实例
+                infoWindow: null, // 全局的infoWindow, infoWindow暂定同时只能弹出一个
             }
         },
         provide: function () {
@@ -41,18 +43,35 @@
                     setTimeout(() => {this.initQmap()}, 100);
                 }else{
                     let center = this.center;
-                    this.map = new qq.maps.Map(this.$refs.mapContainer, {
+                    this.qmap = new qq.maps.Map(this.$refs.mapContainer, {
                         center: new qq.maps.LatLng(center[1], center[0]), // 地图的中心地理坐标。
                         zoom: this.zoom, // 缩放级别
                         zoomControl: false, // 缩放控件
                         panControl: false, // 平移控件
                         mapTypeControl: false, // 地图类型切换
                     });
-                    this.manager.setMap(this.map);
+                    // 初始化infoWindow
+                    this.infoWindow = new qq.maps.InfoWindow({
+                        map: this.qmap,
+                        content: 'content',
+                        position: null,
+                        // zIndex
+                    });
                 }
-            }
+            },
+            resetLatlngBounds(){
+                Vue.nextTick(() => {
+                    let latlngBounds = new qq.maps.LatLngBounds();
+                    let markers = this.manager.getMarkers();
+                    markers.forEach(marker => {
+                        latlngBounds.extend(marker.marker.getPosition());
+                    });
+                    this.qmap.fitBounds(latlngBounds);
+                })
+            },
         },
         created(){
+            this.manager.setMap(this);
             window.initQmap = window.initQmap || this.initQmap;
             if(typeof qq == 'undefined'){
                 function loadScript() {
@@ -70,7 +89,7 @@
             center: {
                 deep: true,
                 handler(val){
-                    this.map.setCenter(new qq.maps.LatLng(this.center[1], this.center[0]))
+                    this.qmap.setCenter(new qq.maps.LatLng(this.center[1], this.center[0]))
                 }
             }
         }
@@ -78,5 +97,7 @@
 </script>
 
 <style scoped>
-
+    .container {
+        position: relative;
+    }
 </style>
