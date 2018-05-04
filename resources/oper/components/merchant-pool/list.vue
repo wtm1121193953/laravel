@@ -53,25 +53,11 @@
                 @current-change="getList"
                 :page-size="15"
                 :total="total"/>
-        <el-col>
-
-            {{keyword}}
-            <qmap width="100%" height="600px">
-                <qmap-search-bar :keyword.sync="keyword" @search="(positions) => { markers = positions}"/>
-
-                <template v-for="(marker, index) in markers">
-                    <qmap-marker v-model="markers[index]" draggable/>
-                </template>
-            </qmap>
-        </el-col>
     </page>
 </template>
 
 <script>
     import api from '../../../assets/js/api'
-    import qmap from '../../../assets/components/qmap/qmap'
-    import qmapMarker from '../../../assets/components/qmap/qmap-marker'
-    import QmapSearchBar from '../../../assets/components/qmap/qmap-search-bar'
 
     import MerchantPoolItemOptions from './merchant-pool-item-options'
     import MerchantForm from './merchant-pool-form'
@@ -129,9 +115,6 @@
         components: {
             MerchantPoolItemOptions,
             MerchantForm,
-            qmap,
-            qmapMarker,
-            QmapSearchBar,
         }
     }
 </script>

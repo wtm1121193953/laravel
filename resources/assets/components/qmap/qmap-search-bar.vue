@@ -1,6 +1,8 @@
 <template>
     <div class="container" :style="{width: width}">
-        <el-input ref="keywordInput" :value="keyword" @keyup.enter="search" @input="keywordChange" placeholder="请输入关键字搜索"/>
+        <el-input ref="keywordInput" :value="keyword" @keyup.native.enter="search" @input="keywordChange" placeholder="请输入关键字搜索">
+            <el-button slot="append" icon="el-icon-search" @click="search"/>
+        </el-input>
     </div>
 </template>
 
@@ -14,7 +16,7 @@
             keyword: {type: String, default: ''}, // 搜索关键词
             cityName: {type: String, default: ''}, // 自动补全控件及搜索服务的城市名
             toMap: {type: Boolean, default: false}, // 是否将搜索结果直接展现到地图中
-            searchLimit: {type: Number, default: 6}, // 搜索数量限制
+            searchLimit: {type: Number, default: 1}, // 搜索数量限制
 
             autoComplete: {type: Boolean, default: true}, // 搜索框是否使用自动补全控件
 
@@ -31,6 +33,7 @@
         },
         data() {
             return {
+                keywordValue: '',
                 searchService: null, // 搜索服务实例
                 autoCompletePlugin: null, // 自动补全控件
             }
@@ -76,14 +79,21 @@
                 }
             },
             keywordChange(value){
+                this.keywordValue = value;
                 this.$emit('update:keyword', value);
             },
-            search(value){
-                this.searchService.search(value);
+            search(){
+                this.searchService.search(this.keywordValue);
             }
         },
         created(){
+            this.keywordValue = this.keyword;
             this.init();
+        },
+        watch: {
+            keyword(val){
+                this.keywordValue = val;
+            }
         }
     }
 </script>
