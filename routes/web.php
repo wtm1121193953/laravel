@@ -56,7 +56,7 @@ Route::get('/miniprogram_bridge/pay', function(){
     $scene->save();
 
     try{
-        $appCodeUrl = WechatService::genMiniprogramAppCodeUrl($targetOperId, $scene->id, $page);
+        $appCodeUrl = WechatService::genMiniprogramAppCode($targetOperId, $scene->id, $page);
     }catch (\App\Exceptions\MiniprogramPageNotExistException $e){
         $appCodeUrl = '';
         $errorMsg = '小程序页面不存在或尚未发布';
