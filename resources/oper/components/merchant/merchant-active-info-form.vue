@@ -7,7 +7,24 @@
         <!-- 商户激活信息左侧块 -->
         <el-col :span="11">
             <el-form-item prop="oper_biz_member_code" label="业务员推广码">
-                <el-input v-model="form.oper_biz_member_code"/>
+                <el-select
+                        v-model="form.oper_biz_member_code"
+                        filterable
+                        remote
+                        reserve-keyword
+                        placeholder="请输入业务员名称、手机号或推广码"
+                        :remote-method="searchOperBizMember"
+                        :loading="searchOperBizMemberLoading">
+                    <el-option
+                            v-for="item in operBizMembers"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.code">
+                        <span class="c-gray">{{item.code}}</span>
+                        <span class="c-blue">{{item.name}}</span>
+                        <span class="c-light-gray">{{item.mobile}}</span>
+                    </el-option>
+                </el-select>
             </el-form-item>
             <el-form-item prop="brand" label="品牌">
                 <el-input v-model="form.brand"/>
@@ -265,6 +282,12 @@
                     legal_id_card_pic_b: [
                         {required: true, message: '法人身份证照片 不能为空'},
                     ],
+                    business_licence_pic_url: [
+                        {required: true, message: '营业执照不能为空'},
+                    ],
+                    organization_code: [
+                        {required: true, message: '营业执照代码不能为空'},
+                    ],
                     contract_pic_url: [
                         {required: true, message: '合同照片 不能为空'},
                     ],
@@ -289,9 +312,23 @@
                         {required: true, message: '商户员工人数 不能为空'},
                     ],
                 },
+                searchOperBizMemberLoading: false,
+                operBizMembers: []
             }
         },
         methods: {
+            searchOperBizMember(query){
+                if (query !== '') {
+                    this.searchOperBizMemberLoading = true;
+                    api.get('/operBizMembers/search', {keyword: query}).then(data => {
+                        this.operBizMembers = data.list;
+                    }).finally(() => {
+                        this.searchOperBizMemberLoading = false;
+                    })
+                } else {
+                    this.operBizMembers = [];
+                }
+            },
             initForm(){
                 if(this.data){
                     let data = this.data;
@@ -303,6 +340,7 @@
                     this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                     this.form.status = parseInt(data.status);
                     this.form.bank_card_type = parseInt(data.bank_card_type);
+                    this.searchOperBizMember(this.form.oper_biz_member_code);
                 }else {
                     this.form = deepCopy(defaultForm);
                 }

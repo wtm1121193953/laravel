@@ -17,9 +17,10 @@ class OperBizMemberController extends Controller
     public function getList()
     {
         $status = request('status');
-        $data = OperBizMember::when($status, function (Builder $query) use ($status){
-            $query->where('status', $status);
-        })->orderBy('id', 'desc')->paginate();
+        $data = OperBizMember::where('oper_id', request()->get('current_user')->oper_id)
+            ->when($status, function (Builder $query) use ($status){
+                $query->where('status', $status);
+            })->orderBy('id', 'desc')->paginate();
 
         $data->each(function($item) {
 
@@ -34,6 +35,37 @@ class OperBizMemberController extends Controller
     }
 
     /**
+     * 搜索业务员
+     */
+    public function search()
+    {
+        $code = request('code', '');
+        $name = request('name', '');
+        $mobile = request('mobile', '');
+        $keyword = request('keyword', '');
+        $list = OperBizMember::where('oper_id', request()->get('current_user')->oper_id)
+            ->when(!empty($keyword), function(Builder $query) use ($keyword){
+                $query->where(function(Builder $query) use ($keyword){
+                    $query->where('code', 'like', "%$keyword%")
+                        ->orWhere('name', 'like', "%$keyword%")
+                        ->orWhere('mobile', 'like', "%$keyword%");
+                });
+            })
+            ->when(!empty($code), function(Builder $query) use ($code) {
+                $query->where('code', 'like', "%$code%");
+            })
+            ->when(!empty($name), function(Builder $query) use ($name){
+                $query->where('name', 'like', "%$name%");
+            })
+            ->when(!empty($mobile), function(Builder $query) use ($mobile){
+                $query->where('mobile', 'like', "%$mobile%");
+            })->get();
+        return Result::success([
+            'list' => $list
+        ]);
+    }
+
+    /**
      * 添加数据
      */
     public function add()
@@ -43,6 +75,7 @@ class OperBizMemberController extends Controller
             'mobile' => 'required',
         ]);
         $operBizMember = new OperBizMember();
+        $operBizMember->oper_id = request()->get('current_user')->oper_id;
         $operBizMember->name = request('name');
         $operBizMember->mobile = request('mobile');
         $operBizMember->remark = request('remark', '');

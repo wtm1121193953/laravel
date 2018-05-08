@@ -110,12 +110,6 @@
                     merchant_category: [
                         {type: 'array', required: true, message: '所属行业不能为空'}
                     ],
-                    business_licence_pic_url: [
-                        {required: true, message: '营业执照不能为空'},
-                    ],
-                    organization_code: [
-                        {required: true, message: '营业执照代码不能为空'},
-                    ],
                     // 位置信息
                     lng_and_lat: [
                         {required: true, message: '商户位置不能为空'},
