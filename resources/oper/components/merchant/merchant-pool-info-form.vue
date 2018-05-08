@@ -20,12 +20,6 @@
                         v-model="form.merchant_category">
                 </el-cascader>
             </el-form-item>
-            <el-form-item prop="business_licence_pic_url" label="营业执照">
-                <image-upload v-model="form.business_licence_pic_url" :limit="1"/>
-            </el-form-item>
-            <el-form-item prop="organization_code" label="营业执照代码">
-                <el-input v-model="form.organization_code"/>
-            </el-form-item>
             <el-form-item prop="lng_and_lat" label="商户位置">
                 {{form.lng_and_lat || '请选择位置'}}
             </el-form-item>
@@ -59,12 +53,6 @@
                     {{ data.name }}
                 </span>
             </el-form-item>
-            <el-form-item label="营业执照">
-                <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button>
-            </el-form-item>
-            <el-form-item label="营业执照代码">
-                {{ data.organization_code}}
-            </el-form-item>
 
             <el-form-item prop="location" label="商户位置">
                 {{[data.lng, data.lat]}}
@@ -93,8 +81,7 @@
         /////// 商户录入信息
         name: '',
         merchant_category: [],
-        business_licence_pic_url: '',
-        organization_code: '',
+
         // 位置信息
         lng_and_lat: null,
         area: [],

@@ -90,19 +90,4 @@ class OperBizMemberController extends Controller
         return Result::success($operBizMember);
     }
 
-    /**
-     * 删除
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
-     */
-    public function del()
-    {
-        $this->validate(request(), [
-            'id' => 'required|integer|min:1',
-        ]);
-        $operBizMember = OperBizMember::findOrFail(request('id'));
-        $operBizMember->delete();
-        return Result::success($operBizMember);
-    }
-
 }

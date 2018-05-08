@@ -6,6 +6,9 @@
         </el-col>
         <!-- 商户激活信息左侧块 -->
         <el-col :span="11">
+            <el-form-item prop="oper_biz_member_code" label="业务员推广码">
+                <el-input v-model="form.oper_biz_member_code"/>
+            </el-form-item>
             <el-form-item prop="brand" label="品牌">
                 <el-input v-model="form.brand"/>
             </el-form-item>
@@ -90,6 +93,13 @@
                 <image-upload v-model="form.legal_id_card_pic_b" :limit="1"/>
             </el-form-item>
 
+            <el-form-item prop="business_licence_pic_url" label="营业执照">
+                <image-upload v-model="form.business_licence_pic_url" :limit="1"/>
+            </el-form-item>
+            <el-form-item prop="organization_code" label="营业执照代码">
+                <el-input v-model="form.organization_code"/>
+            </el-form-item>
+
             <el-form-item prop="contract_pic_url" label="合同">
                 <image-upload v-model="form.contract_pic_url" :limit="10"/>
             </el-form-item>
@@ -130,6 +140,7 @@
 
     let defaultForm = {
         /////// 商户激活信息
+        oper_biz_member_code: '',
         brand: '',
         status: 1,
         business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
@@ -149,6 +160,8 @@
         // 法人信息
         legal_id_card_pic_a: '',
         legal_id_card_pic_b: '',
+        business_licence_pic_url: '',
+        organization_code: '',
         contract_pic_url: '',
         other_card_pic_urls: '',
         // 商户负责人

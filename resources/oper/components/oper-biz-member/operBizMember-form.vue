@@ -6,7 +6,7 @@
                     <el-input v-model="form.name"/>
                 </el-form-item>
                 <el-form-item prop="mobile" label="手机号">
-                    <el-input v-model="form.mobile" :maxlength="11" :disabled="!!data"/>
+                    <el-input v-model="form.mobile" :maxlength="11"/>
                 </el-form-item>
                 <el-form-item prop="remark" label="备注">
                     <el-input v-model="form.remark" :maxlength="20" placeholder="20个字以内"/>

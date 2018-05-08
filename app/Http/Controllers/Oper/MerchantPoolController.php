@@ -74,8 +74,6 @@ class MerchantPoolController extends Controller
         $this->validate(request(), [
             'name' => 'required',
             'merchant_category_id' => 'required|integer|min:1',
-            'business_licence_pic_url' => 'required',
-            'organization_code' => 'required',
             'lng' => 'required|numeric',
             'lat' => 'required|numeric',
             'province_id' => 'required|integer|min:1',
@@ -94,12 +92,6 @@ class MerchantPoolController extends Controller
 
         $merchant = new Merchant();
         $merchant->fillMerchantPoolInfoFromRequest();
-
-        // 商户营业执照代码不能重复
-        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->first();
-        if(!empty($existMerchant)) {
-            throw new BaseResponseException('商户营业执照代码已存在');
-        }
 
         $merchant->creator_oper_id = request()->get('current_user')->oper_id;
         $merchant->save();
@@ -121,12 +113,6 @@ class MerchantPoolController extends Controller
             throw new ParamInvalidException('不能修改其他运营中心录入的商户资料');
         }
         $merchant->fillMerchantPoolInfoFromRequest();
-
-        // 商户营业执照代码不能重复
-        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->offset(1)->first();
-        if(!empty($existMerchant)) {
-            throw new BaseResponseException('商户营业执照代码已存在');
-        }
 
         $merchant->save();
         return Result::success($merchant);

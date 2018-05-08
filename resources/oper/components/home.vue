@@ -93,7 +93,7 @@
         <el-container>
             <leftMenu :collapse="collapseLeftMenu" :menus="menus" ref="leftMenu"/>
 
-            <el-main>
+            <el-main style="overflow-y: scroll;">
                 <el-col :span="24">
                     <!--<transition name="fade" mode="out-in" appear>-->
                     <router-view v-loading="globalLoading"/>
