@@ -68,14 +68,25 @@ class LoginController extends Controller
     private function getMenus()
     {
         return [
-            [ 'id' => 1, 'name' => '商户管理', 'level' => 1, 'url' => '', 'sub' =>
+            [ 'id' => 1, 'name' => '商户管理', 'level' => 1, 'url' => 'merchant', 'sub' =>
                 [
                     [ 'id' => 2, 'name' => '我的商户', 'level' => 2, 'url' => '/oper/merchants', 'pid' => 1,],
                     [ 'id' => 3, 'name' => '商户池', 'level' => 2, 'url' => '/oper/merchant/pool', 'pid' => 1,],
                 ]
             ],
+            [ 'id' => 4, 'name' => '人员管理', 'level' => 1, 'url' => 'user', 'sub' =>
+                [
+                    [ 'id' => 5, 'name' => '我的会员', 'level' => 2, 'url' => '/oper/users', 'pid' => 4,],
+                    [ 'id' => 6, 'name' => '我的业务员', 'level' => 2, 'url' => '/oper/operBizMembers', 'pid' => 4,],
+                ]
+            ],
 
-            [ 'id' => 4, 'name' => '财务管理', 'level' => 1, 'url' => '/oper/settlements',],
+            [ 'id' => 7, 'name' => '财务管理', 'level' => 1, 'url' => '/oper/settlements',],
+            [ 'id' => 8, 'name' => '素材中心', 'level' => 1, 'url' => 'material', 'sub' =>
+                [
+                    [ 'id' => 9, 'name' => '分享会员二维码', 'level' => 2, 'url' => '/oper/miniprogramAppCode', 'pid' => 8,],
+                ]
+            ],
         ];
     }
 

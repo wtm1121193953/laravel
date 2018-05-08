@@ -18,4 +18,5 @@ Route::prefix('oper')
 
         Route::group([], base_path('routes/api/oper/merchant.php'));
         Route::group([], base_path('routes/api/oper/settlements.php'));
+        Route::group([], base_path('routes/api/oper/operBizMember.php'));
     });

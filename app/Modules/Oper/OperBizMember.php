@@ -26,4 +26,13 @@ class OperBizMember extends BaseModel
         }
         return $code;
     }
+
+    /**
+     * @param static $operBizMember
+     * @return int
+     */
+    public static function getActiveMerchantNumber($operBizMember)
+    {
+        return 0;
+    }
 }

@@ -6,6 +6,7 @@ import welcome from '../components/welcome.vue'
 
 import merchant from './merchant'
 import settlements from './settlements'
+import operBizMembers from './operBizMember'
 
 /**
  *
@@ -16,6 +17,7 @@ const routes = [
 
     ...merchant,
     ...settlements,
+    ...operBizMembers,
 
     {
         path: '/',
