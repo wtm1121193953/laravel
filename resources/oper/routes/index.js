@@ -8,6 +8,8 @@ import merchant from './merchant'
 import settlements from './settlements'
 import operBizMembers from './operBizMember'
 
+import InviteChannel from '../components/invite-channel'
+
 /**
  *
  */
@@ -18,6 +20,15 @@ const routes = [
     ...merchant,
     ...settlements,
     ...operBizMembers,
+
+    // 二维码模块
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'invite-channel', component: InviteChannel, name: 'InviteChannel'},
+        ]
+    },
 
     {
         path: '/',

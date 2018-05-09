@@ -16,6 +16,9 @@ Route::prefix('oper')
 
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
 
+        Route::get('inviteChannel/inviteQrcode', 'InviteChannelController@getInviteQrcode');
+        Route::get('inviteChannel/downloadInviteQrcode', 'InviteChannelController@downloadInviteQrcode');
+
         Route::group([], base_path('routes/api/oper/merchant.php'));
         Route::group([], base_path('routes/api/oper/settlements.php'));
         Route::group([], base_path('routes/api/oper/operBizMember.php'));

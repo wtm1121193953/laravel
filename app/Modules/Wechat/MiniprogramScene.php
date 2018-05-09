@@ -7,7 +7,7 @@ use App\BaseModel;
 class MiniprogramScene extends BaseModel
 {
     // 订单支付页面
-    const PAGE_ORDER_PEY = '';
+    const PAGE_ORDER_PAY = '';
     // 邀请注册页面
     const PAGE_INVITE_REGISTER = '';
 }
