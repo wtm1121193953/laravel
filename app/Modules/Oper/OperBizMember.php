@@ -4,6 +4,9 @@ namespace App\Modules\Oper;
 
 use App\BaseModel;
 use App\Exceptions\BaseResponseException;
+use App\Modules\Merchant\Merchant;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class OperBizMember extends BaseModel
 {
@@ -33,6 +36,19 @@ class OperBizMember extends BaseModel
      */
     public static function getActiveMerchantNumber($operBizMember)
     {
-        return 0;
+        return Cache::get('oper_biz_member_active_merchant_number_' . $operBizMember->id) || 0;
+    }
+
+    public static function updateActiveMerchantNumberByCode($code)
+    {
+        $operBizMember = self::where('code', $code)->first();
+        if($operBizMember){
+            $count = Merchant::where('oper_biz_member_code', $code)->count();
+            Cache::forever('oper_biz_member_active_merchant_number_' . $operBizMember->id, $count);
+        }else {
+            Log::warning('更新运营中心业务人员已激活商家数量缓存时, 所传的code对应的业务人员不存在', [
+                'code' => $code,
+            ]);
+        }
     }
 }

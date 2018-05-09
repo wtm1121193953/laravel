@@ -13,7 +13,7 @@
         props: {
             value: {type: Array,}, // marker的值, 一个数组, 第一个元素是经度, 第二个元素是纬度
             draggable: {type: Boolean, default: false}, // marker是否可拖拽, 默认不可拖拽
-            showInfoWindow: {type: Boolean, default: true}, // 是否显示信息窗体 todo
+            showInfoWindow: {type: Boolean, default: true}, // 是否显示信息窗体
         },
         inject: ['manager'],
         data(){

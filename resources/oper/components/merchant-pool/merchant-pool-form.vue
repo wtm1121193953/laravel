@@ -1,5 +1,5 @@
 <template>
-    <!-- todo 调整商户与商户池表单字段 -->
+    <!-- 调整商户与商户池表单字段 -->
     <el-row>
         <el-col :span="24">
             <el-form :model="form" label-width="120px" size="small" :rules="formRules" ref="form" @submit.native.prevent>

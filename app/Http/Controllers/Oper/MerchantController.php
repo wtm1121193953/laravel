@@ -88,7 +88,10 @@ class MerchantController extends Controller
         // 添加审核记录
         MerchantAudit::addRecord($merchant->id, $currentOperId);
 
-        // todo 更新业务员已激活商户数量
+        // 更新业务员已激活商户数量
+        if($merchant->oper_biz_member_code){
+            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
 
         return Result::success($merchant);
     }
@@ -129,7 +132,10 @@ class MerchantController extends Controller
 
         $merchant->save();
 
-        // todo 更新业务员已激活商户数量
+        // 更新业务员已激活商户数量
+        if($merchant->oper_biz_member_code){
+            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
 
         return Result::success($merchant);
     }
@@ -165,7 +171,10 @@ class MerchantController extends Controller
         // 添加审核记录
         MerchantAudit::addRecord($merchant->id, $currentOperId);
 
-        // todo 更新业务员已激活商户数量
+        // 更新业务员已激活商户数量
+        if($merchant->oper_biz_member_code){
+            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
 
         return Result::success('操作成功', $merchant);
     }
