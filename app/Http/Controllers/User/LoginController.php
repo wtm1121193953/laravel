@@ -18,6 +18,7 @@ use App\Modules\User\UserOpenIdMapping;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Result;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 class LoginController extends Controller
 {
@@ -103,5 +104,23 @@ class LoginController extends Controller
             'userInfo' => $user,
             'payload' => $payload,
         ]);
+    }
+
+    /**
+     * 退出登录
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
+    public function logout()
+    {
+        // 解除openId关联
+        $openId = request()->get('current_open_id');
+        $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
+        if($userOpenIdMapping){
+            $userOpenIdMapping->delete();
+        }
+        // 删除缓存的token与openId的关系
+        Cache::forget('open_id_for_token_' . request('token'));
+        return Result::success();
     }
 }
