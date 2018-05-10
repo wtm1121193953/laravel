@@ -7,6 +7,7 @@ import welcome from '../components/welcome.vue'
 import goods from './goods'
 import settlements from './settlements'
 
+import InviteStatisticsDaily from '../components/invite-statistics/daily'
 import OrdersList from '../components/orders/list.vue'
 /**
  *
@@ -17,6 +18,15 @@ const routes = [
 
     ...goods,
     ...settlements,
+
+    // 我的会员
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'invite/statistics/daily', component: InviteStatisticsDaily, name: 'InviteStatisticsDaily'},
+        ]
+    },
 
     //订单管理列表
     {
