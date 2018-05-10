@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\InviteUserStatisticsDailyJob;
 use App\Jobs\OrderExpired;
 use App\Jobs\SettlementForMerchant;
 use App\Jobs\SettlementJob;
@@ -50,7 +51,8 @@ class Test extends Command
      */
     public function handle()
     {
-        OrderExpired::dispatch();
+        InviteUserStatisticsDailyJob::dispatch(new Carbon());
+        /*OrderExpired::dispatch();
         dd();
         SettlementForMerchant::dispatch(1, Carbon::now()->startOfMonth(), Carbon::now());
         dd();
@@ -63,7 +65,7 @@ class Test extends Command
         dd(new \Illuminate\Support\Carbon(Factory::create()->dateTimeBetween('-7 days')->format('Y-m-d H:i:s')));
         dd(Factory::create()->dateTimeBetween('-7 days')->format('YmdHis'));
         SettlementJob::dispatch(1);
-        dd();
+        dd();*/
 //        Redis::geoadd('location:merchant', 113.99531, 22.709883, 1);
 //        Redis::geoadd('location:merchant', 114.002176, 22.663525, 2);
 //        Redis::geoadd('location:merchant', 114.002176, 22.664525, 3);

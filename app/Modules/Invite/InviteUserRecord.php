@@ -2,9 +2,9 @@
 
 namespace App\Modules\Invite;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class InviteUserRecord extends Model
+class InviteUserRecord extends BaseModel
 {
     //
 }
