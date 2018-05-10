@@ -12,6 +12,9 @@ Route::prefix('merchant')
         Route::post('login', 'LoginController@login');
         Route::post('logout', 'LoginController@logout');
 
+        Route::get('inviteChannel/inviteQrcode', 'InviteChannelController@getInviteQrcode');
+        Route::get('inviteChannel/downloadInviteQrcode', 'InviteChannelController@downloadInviteQrcode');
+
         Route::get('invite/statistics/dailyList', 'InviteStatisticsController@dailyList');
 
         Route::group([], base_path('routes/api/merchant/goods.php'));

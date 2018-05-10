@@ -6,7 +6,7 @@
  * Time: 23:36
  */
 
-namespace App\Http\Controllers\Oper;
+namespace App\Http\Controllers\Merchant;
 
 
 use App\Http\Controllers\Controller;
@@ -14,6 +14,7 @@ use App\Modules\Invite\InviteChannel;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use Illuminate\Http\Response;
 
 class InviteChannelController extends Controller
 {
@@ -23,13 +24,13 @@ class InviteChannelController extends Controller
      */
     public function getInviteQrcode()
     {
-        $operId = request()->get('current_user')->oper_id;
-        $inviteChannel = InviteChannel::where('oper_id', $operId)
-            ->where('origin_id', $operId)
-            ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
+        $currentUser = request()->get('current_user');
+        $inviteChannel = InviteChannel::where('oper_id', $currentUser->oper_id)
+            ->where('origin_id', $currentUser->merchant_id)
+            ->where('origin_type', InviteChannel::ORIGIN_TYPE_MERCHANT)
             ->first();
         if(empty($inviteChannel)){
-            $inviteChannel = InviteChannel::createInviteChannel($operId, $operId, InviteChannel::ORIGIN_TYPE_OPER);
+            $inviteChannel = InviteChannel::createInviteChannel($currentUser->oper_id, $currentUser->merchant_id, InviteChannel::ORIGIN_TYPE_MERCHANT);
         }
         $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
         $url = WechatService::getMiniprogramAppCodeUrl($scene);
@@ -46,14 +47,14 @@ class InviteChannelController extends Controller
     {
         // type 小程序码类型, 1-小(8cm, 对应258px) 2-中(15cm, 对应430px)  3-大(50cm, 对应1280px)
         $type = request('type', 1);
-        $operId = request()->get('current_user')->oper_id;
-        $inviteChannel = InviteChannel::where('oper_id', $operId)
-            ->where('origin_id', $operId)
-            ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
+        $currentUser = request()->get('current_user');
+        $inviteChannel = InviteChannel::where('oper_id', $currentUser->oper_id)
+            ->where('origin_id', $currentUser->merchant_id)
+            ->where('origin_type', InviteChannel::ORIGIN_TYPE_MERCHANT)
             ->firstOrFail();
         $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
         $width = $type == 3 ? 1280 : ($type == 2 ? 430 : 258);
-        $inviteQrcodeFilename = WechatService::genMiniprogramAppCode($operId, $scene->id, $scene->page, $width, true);
+        $inviteQrcodeFilename = WechatService::genMiniprogramAppCode($currentUser->oper_id, $scene->id, $scene->page, $width, true);
         $filename = storage_path('app/public/miniprogram/app_code') . '/' . $inviteQrcodeFilename;
         return response()->download($filename);
 
