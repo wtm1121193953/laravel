@@ -47,9 +47,14 @@ class InviteChannelController extends Controller
      */
     public function getInviterInfo()
     {
-        $sceneId = request('scene');
+        $sceneId = request('sceneId');
         if(empty($sceneId)){
             throw new ParamInvalidException('场景ID不能为空');
+        }
+        // 判断场景类型必须是 推广注册小程序码 才可以
+        $scene = MiniprogramScene::findOrFail($sceneId);
+        if($scene->type != MiniprogramScene::TYPE_INVITE_CHANNEL){
+            throw new ParamInvalidException('该场景不是邀请渠道场景');
         }
         $inviteChannel = InviteChannel::where('scene_id', $sceneId)->first();
         if(empty($inviteChannel)){

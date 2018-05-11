@@ -10,4 +10,7 @@ class MiniprogramScene extends BaseModel
     const PAGE_ORDER_PAY = '';
     // 邀请注册页面
     const PAGE_INVITE_REGISTER = '';
+
+    const TYPE_PAY_BRIDGE = 1;
+    const TYPE_INVITE_CHANNEL = 2;
 }
