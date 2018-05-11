@@ -9,8 +9,12 @@
 namespace App\Http\Controllers\User;
 
 
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
+use App\Modules\Merchant\Merchant;
+use App\Modules\Oper\Oper;
+use App\Modules\User\User;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
@@ -36,6 +40,35 @@ class InviteChannelController extends Controller
         return Result::success([
             'qrcode_url' => $url,
         ]);
+    }
+
+    /**
+     * 根据场景ID获取邀请人信息
+     */
+    public function getInviterInfo()
+    {
+        $sceneId = request('scene');
+        if(empty($sceneId)){
+            throw new ParamInvalidException('场景ID不能为空');
+        }
+        $inviteChannel = InviteChannel::where('scene_id', $sceneId)->first();
+        if(empty($inviteChannel)){
+            throw new ParamInvalidException('场景不存在');
+        }
+        $originType = $inviteChannel->origin_type;
+        $originId = $inviteChannel->origin_id;
+
+        $originName = '';
+        if($originType == 1){
+            $user = User::findOrFail($originId);
+            $originName = $user->name ?: $user->mobile;
+        }else if($originType == 2){
+            $originName = Merchant::where('id', $originId)->value('name');
+        }else if($originType == 3){
+            $originName = Oper::where('id', $originId)->value('name');
+        }
+        $inviteChannel->origin_name = $originName;
+        return Result::success($inviteChannel);
     }
 
 }
