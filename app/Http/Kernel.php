@@ -8,7 +8,7 @@ use App\Http\Middleware\Merchant\MerchantLoginFilter;
 use App\Http\Middleware\Oper\OperLoginFilter;
 use App\Http\Middleware\User\CurrentOperInjector;
 use App\Http\Middleware\User\MockMiniprogramEnv;
-use App\Http\Middleware\User\RequestLog;
+use App\Http\Middleware\RequestLog;
 use App\Http\Middleware\User\UserInfoInjector;
 use App\Http\Middleware\User\UserOpenIdInjector;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
@@ -51,6 +51,7 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             'throttle:60,1',
             'bindings',
+            RequestLog::class,
         ],
 
         // admin 后台接口中间件
@@ -75,7 +76,6 @@ class Kernel extends HttpKernel
             CurrentOperInjector::class,
             UserOpenIdInjector::class,
             UserInfoInjector::class,
-            RequestLog::class,
         ]
     ];
 

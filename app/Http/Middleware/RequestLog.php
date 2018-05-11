@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware\User;
+namespace App\Http\Middleware;
 
 use App\Support\Utils;
 use Closure;
@@ -19,13 +19,17 @@ class RequestLog
      */
     public function handle($request, Closure $next)
     {
+        $response = $next($request);
         $attributes = $request->attributes->all();
         foreach ($attributes as $key => $attribute) {
             if($attribute instanceof Model){
                 $attributes[$key] = $attribute->toArray();
             }
         }
-        Log::info('request listen ', Utils::getRequestContext($request));
-        return $next($request);
+        Log::info('request listen ', [
+            'request' => Utils::getRequestContext($request),
+            'response' => $response,
+        ]);
+        return $response;
     }
 }
