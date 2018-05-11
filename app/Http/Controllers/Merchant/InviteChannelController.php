@@ -56,7 +56,7 @@ class InviteChannelController extends Controller
         $width = $type == 3 ? 1280 : ($type == 2 ? 430 : 258);
         $inviteQrcodeFilename = WechatService::genMiniprogramAppCode($currentUser->oper_id, $scene->id, $scene->page, $width, true);
         $filename = storage_path('app/public/miniprogram/app_code') . '/' . $inviteQrcodeFilename;
-        return response()->download($filename);
+        return response()->download($filename, '分享会员二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
 
     }
 }
