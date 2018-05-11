@@ -43,7 +43,11 @@ class OperBizMemberController extends Controller
         $name = request('name', '');
         $mobile = request('mobile', '');
         $keyword = request('keyword', '');
+        $status = request('status');
         $list = OperBizMember::where('oper_id', request()->get('current_user')->oper_id)
+            ->when($status, function(Builder $query) use ($status){
+                $query->where('status', $status);
+            })
             ->when(!empty($keyword), function(Builder $query) use ($keyword){
                 $query->where(function(Builder $query) use ($keyword){
                     $query->where('code', 'like', "%$keyword%")

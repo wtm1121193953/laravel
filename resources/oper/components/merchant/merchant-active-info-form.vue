@@ -320,7 +320,7 @@
             searchOperBizMember(query){
                 if (query !== '') {
                     this.searchOperBizMemberLoading = true;
-                    api.get('/operBizMembers/search', {keyword: query}).then(data => {
+                    api.get('/operBizMembers/search', {keyword: query, status: 1}).then(data => {
                         this.operBizMembers = data.list;
                     }).finally(() => {
                         this.searchOperBizMemberLoading = false;
