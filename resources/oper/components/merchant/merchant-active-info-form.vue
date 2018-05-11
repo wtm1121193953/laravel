@@ -74,10 +74,10 @@
             <el-form-item prop="settlement_cycle_type" required label="结算周期">
                 <el-select :disabled="!!data && data.audit_oper_id != 0" v-model="form.settlement_cycle_type" placeholder="请选择">
                     <el-option label="周结" :value="1"/>
-                    <el-option label="半月结" :value="2"/>
+                    <!--<el-option label="半月结" :value="2"/>
                     <el-option label="月结" :value="3"/>
                     <el-option label="半年结" :value="4"/>
-                    <el-option label="年结" :value="5"/>
+                    <el-option label="年结" :value="5"/>-->
                 </el-select>
             </el-form-item>
             <el-form-item prop="settlement_rate" required label="分利比例">
