@@ -38,6 +38,7 @@ class LoginController extends Controller
             throw new ParamInvalidException('手机号码不合法');
         }
         $verifyCode = request('verify_code');
+        // 非正式环境时, 验证码为6666为通过验证
         if(App::environment('production') || $verifyCode != '6666'){
             $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
                 ->where('verify_code', $verifyCode)
@@ -60,17 +61,19 @@ class LoginController extends Controller
 
         // 如果存在邀请渠道ID, 查询用户是否已被邀请过
         $inviteChannelId = request('inviteChannelId');
-        $inviteChannel = InviteChannel::findOrFail($inviteChannelId);
-        $inviteRecord = InviteUserRecord::where('user_id', $user->id)->first();
-        if($inviteRecord){
-            // 如果当前用户已被邀请过, 不能重复邀请
-            throw new BaseResponseException('当前用户已经被邀请, 不能重复邀请', ResultCode::USER_ALREADY_BEEN_INVITE);
+        if($inviteChannelId){
+            $inviteChannel = InviteChannel::findOrFail($inviteChannelId);
+            $inviteRecord = InviteUserRecord::where('user_id', $user->id)->first();
+            if($inviteRecord){
+                // 如果当前用户已被邀请过, 不能重复邀请
+                throw new BaseResponseException('当前用户已经被邀请, 不能重复邀请', ResultCode::USER_ALREADY_BEEN_INVITE);
+            }
+            $inviteRecord = new InviteUserRecord();
+            $inviteRecord->user_id = $user->id;
+            $inviteRecord->origin_id = $inviteChannel->origin_id;
+            $inviteRecord->origin_type = $inviteChannel->origin_type;
+            $inviteRecord->save();
         }
-        $inviteRecord = new InviteUserRecord();
-        $inviteRecord->user_id = $user->id;
-        $inviteRecord->origin_id = $inviteChannel->origin_id;
-        $inviteRecord->origin_type = $inviteChannel->origin_type;
-        $inviteRecord->save();
 
         // 保存用户与openId的映射关系, 并覆盖旧的关联关系
         $openId = request()->get('current_open_id');
