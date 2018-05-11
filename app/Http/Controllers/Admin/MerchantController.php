@@ -16,6 +16,7 @@ use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Oper\Oper;
 use App\Result;
+use Illuminate\Support\Carbon;
 
 class MerchantController extends Controller
 {
@@ -111,6 +112,10 @@ class MerchantController extends Controller
             if($type == 1){
                 // 如果审核通过, 补充商户所属运营中心ID
                 $merchant->oper_id = $merchant->audit_oper_id;
+                // 如果商户首次激活时间为空, 补充商户首次激活时间
+                if(empty($merchant->active_time)){
+                    $merchant->active_time = new Carbon();
+                }
             }
         }
         $merchant->save();
