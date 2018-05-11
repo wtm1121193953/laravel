@@ -66,7 +66,7 @@ class LoginController extends Controller
             $inviteRecord = InviteUserRecord::where('user_id', $user->id)->first();
             if($inviteRecord){
                 // 如果当前用户已被邀请过, 不能重复邀请
-                throw new BaseResponseException('当前用户已经被邀请, 不能重复邀请', ResultCode::USER_ALREADY_BEEN_INVITE);
+                throw new BaseResponseException('您已经被邀请过了, 不能重复接收邀请', ResultCode::USER_ALREADY_BEEN_INVITE);
             }
             $inviteRecord = new InviteUserRecord();
             $inviteRecord->user_id = $user->id;

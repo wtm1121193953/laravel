@@ -110,6 +110,7 @@ class Handler extends ExceptionHandler
                 ResultCode::PARAMS_INVALID,
                 ResultCode::UNLOGIN,
                 ResultCode::TOKEN_INVALID,
+                ResultCode::USER_ALREADY_BEEN_INVITE,
             ])
         ){
             Log::error('exception handler listen', [
