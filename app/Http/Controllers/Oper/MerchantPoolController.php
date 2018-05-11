@@ -93,6 +93,12 @@ class MerchantPoolController extends Controller
         $merchant = new Merchant();
         $merchant->fillMerchantPoolInfoFromRequest();
 
+        // 商户名不能重复
+        $exists = Merchant::where('name', $merchant->name)->first();
+        if($exists){
+            throw new ParamInvalidException('商户名称不能重复');
+        }
+
         $merchant->creator_oper_id = request()->get('current_user')->oper_id;
         $merchant->save();
         return Result::success($merchant);
@@ -113,6 +119,12 @@ class MerchantPoolController extends Controller
             throw new ParamInvalidException('不能修改其他运营中心录入的商户资料');
         }
         $merchant->fillMerchantPoolInfoFromRequest();
+
+        // 商户名不能重复
+        $exists = Merchant::where('name', $merchant->name)->first();
+        if($exists){
+            throw new ParamInvalidException('商户名称不能重复');
+        }
 
         $merchant->save();
         return Result::success($merchant);
