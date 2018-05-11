@@ -129,7 +129,8 @@ class MerchantController extends Controller
         }
 
         // 商户名不能重复
-        $exists = Merchant::where('name', $merchant->name)->first();
+        $exists = Merchant::where('name', $merchant->name)
+            ->where('id', '<>', $merchant->id)->first();
         if($exists){
             throw new ParamInvalidException('商户名称不能重复');
         }
@@ -172,6 +173,13 @@ class MerchantController extends Controller
         // 设置当前商户提交审核的运营中心
         $merchant->audit_oper_id = $currentOperId;
         $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+
+        // 商户名不能重复
+        $exists = Merchant::where('name', $merchant->name)
+            ->where('id', '<>', $merchant->id)->first();
+        if($exists){
+            throw new ParamInvalidException('商户名称不能重复');
+        }
 
         // 商户营业执照代码不能重复
         $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->first();

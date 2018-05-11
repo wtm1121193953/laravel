@@ -121,7 +121,8 @@ class MerchantPoolController extends Controller
         $merchant->fillMerchantPoolInfoFromRequest();
 
         // 商户名不能重复
-        $exists = Merchant::where('name', $merchant->name)->first();
+        $exists = Merchant::where('name', $merchant->name)
+            ->where('id', '<>', $merchant->id)->first();
         if($exists){
             throw new ParamInvalidException('商户名称不能重复');
         }

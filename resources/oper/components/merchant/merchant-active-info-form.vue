@@ -43,13 +43,22 @@
             </el-form-item>
             <el-form-item prop="business_time" label="营业时间">
                 <el-time-picker
+                        v-model="form.business_start_time"
+                        placeholder="开始时间"
+                />
+                <span style="margin: 0 20px;">至</span>
+                <el-time-picker
+                        v-model="form.business_end_time"
+                        placeholder="结束时间"
+                />
+                <!--<el-time-picker
                         is-range
                         v-model="form.business_time"
                         range-separator="至"
                         start-placeholder="开始时间"
                         end-placeholder="结束时间"
                         placeholder="选择时间范围">
-                </el-time-picker>
+                </el-time-picker>-->
             </el-form-item>
             <el-form-item prop="logo" label="商家logo">
                 <image-upload :width="190" :height="190" v-model="form.logo" :limit="1"/>
@@ -160,7 +169,9 @@
         oper_biz_member_code: '',
         brand: '',
         status: 1,
-        business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
+        // business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
+        business_start_time: new Date('1970-01-01 00:00:00'),
+        business_end_time: new Date('1970-01-01 23:59:59'),
         logo: '',
         desc_pic_list: [],
         desc: '',
@@ -231,8 +242,14 @@
                     invoice_no: [
                         {required: true, message: '发票税号 不能为空'},
                     ],*/
-                    business_time: [
+                    /*business_time: [
                         {type: 'array', required: true, message: '营业时间不能为空'},
+                    ],*/
+                    business_start_time: [
+                        {type: 'date', required: true, message: '营业时间不能为空'},
+                    ],
+                    business_end_time: [
+                        {type: 'date', required: true, message: '营业时间不能为空'},
                     ],
                     logo: [
                         {required: true, message: '商家logo不能为空', trigger: 'change'}
@@ -335,7 +352,13 @@
                     for (let key in defaultForm){
                         this.form[key] = this.data[key];
                     }
-                    this.form.business_time = data.business_time ? ['1970-01-01 '+JSON.parse(data.business_time)[0], '1970-01-01 '+JSON.parse(data.business_time)[1]] : [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')];
+                    // this.form.business_time = data.business_time
+                    //     ? ['1970-01-01 '+JSON.parse(data.business_time)[0], '1970-01-01 '+JSON.parse(data.business_time)[1]]
+                    //     : [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')];
+                    let business_time = JSON.parse(data.business_time);
+                    this.form.business_start_time = data.business_time ? new Date('1970-01-01 '+business_time[0]) : new Date('1970-01-01 00:00:00');
+                    this.form.business_end_time = data.business_time ? new Date('1970-01-01 '+business_time[1]) : new Date('1970-01-01 23:59:59');
+                    console.log(this.form.business_start_time, this.form.business_end_time)
                     this.form.region = parseInt(data.region);
                     this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                     this.form.status = parseInt(data.status);
@@ -356,7 +379,7 @@
                 if(this.data && this.data.id){
                     data.id = this.data.id;
                 }
-                data.business_time = JSON.stringify([new Date(data.business_time[0]).format('hh:mm:ss'), new Date(data.business_time[1]).format('hh:mm:ss')]);
+                data.business_time = JSON.stringify([new Date(data.business_start_time).format('hh:mm:ss'), new Date(data.business_end_time).format('hh:mm:ss')]);
                 return data;
             },
             validate(callback){
