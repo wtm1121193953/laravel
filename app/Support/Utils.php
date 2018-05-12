@@ -43,13 +43,16 @@ class Utils
             }
         }
 //        App::se
-        return [
+        $data = [
             'ip' => $request->ip(),
             'fullUrl' => $request->fullUrl(),
             'header' => $request->header(),
             'params' => $request->all(),
             'attributes' => $attributes,
-            'session' => $request->session()->all(),
         ];
+        if($request->hasSession()){
+            $data['session'] = $request->session()->all();
+        }
+        return $data;
     }
 }
