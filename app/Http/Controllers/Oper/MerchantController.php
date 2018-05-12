@@ -84,11 +84,6 @@ class MerchantController extends Controller
             throw new ParamInvalidException('商户名称不能重复');
         }
 
-        // 商户营业执照代码不能重复
-        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->first();
-        if(!empty($existMerchant)) {
-            throw new BaseResponseException('商户营业执照代码已存在');
-        }
         $merchant->save();
 
         // 添加审核记录
@@ -121,12 +116,6 @@ class MerchantController extends Controller
 
         $merchant->fillMerchantPoolInfoFromRequest();
         $merchant->fillMerchantActiveInfoFromRequest();
-
-        // 商户营业执照代码不能重复
-        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->offset(1)->first();
-        if(!empty($existMerchant)) {
-            throw new BaseResponseException('商户营业执照代码已存在');
-        }
 
         // 商户名不能重复
         $exists = Merchant::where('name', $merchant->name)
@@ -179,12 +168,6 @@ class MerchantController extends Controller
             ->where('id', '<>', $merchant->id)->first();
         if($exists){
             throw new ParamInvalidException('商户名称不能重复');
-        }
-
-        // 商户营业执照代码不能重复
-        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->first();
-        if(!empty($existMerchant)) {
-            throw new BaseResponseException('商户营业执照代码已存在');
         }
 
         $merchant->save();
