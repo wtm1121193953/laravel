@@ -45,7 +45,12 @@
                 })
             },
             merchants(){
-                this.$alert('业务');
+                router.push({
+                    path: '/operBizMember/merchants',
+                    query: {
+                        id: this.scope.row.id
+                    }
+                })
             },
             changeStatus(){
                 let status = this.scope.row.status === 1 ? 2 : 1;

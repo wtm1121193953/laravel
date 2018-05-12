@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Oper;
 
 
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -69,6 +70,16 @@ class OperBizMemberController extends Controller
         ]);
     }
 
+    public function detail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $id = request('id');
+        $operBizMember = OperBizMember::findOrFail($id);
+        return Result::success($operBizMember);
+    }
+
     /**
      * 添加数据
      */
@@ -125,6 +136,26 @@ class OperBizMemberController extends Controller
 
         $operBizMember->save();
         return Result::success($operBizMember);
+    }
+
+    /**
+     * 获取业务员的商户
+     */
+    public function getMerchants()
+    {
+        $this->validate(request(), [
+            'code' => 'required',
+        ]);
+        $code = request('code');
+        $data = Merchant::where('oper_id', request()->get('current_user')->oper_id)
+            ->where('oper_biz_member_code', $code)
+            ->select('id', 'active_time', 'name', 'status')
+            ->paginate();
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
     }
 
 }
