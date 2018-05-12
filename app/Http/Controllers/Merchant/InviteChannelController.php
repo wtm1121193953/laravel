@@ -11,10 +11,10 @@ namespace App\Http\Controllers\Merchant;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteService;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
-use Illuminate\Http\Response;
 
 class InviteChannelController extends Controller
 {
@@ -25,13 +25,7 @@ class InviteChannelController extends Controller
     public function getInviteQrcode()
     {
         $currentUser = request()->get('current_user');
-        $inviteChannel = InviteChannel::where('oper_id', $currentUser->oper_id)
-            ->where('origin_id', $currentUser->merchant_id)
-            ->where('origin_type', InviteChannel::ORIGIN_TYPE_MERCHANT)
-            ->first();
-        if(empty($inviteChannel)){
-            $inviteChannel = InviteChannel::createInviteChannel($currentUser->oper_id, $currentUser->merchant_id, InviteChannel::ORIGIN_TYPE_MERCHANT);
-        }
+        $inviteChannel = InviteService::getInviteChannel($currentUser->oper_id, $currentUser->merchant_id, InviteChannel::ORIGIN_TYPE_MERCHANT);
         $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
         $url = WechatService::getMiniprogramAppCodeUrl($scene);
         return Result::success([

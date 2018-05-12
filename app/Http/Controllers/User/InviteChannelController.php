@@ -12,6 +12,7 @@ namespace App\Http\Controllers\User;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
@@ -29,13 +30,7 @@ class InviteChannelController extends Controller
     {
         $operId = request()->get('current_oper')->id;
         $userId = request()->get('current_user')->id;
-        $inviteChannel = InviteChannel::where('oper_id', $operId)
-            ->where('origin_id', $userId)
-            ->where('origin_type', InviteChannel::ORIGIN_TYPE_USER)
-            ->first();
-        if(empty($inviteChannel)){
-            $inviteChannel = InviteChannel::createInviteChannel($operId, $userId, InviteChannel::ORIGIN_TYPE_USER);
-        }
+        $inviteChannel = InviteService::getInviteChannel($operId, $userId, InviteChannel::ORIGIN_TYPE_USER);
         $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
         $url = WechatService::getMiniprogramAppCodeUrl($scene);
         return Result::success([
@@ -91,7 +86,7 @@ class InviteChannelController extends Controller
         if(empty($inviteChannel)){
             throw new ParamInvalidException('邀请渠道不存在');
         }
-        InviteChannel::bindInviter(request()->get('current_user')->id, $inviteChannel);
+        InviteService::bindInviter(request()->get('current_user')->id, $inviteChannel);
         return Result::success();
     }
 

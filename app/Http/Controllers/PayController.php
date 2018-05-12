@@ -11,6 +11,7 @@ namespace App\Http\Controllers;
 
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperMiniprogram;
@@ -21,7 +22,6 @@ use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Log;
 
 class PayController extends Controller
 {
@@ -109,14 +109,8 @@ class PayController extends Controller
             if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
                 $merchantId = $order->merchant_id;
                 $merchant = Merchant::findOrFail($merchantId);
-                $inviteChannel = InviteChannel::where('origin_id', $merchantId)
-                    ->where('oper_id', $merchant->oper_id)
-                    ->where('origin_type', InviteChannel::ORIGIN_TYPE_MERCHANT)
-                    ->first();
-                if(empty($inviteChannel)){
-                    $inviteChannel = InviteChannel::createInviteChannel($merchant->oper_id, $merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT);
-                }
-                InviteChannel::bindInviter($userId, $inviteChannel);
+                $inviteChannel = InviteService::getInviteChannel($merchant->oper_id, $merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT);
+                InviteService::bindInviter($userId, $inviteChannel);
             }
 
             return true;
@@ -130,5 +124,6 @@ class PayController extends Controller
             // 订单已退款或已完成
             return true;
         }
+        return false;
     }
 }
