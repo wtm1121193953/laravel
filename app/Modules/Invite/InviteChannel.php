@@ -33,7 +33,7 @@ class InviteChannel extends BaseModel
         }
         $scene = new MiniprogramScene();
         $scene->oper_id = $operId;
-        // todo 小程序端邀请注册页面地址
+        // 小程序端邀请注册页面地址
         $scene->page = MiniprogramScene::PAGE_INVITE_REGISTER;
         $scene->type = 2;
         $scene->payload = json_encode([
