@@ -67,7 +67,7 @@ class InviteChannelController extends Controller
         $originName = '';
         if($originType == 1){
             $user = User::findOrFail($originId);
-            $originName = $user->name ?: $user->mobile;
+            $originName = $user->name ?: $this->_getHalfHideMobile($user->mobile);
         }else if($originType == 2){
             $originName = Merchant::where('id', $originId)->value('name');
         }else if($originType == 3){
@@ -75,6 +75,10 @@ class InviteChannelController extends Controller
         }
         $inviteChannel->origin_name = $originName;
         return Result::success($inviteChannel);
+    }
+
+    private function _getHalfHideMobile($mobile){
+        return substr($mobile, 0, 3) . '****' . substr($mobile, -4);
     }
 
     /**
