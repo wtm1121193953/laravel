@@ -15,6 +15,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperBizMember;
 use App\Result;
 use Illuminate\Support\Carbon;
 
@@ -51,6 +52,9 @@ class MerchantController extends Controller
         $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
         $merchant->contract_pic_url = explode(',', $merchant->contract_pic_url);
         $merchant->other_card_pic_urls = explode(',', $merchant->other_card_pic_urls);
+        if($merchant->oper_biz_member_code){
+            $merchant->operBizMemberName = OperBizMember::where('code', $merchant->oper_biz_member_code)->value('name');
+        }
         return Result::success($merchant);
     }
 
