@@ -4,6 +4,7 @@ namespace App\Modules\Invite;
 
 use App\BaseModel;
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
 use App\Modules\Wechat\MiniprogramScene;
 use App\ResultCode;
 
@@ -64,6 +65,9 @@ class InviteChannel extends BaseModel
         if($inviteRecord){
             // 如果当前用户已被邀请过, 不能重复邀请
             throw new BaseResponseException('您已经被邀请过了, 不能重复接收邀请', ResultCode::USER_ALREADY_BEEN_INVITE);
+        }
+        if($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER && $inviteChannel->origin_id == $userId){
+            throw new ParamInvalidException('不能扫描自己的邀请码');
         }
         $inviteRecord = new InviteUserRecord();
         $inviteRecord->user_id = $userId;
