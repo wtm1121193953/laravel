@@ -136,8 +136,6 @@ class LoginController extends Controller
         if($userOpenIdMapping){
             $userOpenIdMapping->delete();
         }
-        // 删除缓存的token与openId的关系
-        Cache::forget('open_id_for_token_' . request('token'));
         return Result::success();
     }
 }
