@@ -37,5 +37,6 @@ Route::prefix('user')
 
         Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
         Route::get('invite/getInviterBySceneId', 'InviteChannelController@getInviterInfo');
+        Route::get('invite/bindInviter', 'InviteChannelController@bindInviter');
 
     });
