@@ -30,7 +30,7 @@ class InviteChannelController extends Controller
         $operId = request()->get('current_oper')->id;
         $inviteChannel = InviteChannel::where('oper_id', $operId)
             ->where('origin_id', $operId)
-            ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
+            ->where('origin_type', InviteChannel::ORIGIN_TYPE_USER)
             ->first();
         if(empty($inviteChannel)){
             $inviteChannel = InviteChannel::createInviteChannel($operId, $operId, InviteChannel::ORIGIN_TYPE_USER);
