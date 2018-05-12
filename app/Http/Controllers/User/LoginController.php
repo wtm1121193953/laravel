@@ -13,13 +13,11 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
-use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Sms\SmsVerifyCode;
 use App\Modules\User\User;
 use App\Modules\User\UserOpenIdMapping;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Result;
-use App\ResultCode;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
@@ -62,17 +60,11 @@ class LoginController extends Controller
         // 如果存在邀请渠道ID, 查询用户是否已被邀请过
         $inviteChannelId = request('inviteChannelId');
         if($inviteChannelId){
-            $inviteChannel = InviteChannel::findOrFail($inviteChannelId);
-            $inviteRecord = InviteUserRecord::where('user_id', $user->id)->first();
-            if($inviteRecord){
-                // 如果当前用户已被邀请过, 不能重复邀请
-                throw new BaseResponseException('您已经被邀请过了, 不能重复接收邀请', ResultCode::USER_ALREADY_BEEN_INVITE);
+            $inviteChannel = InviteChannel::find($inviteChannelId);
+            if(empty($inviteChannel)){
+                throw new ParamInvalidException('邀请渠道不存在');
             }
-            $inviteRecord = new InviteUserRecord();
-            $inviteRecord->user_id = $user->id;
-            $inviteRecord->origin_id = $inviteChannel->origin_id;
-            $inviteRecord->origin_type = $inviteChannel->origin_type;
-            $inviteRecord->save();
+            InviteChannel::bindInviter($user->id, $inviteChannel);
         }
 
         // 保存用户与openId的映射关系, 并覆盖旧的关联关系

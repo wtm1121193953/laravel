@@ -3,7 +3,9 @@
 namespace App\Modules\Invite;
 
 use App\BaseModel;
+use App\Exceptions\BaseResponseException;
 use App\Modules\Wechat\MiniprogramScene;
+use App\ResultCode;
 
 class InviteChannel extends BaseModel
 {
@@ -49,5 +51,24 @@ class InviteChannel extends BaseModel
         $inviteChannel->scene_id = $scene->id;
         $inviteChannel->save();
         return $inviteChannel;
+    }
+
+    /**
+     * 绑定邀请人信息到用户
+     * @param $userId
+     * @param InviteChannel $inviteChannel
+     */
+    public static function bindInviter($userId, InviteChannel $inviteChannel)
+    {
+        $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
+        if($inviteRecord){
+            // 如果当前用户已被邀请过, 不能重复邀请
+            throw new BaseResponseException('您已经被邀请过了, 不能重复接收邀请', ResultCode::USER_ALREADY_BEEN_INVITE);
+        }
+        $inviteRecord = new InviteUserRecord();
+        $inviteRecord->user_id = $userId;
+        $inviteRecord->origin_id = $inviteChannel->origin_id;
+        $inviteRecord->origin_type = $inviteChannel->origin_type;
+        $inviteRecord->save();
     }
 }

@@ -77,4 +77,18 @@ class InviteChannelController extends Controller
         return Result::success($inviteChannel);
     }
 
+    /**
+     * 绑定推荐人
+     */
+    public function bindInviter()
+    {
+        $inviteChannelId = request('inviteChannelId');
+        $inviteChannel = InviteChannel::find($inviteChannelId);
+        if(empty($inviteChannel)){
+            throw new ParamInvalidException('邀请渠道不存在');
+        }
+        InviteChannel::bindInviter(request()->get('current_user')->id, $inviteChannel);
+        return Result::success();
+    }
+
 }
