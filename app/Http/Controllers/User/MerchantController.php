@@ -72,7 +72,6 @@ class MerchantController extends Controller
             })
             ->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
                 // 如果范围存在, 按距离搜索, 并按距离排序
-//                dd(array_keys($distances));
                 $query->whereIn('id', array_keys($distances));
             });
         if($lng && $lat && $radius){
@@ -80,7 +79,9 @@ class MerchantController extends Controller
             $allList = $query->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($distances) {
-                $item->distance = isset($distances[$item->id]) ? $distances[$item->id] : 10000;
+                $distance = isset($distances[$item->id]) ? $distances[$item->id] : 10000;
+                // 格式化距离
+                $item->distance = $this->_getFormativeDistance($distance);
                 return $item;
             })
                 ->sortBy('distance')->values()
@@ -91,7 +92,9 @@ class MerchantController extends Controller
             // 如果传递了经纬度信息, 需要计算用户与商家之间的距离
             if($lng && $lat){
                 $data->each(function ($item) use ($lng, $lat){
-                    $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
+                    $distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
+                    // 格式化距离
+                    $item->distance = $this->_getFormativeDistance($distance);
                 });
             }
             $list = $data->items();
@@ -103,10 +106,6 @@ class MerchantController extends Controller
         $list->each(function ($item) use ($currentOperId) {
             $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
             if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
-            // 格式化距离
-            if(isset($item->distance)){
-                $item->distance = $item->distance >= 1000 ? (number_format($item->distance / 1000, 1) . '千米') : ($item->distance . '米');
-            }
             $category = MerchantCategory::find($item->merchant_category_id);
             $item->merchantCategoryName = $category->name;
             // 最低消费
@@ -141,9 +140,11 @@ class MerchantController extends Controller
         $detail = Merchant::findOrFail($id);
         $detail->desc_pic_list = $detail->desc_pic_list ? explode(',', $detail->desc_pic_list) : [];
         if($detail->business_time) $detail->business_time = json_decode($detail->business_time, 1);
-        $detail->distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), $lng, $lat);
-        // 格式化距离
-        $detail->distance = $detail->distance >= 1000 ? (number_format($detail->distance / 1000, 1) . '千米') : ($detail->distance . '米');
+        if($lng && $lat){
+            $distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), $lng, $lat);
+            // 格式化距离
+            $detail->distance = $this->_getFormativeDistance($distance);
+        }
         $category = MerchantCategory::find($detail->merchant_category_id);
         $detail->merchantCategoryName = $category->name;
         // 最低消费
@@ -160,6 +161,11 @@ class MerchantController extends Controller
         $detail->contacter_phone = $detail->service_phone;
 
         return Result::success(['list' => $detail]);
+    }
+
+    private function _getFormativeDistance($distance)
+    {
+        return $distance >= 1000 ? (number_format($distance / 1000, 1) . '千米') : ($distance . '米');
     }
 
 }
