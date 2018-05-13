@@ -47,10 +47,17 @@ class InviteUserStatisticsDailyJob implements ShouldQueue
             ->selectRaw('count(1) as total')
             ->get();
         $list->each(function($item){
-            $statDaily = new InviteUserStatisticsDaily();
-            $statDaily->date = $this->date;
-            $statDaily->origin_id = $item->origin_id;
-            $statDaily->origin_type = $item->origin_type;
+            // 统计时先查询, 如果存在, 则在原基础上修改
+            $statDaily = InviteUserStatisticsDaily::where('date', $this->date)
+                ->where('origin_id', $item->origin_id)
+                ->where('origin_type', $item->origin_type)
+                ->first();
+            if(empty($statDaily)){
+                $statDaily = new InviteUserStatisticsDaily();
+                $statDaily->date = $this->date;
+                $statDaily->origin_id = $item->origin_id;
+                $statDaily->origin_type = $item->origin_type;
+            }
             $statDaily->invite_count = $item->total;
             $statDaily->save();
         });
