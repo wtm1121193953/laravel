@@ -227,7 +227,7 @@ class MerchantController extends Controller
             'account' => 'required',
             'password' => 'required|min:6',
         ]);
-        $account = MerchantAccount::where('merchant_id', request('id'))->first();
+        $account = MerchantAccount::where('merchant_id', request('merchant_id'))->first();
         if(!empty($account)){
             throw new BaseResponseException('该商户账户已存在, 不能重复创建');
         }
