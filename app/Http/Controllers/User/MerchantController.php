@@ -104,7 +104,9 @@ class MerchantController extends Controller
             $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
             if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
             // 格式化距离
-            $item->distance = $item->distance >= 1000 ? (number_format($item->distance / 1000, 1) . '千米') : ($item->distance . '米');
+            if(isset($item->distance)){
+                $item->distance = $item->distance >= 1000 ? (number_format($item->distance / 1000, 1) . '千米') : ($item->distance . '米');
+            }
             $category = MerchantCategory::find($item->merchant_category_id);
             $item->merchantCategoryName = $category->name;
             // 最低消费
