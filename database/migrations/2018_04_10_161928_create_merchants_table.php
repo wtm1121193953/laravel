@@ -31,7 +31,7 @@ class CreateMerchantsTable extends Migration
             $table->string('logo')->default('')->comment('商家logo');
             $table->string('desc_pic')->default('')->comment('商家介绍图片 [保留, 使用desc_pic_list]');
             $table->string('desc_pic_list', 2000)->default('')->comment('商家介绍图片列表  多图, 使用逗号分隔 ');
-            $table->string('desc')->default('')->comment('商家介绍');
+            $table->string('desc', 1000)->default('')->comment('商家介绍');
             $table->string('invoice_title')->default('')->comment('发票抬头 [废弃, 使用商户名或营业执照图片中的公司名]');
             $table->string('invoice_no')->default('')->comment('发票税号 [废弃, 同商户营业执照编号]');
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-正常 2-禁用');

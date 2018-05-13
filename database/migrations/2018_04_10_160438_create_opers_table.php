@@ -33,7 +33,7 @@ class CreateOpersTable extends Migration
             $table->string('legal_id_card')->default('')->comment('法人身份证号');
             $table->tinyInteger('invoice_type')->default(0)->comment('发票类型 0-其他 1-增值税普票 2-增值税专票 3-国税普票');
             $table->decimal('invoice_tax_rate', 4, 2)->default(0)->comment('发票税点');
-            $table->tinyInteger('settlement_cycle_type')->default(1)->comment('结款周期 1-周结 2-半月结 3-月结 4-半年结 5-年结');
+            $table->tinyInteger('settlement_cycle_type')->default(1)->comment('结款周期 1-周结 2-半月结 3-月结 4-半年结 5-年结 [保留字段, 暂时无用]');
             $table->string('bank_card_no')->default('')->comment('公司银行账号');
             $table->string('sub_bank_name')->default('')->comment('开户支行名称');
             $table->string('bank_open_name')->default('')->comment('开户名');
