@@ -36,7 +36,7 @@ class OperBizMember extends BaseModel
      */
     public static function getActiveMerchantNumber($operBizMember)
     {
-        return Cache::get('oper_biz_member_active_merchant_number_' . $operBizMember->id) || 0;
+        return Cache::get('oper_biz_member_active_merchant_number_' . $operBizMember->id) ?: 0;
     }
 
     public static function updateActiveMerchantNumberByCode($code)
