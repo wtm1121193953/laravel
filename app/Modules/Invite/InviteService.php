@@ -22,31 +22,31 @@ class InviteService
 
     /**
      * 根据运营中心ID, originId 以及originType获取邀请渠道 (不存在时创建)
-     * @param $operId
-     * @param $originId
-     * @param $originType
+     * @param $originId int 邀请人ID
+     * @param $originType int 邀请人类型 1-用户 2-商户 3-运营中心
+     * @param $operId int 运营中心ID, 存在时则生成对应运营中心的小程序码
      * @return InviteChannel
      */
-    public static function getInviteChannel($operId, $originId, $originType)
+    public static function getInviteChannel($originId, $originType, $operId=0)
     {
         $inviteChannel = InviteChannel::where('origin_id', $originId)
             ->where('oper_id', $operId)
             ->where('origin_type', $originType)
             ->first();
         if(empty($inviteChannel)){
-            $inviteChannel = self::createInviteChannel($operId, $originId, $originType);
+            $inviteChannel = self::createInviteChannel($originId, $originType, $operId);
         }
         return $inviteChannel;
     }
 
     /**
      * 生成推广渠道
-     * @param $operId
-     * @param $originId
-     * @param $originType
+     * @param $originId int 邀请人ID
+     * @param $originType int 邀请人类型 1-用户 2-商户 3-运营中心
+     * @param $operId int 运营中心ID, 存在时则生成对应运营中心的小程序码
      * @return InviteChannel
      */
-    public static function createInviteChannel($operId, $originId, $originType)
+    public static function createInviteChannel($originId, $originType, $operId=0)
     {
         // 不能重复生成
         $inviteChannel = InviteChannel::where('oper_id', $operId)
@@ -56,22 +56,28 @@ class InviteService
         if($inviteChannel) {
             return $inviteChannel;
         }
-        $scene = new MiniprogramScene();
-        $scene->oper_id = $operId;
-        // 小程序端邀请注册页面地址
-        $scene->page = MiniprogramScene::PAGE_INVITE_REGISTER;
-        $scene->type = 2;
-        $scene->payload = json_encode([
-            'origin_id' => $originId,
-            'origin_type' => $originType,
-        ]);
-        $scene->save();
+        if($operId > 0){
+            // 如果运营中心ID存在, 则生成该运营中心的小程序码场景
+            $scene = new MiniprogramScene();
+            $scene->oper_id = $operId;
+            // 小程序端邀请注册页面地址
+            $scene->page = MiniprogramScene::PAGE_INVITE_REGISTER;
+            $scene->type = MiniprogramScene::TYPE_INVITE_CHANNEL;
+            $scene->payload = json_encode([
+                'origin_id' => $originId,
+                'origin_type' => $originType,
+            ]);
+            $scene->save();
+            $sceneId = $scene->id;
+        }else {
+            $sceneId = 0;
+        }
 
         $inviteChannel = new InviteChannel();
         $inviteChannel->oper_id = $operId;
         $inviteChannel->origin_id = $originId;
         $inviteChannel->origin_type = $originType;
-        $inviteChannel->scene_id = $scene->id;
+        $inviteChannel->scene_id = $sceneId;
         $inviteChannel->save();
         return $inviteChannel;
     }

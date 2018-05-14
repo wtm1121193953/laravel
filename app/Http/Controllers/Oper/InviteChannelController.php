@@ -25,7 +25,7 @@ class InviteChannelController extends Controller
     public function getInviteQrcode()
     {
         $operId = request()->get('current_user')->oper_id;
-        $inviteChannel = InviteService::getInviteChannel($operId, $operId, InviteChannel::ORIGIN_TYPE_OPER);
+        $inviteChannel = InviteService::getInviteChannel($operId, InviteChannel::ORIGIN_TYPE_OPER, $operId);
         $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
         $url = WechatService::getMiniprogramAppCodeUrl($scene);
         return Result::success([

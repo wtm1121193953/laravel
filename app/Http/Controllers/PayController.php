@@ -109,7 +109,7 @@ class PayController extends Controller
             if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
                 $merchantId = $order->merchant_id;
                 $merchant = Merchant::findOrFail($merchantId);
-                $inviteChannel = InviteService::getInviteChannel($merchant->oper_id, $merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT);
+                $inviteChannel = InviteService::getInviteChannel($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
                 InviteService::bindInviter($userId, $inviteChannel);
             }
 

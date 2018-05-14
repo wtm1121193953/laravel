@@ -48,7 +48,7 @@ Route::get('/miniprogram_bridge/pay', function(){
     $scene = new MiniprogramScene();
     $scene->oper_id = $targetOperId;
     $scene->page = $page;
-    $scene->type = 1;
+    $scene->type = MiniprogramScene::TYPE_PAY_BRIDGE;
     $scene->payload = json_encode([
         'order_no' => $orderNo,
         'user_id' => $userId
