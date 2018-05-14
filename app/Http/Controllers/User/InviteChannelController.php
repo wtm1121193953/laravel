@@ -31,7 +31,7 @@ class InviteChannelController extends Controller
         $operId = request()->get('current_oper')->id;
         $userId = request()->get('current_user')->id;
         $inviteChannel = InviteService::getInviteChannel($userId, InviteChannel::ORIGIN_TYPE_USER, $operId);
-        $inviteChannel->orgin_name = InviteService::getInviteChannelOriginName($inviteChannel);
+        $inviteChannel->origin_name = InviteService::getInviteChannelOriginName($inviteChannel);
         $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
         $url = WechatService::getMiniprogramAppCodeUrl($scene);
 
