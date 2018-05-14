@@ -102,7 +102,7 @@ class Handler extends ExceptionHandler
             if(!$request->ajax() && !$request->wantsJson()){
                 $request->headers->set('X-Requested-With', 'XMLHttpRequest');
             }
-            return parent::render($request, $exception);
+            $response = parent::render($request, $exception);
         }
         $result = json_decode($response->getContent(), 1);
         if(
