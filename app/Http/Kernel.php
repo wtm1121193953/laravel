@@ -70,17 +70,12 @@ class Kernel extends HttpKernel
             MerchantLoginFilter::class
         ],
 
-        // user 用户端(小程序)接口中间件
+        // user 用户端接口中间件
         'user' => [
             MockMiniprogramEnv::class,
             CurrentOperInjector::class,
             UserOpenIdInjector::class,
             UserInfoInjector::class,
-        ],
-
-        // user_app 用户端(App)接口中间件
-        'user_app' => [
-            \App\Http\Middleware\UserApp\UserInfoInjector::class,
         ]
     ];
 

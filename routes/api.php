@@ -34,4 +34,3 @@ Route::group([], base_path('routes/api/admin.php'));
 Route::group([], base_path('routes/api/oper.php'));
 Route::group([], base_path('routes/api/merchant.php'));
 Route::group([], base_path('routes/api/user.php'));
-Route::group([], base_path('routes/api/user_app.php'));
