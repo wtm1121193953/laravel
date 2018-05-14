@@ -16,24 +16,31 @@ use App\Modules\Invite\InviteService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
-use App\Modules\Wechat\MiniprogramScene;
-use App\Modules\Wechat\WechatService;
 use App\Result;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class InviteChannelController extends Controller
 {
 
-    /**
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     */
     public function getInviteQrcode()
     {
         $userId = request()->get('current_user')->id;
         $inviteChannel = InviteService::getInviteChannel($userId, InviteChannel::ORIGIN_TYPE_USER);
-        $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
-        $url = WechatService::getMiniprogramAppCodeUrl($scene);
+        $dir = storage_path('app/public/inviteChannel/qrcode');
+        if(!is_dir($dir)){
+            mkdir($dir, 0777, true);
+        }
+        $filename = "{$inviteChannel->id}_375.png";
+        $path = $dir . "/{$filename}";
+        if(!is_file($path)){
+            QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(json_encode([
+                'type' => 'inviteChannel',
+                'value' => ['id' => $inviteChannel->id],
+            ]), $path);
+        }
+
         return Result::success([
-            'qrcode_url' => $url,
+            'qrcode_url' => asset('storage/inviteChannel/qrcode/' . $filename),
         ]);
     }
 
@@ -42,18 +49,13 @@ class InviteChannelController extends Controller
      */
     public function getInviterInfo()
     {
-        $sceneId = request('sceneId');
-        if(empty($sceneId)){
-            throw new ParamInvalidException('场景ID不能为空');
+        $inviteChannelId = request('inviteChannelId');
+        if(empty($inviteChannelId)){
+            throw new ParamInvalidException('邀请渠道ID不能为空');
         }
-        // 判断场景类型必须是 推广注册小程序码 才可以
-        $scene = MiniprogramScene::findOrFail($sceneId);
-        if($scene->type != MiniprogramScene::TYPE_INVITE_CHANNEL){
-            throw new ParamInvalidException('该场景不是邀请渠道场景');
-        }
-        $inviteChannel = InviteChannel::where('scene_id', $sceneId)->first();
+        $inviteChannel = InviteChannel::find($inviteChannelId);
         if(empty($inviteChannel)){
-            throw new ParamInvalidException('场景不存在');
+            throw new ParamInvalidException('渠道不存在');
         }
         $originType = $inviteChannel->origin_type;
         $originId = $inviteChannel->origin_id;
