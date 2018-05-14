@@ -28,7 +28,7 @@ class AreaService
 
     public static function getCityListGroupByFirstLetter()
     {
-//        $list = Cache::get('cities_group_by_first_letter');
+        $list = Cache::get('cities_group_by_first_letter');
         if(empty($list)){
             $list = Area::where('path', 2)->orderBy('first_letter')->get();
             $list = $list->each(function ($item){
