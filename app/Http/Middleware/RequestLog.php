@@ -34,11 +34,8 @@ class RequestLog
                 'content' => 'content is not json'
             ],
         ];
-        if($response instanceof JsonResponse){
-            $data = $response->getContent();
-            if(is_string($data)){
-                $data = json_decode($data, 1);
-            }
+        $data = json_decode($response->getContent(), 1);
+        if($data){
             $logData['response']['content'] = $data;
         }
 
