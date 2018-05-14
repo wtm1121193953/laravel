@@ -146,9 +146,6 @@
             <el-form-item prop="service_phone" label="客服电话">
                 <el-input v-model="form.service_phone"/>
             </el-form-item>
-            <el-form-item prop="oper_salesman" label="运营中心业务人员姓名">
-                <el-input v-model="form.oper_salesman"/>
-            </el-form-item>
             <el-form-item prop="site_acreage" label="商户面积">
                 <el-input v-model="form.site_acreage" placeholder="单位: ㎡"/>
             </el-form-item>
