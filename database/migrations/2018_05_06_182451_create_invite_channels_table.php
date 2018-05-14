@@ -21,6 +21,8 @@ class CreateInviteChannelsTable extends Migration
             $table->integer('scene_id')->index()->default(0)->comment('场景ID (miniprogram_scenes表id)');
 
             $table->timestamps();
+
+            $table->comment = '邀请渠道表';
         });
     }
 
