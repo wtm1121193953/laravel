@@ -6,7 +6,6 @@ use App\Support\Utils;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 class RequestLog
 {
@@ -29,15 +28,7 @@ class RequestLog
         }
         $logData = [
             'request' => Utils::getRequestContext($request),
-            'response' => [
-                'statusCode' => $response->getStatusCode(),
-                'content' => 'content is not json'
-            ],
         ];
-        $data = json_decode($response->getContent(), 1);
-        if($data){
-            $logData['response']['content'] = $data;
-        }
 
         Log::info('request listen ', $logData);
         return $response;
