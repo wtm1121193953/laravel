@@ -23,7 +23,7 @@ class UserInfoInjector
      */
     public function handle($request, Closure $next)
     {
-        $token = $request->get('token');
+        $token = $request->headers->get('token');
         if($token){
             $user = Cache::get('token_to_user_' . $token);
             if(!empty($user)){
