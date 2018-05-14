@@ -57,24 +57,9 @@ class InviteChannelController extends Controller
         if(empty($inviteChannel)){
             throw new ParamInvalidException('渠道不存在');
         }
-        $originType = $inviteChannel->origin_type;
-        $originId = $inviteChannel->origin_id;
 
-        $originName = '';
-        if($originType == 1){
-            $user = User::findOrFail($originId);
-            $originName = $user->name ?: $this->_getHalfHideMobile($user->mobile);
-        }else if($originType == 2){
-            $originName = Merchant::where('id', $originId)->value('name');
-        }else if($originType == 3){
-            $originName = Oper::where('id', $originId)->value('name');
-        }
-        $inviteChannel->origin_name = $originName;
+        $inviteChannel->origin_name = InviteService::getInviteChannelOriginName($inviteChannel);
         return Result::success($inviteChannel);
-    }
-
-    private function _getHalfHideMobile($mobile){
-        return substr($mobile, 0, 3) . '****' . substr($mobile, -4);
     }
 
     /**

@@ -9,6 +9,9 @@
 namespace App\Modules\Invite;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Merchant\Merchant;
+use App\Modules\Oper\Oper;
+use App\Modules\User\User;
 use App\Modules\Wechat\MiniprogramScene;
 use App\ResultCode;
 
@@ -103,4 +106,31 @@ class InviteService
         $inviteRecord->origin_type = $inviteChannel->origin_type;
         $inviteRecord->save();
     }
+
+    /**
+     * 根据邀请渠道获取邀请者名称
+     * @param InviteChannel $inviteChannel
+     * @return mixed|string
+     */
+    public static function getInviteChannelOriginName(InviteChannel $inviteChannel)
+    {
+        $originType = $inviteChannel->origin_type;
+        $originId = $inviteChannel->origin_id;
+
+        $originName = '';
+        if($originType == 1){
+            $user = User::findOrFail($originId);
+            $originName = $user->name ?: self::_getHalfHideMobile($user->mobile);
+        }else if($originType == 2){
+            $originName = Merchant::where('id', $originId)->value('name');
+        }else if($originType == 3){
+            $originName = Oper::where('id', $originId)->value('name');
+        }
+        return $originName;
+    }
+
+    private static function _getHalfHideMobile($mobile){
+        return substr($mobile, 0, 3) . '****' . substr($mobile, -4);
+    }
+
 }

@@ -31,17 +31,20 @@ class InviteChannelController extends Controller
         $operId = request()->get('current_oper')->id;
         $userId = request()->get('current_user')->id;
         $inviteChannel = InviteService::getInviteChannel($userId, InviteChannel::ORIGIN_TYPE_USER, $operId);
+        $inviteChannel->orgin_name = InviteService::getInviteChannelOriginName($inviteChannel);
         $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
         $url = WechatService::getMiniprogramAppCodeUrl($scene);
+
         return Result::success([
             'qrcode_url' => $url,
+            'inviteChannel' => $inviteChannel
         ]);
     }
 
     /**
      * 根据场景ID获取邀请人信息
      */
-    public function getInviterInfo()
+    public function getInviterBySceneId()
     {
         $sceneId = request('sceneId');
         if(empty($sceneId)){
@@ -56,24 +59,9 @@ class InviteChannelController extends Controller
         if(empty($inviteChannel)){
             throw new ParamInvalidException('场景不存在');
         }
-        $originType = $inviteChannel->origin_type;
-        $originId = $inviteChannel->origin_id;
 
-        $originName = '';
-        if($originType == 1){
-            $user = User::findOrFail($originId);
-            $originName = $user->name ?: $this->_getHalfHideMobile($user->mobile);
-        }else if($originType == 2){
-            $originName = Merchant::where('id', $originId)->value('name');
-        }else if($originType == 3){
-            $originName = Oper::where('id', $originId)->value('name');
-        }
-        $inviteChannel->origin_name = $originName;
+        $inviteChannel->origin_name = InviteService::getInviteChannelOriginName($inviteChannel);
         return Result::success($inviteChannel);
-    }
-
-    private function _getHalfHideMobile($mobile){
-        return substr($mobile, 0, 3) . '****' . substr($mobile, -4);
     }
 
     /**

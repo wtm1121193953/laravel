@@ -36,7 +36,7 @@ Route::prefix('user')
         Route::any('order/refund', 'OrderController@refund')->middleware(UserLoginFilter::class);
 
         Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
-        Route::get('invite/getInviterBySceneId', 'InviteChannelController@getInviterInfo');
+        Route::get('invite/getInviterBySceneId', 'InviteChannelController@getInviterBySceneId');
         Route::post('invite/bindInviter', 'InviteChannelController@bindInviter');
 
     });
