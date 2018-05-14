@@ -67,7 +67,7 @@ Route::get('/miniprogram_bridge/pay', function(){
         'app_code_url' => $appCodeUrl,
         'errorMsg' => $errorMsg ?? null,
     ]);
-})->middleware([\App\Http\Middleware\RequestLog::class]);
+});
 
 
 Route::post('/upload/image', 'UploadController@image');
