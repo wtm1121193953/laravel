@@ -47,7 +47,11 @@ class SmsController extends Controller
         $result = MicroServiceApi::post($url, $data);
         if($result['code'] !== 0){
             Log::error('短信发送失败', compact('url', 'data', 'result'));
-            throw new BaseResponseException('短信发送失败: ' . $result['message']);
+            $message = '发送失败';
+            if($result['code'] == 15){
+                $message .= ':发送频率超过限制';
+            }
+            throw new BaseResponseException($message);
         }
 
         return Result::success([
