@@ -5,8 +5,8 @@ namespace App\Http\Middleware;
 use App\Support\Utils;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class RequestLog
 {
