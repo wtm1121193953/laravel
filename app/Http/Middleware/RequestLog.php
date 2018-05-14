@@ -5,7 +5,6 @@ namespace App\Http\Middleware;
 use App\Support\Utils;
 use Closure;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 class RequestLog
@@ -19,6 +18,7 @@ class RequestLog
      */
     public function handle($request, Closure $next)
     {
+        /** @var \Symfony\Component\HttpFoundation\Response|\Illuminate\Contracts\Routing\ResponseFactory $response */
         $response = $next($request);
         $attributes = $request->attributes->all();
         foreach ($attributes as $key => $attribute) {
@@ -26,10 +26,11 @@ class RequestLog
                 $attributes[$key] = $attribute->toArray();
             }
         }
-        Log::info('request listen ', [
+        $logData = [
             'request' => Utils::getRequestContext($request),
-            'response' => $response,
-        ]);
+        ];
+
+        Log::info('request listen ', $logData);
         return $response;
     }
 }

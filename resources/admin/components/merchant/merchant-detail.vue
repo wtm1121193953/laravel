@@ -125,9 +125,6 @@
                         <el-form-item prop="service_phone" label="客服电话">
                             {{data.service_phone}}
                         </el-form-item>
-                        <el-form-item prop="oper_salesman" label="运营中心业务人员姓名">
-                            {{data.oper_salesman}}
-                        </el-form-item>
                         <el-form-item prop="site_acreage" label="商户面积">
                             {{data.site_acreage}} ㎡
                         </el-form-item>
