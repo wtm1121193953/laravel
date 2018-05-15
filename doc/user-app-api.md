@@ -569,7 +569,7 @@ version: 当前客户端版本
 
 - [ ] 获取邀请人信息
 
-  地址: GET `/invite/getInviterByInviteChannelId`
+  地址: GET `/invite/getInviterByChannelId`
 
   参数: `inviteChannleId 邀请渠道ID(通过扫码获得)`
 

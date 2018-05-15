@@ -47,7 +47,7 @@ class InviteChannelController extends Controller
     /**
      * 根据场景ID获取邀请人信息
      */
-    public function getInviterInfo()
+    public function getInviterByChannelId()
     {
         $inviteChannelId = request('inviteChannelId');
         if(empty($inviteChannelId)){
