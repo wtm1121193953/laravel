@@ -144,9 +144,6 @@ class MerchantController extends Controller
         }else {
             $detail->lowestAmount = 0;
         }
-        $currentOperId = request()->get('current_oper')->id;
-        // 判断商户是否是当前小程序关联运营中心下的商户
-        $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
         // 兼容v1.0.0版客服电话字段
         $detail->contacter_phone = $detail->service_phone;
 
