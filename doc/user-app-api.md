@@ -12,6 +12,7 @@
 ```
 token (不是必填, 需要登录的接口要填)
 version: 当前客户端版本
+app_type: 客户端类型  1-Android 2-iOS
 ```
 
 ##### 统一返回结果:
@@ -569,7 +570,7 @@ version: 当前客户端版本
 
 - [ ] 获取邀请人信息
 
-  地址: GET `/invite/getInviterByChannelId`
+  地址: GET `/invite/getInviterByInviteChannelId`
 
   参数: `inviteChannleId 邀请渠道ID(通过扫码获得)`
 

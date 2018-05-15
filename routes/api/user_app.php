@@ -10,6 +10,9 @@ Route::prefix('app/user')
     ->namespace('UserApp')
     ->middleware('user_app')->group(function (){
 
+        Route::get('version/last', 'VersionController@last');
+        Route::get('versions', 'VersionController@getList');
+
         Route::any('sms/verify_code', 'SmsController@sendVerifyCode');
 
         Route::any('login', 'LoginController@login');
