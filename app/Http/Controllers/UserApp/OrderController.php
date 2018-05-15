@@ -33,23 +33,15 @@ class OrderController extends Controller
         $status = request('status');
         $user = request()->get('current_user');
 
-        $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
-
-        $currentOperId = request()->get('current_oper')->id;
         $data = Order
             ::where('user_id', $user->id)
-            ->when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
-                $query->where('oper_id', $currentOperId);
-            })
             ->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
             })
             ->orderByDesc('id')
             ->paginate();
-        $data->each(function ($item) use ($currentOperId) {
+        $data->each(function ($item) {
             $item->items = OrderItem::where('order_id', $item->id)->get();
-            // 判断商户是否是当前小程序关联运营中心下的商户
-            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
             $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
         });
         return Result::success([
@@ -64,9 +56,6 @@ class OrderController extends Controller
         ]);
         $detail = Order::where('order_no', request('order_no'))->firstOrFail();
         $detail->items = OrderItem::where('order_id', $detail->id)->get();
-        $currentOperId = request()->get('current_oper')->id;
-        // 判断商户是否是当前小程序关联运营中心下的商户
-        $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
         return Result::success($detail);
     }
 
