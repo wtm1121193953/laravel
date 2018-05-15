@@ -42,15 +42,21 @@ class Lbs
                 'regeo result' => $addressArr,
             ]);
         }
+        $data = [];
+        if($area){
+            $data['area'] = $area->name;
+            $data['area_id'] = $area->area_id;
+        }
+        if($city){
+            $data['city'] = $city->name;
+            $data['city_id'] = $city->area_id;
+        }
+        if($province){
+            $data['province'] = $province->name;
+            $data['province_id'] = $province->area_id;
+        }
 
-        return [
-            'area' => $area->name,
-            'area_id' => $area->area_id,
-            'city' => $city->name,
-            'city_id' => $city->area_id,
-            'province' => $province->name,
-            'province_id' => $province->area_id,
-        ];
+        return $data;
     }
 
     /**

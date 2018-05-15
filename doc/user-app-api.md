@@ -260,14 +260,14 @@ app-type: 客户端类型  1-Android 2-iOS
 
   ​
 
-#### 商家模块
+#### 商家模块	
 
 
 - [ ] 获取商家类别列表
 
-    接口地址: GET `/merchant/categories/tree`
-    
-    返回:
+  接口地址: GET `/merchant/categories/tree`
+
+  返回:
 
   ```
     data: {
@@ -306,7 +306,7 @@ app-type: 客户端类型  1-Android 2-iOS
   page: 页码
   ```
 
-    返回
+返回
 
   ```
   data: {
@@ -364,16 +364,16 @@ app-type: 客户端类型  1-Android 2-iOS
   同商户列表返回的字段
   ```
 
-  ​
+  
 
 
 - [ ] 商品列表
 
-    接口地址: GET `/goods`
-    
-    参数: `merchant_id` 商家ID
-    
-    返回
+  接口地址: GET `/goods`
+
+  参数: `merchant_id` 商家ID
+
+  返回
 
   ```
   data: {
@@ -405,11 +405,11 @@ app-type: 客户端类型  1-Android 2-iOS
 
 - [ ] 商品详情
 
-    接口地址: GET `/goods/detail`
-    
-    参数: id 商品ID
-    
-    返回
+  接口地址: GET `/goods/detail`
+
+  参数: id 商品ID
+
+  返回
 
   ```
   同商品列表中的每一项
@@ -474,8 +474,9 @@ app-type: 客户端类型  1-Android 2-iOS
 
 - [ ] 订单详情
 
-    地址: GET`/order/detail`
-    参数
+  地址: GET`/order/detail`
+
+  参数
 
   ```
   order_no 订单号
