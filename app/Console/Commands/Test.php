@@ -51,6 +51,10 @@ class Test extends Command
      */
     public function handle()
     {
+        $subWeek = Carbon::now()->subWeek();
+
+        dump($subWeek->startOfWeek()->format('Y-m-d H:i:s'));
+        dd($subWeek->endOfWeek()->format('Y-m-d H:i:s'));
         InviteUserStatisticsDailyJob::dispatch(new Carbon());
         /*OrderExpired::dispatch();
         dd();

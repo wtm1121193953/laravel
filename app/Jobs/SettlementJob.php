@@ -38,8 +38,9 @@ class SettlementJob implements ShouldQueue
         // 计算要结算的开始日期与结束日期
         switch ($this->settlementCycleType){
             case Merchant::SETTLE_WEEKLY:
-                $end = Carbon::now()->subDay()->endOfDay();
-                $start = Carbon::now()->subWeek()->startOfDay();
+                $subWeek = Carbon::now()->subWeek();
+                $end = $subWeek->endOfWeek();
+                $start = $subWeek->startOfWeek();
                 break;
             case Merchant::SETTLE_HALF_MONTHLY:
                 if(Carbon::now()->day > 15){
