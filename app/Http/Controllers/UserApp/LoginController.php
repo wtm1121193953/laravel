@@ -84,42 +84,6 @@ class LoginController extends Controller
         ]);
     }
 
-    public function loginWithSceneId()
-    {
-        $this->validate(request(), [
-            'sceneId' => 'required'
-        ]);
-        $sceneId = request('sceneId');
-        $scene = MiniprogramScene::findOrFail($sceneId);
-        if($scene->type != 1){
-            throw new BaseResponseException('场景类型不匹配');
-        }
-        $payload = json_decode($scene->payload, 1);
-        if(!$payload || !$payload['user_id'] || !$payload['order_no']){
-            throw new BaseResponseException('payload数据错误');
-        }
-        $user = User::findOrFail($payload['user_id']);
-        // 保存用户与openId的映射关系, 并覆盖旧的关联关系
-        $openId = request()->get('current_open_id');
-        $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
-        if($userOpenIdMapping){
-            $userOpenIdMapping->user_id = $payload['user_id'];
-            $userOpenIdMapping->oper_id = request()->get('current_oper')->id;
-            $userOpenIdMapping->save();
-        }else {
-            $userOpenIdMapping = new UserOpenIdMapping();
-            $userOpenIdMapping->oper_id = request()->get('current_oper')->id;
-            $userOpenIdMapping->open_id = $openId;
-            $userOpenIdMapping->user_id = $payload['user_id'];
-            $userOpenIdMapping->save();
-        }
-
-        return Result::success([
-            'userInfo' => $user,
-            'payload' => $payload,
-        ]);
-    }
-
     /**
      * 退出登录
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
@@ -127,12 +91,9 @@ class LoginController extends Controller
      */
     public function logout()
     {
-        // 解除openId关联
-        $openId = request()->get('current_open_id');
-        $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
-        if($userOpenIdMapping){
-            $userOpenIdMapping->delete();
-        }
+        // 清除用户token
+        $token = request()->header('token');
+        Cache::forget('token_to_user_' . $token);
         return Result::success();
     }
 }
