@@ -20,8 +20,8 @@ Route::prefix('app/user')
         Route::any('loginWithSceneId', 'LoginController@loginWithSceneId');
 
         Route::get('area/tree', 'AreaController@getTree');
-        Route::get('area/cites/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
-        Route::get('area/cites/withHot', 'AreaController@getCitiesWithHot');
+        Route::get('area/cities/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
+        Route::get('area/cities/withHot', 'AreaController@getCitiesWithHot');
         Route::get('area/getByGps', 'AreaController@getAreaByGps');
 
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
