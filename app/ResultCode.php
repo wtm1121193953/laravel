@@ -43,6 +43,7 @@ class ResultCode
     const UPLOAD_ERROR = 20001;   // 文件上传失败
 
     const SMS_SEND_ERROR = 30001;   // 短信发送失败
+    const SMS_BUSINESS_LIMIT_CONTROL = 30015;  // 短信发送频率超过限制
 
 
     /************ 微信接口相关  **************/

@@ -14,6 +14,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Sms\SmsVerifyCode;
 use App\Result;
+use App\ResultCode;
 use App\Support\MicroServiceApi;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -47,7 +48,13 @@ class SmsController extends Controller
         $result = MicroServiceApi::post($url, $data);
         if($result['code'] !== 0){
             Log::error('短信发送失败', compact('url', 'data', 'result'));
-            throw new BaseResponseException('短信发送失败: ' . $result['message']);
+            $message = '发送失败';
+            $code = ResultCode::SMS_SEND_ERROR;
+            if($result['code'] == 15){
+                $message = '发送频率超限';
+                $code = ResultCode::SMS_BUSINESS_LIMIT_CONTROL;
+            }
+            throw new BaseResponseException($message, $code);
         }
 
         return Result::success([
