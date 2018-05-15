@@ -12,7 +12,7 @@
 ```
 token (不是必填, 需要登录的接口要填)
 version: 当前客户端版本
-app_type: 客户端类型  1-Android 2-iOS
+app-type: 客户端类型  1-Android 2-iOS
 ```
 
 ##### 统一返回结果:
@@ -71,7 +71,7 @@ app_type: 客户端类型  1-Android 2-iOS
   ```
   data: {
       version: 版本号,
-      force: 是否强制更新,
+      force: 是否强制更新, 1-强制更新, 0-不强制更新,
       desc: 更新说明 (客户端文档格式需要怎么处理, 简单的换行?)
   }
   ```

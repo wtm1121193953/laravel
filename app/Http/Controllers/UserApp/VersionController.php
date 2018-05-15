@@ -20,7 +20,7 @@ class VersionController extends Controller
      */
     public function last()
     {
-        $appType = request()->headers->get('app_type');
+        $appType = request()->headers->get('app-type');
         return Result::success([
             'version' => 'v1.0.2',
             'force' => '1',
@@ -34,7 +34,7 @@ class VersionController extends Controller
      */
     public function getList()
     {
-        $appType = request()->headers->get('app_type');
+        $appType = request()->headers->get('app-type');
         return Result::success([
             'last' => [
                 'version' => 'v1.0.2',
