@@ -21,6 +21,7 @@ use App\Modules\Wechat\MiniprogramScene;
 use App\Result;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
@@ -72,10 +73,14 @@ class LoginController extends Controller
             }
             InviteService::bindInviter($user->id, $inviteChannel);
         }
+        // 生成token并返回
+        $token = str_random(64);
+        Cache::put('token_to_user_' . $token, $user, 60 * 24 * 30);
 
         DB::commit();
         return Result::success([
-            'userInfo' => $user
+            'userInfo' => $user,
+            'token' => $token
         ]);
     }
 
