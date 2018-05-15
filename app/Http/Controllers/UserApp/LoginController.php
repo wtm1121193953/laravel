@@ -21,10 +21,15 @@ use App\Modules\Wechat\MiniprogramScene;
 use App\Result;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {
 
+    /**
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function login()
     {
         $this->validate(request(), [
@@ -36,6 +41,7 @@ class LoginController extends Controller
             throw new ParamInvalidException('手机号码不合法');
         }
         $verifyCode = request('verify_code');
+        DB::beginTransaction();
         // 非正式环境时, 验证码为6666为通过验证
         if(App::environment('production') || $verifyCode != '6666'){
             $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
@@ -81,6 +87,7 @@ class LoginController extends Controller
             $userOpenIdMapping->user_id = $user->id;
             $userOpenIdMapping->save();
         }
+        DB::commit();
         return Result::success([
             'userInfo' => $user
         ]);
