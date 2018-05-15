@@ -104,7 +104,9 @@ class Lbs
 
         $arr = [];
         foreach ($result as $item) {
-            $arr[$item[0]] = intval($item[1]);
+            if(is_int($item[0])){
+                $arr[$item[0]] = intval($item[1]);
+            }
         }
         return $arr;
     }

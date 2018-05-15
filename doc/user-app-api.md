@@ -335,10 +335,10 @@ app-type: 客户端类型  1-Android 2-iOS
         desc: 商家介绍
         contacter: 联系人姓名
         contacter_phone: 负责人联系方式
+        service_phone: 客服电话
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在
         lowestAmount: 最低消费金额
-        isOperSelf: 是否归属于当前小程序的运营中心
       }
     ]
   } 
