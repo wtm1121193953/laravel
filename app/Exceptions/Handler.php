@@ -106,6 +106,7 @@ class Handler extends ExceptionHandler
         }
         $result = json_decode($response->getContent(), 1);
         if(
+            !isset($result['code']) ||
             !in_array($result['code'], [
                 ResultCode::PARAMS_INVALID,
                 ResultCode::UNLOGIN,
