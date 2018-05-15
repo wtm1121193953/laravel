@@ -131,7 +131,9 @@ class MerchantController extends Controller
         $detail->desc_pic_list = $detail->desc_pic_list ? explode(',', $detail->desc_pic_list) : [];
         if($detail->business_time) $detail->business_time = json_decode($detail->business_time, 1);
         if($lng && $lat){
-            $distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), $lng, $lat);
+            $currentUser = request()->get('current_user');
+            $tempToken = empty($currentUser) ? str_random() : $currentUser->id;
+            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, $lng, $lat);
             // 格式化距离
             $detail->distance = $this->_getFormativeDistance($distance);
         }
