@@ -10,6 +10,7 @@ namespace App\Http\Controllers\UserApp;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
@@ -99,42 +100,7 @@ class OrderController extends Controller
         $order->origin_app_type = request()->header('app-type');
         $order->save();
 
-        if(App::environment() === 'local'){
-            // 生成核销码, 线上需要放到支付成功通知中
-            $items = [];
-            for ($i = 0; $i < $number; $i ++){
-                $orderItem = new OrderItem();
-                $orderItem->oper_id = $merchant->oper_id;
-                $orderItem->merchant_id = $merchant->id;
-                $orderItem->order_id = $order->id;
-                $orderItem->verify_code = OrderItem::createVerifyCode($merchant->id);
-                $orderItem->status = 1;
-                $orderItem->save();
-                $items[] = $orderItem;
-            }
-            $order->status = Order::STATUS_PAID;
-            $order->save();
-        }
-
-        if(request('scene') == 1){
-            // 模拟生成sceneId并返回
-            $scene = new MiniprogramScene();
-            $scene->oper_id = $merchant->oper_id;
-            $scene->page = request('page', '');
-            $scene->type = 1;
-            $scene->payload = json_encode([
-                'order_no' => $orderNo,
-                'user_id' => $user->id
-            ]);
-            $scene->save();
-        }
-
-        return Result::success([
-            'order_no' => $orderNo,
-            'isOperSelf' => $isOperSelf,
-            'sdk_config' => $sdkConfig,
-            'sceneId' => isset($scene) ? $scene->id : '',
-        ]);
+        return Result::success($order);
     }
 
     /**
@@ -144,63 +110,58 @@ class OrderController extends Controller
     public function pay()
     {
         $this->validate(request(), [
-            'order_no' => 'required'
+            'order_no' => 'required',
+            'pay_type' => 'required'
         ]);
         $orderNo = request('order_no');
         $order = Order::where('order_no', $orderNo)->firstOrFail();
 
+        if($order->status == Order::STATUS_PAID){
+            throw new ParamInvalidException('该订单已支付');
+        }
+        if($order->status == Order::STATUS_CANCEL){
+            throw new ParamInvalidException('该订单已取消');
+        }
         if($order->status != Order::STATUS_UN_PAY){
             throw new BaseResponseException('订单状态异常');
         }
 
-        if($order->oper_id !== request()->get('current_oper')->id){
-            throw new BaseResponseException('该订单不是当前运营中心的订单');
-        }
+        $payType = request('pay_type', 1);
+        $order->payType = $payType;
+        $order->save();
+        if($payType == 1){
+            // 如果是微信支付
+            // TODO  获取平台的微信支付
+            $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
+            $data = [
+                'body' => $order->goods_name,
+                'out_trade_no' => $orderNo,
+                'total_fee' => $order->pay_price * 100,
+                'trade_type' => 'JSAPI',
+                'openid' => request()->get('current_open_id'),
+            ];
 
-        $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
-        $data = [
-            'body' => $order->goods_name,
-            'out_trade_no' => $orderNo,
-            'total_fee' => $order->pay_price * 100,
-            'trade_type' => 'JSAPI',
-            'openid' => request()->get('current_open_id'),
-        ];
-
-        $unifyResult = $payApp->order->unify($data);
-        if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
-            $order->save();
-        }else {
-            Log::error('微信统一下单失败', [
-                'payConfig' => $payApp->getConfig(),
-                'data' => $data,
-                'result' => $unifyResult,
-            ]);
-            throw new BaseResponseException('微信统一下单失败');
-        }
-
-        if(App::environment() === 'local'){
-            // 生成核销码, 线上需要放到支付成功通知中
-            $items = [];
-            for ($i = 0; $i < $order->buy_number; $i ++){
-                $orderItem = new OrderItem();
-                $orderItem->oper_id = $order->oper_id;
-                $orderItem->merchant_id = $order->merchant_id;
-                $orderItem->order_id = $order->id;
-                $orderItem->verify_code = OrderItem::createVerifyCode($order->merchant_id);
-                $orderItem->status = 1;
-                $orderItem->save();
-                $items[] = $orderItem;
+            $unifyResult = $payApp->order->unify($data);
+            if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
+                $order->save();
+            }else {
+                Log::error('微信统一下单失败', [
+                    'payConfig' => $payApp->getConfig(),
+                    'data' => $data,
+                    'result' => $unifyResult,
+                ]);
+                throw new BaseResponseException('微信统一下单失败');
             }
-            $order->status = Order::STATUS_PAID;
-            $order->save();
+            $sdkConfig = $payApp->jssdk->appConfig($unifyResult['prepay_id']);
+
+            return Result::success([
+                'order_no' => $orderNo,
+                'sdk_config' => $sdkConfig,
+            ]);
+        }else {
+            // 如果是支付宝支付
+            throw new ParamInvalidException('暂未开通支付宝支付');
         }
-
-        $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
-
-        return Result::success([
-            'order_no' => $orderNo,
-            'sdk_config' => $sdkConfig
-        ]);
     }
 
     /**
@@ -225,32 +186,34 @@ class OrderController extends Controller
         $orderRefund->order_no = $order->order_no;
         $orderRefund->amount = $orderPay->amount;
         $orderRefund->save();
-        // 发起微信支付退款
-        $payApp = WechatService::getWechatPayAppForOper(request()->get('current_oper')->id);
-        $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->id, $orderPay->amount * 100, $orderPay->amount * 100, [
-            'refund_desc' => '用户发起退款',
-        ]);
-        if($result['return_code'] === 'SUCCESS' && array_get($result, 'result_code') === 'SUCCESS'){
-            // 微信退款成功
-            $orderRefund->refund_id = $result['refund_id'];
-            $orderRefund->status = 2;
-            $orderRefund->save();
-
-            $order->status = Order::STATUS_REFUNDED;
-            $order->save();
-            return Result::success($orderRefund);
-        }else {
-            Log::error('微信退款失败 :', [
-                'result' => $result,
-                'params' => [
-                    '$orderPay->transaction_no' => $orderPay->transaction_no,
-                    '$orderRefund->id' => $orderRefund->id,
-                    '$orderPay->amount' => $orderPay->amount,
-                    'refundAmount' => $orderPay->amount,
-                    'currentOper' => request()->get('current_oper')
-                ]
+        if($order->payType == 1){
+            // 发起微信支付退款
+            // todo 获取平台的微信支付实例
+            $payApp = WechatService::getWechatPayAppForOper(request()->get('current_oper')->id);
+            $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->id, $orderPay->amount * 100, $orderPay->amount * 100, [
+                'refund_desc' => '用户发起退款',
             ]);
-            throw new BaseResponseException('微信退款失败');
+            if($result['return_code'] === 'SUCCESS' && array_get($result, 'result_code') === 'SUCCESS'){
+                // 微信退款成功
+                $orderRefund->refund_id = $result['refund_id'];
+                $orderRefund->status = 2;
+                $orderRefund->save();
+
+                $order->status = Order::STATUS_REFUNDED;
+                $order->save();
+                return Result::success($orderRefund);
+            }else {
+                Log::error('微信退款失败 :', [
+                    'result' => $result,
+                    'params' => [
+                        'orderPay' => $orderPay->toArray(),
+                        'orderRefund' => $orderRefund->toArray(),
+                    ]
+                ]);
+                throw new BaseResponseException('微信退款失败');
+            }
+        }else {
+            throw new ParamInvalidException('暂未开通微信外的其他支付方式');
         }
     }
 }
