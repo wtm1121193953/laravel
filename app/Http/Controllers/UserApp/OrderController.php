@@ -77,7 +77,6 @@ class OrderController extends Controller
         $user = request()->get('current_user');
 
         $merchant = Merchant::findOrFail($goods->merchant_id);
-        $oper = request()->get('current_oper');
 
         $order = new Order();
         $orderNo = Order::genOrderNo();
@@ -97,29 +96,8 @@ class OrderController extends Controller
         $order->buy_number = $number;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $goods->price * $number;
+        $order->origin_app_type = request()->header('app-type');
         $order->save();
-
-        $payApp = WechatService::getWechatPayAppForOper($merchant->oper_id);
-        $data = [
-            'body' => $order->goods_name,
-            'out_trade_no' => $orderNo,
-            'total_fee' => $order->pay_price * 100,
-            'trade_type' => 'JSAPI',
-            'openid' => $order->open_id,
-        ];
-        $unifyResult = $payApp->order->unify($data);
-        if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
-            $order->save();
-        }else {
-            Log::error('微信统一下单失败', [
-                'payConfig' => $payApp->getConfig(),
-                'data' => $data,
-                'result' => $unifyResult,
-            ]);
-            throw new BaseResponseException('微信统一下单失败');
-        }
-        $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
-
 
         if(App::environment() === 'local'){
             // 生成核销码, 线上需要放到支付成功通知中
