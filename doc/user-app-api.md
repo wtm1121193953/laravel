@@ -258,7 +258,7 @@ app-type: 客户端类型  1-Android 2-iOS
   }
   ```
 
-  ​
+  
 
 #### 商家模块	
 
@@ -456,6 +456,7 @@ app-type: 客户端类型  1-Android 2-iOS
                 refund_price: 退款金额,
                 refund_time: 退款时间,
                 status: 状态 1-未支付 2-已取消 3-已关闭 (超时自动关闭) 4-已付款  6-已退款 7-已完成 (不可退款),
+                origin_app_type: 订单来源客户端类型  1-安卓 2-ios 3-小程序
                 items: 核销码列表(已支付及之后的状态才存在) [
                     {
                         id: 核销码ID,
@@ -463,8 +464,8 @@ app-type: 客户端类型  1-Android 2-iOS
                         verify_code: 核销码,
                         status: 状态 1-未核销, 2-已核销 3-已退款,
                     }
-                ]
-                isOperSelf: 是否归属于当前小程序的运营中心
+                ],
+                goods_end_date: 商品截止日期
             }
         ]
     } 
@@ -507,17 +508,57 @@ app-type: 客户端类型  1-Android 2-iOS
 
   ```
     data: {
-    	order_no: 订单号,
-    	isOperSelf: 是否归属于当前小程序的运营中心
-    	sdk_config: 调起微信支付配置, isOperSelf 为1时存在 {
-          appId: appid,
-          nonceStr: 随机字符串,
-          package: package,
-          signType: signType,
-          paySign: 支付签名,
-          timestamp: 时间戳,
-    	}
+        id: 订单ID,
+        oper_id: 运营中心ID,
+        order_no: 订单号,
+        user_id: 用户ID,
+        user_name: 用户名,
+        notify_mobile: 用户通知手机号,
+        merchant_id: 商家ID,
+        merchant_name: 商家名,
+        goods_id: 商品ID,
+        goods_name: 商品名,
+        goods_pic: 商品图片,
+        goods_thumb_url: 商品缩略图,
+        price: 商家单价,
+        buy_number: 购买数量,
+        pay_price: 支付金额,
+        pay_time: 支付时间,
+        refund_price: 退款金额,
+        refund_time: 退款时间,
+        status: 状态 1-未支付 2-已取消 3-已关闭 (超时自动关闭) 4-已付款  6-已退款 7-已完成 (不可退款),
+        origin_app_type: 订单来源客户端类型  1-安卓 2-ios 3-小程序
     }
+  ```
+
+  
+
+- [ ] 订单支付接口
+
+  地址: POST `/order/pay`
+
+  参数
+
+  ```
+  order_no: 订单号
+  pay_type: 支付类型 1-微信支付 2-支付宝支付  默认1
+  ```
+
+  返回
+
+  ```
+  data: {
+      order_no: 订单号,
+      sdk_config: 调起支付参数 {
+      	appid,
+      	partnerid,
+      	prepayid,
+      	noncestr,
+      	timestamp,
+      	package,
+      	sign
+      }
+  }
   ```
 
   ​
