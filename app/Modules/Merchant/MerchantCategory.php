@@ -31,4 +31,9 @@ class MerchantCategory extends BaseModel
         array_unshift($parentPath, $category);
         return $parentPath;
     }
+
+    public static function clearCache()
+    {
+        Cache::forget('merchant_category_tree');
+    }
 }

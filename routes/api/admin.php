@@ -36,6 +36,13 @@ Route::prefix('admin')
 
     Route::get('area/tree', 'AreaController@getTree');
 
+    Route::get('merchant/categories', 'MerchantCategoryController@getList');
+    Route::get('merchant/category/tree', 'MerchantCategoryController@getTree');
+    Route::post('merchant/category/add', 'MerchantCategoryController@add');
+    Route::post('merchant/category/edit', 'MerchantCategoryController@edit');
+    Route::post('merchant/category/changeStatus', 'MerchantCategoryController@changeStatus');
+    Route::post('merchant/category/del', 'MerchantCategoryController@del');
+
     Route::get('merchants', 'MerchantController@getList');
     Route::get('merchant/detail', 'MerchantController@detail');
     Route::post('merchant/audit', 'MerchantController@audit');
