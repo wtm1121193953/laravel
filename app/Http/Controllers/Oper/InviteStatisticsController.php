@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Oper;
 
 
+use App\Exceptions\ParamInvalidException;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Invite\InviteUserRecord;
@@ -18,6 +19,11 @@ use Illuminate\Support\Carbon;
 
 class InviteStatisticsController
 {
+
+    public function __construct()
+    {
+        throw new ParamInvalidException('邀请用户功能已关闭');
+    }
 
     public function dailyList()
     {
