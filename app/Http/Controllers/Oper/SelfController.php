@@ -47,11 +47,11 @@ class SelfController extends Controller
             throw new NoPermissionException('运营中心已被冻结');
         }
 
-        $user->username = $user->username ?? $user->account;
-
         session([
             config('oper.user_session') => $user,
         ]);
+
+        $user->operName = Oper::where('id', $user->oper_id)->value('name');
 
         return Result::success([
             'user' => $user,
@@ -84,10 +84,11 @@ class SelfController extends Controller
         $user->save();
 
         // 修改密码成功后更新session中的user
-        $user->username = $user->username ?? $user->account;
         session([
             config('oper.user_session') => $user,
         ]);
+
+        $user->operName = Oper::where('id', $user->oper_id)->value('name');
 
         return Result::success($user);
     }
