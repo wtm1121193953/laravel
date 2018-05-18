@@ -1,8 +1,8 @@
 <template>
     <el-container class="container">
         <el-header class="header">
-            <!-- logo -->
             <el-container>
+                <!-- logo -->
                 <el-aside width="200px">
                     <div class="panel-logo fl" :style="{'background-color': theme.color}">
                         <template v-if="logo_type === 1">
@@ -225,6 +225,7 @@
                 api.post('/self/modifyPassword', this.modifyPasswordForm).then(data => {
                     this.$message.success('修改密码成功')
                     this.showModifyPasswordForm = false;
+                    this.$refs.modifyPasswordForm.resetFields();
                 })
             },
         },
@@ -291,10 +292,6 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-    }
-    .top-menu-item {
-        min-width: 0;
-        width: 100%
     }
 
     .logout {

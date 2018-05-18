@@ -18,7 +18,7 @@ use App\Modules\Merchant\MerchantAccount;
 use App\Result;
 use Illuminate\Support\Facades\Session;
 
-class LoginController extends Controller
+class SelfController extends Controller
 {
 
     public function login()
@@ -43,11 +43,11 @@ class LoginController extends Controller
             throw new NoPermissionException('商户已被冻结');
         }
 
-        $user->username = $merchant->name;
-
         session([
             config('merchant.user_session') => $user,
         ]);
+
+        $user->merchantName = $merchant->name;
 
         return Result::success([
             'user' => $user,
@@ -59,6 +59,34 @@ class LoginController extends Controller
     {
         Session::forget(config('merchant.user_session'));
         return Result::success();
+    }
+
+    public function modifyPassword()
+    {
+        $this->validate(request(), [
+            'password' => 'required',
+            'newPassword' => 'required',
+            'reNewPassword' => 'required|same:newPassword'
+        ]);
+        $user = request()->get('current_user');
+        // 检查原密码是否正确
+        if(MerchantAccount::genPassword(request('password'), $user->salt) !== $user->password){
+            throw new PasswordErrorException();
+        }
+        $user = MerchantAccount::findOrFail($user->id);
+        $salt = str_random();
+        $user->salt = $salt;
+        $user->password = MerchantAccount::genPassword(request('newPassword'), $salt);
+        $user->save();
+
+        // 修改密码成功后更新session中的user
+        session([
+            config('merchant.user_session') => $user,
+        ]);
+
+        $user->merchantName = Merchant::where('id', $user->merchant_id)->value('name');
+
+        return Result::success($user);
     }
 
     private function getMenus()

@@ -51,7 +51,7 @@ class SelfController extends Controller
             config('oper.user_session') => $user,
         ]);
 
-        $user->operName = Oper::where('id', $user->oper_id)->value('name');
+        $user->operName = $oper->name;
 
         return Result::success([
             'user' => $user,

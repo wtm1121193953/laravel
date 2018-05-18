@@ -1,39 +1,39 @@
 <template>
     <el-container class="container">
         <el-header class="header">
-            <!-- logo -->
-            <div class="panel-logo fl" :style="{'background-color': theme.color}">
-                <template v-if="logo_type === 1">
-                    <img src="../../assets/images/logo.png" class="logo">
-                </template>
-                <template v-else>
-                    <div class="logo p-l-20 p-r-20" :style="{'color': theme.menuTextColor}">{{logo}}</div>
-                </template>
-            </div>
-            <div class="top-left-menu" style="height: 60px; float: left; line-height: 60px; text-align: center;" :style="{'background-color': theme.color, 'color': theme.menuTextColor}">
-                <div class="fl" style="width: 60px; cursor: pointer;" @click="collapseLeftMenu = !collapseLeftMenu"><i class="el-icon-menu"></i></div>
-                <!--<div class="fl" style="width: 75px"> V 2.0 </div>-->
-            </div>
-            <!-- 菜单前的下边框 -->
-            <div class="mock-menu-bottom-line"></div>
+            <el-container>
+                <!-- logo -->
+                <el-aside width="200px">
+                    <div class="panel-logo fl" :style="{'background-color': theme.color}">
+                        <template v-if="logo_type === 1">
+                            <img src="../../assets/images/logo.png" class="logo">
+                        </template>
+                        <template v-else>
+                            <div class="logo p-l-20" :style="{'color': theme.menuTextColor}">{{logo}}</div>
+                        </template>
+                    </div>
+                </el-aside>
+                <el-main class="header-main" :style="{'background-color': theme.color, 'color': theme.menuTextColor}">
+                    <div class="fl menu-collapse" @click="collapseLeftMenu = !collapseLeftMenu"><i class="el-icon-menu"></i></div>
+                    <!--<div class="fl" >{{user.merchantName}}</div>-->
 
-            <!-- 顶部菜单 -->
-            <el-menu
-                    :background-color="theme.color"
-                    :text-color="theme.menuTextColor"
-                    :active-text-color="theme.menuActiveTextColor"
-                    mode="horizontal"
-                    @select="selectTopMenu"
-                    style="margin-left: 260px"
-            >
-                <el-submenu index="options" :show-timeout="100" style="float: right;">
-                    <template slot="title">{{username}} <i class="fa fa-user" aria-hidden="true"></i></template>
-                    <el-menu-item index="refresh-rules" class="top-menu-item">刷新权限</el-menu-item>
-                    <el-menu-item index="theme-setting" class="top-menu-item">主题设置</el-menu-item>
-                    <el-menu-item index="modify-password" class="top-menu-item">修改密码</el-menu-item>
-                    <el-menu-item index="logout" class="top-menu-item">退出</el-menu-item>
-                </el-submenu>
-            </el-menu>
+                    <!-- 顶部菜单 -->
+                    <div class="fr header-dropdown-menu">
+                        <el-dropdown trigger="click" @command="selectTopMenu">
+                            <el-button type="text" :style="{color: theme.menuTextColor}">
+                                {{ username }} <i class="el-icon-arrow-down el-icon--right"></i>
+                            </el-button>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item command="refresh-rules">刷新权限</el-dropdown-item>
+                                <el-dropdown-item command="theme-setting">主题设置</el-dropdown-item>
+                                <el-dropdown-item command="modify-password">修改密码</el-dropdown-item>
+                                <el-dropdown-item command="logout">退出</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </div>
+                </el-main>
+
+            </el-container>
 
             <!-- 主题设置面板 -->
             <el-dialog :visible.sync="showThemeSetting" title="主题设置">
@@ -224,6 +224,7 @@
                 api.post('/self/modifyPassword', this.modifyPasswordForm).then(data => {
                     this.$message.success('修改密码成功')
                     this.showModifyPasswordForm = false;
+                    this.$refs.modifyPasswordForm.resetFields();
                 })
             },
         },
@@ -260,9 +261,21 @@
 
     .header {
         padding: 0;
+        border-bottom: solid 1px #e6e6e6;
     }
-    .mock-menu-bottom-line {
-        position:absolute; height: 0; width: 260px; top: 60px; border-bottom: solid 1px #e6e6e6;
+    .header-main {
+        padding: 0;
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+    }
+    .header .menu-collapse {
+        width: 60px;
+        cursor: pointer;
+        margin-right: 20px;
+    }
+    .header .header-dropdown-menu {
+        margin-right: 30px;
     }
     .panel-logo {
         cursor: pointer;
@@ -278,10 +291,6 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-    }
-    .top-menu-item {
-        min-width: 0;
-        width: 100%
     }
 
     .logout {

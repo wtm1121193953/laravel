@@ -9,8 +9,9 @@ Route::prefix('merchant')
     ->namespace('Merchant')
     ->middleware('merchant')->group(function (){
 
-        Route::post('login', 'LoginController@login');
-        Route::post('logout', 'LoginController@logout');
+        Route::post('login', 'SelfController@login');
+        Route::post('logout', 'SelfController@logout');
+        Route::post('self/modifyPassword', 'SelfController@modifyPassword');
 
         Route::get('inviteChannel/inviteQrcode', 'InviteChannelController@getInviteQrcode');
         Route::get('inviteChannel/downloadInviteQrcode', 'InviteChannelController@downloadInviteQrcode');
