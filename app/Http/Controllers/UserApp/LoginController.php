@@ -12,8 +12,6 @@ namespace App\Http\Controllers\UserApp;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
-use App\Modules\Invite\InviteChannel;
-use App\Modules\Invite\InviteService;
 use App\Modules\Sms\SmsVerifyCode;
 use App\Modules\User\User;
 use App\Modules\User\UserOpenIdMapping;
@@ -58,14 +56,15 @@ class LoginController extends Controller
         }
 
         // 如果存在邀请渠道ID, 查询用户是否已被邀请过
-        $inviteChannelId = request('inviteChannelId');
+        // 去掉邀请会员功能
+        /*$inviteChannelId = request('inviteChannelId');
         if($inviteChannelId){
             $inviteChannel = InviteChannel::find($inviteChannelId);
             if(empty($inviteChannel)){
                 throw new ParamInvalidException('邀请渠道不存在');
             }
             InviteService::bindInviter($user->id, $inviteChannel);
-        }
+        }*/
 
         // 保存用户与openId的映射关系, 并覆盖旧的关联关系
         $openId = request()->get('current_open_id');
