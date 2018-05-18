@@ -18,7 +18,7 @@ use App\Modules\Oper\OperAccount;
 use App\Result;
 use Illuminate\Support\Facades\Session;
 
-class LoginController extends Controller
+class SelfController extends Controller
 {
 
     /**
@@ -63,6 +63,33 @@ class LoginController extends Controller
     {
         Session::forget(config('oper.user_session'));
         return Result::success();
+    }
+
+    public function modifyPassword()
+    {
+        $this->validate(request(), [
+            'password' => 'required',
+            'newPassword' => 'required',
+            'reNewPassword' => 'required|same:newPassword'
+        ]);
+        $user = request()->get('current_user');
+        // 检查原密码是否正确
+        if(OperAccount::genPassword(request('password'), $user->salt) !== $user->password){
+            throw new PasswordErrorException();
+        }
+        $user = OperAccount::findOrFail($user->id);
+        $salt = str_random();
+        $user->salt = $salt;
+        $user->password = OperAccount::genPassword(request('newPassword'), $salt);
+        $user->save();
+
+        // 修改密码成功后更新session中的user
+        $user->username = $user->username ?? $user->account;
+        session([
+            config('oper.user_session') => $user,
+        ]);
+
+        return Result::success($user);
     }
 
     private function getMenus()

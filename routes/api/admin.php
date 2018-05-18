@@ -12,6 +12,7 @@ Route::prefix('admin')
     Route::post('login', 'SelfController@login');
     Route::post('logout', 'SelfController@logout');
     Route::get('self/rules', 'SelfController@getRules');
+    Route::post('self/modifyPassword', 'SelfController@modifyPassword');
 
     Route::get('users', 'UserController@getList');
     Route::post('user/add', 'UserController@add');

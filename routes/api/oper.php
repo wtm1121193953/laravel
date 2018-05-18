@@ -9,8 +9,9 @@ Route::prefix('oper')
     ->namespace('Oper')
     ->middleware('oper')->group(function (){
 
-        Route::post('login', 'LoginController@login');
-        Route::post('logout', 'LoginController@logout');
+        Route::post('login', 'SelfController@login');
+        Route::post('logout', 'SelfController@logout');
+        Route::post('self/modifyPassword', 'SelfController@modifyPassword');
 
         Route::get('area/tree', 'AreaController@getTree');
 
