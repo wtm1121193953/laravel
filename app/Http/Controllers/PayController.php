@@ -32,11 +32,6 @@ class PayController extends Controller
      */
     public function notify()
     {
-
-        if(App::environment() === 'local' || request()->get('mock')){
-            $this->paySuccess(request('order_no'), 'mock transaction id', 0);
-            return Result::success('模拟支付成功');
-        }
         $str = request()->getContent();
         $xml = simplexml_load_string($str);
         // 获取appid
@@ -61,6 +56,19 @@ class PayController extends Controller
             return false;
         });
         return $response;
+    }
+
+    /**
+     * 本地模拟支付成功
+     */
+    public function mockPaySuccess()
+    {
+        if(App::environment() === 'local'){
+            $this->paySuccess(request('order_no'), 'mock transaction id', 0);
+            return Result::success('模拟支付成功');
+        }else {
+            abort(404);
+        }
     }
 
     /**
