@@ -9,6 +9,10 @@
                     :data="list"
                     :props="{label: 'name', children: 'sub'}"
                     :expand-on-click-node="false"
+                    :default-expanded-keys="expandedKeys"
+                    node-key="id"
+                    @node-expand="treeNodeExpand"
+                    @node-collapse="treeNodeCollapse"
             >
                 <span class="custom-tree-node" slot-scope="{ node, data }">
                     <span :class="{'c-gray': data.status != 1}">{{data.name}} <template v-if="data.status != 1">(已禁用)</template></span>
@@ -20,6 +24,7 @@
                             <el-dropdown-menu slot="dropdown" class="dropmenu">
                                 <el-dropdown-item command="addChild" v-if="data.pid == 0">添加子类目</el-dropdown-item>
                                 <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                                <el-dropdown-item command="changeStatus">{{data.status == 1 ? '禁用' : '启用'}}</el-dropdown-item>
                                 <el-dropdown-item command="del">删除</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
@@ -83,7 +88,8 @@
                     ]
                 },
                 showForm: false,
-                formTitle: '添加类目'
+                formTitle: '添加类目',
+                expandedKeys: [], // 类目树中展开的节点
             }
         },
         computed: {
@@ -104,6 +110,9 @@
                     case 'edit':
                         this.edit(data)
                         break;
+                    case 'changeStatus':
+                        this.changeStatus(data);
+                        break;
                     case 'del':
                         this.del(data);
                         break;
@@ -123,6 +132,12 @@
                 this.showForm = true;
                 this.formTitle = '编辑类目'
             },
+            changeStatus(data){
+                let status = data.status == 1 ? 2 : 1;
+                api.post('/merchant/category/changeStatus', {id: data.id, status: status}).then(data => {
+                    this.getList();
+                })
+            },
             cancel(){
                 this.showForm = false;
                 this.$refs.form.resetFields();
@@ -135,7 +150,6 @@
                 }
             },
             doEdit(){
-                console.log(JSON.parse(JSON.stringify(this.form)))
                 api.post('/merchant/category/edit', this.form).then(data => {
                     this.showForm = false;
                     this.$refs.form.resetFields();
@@ -150,10 +164,18 @@
                 })
             },
             del(data){
-                api.post('/merchant/category/del', {id: data.id}).then(data => {
-                    this.getList();
+                this.$confirm(`确定要删除类目: ${data.name} 吗?`).then(() => {
+                    api.post('/merchant/category/del', {id: data.id}).then(data => {
+                        this.getList();
+                    })
                 })
-            }
+            },
+            treeNodeExpand(data){
+                this.expandedKeys.push(data.id)
+            },
+            treeNodeCollapse(data){
+                this.expandedKeys.splice(this.expandedKeys.indexOf(data.id), 1)
+            },
         },
         created(){
             this.getList();
@@ -166,6 +188,10 @@
 <style>
     .merchant-categories-tree .el-tree-node__content {
         height: 40px;
+        border-bottom: 1px solid #ebeef5;
+    }
+    .merchant-categories-tree>.el-tree-node:first-child .el-tree-node__content {
+        border-top: 1px solid #ebeef5;
     }
 </style>
 

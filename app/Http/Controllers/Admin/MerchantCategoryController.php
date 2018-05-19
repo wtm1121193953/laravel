@@ -20,7 +20,7 @@ class MerchantCategoryController extends Controller
 
     public function getTree()
     {
-        $tree = MerchantCategory::getTree();
+        $tree = MerchantCategory::getTree(true);
         return Result::success(['list' => $tree]);
     }
 
