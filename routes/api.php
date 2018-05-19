@@ -26,6 +26,8 @@ Route::post('/upload/image', 'UploadController@image');
 
 // 微信支付回调
 Route::any('/pay/notify', 'PayController@notify');
+// 模拟支付成功接口, 只有本地才有效
+Route::any('/pay/mockPaySuccess', 'PayController@mockPaySuccess');
 
 /**
  * 加载后台接口路由
