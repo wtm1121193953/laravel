@@ -31,8 +31,14 @@ class OrderController extends Controller
         $status = request('status');
         $user = request()->get('current_user');
 
-        $data = Order
-            ::where('user_id', $user->id)
+        $data = Order::where('user_id', $user->id)
+            ->where(function (Builder $query){
+                $query->where('type', 1)
+                    ->orWhere(function(Builder $query){
+                        $query->where('type', 2)
+                            ->whereIn('status', [4, 6, 7]);
+                    });
+            })
             ->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
             })

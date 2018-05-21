@@ -35,8 +35,14 @@ class OrderController extends Controller
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
 
         $currentOperId = request()->get('current_oper')->id;
-        $data = Order
-            ::where('user_id', $user->id)
+        $data = Order::where('user_id', $user->id)
+            ->where(function (Builder $query){
+                $query->where('type', 1)
+                    ->orWhere(function(Builder $query){
+                        $query->where('type', 2)
+                            ->whereIn('status', [4, 6, 7]);
+                    });
+            })
             ->when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
                 $query->where('oper_id', $currentOperId);
             })
