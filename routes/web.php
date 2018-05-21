@@ -37,7 +37,6 @@ Route::get('/merchant', function () {
 
 Route::get('/miniprogram_bridge/pay', function(){
     $targetOperId = request('targetOperId');
-    dd($targetOperId, '干嘛呢');
     if(empty($targetOperId)) throw new BaseResponseException('targetOperId不能为空');
     $orderNo = request('orderNo');
     if(empty($orderNo)) throw new ParamInvalidException('订单号不能为空');
