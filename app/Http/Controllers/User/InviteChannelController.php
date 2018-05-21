@@ -23,6 +23,11 @@ use App\Result;
 class InviteChannelController extends Controller
 {
 
+    public function __construct()
+    {
+        throw new ParamInvalidException('邀请用户功能已关闭');
+    }
+
     /**
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */

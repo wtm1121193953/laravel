@@ -10,10 +10,6 @@ namespace App\Http\Controllers;
 
 
 use App\Modules\Goods\Goods;
-use App\Modules\Invite\InviteChannel;
-use App\Modules\Invite\InviteService;
-use App\Modules\Invite\InviteUserRecord;
-use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperMiniprogram;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
@@ -113,13 +109,13 @@ class PayController extends Controller
             $orderPay->save();
 
             // 支付成功, 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
-            $userId = $order->user_id;
+            /*$userId = $order->user_id;
             if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
                 $merchantId = $order->merchant_id;
                 $merchant = Merchant::findOrFail($merchantId);
                 $inviteChannel = InviteService::getInviteChannel($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
                 InviteService::bindInviter($userId, $inviteChannel);
-            }
+            }*/
 
             return true;
         }else if($order->status == Order::STATUS_PAID){

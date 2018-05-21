@@ -22,6 +22,11 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 class InviteChannelController extends Controller
 {
 
+    public function __construct()
+    {
+        throw new ParamInvalidException('邀请用户功能已关闭');
+    }
+
     public function getInviteQrcode()
     {
         $userId = request()->get('current_user')->id;

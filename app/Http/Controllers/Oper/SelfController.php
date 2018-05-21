@@ -104,17 +104,17 @@ class SelfController extends Controller
             ],
             [ 'id' => 4, 'name' => '人员管理', 'level' => 1, 'url' => 'user', 'sub' =>
                 [
-                    [ 'id' => 5, 'name' => '我的会员', 'level' => 2, 'url' => '/oper/invite/statistics/daily', 'pid' => 4,],
+//                    [ 'id' => 5, 'name' => '我的会员', 'level' => 2, 'url' => '/oper/invite/statistics/daily', 'pid' => 4,],
                     [ 'id' => 6, 'name' => '我的业务员', 'level' => 2, 'url' => '/oper/operBizMembers', 'pid' => 4,],
                 ]
             ],
 
             [ 'id' => 7, 'name' => '财务管理', 'level' => 1, 'url' => '/oper/settlements',],
-            [ 'id' => 8, 'name' => '素材中心', 'level' => 1, 'url' => 'material', 'sub' =>
+            /*[ 'id' => 8, 'name' => '素材中心', 'level' => 1, 'url' => 'material', 'sub' =>
                 [
                     [ 'id' => 9, 'name' => '分享会员二维码', 'level' => 2, 'url' => '/oper/invite-channel', 'pid' => 8,],
                 ]
-            ],
+            ],*/
         ];
     }
 

@@ -21,16 +21,10 @@ use App\Modules\Wechat\MiniprogramScene;
 use App\Result;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {
 
-    /**
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
-     */
     public function login()
     {
         $this->validate(request(), [
@@ -42,7 +36,6 @@ class LoginController extends Controller
             throw new ParamInvalidException('手机号码不合法');
         }
         $verifyCode = request('verify_code');
-        DB::beginTransaction();
         // 非正式环境时, 验证码为6666为通过验证
         if(App::environment('production') || $verifyCode != '6666'){
             $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
@@ -73,14 +66,59 @@ class LoginController extends Controller
             }
             InviteService::bindInviter($user->id, $inviteChannel);
         }
-        // 生成token并返回
-        $token = str_random(64);
-        Cache::put('token_to_user_' . $token, $user, 60 * 24 * 30);
 
-        DB::commit();
+        // 保存用户与openId的映射关系, 并覆盖旧的关联关系
+        $openId = request()->get('current_open_id');
+        $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
+        if($userOpenIdMapping){
+            $userOpenIdMapping->user_id = $user->id;
+            $userOpenIdMapping->oper_id = request()->get('current_oper')->id;
+            $userOpenIdMapping->save();
+        }else {
+            $userOpenIdMapping = new UserOpenIdMapping();
+            $userOpenIdMapping->oper_id = request()->get('current_oper')->id;
+            $userOpenIdMapping->open_id = $openId;
+            $userOpenIdMapping->user_id = $user->id;
+            $userOpenIdMapping->save();
+        }
+        return Result::success([
+            'userInfo' => $user
+        ]);
+    }
+
+    public function loginWithSceneId()
+    {
+        $this->validate(request(), [
+            'sceneId' => 'required'
+        ]);
+        $sceneId = request('sceneId');
+        $scene = MiniprogramScene::findOrFail($sceneId);
+        if($scene->type != 1){
+            throw new BaseResponseException('场景类型不匹配');
+        }
+        $payload = json_decode($scene->payload, 1);
+        if(!$payload || !$payload['user_id'] || !$payload['order_no']){
+            throw new BaseResponseException('payload数据错误');
+        }
+        $user = User::findOrFail($payload['user_id']);
+        // 保存用户与openId的映射关系, 并覆盖旧的关联关系
+        $openId = request()->get('current_open_id');
+        $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
+        if($userOpenIdMapping){
+            $userOpenIdMapping->user_id = $payload['user_id'];
+            $userOpenIdMapping->oper_id = request()->get('current_oper')->id;
+            $userOpenIdMapping->save();
+        }else {
+            $userOpenIdMapping = new UserOpenIdMapping();
+            $userOpenIdMapping->oper_id = request()->get('current_oper')->id;
+            $userOpenIdMapping->open_id = $openId;
+            $userOpenIdMapping->user_id = $payload['user_id'];
+            $userOpenIdMapping->save();
+        }
+
         return Result::success([
             'userInfo' => $user,
-            'token' => $token
+            'payload' => $payload,
         ]);
     }
 
@@ -91,9 +129,12 @@ class LoginController extends Controller
      */
     public function logout()
     {
-        // 清除用户token
-        $token = request()->header('token');
-        Cache::forget('token_to_user_' . $token);
+        // 解除openId关联
+        $openId = request()->get('current_open_id');
+        $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
+        if($userOpenIdMapping){
+            $userOpenIdMapping->delete();
+        }
         return Result::success();
     }
 }
