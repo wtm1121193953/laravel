@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Jobs\InviteUserStatisticsDailyJob;
 use App\Jobs\InviteUserStatisticsJob;
+use App\Jobs\OrderAutoFinished;
 use App\Jobs\OrderExpired;
 use App\Jobs\SettlementHalfMonthly;
 use App\Jobs\SettlementHalfYearly;
@@ -36,17 +37,13 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        /**
-         * 用户邀请记录每日统计, 每日统计昨日的注册数
-         */
+        /** 用户邀请记录每日统计, 每日统计昨日的注册数 */
         $schedule->job(new InviteUserStatisticsDailyJob((new Carbon())->subDay()))->daily();
-        /**
-         * 订单超时自动关闭
-         */
+        /** 订单超时自动关闭 */
         $schedule->job(OrderExpired::class)->hourly();
-        /**
-         * 结算任务
-         */
+        /** 输入金额付款订单自动完成 */
+        $schedule->job(OrderAutoFinished::class)->daily();
+        /** 结算任务 */
         // 周结
         $schedule->job(new SettlementJob(Merchant::SETTLE_WEEKLY))
             ->weeklyOn(1);

@@ -11,7 +11,12 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
-class OrderExpired implements ShouldQueue
+/**
+ * 订单自动完成任务(仅直接输入金额付款的订单, 付款超过24小时后自动设置状态为已完成)
+ * Class OrderAutoFinished
+ * @package App\Jobs
+ */
+class OrderAutoFinished implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -33,10 +38,11 @@ class OrderExpired implements ShouldQueue
     public function handle()
     {
         //
-        Log::info('开始执行订单超时自动关闭定时任务');
-        Order::where('status', 1)
-            ->where('created_at', '<', Carbon::now()->subDay())
-            ->update(['status' => Order::STATUS_CLOSED]);
-        Log::info('订单超时自动关闭定时任务执行完成');
+        Log::info('开始执行输入金额付款订单自动完成定时任务');
+        Order::where('type', Order::TYPE_SCAN_QRCODE_PAY)
+            ->where('pay_time', '<', Carbon::yesterday())
+            ->where('status', Order::STATUS_PAID)
+            ->update(['status' => Order::STATUS_FINISHED]);
+        Log::info('输入金额付款订单自动完成定时任务执行完成');
     }
 }
