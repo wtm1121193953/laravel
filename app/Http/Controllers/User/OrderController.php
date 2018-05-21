@@ -19,11 +19,9 @@ use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
 use App\Modules\Setting\SettingService;
-use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
@@ -161,10 +159,21 @@ class OrderController extends Controller
         $user = request()->get('current_user');
         $merchant = Merchant::findOrFail(request('merchant_id'));
 
-        $order = new Order();
-        $orderNo = Order::genOrderNo();
+        // 查询该用户在该商家下是否有未支付的直接付款订单, 若有直接修改原订单信息
+        $order = Order::where('type', Order::TYPE_SCAN_QRCODE_PAY)
+            ->where('merchant_id', $merchant->id)
+            ->where('user_id', $user->id)
+            ->where('status', Order::STATUS_UN_PAY)
+            ->first();
+        if(empty($order)){
+            $order = new Order();
+            $orderNo = Order::genOrderNo();
+            $order->order_no = $orderNo;
+        }else {
+            $orderNo = $order->order_no;
+        }
+
         $order->oper_id = $merchant->oper_id;
-        $order->order_no = $orderNo;
         $order->user_id = $user->id;
         $order->open_id = request()->get('current_open_id');
         $order->user_name = $user->name ?? '';
