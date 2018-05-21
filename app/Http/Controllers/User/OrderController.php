@@ -142,7 +142,7 @@ class OrderController extends Controller
         }
 
         return Result::success([
-            'order' => $order,
+            'order_no' => $orderNo,
             'isOperSelf' => $isOperSelf,
             'sdk_config' => $sdkConfig,
         ]);
@@ -203,6 +203,7 @@ class OrderController extends Controller
         }
 
         return Result::success([
+            'order' => $order,
             'order_no' => $orderNo,
             'isOperSelf' => $isOperSelf,
             'sdk_config' => $sdkConfig,
