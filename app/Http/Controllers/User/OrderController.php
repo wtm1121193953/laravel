@@ -37,9 +37,9 @@ class OrderController extends Controller
         $currentOperId = request()->get('current_oper')->id;
         $data = Order::where('user_id', $user->id)
             ->where(function (Builder $query){
-                $query->where('type', 1)
+                $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function(Builder $query){
-                        $query->where('type', 2)
+                        $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
                             ->whereIn('status', [4, 6, 7]);
                     });
             })
