@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PayQrcodeController extends Controller
 {

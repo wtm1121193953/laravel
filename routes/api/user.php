@@ -40,4 +40,6 @@ Route::prefix('user')
         Route::get('invite/getInviterBySceneId', 'InviteChannelController@getInviterBySceneId');
         Route::post('invite/bindInviter', 'InviteChannelController@bindInviter');
 
+        Route::post('scene/info', 'SceneController@getSceneInfo');
+
     });
