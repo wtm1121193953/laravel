@@ -8,6 +8,7 @@ import goods from './goods'
 import settlements from './settlements'
 
 import InviteChannel from '../components/invite-channel'
+import PayQrcode from '../components/pay-qrcode'
 
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
@@ -37,6 +38,7 @@ const routes = [
         component: Home,
         children: [
             {path: 'invite/channel', component: InviteChannel, name: 'InviteChannel'},
+            {path: 'pay/qrcode', component: PayQrcode, name: 'PayQrcode'},
         ]
     },
 

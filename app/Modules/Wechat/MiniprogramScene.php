@@ -7,10 +7,13 @@ use App\BaseModel;
 class MiniprogramScene extends BaseModel
 {
     // 订单支付页面(订单支付页面的路径暂时由小程序传参过来)
-    const PAGE_ORDER_PAY = '';
+    const PAGE_ORDER_PAY = 'pages/order/info';
     // 邀请注册页面
     const PAGE_INVITE_REGISTER = 'pages/login/index';
+    // 扫码支付页面
+    const PAGE_PAY_SCAN = 'pages/order/addOfPrice';
 
-    const TYPE_PAY_BRIDGE = 1;
-    const TYPE_INVITE_CHANNEL = 2;
+    const TYPE_PAY_BRIDGE = 1; // 小程序间支付跳转
+    const TYPE_INVITE_CHANNEL = 2; // 邀请注册渠道
+    const TYPE_PAY_SCAN = 3; // 扫码支付
 }

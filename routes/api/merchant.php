@@ -16,6 +16,9 @@ Route::prefix('merchant')
         Route::get('inviteChannel/inviteQrcode', 'InviteChannelController@getInviteQrcode');
         Route::get('inviteChannel/downloadInviteQrcode', 'InviteChannelController@downloadInviteQrcode');
 
+        Route::get('pay/qrcode/miniprogramQrcode', 'PayQrcodeController@getMiniprogramAppCode');
+        Route::get('pay/qrcode/downloadMiniprogramQrcode', 'PayQrcodeController@downloadMiniprogramAppCode');
+
         Route::get('invite/statistics/dailyList', 'InviteStatisticsController@dailyList');
 
         Route::group([], base_path('routes/api/merchant/goods.php'));
