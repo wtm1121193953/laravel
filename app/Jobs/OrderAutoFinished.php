@@ -42,7 +42,7 @@ class OrderAutoFinished implements ShouldQueue
         Order::where('type', Order::TYPE_SCAN_QRCODE_PAY)
             ->where('pay_time', '<', Carbon::yesterday())
             ->where('status', Order::STATUS_PAID)
-            ->update(['status' => Order::STATUS_FINISHED]);
+            ->update(['status' => Order::STATUS_FINISHED, 'finish_time' => Carbon::now()]);
         Log::info('输入金额付款订单自动完成定时任务执行完成');
     }
 }
