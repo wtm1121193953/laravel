@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Merchant;
 
 
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
@@ -31,7 +32,11 @@ class PayQrcodeController extends Controller
             $scene = new MiniprogramScene();
             $scene->oper_id = request()->get('current_user')->oper_id;
             $scene->merchant_id = $merchantId;
+            $scene->type = MiniprogramScene::TYPE_PAY_SCAN;
             $scene->page = MiniprogramScene::PAGE_PAY_SCAN;
+            $scene->payload = json_encode([
+                'merchant_id' => $merchantId,
+            ]);
             $scene->save();
         }
         $qrcode_url = WechatService::getMiniprogramAppCodeUrl($scene);
