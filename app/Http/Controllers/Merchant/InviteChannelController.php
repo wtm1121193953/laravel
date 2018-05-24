@@ -9,7 +9,6 @@
 namespace App\Http\Controllers\Merchant;
 
 
-use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteService;
@@ -19,11 +18,6 @@ use App\Result;
 
 class InviteChannelController extends Controller
 {
-
-    public function __construct()
-    {
-        throw new ParamInvalidException('邀请用户功能已关闭');
-    }
 
     /**
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException

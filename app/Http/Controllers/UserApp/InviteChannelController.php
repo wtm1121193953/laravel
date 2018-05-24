@@ -13,19 +13,11 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteService;
-use App\Modules\Merchant\Merchant;
-use App\Modules\Oper\Oper;
-use App\Modules\User\User;
 use App\Result;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class InviteChannelController extends Controller
 {
-
-    public function __construct()
-    {
-        throw new ParamInvalidException('邀请用户功能已关闭');
-    }
 
     public function getInviteQrcode()
     {

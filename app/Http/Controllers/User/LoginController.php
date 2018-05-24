@@ -65,15 +65,14 @@ class LoginController extends Controller
         }
 
         // 如果存在邀请渠道ID, 查询用户是否已被邀请过
-        // 去掉邀请渠道
-        /*$inviteChannelId = request('inviteChannelId');
+        $inviteChannelId = request('inviteChannelId');
         if($inviteChannelId){
             $inviteChannel = InviteChannel::find($inviteChannelId);
             if(empty($inviteChannel)){
                 throw new ParamInvalidException('邀请渠道不存在');
             }
             InviteService::bindInviter($user->id, $inviteChannel);
-        }*/
+        }
 
         // 保存用户与openId的映射关系, 并覆盖旧的关联关系
         $openId = request()->get('current_open_id');
