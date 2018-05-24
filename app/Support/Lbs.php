@@ -32,8 +32,12 @@ class Lbs
     {
         $amap = new Amap();
         $result = $amap->regeo($lng, $lat);
+        Log::info('高德地图逆地理解析结果: ', $result);
         $addressArr = $result['addressComponent'];
         $areaCode = $addressArr['adcode'];
+        if(empty($areaCode)){
+            Log::error('高德地图逆地理解析错误', compact('lng', 'lat', 'result'));
+        }
         $area = Area::where('area_id', $areaCode)->first();
         $city = Area::where('area_id', substr($areaCode, 0, 4) . '00')->first();
         $province = Area::where('area_id', substr($areaCode, 0, 2))->first();
