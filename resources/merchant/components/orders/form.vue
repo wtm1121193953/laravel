@@ -28,6 +28,9 @@
             <el-form-item label="手机号：">
                 {{order.notify_mobile}}
             </el-form-item>
+            <el-form-item label="备注：">
+                {{order.remark}}
+            </el-form-item>
             <el-form-item label="订单创建时间：">
                 {{order.created_at}}
             </el-form-item>

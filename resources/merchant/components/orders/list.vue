@@ -36,7 +36,7 @@
                     <span v-else-if="parseInt(scope.row.status) === 4">已支付</span>
                     <span v-else-if="parseInt(scope.row.status) === 5">退款中[保留状态]</span>
                     <span v-else-if="parseInt(scope.row.status) === 6">已退款</span>
-                    <span v-else-if="parseInt(scope.row.status) === 7">已完成[不可退款]</span>
+                    <span v-else-if="parseInt(scope.row.status) === 7">已完成</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>

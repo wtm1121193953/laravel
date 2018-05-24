@@ -113,6 +113,7 @@ class OrderController extends Controller
         $order->buy_number = $number;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $goods->price * $number;
+        $order->remark = request('remark', '');
         $order->save();
 
         $isOperSelf = $merchant->oper_id === $oper->id ? 1 : 0;
