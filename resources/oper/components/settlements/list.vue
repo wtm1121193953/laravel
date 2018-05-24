@@ -1,7 +1,26 @@
 <template>
     <page title="财务管理" v-loading="isLoading">
+        <el-form size="small" :model="query" inline>
+            <el-form-item label="商户">
+                <el-select v-model="query.merchantId">
+                    <el-option label="全部" value=""/>
+                    <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="search"><i class="el-icon-search"> 搜索</i></el-button>
+            </el-form-item>
+        </el-form>
         <el-table :data="list" stripe>
-            <el-table-column prop="merchant_name" label="结算商户" align="center"/>
+            <el-table-column prop="merchant_name" label="结算商户" align="center">
+                <template slot-scope="scope">
+                    {{scope.row.merchant_name}}
+                    <el-button type="text"
+                               v-if="!query.merchantId"
+                               @click="() => {query.merchantId = scope.row.merchant_id; search();}"
+                    >只看他的</el-button>
+                </template>
+            </el-table-column>
             <el-table-column prop="settlement_date" label="结算时间" align="center"/>
             <el-table-column prop="settlement_cycle" label="结算周期" align="center">
                 <template slot-scope="scope">
@@ -70,12 +89,23 @@
                 list: [],
                 query: {
                     page: 1,
+                    merchantId: '',
                 },
                 total: 0,
                 settlement: {},
+                merchants: [],
             }
         },
         methods: {
+            getMerchants(){
+                api.get('/merchants').then(data => {
+                    this.merchants = data.list;
+                })
+            },
+            search(){
+                this.query.page = 1;
+                this.getList();
+            },
             getList() {
                 this.isLoading = true;
                 api.get('/settlements', this.query).then(data => {
@@ -111,6 +141,7 @@
         },
         created() {
             this.getList();
+            this.getMerchants();
         },
         components: {
             SettlementDetail,
