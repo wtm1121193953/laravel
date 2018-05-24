@@ -29,7 +29,7 @@ class OrderController extends Controller
 
         $query = Order::where('oper_id', request()->get('current_user')->oper_id)
             ->when($orderNo, function(Builder $query) use ($orderNo){
-                $query->where('order_no', $orderNo);
+                $query->where('order_no', 'like', "%$orderNo%");
             })
             ->when($mobile, function (Builder $query) use ($mobile){
                 $query->where('notify_mobile', 'like', "%$mobile%");

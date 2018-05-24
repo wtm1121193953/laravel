@@ -9,6 +9,7 @@
             </el-form-item>
             <el-form-item label="所属商户">
                 <el-select v-model="query.merchantId">
+                    <el-option value="" label="全部"/>
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
             </el-form-item>
@@ -30,7 +31,7 @@
                 </el-date-picker>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary">
+                <el-button type="primary" @click="search">
                     <i class="el-icon-search"></i> 搜索
                 </el-button>
             </el-form-item>
@@ -120,10 +121,20 @@
 
         },
         methods: {
+            search(){
+                this.query.page = 1;
+                this.getList();
+            },
             getList(){
                 this.isLoading = true;
-                console.log(JSON.parse(JSON.stringify(this.query)))
-                api.get('/orders', this.query).then(data => {
+                let queryData = deepCopy(this.query);
+                if(this.query.startTime instanceof Date){
+                    queryData.startTime = this.query.startTime.format('yyyy-MM-dd') + ' 00:00:00';
+                }
+                if(this.query.endTime instanceof Date){
+                    queryData.endTime = this.query.endTime.format('yyyy-MM-dd') + ' 23:59:59';
+                }
+                api.get('/orders', queryData).then(data => {
                     this.isLoading = false;
                     this.list = data.list;
                     this.total = data.total;
