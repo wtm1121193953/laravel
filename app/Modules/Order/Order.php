@@ -61,4 +61,29 @@ class Order extends BaseModel
         return $orderNo;
     }
 
+    public static function getTypeText($type)
+    {
+        return ['', '团购', '买单'][$type];
+    }
+
+    public static function getStatusText($status)
+    {
+        return ['', '未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成[不可退款]'][$status];
+    }
+
+    public static function getPayTypeText($payType)
+    {
+        return ['', '微信支付', '支付宝支付'][$payType];
+    }
+
+    public static function getPayTargetTypeText($payTargetType)
+    {
+        return ['', '运营中心', '平台'][$payTargetType];
+    }
+
+    public static function getOriginAppTypeText($originAppType)
+    {
+        return ['', '安卓', 'iOS', '小程序'][$originAppType];
+    }
+
 }

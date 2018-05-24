@@ -5,7 +5,7 @@
                 <el-input type="text" v-model="query.orderNo"/>
             </el-form-item>
             <el-form-item label="手机号">
-                <el-input type="text" v-model="query.mobile"/>
+                <el-input type="text" v-model="query.mobile" class="w-150"/>
             </el-form-item>
             <el-form-item label="所属商户">
                 <el-select v-model="query.merchantId">
@@ -14,26 +14,34 @@
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-select v-model="query.timeType">
+                <el-select v-model="query.timeType" class="w-150">
                     <el-option value="payTime" label="支付时间"/>
                     <el-option value="finishTime" label="核销时间"/>
-                </el-select>
+                </el-select> :
                 <el-date-picker
+                        class="w-150"
                         v-model="query.startTime"
                         type="date"
-                        placeholder="开始日期">
-                </el-date-picker>
+                        placeholder="开始日期"
+                        value-format="yyyy-MM-dd 00:00:00"
+
+                />
                 -
                 <el-date-picker
+                        class="w-150"
                         v-model="query.endTime"
                         type="date"
-                        placeholder="结束日期">
-                </el-date-picker>
+                        placeholder="结束日期"
+                        value-format="yyyy-MM-dd 23:59:59"
+                />
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search">
                     <i class="el-icon-search"></i> 搜索
                 </el-button>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" class="m-l-30" @click="exportExcel">导出Excel</el-button>
             </el-form-item>
         </el-form>
         <el-table :data="list" stripe>
@@ -121,6 +129,13 @@
 
         },
         methods: {
+            exportExcel(){
+                let array = [];
+                for (let key in this.query){
+                    array.push(key + '=' + this.query[key]);
+                }
+                location.href = '/api/oper/order/export?' + array.join('&');
+            },
             search(){
                 this.query.page = 1;
                 this.getList();
@@ -128,12 +143,6 @@
             getList(){
                 this.isLoading = true;
                 let queryData = deepCopy(this.query);
-                if(this.query.startTime instanceof Date){
-                    queryData.startTime = this.query.startTime.format('yyyy-MM-dd') + ' 00:00:00';
-                }
-                if(this.query.endTime instanceof Date){
-                    queryData.endTime = this.query.endTime.format('yyyy-MM-dd') + ' 23:59:59';
-                }
                 api.get('/orders', queryData).then(data => {
                     this.isLoading = false;
                     this.list = data.list;
