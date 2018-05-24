@@ -43,9 +43,8 @@ class Lbs
         $city = Area::where('area_id', substr($areaCode, 0, 4) . '00')->first();
         $province = Area::where('area_id', substr($areaCode, 0, 2))->first();
         if(empty($area) || empty($city) || empty($province)){
-            Log::error('根据经纬度获取位置信息失败', [
-                'regeo result' => $addressArr,
-            ]);
+            Log::error('根据经纬度获取位置信息失败', compact('lng', 'lat', 'result'));
+            throw new BaseResponseException('定位当前城市失败');
         }
         $data = [];
         if($area){
