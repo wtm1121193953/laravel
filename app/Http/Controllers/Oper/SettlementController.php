@@ -20,13 +20,14 @@ class SettlementController extends Controller
     public function getList()
     {
         $data = Settlement::where('oper_id', request()->get('current_user')->oper_id)
+            ->where('amount', '>', 0)
             ->orderBy('id', 'desc')
             ->paginate();
         $merchant = Merchant::where('oper_id', request()->get('current_user')->oper_id)
             ->get()->keyBy('id');
 
         foreach ($data as &$item){
-            $item['merchant_name'] = $merchant[$item['merchant_id']]['name'];
+            $item['merchant_name'] = isset($merchant[$item['merchant_id']]) ? $merchant[$item['merchant_id']]['name'] : '';
         }
         return Result::success([
             'list' => $data->items(),
