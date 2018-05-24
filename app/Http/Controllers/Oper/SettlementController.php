@@ -22,7 +22,7 @@ class SettlementController extends Controller
     {
         $merchantId = request('merchantId');
         $data = Settlement::where('oper_id', request()->get('current_user')->oper_id)
-//            ->where('amount', '>', 0)
+            ->where('amount', '>', 0)
             ->when($merchantId, function(Builder $query) use ($merchantId){
                 $query->where('merchant_id', $merchantId);
             })
