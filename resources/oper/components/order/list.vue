@@ -44,10 +44,10 @@
                             <el-form-item label="创建时间">
                                 <span>{{ scope.row.created_at }}</span>
                             </el-form-item>
-                            <el-form-item label="支付时间">
+                            <el-form-item label="支付时间" v-if="scope.row.pay_time">
                                 <span>{{ scope.row.pay_time }}</span>
                             </el-form-item>
-                            <el-form-item label="核销时间">
+                            <el-form-item label="核销时间" v-if="scope.row.finish_time">
                                 <span>{{ scope.row.finish_time }}</span>
                             </el-form-item>
                             <el-form-item label="手机号">

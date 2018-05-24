@@ -41,8 +41,6 @@ class Kernel extends ConsoleKernel
         $schedule->job(new InviteUserStatisticsDailyJob((new Carbon())->subDay()))->daily();
         /** 订单超时自动关闭 */
         $schedule->job(OrderExpired::class)->hourly();
-        /** 输入金额付款订单自动完成 */
-        $schedule->job(OrderAutoFinished::class)->daily();
         /** 结算任务 */
         // 周结
         $schedule->job(new SettlementJob(Merchant::SETTLE_WEEKLY))
