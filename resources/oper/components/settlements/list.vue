@@ -7,6 +7,13 @@
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
             </el-form-item>
+            <el-form-item label="状态">
+                <el-select v-model="query.status">
+                    <el-option label="全部" value=""/>
+                    <el-option label="未打款" :value="1"/>
+                    <el-option label="已打款" :value="2"/>
+                </el-select>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search"> 搜索</i></el-button>
             </el-form-item>
@@ -90,6 +97,7 @@
                 query: {
                     page: 1,
                     merchantId: '',
+                    status: '',
                 },
                 total: 0,
                 settlement: {},

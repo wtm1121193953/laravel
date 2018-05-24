@@ -21,10 +21,14 @@ class SettlementController extends Controller
     public function getList()
     {
         $merchantId = request('merchantId');
+        $status = request('status');
         $data = Settlement::where('oper_id', request()->get('current_user')->oper_id)
             ->where('amount', '>', 0)
             ->when($merchantId, function(Builder $query) use ($merchantId){
                 $query->where('merchant_id', $merchantId);
+            })
+            ->when($status, function (Builder $query) use ($status){
+                $query->where('status', $status);
             })
             ->orderBy('id', 'desc')
             ->paginate();
