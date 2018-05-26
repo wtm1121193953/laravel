@@ -105,6 +105,71 @@ class OrderController extends Controller
     }
 
     /**
+     * 扫码付款
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     */
+    public function scanQrcodePay()
+    {
+        $this->validate(request(), [
+            'merchant_id' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0',
+            'pay_type' => 'required',
+        ]);
+        $price = request('price');
+        if($price <= 0 ){
+            throw new ParamInvalidException('价格不合法');
+        }
+        $user = request()->get('current_user');
+        $merchant = Merchant::findOrFail(request('merchant_id'));
+
+        // 查询该用户在该商家下是否有未支付的直接付款订单, 若有直接修改原订单信息
+        $order = Order::where('type', Order::TYPE_SCAN_QRCODE_PAY)
+            ->where('merchant_id', $merchant->id)
+            ->where('user_id', $user->id)
+            ->where('status', Order::STATUS_UN_PAY)
+            ->first();
+        if(empty($order)){
+            $order = new Order();
+            $orderNo = Order::genOrderNo();
+            $order->order_no = $orderNo;
+        }else {
+            $orderNo = $order->order_no;
+        }
+
+        $order->oper_id = $merchant->oper_id;
+        $order->user_id = $user->id;
+        $order->open_id = request()->get('current_open_id');
+        $order->user_name = $user->name ?? '';
+        $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
+        $order->merchant_id = $merchant->id;
+        $order->merchant_name = $merchant->name ?? '';
+        $order->type = Order::TYPE_SCAN_QRCODE_PAY;
+        $order->goods_id = 0;
+        $order->goods_name = $merchant->name;
+        $order->goods_pic = $merchant->logo;
+        $order->price = $price;
+        $order->status = Order::STATUS_UN_PAY;
+        $order->pay_price = $price;
+
+        $payType = request('pay_type', 1);
+        $order->payType = $payType;
+        $order->save();
+
+        if($payType == 1){
+            // 如果是微信支付
+            $sdkConfig = $this->_wechatUnifyPay($order);
+            return Result::success([
+                'order' => $order,
+                'order_no' => $orderNo,
+                'sdk_config' => $sdkConfig,
+            ]);
+        }else {
+            // 如果是支付宝支付
+            throw new ParamInvalidException('暂未开通支付宝支付');
+        }
+    }
+
+    /**
      * 立即付款
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
@@ -112,7 +177,7 @@ class OrderController extends Controller
     {
         $this->validate(request(), [
             'order_no' => 'required',
-            'pay_type' => 'required'
+            'pay_type' => 'required',
         ]);
         $orderNo = request('order_no');
         $order = Order::where('order_no', $orderNo)->firstOrFail();
@@ -132,29 +197,7 @@ class OrderController extends Controller
         $order->save();
         if($payType == 1){
             // 如果是微信支付
-            // TODO  获取平台的微信支付
-            $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
-            $data = [
-                'body' => $order->goods_name,
-                'out_trade_no' => $orderNo,
-                'total_fee' => $order->pay_price * 100,
-                'trade_type' => 'JSAPI',
-                'openid' => request()->get('current_open_id'),
-            ];
-
-            $unifyResult = $payApp->order->unify($data);
-            if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
-                $order->save();
-            }else {
-                Log::error('微信统一下单失败', [
-                    'payConfig' => $payApp->getConfig(),
-                    'data' => $data,
-                    'result' => $unifyResult,
-                ]);
-                throw new BaseResponseException('微信统一下单失败');
-            }
-            $sdkConfig = $payApp->jssdk->appConfig($unifyResult['prepay_id']);
-
+            $sdkConfig = $this->_wechatUnifyPay($order);
             return Result::success([
                 'order_no' => $orderNo,
                 'sdk_config' => $sdkConfig,
@@ -216,5 +259,37 @@ class OrderController extends Controller
         }else {
             throw new ParamInvalidException('暂未开通微信外的其他支付方式');
         }
+    }
+
+    /**
+     * 微信下单并获取支付参数
+     * @param $order
+     * @return array
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     */
+    private function _wechatUnifyPay(Order $order)
+    {
+        // todo 获取平台的微信支付实例
+        $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
+        $data = [
+            'body' => $order->goods_name,
+            'out_trade_no' => $order->order_no,
+            'total_fee' => $order->pay_price * 100,
+            'trade_type' => 'JSAPI',
+            'openid' => $order->open_id,
+        ];
+        $unifyResult = $payApp->order->unify($data);
+        if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
+            $order->save();
+        }else {
+            Log::error('微信统一下单失败', [
+                'payConfig' => $payApp->getConfig(),
+                'data' => $data,
+                'result' => $unifyResult,
+            ]);
+            throw new BaseResponseException('微信统一下单失败');
+        }
+        $sdkConfig = $payApp->jssdk->appConfig($unifyResult['prepay_id']);
+        return $sdkConfig;
     }
 }
