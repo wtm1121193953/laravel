@@ -55,7 +55,7 @@
                             <el-form-item label="支付时间" v-if="scope.row.pay_time">
                                 <span>{{ scope.row.pay_time }}</span>
                             </el-form-item>
-                            <el-form-item label="核销时间" v-if="scope.row.finish_time">
+                            <el-form-item label="核销时间" v-if="scope.row.finish_time && scope.row.type != 2">
                                 <span>{{ scope.row.finish_time }}</span>
                             </el-form-item>
                             <el-form-item label="手机号">

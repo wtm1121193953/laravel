@@ -3,14 +3,9 @@
 namespace App\Console;
 
 use App\Jobs\InviteUserStatisticsDailyJob;
-use App\Jobs\InviteUserStatisticsJob;
 use App\Jobs\OrderAutoFinished;
 use App\Jobs\OrderExpired;
-use App\Jobs\SettlementHalfMonthly;
-use App\Jobs\SettlementHalfYearly;
-use App\Jobs\SettlementMonthly;
 use App\Jobs\SettlementJob;
-use App\Jobs\SettlementYearly;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -41,6 +36,8 @@ class Kernel extends ConsoleKernel
         $schedule->job(new InviteUserStatisticsDailyJob((new Carbon())->subDay()))->daily();
         /** 订单超时自动关闭 */
         $schedule->job(OrderExpired::class)->hourly();
+        /** 输入金额付款订单自动完成 */
+        $schedule->job(OrderAutoFinished::class)->daily();
         /** 结算任务 */
         // 周结
         $schedule->job(new SettlementJob(Merchant::SETTLE_WEEKLY))
