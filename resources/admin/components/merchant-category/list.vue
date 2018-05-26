@@ -8,7 +8,6 @@
                     class="merchant-categories-tree"
                     :data="list"
                     :props="{label: 'name', children: 'sub'}"
-                    :expand-on-click-node="false"
                     :default-expanded-keys="expandedKeys"
                     node-key="id"
                     @node-expand="treeNodeExpand"
@@ -16,7 +15,8 @@
             >
                 <span class="custom-tree-node" slot-scope="{ node, data }">
                     <span :class="{'c-gray': data.status != 1}">{{data.name}} <template v-if="data.status != 1">(已禁用)</template></span>
-                    <span>
+                    <!--阻止事件冒泡, 方式点击按钮时树展开-->
+                    <span @click.stop="() => {}">
                         <el-dropdown @command="(command) => categoryDropdownClicked(command, data)" trigger="click">
                             <el-button type="text">
                                 操作 <i class="el-icon-arrow-down"></i>
