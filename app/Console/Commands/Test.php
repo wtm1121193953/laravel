@@ -52,7 +52,7 @@ class Test extends Command
      */
     public function handle()
     {
-        dd(Goods::where('merchant_id', 1)->orderBy('price')->value('price'));
+        dd(Goods::getLowestPriceForMerchant(21));
         $subWeek = Carbon::now()->subWeek();
 
         dump($subWeek->startOfWeek()->format('Y-m-d H:i:s'));

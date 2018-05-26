@@ -17,7 +17,10 @@ class Goods extends BaseModel
      */
     public static function getLowestPriceForMerchant($merchantId)
     {
-        $lowestAmount = Goods::where('merchant_id', $merchantId)->where('status', 1)->orderBy('price')->value('price');
+        $lowestAmount = Goods::where('merchant_id', $merchantId)
+            ->where('status', 1)
+            ->orderBy('price')
+            ->value('price');
         return $lowestAmount;
     }
 }
