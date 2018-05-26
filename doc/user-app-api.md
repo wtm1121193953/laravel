@@ -563,7 +563,36 @@ app-type: 客户端类型  1-Android 2-iOS
 
   ​
 
+- [ ] 输入金额直接付款接口
 
+  地址: POST `order/scanQrcodePay`
+
+  参数: 
+
+  ```
+  merchant_id: 商户ID,
+  price: 金额,
+  pay_type: 支付类型,
+  ```
+
+  返回: 
+
+  ```
+    data: {
+        order_no: 订单号,
+        sdk_config: 调起支付参数 {
+        	appid,
+        	partnerid,
+        	prepayid,
+        	noncestr,
+        	timestamp,
+        	package,
+        	sign
+        }
+    }
+  ```
+
+  
 
 - [ ] 退款接口
 
@@ -652,4 +681,4 @@ app-type: 客户端类型  1-Android 2-iOS
   10008: 用户已经绑定了邀请人
   ```
 
-  ​
+  
