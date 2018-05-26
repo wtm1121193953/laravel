@@ -6,6 +6,8 @@ import welcome from '../components/welcome.vue'
 
 import goods from './goods'
 import settlements from './settlements'
+import dishesCategory from './dishesCategory'
+import dishesGoods from './dishesGoods'
 
 import InviteChannel from '../components/invite-channel'
 import PayQrcode from '../components/pay-qrcode'
@@ -22,6 +24,8 @@ const routes = [
 
     ...goods,
     ...settlements,
+    ...dishesCategory,
+    ...dishesGoods,
 
     // 我的会员
     {
