@@ -73,6 +73,7 @@ class WechatService
     }
 
     /**
+     * 生成小程序码
      * @param $operId
      * @param $sceneId
      * @param string $page
@@ -123,4 +124,54 @@ class WechatService
             return $url;
         }
     }
+
+
+    /**
+     * 生成小程序二维码
+     * @param $operId
+     * @param $sceneId
+     * @param string $page
+     * @param int $width
+     * @param bool $getWithFilename
+     * @return string
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     */
+    public static function genMiniprogramQrCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false)
+    {
+        $app = WechatService::getWechatMiniAppForOper($operId);
+        $response = $app->app_code->getQrCode($sceneId, [
+            'page' => $page,
+            'width' => $width,
+        ]);
+        if($json = json_decode($response, 1)){
+            if($json['errcode'] == 41030){
+                throw new MiniprogramPageNotExistException();
+            }
+            throw new BaseResponseException('小程序码生成失败' . $response);
+        }
+        $filename = $response->save(storage_path('app/public/miniprogram/qr_code'), "_{$sceneId}_{$width}");
+        if($getWithFilename){
+            return $filename;
+        }
+
+        return asset('storage/miniprogram/qr_code/' . $filename);
+    }
+
+    /**
+     * 获取小程序二维码Url
+     * @param $sceneId int|MiniprogramScene
+     * @return mixed|string
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     */
+    public static function getMiniprogramQrCodeUrl($sceneId)
+    {
+        if($sceneId instanceof MiniprogramScene){
+            $scene = $sceneId;
+        }else {
+            $scene = MiniprogramScene::find($sceneId);
+        }
+        $url = self::genMiniprogramQrCode($scene->oper_id, $scene->id, $scene->page);
+        return $url;
+    }
+
 }
