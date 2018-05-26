@@ -6,6 +6,7 @@ use App\Jobs\InviteUserStatisticsDailyJob;
 use App\Jobs\OrderExpired;
 use App\Jobs\SettlementForMerchant;
 use App\Jobs\SettlementJob;
+use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Wechat\WechatService;
 use App\Support\Lbs;
@@ -51,6 +52,7 @@ class Test extends Command
      */
     public function handle()
     {
+        dd(Goods::where('merchant_id', 1)->orderBy('price')->value('price'));
         $subWeek = Carbon::now()->subWeek();
 
         dump($subWeek->startOfWeek()->format('Y-m-d H:i:s'));
