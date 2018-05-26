@@ -35,7 +35,7 @@ class LoginController extends Controller
             'verify_code' => 'required|size:4',
         ]);
         $mobile = request('mobile');
-        if(!preg_match('/^1[3,4,5,6,7,8]\d{9}/', $mobile)){
+        if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}/', $mobile)){
             throw new ParamInvalidException('手机号码不合法');
         }
         $verifyCode = request('verify_code');
