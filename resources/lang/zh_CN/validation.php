@@ -56,6 +56,7 @@ return [
         'verifyCode' => [
             'required' => '请输入验证码',
             'captcha' => '验证码不正确',
+            'size' => '验证码位数不正确',
         ],
         'captcha' => [
             'required' => '请输入验证码',
