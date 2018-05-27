@@ -10,9 +10,13 @@ namespace App\Http\Controllers\User;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Dishes\Dishes;
 use App\Modules\Dishes\DishesCategory;
 use App\Modules\Dishes\DishesGoods;
+use App\Modules\Dishes\DishesItem;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Result;
 
@@ -68,5 +72,52 @@ class MerchantDishesController extends Controller
         return Result::success([
             'list' => $list,
         ]);
+    }
+
+    public function dishesSettle()
+    {
+        $this->validate(request(), [
+            'merchant_id' => 'required|integer|min:1',
+        ]);
+        $dishesList = request('dishes_list');
+        $merchantId = request('merchant_id');
+        if (empty($dishesList)){
+            throw new ParamInvalidException('单品列表为空');
+        }
+        if(sizeof($dishesList) < 1){
+            throw new ParamInvalidException('参数不合法1');
+        }
+        foreach ($dishesList as $item) {
+            if(!isset($item['id']) || !isset($item['number'])){
+                throw new ParamInvalidException('参数不合法2');
+            }
+        }
+        $merchant = Merchant::findOrFail($merchantId);
+
+        $dishes = new Dishes();
+        $dishes->oper_id = $merchant->oper_id;
+        $dishes->merchant_id = $merchant->id;
+        $dishes->save();
+
+        foreach ($dishesList as $item){
+            $dishesGoods = DishesGoods::findOrFail($item['id']);
+
+            if ($dishesGoods['oper_id'] !== $merchant->oper_id){
+                continue;
+            }
+
+            $dishesItem = new DishesItem();
+            $dishesItem->oper_id = $merchant->oper_id;
+            $dishesItem->merchant_id = $merchant->id;
+            $dishesItem->dishes_id = $dishes->id;
+            $dishesItem->dishes_goods_id = $item['id'];
+            $dishesItem->number = $item['number'];
+            $dishesItem->dishes_goods_sale_price = $dishesGoods['sale_price'];
+            $dishesItem->dishes_goods_logo = $dishesGoods['logo'];
+            $dishesItem->dishes_goods_name = $dishesGoods['name'];
+            $dishesItem->save();
+        }
+
+        return Result::success($dishes);
     }
 }
