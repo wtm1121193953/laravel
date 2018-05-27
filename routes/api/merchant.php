@@ -21,8 +21,8 @@ Route::prefix('merchant')
 
         Route::get('invite/statistics/dailyList', 'InviteStatisticsController@dailyList');
 
-        Route::post('setting/edit', 'SettingController@edit');
-        Route::get('setting/getList', 'SettingController@getList');
+        Route::post('setting/edit', 'MerchantSettingController@edit');
+        Route::get('setting/getList', 'MerchantSettingController@getList');
 
         Route::group([], base_path('routes/api/merchant/goods.php'));
         Route::group([], base_path('routes/api/merchant/orders.php'));

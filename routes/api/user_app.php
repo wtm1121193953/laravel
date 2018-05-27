@@ -43,4 +43,7 @@ Route::prefix('app/user')
         Route::post('invite/bindInviter', 'InviteChannelController@bindInviter');
 
         Route::get('scene/info', 'SceneController@getSceneInfo');
+
+        Route::get('merchant/dishesCategory', 'MerchantDishesController@getDishesCategory');
+        Route::get('merchant/dishesGoods', 'MerchantDishesController@getDishesGoods');
     });

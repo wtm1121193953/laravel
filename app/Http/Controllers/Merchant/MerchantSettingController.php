@@ -10,10 +10,11 @@ namespace App\Http\Controllers\Merchant;
 
 
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Merchant\MerchantSetting;
 use App\Result;
 
-class SettingController extends Controller
+class MerchantSettingController extends Controller
 {
     /**
      * 商户系统设置 添加和修改
@@ -21,21 +22,11 @@ class SettingController extends Controller
      */
     public function edit()
     {
-        $data = request('form');
-        $info = request('info');
+        $data = request()->all([
+            'dishes_function'
+        ]);
         foreach ($data as $key => $value){
-            $setting = MerchantSetting::where('merchant_id', request()->get('current_user')->merchant_id)
-                ->where('key', $key)
-                ->first();
-            if (empty($setting)){
-                $setting = new MerchantSetting();
-                $setting->oper_id = request()->get('current_user')->oper_id;
-                $setting->merchant_id = request()->get('current_user')->merchant_id;
-                $setting->key = $key;
-                $setting->info = $info[$key];
-            }
-            $setting->value = $value;
-            $setting->save();
+            MerchantSettingService::set(request()->get('current_user')->oper_id, request()->get('current_user')->merchant_id, $key, $value);
         }
         return Result::success();
     }

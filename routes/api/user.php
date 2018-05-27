@@ -42,4 +42,7 @@ Route::prefix('user')
 
         Route::get('scene/info', 'SceneController@getSceneInfo');
 
+        Route::get('merchant/dishesCategory', 'MerchantDishesController@getDishesCategory');
+        Route::get('merchant/dishesGoods', 'MerchantDishesController@getDishesGoods');
+
     });

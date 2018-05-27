@@ -25,20 +25,13 @@
         data() {
             return {
                 form: {
-                    dishes_function: '1',
-                },
-                info: {
-                    dishes_function: '单品购买功能设置',
+                    dishes_function: '0',
                 }
             }
         },
         methods: {
             save() {
-                let param = {
-                    form: this.form,
-                    info: this.info,
-                };
-                api.post('/setting/edit', param).then(() => {
+                api.post('/setting/edit', this.form).then(() => {
                     this.$message.success('保存成功!');
                 })
             },
