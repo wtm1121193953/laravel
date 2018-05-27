@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Merchant;
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesCategory;
+use App\Modules\Dishes\DishesGoods;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +21,8 @@ class DishesCategoryController extends Controller
     {
         $status = request('status');
         $pageSize = request('pageSize');
-        $data = DishesCategory::when($status, function (Builder $query) use ($status){
+        $data = DishesCategory::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })->orderBy('sort', 'asc')->paginate($pageSize);
 
@@ -36,7 +38,8 @@ class DishesCategoryController extends Controller
     public function getAllList()
     {
         $status = request('status');
-        $list = DishesCategory::when($status, function (Builder $query) use ($status){
+        $list = DishesCategory::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })->orderBy('id', 'desc')->get();
 
@@ -54,6 +57,8 @@ class DishesCategoryController extends Controller
             'name' => 'required',
         ]);
         $dishesCategory = new DishesCategory();
+        $dishesCategory->oper_id = request()->get('current_user')->oper_id;
+        $dishesCategory->merchant_id = request()->get('current_user')->merchant_id;
         $dishesCategory->name = request('name');
         $dishesCategory->status = request('status', 1);
         $dishesCategory->sort = DishesCategory::max('sort') + 1;
@@ -107,11 +112,22 @@ class DishesCategoryController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $dishesCategory = DishesCategory::findOrFail(request('id'));
+        $categoryId = request('id');
+        $goodsCount = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->where('category_id', $categoryId)->count();
+        if ($goodsCount > 0){
+            throw new BaseResponseException('该分类下有'.$goodsCount.'个单品，不能删除！');
+        }
+        $dishesCategory = DishesCategory::findOrFail($categoryId);
         $dishesCategory->delete();
         return Result::success($dishesCategory);
     }
 
+    /**
+     * 上下移动
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function saveOrder()
     {
         $type = request('type');
@@ -127,7 +143,8 @@ class DishesCategoryController extends Controller
         if (empty($dishesCategory)){
             throw new BaseResponseException('该单品分类不存在');
         }
-        $dishesCategoryExchange = DishesCategory::where('sort', $option, $dishesCategory['sort'])
+        $dishesCategoryExchange = DishesCategory::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->where('sort', $option, $dishesCategory['sort'])
             ->orderBy('sort', $order)
             ->first();
         if (empty($dishesCategoryExchange)){

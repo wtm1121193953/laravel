@@ -15,6 +15,8 @@ class CreateDishesGoodsTable extends Migration
     {
         Schema::create('dishes_goods', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('oper_id')->index()->default(0)->comment('所属运营中心ID');
+            $table->integer('merchant_id')->index()->default(0)->comment('商家ID');
             $table->string('name')->default('')->comment('点菜商品名称');
             $table->integer('market_price')->default(0)->comment('市场价格');
             $table->integer('sale_price')->default(0)->comment('销售价格');

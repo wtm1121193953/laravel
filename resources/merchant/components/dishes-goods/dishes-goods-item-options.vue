@@ -5,8 +5,9 @@
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '禁用' : '启用'}}</el-button>
         <el-button type="text" @click="del">删除</el-button>
 
-        <el-dialog title="编辑xxxxxx信息" :visible.sync="isEdit">
-            <dishesGoods-form
+        <el-dialog title="编辑单品信息" :visible.sync="isEdit">
+            <dishes-goods-form
+                    ref="form"
                     :data="scope.row"
                     @cancel="isEdit = false"
                     @save="doEdit"/>
@@ -39,7 +40,8 @@
                 this.$emit('before-request')
                 api.post('/dishesGoods/edit', data).then((data) => {
                     this.isEdit = false;
-                    this.$emit('change', this.scope.$index, data)
+                    this.$emit('refresh');
+                    this.$refs.form.reset();
                 }).finally(() => {
                     this.$emit('after-request')
                 })
@@ -47,16 +49,16 @@
             changeStatus(){
                 let status = this.scope.row.status === 1 ? 2 : 1;
                 this.$emit('before-request')
-                api.post('/dishesGoods/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
+                api.post('/dishesGoods/changeStatus', {id: this.scope.row.id, status: status}).then(() => {
                     this.scope.row.status = status;
-                    this.$emit('change', this.scope.$index, data)
+                    this.$emit('refresh');
                 }).finally(() => {
                     this.$emit('after-request')
                 })
             },
             del(){
                 let data = this.scope.row;
-                this.$confirm(`确定要删除xxxxxx ${data.name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
+                this.$confirm(`确定要删除 ${data.name} 单品吗? `, '温馨提示', {type: 'warning'}).then(() => {
                     this.$emit('before-request')
                     api.post('/dishesGoods/del', {id: data.id}).then(() => {
                         this.$emit('refresh')

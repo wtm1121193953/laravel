@@ -2,16 +2,16 @@
 
 namespace App\Modules\Dishes;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DishesGoods extends Model
+class DishesGoods extends BaseModel
 {
     //
     use SoftDeletes;
 
     public function category()
     {
-        return $this->hasOne('App\Modules\Dishes\DishesCategory');
+        return $this->belongsTo('App\Modules\Dishes\DishesCategory');
     }
 }

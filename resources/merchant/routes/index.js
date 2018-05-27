@@ -15,6 +15,10 @@ import PayQrcode from '../components/pay-qrcode'
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
 import OrdersList from '../components/orders/list.vue'
+
+//setting 商户系统配置
+import Setting from '../components/setting/list.vue'
+
 /**
  *
  */
@@ -52,6 +56,15 @@ const routes = [
         component: Home,
         children: [
             {path: 'orders', component: OrdersList, name: 'OrdersList'},
+        ]
+    },
+
+    //商户系统配置
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'setting', component: Setting, name: 'Setting'},
         ]
     },
 

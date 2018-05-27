@@ -113,7 +113,7 @@ class SelfController extends Controller
                     [ 'id' => 8, 'name' => '支付二维码', 'level' => 2, 'url' => '/merchant/pay/qrcode', 'pid' => 6,],
                 ]
             ],
-            [ 'id' => 12, 'name' => '系统设置', 'level' => 1, 'url' => '' ],
+            [ 'id' => 12, 'name' => '系统配置', 'level' => 1, 'url' => '/merchant/setting' ],
         ];
     }
 

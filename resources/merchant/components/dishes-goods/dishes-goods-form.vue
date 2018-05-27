@@ -5,14 +5,14 @@
                 <el-form-item prop="name" label="商品名称">
                     <el-input v-model="form.name"/>
                 </el-form-item>
-                <el-form-item prop="marketPrice" label="市场价">
-                    <el-input-number v-model="form.marketPrice"></el-input-number>
+                <el-form-item prop="market_price" label="市场价">
+                    <el-input-number v-model="form.market_price" :min="0"></el-input-number>
                 </el-form-item>
-                <el-form-item prop="salePrice" label="销售价">
-                    <el-input-number v-model="form.salePrice"></el-input-number>
+                <el-form-item prop="sale_price" label="销售价">
+                    <el-input-number v-model="form.sale_price" :min="0"></el-input-number>
                 </el-form-item>
-                <el-form-item prop="categoryId" label="类别">
-                    <el-select v-model="form.categoryId" placeholder="请选择">
+                <el-form-item prop="category_id" label="类别">
+                    <el-select v-model="form.category_id" placeholder="请选择">
                         <el-option
                             v-for="item in categories"
                             :key="item.id"
@@ -22,10 +22,10 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item prop="logo" label="商品logo图">
-                    <image-upload v-model="form.logo"></image-upload>
+                    <image-upload v-model="form.logo" :limit="1"></image-upload>
                 </el-form-item>
-                <el-form-item prop="detailImage" label="商品详情图">
-                    <image-upload v-model="form.detailImage"></image-upload>
+                <el-form-item prop="detail_image" label="商品详情图">
+                    <image-upload v-model="form.detail_image" :limit="1"></image-upload>
                 </el-form-item>
                 <el-form-item prop="intro" label="商品简介">
                     <el-input type="textarea" v-model="form.intro"></el-input>
@@ -46,13 +46,15 @@
 
 </template>
 <script>
+    import api from '../../../assets/js/api'
+
     let defaultForm = {
         name: '',
-        marketPrice: 0,
-        salePrice: 0,
-        categoryId: '',
+        market_price: 0,
+        sale_price: 0,
+        category_id: '',
         logo: '',
-        detailImage: '',
+        detail_image: '',
         intro: '',
         status: 1,
     };
@@ -71,6 +73,9 @@
                 formRules: {
                     name: [
                         {required: true, message: '名称不能为空'}
+                    ],
+                    category_id: [
+                        {required: true, message: '类别不能为空'}
                     ]
                 },
             }
@@ -85,6 +90,10 @@
             },
             cancel(){
                 this.$emit('cancel');
+                this.reset();
+            },
+            reset() {
+                this.$refs.form.resetFields();
             },
             save(){
                 this.$refs.form.validate(valid => {
@@ -93,11 +102,16 @@
                         this.$emit('save', data);
                     }
                 })
-
+            },
+            getCategorys() {
+                api.get('/dishesCategories/all').then(data => {
+                    this.categories = data.list;
+                })
             }
         },
         created(){
             this.initForm();
+            this.getCategorys();
         },
         watch: {
             data(){

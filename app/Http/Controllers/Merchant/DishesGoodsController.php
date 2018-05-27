@@ -17,9 +17,11 @@ class DishesGoodsController extends Controller
     public function getList()
     {
         $status = request('status');
-        $data = DishesGoods::when($status, function (Builder $query) use ($status){
+        $pageSize = request('pageSize');
+        $data = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
-        })->orderBy('id', 'desc')->paginate();
+        })->orderBy('id', 'desc')->with('category:id,name')->paginate($pageSize);
 
         return Result::success([
             'list' => $data->items(),
@@ -33,7 +35,8 @@ class DishesGoodsController extends Controller
     public function getAllList()
     {
         $status = request('status');
-        $list = DishesGoods::when($status, function (Builder $query) use ($status){
+        $list = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })->orderBy('id', 'desc')->get();
 
@@ -51,7 +54,15 @@ class DishesGoodsController extends Controller
             'name' => 'required',
         ]);
         $dishesGoods = new DishesGoods();
+        $dishesGoods->oper_id = request()->get('current_user')->oper_id;
+        $dishesGoods->merchant_id = request()->get('current_user')->merchant_id;
         $dishesGoods->name = request('name');
+        $dishesGoods->market_price = request('market_price', 0);
+        $dishesGoods->sale_price = request('sale_price', 0);
+        $dishesGoods->category_id = request('category_id',0);
+        $dishesGoods->intro = request('intro', '');
+        $dishesGoods->logo = request('logo', '');
+        $dishesGoods->detail_image = request('detail_image', '');
         $dishesGoods->status = request('status', 1);
 
         $dishesGoods->save();
@@ -70,6 +81,12 @@ class DishesGoodsController extends Controller
         ]);
         $dishesGoods = DishesGoods::findOrFail(request('id'));
         $dishesGoods->name = request('name');
+        $dishesGoods->market_price = request('market_price', 0);
+        $dishesGoods->sale_price = request('sale_price', 0);
+        $dishesGoods->category_id = request('category_id', 0);
+        $dishesGoods->intro = request('intro', '');
+        $dishesGoods->logo = request('logo', '');
+        $dishesGoods->detail_image = request('detail_image', '');
         $dishesGoods->status = request('status', 1);
 
         $dishesGoods->save();

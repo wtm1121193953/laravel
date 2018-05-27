@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDishesCategoriesTable extends Migration
+class CreateMerchantSettingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,15 @@ class CreateDishesCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('dishes_categories', function (Blueprint $table) {
+        Schema::create('merchant_settings', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('oper_id')->index()->default(0)->comment('所属运营中心ID');
             $table->integer('merchant_id')->index()->default(0)->comment('商家ID');
-            $table->string('name')->default('')->comment('单品分类名称');
-            $table->integer('sort')->default(1)->comment('排序');
-            $table->tinyInteger('status')->index()->default(1)->comment('1-上架， 2-下架');
+            $table->string('key')->index()->default('')->comment('配置的键');
+            $table->string('value')->default('')->comment('配置的值');
+            $table->string('info')->default('')->comment('配置说明');
             $table->timestamps();
-            $table->softDeletes();
-            $table->comment = '单品分类列表';
+            $table->comment = '商户配置表';
         });
     }
 
@@ -33,6 +32,6 @@ class CreateDishesCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('dishes_categories');
+        Schema::dropIfExists('merchant_settings');
     }
 }
