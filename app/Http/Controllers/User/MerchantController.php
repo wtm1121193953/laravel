@@ -79,13 +79,16 @@ class MerchantController extends Controller
             $allList = $query->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($distances) {
-                $distance = isset($distances[$item->id]) ? $distances[$item->id] : 10000;
-                // 格式化距离
-                $item->distance = $this->_getFormativeDistance($distance);
+                $item->distance = isset($distances[$item->id]) ? $distances[$item->id] : 10000;
                 return $item;
             })
-                ->sortBy('distance')->values()
-                ->forPage(request('page', 1), 15)->values();
+                ->sortBy('distance')
+                ->forPage(request('page', 1), 15)
+                ->values()
+                ->each(function($item) {
+                    // 格式化距离
+                    $item->distance = $this->_getFormativeDistance($item->distance);
+                });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
             $data = $query->paginate();
