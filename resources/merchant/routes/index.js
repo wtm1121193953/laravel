@@ -6,6 +6,8 @@ import welcome from '../components/welcome.vue'
 
 import goods from './goods'
 import settlements from './settlements'
+import dishesCategory from './dishesCategory'
+import dishesGoods from './dishesGoods'
 
 import InviteChannel from '../components/invite-channel'
 import PayQrcode from '../components/pay-qrcode'
@@ -13,6 +15,10 @@ import PayQrcode from '../components/pay-qrcode'
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
 import OrdersList from '../components/orders/list.vue'
+
+//setting 商户系统配置
+import Setting from '../components/setting/list.vue'
+
 /**
  *
  */
@@ -22,6 +28,8 @@ const routes = [
 
     ...goods,
     ...settlements,
+    ...dishesCategory,
+    ...dishesGoods,
 
     // 我的会员
     {
@@ -48,6 +56,15 @@ const routes = [
         component: Home,
         children: [
             {path: 'orders', component: OrdersList, name: 'OrdersList'},
+        ]
+    },
+
+    //商户系统配置
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'setting', component: Setting, name: 'Setting'},
         ]
     },
 
