@@ -2,20 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\InviteUserStatisticsDailyJob;
-use App\Jobs\OrderExpired;
 use App\Jobs\SettlementForMerchant;
-use App\Jobs\SettlementJob;
-use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
-use App\Modules\Wechat\WechatService;
-use App\Support\Lbs;
-use Faker\Factory;
-use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redis;
 
 class Test extends Command
 {
@@ -52,39 +42,34 @@ class Test extends Command
      */
     public function handle()
     {
-        dd(Goods::getLowestPriceForMerchant(21));
-        $subWeek = Carbon::now()->subWeek();
+//        SettlementJob::dispatch(Merchant::SETTLE_WEEKLY);
+        $this->remedySettlementsOf20180521and20180528();
+    }
 
-        dump($subWeek->startOfWeek()->format('Y-m-d H:i:s'));
-        dd($subWeek->endOfWeek()->format('Y-m-d H:i:s'));
-        InviteUserStatisticsDailyJob::dispatch(new Carbon());
-        /*OrderExpired::dispatch();
-        dd();
-        SettlementForMerchant::dispatch(1, Carbon::now()->startOfMonth(), Carbon::now());
-        dd();
-        SettlementJob::dispatch(Merchant::SETTLE_WEEKLY);
-        SettlementJob::dispatch(Merchant::SETTLE_HALF_MONTHLY);
-        SettlementJob::dispatch(Merchant::SETTLE_MONTHLY);
-        SettlementJob::dispatch(Merchant::SETTLE_HALF_YEARLY);
-        SettlementJob::dispatch(Merchant::SETTLE_YEARLY);
-        dd();
-        dd(new \Illuminate\Support\Carbon(Factory::create()->dateTimeBetween('-7 days')->format('Y-m-d H:i:s')));
-        dd(Factory::create()->dateTimeBetween('-7 days')->format('YmdHis'));
-        SettlementJob::dispatch(1);
-        dd();*/
-//        Redis::geoadd('location:merchant', 113.99531, 22.709883, 1);
-//        Redis::geoadd('location:merchant', 114.002176, 22.663525, 2);
-//        Redis::geoadd('location:merchant', 114.002176, 22.664525, 3);
+    private function remedySettlementsOf20180521and20180528()
+    {
+        // 执行 20180521 的结算
+        $date = '2018-05-21';
+        $start = Carbon::createFromFormat('Y-m-d', $date)->subWeek()->startOfWeek();
+        $end = Carbon::createFromFormat('Y-m-d', $date)->subWeek()->endOfWeek();
+        Merchant::where('settlement_cycle_type', Merchant::SETTLE_WEEKLY)
+            ->where('oper_id', '>', 0)
+            ->chunk(100, function($merchants) use ($start, $end){
+                $merchants->each(function ($item) use ($start, $end){
+                    SettlementForMerchant::dispatch($item->id, $start, $end);
+                });
+            });
+        // 执行 20180528 的结算
+        $date = '2018-05-28';
+        $start = Carbon::createFromFormat('Y-m-d', $date)->subWeek()->startOfWeek();
+        $end = Carbon::createFromFormat('Y-m-d', $date)->subWeek()->endOfWeek();
+        Merchant::where('settlement_cycle_type', Merchant::SETTLE_WEEKLY)
+            ->where('oper_id', '>', 0)
+            ->chunk(100, function($merchants) use ($start, $end){
+                $merchants->each(function ($item) use ($start, $end){
+                    SettlementForMerchant::dispatch($item->id, $start, $end);
+                });
+            });
 
-//        dump(Redis::geodist('location:merchant', 1, 5, 'km'));
-//        dump($result = Redis::georadius('location:merchant', 114.002176, 22.664525, 6, 'km', 'WITHDIST', 'asc', 'count',  2));
-//        dump(Lbs::getNearlyMerchantDistanceByGps(114.101585,22.471113, 200000));
-//        dump(Merchant::all()->sortByDesc('id')->forPage(2, 3)->values());
-        //
-//        preg_match('/servicewechat.com\/(wx[\d0-9a-zA-Z]*)\/.*/', 'https://servicewechat.com/wx1abb4cf60ffea6c9/devtools/page-frame.html', $matches);
-//        dump($matches);
-//        $app = WechatService::getWechatMiniAppForOper(1);
-//        $result = $app->auth->session('');
-//        dump($result);
     }
 }
