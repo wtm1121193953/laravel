@@ -73,6 +73,7 @@ class WechatService
     }
 
     /**
+     * 生成小程序码
      * @param $operId
      * @param $sceneId
      * @param string $page
@@ -123,4 +124,5 @@ class WechatService
             return $url;
         }
     }
+
 }

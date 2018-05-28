@@ -101,12 +101,7 @@ class MerchantController extends Controller
             $category = MerchantCategory::find($item->merchant_category_id);
             $item->merchantCategoryName = $category->name;
             // 最低消费
-            $lowestAmount = Goods::where('merchant_id', $item->id)->orderBy('price')->value('price');
-            if($lowestAmount > 0){
-                $item->lowestAmount = $lowestAmount;
-            }else {
-                $item->lowestAmount = 0;
-            }
+            $item->lowestAmount = Goods::getLowestPriceForMerchant($item->id);
             // 兼容v1.0.0版客服电话字段
             $item->contacter_phone = $item->service_phone;
         });
@@ -140,12 +135,7 @@ class MerchantController extends Controller
         $category = MerchantCategory::find($detail->merchant_category_id);
         $detail->merchantCategoryName = $category->name;
         // 最低消费
-        $lowestAmount = Goods::where('merchant_id', $id)->orderBy('price')->value('price');
-        if($lowestAmount > 0){
-            $detail->lowestAmount = $lowestAmount;
-        }else {
-            $detail->lowestAmount = 0;
-        }
+        $detail->lowestAmount = Goods::getLowestPriceForMerchant($detail->id);
         // 兼容v1.0.0版客服电话字段
         $detail->contacter_phone = $detail->service_phone;
 

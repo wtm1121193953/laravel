@@ -38,7 +38,7 @@ class InviteStatisticsController
         }
         return Result::success([
             'list' => $data->items(),
-            'total' => $data->total(),
+            'total' => $data->total() + 1,
         ]);
     }
 }

@@ -22,6 +22,7 @@ use App\Modules\Setting\SettingService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
@@ -174,12 +175,13 @@ class OrderController extends Controller
             ->first();
         if(empty($order)){
             $order = new Order();
-            $orderNo = Order::genOrderNo();
-            $order->order_no = $orderNo;
         }else {
-            $orderNo = $order->order_no;
+            $order->created_at = Carbon::now();
         }
 
+        // 生成另外的订单号, 微信支付统一下单同一个订单号重复下单时金额不能不同
+        $orderNo = Order::genOrderNo();
+        $order->order_no = $orderNo;
         $order->oper_id = $merchant->oper_id;
         $order->user_id = $user->id;
         $order->open_id = request()->get('current_open_id');
