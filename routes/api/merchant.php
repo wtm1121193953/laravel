@@ -21,7 +21,10 @@ Route::prefix('merchant')
 
         Route::get('invite/statistics/dailyList', 'InviteStatisticsController@dailyList');
 
+        Route::get('sms/getVerifyCode', 'SmsController@sendVerifyCode');
+
         Route::group([], base_path('routes/api/merchant/goods.php'));
         Route::group([], base_path('routes/api/merchant/orders.php'));
         Route::group([], base_path('routes/api/merchant/settlements.php'));
+        Route::group([], base_path('routes/api/merchant/mapping_user.php'));
     });

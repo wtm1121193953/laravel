@@ -14,6 +14,9 @@ import InviteChannel from '../components/invite-channel'
 
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
+//系统设置
+import SettingMappingUser from '../components/setting/mapping-user'
+
 /**
  *
  */
@@ -50,6 +53,15 @@ const routes = [
         component: Home,
         children: [
             {path: 'invite-channel', component: InviteChannel, name: 'InviteChannel'},
+        ]
+    },
+
+    //系统设置
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'setting/mapping_user', component: SettingMappingUser, name: 'SettingMappingUser'},
         ]
     },
 
