@@ -1,24 +1,17 @@
 <template>
     <page title="系统设置">
         <el-form v-model="form" label-width="150px">
-            <el-form-item v-for="setting in settings"
-                          :key="setting.key"
-                          :label="setting.name"
-                          :prop="setting.key">
-                <template v-if="setting.key === 'merchant_share_in_miniprogram'">
-                    <el-switch
-                            v-model="form[setting.key]"
-                            active-text="共享"
-                            inactive-text="不共享"
-                            active-value="1"
-                            inactive-value="0">
-                    </el-switch>
-                    <div>{{setting.desc}}</div>
-                </template>
-                <template v-else>
-                    <el-input v-model="form[setting.key]" placeholder=""/>
-                    <div>{{setting.desc}}</div>
-                </template>
+            <el-form-item
+                          label="小程序端商户共享"
+                          prop="merchant_share_in_miniprogram">
+                <el-switch
+                        v-model="form.merchant_share_in_miniprogram"
+                        active-text="共享"
+                        inactive-text="不共享"
+                        active-value="1"
+                        inactive-value="0">
+                </el-switch>
+                <div>不同运营中心的小程序共享用户间的商户与订单</div>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="save">保存</el-button>
@@ -34,7 +27,6 @@
         name: "index",
         data(){
             return {
-                settings: [],
                 form: {
                     merchant_share_in_miniprogram: ''
                 }
@@ -49,10 +41,7 @@
             },
             getSetting(){
                 api.get('/settings').then(data => {
-                    this.settings = data.list;
-                    this.settings.forEach(item => {
-                        this.form[item.key] = item.value;
-                    })
+                    this.form = data.list;
                 });
             }
         },

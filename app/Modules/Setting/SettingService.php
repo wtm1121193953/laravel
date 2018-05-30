@@ -9,6 +9,9 @@
 namespace App\Modules\Setting;
 
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+
 class SettingService
 {
     const SETTING_DESCS = [
@@ -45,19 +48,56 @@ class SettingService
         if(empty($setting)){
             $setting = new Setting();
             $setting->key = $key;
+            $setting->desc = self::getDesc($key);
         }
         $setting->value = $value;
         $setting->save();
+        Cache::forget('setting_cache');
+        Cache::forget('setting_cache:' . $key);
     }
 
     /**
      * 根据key获取配置值
      * @param $key
-     * @return mixed|string
+     * @return string
      */
     public static function getValueByKey($key)
     {
-        $value = Setting::where('key', $key)->value('value');
+        $value = Cache::get('setting_cache:' . $key);
+        if(empty($value)){
+            $value = Setting::where('key', $key)->value('value');
+            Cache::forever('setting_cache:' . $key, $value);
+        }
         return $value ?? '';
+    }
+
+    /**
+     * 根据 key 获取
+     * @param array $keys
+     * @return Collection
+     */
+    public static function get(...$keys)
+    {
+        $settings = self::getAll();
+        if (empty($keys)){
+            return $settings;
+        }
+        return $settings->only($keys);
+    }
+
+    /**
+     * 获取全部系统设置项
+     * @return Collection
+     */
+    protected static function getAll(){
+        $settings = Cache::get('setting_cache');
+        if(empty($settings)){
+            $settings = collect();
+            Setting::all()->each(function($item) use ($settings){
+                $settings->put($item->key, $item->value);
+            });
+            Cache::forever('setting_cache', $settings);
+        }
+        return $settings;
     }
 }

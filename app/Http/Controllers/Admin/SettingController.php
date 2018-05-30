@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Setting\Setting;
+use App\Modules\Setting\SettingService;
 use App\Result;
 
 class SettingController extends Controller
@@ -21,7 +22,7 @@ class SettingController extends Controller
      */
     public function getList()
     {
-        $settings = Setting::all();
+        $settings = SettingService::get('merchant_share_in_miniprogram');
         return Result::success([
             'list' => $settings
         ]);
@@ -32,13 +33,7 @@ class SettingController extends Controller
             'merchant_share_in_miniprogram'
         ]);
         foreach ($data as $key => $value) {
-            $setting = Setting::where('key', $key)->first();
-            if(empty($setting)){
-                $setting = new Setting();
-                $setting->key = $key;
-            }
-            $setting->value = $value;
-            $setting->save();
+            SettingService::set($key, $value);
         }
         return Result::success();
     }
