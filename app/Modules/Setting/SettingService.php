@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Cache;
 class SettingService
 {
     const SETTING_DESCS = [
-        'merchant_share_in_miniprogram' => '不同运营中心的小程序共享用户间的商户与订单',
+        'merchant_share_in_miniprogram' => '小程序端商户共享|不同运营中心的小程序共享用户间的商户与订单',
         'oper_profit_radio' => '运用中心抽成配置(百分比, 抽成金额 = 订单利润 * 抽成比例)',
         'consume_quota_convert_ratio_to_parent' => '直推用户累计额度换算系数(百分比)',
         'credit_multiplier_of_amount' => '积分系数配置(积分 = 返利金额 * 系数)',
@@ -38,17 +38,31 @@ class SettingService
         'credit_multiplier_of_merchant_level_3' => '商户等级加成: 商户等级2(品牌商户), 倍数',
     ];
 
+    /**
+     * 获取配置说明详情
+     * @param $key
+     * @return mixed|string
+     */
     protected static function getDesc($key){
         return self::SETTING_DESCS[$key] ?? '';
     }
 
+    /**
+     * 设置配置
+     * @param $key
+     * @param $value
+     */
     public static function set($key, $value)
     {
         $setting = Setting::where('key', $key)->first();
         if(empty($setting)){
             $setting = new Setting();
             $setting->key = $key;
-            $setting->desc = self::getDesc($key);
+            $info = explode('|', self::getDesc($key));
+            $name = $info[0];
+            $desc = $info[1] ?? $info[0];
+            $setting->name = $name;
+            $setting->desc = $desc;
         }
         $setting->value = $value;
         $setting->save();
