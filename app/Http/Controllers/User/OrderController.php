@@ -69,7 +69,9 @@ class OrderController extends Controller
             'order_no' => 'required'
         ]);
         $detail = Order::where('order_no', request('order_no'))->firstOrFail();
-        $detail->items = OrderItem::where('order_id', $detail->id)->get();
+        // 只返回一个核销码
+        $orderItem = OrderItem::where('order_id', $detail->id)->first();
+        $detail->items = !empty($orderItem) ? [$orderItem] : [];
         $currentOperId = request()->get('current_oper')->id;
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
