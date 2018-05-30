@@ -17,7 +17,7 @@ class CreateUserConsumeQuotaRecordsTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->index()->default(0)->comment('用户ID');
             $table->decimal('consume_quota')->default(0)->comment('产生消费额');
-            $table->tinyInteger('type')->default(1)->comment('来源类型 (1-消费自返 2-直接下级消费返)');
+            $table->tinyInteger('type')->index()->default(1)->comment('来源类型 (1-消费自返 2-直接下级消费返)');
             $table->string('order_no')->default('')->comment('关联订单号');
             $table->string('consume_user_mobile', 11)->default('')->comment('消费用户手机号');
             $table->timestamps();

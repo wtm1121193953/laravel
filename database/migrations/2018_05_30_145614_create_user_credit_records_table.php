@@ -25,7 +25,7 @@ class CreateUserCreditRecordsTable extends Migration
             $table->string('consume_user_mobile', 11)->default('')->comment('消费用户手机号');
             $table->decimal('order_profit_amount')->default(0)->comment('订单利润');
             $table->decimal('ratio', 4, 2)->default(0)->comment('返利比例[=用户等级对应比例 * 用户所关联的商户等级加成(若存在), 是一个百分比, 如20则表示百分之20]');
-            $table->decimal('credit_multiplier_of_amount')->default(1)->comment('积分系数, 用于订单金额与积分之间的换算');
+            $table->decimal('credit_multiplier_of_amount')->default(1)->comment('积分系数, 系统配置项, 用于记录积分生成时配置的值, 用于订单金额与积分之间的换算');
             $table->timestamps();
         });
     }
