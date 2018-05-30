@@ -76,7 +76,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    api.post('/merchantBindUser', this.formData).then(data => {
+                    api.post('/operBindUser', this.formData).then(data => {
                         this.$message.success('绑定成功');
                         this.mobile = data.userInfo.mobile;
                         this.isBind = true;
