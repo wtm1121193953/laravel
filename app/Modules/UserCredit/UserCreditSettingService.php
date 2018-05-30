@@ -41,46 +41,77 @@ class UserCreditSettingService extends SettingService
     /**
      * 根据用户积分数量获取用户等级
      * @param int $creditNumber
+     * @return int
      */
     public static function getUserLevelByCreditNumber($creditNumber)
     {
-        // todo
+        $userLevelSettings = self::get('user_level_1_of_credit_number', 'user_level_2_of_credit_number', 'user_level_3_of_credit_number', 'user_level_4_of_credit_number');
+        if ($creditNumber >= $userLevelSettings['user_level_1_of_credit_number'] && $creditNumber < $userLevelSettings['user_level_2_of_credit_number']){
+            return 1;
+        }elseif ($creditNumber >= $userLevelSettings['user_level_2_of_credit_number'] && $creditNumber < $userLevelSettings['user_level_3_of_credit_number']){
+            return 2;
+        }elseif ($creditNumber >= $userLevelSettings['user_level_3_of_credit_number'] && $creditNumber < $userLevelSettings['user_level_4_of_credit_number']){
+            return 3;
+        }elseif ($creditNumber >= $userLevelSettings['user_level_4_of_credit_number']){
+            return 4;
+        }else{
+            return 0;
+        }
     }
 
     /**
      * 根据商户邀请的用户数量获取商户等级
      * @param int $inviteUserNumber
+     * @return int
      */
     public static function getMerchantLevelByInviteUserNumber($inviteUserNumber)
     {
-        // todo
+        $merchantLevelSettings = self::get('merchant_level_1_of_invite_user_number', 'merchant_level_2_of_invite_user_number','merchant_level_3_of_invite_user_number');
+        if ($inviteUserNumber >= $merchantLevelSettings['merchant_level_1_of_invite_user_number'] && $inviteUserNumber < $merchantLevelSettings['merchant_level_2_of_invite_user_number']) {
+            return 1;
+        }elseif ($inviteUserNumber >= $merchantLevelSettings['merchant_level_2_of_invite_user_number'] && $inviteUserNumber < $merchantLevelSettings['merchant_level_3_of_invite_user_number']) {
+            return 2;
+        }elseif ($inviteUserNumber >= $merchantLevelSettings['merchant_level_3_of_invite_user_number']) {
+            return 3;
+        }else{
+            return 0;
+        }
     }
 
     /**
      * 根据用户等级获取自返比例配置
      * @param $userLevel
+     * @return string
      */
     public static function getCreditToSelfRatioSetting($userLevel)
     {
-        // todo
+        $key = 'credit_to_self_ratio_of_user_level_'.$userLevel;
+        $ratio = self::getValueByKey($key);
+        return $ratio;
     }
 
     /**
      * 根据用户等级获取 分享提成 比例
      * @param $userLevel
+     * @return string
      */
     public static function getCreditToParentRatioSetting($userLevel)
     {
-        // todo
+        $key = 'credit_to_parent_ratio_of_user_level_'.$userLevel;
+        $parentRatio = self::getValueByKey($key);
+        return $parentRatio;
     }
 
     /**
      * 根据商户等级获取 商户等级加成 配置
      * @param $merchantLevel
+     * @return string
      */
     public static function getCreditMultiplierOfMerchantSetting($merchantLevel)
     {
-        // todo
+        $key = 'credit_multiplier_of_merchant_level_'.$merchantLevel;
+        $creditMultiplier = self::getValueByKey($key);
+        return $creditMultiplier;
     }
 
 }
