@@ -58,7 +58,10 @@ class OrderPaidJob implements ShouldQueue
                 $this->handleCredit($this->order);
                 DB::commit();
             }catch (\Exception $e){
-                Log::info('订单积分执行错误,错误信息:'. $e->getMessage());
+                Log::error('订单积分任务执行错误,错误信息:'. $e->getMessage(), [
+                    'order' => $this->order->toArray(),
+                    'e' => $e
+                ]);
                 DB::rollBack();
             }
         }
@@ -68,10 +71,10 @@ class OrderPaidJob implements ShouldQueue
     {
         // 处理消费的用户的消费额
         $this->handleUserSelfConsumeQuota($order);
-        // 找消费用户的上级
+        // 获取用户的上级
         $parentUser = $this->getParentUser($order->user_id);
 
-        if (!empty($parentUser) && $parentUser->origin_type == 1){
+        if (!empty($parentUser)){
             $this->handleParentUserConsumeQuota($order, $parentUser);
         }
 
@@ -87,7 +90,7 @@ class OrderPaidJob implements ShouldQueue
         $userConsumeQuotaRecords = new UserConsumeQuotaRecord();
         $userConsumeQuotaRecords->user_id = $order->user_id;
         $userConsumeQuotaRecords->consume_quota = $order->pay_price;
-        $userConsumeQuotaRecords->type = 1;
+        $userConsumeQuotaRecords->type = UserConsumeQuotaRecord::TYPE_TO_SELF;
         $userConsumeQuotaRecords->order_no = $order->order_no;
         $userConsumeQuotaRecords->consume_user_mobile = $order->notify_mobile;
         $userConsumeQuotaRecords->save();
@@ -97,10 +100,12 @@ class OrderPaidJob implements ShouldQueue
         if (empty($userCredit)){
             $userCredit = new UserCredit();
             $userCredit->user_id = $order->user_id;
-            $userCredit->consume_quota = 0;
+            $userCredit->consume_quota = $order->pay_price;
+            $userCredit->save();
+        }else {
+            $userCredit->consume_quota = DB::raw('consume_quota + ' . $order->pay_price);
+            $userCredit->save();
         }
-        $userCredit->consume_quota = $userCredit->consume_quota + $order->pay_price;
-        $userCredit->save();
     }
 
     /**
@@ -115,22 +120,24 @@ class OrderPaidJob implements ShouldQueue
 
         // 加上级用户消费额记录
         $userConsumeQuotaRecords = new UserConsumeQuotaRecord();
-        $userConsumeQuotaRecords->user_id = $parentUser->origin_id;
+        $userConsumeQuotaRecords->user_id = $parentUser->id;
         $userConsumeQuotaRecords->consume_quota = $consumeQuota;
-        $userConsumeQuotaRecords->type = 2;
+        $userConsumeQuotaRecords->type = UserConsumeQuotaRecord::TYPE_TO_PARENT;
         $userConsumeQuotaRecords->order_no = $order->order_no;
         $userConsumeQuotaRecords->consume_user_mobile = $order->notify_mobile;
         $userConsumeQuotaRecords->save();
 
         // 加上级用户总消费额
-        $userCredit = UserCredit::where('user_id', $parentUser->origin_id)->first();
+        $userCredit = UserCredit::where('user_id', $parentUser->id)->first();
         if (empty($userCredit)){
             $userCredit = new UserCredit();
-            $userCredit->user_id = $parentUser->origin_id;
-            $userCredit->consume_quota = 0;
+            $userCredit->user_id = $parentUser->id;
+            $userCredit->consume_quota = $consumeQuota;
+            $userCredit->save();
+        }else {
+            $userCredit->consume_quota = DB::raw('consume_quota + ' . $consumeQuota);
+            $userCredit->save();
         }
-        $userCredit->consume_quota = $userCredit->consume_quota + $consumeQuota;
-        $userCredit->save();
     }
 
     /**
@@ -145,7 +152,7 @@ class OrderPaidJob implements ShouldQueue
         // 处理上级用户的积分
         // 获取上级
         $parentUser = $this->getParentUser($order->user_id);
-        if(!empty($parentUser) && $parentUser->origin_type == 1){
+        if(!empty($parentUser)){
             $this->handleParentUserCredit($order, $parentUser);
         }
     }
@@ -156,13 +163,14 @@ class OrderPaidJob implements ShouldQueue
      */
     private function handleUserSelfCredit($order)
     {
-        //添加积分表记录
+        // 获取商户的返利比例(即盈利比例)
         $settlementRate = Merchant::where('id', $order->merchant_id)->value('settlement_rate'); //分利比例
-        $settlement = $order->pay_price * $settlementRate;
+        // 计算订单盈利金额
+        $profitAmount = $order->pay_price * $settlementRate;
         $userLevel = User::where('id', $order->user_id)->value('level'); //用户等级
         $creditRatio = UserCreditSettingService::getCreditToSelfRatioSetting($userLevel); //自反比例
         $creditMultiplierOfAmount = SettingService::getValueByKey('credit_multiplier_of_amount'); //积分系数
-        $credit = $settlement * $creditRatio * $creditMultiplierOfAmount / 100 ; //产生积分
+        $credit = $profitAmount * $creditRatio * $creditMultiplierOfAmount / 100 ; //产生积分
 
         $userCreditRecord = new UserCreditRecord();
         $userCreditRecord->user_id = $order->user_id;
@@ -172,7 +180,7 @@ class OrderPaidJob implements ShouldQueue
         $userCreditRecord->user_level = $userLevel;
         $userCreditRecord->order_no = $order->order_no;
         $userCreditRecord->consume_user_mobile = $order->notify_mobile;
-        $userCreditRecord->order_profit_amount = $settlement;
+        $userCreditRecord->order_profit_amount = $profitAmount;
         $userCreditRecord->ratio = $creditRatio;
         $userCreditRecord->credit_multiplier_of_amount = $creditMultiplierOfAmount;
         $userCreditRecord->save();
@@ -194,28 +202,30 @@ class OrderPaidJob implements ShouldQueue
         $settlementRate = Merchant::where('id', $order->merchant_id)->value('settlement_rate'); //分利比例
         $settlement = $order->pay_price * $settlementRate;
 
-        $parentLevel = User::where('id', $parentUser->origin_id)->value('level'); //父级用户等级
+        $parentLevel = User::where('id', $parentUser->id)->value('level'); //父级用户等级
         $creditRatio = UserCreditSettingService::getCreditToParentRatioSetting($parentLevel); //分享提成比例
-        $merchantId = UserMapping::where('user_id', $parentUser->origin_id)
+        
+        $merchantId = UserMapping::where('user_id', $parentUser->id)
             ->where('origin_type', 1)
             ->value('origin_id');
-        $creditMultiplierOfMerchantLevel = 1;
+        $merchantLevel = 0;
         if ($merchantId){
+            // 如果用户关联了商户, 则获取商户等级并根据商户等级获取商户等级加成
             $merchantLevel = Merchant::where('id', $merchantId)->value('level');
             $creditMultiplierOfMerchantLevel = UserCreditSettingService::getCreditMultiplierOfMerchantSetting($merchantLevel); //商户等级加成
+            $creditRatio = $creditRatio * $creditMultiplierOfMerchantLevel; // 返利比例
         }
-        $creditRatio = $creditRatio * $creditMultiplierOfMerchantLevel; // 返利比例
 
         $creditMultiplierOfAmount = SettingService::getValueByKey('credit_multiplier_of_amount'); //积分系数
         $credit = $settlement * $creditRatio * $creditMultiplierOfAmount / 100 ; //产生积分
 
         $userCreditRecord = new UserCreditRecord();
-        $userCreditRecord->user_id = $parentUser->origin_id;
+        $userCreditRecord->user_id = $parentUser->id;
         $userCreditRecord->credit = $credit;
         $userCreditRecord->inout_type = 1;
         $userCreditRecord->type = $merchantId ? 3 : 2;
         $userCreditRecord->user_level = $parentLevel;
-        $userCreditRecord->merchant_level = $creditMultiplierOfMerchantLevel;
+        $userCreditRecord->merchant_level = $merchantLevel;
         $userCreditRecord->order_no = $order->order_no;
         $userCreditRecord->consume_user_mobile = $order->notify_mobile;
         $userCreditRecord->order_profit_amount = $settlement;
@@ -224,21 +234,46 @@ class OrderPaidJob implements ShouldQueue
         $userCreditRecord->save();
 
         //添加累计积分
-        $userCredit = UserCredit::where('user_id', $parentUser->origin_id)->first();
-        $userCredit->total_credit = $userCredit->total_credit + $credit;
+        $userCredit = UserCredit::where('user_id', $parentUser->id)->first();
+        $userCredit->total_credit = DB::raw('total_credit + ' . $credit);
         $userCredit->save();
 
     }
 
     /**
      * 获取用户上级
-     * @param $user_id
-     * @return InviteUserRecord
+     * @param $userId
+     * @return User
      */
-    private function getParentUser($user_id)
+    private function getParentUser($userId)
     {
-        $parentUser = InviteUserRecord::where('user_id', $user_id)->first();
-        return $parentUser;
+        $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
+        if(empty($inviteRecord)){
+            // 如果没有用户没有上级, 不做任何处理
+            return null;
+        }
+        if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_USER){
+            $user = User::find($inviteRecord->origin_id);
+        }else if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT){
+            $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
+                ->where('origin_type', UserMapping::ORIGIN_TYPE_MERCHANT)
+                ->first();
+            if(empty($userMapping)){
+                // todo 如果商户没有关联用户, 积分需要另做处理
+                return null;
+            }
+            $user = User::findOrFail($userMapping->user_id);
+        }else if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER){
+            $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
+                ->where('origin_type', UserMapping::ORIGIN_TYPE_OPER)
+                ->first();
+            if(empty($userMapping)){
+                // todo 如果运营中心没有关联用户, 积分需要另做处理
+                return null;
+            }
+            $user = User::findOrFail($userMapping->user_id);
+        }
+        return $user;
     }
 
 

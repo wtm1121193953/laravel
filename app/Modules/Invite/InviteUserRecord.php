@@ -2,9 +2,8 @@
 
 namespace App\Modules\Invite;
 
-use App\BaseModel;
 
-class InviteUserRecord extends BaseModel
+class InviteUserRecord extends InviteChannel
 {
     //
 }

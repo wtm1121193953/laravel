@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\SettlementForMerchant;
+use App\Jobs\OrderPaidJob;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Modules\Settlement\Settlement;
@@ -41,11 +41,12 @@ class Test extends Command
      * Execute the console command.
      *
      * @return mixed
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function handle()
     {
+        OrderPaidJob::dispatch(Order::where('status', 4)->first());
+        dd();
 //        SettlementJob::dispatch(Merchant::SETTLE_WEEKLY);
         $this->remedySettlementsOf20180521and20180528();
     }

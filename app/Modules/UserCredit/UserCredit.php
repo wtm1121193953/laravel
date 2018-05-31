@@ -2,9 +2,9 @@
 
 namespace App\Modules\UserCredit;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class UserCredit extends Model
+class UserCredit extends BaseModel
 {
     //
 }
