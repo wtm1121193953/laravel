@@ -45,17 +45,19 @@ class UserCreditSettingService extends SettingService
      */
     public static function getUserLevelByCreditNumber($creditNumber)
     {
-        $userLevelSettings = self::get('user_level_1_of_credit_number', 'user_level_2_of_credit_number', 'user_level_3_of_credit_number', 'user_level_4_of_credit_number');
-        if ($creditNumber >= $userLevelSettings['user_level_1_of_credit_number'] && $creditNumber < $userLevelSettings['user_level_2_of_credit_number']){
-            return 1;
-        }elseif ($creditNumber >= $userLevelSettings['user_level_2_of_credit_number'] && $creditNumber < $userLevelSettings['user_level_3_of_credit_number']){
-            return 2;
-        }elseif ($creditNumber >= $userLevelSettings['user_level_3_of_credit_number'] && $creditNumber < $userLevelSettings['user_level_4_of_credit_number']){
-            return 3;
-        }elseif ($creditNumber >= $userLevelSettings['user_level_4_of_credit_number']){
+        $userLevelSettings = self::get('user_level_1_of_credit_number',
+            'user_level_2_of_credit_number',
+            'user_level_3_of_credit_number',
+            'user_level_4_of_credit_number');
+
+        if($creditNumber >= $userLevelSettings['user_level_4_of_credit_number']){
             return 4;
-        }else{
-            return 0;
+        }else if($creditNumber >= $userLevelSettings['user_level_3_of_credit_number']){
+            return 3;
+        }else if($creditNumber >= $userLevelSettings['user_level_2_of_credit_number']) {
+            return 2;
+        }else {
+            return 1;
         }
     }
 
@@ -66,15 +68,16 @@ class UserCreditSettingService extends SettingService
      */
     public static function getMerchantLevelByInviteUserNumber($inviteUserNumber)
     {
-        $merchantLevelSettings = self::get('merchant_level_1_of_invite_user_number', 'merchant_level_2_of_invite_user_number','merchant_level_3_of_invite_user_number');
-        if ($inviteUserNumber >= $merchantLevelSettings['merchant_level_1_of_invite_user_number'] && $inviteUserNumber < $merchantLevelSettings['merchant_level_2_of_invite_user_number']) {
-            return 1;
-        }elseif ($inviteUserNumber >= $merchantLevelSettings['merchant_level_2_of_invite_user_number'] && $inviteUserNumber < $merchantLevelSettings['merchant_level_3_of_invite_user_number']) {
-            return 2;
-        }elseif ($inviteUserNumber >= $merchantLevelSettings['merchant_level_3_of_invite_user_number']) {
+        $merchantLevelSettings = self::get('merchant_level_1_of_invite_user_number',
+            'merchant_level_2_of_invite_user_number',
+            'merchant_level_3_of_invite_user_number');
+
+        if($inviteUserNumber >= $merchantLevelSettings['merchant_level_3_of_invite_user_number']){
             return 3;
-        }else{
-            return 0;
+        }else if($inviteUserNumber >= $merchantLevelSettings['merchant_level_2_of_invite_user_number']){
+            return 2;
+        }else {
+            return 1;
         }
     }
 
