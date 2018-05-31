@@ -50,6 +50,15 @@ class OrderPaidJob implements ShouldQueue
             Log::info('订单号：'.$this->order->order_no. ', 状态：'.$this->order->status. ', 不统计积分！');
             return ;
         }else{
+            // 查询该订单是否已经计算过积分返利, 防止重复计算
+            if(!empty(
+                UserCreditRecord::where('type', 1)
+                    ->where('order_no', $this->order->order_no)
+                    ->first()
+            )){
+                Log::info('订单号: ' . $this->order->order_no . ' 已计算过积分, 不再重复计算');
+                return ;
+            }
             try{
                 DB::beginTransaction();
                 // 处理消费额
