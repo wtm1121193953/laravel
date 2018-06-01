@@ -42,4 +42,6 @@ Route::prefix('user')
 
         Route::get('scene/info', 'SceneController@getSceneInfo');
 
+        Route::get('credit/payAmountToCreditRatio', 'CreditController@payAmountToCreditRatio');
+
     });

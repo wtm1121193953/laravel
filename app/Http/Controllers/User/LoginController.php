@@ -14,8 +14,11 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteService;
+use App\Modules\Merchant\Merchant;
+use App\Modules\Oper\Oper;
 use App\Modules\Sms\SmsVerifyCode;
 use App\Modules\User\User;
+use App\Modules\User\UserMapping;
 use App\Modules\User\UserOpenIdMapping;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Result;
@@ -89,6 +92,18 @@ class LoginController extends Controller
             $userOpenIdMapping->save();
         }
         DB::commit();
+
+        $userMapping = UserMapping::where('user_id', $user->id)->first();
+        if (!empty($userMapping)){
+            if ($userMapping->origin_type == 1){
+                $merchant = Merchant::findOrFail($userMapping->origin_id);
+                $user->mapping_merchant_name = $merchant->name;
+            }else{
+                $oper = Oper::findOrFail($userMapping->origin_id);
+                $user->mapping_oper_name = $oper->name;
+            }
+        }
+
         return Result::success([
             'userInfo' => $user
         ]);

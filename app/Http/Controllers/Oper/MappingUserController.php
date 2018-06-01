@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Oper;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
@@ -47,6 +48,10 @@ class MappingUserController extends Controller
         return Result::success($user);
     }
 
+    /**
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function operBindUser()
     {
         $this->validate(request(), [
@@ -57,6 +62,14 @@ class MappingUserController extends Controller
         if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}/', $mobile)){
             throw new ParamInvalidException('手机号码不合法');
         }
+
+        if($user = User::where('mobile', $mobile)->first()){
+            $mappingUser = UserMapping::where('user_id', $user->id)->first();
+            if (!empty($mappingUser)){
+                throw new BaseResponseException('该手机号码已被绑定，请更换手机号码重试');
+            }
+        }
+
         $verifyCode = request('verify_code');
         // 开始事务, 如果登陆失败, 验证码回滚为为验证状态
         DB::beginTransaction();
