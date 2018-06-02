@@ -14,6 +14,12 @@
                     <el-option label="已打款" :value="2"/>
                 </el-select>
             </el-form-item>
+            <el-form-item label="结算金额为0的数据">
+                <el-select v-model="query.showAmount">
+                    <el-option label="显示" value=""/>
+                    <el-option label="不显示" :value="1"/>
+                </el-select>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search"> 搜索</i></el-button>
             </el-form-item>
@@ -98,6 +104,7 @@
                     page: 1,
                     merchantId: '',
                     status: '',
+                    showAmount: '',
                 },
                 total: 0,
                 settlement: {},

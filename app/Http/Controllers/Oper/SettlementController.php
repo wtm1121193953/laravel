@@ -22,6 +22,7 @@ class SettlementController extends Controller
     {
         $merchantId = request('merchantId');
         $status = request('status');
+        $showAmount = request('showAmount');
         $data = Settlement::where('oper_id', request()->get('current_user')->oper_id)
             ->where('amount', '>', 0)
             ->when($merchantId, function(Builder $query) use ($merchantId){
@@ -29,6 +30,9 @@ class SettlementController extends Controller
             })
             ->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
+            })
+            ->when($showAmount, function(Builder $query) {
+                $query->where('amount', '>', 0);
             })
             ->orderBy('id', 'desc')
             ->paginate();
