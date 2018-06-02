@@ -6,7 +6,7 @@
  * Time: 21:01
  */
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\UserApp;
 
 
 use App\Http\Controllers\Controller;

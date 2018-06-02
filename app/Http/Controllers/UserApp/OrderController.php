@@ -18,6 +18,8 @@ use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
+use App\Modules\User\User;
+use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -60,6 +62,15 @@ class OrderController extends Controller
         ]);
         $detail = Order::where('order_no', request('order_no'))->firstOrFail();
         $detail->items = OrderItem::where('order_id', $detail->id)->get();
+
+        $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
+            ->where('type', 1)
+            ->first();
+        if (!empty($creditRecord)){
+            $detail->user_level = $creditRecord->user_level;
+            $detail->user_level_text = User::getLevelText($creditRecord->user_level);
+            $detail->credit = $creditRecord->credit;
+        }
         return Result::success($detail);
     }
 
