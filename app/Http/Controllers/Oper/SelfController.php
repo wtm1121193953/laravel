@@ -118,7 +118,8 @@ class SelfController extends Controller
             ],*/
             [ 'id' => 11, 'name' => '系统设置', 'level' => 1, 'url' => 'setting', 'sub' =>
                 [
-                    [ 'id' => 12, 'name' => '关联用户', 'level' => 2, 'url' => '/oper/setting/mapping_user', 'pid' => 11]
+                    [ 'id' => 12, 'name' => '关联用户', 'level' => 2, 'url' => '/oper/setting/mapping_user', 'pid' => 11],
+                    [ 'id' => 13, 'name' => '支付到平台', 'level' => 2, 'url' => '/oper/setting/pay_to_platform', 'pid' => 11]
                 ]
             ],
         ];

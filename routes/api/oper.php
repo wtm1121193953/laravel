@@ -31,4 +31,5 @@ Route::prefix('oper')
         Route::group([], base_path('routes/api/oper/settlements.php'));
         Route::group([], base_path('routes/api/oper/operBizMember.php'));
         Route::group([], base_path('routes/api/oper/mapping_user.php'));
+        Route::group([], base_path('routes/api/oper/operSetting.php'));
     });
