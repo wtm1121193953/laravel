@@ -20,8 +20,11 @@ use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use App\Support\Alipay;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PayController extends Controller
 {
@@ -72,6 +75,27 @@ class PayController extends Controller
     }
 
     /**
+     * 支付宝支付回调
+     * @return string
+     */
+    public function alipayNotify()
+    {
+        $data = $_POST;
+        $flag = Alipay::verify($data);
+        if ($flag){
+            if ($data['trade_status'] == "TRADE_SUCCESS" || $data['trade_status'] == "TRADE_FINISHED"){
+                $res = $this->paySuccess($data['out_trade_no'], $data['trade_no'], $data['total_amount']);
+                return $res ? 'success' : 'fail';
+            }
+
+            return "success";
+        }else{
+            Log::error('alipay 回调验证签名失败, 商户订单号: '. $data['out_trade_no']. '; 交易状态: '. $data['trade_status'], $data);
+            return "fail";
+        }
+    }
+
+    /**
      * 支付成功
      * @param $orderNo
      * @param $transactionId
@@ -87,45 +111,53 @@ class PayController extends Controller
             || $order->status === Order::STATUS_CANCEL
             || $order->status === Order::STATUS_CLOSED
         ){
-            $order->pay_time = Carbon::now(); // 更新支付时间为当前时间
-            if($order->type == Order::TYPE_SCAN_QRCODE_PAY){
-                // 如果是扫码付款, 直接改变订单状态为已完成
-                $order->status = Order::STATUS_FINISHED;
-                $order->finish_time = Carbon::now();
-                $order->save();
-            }else {
-                $order->status = Order::STATUS_PAID;
-                $order->save();
-            }
+            try{
+                DB::beginTransaction();
+                $order->pay_time = Carbon::now(); // 更新支付时间为当前时间
+                if($order->type == Order::TYPE_SCAN_QRCODE_PAY){
+                    // 如果是扫码付款, 直接改变订单状态为已完成
+                    $order->status = Order::STATUS_FINISHED;
+                    $order->finish_time = Carbon::now();
+                    $order->save();
+                }else {
+                    $order->status = Order::STATUS_PAID;
+                    $order->save();
+                }
 
-            // 添加商品已售数量
-            Goods::where('id', $order->goods_id)->increment('sell_number');
+                // 添加商品已售数量
+                Goods::where('id', $order->goods_id)->increment('sell_number');
 
-            // 生成核销码, 线上需要放到支付成功通知中
-            for ($i = 0; $i < $order->buy_number; $i ++){
-                $orderItem = new OrderItem();
-                $orderItem->oper_id = $order->oper_id;
-                $orderItem->merchant_id = $order->merchant_id;
-                $orderItem->order_id = $order->id;
-                $orderItem->verify_code = OrderItem::createVerifyCode($order->merchant_id);
-                $orderItem->status = 1;
-                $orderItem->save();
-            }
-            // 生成订单支付记录
-            $orderPay = new OrderPay();
-            $orderPay->order_id = $order->id;
-            $orderPay->order_no = $orderNo;
-            $orderPay->transaction_no = $transactionId;
-            $orderPay->amount = $totalFee * 1.0 / 100;
-            $orderPay->save();
+                // 生成核销码, 线上需要放到支付成功通知中
+                for ($i = 0; $i < $order->buy_number; $i ++){
+                    $orderItem = new OrderItem();
+                    $orderItem->oper_id = $order->oper_id;
+                    $orderItem->merchant_id = $order->merchant_id;
+                    $orderItem->order_id = $order->id;
+                    $orderItem->verify_code = OrderItem::createVerifyCode($order->merchant_id);
+                    $orderItem->status = 1;
+                    $orderItem->save();
+                }
+                // 生成订单支付记录
+                $orderPay = new OrderPay();
+                $orderPay->order_id = $order->id;
+                $orderPay->order_no = $orderNo;
+                $orderPay->transaction_no = $transactionId;
+                $orderPay->amount = $totalFee * 1.0 / 100;
+                $orderPay->save();
 
-            // 支付成功, 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
-            $userId = $order->user_id;
-            if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
-                $merchantId = $order->merchant_id;
-                $merchant = Merchant::findOrFail($merchantId);
-                $inviteChannel = InviteService::getInviteChannel($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
-                InviteService::bindInviter($userId, $inviteChannel);
+                // 支付成功, 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
+                $userId = $order->user_id;
+                if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
+                    $merchantId = $order->merchant_id;
+                    $merchant = Merchant::findOrFail($merchantId);
+                    $inviteChannel = InviteService::getInviteChannel($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
+                    InviteService::bindInviter($userId, $inviteChannel);
+                }
+                DB::commit();
+            }catch (\Exception $e){
+                DB::rollBack();
+                Log::error('订单支付成功回调操作失败,失败信息:'.$e->getMessage());
+                return false;
             }
 
             return true;
