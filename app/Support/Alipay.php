@@ -12,8 +12,11 @@ namespace App\Support;
 require 'alipay-sdk/AopSdk.php';
 
 use AlipayTradeAppPayRequest;
+use AlipayTradeRefundRequest;
 use AopClient;
 use App\Modules\Order\Order;
+use App\Modules\Order\OrderPay;
+use App\Modules\Order\OrderRefund;
 
 class Alipay
 {
@@ -44,8 +47,7 @@ class Alipay
 
         $response = $aop->sdkExecute($request);  //这里和普通的接口调用不同，使用的是sdkExecute
 
-        //htmlspecialchars是为了输出到页面时防止被浏览器将关键参数html转义，实际打印到日志以及http传输不会有这个问题
-        return htmlspecialchars($response);//就是orderString 可以直接给客户端请求，无需再做处理。
+        return json_decode($response);//就是orderString 可以直接给客户端请求，无需再做处理。
     }
 
     public static function verify($data)
@@ -54,5 +56,34 @@ class Alipay
         $aop->alipayrsaPublicKey = config('alipayrsa_public_key');
         $flag = $aop->rsaCheckV1($data, NULL, "RSA2");
         return $flag;
+    }
+
+    public static function refund(OrderPay $orderPay, OrderRefund $orderRefund)
+    {
+        $aop = new AopClient ();
+        $aop->gatewayUrl = config('alipay.gateway_url');
+        $aop->appId = config('alipay.app_id');
+        $aop->rsaPrivateKey = config('alipay.rsa_private_key');
+        $aop->alipayrsaPublicKey= config('alipayrsa_public_key');
+        $aop->signType = 'RSA2';
+        $aop->postCharset='GBK';
+        $aop->format='json';
+        $request = new AlipayTradeRefundRequest();
+
+        $data = [
+            'refund_amount' => $orderPay->amount,
+            'out_request_no' => $orderRefund->id,
+            'trade_no' => $orderPay->transaction_no,
+            'out_trade_no' => $orderPay->order_no,
+        ];
+
+        $bizcontent = json_encode($data);
+        $request->setBizContent($bizcontent);
+        $response = $aop->execute ( $request);
+
+        $responseNode = str_replace(".", "_", $request->getApiMethodName()) . "_response";
+        $result = $response->$responseNode;
+
+        return $result;
     }
 }

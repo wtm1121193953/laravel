@@ -22,6 +22,7 @@ use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use App\Support\Alipay;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 
@@ -176,7 +177,12 @@ class OrderController extends Controller
             ]);
         }else {
             // 如果是支付宝支付
-            throw new ParamInvalidException('暂未开通支付宝支付');
+            $sdkConfig = Alipay::pay($order);
+            return Result::success([
+                'order' => $order,
+                'order_no' => $orderNo,
+                'sdk_config' => $sdkConfig,
+            ]);
         }
     }
 
@@ -215,7 +221,11 @@ class OrderController extends Controller
             ]);
         }else {
             // 如果是支付宝支付
-            throw new ParamInvalidException('暂未开通支付宝支付');
+            $sdkConfig = Alipay::pay($order);
+            return Result::success([
+                'order_no' => $orderNo,
+                'sdk_config' => $sdkConfig,
+            ]);
         }
     }
 
@@ -268,7 +278,26 @@ class OrderController extends Controller
                 throw new BaseResponseException('微信退款失败');
             }
         }else {
-            throw new ParamInvalidException('暂未开通微信外的其他支付方式');
+            $result = Alipay::refund($orderPay, $orderRefund);
+            if (!empty($result->code)&& $result->code == 10000){
+                // 支付宝退款成功
+                $orderRefund->refund_id = '';
+                $orderRefund->status = 2;
+                $orderRefund->save();
+
+                $order->status = Order::STATUS_REFUNDED;
+                $order->save();
+                return Result::success($orderRefund);
+            }else{
+                Log::error('支付宝退款失败 :', [
+                    'result' => $result,
+                    'params' => [
+                        'orderPay' => $orderPay->toArray(),
+                        'orderRefund' => $orderRefund->toArray(),
+                    ]
+                ]);
+                throw new BaseResponseException('支付宝退款失败');
+            }
         }
     }
 

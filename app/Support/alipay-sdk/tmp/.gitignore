@@ -1,1 +1,2 @@
-/LtAutoloader-token-cache
+*
+!.gitignore
