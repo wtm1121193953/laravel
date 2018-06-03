@@ -128,7 +128,9 @@ app-type: 客户端类型  1-Android 2-iOS
   data: {
       userInfo: 用户信息 {
           name: 用户名称,
-          mobile: 手机号
+          mobile: 手机号,
+          mapping_merchant_name: 与用户绑定的商户名称,
+          mapping_oper_name: 与用户绑定的运营中心名称,
       },
       token: 返回用户token
   }
@@ -167,15 +169,15 @@ app-type: 客户端类型  1-Android 2-iOS
 - [ ] 短信接口
 
       接口地址: `POST`  `/sms/verify_code`
-
+        
       参数:
-
+        
       ```
       mobile 手机号
       ```
-
+        
       返回值: 
-
+        
       ```
       data: {
         verify_code: 验证码, 测试时存在
@@ -187,11 +189,11 @@ app-type: 客户端类型  1-Android 2-iOS
 - [x] 获取地区列表(树形结构)
 
       接口地址: GET `/area/tree`
-
+        
       参数: `tier ` 要获取的层级数 1-3 (省/市/县) , 默认为3
-
+        
       返回: 
-
+        
       ```
       data: {
         list: [
@@ -486,7 +488,12 @@ app-type: 客户端类型  1-Android 2-iOS
   返回
 
   ```
-  同订单列表中的每一项
+  data: {
+  	同订单列表中的每一项,
+      user_level: 产生积分时的用户等级,
+      user_level_text: 用户等级名称(可以为空, 前端为空时不显示),
+      credit: 该订单产生的积分(可以为空, 前端为空时不显示),
+  }
   ```
 
   ​
@@ -691,60 +698,38 @@ app-type: 客户端类型  1-Android 2-iOS
 
 ## 新增接口
 
-#### 买单
+#### 积分
 
-- 输入金额下单接口
+- [ ] 获取积分转换率接口
 
-  参数:
+  > 根据商户ID与用户等级获取订单金额转换为最终得到积分的比例
+
+  地址: GET ```/credit/payAmountToCreditRatio``` 
+
+  参数
 
   ```
   merchantId: 商户ID
-  price: 金额
   ```
 
-  返回:
+  返回
 
   ```
   data: {
-      order_no: 订单号
-      sdk_config: 支付调起参数
+      creditRatio: 积分转换比例
   }
   ```
 
   
 
-#### 账号信息
+- [ ] 我的积分列表
 
-- 登陆/注册接口增加绑定商户及运营中心返回
-
-#### 积分
-
-- 预计获得积分接口(团购订单)
-
-  参数: 
-
-  ```
-  goodsId: 商品ID, 团购有
-  number: 数量, 团购有
-  ```
-
-- 预计订单获取积分(直接买单)
-
-  参数:
-
-  ```
-  merchantId 
-  price
-  ```
-
-- 订单详情增加订单返利积分及返利时的用户等级字段(可以为空, 前端为空时不显示)
-
-- 我的积分列表
+  地址: GET ```/credit/getCreditList``` 
 
   参数
 
   ```
-  month: 月份, 为空时则查询当月
+  month: 月份, 为空时则查询当月  如: 2016-02-01
   ```
 
   返回
@@ -753,13 +738,31 @@ app-type: 客户端类型  1-Android 2-iOS
   data: {
       list: [
           // 积分记录
+          {
+              id: 主键ID,
+              user_id: 用户ID,
+              credit: 产生积分,
+              inout_type: 收支类型(1-收入 2-支出),
+              type: 来源类型(1-自返 2-分享提成 3-商家提成 4-退款退回 5-消费支出),
+              user_level: 产生积分时的用户等级,
+              merchant_level: 积分产生时的商家等级(类型为商家提成时存在),
+              order_no: 关联订单号(类型为消费支出时为积分订单号, 其他为正常的订单号),
+              consume_user_mobile: 消费用户手机号,
+              order_profit_amount: 订单利润,
+              ratio: 返利比例[=用户等级对应比例 * 用户所关联的商户等级加成(若存在), 是一个百分比, 如20则表示百分之20],
+              credit_multiplier_of_amount: 积分系数, 系统配置项, 用于记录积分生成时配置的值, 用于订单金额与积分之间的换算,
+              created_at: 创建时间,
+          },
+          ......
       ]
   }
   ```
 
   
 
-- 我的累计积分
+- [ ] 我的累计积分和累计消费额
+
+  地址: GET ```/credit/getUserCredit```
 
   参数: 无
 
@@ -767,31 +770,23 @@ app-type: 客户端类型  1-Android 2-iOS
 
   ```
   data: {
-      total_credit: 总积分
-      left_credit: 消费积分
+  	user_id: 用户ID,
+      total_credit: 总积分,
+      used_credit: 消费积分,
+      consume_quota: 累计消费额,
+      created_at: 创建时间,
   }
   ```
+  
 
+- [ ] 我的消费额列表
 
-
-- 我的累计消费额
-
-  参数: 无
-
-  返回: 
-
-  ```
-  data: {
-      total_consumexxx: 总消费额
-  }
-  ```
-
-- 我的消费额列表
+  地址: GET ```/credit/getConsumeQuotaRecordList```
 
   参数
 
   ```
-  month: 月份, 为空时则查询当月
+  month: 月份, 为空时则查询当月 如: 2018-06-01
   ```
 
   返回
@@ -800,8 +795,19 @@ app-type: 客户端类型  1-Android 2-iOS
   data: {
       list: [
           // 消费额记录
+          {
+              id: 主键ID,
+              user_id: 用户ID,
+              consume_quota: 产生消费额,
+              type: 来源类型 (1-消费自返 2-直接下级消费返),
+              order_no: 关联订单号,
+              consume_user_mobile: 消费用户手机号,
+              created_at: 创建时间,
+          },
+          ......
       ]
   }
   ```
 
   
+
