@@ -18,10 +18,19 @@ class OperBizMemberController extends Controller
     public function getList()
     {
         $status = request('status');
+        $name = request('name');
+        $mobile = request('mobile');
         $data = OperBizMember::where('oper_id', request()->get('current_user')->oper_id)
             ->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
-            })->orderBy('id', 'desc')->paginate();
+            })
+            ->when($name, function (Builder $query) use ($name) {
+                $query->where('name', 'like', "%$name%");
+            })
+            ->when($mobile, function (Builder $query) use ($mobile){
+                $query->where('mobile', 'like', "%$mobile%");
+            })
+            ->orderBy('id', 'desc')->paginate();
 
         $data->each(function($item) {
 

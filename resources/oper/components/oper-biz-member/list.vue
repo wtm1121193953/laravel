@@ -1,5 +1,23 @@
 <template>
     <page title="我的业务员" v-loading="isLoading">
+        <el-form class="fl" size="small" inline>
+            <el-form-item label="" prop="name">
+                <el-input v-model="query.name" @keyup.enter.native="search" placeholder="姓名"/>
+            </el-form-item>
+            <el-form-item label="" prop="mobile">
+                <el-input v-model="query.mobile" @keyup.enter.native="search" placeholder="手机号"/>
+            </el-form-item>
+            <el-form-item label="状态" prop="status">
+                <el-select v-model="query.status" placeholder="请选择">
+                    <el-option label="全部" value=""/>
+                    <el-option label="正常" value="1"/>
+                    <el-option label="冻结" value="2"/>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
+            </el-form-item>
+        </el-form>
         <el-button class="fr" type="primary" @click="add">添加业务员</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
@@ -59,6 +77,9 @@
                 isAdd: false,
                 isLoading: false,
                 query: {
+                    name: '',
+                    mobile: '',
+                    status: '',
                     page: 1,
                 },
                 list: [],
@@ -69,6 +90,10 @@
 
         },
         methods: {
+            search(){
+                this.query.page = 1;
+                this.getList()
+            },
             getList(){
                 api.get('/operBizMembers', this.query).then(data => {
                     this.list = data.list;
