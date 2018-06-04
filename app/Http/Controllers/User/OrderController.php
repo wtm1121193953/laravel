@@ -308,7 +308,7 @@ class OrderController extends Controller
             'out_trade_no' => $order->order_no,
             'total_fee' => $order->pay_price * 100,
             'trade_type' => 'JSAPI',
-            'openid' => $order->open_id,
+            'openid' => request()->get('current_open_id'),
         ];
         $unifyResult = $payApp->order->unify($data);
         if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
