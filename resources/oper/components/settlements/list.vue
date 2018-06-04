@@ -24,7 +24,7 @@
                     {{scope.row.merchant_name}}
                     <el-button type="text"
                                v-if="!query.merchantId"
-                               @click="() => {query.merchantId = scope.row.merchant_id; search();}"
+                               @click="selectMerchant(scope.row.merchant_id)"
                     >只看他的</el-button>
                 </template>
             </el-table-column>
@@ -109,6 +109,10 @@
                 api.get('/merchants').then(data => {
                     this.merchants = data.list;
                 })
+            },
+            selectMerchant(merchantId){
+                this.query.merchantId = merchantId;
+                this.search();
             },
             search(){
                 this.query.page = 1;
