@@ -2,7 +2,7 @@
     <page title="财务管理" v-loading="isLoading">
         <el-form size="small" :model="query" inline>
             <el-form-item label="商户">
-                <el-select v-model="query.merchantId">
+                <el-select v-model="query.merchantId" filterable>
                     <el-option label="全部" value=""/>
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
@@ -30,7 +30,7 @@
                     {{scope.row.merchant_name}}
                     <el-button type="text"
                                v-if="!query.merchantId"
-                               @click="() => {query.merchantId = scope.row.merchant_id; search();}"
+                               @click="selectMerchant(scope.row.merchant_id)"
                     >只看他的</el-button>
                 </template>
             </el-table-column>
@@ -116,6 +116,10 @@
                 api.get('/merchants').then(data => {
                     this.merchants = data.list;
                 })
+            },
+            selectMerchant(merchantId){
+                this.query.merchantId = merchantId;
+                this.search();
             },
             search(){
                 this.query.page = 1;

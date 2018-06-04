@@ -3,6 +3,24 @@
         <el-tabs v-model="activeTab" type="card" @tab-click="changeTab">
             <el-tab-pane label="待审核商户列表" name="merchant">
 
+                <el-form class="fl" inline size="small">
+                    <el-form-item label="" prop="name">
+                        <el-input v-model="query.name" placeholder="商户名称" @keyup.enter.native="search"/>
+                    </el-form-item>
+                    <el-form-item label="审核状态" prop="audit_status">
+                        <el-select v-model="query.audit_status" placeholder="请选择">
+                            <el-option label="全部" value=""/>
+                            <el-option label="待审核" value="-1"/>
+                            <el-option label="审核通过" value="1"/>
+                            <el-option label="审核不通过" value="2"/>
+                            <el-option label="重新提交审核" value="3"/>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
+                    </el-form-item>
+                </el-form>
+
                 <el-table :data="list" stripe>
                     <el-table-column prop="created_at" label="添加时间"/>
                     <el-table-column prop="id" label="商户ID"/>
@@ -90,6 +108,8 @@
                 showDetail: false,
                 isLoading: false,
                 query: {
+                    name: '',
+                    audit_status: '',
                     page: 1,
                 },
                 list: [],
@@ -107,6 +127,10 @@
                 }else {
                     this.$refs.auditList.getList();
                 }
+            },
+            search(){
+                this.query.page = 1;
+                this.getList();
             },
             getList(){
                 api.get('/merchants', this.query).then(data => {

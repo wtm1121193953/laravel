@@ -2,6 +2,30 @@
     <page title="我的商户" v-loading="isLoading">
         <el-tabs v-model="activeTab" type="card" @tab-click="changeTab">
             <el-tab-pane label="我的商户" name="merchant">
+                <el-form class="fl" inline size="small">
+                    <el-form-item label="" prop="name">
+                        <el-input v-model="query.name" @keyup.enter.native="search" placeholder="商户名称"/>
+                    </el-form-item>
+                    <el-form-item label="状态" prop="status">
+                        <el-select v-model="query.status">
+                            <el-option label="全部" value=""/>
+                            <el-option label="正常" value="1"/>
+                            <el-option label="已冻结" value="2"/>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="审核状态" prop="audit_status">
+                        <el-select v-model="query.audit_status" placeholder="请选择">
+                            <el-option label="全部" value=""/>
+                            <el-option label="待审核" value="-1"/>
+                            <el-option label="审核通过" value="1"/>
+                            <el-option label="审核不通过" value="2"/>
+                            <el-option label="重新提交审核" value="3"/>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
+                    </el-form-item>
+                </el-form>
                 <!--<el-dropdown class="fr" @command="addBtnClick" trigger="click">
                     <el-button type="primary">
                         添加商户<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
@@ -86,6 +110,9 @@
                 activeTab: 'merchant',
                 isLoading: false,
                 query: {
+                    name: '',
+                    status: '',
+                    audit_status: '',
                     page: 1,
                 },
                 list: [],
@@ -102,6 +129,10 @@
                 }else {
                     this.$refs.auditList.getList();
                 }
+            },
+            search(){
+                this.query.page = 1;
+                this.getList();
             },
             getList(){
                 this.isLoading = true;

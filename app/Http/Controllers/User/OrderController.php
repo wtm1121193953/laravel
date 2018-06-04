@@ -71,7 +71,9 @@ class OrderController extends Controller
             'order_no' => 'required'
         ]);
         $detail = Order::where('order_no', request('order_no'))->firstOrFail();
-        $detail->items = OrderItem::where('order_id', $detail->id)->get();
+        // 只返回一个核销码
+        $orderItem = OrderItem::where('order_id', $detail->id)->first();
+        $detail->items = !empty($orderItem) ? [$orderItem] : [];
         $currentOperId = request()->get('current_oper')->id;
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
@@ -177,19 +179,7 @@ class OrderController extends Controller
         $user = request()->get('current_user');
         $merchant = Merchant::findOrFail(request('merchant_id'));
 
-        // 查询该用户在该商家下是否有未支付的直接付款订单, 若有直接修改原订单信息
-        $order = Order::where('type', Order::TYPE_SCAN_QRCODE_PAY)
-            ->where('merchant_id', $merchant->id)
-            ->where('user_id', $user->id)
-            ->where('status', Order::STATUS_UN_PAY)
-            ->first();
-        if(empty($order)){
-            $order = new Order();
-        }else {
-            $order->created_at = Carbon::now();
-        }
-
-        // 生成另外的订单号, 微信支付统一下单同一个订单号重复下单时金额不能不同
+        $order = new Order();
         $orderNo = Order::genOrderNo();
         $order->order_no = $orderNo;
         $order->oper_id = $merchant->oper_id;
@@ -316,7 +306,7 @@ class OrderController extends Controller
             'out_trade_no' => $order->order_no,
             'total_fee' => $order->pay_price * 100,
             'trade_type' => 'JSAPI',
-            'openid' => $order->open_id,
+            'openid' => request()->get('current_open_id'),
         ];
         $unifyResult = $payApp->order->unify($data);
         if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){

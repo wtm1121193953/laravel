@@ -20,10 +20,16 @@ class OperController extends Controller
      */
     public function getList()
     {
+        $name = request('name');
         $status = request('status');
         $data = Oper::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
-        })->orderBy('id', 'desc')->paginate();
+        })
+            ->when($name, function(Builder $query) use ($name){
+                $query->where('name', 'like', "%$name%");
+            })
+            ->orderBy('id', 'desc')
+            ->paginate();
 
         $data->each(function ($item){
             $item->account = OperAccount::where('oper_id', $item->id)->first() ?: null;
