@@ -4,11 +4,11 @@
             <el-tab-pane label="待审核商户列表" name="merchant">
 
                 <el-form class="fl" inline size="small">
-                    <el-form-item label="商户名称" prop="name">
+                    <el-form-item label="" prop="name">
                         <el-input v-model="query.name" placeholder="商户名称" @keyup.enter.native="search"/>
                     </el-form-item>
-                    <el-form-item label="状态" prop="status">
-                        <el-select v-model="query.status" placeholder="请选择">
+                    <el-form-item label="审核状态" prop="audit_status">
+                        <el-select v-model="query.audit_status" placeholder="请选择">
                             <el-option label="全部" value=""/>
                             <el-option label="待审核" value="-1"/>
                             <el-option label="审核通过" value="1"/>
@@ -109,7 +109,7 @@
                 isLoading: false,
                 query: {
                     name: '',
-                    status: '',
+                    audit_status: '',
                     page: 1,
                 },
                 list: [],

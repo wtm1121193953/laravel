@@ -26,13 +26,13 @@ class MerchantController extends Controller
     public function getList()
     {
         $name = request('name');
-        $status = request('status');
+        $auditStatus = request('audit_status');
         $data = Merchant::where('audit_oper_id', '>', 0)
-            ->when(!empty($status), function (Builder $query) use ($status){
-                if($status == -1){
-                    $status = 0;
+            ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus){
+                if($auditStatus == -1){
+                    $auditStatus = 0;
                 }
-                $query->where('status', $status);
+                $query->where('audit_status', $auditStatus);
             })
             ->when($name, function (Builder $query) use ($name){
                 $query->where('name', 'like', "%$name%");

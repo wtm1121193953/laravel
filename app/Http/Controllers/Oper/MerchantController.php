@@ -22,6 +22,8 @@ class MerchantController extends Controller
      */
     public function getList()
     {
+        $name = request('name');
+        $auditStatus = request('audit_status');
         $status = request('status');
         $data = Merchant::where(function (Builder $query){
                 $currentOperId = request()->get('current_user')->oper_id;
@@ -30,6 +32,15 @@ class MerchantController extends Controller
             })
             ->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
+            })
+            ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus){
+                if($auditStatus == -1){
+                    $auditStatus = 0;
+                }
+                $query->where('audit_status', $auditStatus);
+            })
+            ->when($name, function (Builder $query) use ($name){
+                $query->where('name', 'like', "%$name%");
             })
             ->orderBy('updated_at', 'desc')
             ->paginate();
