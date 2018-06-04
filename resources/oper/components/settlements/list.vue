@@ -2,7 +2,7 @@
     <page title="财务管理" v-loading="isLoading">
         <el-form size="small" :model="query" inline>
             <el-form-item label="商户">
-                <el-select v-model="query.merchantId">
+                <el-select v-model="query.merchantId" filterable>
                     <el-option label="全部" value=""/>
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
