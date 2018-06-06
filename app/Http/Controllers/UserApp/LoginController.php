@@ -89,6 +89,7 @@ class LoginController extends Controller
                 $user->mapping_oper_name = $oper->name;
             }
         }
+        $user->level_text = User::getLevelText($user->level);
         return Result::success([
             'userInfo' => $user,
             'token' => $token

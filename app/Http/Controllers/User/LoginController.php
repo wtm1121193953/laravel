@@ -104,6 +104,7 @@ class LoginController extends Controller
             }
         }
 
+        $user->level_text = User::getLevelText($user->level);
         return Result::success([
             'userInfo' => $user
         ]);
@@ -139,6 +140,7 @@ class LoginController extends Controller
             $userOpenIdMapping->save();
         }
 
+        $user->level_text = User::getLevelText($user->level);
         return Result::success([
             'userInfo' => $user,
             'payload' => $payload,
