@@ -103,13 +103,14 @@ class CreditController extends Controller
             $month = date('m');
         }
         $user = request()->get('current_user');
-        $userConsumeQuotaRecordList = UserConsumeQuotaRecord::where('user_id', $user->id)
+        $data = UserConsumeQuotaRecord::where('user_id', $user->id)
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->get();
+            ->paginate();
 
         return Result::success([
-            'list' => $userConsumeQuotaRecordList,
+            'list' => $data->items(),
+            'total' => $data->total(),
         ]);
     }
 }
