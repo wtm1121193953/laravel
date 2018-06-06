@@ -213,6 +213,8 @@ class OrderPaidJob implements ShouldQueue
 
         $parentLevel = User::where('id', $parentUser->id)->value('level'); //父级用户等级
         $creditRatio = UserCreditSettingService::getCreditToParentRatioSetting($parentLevel); //分享提成比例
+        dump($creditRatio);
+        dump($parentLevel);
         
         $merchantId = UserMapping::where('user_id', $parentUser->id)
             ->where('origin_type', 1)
