@@ -180,7 +180,7 @@ class OrderController extends Controller
             return Result::success([
                 'order' => $order,
                 'order_no' => $orderNo,
-                'sdk_config' => $sdkConfig,
+                'alipay_sdk_config' => $sdkConfig,
             ]);
         }
     }
