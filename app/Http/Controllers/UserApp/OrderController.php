@@ -223,7 +223,7 @@ class OrderController extends Controller
             $sdkConfig = Alipay::pay($order);
             return Result::success([
                 'order_no' => $orderNo,
-                'sdk_config' => $sdkConfig,
+                'alipay_sdk_config' => $sdkConfig,
             ]);
         }
     }
