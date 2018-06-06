@@ -39,6 +39,7 @@ class Alipay
             'timeout_express' => '1d',
             'total_amount' => $order->pay_price,
             'out_trade_no' => $order->order_no,
+            'product_code' => 'QUICK_MSECURITY_PAY',
         ];
 
         $bizcontent = json_encode($data, JSON_UNESCAPED_UNICODE);
