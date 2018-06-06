@@ -41,7 +41,7 @@ class Alipay
             'out_trade_no' => $order->order_no,
         ];
 
-        $bizcontent = json_encode($data);
+        $bizcontent = json_encode($data, JSON_UNESCAPED_UNICODE);
         $request->setNotifyUrl(request()->getSchemeAndHttpHost()."/api/pay/alipayNotify");
         $request->setBizContent($bizcontent);
 
