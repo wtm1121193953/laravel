@@ -169,15 +169,15 @@ app-type: 客户端类型  1-Android 2-iOS
 - [ ] 短信接口
 
       接口地址: `POST`  `/sms/verify_code`
-        
+      
       参数:
-        
+      
       ```
       mobile 手机号
       ```
-        
+      
       返回值: 
-        
+      
       ```
       data: {
         verify_code: 验证码, 测试时存在
@@ -189,11 +189,11 @@ app-type: 客户端类型  1-Android 2-iOS
 - [x] 获取地区列表(树形结构)
 
       接口地址: GET `/area/tree`
-        
+      
       参数: `tier ` 要获取的层级数 1-3 (省/市/县) , 默认为3
-        
+      
       返回: 
-        
+      
       ```
       data: {
         list: [
@@ -556,7 +556,7 @@ app-type: 客户端类型  1-Android 2-iOS
   ```
   data: {
       order_no: 订单号,
-      sdk_config: 调起支付参数 {
+      sdk_config: 微信调起支付参数(支付类型为微信支付时存在) {
       	appid,
       	partnerid,
       	prepayid,
@@ -564,7 +564,8 @@ app-type: 客户端类型  1-Android 2-iOS
       	timestamp,
       	package,
       	sign
-      }
+      },
+      alipay_sdk_config: 支付宝支付调起字符串, 支付类型为支付宝支付时存在
   }
   ```
 
@@ -587,7 +588,7 @@ app-type: 客户端类型  1-Android 2-iOS
   ```
     data: {
         order_no: 订单号,
-        sdk_config: 调起支付参数 {
+        sdk_config: 微信调起支付参数(支付类型为微信支付时存在) {
         	appid,
         	partnerid,
         	prepayid,
@@ -595,7 +596,8 @@ app-type: 客户端类型  1-Android 2-iOS
         	timestamp,
         	package,
         	sign
-        }
+        },
+        alipay_sdk_config: 支付宝支付调起字符串, 支付类型为支付宝支付时存在
     }
   ```
 
@@ -709,7 +711,8 @@ app-type: 客户端类型  1-Android 2-iOS
   参数
 
   ```
-  merchantId: 商户ID
+merchantId: 商户ID
+page: 当前页码
   ```
 
   返回
@@ -754,7 +757,8 @@ app-type: 客户端类型  1-Android 2-iOS
               created_at: 创建时间,
           },
           ......
-      ]
+      ],
+      total: 总记录数
   }
   ```
 
@@ -770,14 +774,14 @@ app-type: 客户端类型  1-Android 2-iOS
 
   ```
   data: {
-  	user_id: 用户ID,
+  	  user_id: 用户ID,
       total_credit: 总积分,
       used_credit: 消费积分,
       consume_quota: 累计消费额,
       created_at: 创建时间,
   }
   ```
-  
+
 
 - [ ] 我的消费额列表
 
@@ -787,6 +791,7 @@ app-type: 客户端类型  1-Android 2-iOS
 
   ```
   month: 月份, 为空时则查询当月 如: 2018-06-01
+  page: 当前页码
   ```
 
   返回
@@ -805,7 +810,8 @@ app-type: 客户端类型  1-Android 2-iOS
               created_at: 创建时间,
           },
           ......
-      ]
+      ],
+      total: 总记录数
   }
   ```
 
