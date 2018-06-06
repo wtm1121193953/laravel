@@ -46,6 +46,7 @@ class Alipay
         $request->setBizContent($bizcontent);
 
         $response = $aop->sdkExecute($request);  //这里和普通的接口调用不同，使用的是sdkExecute
+        dd($response);
 
         return json_decode($response);//就是orderString 可以直接给客户端请求，无需再做处理。
     }
