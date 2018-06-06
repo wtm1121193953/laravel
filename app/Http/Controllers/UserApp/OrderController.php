@@ -164,7 +164,7 @@ class OrderController extends Controller
         $order->pay_price = $price;
 
         $payType = request('pay_type', 1);
-        $order->payType = $payType;
+        $order->pay_type = $payType;
         $order->save();
 
         if($payType == 1){
@@ -210,7 +210,7 @@ class OrderController extends Controller
         }
 
         $payType = request('pay_type', 1);
-        $order->payType = $payType;
+        $order->pay_type = $payType;
         $order->save();
         if($payType == 1){
             // 如果是微信支付
@@ -251,7 +251,7 @@ class OrderController extends Controller
         $orderRefund->order_no = $order->order_no;
         $orderRefund->amount = $orderPay->amount;
         $orderRefund->save();
-        if($order->payType == 1){
+        if($order->pay_type == 1){
             // 发起微信支付退款
             // todo 获取平台的微信支付实例
             $payApp = WechatService::getWechatPayAppForOper(request()->get('current_oper')->id);
