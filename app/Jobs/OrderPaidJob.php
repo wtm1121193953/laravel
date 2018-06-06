@@ -226,7 +226,8 @@ class OrderPaidJob implements ShouldQueue
         }
 
         $creditMultiplierOfAmount = SettingService::getValueByKey('credit_multiplier_of_amount'); //积分系数
-        $credit = $settlement * $creditRatio * $creditMultiplierOfAmount / 100 ; //产生积分
+        dd($settlement, $creditRatio, $creditMultiplierOfAmount);
+        $credit = $settlement * $creditRatio * $creditMultiplierOfAmount / 100.0 ; //产生积分
 
         $userCreditRecord = new UserCreditRecord();
         $userCreditRecord->user_id = $parentUser->id;
