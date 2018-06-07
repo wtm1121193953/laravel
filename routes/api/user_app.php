@@ -17,7 +17,8 @@ Route::prefix('app/user')
 
         Route::any('login', 'LoginController@login');
         Route::any('logout', 'LoginController@logout');
-        Route::any('loginWithSceneId', 'LoginController@loginWithSceneId');
+
+        Route::any('user/info', 'UserController@getInfo')->middleware(UserLoginFilter::class);
 
         Route::get('area/tree', 'AreaController@getTree');
         Route::get('area/cities/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
