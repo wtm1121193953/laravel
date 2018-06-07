@@ -28,8 +28,10 @@ class AlertTableInviteUserRecordsAddInviteChannelId extends Migration
                         ->first();
                     $inviteChannels["$item->origin_id-$item->origin_type"] = $inviteChannel;
                 }
-                $item->invite_channel_id = $inviteChannel->id;
-                $item->save();
+                if($inviteChannel){
+                    $item->invite_channel_id = $inviteChannel->id;
+                    $item->save();
+                }
             });
         });
     }
