@@ -1,3 +1,9 @@
+<style lang="less">
+    //引入公共样式 - 移动端
+    @import url(./assets/style/vectors.less);
+</style>
+
+
 <template>
     <div id="app">
         <transition name="fade">
@@ -9,7 +15,14 @@
 <script>
     export default {
         name: 'app',
-        components: {}
+        components: {},
+        mounted() {
+            //挂载之后添加meta标签，替换之前pc端的，适用于移动端避免缩放
+            const meta = document.createElement('meta')
+            meta.setAttribute("name", "viewport")
+            meta.setAttribute("content", "width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no")
+            document.getElementsByTagName('head')[0].appendChild(meta)
+        }
     }
 </script>
 
@@ -45,30 +58,5 @@
         100% {
             transform: scale(0);
         }
-    }
-
-    body {
-        margin: 0;
-        padding: 0;
-        font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
-        font-weight: 400;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    #app {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-    }
-
-    .el-submenu [class^=fa] {
-        vertical-align: baseline;
-        margin-right: 10px;
-    }
-
-    .el-menu-item [class^=fa] {
-        vertical-align: baseline;
-        margin-right: 10px;
     }
 </style>

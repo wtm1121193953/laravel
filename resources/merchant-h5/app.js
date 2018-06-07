@@ -18,6 +18,10 @@ const router = new VueRouter({
     routes
 })
 router.beforeEach((to, from, next) => {
+    //存储上一个页面和当前页面的path
+    localStorage.setItem('merchant-h5_router_to_path', to.path)
+    localStorage.setItem('merchant-h5_router_from_path', from.path)
+
     store.commit('setGlobalLoading', true)
     NProgress.start()
     // 处理服务器重定向到指定页面时在浏览器返回页面为空的问题
@@ -48,6 +52,10 @@ Vue.component(ImageUpload.name, ImageUpload)
 
 import quillEditorPlugin from './quill-editor-plugin'
 Vue.use(quillEditorPlugin.VueQuillEditor, quillEditorPlugin.globalOptions)
+
+//移动端下拉刷新
+import VueScroller from 'vue-scroller'
+Vue.use(VueScroller)
 
 window.baseApiUrl = '/api/merchant/'
 import api from '../assets/js/api'
