@@ -86,6 +86,8 @@ class LoginController extends Controller
             if ($userMapping->origin_type == 1){
                 $merchant = Merchant::findOrFail($userMapping->origin_id);
                 $user->mapping_merchant_name = $merchant->name;
+                $user->merchant_level = $merchant->level;
+                $user->merchant_level_text = Merchant::getLevelText($merchant->level);
             }else{
                 $oper = Oper::findOrFail($userMapping->origin_id);
                 $user->mapping_oper_name = $oper->name;
