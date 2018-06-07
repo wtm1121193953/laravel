@@ -2,9 +2,9 @@
 
 namespace App\Modules\UserCredit;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class UserConsumeQuotaRecord extends Model
+class UserConsumeQuotaRecord extends BaseModel
 {
     //
     const TYPE_TO_SELF = 1;

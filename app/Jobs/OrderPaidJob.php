@@ -212,8 +212,12 @@ class OrderPaidJob implements ShouldQueue
         $settlement = $order->pay_price * $settlementRate;
 
         $parentLevel = User::where('id', $parentUser->id)->value('level'); //父级用户等级
+        // 如果父用户等级是1级[萌新], 则不给父用户返利
+        if($parentLevel == 1){
+            return ;
+        }
         $creditRatio = UserCreditSettingService::getCreditToParentRatioSetting($parentLevel); //分享提成比例
-        
+
         $merchantId = UserMapping::where('user_id', $parentUser->id)
             ->where('origin_type', 1)
             ->value('origin_id');
@@ -226,7 +230,7 @@ class OrderPaidJob implements ShouldQueue
         }
 
         $creditMultiplierOfAmount = SettingService::getValueByKey('credit_multiplier_of_amount'); //积分系数
-        $credit = $settlement * $creditRatio * $creditMultiplierOfAmount / 100 ; //产生积分
+        $credit = $settlement * $creditRatio * $creditMultiplierOfAmount / 100.0 ; //产生积分
 
         $userCreditRecord = new UserCreditRecord();
         $userCreditRecord->user_id = $parentUser->id;

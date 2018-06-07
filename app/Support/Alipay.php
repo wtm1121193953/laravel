@@ -39,15 +39,16 @@ class Alipay
             'timeout_express' => '1d',
             'total_amount' => $order->pay_price,
             'out_trade_no' => $order->order_no,
+            'product_code' => 'QUICK_MSECURITY_PAY',
         ];
 
-        $bizcontent = json_encode($data);
+        $bizcontent = json_encode($data, JSON_UNESCAPED_UNICODE);
         $request->setNotifyUrl(request()->getSchemeAndHttpHost()."/api/pay/alipayNotify");
         $request->setBizContent($bizcontent);
 
         $response = $aop->sdkExecute($request);  //这里和普通的接口调用不同，使用的是sdkExecute
 
-        return json_decode($response);//就是orderString 可以直接给客户端请求，无需再做处理。
+        return $response;//就是orderString 可以直接给客户端请求，无需再做处理。
     }
 
     public static function verify($data)

@@ -43,7 +43,7 @@ class CreditController extends Controller
         }
         $creditRatio = UserCreditSettingService::getCreditToSelfRatioSetting($userLevel); //自反比例
         $creditMultiplierOfAmount = SettingService::getValueByKey('credit_multiplier_of_amount'); //积分系数
-        $creditRatio = $settlementRate * $creditRatio * $creditMultiplierOfAmount / 100 ; //积分换算比例
+        $creditRatio = $settlementRate * $creditRatio * $creditMultiplierOfAmount / 100.0 ; //积分换算比例
 
         return Result::success([
             'creditRatio' => $creditRatio,
@@ -65,13 +65,14 @@ class CreditController extends Controller
             $month = date('m');
         }
         $user = request()->get('current_user');
-        $userCreditRecordList = UserCreditRecord::where('user_id', $user->id)
+        $data = UserCreditRecord::where('user_id', $user->id)
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->get();
+            ->paginate();
 
         return Result::success([
-            'list' => $userCreditRecordList,
+            'list' => $data->items(),
+            'total' => $data->total(),
         ]);
     }
 
@@ -102,13 +103,14 @@ class CreditController extends Controller
             $month = date('m');
         }
         $user = request()->get('current_user');
-        $userConsumeQuotaRecordList = UserConsumeQuotaRecord::where('user_id', $user->id)
+        $data = UserConsumeQuotaRecord::where('user_id', $user->id)
             ->whereYear('created_at', $year)
             ->whereMonth('created_at', $month)
-            ->get();
+            ->paginate();
 
         return Result::success([
-            'list' => $userConsumeQuotaRecordList,
+            'list' => $data->items(),
+            'total' => $data->total(),
         ]);
     }
 }
