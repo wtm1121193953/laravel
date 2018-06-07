@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Oper;
 
 
+use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
@@ -20,23 +21,72 @@ use App\Result;
 class InviteChannelController extends Controller
 {
 
-    public function __construct()
-    {
-        throw new ParamInvalidException('邀请用户功能已关闭');
-    }
-
-    /**
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     */
-    public function getInviteQrcode()
+    public function getList()
     {
         $operId = request()->get('current_user')->oper_id;
-        $inviteChannel = InviteService::getInviteChannel($operId, InviteChannel::ORIGIN_TYPE_OPER, $operId);
-        $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
-        $url = WechatService::getMiniprogramAppCodeUrl($scene);
+        $data = InviteChannel::where('origin_id', $operId)
+            ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
+            ->paginate();
         return Result::success([
-            'qrcode_url' => $url,
+            'list' => $data->items(),
+            'total' => $data->total()
         ]);
+    }
+
+    public function add()
+    {
+        $this->validate(request(), [
+            'name' => 'required'
+        ]);
+        $name = request('name');
+        $remark = request('remark');
+        $operId = request()->get('current_user')->oper_id;
+
+        $inviteChannel = new InviteChannel();
+        $inviteChannel->oper_id = $operId;
+        $inviteChannel->origin_id = $operId;
+        $inviteChannel->origin_type = InviteChannel::ORIGIN_TYPE_OPER;
+        $inviteChannel->name = $name;
+        $inviteChannel->remark = $remark;
+
+        $scene = new MiniprogramScene();
+        $scene->oper_id = $operId;
+        $scene->page = MiniprogramScene::PAGE_INVITE_REGISTER;
+        $scene->type = MiniprogramScene::TYPE_INVITE_CHANNEL;
+        $scene->payload = json_encode([
+            'origin_id' => $operId,
+            'origin_type' => InviteChannel::ORIGIN_TYPE_OPER,
+        ]);
+        $scene->save();
+
+        $inviteChannel->scene_id = $scene->id;
+        $inviteChannel->save();
+        return Result::success($inviteChannel);
+    }
+
+    public function edit()
+    {
+
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'name' => 'required',
+        ]);
+        $name = request('name');
+        $remark = request('remark');
+        $operId = request()->get('current_user')->oper_id;
+
+        $inviteChannel = InviteChannel::find(request('id'));
+        if(empty($inviteChannel)){
+            throw new ParamInvalidException('邀请渠道不存在');
+        }
+
+        if($inviteChannel->origin_id != $operId){
+            throw new NoPermissionException('无权限修改');
+        }
+        $inviteChannel->name = $name;
+        $inviteChannel->remark = $remark;
+        $inviteChannel->save();
+        return Result::success($inviteChannel);
     }
 
     /**
