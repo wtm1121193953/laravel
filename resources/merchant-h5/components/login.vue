@@ -1,4 +1,4 @@
-<style lang="less" scoped>
+<style lang="less">
     .login-container {
         width: 100%;
         position: absolute;
@@ -22,14 +22,14 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        margin: -230px 0 0 -180px;
-        width: 310px;
-        height: 274px;
-        padding: 25px;
-        box-shadow: 0 0 100px rgba(0,0,0,.08);
+        margin: -4.6rem 0 0 -3.1rem;
+        width: 5.2rem;
+        padding: 0.5rem;
+        box-shadow: 0 0 2rem rgba(0,0,0,.08);
         background-color: #fff;
-        border-radius: 4px;
+        border-radius: 0.08rem;
         z-index: 3;
+
         .login-logo {
             text-align: center;
             height: 40px;
@@ -62,6 +62,27 @@
         transform: translate3d(0, -50px, 0);
         opacity: 0;
     }
+
+    .el-input__inner {
+        line-height: 1;
+    }
+
+    .verifyCode {
+        .el-form-item__content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            .el-input {
+                flex: 1;
+            }
+
+            .verify-img {
+                position: relative;
+                margin-left: 0.2rem;
+            }
+        }
+    }
 </style>
 <template>
     <div class="login-container">
@@ -80,9 +101,8 @@
                     <el-form-item prop="password">
                         <el-input type="password" v-model="form.password" auto-complete="off" placeholder="密码"/>
                     </el-form-item>
-                    <el-form-item prop="verifyCode">
-                        <el-input type="text" v-model="form.verifyCode" auto-complete="off" class="w-150"
-                                  placeholder="验证码"/>
+                    <el-form-item prop="verifyCode" class="verifyCode">
+                        <el-input type="text" v-model="form.verifyCode" auto-complete="off" placeholder="验证码"/>
                         <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/>
                     </el-form-item>
                     <el-form-item>
@@ -143,6 +163,16 @@
                 }, 300)
             },
             relocation() {
+                //返回上一页
+                const from = localStorage.getItem('merchant-h5_router_from_path');
+
+                if(from == '/' || from == '/login') {
+                    this.$router.replace('/');
+                } else {
+                    this.$router.go(-1);
+                }
+                return;
+
                 if (this.$route.query && this.$route.query._from) {
                     router.push(this.$route.query._from);
                 }else{
@@ -243,7 +273,7 @@
         mounted () {
             const that = this;
             that.showLogin = true;
-            that.init3D();
+            //that.init3D();
         },
         beforeDestroy () {
             const self = this
