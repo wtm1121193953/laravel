@@ -70,9 +70,23 @@ class CreditController extends Controller
             ->whereMonth('created_at', $month)
             ->paginate();
 
+        // 获取当月总积分以及总消耗积分
+        $totalInCredit = UserCreditRecord::where('user_id', $user->id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 1)
+            ->sum('credit');
+        $totalOutCredit = UserCreditRecord::where('user_id', $user->id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 2)
+            ->sum('credit');
+
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
+            'totalInCredit' => $totalInCredit,
+            'totalOutCredit' => $totalOutCredit,
         ]);
     }
 
