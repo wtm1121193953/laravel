@@ -66,7 +66,7 @@ class LoginController extends Controller
             $user->mobile = $mobile;
             $user->save();
             // 重新查一次用户信息, 补充用户信息中的全部字段
-            $user = User::first($user->id);
+            $user = User::find($user->id);
         }
 
         // 如果存在邀请渠道ID, 查询用户是否已被邀请过
