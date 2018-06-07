@@ -11,26 +11,45 @@ namespace App\Http\Controllers\Oper;
 
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
+use App\Exports\OperInviteChannelExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
-use App\Modules\Invite\InviteService;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use Illuminate\Database\Eloquent\Builder;
 
 class InviteChannelController extends Controller
 {
 
     public function getList()
     {
+        $keyword = request('keyword');
         $operId = request()->get('current_user')->oper_id;
         $data = InviteChannel::where('origin_id', $operId)
             ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
+            ->when('keyword', function (Builder $query) use ($keyword){
+                $query->where('name', 'like', "%$keyword%");
+            })
+            ->withCount('inviteUserRecords')
             ->paginate();
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total()
         ]);
+    }
+
+    public function export()
+    {
+        $keyword = request('keyword');
+        $operId = request()->get('current_user')->oper_id;
+        $query = InviteChannel::where('origin_id', $operId)
+            ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
+            ->when('keyword', function (Builder $query) use ($keyword){
+                $query->where('name', 'like', "%$keyword%");
+            })
+            ->withCount('inviteUserRecords');
+        return (new OperInviteChannelExport($query))->download('推广渠道列表.xlsx');
     }
 
     public function add()
@@ -66,7 +85,6 @@ class InviteChannelController extends Controller
 
     public function edit()
     {
-
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
             'name' => 'required',
