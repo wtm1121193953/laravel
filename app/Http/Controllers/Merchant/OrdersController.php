@@ -21,6 +21,7 @@ class OrdersController extends Controller
 {
     public function getList()
     {
+        $keyword = request('keyword');
         $orderNo = request('orderNo');
         $notifyMobile = request('notifyMobile');
         $data = Order::where('merchant_id', request()->get('current_user')->merchant_id)
@@ -36,6 +37,12 @@ class OrdersController extends Controller
             })
             ->when($notifyMobile, function (Builder $query) use ($notifyMobile){
                 $query->where('notify_mobile', 'like', "%$notifyMobile%");
+            })
+            ->when($keyword, function(Builder $query) use ($keyword){
+                $query->where(function (Builder $query) use ($keyword) {
+                    $query->where('order_no', 'like', "%$keyword%")
+                        ->orWhere('notify_mobile', 'like', "$keyword");
+                });
             })
             ->orderBy('id', 'desc')->paginate();
 
