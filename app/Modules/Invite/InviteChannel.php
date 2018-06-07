@@ -13,4 +13,8 @@ class InviteChannel extends BaseModel
     //推广人类型  3-运营中心
     const ORIGIN_TYPE_OPER = 3;
 
+    public function inviteUserRecords()
+    {
+        return $this->hasMany(InviteUserRecord::class);
+    }
 }

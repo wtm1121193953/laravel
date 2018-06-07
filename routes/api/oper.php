@@ -18,6 +18,7 @@ Route::prefix('oper')
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
 
         Route::get('inviteChannels', 'InviteChannelController@getList');
+        Route::get('inviteChannel/export', 'InviteChannelController@export');
         Route::post('inviteChannel/add', 'InviteChannelController@add');
         Route::post('inviteChannel/edit', 'InviteChannelController@edit');
         Route::get('inviteChannel/inviteQrcode', 'InviteChannelController@getInviteQrcode');

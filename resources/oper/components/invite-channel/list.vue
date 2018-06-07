@@ -1,5 +1,13 @@
 <template>
     <page title="推广渠道">
+        <el-form inline class="fl" :model="query" size="small">
+            <el-form-item prop="keyword">
+                <el-input v-model="query.keyword" placeholder="渠道名称" @keyup.enter.native="search"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
+            </el-form-item>
+        </el-form>
         <el-button class="fr m-l-20" type="primary" @click="add">添加推广渠道</el-button>
         <el-button class="fr m-l-20" type="success" @click="exportExcel">导出Excel</el-button>
 
@@ -7,6 +15,7 @@
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="name" label="推广渠道名称"/>
+            <el-table-column prop="invite_user_records_count" label="注册人数"/>
             <el-table-column prop="remark" label="备注"/>
             <el-table-column label="操作">
                 <template slot-scope="scope">
@@ -43,6 +52,7 @@
                 list: [],
                 total: 0,
                 query: {
+                    keyword: '',
                     page: 1,
                 },
                 isAdd: false,
@@ -54,6 +64,10 @@
             InviteChannelForm
         },
         methods: {
+            search(){
+                this.query.page = 1;
+                this.getList()
+            },
             getList(){
                 api.get('/inviteChannels', this.query).then(data => {
                     this.list = data.list;
@@ -62,6 +76,13 @@
             },
             exportExcel(){
                 // 导出操作
+                let message = '确定导出全部推广渠道列表么?'
+                if(this.query.keyword){
+                    message = '确定导出当前筛选的推广渠道列表么?'
+                }
+                this.$confirm(message).then(() => {
+                    location.href = '/api/oper/inviteChannel/export?keyword=' + this.query.keyword
+                })
             },
             add(){
                 this.isAdd = true;
@@ -80,7 +101,6 @@
             },
             doEdit(data){
                 // 编辑操作
-                console.log(data)
                 api.post('inviteChannel/edit', data).then(data => {
                     this.isEdit = false;
                     this.$refs.editForm.resetForm()
