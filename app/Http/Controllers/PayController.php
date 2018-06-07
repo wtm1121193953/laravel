@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Jobs\OrderPaidJob;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteService;
@@ -153,6 +154,7 @@ class PayController extends Controller
                     $inviteChannel = InviteService::getInviteChannel($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
                     InviteService::bindInviter($userId, $inviteChannel);
                 }
+                OrderPaidJob::dispatch($order);
                 DB::commit();
             }catch (\Exception $e){
                 DB::rollBack();
