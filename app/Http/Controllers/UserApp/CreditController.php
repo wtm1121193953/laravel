@@ -122,9 +122,22 @@ class CreditController extends Controller
             ->whereMonth('created_at', $month)
             ->paginate();
 
+        // 获取当月总消费额
+        $totalInConsumeQuota = UserConsumeQuotaRecord::where('user_id', $user->id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 1)
+            ->sum('consume_quota');
+        $totalOutConsumeQuota = UserConsumeQuotaRecord::where('user_id', $user->id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 2)
+            ->sum('consume_quota');
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
+            'totalInConsumeQuota' => $totalInConsumeQuota,
+            'totalOutConsumeQuota' => $totalOutConsumeQuota,
         ]);
     }
 }
