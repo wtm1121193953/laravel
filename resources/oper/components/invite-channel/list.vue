@@ -20,7 +20,26 @@
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="edit(scope.row)">编辑</el-button>
-                    <el-button type="text" @click="download(scope.row)">下载二维码</el-button>
+                    <el-popover
+                            placement="top-end"
+                            width="250"
+                            trigger="click">
+                        <p>请选择您需要的尺寸</p>
+                        <div style="text-align: left; margin: 0">
+                            <el-radio-group v-model="qrcodeSizeType" size="mini">
+                                <el-radio-button label="1">小</el-radio-button>
+                                <el-radio-button label="2">中</el-radio-button>
+                                <el-radio-button label="3">大</el-radio-button>
+                            </el-radio-group>
+                            <p v-if="qrcodeSizeType == 1">尺寸: 258 * 258px, 适合打印尺寸: 8cm</p>
+                            <p v-if="qrcodeSizeType == 2">尺寸: 430 * 430px, 适合打印尺寸: 15cm</p>
+                            <p v-if="qrcodeSizeType == 3">尺寸: 1280 * 1280px, 适合打印尺寸: 50cm</p>
+                        </div>
+                        <div style="text-align: right; margin: 0">
+                            <el-button type="primary" size="mini" @click="download(scope.row)">确定</el-button>
+                        </div>
+                        <el-button slot="reference" type="text">下载小程序码</el-button>
+                    </el-popover>
                 </template>
             </el-table-column>
         </el-table>
@@ -58,6 +77,7 @@
                 isAdd: false,
                 isEdit: false,
                 currentEditData: null,
+                qrcodeSizeType: 1,
             }
         },
         components: {
@@ -81,7 +101,7 @@
                     message = '确定导出当前筛选的推广渠道列表么?'
                 }
                 this.$confirm(message).then(() => {
-                    location.href = '/api/oper/inviteChannel/export?keyword=' + this.query.keyword
+                    window.open('/api/oper/inviteChannel/export?keyword=' + this.query.keyword)
                 })
             },
             add(){
@@ -107,8 +127,8 @@
                     this.getList()
                 })
             },
-            download(){
-
+            download(data){
+                window.open(`/api/oper/inviteChannel/downloadInviteQrcode?id=${data.id}&qrcodeSizeType=${this.qrcodeSizeType}` )
             },
         },
         created(){

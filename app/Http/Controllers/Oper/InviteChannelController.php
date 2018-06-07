@@ -113,18 +113,22 @@ class InviteChannelController extends Controller
      */
     public function downloadInviteQrcode()
     {
-        // type 小程序码类型, 1-小(8cm, 对应258px) 2-中(15cm, 对应430px)  3-大(50cm, 对应1280px)
-        $type = request('type', 1);
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        // qrcodeSizeType 小程序码尺寸类型, 1-小(8cm, 对应258px) 2-中(15cm, 对应430px)  3-大(50cm, 对应1280px)
+        $qrcodeSizeType = request('qrcodeSizeType', 1);
         $operId = request()->get('current_user')->oper_id;
-        $inviteChannel = InviteChannel::where('oper_id', $operId)
+        $inviteChannel = InviteChannel::where('id', $id)
             ->where('origin_id', $operId)
             ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
             ->firstOrFail();
         $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
-        $width = $type == 3 ? 1280 : ($type == 2 ? 430 : 258);
+        $width = $qrcodeSizeType == 3 ? 1280 : ($qrcodeSizeType == 2 ? 430 : 258);
         $inviteQrcodeFilename = WechatService::genMiniprogramAppCode($operId, $scene->id, $scene->page, $width, true);
         $filename = storage_path('app/public/miniprogram/app_code') . '/' . $inviteQrcodeFilename;
-        return response()->download($filename, '分享会员二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
+        return response()->download($filename, '推广小程序码-' . $inviteChannel->name . '-' . ['', '小', '中', '大'][$qrcodeSizeType] . '.jpg');
 
     }
 }

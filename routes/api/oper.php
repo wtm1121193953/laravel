@@ -21,7 +21,6 @@ Route::prefix('oper')
         Route::get('inviteChannel/export', 'InviteChannelController@export');
         Route::post('inviteChannel/add', 'InviteChannelController@add');
         Route::post('inviteChannel/edit', 'InviteChannelController@edit');
-        Route::get('inviteChannel/inviteQrcode', 'InviteChannelController@getInviteQrcode');
         Route::get('inviteChannel/downloadInviteQrcode', 'InviteChannelController@downloadInviteQrcode');
 
         Route::get('invite/statistics/dailyList', 'InviteStatisticsController@dailyList');
