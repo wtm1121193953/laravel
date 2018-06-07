@@ -34,7 +34,7 @@
                             <span v-else style="color: #F56C6C;">未知 {{ item.status }}</span>
                         </el-row>
                         <el-row class="content">
-                            <div class="avatar" v-if="item.goods_pic" :style="{'background-image': 'url(' + item.goods_pic + ')'}"></div>
+                            <div class="avatar" v-if="item.goods_thumb_url" :style="{'background-image': 'url(' + item.goods_thumb_url + ')'}"></div>
                             <div class="info">
                                 <div class="left">
                                     <h4>{{ item.goods_name }}</h4>
@@ -66,12 +66,12 @@
             <div>(仅支持一次核销订单全部消费码)</div>
             <el-row>
                 <el-col :span="16">
-                    <el-input placeholder="请输入消费码" @keyup.native.enter="verification" v-model="verify_code"/>
+                    <el-input type="tel" placeholder="请输入消费码" @keyup.native.enter="verification" v-model="verify_code"/>
                 </el-col>
                 <el-col :span="7" :offset="1">
                     <el-button type="primary" ref="verifyInput" @click="verification">核销</el-button>
                 </el-col>
-                <div v-if="verify_success">核销成功！<el-button type="text" @click="showDetail(order)">查看订单</el-button></div>
+                <!-- <div v-if="verify_success">核销成功！<el-button type="text" @click="showDetail(order)">查看订单</el-button></div> -->
                 <div v-if="verify_fail" style="padding-top: 0.2rem; clear: both;">核销失败！请检查消费码</div>
             </el-row>
         </el-dialog>
@@ -124,7 +124,8 @@
                 verify_success: false,
                 verify_fail: false,
                 isGetListEnd: false,
-                isConvenient: false
+                isConvenient: false,
+                isRefresh: false
             }
         },
         methods: {
@@ -144,18 +145,31 @@
             getList() {
                 this.isLoading = true;
                 api.get('/orders', this.query).then(data => {
-                    console.log(data)
-                    if(data.list.length == 0) {
+                    //获取为搜索数据
+                    if(this.searching) {
+                        //搜索结果为0
+                        if(data.list.length == 0) {
+                            this.list = [];
+                        } else {
+                            this.list = data.list;
+                            this.isGetListEnd = false;
+                        }
+                        
+                        this.searching = false;
+                    } else if(this.isRefresh) {
+                        //下拉加载
+                        data.list.reverse().map((item, key) => {
+                            this.list.unshift(item);
+                            return item;
+                        });
+                    } else {
+                        this.list = this.list.concat(data.list);
+                    }
+
+                    if(data.list.length == 0 && !this.isGetListEnd) {
                         //没有数据返回
                         this.isGetListEnd = true;
                         return;
-                    }
-
-                    if(this.searching) {
-                        this.list = data.list;
-                        this.searching = false;
-                    } else {
-                        this.list = this.list.concat(data.list);
                     }
                     
                     this.total = data.total;
@@ -187,8 +201,9 @@
                     console.log(result);
                     if(result && parseInt(result.code) === 0){
                         this.order = result.data;
-                        console.log('order',this.order);
+                        this.verify_code = '';
                         this.verify_success = true;
+                        this.$message.success('核销成功！');
                     }else{
                         this.verify_code = '';
                         this.verify_fail = true;
@@ -196,8 +211,28 @@
                     }
                 })
             },
+            refresh(done) {
+                this.isRefresh = true;
+
+                //下拉数据拉新
+                if(this.isGetListEnd) {
+                    setTimeout(() => {
+                        this.isRefresh = false;
+                        done(true)
+                    }, 1500)
+                    return;
+                }
+
+                setTimeout(() => {
+                    this.query.page = this.query.page + 1;
+                    this.getList();
+                    setTimeout(() => {
+                        done()
+                    })
+                }, 1500)
+            },
             infinite(done) {
-                //上滑数据拉新
+                //上拉数据拉新
                 if(this.isGetListEnd) {
                     setTimeout(() => {
                         done(true)
@@ -221,7 +256,7 @@
 
                 this.$message({
                     message: msg,
-                    duration: 0,
+                    duration: 10000,
                     showClose: true
                 })
             },
@@ -424,6 +459,7 @@
             }
         }
 
+        //核销
         .verification {
             position: fixed;
             bottom: 0.3rem;
@@ -440,6 +476,7 @@
             }
         }
         
+        //核销弹窗
         .verification-dialog {
             .el-dialog__header {
                 padding: 0.4rem 0.4rem 0.2rem;
