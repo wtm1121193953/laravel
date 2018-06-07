@@ -60,6 +60,35 @@ class MerchantController extends Controller
         ]);
     }
 
+    /**
+     * 获取全部的商户名称
+     */
+    public function allNames()
+    {
+        $auditStatus = request('audit_status');
+        $status = request('status');
+        $list = Merchant::where(function (Builder $query){
+            $currentOperId = request()->get('current_user')->oper_id;
+            $query->where('oper_id', $currentOperId)
+                ->orWhere('audit_oper_id', $currentOperId);
+        })
+            ->when($status, function (Builder $query) use ($status){
+                $query->where('status', $status);
+            })
+            ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus){
+                if($auditStatus == -1){
+                    $auditStatus = 0;
+                }
+                $query->where('audit_status', $auditStatus);
+            })
+            ->orderBy('updated_at', 'desc')
+            ->select('id', 'name')
+            ->get();
+        return Result::success([
+            'list' => $list
+        ]);
+    }
+
     public function detail()
     {
         $id = request('id');
