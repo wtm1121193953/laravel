@@ -66,7 +66,7 @@ class PayController extends Controller
      */
     public function mockPaySuccess()
     {
-        if(App::environment() === 'local'){
+        if(App::environment() === 'local' || App::environment() === 'test'){
             $this->paySuccess(request('order_no'), 'mock transaction id', 0);
             return Result::success('模拟支付成功');
         }else {

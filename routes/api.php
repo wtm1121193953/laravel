@@ -28,6 +28,7 @@ Route::post('/upload/image', 'UploadController@image');
 Route::any('/pay/notify', 'PayController@notify');
 // 模拟支付成功接口, 只有本地才有效
 Route::any('/pay/mockPaySuccess', 'PayController@mockPaySuccess');
+Route::any('/app/user/pay/mockPaySuccess', 'PayController@mockPaySuccess');
 // 支付宝支付回调
 Route::any('/pay/alipayNotify', 'PayController@alipayNotify');
 
