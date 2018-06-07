@@ -61,11 +61,15 @@ class OrderController extends Controller
         $this->validate(request(), [
             'order_no' => 'required'
         ]);
-        $detail = Order::where('order_no', request('order_no'))->firstOrFail();
+        $user = request()->get('current_user');
+        $detail = Order::where('order_no', request('order_no'))
+            ->where('user_id', $user->id)
+            ->firstOrFail();
         $detail->items = OrderItem::where('order_id', $detail->id)->get();
 
         $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
             ->where('type', 1)
+            ->where('user_id', $user->id)
             ->first();
         if (!empty($creditRecord)){
             $detail->user_level = $creditRecord->user_level;
