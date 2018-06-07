@@ -41,7 +41,7 @@ class OrdersController extends Controller
             ->when($keyword, function(Builder $query) use ($keyword){
                 $query->where(function (Builder $query) use ($keyword) {
                     $query->where('order_no', 'like', "%$keyword%")
-                        ->orWhere('notify_mobile', 'like', "$keyword");
+                        ->orWhere('notify_mobile', 'like', "%$keyword%");
                 });
             })
             ->orderBy('id', 'desc')->paginate();
