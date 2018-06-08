@@ -14,6 +14,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Exports\OperInviteChannelExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
@@ -129,6 +130,42 @@ class InviteChannelController extends Controller
         $inviteQrcodeFilename = WechatService::genMiniprogramAppCode($operId, $scene->id, $scene->page, $width, true);
         $filename = storage_path('app/public/miniprogram/app_code') . '/' . $inviteQrcodeFilename;
         return response()->download($filename, '推广小程序码-' . $inviteChannel->name . '-' . ['', '小', '中', '大'][$qrcodeSizeType] . '.jpg');
+    }
 
+    /**
+     * 获取邀请记录列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getInviteRecords()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $id = request('id');
+        $mobile = request('mobile');
+        $startTime = request('startTime');
+        $endTime = request('endTime');
+        $data = InviteUserRecord::where('invite_channel_id', $id)
+            ->whereHas('user', function ($query) use ($mobile, $startTime, $endTime) {
+                $query->when($mobile, function (Builder $query) use ($mobile){
+                    $query->where('mobile', 'like', "%$mobile%");
+                })
+                    ->when($startTime && $endTime, function (Builder $query) use ($startTime, $endTime){
+                        $query->whereBetween('created_at', [$startTime, $endTime]);
+                    })
+                    ->when($startTime && !$endTime, function (Builder $query) use ($startTime){
+                        $query->where('created_at', '>=', $startTime);
+                    })
+                    ->when($endTime && !$startTime, function (Builder $query) use ($endTime) {
+                        $query->where('created_at', '<=', $endTime);
+                    })
+                ;
+            })
+            ->with('user:id,mobile,created_at')
+            ->paginate();
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
     }
 }

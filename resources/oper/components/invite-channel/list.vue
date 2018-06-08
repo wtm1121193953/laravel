@@ -15,7 +15,13 @@
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="name" label="推广渠道名称"/>
-            <el-table-column prop="invite_user_records_count" label="注册人数"/>
+            <el-table-column prop="invite_user_records_count" label="注册人数">
+                <template slot-scope="scope">
+                    <el-button type="text" @click="inviteRecords(scope.row)">
+                        {{scope.row.invite_user_records_count}}
+                    </el-button>
+                </template>
+            </el-table-column>
             <el-table-column prop="remark" label="备注"/>
             <el-table-column label="操作">
                 <template slot-scope="scope">
@@ -130,6 +136,9 @@
             download(data){
                 window.open(`/api/oper/inviteChannel/downloadInviteQrcode?id=${data.id}&qrcodeSizeType=${this.qrcodeSizeType}` )
             },
+            inviteRecords(data){
+                router.push(`/invite-records?id=${data.id}&name=${data.name}`)
+            }
         },
         created(){
             this.getList();
