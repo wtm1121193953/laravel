@@ -102,6 +102,7 @@ class InviteService
         }
         $inviteRecord = new InviteUserRecord();
         $inviteRecord->user_id = $userId;
+        $inviteRecord->invite_channel_id = $inviteChannel->id;
         $inviteRecord->origin_id = $inviteChannel->origin_id;
         $inviteRecord->origin_type = $inviteChannel->origin_type;
         $inviteRecord->save();
