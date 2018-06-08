@@ -76,27 +76,6 @@ class PayController extends Controller
     }
 
     /**
-     * 支付宝支付回调
-     * @return string
-     */
-    public function alipayNotify()
-    {
-        $data = $_POST;
-        $flag = Alipay::verify($data);
-        if ($flag){
-            if ($data['trade_status'] == "TRADE_SUCCESS" || $data['trade_status'] == "TRADE_FINISHED"){
-                $res = $this->paySuccess($data['out_trade_no'], $data['trade_no'], $data['total_amount']);
-                return $res ? 'success' : 'fail';
-            }
-
-            return "success";
-        }else{
-            Log::error('alipay 回调验证签名失败, 商户订单号: '. $data['out_trade_no']. '; 交易状态: '. $data['trade_status'], $data);
-            return "fail";
-        }
-    }
-
-    /**
      * 支付成功
      * @param $orderNo
      * @param $transactionId
@@ -126,7 +105,7 @@ class PayController extends Controller
                 }
 
                 // 添加商品已售数量
-                Goods::where('id', $order->goods_id)->increment('sell_number');
+                Goods::where('id', $order->goods_id)->increment('sell_number', max($order->buy_number, 1));
 
                 // 生成核销码, 线上需要放到支付成功通知中
                 for ($i = 0; $i < $order->buy_number; $i ++){
