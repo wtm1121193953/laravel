@@ -172,7 +172,9 @@ class OrderController extends Controller
 
         if($payType == 1){
             // 如果是微信支付
-            $sdkConfig = $this->_wechatUnifyPay($order);
+            // todo 微信支付暂时跳过
+//            $sdkConfig = $this->_wechatUnifyPay($order);
+            $sdkConfig = [];
             return Result::success([
                 'order' => $order,
                 'order_no' => $orderNo,
@@ -217,7 +219,9 @@ class OrderController extends Controller
         $order->save();
         if($payType == 1){
             // 如果是微信支付
-            $sdkConfig = $this->_wechatUnifyPay($order);
+            // todo 暂时跳过微信支付
+//            $sdkConfig = $this->_wechatUnifyPay($order);
+            $sdkConfig = [];
             return Result::success([
                 'order_no' => $orderNo,
                 'sdk_config' => $sdkConfig,
@@ -255,9 +259,19 @@ class OrderController extends Controller
         $orderRefund->amount = $orderPay->amount;
         $orderRefund->save();
         if($order->pay_type == 1){
+            // todo 暂时跳过支付, 直接返回成功
+            // 微信退款成功
+            $orderRefund->refund_id = 'mock refund id';
+            $orderRefund->status = 2;
+            $orderRefund->save();
+
+            $order->status = Order::STATUS_REFUNDED;
+            $order->save();
+            return Result::success($orderRefund);
+
             // 发起微信支付退款
             // todo 获取平台的微信支付实例
-            $payApp = WechatService::getWechatPayAppForOper(request()->get('current_oper')->id);
+            $payApp = WechatService::getWechatPayAppForOper(0);
             $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->id, $orderPay->amount * 100, $orderPay->amount * 100, [
                 'refund_desc' => '用户发起退款',
             ]);
