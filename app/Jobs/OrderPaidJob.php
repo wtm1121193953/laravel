@@ -99,6 +99,7 @@ class OrderPaidJob implements ShouldQueue
         $userConsumeQuotaRecords = new UserConsumeQuotaRecord();
         $userConsumeQuotaRecords->user_id = $order->user_id;
         $userConsumeQuotaRecords->consume_quota = $order->pay_price;
+        $userConsumeQuotaRecords->inout_type = 1;
         $userConsumeQuotaRecords->type = UserConsumeQuotaRecord::TYPE_TO_SELF;
         $userConsumeQuotaRecords->order_no = $order->order_no;
         $userConsumeQuotaRecords->consume_user_mobile = $order->notify_mobile;
@@ -131,6 +132,7 @@ class OrderPaidJob implements ShouldQueue
         $userConsumeQuotaRecords = new UserConsumeQuotaRecord();
         $userConsumeQuotaRecords->user_id = $parentUser->id;
         $userConsumeQuotaRecords->consume_quota = $consumeQuota;
+        $userConsumeQuotaRecords->inout_type = 1;
         $userConsumeQuotaRecords->type = UserConsumeQuotaRecord::TYPE_TO_PARENT;
         $userConsumeQuotaRecords->order_no = $order->order_no;
         $userConsumeQuotaRecords->consume_user_mobile = $order->notify_mobile;
