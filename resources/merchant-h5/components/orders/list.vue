@@ -92,7 +92,7 @@
 
                 <ul class="handler-list">
                     <li @click="logout">
-                        <i class="el-icon-refresh"></i>
+                        <i class="icon ion-md-log-out" style="font-size: 0.48rem;"></i>
                         <p>退出登录</p>
                     </li>
                 </ul>
@@ -555,6 +555,7 @@
                         text-align: center;
                         font-size: 0.24rem;
                         color: #999;
+                        line-height: 1.3;
                     }
                 }
             }

@@ -27,6 +27,7 @@
 </script>
 
 <style>
+    @import url(./assets/style/ionicons/css/ionicons.css);
 
     .bounce-enter-active {
         animation: bounce-in .5s;
