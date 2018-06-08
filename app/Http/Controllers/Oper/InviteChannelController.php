@@ -13,6 +13,7 @@ use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
 use App\Exports\OperInviteChannelExport;
 use App\Http\Controllers\Controller;
+use App\Jobs\OperInviteRecordsExport;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Wechat\MiniprogramScene;
@@ -167,5 +168,36 @@ class InviteChannelController extends Controller
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
+
+    public function exportInviteRecords()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $id = request('id');
+        $mobile = request('mobile');
+        $startTime = request('startTime');
+        $endTime = request('endTime');
+        $query = InviteUserRecord::where('invite_channel_id', $id)
+            ->whereHas('user', function ($query) use ($mobile, $startTime, $endTime) {
+                $query->when($mobile, function (Builder $query) use ($mobile){
+                    $query->where('mobile', 'like', "%$mobile%");
+                })
+                    ->when($startTime && $endTime, function (Builder $query) use ($startTime, $endTime){
+                        $query->whereBetween('created_at', [$startTime, $endTime]);
+                    })
+                    ->when($startTime && !$endTime, function (Builder $query) use ($startTime){
+                        $query->where('created_at', '>=', $startTime);
+                    })
+                    ->when($endTime && !$startTime, function (Builder $query) use ($endTime) {
+                        $query->where('created_at', '<=', $endTime);
+                    })
+                ;
+            })
+            ->with('user:id,mobile,created_at');
+        $inviteChannel = InviteChannel::find($id);
+
+        return (new OperInviteRecordsExport($query))->download("推广渠道[{$inviteChannel->name}]注册用户记录.xlsx");
     }
 }
