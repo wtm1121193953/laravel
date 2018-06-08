@@ -224,6 +224,26 @@
         var loader = document.getElementById('bootstrap-loader');
         loader.parentNode.removeChild(loader);
     });
+
+    //返回true表示为pc端打开，返回false表示为手机端打开  
+    function checkClient() {   
+        var userAgentInfo = navigator.userAgent;
+        var Agents = new Array("Android","iPhone","SymbianOS","Windows Phone","iPad","iPod");
+        var flag = true;
+        for(var v = 0; v < Agents.length; v++) {
+            if(userAgentInfo.indexOf(Agents[v]) > 0) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    if(checkClient()) {
+        //pc
+        var href = window.location.href;
+        window.location.href = href.replace('merchant-h5', 'merchant')
+    }
 </script>
 <div id="app">
 
