@@ -34,6 +34,7 @@ class InviteChannelController extends Controller
                 $query->where('name', 'like', "%$keyword%");
             })
             ->withCount('inviteUserRecords')
+            ->orderByDesc('id')
             ->paginate();
         return Result::success([
             'list' => $data->items(),
@@ -163,6 +164,7 @@ class InviteChannelController extends Controller
                 ;
             })
             ->with('user:id,mobile,created_at')
+            ->orderByDesc('user_id')
             ->paginate();
         return Result::success([
             'list' => $data->items(),
