@@ -135,6 +135,12 @@
                 return ;
             }
             this.themeSettingForm = deepCopy(store.state.theme);
+
+            //跳转到订单列表页
+            const path = this.$router.history.current.path;
+            if(path == '/') {
+                router.replace('/orders');
+            }
         },
         components: {},
         watch: {}
