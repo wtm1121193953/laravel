@@ -1,0 +1,247 @@
+@charset "utf-8";
+:global {
+  @media only screen and (max-width: 800px), only screen and (max-device-width: 800px) {
+    html {
+      font-size: 106.66666666666667px;
+    }
+  }
+  @media only screen and (max-width: 720px), only screen and (max-device-width: 720px) {
+    html {
+      font-size: 96px;
+    }
+  }
+  @media only screen and (max-width: 640px), only screen and (max-device-width: 640px) {
+    html {
+      font-size: 85.33333333333334px;
+    }
+  }
+  @media only screen and (max-width: 600px), only screen and (max-device-width: 600px) {
+    html {
+      font-size: 80px;
+    }
+  }
+  @media only screen and (max-width: 540px), only screen and (max-device-width: 540px) {
+    html {
+      font-size: 72px;
+    }
+  }
+  @media only screen and (max-width: 480px), only screen and (max-device-width: 480px) {
+    html {
+      font-size: 64px;
+    }
+  }
+  @media only screen and (max-width: 414px), only screen and (max-device-width: 414px) {
+    html {
+      font-size: 55.2px;
+    }
+  }
+  @media only screen and (max-width: 400px), only screen and (max-device-width: 400px) {
+    html {
+      font-size: 53.333333333333336px;
+    }
+  }
+  @media only screen and (max-width: 375px), only screen and (max-device-width: 375px) {
+    html {
+      font-size: 50px;
+    }
+  }
+  @media only screen and (max-width: 360px), only screen and (max-device-width: 360px) {
+    html {
+      font-size: 48px;
+    }
+  }
+  @media only screen and (max-width: 320px), only screen and (max-device-width: 320px) {
+    html {
+      font-size: 42.66666666666667px;
+    }
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: Helvetica Neue, Helvetica, STHeiTi, sans-serif;
+    line-height: 1.5;
+    font-size: 14px;
+    color: #333;
+    background-color: #eee;
+    -webkit-user-select: none;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    outline: 0;
+  }
+
+  ul {
+    list-style-type: none;
+  }
+
+  i,em,b {
+    font-style: normal;
+  }
+
+  a, a:active {
+    text-decoration: none;
+    color: #333;
+  }
+
+  input, textarea {
+      border: 0 none;
+      background-color: transparent;
+  }
+
+  .route-wrapper {
+    position: relative;
+
+    & > div {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+  }
+
+  /*增加滚动条自定义*/
+  .scroll-bar() {
+    overflow-y: auto;
+
+    /*滚动条样式*/
+    &::-webkit-scrollbar-track-piece {
+      background-color: rgba(0, 0, 0, 0.06);
+      border-left: 1px solid rgba(0, 0, 0, 0);
+    }
+    &::-webkit-scrollbar {
+      width: 0.08rem;
+      height: 0.26rem;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #F8D53F;
+      background-clip: padding-box;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+      min-height: 0.56rem;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+    }
+  }
+
+  .ellipsis (@x) {
+    overflow : hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: @x;
+    -webkit-box-orient: vertical;
+  }
+
+  .btn-group {
+    position:fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    padding: 0.22rem;
+    background-color: transparent;
+    display: flex;
+
+    .btn {
+      flex: 1;
+      margin-left: 0.22rem;
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+
+  .btn {
+    position: relative;
+    height: 0.53rem;
+    line-height: 0.53rem;
+    padding: 0.24rem 0.15rem 0.23rem;
+    text-align: center;
+    font-size: 0.38rem;
+    white-space: nowrap;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-sizing: content-box;
+
+    &:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    &:active::before {
+      content: '';
+    }
+
+    &.default {
+      background-color: #fff;
+      color: #999;
+      border: 0.01rem solid #ccc;
+    }
+
+    &.primary {
+      background-color: #6392FE;
+      color: #fff;
+    }
+
+    &.readonly {
+      background-color: #999;
+      color: #fff;
+    }
+  }
+
+  .not-data {
+    margin-top: 30%;
+    padding-top: 180px;
+    background: top center no-repeat;
+    background-size: 138px auto;
+    text-align: center;
+    color: #999;
+  }
+
+  #status-page {
+    margin-top: 36.667%;
+    padding: 0 0.22rem 0.22rem;
+    text-align: center;
+
+    img {
+      display: block;
+      margin: 0 auto;
+    }
+
+    p {
+      margin-top: 0.42rem;
+      font-size: 0.3rem;
+      color: #888;
+    }
+  }
+
+  /* 小红点 */
+  .badge-hot {
+    &:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0.26rem;
+      width: 0.2rem;
+      height: 0.2rem;
+      margin: auto 0;
+      background: #F34032;
+      border-radius: 100%;
+    }
+  }
+}
