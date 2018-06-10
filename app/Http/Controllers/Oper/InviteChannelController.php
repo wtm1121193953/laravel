@@ -61,7 +61,7 @@ class InviteChannelController extends Controller
             'name' => 'required'
         ]);
         $name = request('name');
-        $remark = request('remark');
+        $remark = request('remark', '');
         $operId = request()->get('current_user')->oper_id;
 
         $inviteChannel = new InviteChannel();
@@ -93,7 +93,7 @@ class InviteChannelController extends Controller
             'name' => 'required',
         ]);
         $name = request('name');
-        $remark = request('remark');
+        $remark = request('remark', '');
         $operId = request()->get('current_user')->oper_id;
 
         $inviteChannel = InviteChannel::find(request('id'));
