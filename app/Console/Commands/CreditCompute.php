@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Symfony\Component\Console\Exception\RuntimeException;
 
-class CreditComputeHistory extends Command
+class CreditCompute extends Command
 {
     /**
      * The name and signature of the console command.

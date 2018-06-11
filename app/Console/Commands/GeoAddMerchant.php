@@ -6,7 +6,7 @@ use App\Modules\Merchant\Merchant;
 use App\Support\Lbs;
 use Illuminate\Console\Command;
 
-class AddMerchantGeo extends Command
+class GeoAddMerchant extends Command
 {
     /**
      * The name and signature of the console command.
