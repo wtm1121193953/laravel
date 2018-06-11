@@ -126,7 +126,7 @@ class OrderPaidJob implements ShouldQueue
     {
         // 获取消费额换算配置
         $consumeQuotaConvertRatioToParent = SettingService::getValueByKey('consume_quota_convert_ratio_to_parent');
-        $consumeQuota = $order->pay_price * $consumeQuotaConvertRatioToParent;
+        $consumeQuota = $order->pay_price * $consumeQuotaConvertRatioToParent / 100.0;
 
         // 加上级用户消费额记录
         $userConsumeQuotaRecords = new UserConsumeQuotaRecord();
@@ -277,7 +277,7 @@ class OrderPaidJob implements ShouldQueue
                 // todo 如果商户没有关联用户, 积分需要另做处理
                 return null;
             }
-            $user = User::findOrFail($userMapping->user_id);
+            $user = User::find($userMapping->user_id);
         }else if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER){
             $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
                 ->where('origin_type', UserMapping::ORIGIN_TYPE_OPER)
@@ -286,7 +286,7 @@ class OrderPaidJob implements ShouldQueue
                 // todo 如果运营中心没有关联用户, 积分需要另做处理
                 return null;
             }
-            $user = User::findOrFail($userMapping->user_id);
+            $user = User::find($userMapping->user_id);
         }
         return $user;
     }
