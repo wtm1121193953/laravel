@@ -44,7 +44,7 @@ class CreditCompute extends Command
     {
         //
         if($this->option('all')){
-            Order::chunk(100, function(Collection $list){
+            Order::whereIn('status', [4, 5, 6, 7])->chunk(100, function(Collection $list){
                 $list->each(function (Order $item){
                     // 查询该订单是否已计算过积分
                     $creditRecord = UserCreditRecord::where('order_no', $item->order_no)
