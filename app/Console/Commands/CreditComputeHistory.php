@@ -7,6 +7,7 @@ use App\Modules\Order\Order;
 use App\Modules\UserCredit\UserCreditRecord;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
+use Symfony\Component\Console\Exception\RuntimeException;
 
 class CreditComputeHistory extends Command
 {
@@ -15,7 +16,7 @@ class CreditComputeHistory extends Command
      *
      * @var string
      */
-    protected $signature = 'credit:compute {orderNo} {--all}';
+    protected $signature = 'credit:compute {orderNo?} {--all}';
 
     /**
      * The console command description.
@@ -42,17 +43,26 @@ class CreditComputeHistory extends Command
     public function handle()
     {
         //
-        Order::chunk(100, function(Collection $list){
-            $list->each(function (Order $item){
-                // 查询该订单是否已计算过积分
-                $creditRecord = UserCreditRecord::where('order_no', $item->order_no)
-                    ->where('type', UserCreditRecord::TYPE_FROM_SELF)
-                    ->first();
-                if(empty($creditRecord)){
-                    // 如果没有计算过积分, 才计算积分
-                    OrderPaidJob::dispatch($item);
-                }
+        if($this->option('all')){
+            Order::chunk(100, function(Collection $list){
+                $list->each(function (Order $item){
+                    // 查询该订单是否已计算过积分
+                    $creditRecord = UserCreditRecord::where('order_no', $item->order_no)
+                        ->where('type', UserCreditRecord::TYPE_FROM_SELF)
+                        ->first();
+                    if(empty($creditRecord)){
+                        // 如果没有计算过积分, 才计算积分
+                        OrderPaidJob::dispatch($item);
+                    }
+                });
             });
-        });
+        }else {
+            $orderNo = $this->argument('orderNo');
+            if(empty($orderNo)){
+                throw new RuntimeException('当没有all选项时, 订单号必填');
+            }
+            $order = Order::where('order_no', $orderNo)->firstOrFail();
+            OrderPaidJob::dispatch($order);
+        }
     }
 }
