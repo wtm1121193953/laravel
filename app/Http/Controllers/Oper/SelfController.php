@@ -111,11 +111,11 @@ class SelfController extends Controller
             ],
 
             [ 'id' => 7, 'name' => '财务管理', 'level' => 1, 'url' => '/oper/settlements',],
-            [ 'id' => 8, 'name' => '推广渠道', 'level' => 1, 'url' => 'material', 'sub' =>
+            /*[ 'id' => 8, 'name' => '推广渠道', 'level' => 1, 'url' => 'material', 'sub' =>
                 [
                     [ 'id' => 9, 'name' => '渠道列表', 'level' => 2, 'url' => '/oper/invite-channel', 'pid' => 8,],
                 ]
-            ],
+            ],*/
         ];
     }
 
