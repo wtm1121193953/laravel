@@ -10,6 +10,7 @@ namespace App\Http\Controllers\User;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Invite\InviteService;
 use App\Modules\Invite\InviteUserRecord;
 
 /**
@@ -29,6 +30,9 @@ class UnbindInviterController extends Controller
         if(empty($inviteRecord)){
             throw new BaseResponseException('未绑定邀请人');
         }
-
+        $parentUser = InviteService::getParentUser(request()->get('current_user')->id);
+        if(empty($parentUser)){
+            throw new BaseResponseException('未绑定邀请人');
+        }
     }
 }
