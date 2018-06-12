@@ -200,6 +200,8 @@ class OrderPaidJob implements ShouldQueue
         $userCredit = UserCredit::where('user_id', $order->user_id)->first();
         $userCredit->total_credit = $userCredit->total_credit + $credit;
         $userCredit->save();
+
+        UserLevelCalculationJob::dispatch($order->user_id);
     }
 
     /**

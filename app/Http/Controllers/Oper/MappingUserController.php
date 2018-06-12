@@ -12,6 +12,7 @@ namespace App\Http\Controllers\Oper;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Sms\SmsVerifyCode;
@@ -67,6 +68,14 @@ class MappingUserController extends Controller
             $mappingUser = UserMapping::where('user_id', $user->id)->first();
             if (!empty($mappingUser)){
                 throw new BaseResponseException('该手机号码已被绑定，请更换手机号码重试');
+            }
+
+            $inviteUserRecord = InviteUserRecord::where('user_id', $user->id)
+                ->where('origin_id', request()->get('current_user')->oper_id)
+                ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_OPER)
+                ->first();
+            if (!empty($inviteUserRecord)){
+                throw new BaseResponseException('不能绑定该运营中心所邀请的用户');
             }
         }
 

@@ -9,6 +9,7 @@
 namespace App\Modules\Invite;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Jobs\MerchantLevelCalculationJob;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
@@ -106,6 +107,10 @@ class InviteService
         $inviteRecord->origin_id = $inviteChannel->origin_id;
         $inviteRecord->origin_type = $inviteChannel->origin_type;
         $inviteRecord->save();
+
+        if ($inviteRecord){
+            MerchantLevelCalculationJob::dispatch($inviteRecord->origin_id);
+        }
     }
 
     /**
