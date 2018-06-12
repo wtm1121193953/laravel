@@ -26,6 +26,28 @@ class InviteService
 {
 
     /**
+     * 获取用户上级, 可能是用户/商户或运营中心
+     * @param $userId
+     * @return Merchant|Oper|User|null
+     */
+    public static function getParent($userId)
+    {
+        $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
+        if(empty($inviteRecord)){
+            // 如果没有用户没有上级, 不做任何处理
+            return null;
+        }
+        if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT){
+            $object = Merchant::where('id', $inviteRecord->origin_id)->first();
+        }else if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER){
+            $object = Oper::where('id', $inviteRecord->origin_id)->first();
+        }else {
+            $object = User::find($inviteRecord->origin_id);
+        }
+        return $object;
+    }
+
+    /**
      * 获取上级用户
      * @param $userId
      * @return User
