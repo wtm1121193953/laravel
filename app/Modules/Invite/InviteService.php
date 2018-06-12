@@ -13,6 +13,7 @@ use App\Jobs\MerchantLevelCalculationJob;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
+use App\Modules\User\UserMapping;
 use App\Modules\Wechat\MiniprogramScene;
 use App\ResultCode;
 
@@ -23,6 +24,40 @@ use App\ResultCode;
  */
 class InviteService
 {
+
+    /**
+     * 获取上级用户
+     * @param $userId
+     * @return User
+     */
+    public static function getParentUser($userId)
+    {
+        $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
+        if(empty($inviteRecord)){
+            // 如果没有用户没有上级, 不做任何处理
+            return null;
+        }
+        if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT){
+            $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
+                ->where('origin_type', UserMapping::ORIGIN_TYPE_MERCHANT)
+                ->first();
+            if(empty($userMapping)){
+                return null;
+            }
+            $user = User::find($userMapping->user_id);
+        }else if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER){
+            $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
+                ->where('origin_type', UserMapping::ORIGIN_TYPE_OPER)
+                ->first();
+            if(empty($userMapping)){
+                return null;
+            }
+            $user = User::find($userMapping->user_id);
+        }else {
+            $user = User::find($inviteRecord->origin_id);
+        }
+        return $user;
+    }
 
     /**
      * 根据运营中心ID, originId 以及originType获取邀请渠道 (不存在时创建)

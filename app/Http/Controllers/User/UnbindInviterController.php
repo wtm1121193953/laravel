@@ -8,7 +8,9 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Invite\InviteUserRecord;
 
 /**
  * 解除绑定关系控制器
@@ -23,6 +25,10 @@ class UnbindInviterController extends Controller
      */
     public function getBindInfo()
     {
+        $inviteRecord = InviteUserRecord::where('user_id', request()->get('current_user')->id);
+        if(empty($inviteRecord)){
+            throw new BaseResponseException('未绑定邀请人');
+        }
 
     }
 }

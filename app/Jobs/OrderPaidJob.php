@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Modules\Invite\InviteUserRecord;
+use App\Modules\Invite\InviteService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Modules\Setting\SettingService;
@@ -81,7 +81,7 @@ class OrderPaidJob implements ShouldQueue
         // 处理消费的用户的消费额
         $this->handleUserSelfConsumeQuota($order);
         // 获取用户的上级
-        $parentUser = $this->getParentUser($order->user_id);
+        $parentUser = InviteService::getParentUser($order->user_id);
 
         if (!empty($parentUser)){
             $this->handleParentUserConsumeQuota($order, $parentUser);
@@ -162,7 +162,7 @@ class OrderPaidJob implements ShouldQueue
 
         // 处理上级用户的积分
         // 获取上级
-        $parentUser = $this->getParentUser($order->user_id);
+        $parentUser = InviteService::getParentUser($order->user_id);
         if(!empty($parentUser)){
             $this->handleParentUserCredit($order, $parentUser);
         }
@@ -256,42 +256,5 @@ class OrderPaidJob implements ShouldQueue
         $userCredit->save();
 
     }
-
-    /**
-     * 获取用户上级
-     * @param $userId
-     * @return User
-     */
-    private function getParentUser($userId)
-    {
-        $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
-        if(empty($inviteRecord)){
-            // 如果没有用户没有上级, 不做任何处理
-            return null;
-        }
-        if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_USER){
-            $user = User::find($inviteRecord->origin_id);
-        }else if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT){
-            $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
-                ->where('origin_type', UserMapping::ORIGIN_TYPE_MERCHANT)
-                ->first();
-            if(empty($userMapping)){
-                // todo 如果商户没有关联用户, 积分需要另做处理
-                return null;
-            }
-            $user = User::find($userMapping->user_id);
-        }else if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER){
-            $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
-                ->where('origin_type', UserMapping::ORIGIN_TYPE_OPER)
-                ->first();
-            if(empty($userMapping)){
-                // todo 如果运营中心没有关联用户, 积分需要另做处理
-                return null;
-            }
-            $user = User::find($userMapping->user_id);
-        }
-        return $user;
-    }
-
 
 }
