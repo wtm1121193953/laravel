@@ -11,5 +11,7 @@ class UserCreditRecord extends BaseModel
     const TYPE_FROM_MERCHANT_SHARE = 3; // 分享提成
     const TYPE_REFUND = 4; // 退款退回
     const TYPE_BUY = 5; // 消费支出
-    //
+    //收支类型
+    const IN_TYPE = 1;
+    const OUT_TYPE = 2;
 }

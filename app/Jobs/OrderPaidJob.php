@@ -52,7 +52,7 @@ class OrderPaidJob implements ShouldQueue
         }else{
             // 查询该订单是否已经计算过积分返利, 防止重复计算
             if(!empty(
-                UserCreditRecord::where('type', 1)
+                UserCreditRecord::where('type', UserCreditRecord::TYPE_FROM_SELF)
                     ->where('order_no', $this->order->order_no)
                     ->first()
             )){
@@ -177,7 +177,7 @@ class OrderPaidJob implements ShouldQueue
         // 获取商户的返利比例(即盈利比例)
         $settlementRate = Merchant::where('id', $order->merchant_id)->value('settlement_rate'); //分利比例
         // 计算订单盈利金额
-        $profitAmount = $order->pay_price * $settlementRate;
+        $profitAmount = $order->pay_price * $settlementRate / 100;
         $userLevel = User::where('id', $order->user_id)->value('level'); //用户等级
         $creditRatio = UserCreditSettingService::getCreditToSelfRatioSetting($userLevel); //自反比例
         $creditMultiplierOfAmount = SettingService::getValueByKey('credit_multiplier_of_amount'); //积分系数
@@ -213,7 +213,7 @@ class OrderPaidJob implements ShouldQueue
     {
         //添加积分表记录
         $settlementRate = Merchant::where('id', $order->merchant_id)->value('settlement_rate'); //分利比例
-        $settlement = $order->pay_price * $settlementRate;
+        $settlement = $order->pay_price * $settlementRate / 100;
 
         $parentLevel = User::where('id', $parentUser->id)->value('level'); //父级用户等级
         // 如果父用户等级是1级[萌新], 则不给父用户返利
