@@ -54,6 +54,8 @@ Route::prefix('admin')
 
     Route::get('settings', 'SettingController@getList');
     Route::post('setting/edit', 'SettingController@edit');
+    Route::get('setting/getCreditRulesList', 'SettingController@getCreditRulesList');
+    Route::post('setting/setCreditRules', 'SettingController@setCreditRules');
 
     Route::group([], base_path('routes/api/admin/goods.php'));
     Route::group([], base_path('routes/api/admin/oper.php'));
