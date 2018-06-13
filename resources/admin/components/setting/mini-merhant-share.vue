@@ -1,5 +1,5 @@
 <template>
-    <page title="系统设置">
+    <page title="小程序端商户共享设置">
         <el-form v-model="form" label-width="150px">
             <el-form-item
                           label="小程序端商户共享"

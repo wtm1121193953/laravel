@@ -13,7 +13,8 @@ import oper from './oper'
 import oper_accounts from './oper_account'
 import merchant from './merchant'
 
-import Setting from '../components/setting'
+import MiniMerchantShareSetting from '../components/setting/mini-merhant-share'
+import CreditRules from '../components/setting/credit-rules'
 
 /**
  *
@@ -37,7 +38,8 @@ const routes = [
         path: '/',
         component: Home,
         children: [
-            {path: 'setting', component: Setting, name: 'Setting'},
+            {path: 'setting/mini_merchant_share', component: MiniMerchantShareSetting, name: 'MiniMerchantShareSetting'},
+            {path: 'setting/credit_rules', component: CreditRules, name: 'CreditRules'}
         ]
     },
 
