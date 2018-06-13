@@ -11,6 +11,7 @@ namespace App\Http\Controllers\UserApp;
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteUserRecord;
+use App\Modules\Invite\InviteUserUnbindRecord;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
@@ -67,6 +68,39 @@ class UnbindInviterController extends Controller
             'mappingUser' => $mappingUser,
         ]);
     }
+
+    /**
+     * 解綁用戶信息
+     */
+    public function unbind()
+    {
+       // $userId = request()->get('current_user')->id;
+        $userId=30;
+        //獲取解綁記錄
+        $UnbindInviteRecordid  = InviteUserUnbindRecord:: where([
+            ['user_id', '=', $userId],
+            ['status', '=', '2'],
+        ])->first();
+        if(!empty($UnbindInviteRecordid)){
+            throw new BaseResponseException('该用户已解绑一次，不能再次解绑');
+        }else{
+            $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
+            if(empty($inviteRecord)){
+                throw new BaseResponseException('未绑定邀请人');
+            }else{
+                $result =  InviteUserRecord::where('user_id',$userId)->delete();
+                if($result){
+                    $user = new InviteUserUnbindRecord();
+                    $user->user_id = $userId;
+                    $user->status = 2;
+                        if($user->save()){
+                            return Result::success();
+                        }}
+                }
+
+            }
+
+        }
 
 
 }
