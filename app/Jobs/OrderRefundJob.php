@@ -266,5 +266,7 @@ class OrderRefundJob implements ShouldQueue
         $userCredit = UserCredit::where('user_id', $parentUser->id)->first();
         $userCredit->total_credit = DB::raw('total_credit - ' . $userCredit->credit);
         $userCredit->save();
+
+        UserLevelCalculationJob::dispatch($parentUser->id);
     }
 }

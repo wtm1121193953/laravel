@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\OrderPaidJob;
+use App\Jobs\OrderRefundJob;
 use App\Modules\Order\Order;
 use App\Modules\UserCredit\UserCreditRecord;
 use Illuminate\Console\Command;
@@ -53,6 +54,7 @@ class CreditCompute extends Command
                     if(empty($creditRecord)){
                         // 如果没有计算过积分, 才计算积分
                         OrderPaidJob::dispatch($item);
+                        OrderRefundJob::dispatch($item);
                     }
                 });
             });
@@ -63,6 +65,7 @@ class CreditCompute extends Command
             }
             $order = Order::where('order_no', $orderNo)->firstOrFail();
             OrderPaidJob::dispatch($order);
+            OrderRefundJob::dispatch($order);
         }
     }
 }
