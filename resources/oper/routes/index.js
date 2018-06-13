@@ -17,7 +17,6 @@ import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
 //系统设置
 import SettingMappingUser from '../components/setting/mapping-user'
-import SettingPayToPlantForm from '../components/setting/pay-to-platform'
 
 /**
  *
@@ -65,7 +64,6 @@ const routes = [
         component: Home,
         children: [
             {path: 'setting/mapping_user', component: SettingMappingUser, name: 'SettingMappingUser'},
-            {path: 'setting/pay_to_platform', component: SettingPayToPlantForm, name: 'SettingPayToPlantForm'},
         ]
     },
 
