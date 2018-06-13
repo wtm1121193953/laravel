@@ -6,7 +6,7 @@
  * Time: 12:14
  */
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\UserApp;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;

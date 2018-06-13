@@ -40,10 +40,7 @@ Route::prefix('user')
 
         Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
         Route::get('invite/getInviterBySceneId', 'InviteChannelController@getInviterBySceneId');
-        Route::post('invite/bindInviter', 'InviteChannelController@bindInviter');
-
-        Route::post('invite/getInviterInfo', 'UnbindInviterController@getBindInfo');
-        Route::post('invite/unbind', 'UnbindInviterController@unbind');
+        Route::post('invite/bindInviter', 'InviteChannelController@bindInviter')->middleware(UserLoginFilter::class);
 
         Route::get('scene/info', 'SceneController@getSceneInfo');
 
