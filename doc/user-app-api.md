@@ -856,7 +856,7 @@ app-type: 客户端类型  1-Android 2-iOS
 
   - [ ] 用户解绑
 
-  地址: GET     ```invite/unblind```
+  地址: POST     ```invite/unbind```
 
   参数
 
