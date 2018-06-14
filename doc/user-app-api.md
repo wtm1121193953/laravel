@@ -1,3 +1,5 @@
+
+
 ### 用户端App接口列表
 
 ##### 域名信息: 
@@ -148,7 +150,7 @@ app-type: 客户端类型  1-Android 2-iOS
 - [ ] 退出登陆
 
     接口地址: POST `/logout`
-    
+
     参数: 
 
   ```
@@ -169,15 +171,15 @@ app-type: 客户端类型  1-Android 2-iOS
 - [ ] 短信接口
 
       接口地址: `POST`  `/sms/verify_code`
-      
+
       参数:
-      
+
       ```
       mobile 手机号
       ```
-      
+
       返回值: 
-      
+
       ```
       data: {
         verify_code: 验证码, 测试时存在
@@ -189,11 +191,11 @@ app-type: 客户端类型  1-Android 2-iOS
 - [x] 获取地区列表(树形结构)
 
       接口地址: GET `/area/tree`
-      
+
       参数: `tier ` 要获取的层级数 1-3 (省/市/县) , 默认为3
-      
+
       返回: 
-      
+
       ```
       data: {
         list: [
@@ -366,7 +368,6 @@ app-type: 客户端类型  1-Android 2-iOS
   同商户列表返回的字段
   ```
 
-  
 
 
 - [ ] 商品列表
@@ -538,7 +539,6 @@ app-type: 客户端类型  1-Android 2-iOS
     }
   ```
 
-  
 
 - [ ] 订单支付接口
 
@@ -601,7 +601,6 @@ app-type: 客户端类型  1-Android 2-iOS
     }
   ```
 
-  
 
 - [ ] 退款接口
 
@@ -690,7 +689,6 @@ app-type: 客户端类型  1-Android 2-iOS
   10008: 用户已经绑定了邀请人
   ```
 
-  
 
 
 
@@ -711,8 +709,8 @@ app-type: 客户端类型  1-Android 2-iOS
   参数
 
   ```
-merchantId: 商户ID
-page: 当前页码
+  merchantId: 商户ID
+  page: 当前页码
   ```
 
   返回
@@ -723,7 +721,6 @@ page: 当前页码
   }
   ```
 
-  
 
 - [ ] 我的积分列表
 
@@ -762,7 +759,6 @@ page: 当前页码
   }
   ```
 
-  
 
 - [ ] 我的累计积分和累计消费额
 
@@ -815,5 +811,80 @@ page: 当前页码
   }
   ```
 
-  
 
+
+- [ ] 用户邀请人信息
+
+  地址: GET ```invite/getInviterInfo```
+
+  参数
+
+  ```
+   
+  ```
+
+  返回
+
+  ```  
+        "data": {
+        "origin_type": 1,  邀请人类型 1-用户 2-商户 3-运营中心
+        "user": {        邀请的用户信息, origin_type 为1 时存在
+            "id": 2,
+            "name": "",
+            "mobile": "13923756372",
+            "email": "",
+            "account": "",
+            "status": 1,
+            "created_at": "2018-05-11 15:41:50",
+            "updated_at": "2018-05-11 15:41:50",
+            "level": 1
+        },
+        "merchant":邀请的商户信息 origin_type为2时存在 {
+          name:...
+        },   
+        "oper":  邀请的运营中心信息 origin_type为3时存在 {
+          name:...       
+        },     
+        "mappingUser":  邀请的运营中心或商户绑定的用户信息, origin_type 为2或3, 以及商户或运营中心已绑定用户时存在 {
+          mobile:...
+        }    
+    },
+    
+  ```
+
+  ​
+
+  - [ ] 用户解绑
+
+  地址: GET     ```invite/unblind```
+
+  参数
+
+  ```
+   
+  ```
+
+  首次解绑 成功返回
+
+  ```  
+
+  {
+    "code": 0,
+    "message": "请求成功",
+    "data": [],
+    "timestamp": 1528947476
+  }
+     
+  ```
+  若第二次解绑
+
+  ````
+  {
+    "code": 500,
+    "message": "该用户已解绑一次，不能再次解绑",
+    "timestamp": 1528947551
+  }
+  ````
+```
+  
+```
