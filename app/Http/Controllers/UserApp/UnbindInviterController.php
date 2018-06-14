@@ -89,17 +89,15 @@ class UnbindInviterController extends Controller
             }else{
                 $result =  InviteUserRecord::where('user_id',$userId)->delete();
                 if($result){
-                    $user = new InviteUserUnbindRecord();
-                    $user->user_id = $userId;
-                    $user->status = 2;
-                        if($user->save()){
+                    $UnbindInviteRecord = new InviteUserUnbindRecord();
+                    $UnbindInviteRecord->user_id = $userId;
+                    $UnbindInviteRecord->status = 2;
+                        if($UnbindInviteRecord->save()){
                             return Result::success();
                         }}
+
                 }
-
             }
-
         }
-
 
 }
