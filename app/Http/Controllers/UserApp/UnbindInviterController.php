@@ -71,31 +71,32 @@ class UnbindInviterController extends Controller
 
     /**
      * 解綁用戶信息
+     * @throws \Exception
      */
     public function unbind()
     {
         $userId = request()->get('current_user')->id;
         //獲取解綁記錄
-        $UnbindInviteRecordid  = InviteUserUnbindRecord:: where([
+        $UnbindInviteRecordid = InviteUserUnbindRecord:: where([
             ['user_id', '=', $userId],
             ['status', '=', '2'],
         ])->first();
-        if($UnbindInviteRecordid){
+        if ($UnbindInviteRecordid) {
             throw new BaseResponseException('该用户已解绑一次，不能再次解绑');
-        }else{
+        } else {
             $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
-            if(empty($inviteRecord)){
+            if (empty($inviteRecord)) {
                 throw new BaseResponseException('未绑定邀请人');
-            }else{
-                $result = $inviteRecord->delete();
-                if($result){
-                    $UnbindInviteRecord = new InviteUserUnbindRecord();
-                    $UnbindInviteRecord->user_id = $userId;
-                    $UnbindInviteRecord->status = 2;
-                    if($UnbindInviteRecord->save()){
-                        return Result::success();
-                    }}
-                }
+            } else {
+                $inviteRecord->delete();
+                $unbindInviteRecord = new InviteUserUnbindRecord();
+                $unbindInviteRecord->user_id = $userId;
+                $unbindInviteRecord->status = 2;
+                $unbindInviteRecord->save();
+                return Result::success();
             }
         }
+    }
+
+
 }
