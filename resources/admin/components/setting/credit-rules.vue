@@ -109,7 +109,10 @@
             initForm() {
                 this.formLoading = true;
                 api.get('/setting/getCreditRulesList').then(data => {
-                    this.form = data.list;
+                    for (let index in data.list) {
+                        this.form[index] = parseInt(data.list[index]);
+                    }
+
                     this.formLoading = false;
                 })
             }
