@@ -75,7 +75,6 @@ class UnbindInviterController extends Controller
     public function unbind()
     {
         $userId = request()->get('current_user')->id;
-        $userId = 16;
         //獲取解綁記錄
         $UnbindInviteRecordid  = InviteUserUnbindRecord:: where([
             ['user_id', '=', $userId],
