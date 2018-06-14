@@ -71,6 +71,7 @@ class UnbindInviterController extends Controller
 
     /**
      * 解綁用戶信息
+     * @throws \Exception
      */
     public function unbind()
     {
