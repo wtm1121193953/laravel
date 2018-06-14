@@ -88,16 +88,15 @@ class UnbindInviterController extends Controller
             if(empty($inviteRecord)){
                 throw new BaseResponseException('未绑定邀请人');
             }else{
-                $result = $inviteRecord->delete();
-                if($result){
-                    $UnbindInviteRecord = new InviteUserUnbindRecord();
-                    $UnbindInviteRecord->user_id = $userId;
-                    $UnbindInviteRecord->status = 2;
-                    if($UnbindInviteRecord->save()){
-                        return Result::success();
-                    }}
-                }
+                $inviteRecord->delete();
+                $unbindInviteRecord = new InviteUserUnbindRecord();
+                $unbindInviteRecord->user_id = $userId;
+                $unbindInviteRecord->status = 2;
+                $unbindInviteRecord->save();
+
+                return Result::success();
             }
         }
+    }
 
 }
