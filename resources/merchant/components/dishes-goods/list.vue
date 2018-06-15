@@ -77,7 +77,7 @@
         },
         methods: {
             getList(){
-                api.get('/dishesGoods', this.query).then(data => {
+                api.get('/dishes/goods', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                 })
@@ -90,7 +90,7 @@
             },
             doAdd(data){
                 this.isLoading = true;
-                api.post('/dishesGoods/add', data).then(() => {
+                api.post('/dishes/goods/add', data).then(() => {
                     this.isAdd = false;
                     this.getList();
                     this.$refs.form.reset();

@@ -39,7 +39,7 @@
             },
             doEdit(data){
                 this.$emit('before-request')
-                api.post('/dishes-category/edit', data).then((data) => {
+                api.post('dishes/category/edit', data).then((data) => {
                     this.isEdit = false;
                     this.$emit('change', this.scope.$index, data)
                 }).finally(() => {
@@ -49,7 +49,7 @@
             changeStatus(){
                 let status = this.scope.row.status === 1 ? 2 : 1;
                 this.$emit('before-request')
-                api.post('/dishes-category/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
+                api.post('/dishes/category/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
                     this.scope.row.status = status;
                     this.$emit('change', this.scope.$index, data)
                 }).finally(() => {
@@ -60,7 +60,7 @@
                 let data = this.scope.row;
                 this.$confirm(`确定要删除 ${data.name} 分类吗? `, '温馨提示', {type: 'warning'}).then(() => {
                     this.$emit('before-request')
-                    api.post('/dishes-category/del', {id: data.id}).then(() => {
+                    api.post('/dishes/category/del', {id: data.id}).then(() => {
                         this.$emit('refresh')
                     }).finally(() => {
                         this.$emit('after-request')
@@ -68,7 +68,7 @@
                 })
             },
             saveOrder(row, type) {
-                api.post('/dishes-category/saveOrder', {id: row.id, type: type}).then(() => {
+                api.post('/dishes/category/saveOrder', {id: row.id, type: type}).then(() => {
                     this.$emit('refresh');
                 })
             }

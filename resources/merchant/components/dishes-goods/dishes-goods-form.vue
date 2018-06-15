@@ -104,7 +104,7 @@
                 })
             },
             getCategorys() {
-                api.get('/dishesCategories/all').then(data => {
+                api.get('/dishes/categories/all').then(data => {
                     this.categories = data.list;
                 })
             }

@@ -67,7 +67,7 @@
         },
         methods: {
             getList(){
-                api.get('/dishesCategories', this.query).then(data => {
+                api.get('/dishes/categories', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                 })
@@ -80,7 +80,7 @@
             },
             doAdd(data){
                 this.isLoading = true;
-                api.post('/dishes-category/add', data).then(() => {
+                api.post('/dishes/category/add', data).then(() => {
                     this.isAdd = false;
                     this.getList();
                     this.$refs.form.reset();

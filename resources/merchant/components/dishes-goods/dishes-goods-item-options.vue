@@ -38,7 +38,7 @@
             },
             doEdit(data){
                 this.$emit('before-request')
-                api.post('/dishesGoods/edit', data).then((data) => {
+                api.post('/dishes/goods/edit', data).then((data) => {
                     this.isEdit = false;
                     this.$emit('refresh');
                     this.$refs.form.reset();
@@ -49,7 +49,7 @@
             changeStatus(){
                 let status = this.scope.row.status === 1 ? 2 : 1;
                 this.$emit('before-request')
-                api.post('/dishesGoods/changeStatus', {id: this.scope.row.id, status: status}).then(() => {
+                api.post('/dishes/goods/changeStatus', {id: this.scope.row.id, status: status}).then(() => {
                     this.scope.row.status = status;
                     this.$emit('refresh');
                 }).finally(() => {
@@ -60,7 +60,7 @@
                 let data = this.scope.row;
                 this.$confirm(`确定要删除 ${data.name} 单品吗? `, '温馨提示', {type: 'warning'}).then(() => {
                     this.$emit('before-request')
-                    api.post('/dishesGoods/del', {id: data.id}).then(() => {
+                    api.post('/dishes/goods/del', {id: data.id}).then(() => {
                         this.$emit('refresh')
                     }).finally(() => {
                         this.$emit('after-request')
