@@ -194,32 +194,32 @@ class OrderRefundJob implements ShouldQueue
     private function handleUserSelfCredit($order)
     {
         //查找该订单用户自己的积分记录
-        $userCredit = UserCreditRecord::where('user_id', $order->user_id)
+        $userCreditRecordOne = UserCreditRecord::where('user_id', $order->user_id)
             ->where('inout_type', UserCreditRecord::IN_TYPE)
             ->where('type', UserCreditRecord::TYPE_FROM_SELF)
             ->where('order_no', $order->order_no)
             ->first();
-        if (empty($userCredit)){
+        if (empty($userCreditRecordOne)){
             Log::error('用户退款退积分时，未找到该订单的积分记录', ['order' => $order]);
             throw new BaseResponseException('用户退款退积分时，未找到该订单的积分记录');
         }
 
         $userCreditRecord = new UserCreditRecord();
         $userCreditRecord->user_id = $order->user_id;
-        $userCreditRecord->credit = $userCredit->credit;
+        $userCreditRecord->credit = $userCreditRecordOne->credit;
         $userCreditRecord->inout_type = UserCreditRecord::OUT_TYPE;
         $userCreditRecord->type = UserCreditRecord::TYPE_REFUND;
-        $userCreditRecord->user_level = $userCredit->user_level;
+        $userCreditRecord->user_level = $userCreditRecordOne->user_level;
         $userCreditRecord->order_no = $order->order_no;
         $userCreditRecord->consume_user_mobile = $order->notify_mobile;
-        $userCreditRecord->order_profit_amount = $userCredit->order_profit_amount;
-        $userCreditRecord->ratio = $userCredit->ratio;
-        $userCreditRecord->credit_multiplier_of_amount = $userCredit->credit_multiplier_of_amount;
+        $userCreditRecord->order_profit_amount = $userCreditRecordOne->order_profit_amount;
+        $userCreditRecord->ratio = $userCreditRecordOne->ratio;
+        $userCreditRecord->credit_multiplier_of_amount = $userCreditRecordOne->credit_multiplier_of_amount;
         $userCreditRecord->save();
 
         //减去累计积分
         $userCredit = UserCredit::where('user_id', $order->user_id)->first();
-        $userCredit->total_credit = $userCredit->total_credit - $userCredit->credit;
+        $userCredit->total_credit = $userCredit->total_credit - $userCreditRecordOne->credit;
         $userCredit->save();
 
         UserLevelCalculationJob::dispatch($order->user_id);
