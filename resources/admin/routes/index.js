@@ -13,8 +13,11 @@ import oper from './oper'
 import oper_accounts from './oper_account'
 import merchant from './merchant'
 
+/*系统设置*/
 import MiniMerchantShareSetting from '../components/setting/mini-merhant-share'
 import CreditRules from '../components/setting/credit-rules'
+import PageSetting from '../components/setting/page-setting'
+import PageSettingForm from '../components/setting/page-setting-form'
 
 /**
  *
@@ -39,7 +42,9 @@ const routes = [
         component: Home,
         children: [
             {path: 'setting/mini_merchant_share', component: MiniMerchantShareSetting, name: 'MiniMerchantShareSetting'},
-            {path: 'setting/credit_rules', component: CreditRules, name: 'CreditRules'}
+            {path: 'setting/credit_rules', component: CreditRules, name: 'CreditRules'},
+            {path: 'setting/page_setting', component: PageSetting, name: 'PageSetting'},
+            {path: 'setting/page_setting_form', component: PageSettingForm, name: 'PageSettingForm'},
         ]
     },
 

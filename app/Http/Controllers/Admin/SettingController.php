@@ -48,7 +48,26 @@ class SettingController extends Controller
      */
     public function getCreditRulesList()
     {
-        $list = SettingService::exceptKeys('merchant_share_in_miniprogram');
+        $list = SettingService::get('oper_profit_radio',
+            'consume_quota_convert_ratio_to_parent',
+            'credit_multiplier_of_amount',
+            'user_level_1_of_credit_number',
+            'user_level_2_of_credit_number',
+            'user_level_3_of_credit_number',
+            'user_level_4_of_credit_number',
+            'merchant_level_1_of_invite_user_number',
+            'merchant_level_2_of_invite_user_number',
+            'merchant_level_3_of_invite_user_number',
+            'credit_to_self_ratio_of_user_level_1',
+            'credit_to_self_ratio_of_user_level_2',
+            'credit_to_self_ratio_of_user_level_3',
+            'credit_to_self_ratio_of_user_level_4',
+            'credit_to_parent_ratio_of_user_level_2',
+            'credit_to_parent_ratio_of_user_level_3',
+            'credit_to_parent_ratio_of_user_level_4',
+            'credit_multiplier_of_merchant_level_1',
+            'credit_multiplier_of_merchant_level_2',
+            'credit_multiplier_of_merchant_level_3');
         return Result::success([
             'list' => $list
         ]);
@@ -60,7 +79,28 @@ class SettingController extends Controller
      */
     public function setCreditRules()
     {
-        $data = request()->all();
+        $data = request()->all([
+            'oper_profit_radio',
+            'consume_quota_convert_ratio_to_parent',
+            'credit_multiplier_of_amount',
+            'user_level_1_of_credit_number',
+            'user_level_2_of_credit_number',
+            'user_level_3_of_credit_number',
+            'user_level_4_of_credit_number',
+            'merchant_level_1_of_invite_user_number',
+            'merchant_level_2_of_invite_user_number',
+            'merchant_level_3_of_invite_user_number',
+            'credit_to_self_ratio_of_user_level_1',
+            'credit_to_self_ratio_of_user_level_2',
+            'credit_to_self_ratio_of_user_level_3',
+            'credit_to_self_ratio_of_user_level_4',
+            'credit_to_parent_ratio_of_user_level_2',
+            'credit_to_parent_ratio_of_user_level_3',
+            'credit_to_parent_ratio_of_user_level_4',
+            'credit_multiplier_of_merchant_level_1',
+            'credit_multiplier_of_merchant_level_2',
+            'credit_multiplier_of_merchant_level_3',
+        ]);
         foreach ($data as $key => $value) {
             SettingService::set($key, $value);
         }
