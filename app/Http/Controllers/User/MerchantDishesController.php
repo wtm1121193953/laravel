@@ -29,6 +29,7 @@ class MerchantDishesController extends Controller
     public function __construct()
     {
         $merchantId = request('merchant_id');
+        dd($merchantId);
         $key = request('key');
         if (!$merchantId || !$key){
             throw new BaseResponseException('商户ID和商户单品购买设置的键不能为空');
@@ -46,6 +47,7 @@ class MerchantDishesController extends Controller
     public function getDishesCategory()
     {
         $merchantId = request('merchant_id');
+
         $list = DishesCategory::where('merchant_id', $merchantId)
             ->where('status', 1)
             ->orderBy('sort')

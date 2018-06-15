@@ -114,7 +114,7 @@ class DishesCategoryController extends Controller
         ]);
         $categoryId = request('id');
         $goodsCount = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
-            ->where('category_id', $categoryId)->count();
+            ->where('dishes_category_id', $categoryId)->count();
         if ($goodsCount > 0){
             throw new BaseResponseException('该分类下有'.$goodsCount.'个单品，不能删除！');
         }

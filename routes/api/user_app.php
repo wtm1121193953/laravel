@@ -41,7 +41,6 @@ Route::prefix('app/user')
         Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
         Route::get('invite/getInviterByInviteChannelId', 'InviteChannelController@getInviterByChannelId');
         Route::post('invite/bindInviter', 'InviteChannelController@bindInviter');
-
         Route::get('scene/info', 'SceneController@getSceneInfo');
 
         Route::get('merchant/dishesCategory', 'MerchantDishesController@getDishesCategory');

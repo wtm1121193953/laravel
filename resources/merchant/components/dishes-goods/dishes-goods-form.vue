@@ -11,8 +11,8 @@
                 <el-form-item prop="sale_price" label="销售价">
                     <el-input-number v-model="form.sale_price" :min="0"></el-input-number>
                 </el-form-item>
-                <el-form-item prop="category_id" label="类别">
-                    <el-select v-model="form.category_id" placeholder="请选择">
+                <el-form-item prop="dishes_category_id" label="类别">
+                    <el-select v-model="form.dishes_category_id" placeholder="请选择">
                         <el-option
                             v-for="item in categories"
                             :key="item.id"
@@ -52,7 +52,7 @@
         name: '',
         market_price: 0,
         sale_price: 0,
-        category_id: '',
+        dishes_category_id: '',
         logo: '',
         detail_image: '',
         intro: '',
@@ -74,7 +74,7 @@
                     name: [
                         {required: true, message: '名称不能为空'}
                     ],
-                    category_id: [
+                    dishes_category_id: [
                         {required: true, message: '类别不能为空'}
                     ]
                 },

@@ -59,7 +59,7 @@ class DishesGoodsController extends Controller
         $dishesGoods->name = request('name');
         $dishesGoods->market_price = request('market_price', 0);
         $dishesGoods->sale_price = request('sale_price', 0);
-        $dishesGoods->category_id = request('category_id',0);
+        $dishesGoods->dishes_category_id = request('dishes_category_id',0);
         $dishesGoods->intro = request('intro', '');
         $dishesGoods->logo = request('logo', '');
         $dishesGoods->detail_image = request('detail_image', '');
@@ -83,7 +83,7 @@ class DishesGoodsController extends Controller
         $dishesGoods->name = request('name');
         $dishesGoods->market_price = request('market_price', 0);
         $dishesGoods->sale_price = request('sale_price', 0);
-        $dishesGoods->category_id = request('category_id', 0);
+        $dishesGoods->dishes_category_id = request('dishes_category_id', 0);
         $dishesGoods->intro = request('intro', '');
         $dishesGoods->logo = request('logo', '');
         $dishesGoods->detail_image = request('detail_image', '');
