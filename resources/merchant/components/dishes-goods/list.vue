@@ -5,7 +5,7 @@
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="name" label="商品名称"/>
             <el-table-column prop="sale_price" label="销售价"/>
-            <el-table-column prop="category.name" label="类别"/>
+            <el-table-column prop="dishes_category.name" label="类别"/>
             <el-table-column prop="logo" label="商品图片">
                 <template slot-scope="scope">
                     <div style="height: 50px; width: 50px">
