@@ -10,7 +10,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Setting\Setting;
+use App\Modules\Article\Article;
 use App\Modules\Setting\SettingService;
 use App\Result;
 
@@ -105,5 +105,42 @@ class SettingController extends Controller
             SettingService::set($key, $value);
         }
         return Result::success();
+    }
+
+    /**
+     * 系统设置 页面配置
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function setArticle()
+    {
+        $this->validate(request(), [
+            'code' => 'required'
+        ]);
+        $code = request('code');
+        $article = Article::where('code', $code)->first();
+        if (empty($article)){
+            $article = new Article();
+            $article->title = request('title');
+            $article->code = request('code');
+        }
+        $article->content = request('content', '');
+        $article->save();
+        return Result::success($article);
+    }
+
+    /**
+     * 获取文章
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getArticle()
+    {
+        $this->validate(request(), [
+            'code' => 'required'
+        ]);
+        $code = request('code');
+        $article = Article::where('code', $code)->first();
+        return Result::success([
+            'article' => $article,
+        ]);
     }
 }

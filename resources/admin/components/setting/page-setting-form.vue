@@ -13,6 +13,8 @@
 </template>
 
 <script>
+    import api from '../../../assets/js/api'
+
     export default {
         name: "page-setting-form",
         data() {
@@ -29,12 +31,23 @@
                 router.push('/setting/page_setting');
             },
             commit() {
-
+                api.post('setting/setArticle', this.form).then(() => {
+                    this.$message.success('编辑成功');
+                    router.push('/setting/page_setting');
+                })
+            },
+            getArticle(code) {
+                api.get('setting/getArticle', {code: code}).then(data => {
+                    if (data.article){
+                        this.form.content = data.article.content;
+                    }
+                })
             }
         },
         created() {
             this.form.code = this.$route.query.code;
             this.form.title = this.$route.query.title;
+            this.getArticle(this.form.code);
         }
     }
 </script>
