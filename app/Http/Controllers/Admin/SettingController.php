@@ -120,9 +120,9 @@ class SettingController extends Controller
         $article = Article::where('code', $code)->first();
         if (empty($article)){
             $article = new Article();
-            $article->title = request('title');
             $article->code = request('code');
         }
+        $article->title = request('title');
         $article->content = request('content', '');
         $article->save();
         return Result::success($article);

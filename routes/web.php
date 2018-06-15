@@ -45,6 +45,8 @@ Route::get('/user-h5', function () {
     return view('user-h5');
 });
 
+Route::get('/article/{code}', 'ArticleController@index');
+
 Route::get('/miniprogram_bridge/pay', function(){
     $targetOperId = request('targetOperId');
     if(empty($targetOperId)) throw new BaseResponseException('targetOperId不能为空');

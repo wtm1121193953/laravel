@@ -40,7 +40,9 @@ class UserLevelCalculationJob implements ShouldQueue
         $userTotalCredit = UserCredit::where('user_id', $this->originId)->value('total_credit');
         $userLevel = UserCreditSettingService::getUserLevelByCreditNumber($userTotalCredit);
         $user = User::findOrFail($this->originId);
-        $user->level = $userLevel;
-        $user->save();
+        if ($user->level != $userLevel){
+            $user->level = $userLevel;
+            $user->save();
+        }
     }
 }

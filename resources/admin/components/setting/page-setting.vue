@@ -19,11 +19,11 @@
             return {
                 tableData: [
                     {
-                        title: '积分规则页面配置',
+                        title: '积分规则',
                         code: 'credit_rules',
                     },
                     {
-                        title: '等级规则页面配置',
+                        title: '等级规则',
                         code: 'grade_rules',
                     }
                 ]
