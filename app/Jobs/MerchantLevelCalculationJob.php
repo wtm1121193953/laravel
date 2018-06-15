@@ -17,16 +17,16 @@ class MerchantLevelCalculationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $originId;
+    protected $merchantId;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($originId)
+    public function __construct($merchantId)
     {
         //
-        $this->originId = $originId;
+        $this->merchantId = $merchantId;
     }
 
     /**
@@ -37,11 +37,11 @@ class MerchantLevelCalculationJob implements ShouldQueue
     public function handle()
     {
         //
-        $inviteCount = InviteUserRecord::where('origin_id', $this->originId)
+        $inviteCount = InviteUserRecord::where('origin_id', $this->merchantId)
             ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
             ->count();
         $merchantLevel = UserCreditSettingService::getMerchantLevelByInviteUserNumber($inviteCount);
-        $merchant = Merchant::findOrFail($this->originId);
+        $merchant = Merchant::findOrFail($this->merchantId);
         $merchant->level = $merchantLevel;
         $merchant->save();
     }

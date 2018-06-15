@@ -165,7 +165,7 @@ class InviteService
         $inviteRecord->origin_type = $inviteChannel->origin_type;
         $inviteRecord->save();
 
-        if ($inviteRecord){
+        if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT){
             MerchantLevelCalculationJob::dispatch($inviteRecord->origin_id);
         }
     }
