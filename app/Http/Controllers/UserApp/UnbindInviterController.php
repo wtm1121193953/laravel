@@ -82,7 +82,7 @@ class UnbindInviterController extends Controller
             ['status', '=', '2'],
         ])->first();
         if ($UnbindInviteRecordid) {
-            throw new BaseResponseException('该用户已解绑一次，不能再次解绑');
+            throw new BaseResponseException('每个账户只有一次解绑机会，您已没有解绑次数');
         } else {
             $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
             if (empty($inviteRecord)) {
