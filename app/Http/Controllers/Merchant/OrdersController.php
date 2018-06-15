@@ -15,7 +15,6 @@ use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
-use App\Modules\UserCredit\UserCreditSettingService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;

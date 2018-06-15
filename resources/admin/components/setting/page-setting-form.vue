@@ -53,5 +53,9 @@
 </script>
 
 <style scoped>
-
+    .quill-editor {
+        height: 500px;
+        width: 1000px;
+        margin-bottom: 50px;
+    }
 </style>
