@@ -22,7 +22,7 @@ use App\Result;
 class CreditController extends Controller
 {
     /**
-     * 获取积分转换率
+     * 获取积分转换率 (百分比)
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function payAmountToCreditRatio()
