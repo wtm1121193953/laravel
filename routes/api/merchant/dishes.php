@@ -20,17 +20,9 @@ Route::post('/dishes/category/del', 'DishesCategoryController@del');
 Route::post('/dishes/category/saveOrder', 'DishesCategoryController@saveOrder');
 
 
-
-
 Route::get('/dishes/goods', 'DishesGoodsController@getList');
 Route::get('/dishes/goods/all', 'DishesGoodsController@getAllList');
 Route::post('/dishes/goods/add', 'DishesGoodsController@add');
 Route::post('/dishes/goods/edit', 'DishesGoodsController@edit');
 Route::post('/dishes/goods/changeStatus', 'DishesGoodsController@changeStatus');
 Route::post('/dishes/goods/del', 'DishesGoodsController@del');
-
-
-
-//  /dishes/goodsList   /dishes/categories
-
-//     Route::group([], base_path('routes/api/merchant/dishesCategory.php'));

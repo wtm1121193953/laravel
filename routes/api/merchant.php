@@ -28,9 +28,6 @@ Route::prefix('merchant')
         Route::group([], base_path('routes/api/merchant/orders.php'));
         Route::group([], base_path('routes/api/merchant/settlements.php'));
 
-      //  Route::group([], base_path('routes/api/merchant/dishesCategory.php'));
-//        Route::group([], base_path('routes/api/merchant/dishesGoods.php'));
-
         Route::group([], base_path('routes/api/merchant/dishes.php'));
 
 
