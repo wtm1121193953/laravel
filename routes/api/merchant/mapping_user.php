@@ -1,6 +1,5 @@
 <?php
 use Illuminate\Support\Facades\Route;
 
-Route::get('/getMappingUser', 'MappingUserController@getMappingUser');
-Route::get('/getUser', 'MappingUserController@getUser');
-Route::post('/merchantBindUser', 'MappingUserController@merchantBindUser');
+Route::get('/mappingUser/userInfo', 'MappingUserController@getMappingUser');
+Route::post('/mappingUser/bindUser', 'MappingUserController@bindUser');

@@ -30,11 +30,15 @@ class MappingUserController extends Controller
         $origin_id = request()->get('current_user')->oper_id;
         $origin_type = 2;
 
-        $mapping_user = UserMapping::where('origin_id', $origin_id)
+        $userMapping = UserMapping::where('origin_id', $origin_id)
             ->where('origin_type', $origin_type)
             ->first();
+        if(empty($userMapping)){
+            return Result::success();
+        }
+        $user = User::findOrFail($userMapping->user_id);
 
-        return Result::success($mapping_user);
+        return Result::success($user);
     }
 
     public function getUser()

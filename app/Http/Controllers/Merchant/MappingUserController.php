@@ -27,23 +27,14 @@ class MappingUserController extends Controller
     public function getMappingUser()
     {
         $origin_id = request()->get('current_user')->merchant_id;
-        $origin_type = 1;
 
-        $mapping_user = UserMapping::where('origin_id', $origin_id)
-            ->where('origin_type', $origin_type)
+        $userMapping = UserMapping::where('origin_id', $origin_id)
+            ->where('origin_type', UserMapping::ORIGIN_TYPE_MERCHANT)
             ->first();
-
-        return Result::success($mapping_user);
-    }
-
-    public function getUser()
-    {
-        $this->validate(request(),  [
-            'id' => 'required'
-        ]);
-
-        $id = request('id');
-        $user = User::findOrFail($id);
+        if(empty($userMapping)){
+            return Result::success();
+        }
+        $user = User::findOrFail($userMapping->user_id);
 
         return Result::success($user);
     }
@@ -52,7 +43,7 @@ class MappingUserController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws \Exception
      */
-    public function merchantBindUser()
+    public function bindUser()
     {
         $this->validate(request(), [
             'mobile' => 'required|size:11',
