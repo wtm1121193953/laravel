@@ -34,7 +34,7 @@ class UnbindInviterController extends Controller
         $userId = request()->get('current_user')->id;
         $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
         if(empty($inviteRecord)){
-            throw new BaseResponseException('未绑定邀请人');
+            return Result::success();
         }
         $mappingUser = null; // 上级商户或运营中心关联的用户
         $merchant = null; // 关联的上级商户
