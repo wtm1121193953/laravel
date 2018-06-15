@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Merchant;
 
-
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
 use App\Result;
@@ -21,7 +20,9 @@ class DishesGoodsController extends Controller
         $data = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
             ->when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
-        })->orderBy('id', 'desc')->with('category:id,name')->paginate($pageSize);
+        })->orderBy('id', 'desc')->with('dishesCategory:id,name')->paginate($pageSize);
+
+
 
         return Result::success([
             'list' => $data->items(),
