@@ -3,7 +3,7 @@
         <el-form :model="form">
             <el-form-item label="开启单品购买功能">
                 <el-switch
-                    v-model="form.dishes_function"
+                    v-model="form.dishes_enabled"
                     active-text="开启"
                     inactive-text="关闭"
                     active-value="1"
@@ -19,13 +19,12 @@
 
 <script>
     import api from '../../../assets/js/api'
-
     export default {
         name: "list",
         data() {
             return {
                 form: {
-                    dishes_function: '0',
+                    dishes_enabled: '0',
                 }
             }
         },
@@ -36,8 +35,8 @@
                 })
             },
             getList() {
-                api.get('/setting/getList').then(data => {
-                    this.form = data.list;
+                api.get('/setting/getSetting').then(data => {
+                    this.form = data.setting;
                 })
             }
         },

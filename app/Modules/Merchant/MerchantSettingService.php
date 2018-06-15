@@ -14,13 +14,18 @@ use Illuminate\Support\Facades\Cache;
 class MerchantSettingService
 {
     const info = [
-        'dishes_function' => '单品购买功能设置'
+        'dishes_enabled' => '单品购买功能设置'
+    ];
+
+    const defaultSettings = [
+        'dishes_enabled' => 0
     ];
 
     public static function set($operId, $merchantId, $key, $value)
     {
         // set
         Cache::forget("merchant_setting_key_{$merchantId}_$key");
+  // var_dump($operId,$merchantId,$key,$value);die();
         $setting = MerchantSetting::where('merchant_id', $merchantId)
             ->where('key', $key)
             ->first();

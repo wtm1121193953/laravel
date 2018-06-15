@@ -19,7 +19,7 @@ use App\Result;
 class MerchantDishesController extends Controller
 {
     /**
-     * 判断单品购买功能是否开启
+     * 判断单品（单个）购买功能是否开启
      * MerchantDishesController constructor.
      */
     public function __construct()
@@ -35,8 +35,9 @@ class MerchantDishesController extends Controller
         }
     }
 
+
     /**
-     * 获取单品分类
+     * 获取菜的分类
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function getDishesCategory()
@@ -52,21 +53,25 @@ class MerchantDishesController extends Controller
     }
 
     /**
-     * 获取单品指定分类的商品
+     * 获取单个分类菜的下面的菜品
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function getDishesGoods()
     {
         $merchantId = request('merchant_id');
-        $categoryId = request('category_id');
+        $categoryId = request('dashes_category_id');
         if (!$categoryId){
             throw new BaseResponseException('分类ID不能为空');
         }
         $list = DishesGoods::where('merchant_id', $merchantId)
             ->where('status', 1)
+            ->where('dashes_category_id',$categoryId)
             ->get();
         return Result::success([
             'list' => $list,
         ]);
     }
+
+
+
 }

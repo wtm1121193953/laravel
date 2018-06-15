@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use  App\Modules\Merchant\MerchantSettingService;
 
 class Test extends Command
 {
@@ -46,8 +47,10 @@ class Test extends Command
      */
     public function handle()
     {
+     //   MerchantSettingService::set();
+
 //        SettlementJob::dispatch(Merchant::SETTLE_WEEKLY);
-        $this->remedySettlementsOf20180521and20180528();
+     //   $this->remedySettlementsOf20180521and20180528();
     }
 
     private function remedySettlementsOf20180521and20180528()

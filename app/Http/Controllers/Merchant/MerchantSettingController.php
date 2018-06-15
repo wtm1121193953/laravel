@@ -23,8 +23,9 @@ class MerchantSettingController extends Controller
     public function edit()
     {
         $data = request()->all([
-            'dishes_function'
+            'dishes_enabled'
         ]);
+    // var_dump($data);die();
         foreach ($data as $key => $value){
             MerchantSettingService::set(request()->get('current_user')->oper_id, request()->get('current_user')->merchant_id, $key, $value);
         }
@@ -35,16 +36,17 @@ class MerchantSettingController extends Controller
      * 获取商户系统设置
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
-    public function getList()
+    public function getSetting()
     {
         $data = MerchantSetting::where('merchant_id', request()->get('current_user')->merchant_id)
             ->get();
-        $list = [];
+        $setting = MerchantSettingService::defaultSettings;
         foreach ($data as $item){
-            $list[$item['key']] = $item['value'];
+            $setting[$item['key']] = $item['value'];
         }
+
         return Result::success([
-            'list' => $list,
+            'setting' => $setting,
         ]);
     }
 }
