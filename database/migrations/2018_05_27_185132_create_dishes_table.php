@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Jialeo\LaravelSchemaExtend\Schema;
 
 class CreateDishesTable extends Migration
 {
@@ -15,10 +15,11 @@ class CreateDishesTable extends Migration
     {
         Schema::create('dishes', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('user_id')->index()->default(0)->comment('用户ID');
             $table->integer('oper_id')->index()->default(0)->comment('所属运营中心ID');
             $table->integer('merchant_id')->index()->default(0)->comment('商家ID');
             $table->timestamps();
-            $table->comment = '单品order和dishes_items的中间表';
+            $table->comment = '点菜表(单品order和dishes_items的中间表)';
         });
     }
 

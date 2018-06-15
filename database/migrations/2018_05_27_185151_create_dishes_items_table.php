@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
+use Jialeo\LaravelSchemaExtend\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -15,6 +15,7 @@ class CreateDishesItemsTable extends Migration
     {
         Schema::create('dishes_items', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('user_id')->index()->default(0)->comment('用户ID');
             $table->integer('oper_id')->index()->default(0)->comment('所属运营中心ID');
             $table->integer('merchant_id')->index()->default(0)->comment('商家ID');
             $table->integer('dishes_id')->index()->default(0)->comment('dishes表的id');
