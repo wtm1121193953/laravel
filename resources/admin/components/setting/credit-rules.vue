@@ -11,7 +11,7 @@
                 <el-input-number v-model="form.credit_multiplier_of_amount" :min="0"></el-input-number>
             </el-form-item>
             <el-form-item label="用户等级1(萌新)对应的积分数量" prop="user_level_1_of_credit_number">
-                <el-input-number v-model="form.user_level_1_of_credit_number" :min="0"></el-input-number>
+                <span>0</span>
             </el-form-item>
             <el-form-item label="用户等级2(粉丝)对应的积分数量" prop="user_level_2_of_credit_number">
                 <el-input-number v-model="form.user_level_2_of_credit_number" :min="0"></el-input-number>
@@ -23,7 +23,7 @@
                 <el-input-number v-model="form.user_level_4_of_credit_number" :min="0"></el-input-number>
             </el-form-item>
             <el-form-item label="商户等级1(签约商户)对应的邀请用户数量" prop="merchant_level_1_of_invite_user_number">
-                <el-input-number v-model="form.merchant_level_1_of_invite_user_number" :min="0"></el-input-number>
+                <span>0</span>
             </el-form-item>
             <el-form-item label="商户等级2(联盟商户)对应的邀请用户数量" prop="merchant_level_2_of_invite_user_number">
                 <el-input-number v-model="form.merchant_level_2_of_invite_user_number" :min="0"></el-input-number>
@@ -109,10 +109,7 @@
             initForm() {
                 this.formLoading = true;
                 api.get('/setting/getCreditRulesList').then(data => {
-                    for (let index in data.list) {
-                        this.form[index] = parseInt(data.list[index]);
-                    }
-
+                    this.form = data.list;
                     this.formLoading = false;
                 })
             }
