@@ -77,7 +77,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    api.post('/operBindUser', this.formData).then(data => {
+                    api.post('/mappingUser/bindUser', this.formData).then(data => {
                         this.$message.success('绑定成功');
                         this.mobile = data.userInfo.mobile;
                         this.isBind = true;
@@ -89,16 +89,11 @@
                     });
                 });
             },
-            getUser(user_id) {
-                api.get('/getUser', {id: user_id}).then(data => {
-                    this.mobile = data.mobile;
-                })
-            },
             getMappingUser() {
-                api.get('/getMappingUser').then(data => {
+                api.get('/mappingUser/userInfo').then(data => {
                     if (data.id){
                         this.isBind = true;
-                        this.getUser(data.user_id);
+                        this.mobile = data.mobile;
                     }else {
                         this.isBind = false;
                     }
