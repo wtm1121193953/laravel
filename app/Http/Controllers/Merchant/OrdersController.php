@@ -13,6 +13,8 @@ use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
+use App\Modules\User\User;
+use App\Modules\UserCredit\UserCreditRecord;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -45,6 +47,21 @@ class OrdersController extends Controller
                 });
             })
             ->orderBy('id', 'desc')->paginate();
+
+        foreach ($data as $key => $item){
+            $userCreditRecord = UserCreditRecord::where('user_id', $item->user_id)
+                ->where('order_no', $item->order_no)
+                ->where('inout_type', UserCreditRecord::IN_TYPE)
+                ->where('type', UserCreditRecord::TYPE_FROM_SELF)
+                ->first();
+            if (!empty($userCreditRecord)){
+                $data[$key]['credit'] = $userCreditRecord->credit;
+                $data[$key]['user_level_text'] = User::getLevelText($userCreditRecord->user_level);
+            }else{
+                $data[$key]['credit'] = 0;
+                $data[$key]['user_level_text'] = '';
+            }
+        }
 
         return Result::success([
             'list' => $data->items(),

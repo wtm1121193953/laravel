@@ -10,7 +10,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Setting\Setting;
+use App\Modules\Article\Article;
 use App\Modules\Setting\SettingService;
 use App\Result;
 
@@ -48,7 +48,26 @@ class SettingController extends Controller
      */
     public function getCreditRulesList()
     {
-        $list = SettingService::exceptKeys('merchant_share_in_miniprogram');
+        $list = SettingService::get('oper_profit_radio',
+            'consume_quota_convert_ratio_to_parent',
+            'credit_multiplier_of_amount',
+            'user_level_1_of_credit_number',
+            'user_level_2_of_credit_number',
+            'user_level_3_of_credit_number',
+            'user_level_4_of_credit_number',
+            'merchant_level_1_of_invite_user_number',
+            'merchant_level_2_of_invite_user_number',
+            'merchant_level_3_of_invite_user_number',
+            'credit_to_self_ratio_of_user_level_1',
+            'credit_to_self_ratio_of_user_level_2',
+            'credit_to_self_ratio_of_user_level_3',
+            'credit_to_self_ratio_of_user_level_4',
+            'credit_to_parent_ratio_of_user_level_2',
+            'credit_to_parent_ratio_of_user_level_3',
+            'credit_to_parent_ratio_of_user_level_4',
+            'credit_multiplier_of_merchant_level_1',
+            'credit_multiplier_of_merchant_level_2',
+            'credit_multiplier_of_merchant_level_3');
         return Result::success([
             'list' => $list
         ]);
@@ -60,10 +79,68 @@ class SettingController extends Controller
      */
     public function setCreditRules()
     {
-        $data = request()->all();
+        $data = request()->all([
+            'oper_profit_radio',
+            'consume_quota_convert_ratio_to_parent',
+            'credit_multiplier_of_amount',
+            'user_level_1_of_credit_number',
+            'user_level_2_of_credit_number',
+            'user_level_3_of_credit_number',
+            'user_level_4_of_credit_number',
+            'merchant_level_1_of_invite_user_number',
+            'merchant_level_2_of_invite_user_number',
+            'merchant_level_3_of_invite_user_number',
+            'credit_to_self_ratio_of_user_level_1',
+            'credit_to_self_ratio_of_user_level_2',
+            'credit_to_self_ratio_of_user_level_3',
+            'credit_to_self_ratio_of_user_level_4',
+            'credit_to_parent_ratio_of_user_level_2',
+            'credit_to_parent_ratio_of_user_level_3',
+            'credit_to_parent_ratio_of_user_level_4',
+            'credit_multiplier_of_merchant_level_1',
+            'credit_multiplier_of_merchant_level_2',
+            'credit_multiplier_of_merchant_level_3',
+        ]);
         foreach ($data as $key => $value) {
             SettingService::set($key, $value);
         }
         return Result::success();
+    }
+
+    /**
+     * 系统设置 页面配置
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function setArticle()
+    {
+        $this->validate(request(), [
+            'code' => 'required'
+        ]);
+        $code = request('code');
+        $article = Article::where('code', $code)->first();
+        if (empty($article)){
+            $article = new Article();
+            $article->title = request('title');
+            $article->code = request('code');
+        }
+        $article->content = request('content', '');
+        $article->save();
+        return Result::success($article);
+    }
+
+    /**
+     * 获取文章
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getArticle()
+    {
+        $this->validate(request(), [
+            'code' => 'required'
+        ]);
+        $code = request('code');
+        $article = Article::where('code', $code)->first();
+        return Result::success([
+            'article' => $article,
+        ]);
     }
 }
