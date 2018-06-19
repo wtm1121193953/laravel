@@ -1,7 +1,7 @@
 <template>
-    <el-dialog :title="title" :visible.sync="isShow">
+    <el-dialog :title="title" :visible.sync="isShow" width="60%">
         <div style="vertical-align: middle;text-align: center;">
-            <el-carousel v-if="multi">
+            <el-carousel v-if="multi" height="700px">
                 <el-carousel-item v-for="item in url" :key="item">
                     <img :src="item" alt="" style="max-height: 100%; max-width: 100%;">
                 </el-carousel-item>
