@@ -57,7 +57,7 @@ class LoginController extends Controller
 
     public function logout()
     {
-        Session::flush();
+        Session::forget(config('merchant.user_session'));
         return Result::success();
     }
 
@@ -66,7 +66,18 @@ class LoginController extends Controller
         return [
             [ 'id' => 1, 'name' => '商品管理', 'level' => 1, 'url' => '/merchant/goods',],
             [ 'id' => 2, 'name' => '订单管理', 'level' => 1, 'url' => '/merchant/orders',],
-            [ 'id' => 3, 'name' => '财务管理', 'level' => 1, 'url' => '/merchant/settlements',],
+
+            [ 'id' => 3, 'name' => '人员管理', 'level' => 1, 'url' => 'user', 'sub' =>
+                [
+                    [ 'id' => 4, 'name' => '我的会员', 'level' => 2, 'url' => '/merchant/invite/statistics/daily', 'pid' => 4,],
+                ]
+            ],
+            [ 'id' => 5, 'name' => '财务管理', 'level' => 1, 'url' => '/merchant/settlements',],
+            [ 'id' => 6, 'name' => '素材中心', 'level' => 1, 'url' => 'material', 'sub' =>
+                [
+                    [ 'id' => 7, 'name' => '分享会员二维码', 'level' => 2, 'url' => '/merchant/invite/channel', 'pid' => 8,],
+                ]
+            ],
         ];
     }
 

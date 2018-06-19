@@ -42,6 +42,11 @@
                     </el-col>
                     <!-- 商户激活信息左侧块 -->
                     <el-col :span="11">
+                        <el-form-item prop="oper_biz_member_code" label="业务员">
+                            <template v-if="data.oper_biz_member_code">
+                                {{data.operBizMemberName}} [ {{data.oper_biz_member_code}} ]
+                            </template>
+                        </el-form-item>
                         <el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>
                         <el-form-item prop="invoice_title" label="发票抬头">{{data.invoice_title}}</el-form-item>
                         <el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>
@@ -119,9 +124,6 @@
                         </el-form-item>
                         <el-form-item prop="service_phone" label="客服电话">
                             {{data.service_phone}}
-                        </el-form-item>
-                        <el-form-item prop="oper_salesman" label="运营中心业务人员姓名">
-                            {{data.oper_salesman}}
                         </el-form-item>
                         <el-form-item prop="site_acreage" label="商户面积">
                             {{data.site_acreage}} ㎡

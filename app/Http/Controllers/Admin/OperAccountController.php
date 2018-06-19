@@ -54,9 +54,9 @@ class OperAccountController extends Controller
             'account' => 'required',
             'password' => 'required|min:6',
         ]);
-        $account = OperAccount::where('oper_id', request('id'))->first();
+        $account = OperAccount::where('oper_id', request('oper_id'))->first();
         if(!empty($account)){
-            throw new BaseResponseException('账户已存在, 不能重复创建');
+            throw new BaseResponseException('该运营中心账户已存在, 不能重复创建');
         }
         // 查询账号是否重复
         if(!empty(OperAccount::where('account', request('account'))->first())){

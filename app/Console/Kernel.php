@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Jobs\InviteUserStatisticsDailyJob;
+use App\Jobs\InviteUserStatisticsJob;
 use App\Jobs\OrderExpired;
 use App\Jobs\SettlementHalfMonthly;
 use App\Jobs\SettlementHalfYearly;
@@ -11,6 +13,7 @@ use App\Jobs\SettlementYearly;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Carbon;
 
 class Kernel extends ConsoleKernel
 {
@@ -33,6 +36,10 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        /**
+         * 用户邀请记录每日统计, 每日统计昨日的注册数
+         */
+        $schedule->job(new InviteUserStatisticsDailyJob((new Carbon())->subDay()))->daily();
         /**
          * 订单超时自动关闭
          */

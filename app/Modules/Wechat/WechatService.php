@@ -69,16 +69,17 @@ class WechatService
 
     /**
      * @param $operId
-     * @param $scene
+     * @param $sceneId
      * @param string $page
      * @param int $width
+     * @param bool $getWithFilename
      * @return string
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
-    public static function genMiniprogramAppCodeUrl($operId, $scene, $page='pages/index/index', $width=375)
+    public static function genMiniprogramAppCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false)
     {
         $app = WechatService::getWechatMiniAppForOper($operId);
-        $response = $app->app_code->getUnlimit($scene, [
+        $response = $app->app_code->getUnlimit($sceneId, [
             'page' => $page,
             'width' => $width,
         ]);
@@ -88,8 +89,33 @@ class WechatService
             }
             throw new BaseResponseException('小程序码生成失败' . $response);
         }
-        $filename = $response->save(storage_path('app/public/miniprogram/app_code'));
+        $filename = $response->save(storage_path('app/public/miniprogram/app_code'), "_{$sceneId}_{$width}");
+        if($getWithFilename){
+            return $filename;
+        }
 
         return asset('storage/miniprogram/app_code/' . $filename);
+    }
+
+    /**
+     * @param $sceneId int|MiniprogramScene
+     * @return mixed|string
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     */
+    public static function getMiniprogramAppCodeUrl($sceneId)
+    {
+        if($sceneId instanceof MiniprogramScene){
+            $scene = $sceneId;
+        }else {
+            $scene = MiniprogramScene::find($sceneId);
+        }
+        if(!empty($scene->qrcode_url)){
+            return $scene->qrcode_url;
+        }else {
+            $url = self::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page);
+            $scene->qrcode_url = $url;
+            $scene->save();
+            return $url;
+        }
     }
 }

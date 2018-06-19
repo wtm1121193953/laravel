@@ -14,6 +14,7 @@ Route::prefix('user')
         Route::any('sms/verify_code', 'SmsController@sendVerifyCode');
 
         Route::any('login', 'LoginController@login');
+        Route::any('logout', 'LoginController@logout');
         Route::any('loginWithSceneId', 'LoginController@loginWithSceneId');
 
         Route::get('area/tree', 'AreaController@getTree');
@@ -33,6 +34,9 @@ Route::prefix('user')
         Route::any('order/buy', 'OrderController@buy')->middleware(UserLoginFilter::class);
         Route::any('order/pay', 'OrderController@pay')->middleware(UserLoginFilter::class);
         Route::any('order/refund', 'OrderController@refund')->middleware(UserLoginFilter::class);
-//        Route::get('order/pay', 'OrderController@pay');
+
+        Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
+        Route::get('invite/getInviterBySceneId', 'InviteChannelController@getInviterBySceneId');
+        Route::post('invite/bindInviter', 'InviteChannelController@bindInviter');
 
     });

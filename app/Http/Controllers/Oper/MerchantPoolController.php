@@ -74,8 +74,6 @@ class MerchantPoolController extends Controller
         $this->validate(request(), [
             'name' => 'required',
             'merchant_category_id' => 'required|integer|min:1',
-            'business_licence_pic_url' => 'required',
-            'organization_code' => 'required',
             'lng' => 'required|numeric',
             'lat' => 'required|numeric',
             'province_id' => 'required|integer|min:1',
@@ -95,10 +93,10 @@ class MerchantPoolController extends Controller
         $merchant = new Merchant();
         $merchant->fillMerchantPoolInfoFromRequest();
 
-        // 商户营业执照代码不能重复
-        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->first();
-        if(!empty($existMerchant)) {
-            throw new BaseResponseException('商户营业执照代码已存在');
+        // 商户名不能重复
+        $exists = Merchant::where('name', $merchant->name)->first();
+        if($exists){
+            throw new ParamInvalidException('商户名称不能重复');
         }
 
         $merchant->creator_oper_id = request()->get('current_user')->oper_id;
@@ -122,10 +120,11 @@ class MerchantPoolController extends Controller
         }
         $merchant->fillMerchantPoolInfoFromRequest();
 
-        // 商户营业执照代码不能重复
-        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->offset(1)->first();
-        if(!empty($existMerchant)) {
-            throw new BaseResponseException('商户营业执照代码已存在');
+        // 商户名不能重复
+        $exists = Merchant::where('name', $merchant->name)
+            ->where('id', '<>', $merchant->id)->first();
+        if($exists){
+            throw new ParamInvalidException('商户名称不能重复');
         }
 
         $merchant->save();

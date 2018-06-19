@@ -7,6 +7,10 @@ import welcome from '../components/welcome.vue'
 import goods from './goods'
 import settlements from './settlements'
 
+import InviteChannel from '../components/invite-channel'
+
+import InviteStatisticsDaily from '../components/invite-statistics/daily'
+
 import OrdersList from '../components/orders/list.vue'
 /**
  *
@@ -17,6 +21,24 @@ const routes = [
 
     ...goods,
     ...settlements,
+
+    // 我的会员
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'invite/statistics/daily', component: InviteStatisticsDaily, name: 'InviteStatisticsDaily'},
+        ]
+    },
+
+    // 二维码模块
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'invite/channel', component: InviteChannel, name: 'InviteChannel'},
+        ]
+    },
 
     //订单管理列表
     {

@@ -8,6 +8,7 @@ use App\Support\Utils;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
@@ -102,14 +103,20 @@ class Handler extends ExceptionHandler
             if(!$request->ajax() && !$request->wantsJson()){
                 $request->headers->set('X-Requested-With', 'XMLHttpRequest');
             }
-            return parent::render($request, $exception);
+            $response = parent::render($request, $exception);
+        }
+        // 如果
+        if(DB::transactionLevel() > 0){
+            DB::rollBack(0);
         }
         $result = json_decode($response->getContent(), 1);
         if(
+            !isset($result['code']) ||
             !in_array($result['code'], [
                 ResultCode::PARAMS_INVALID,
                 ResultCode::UNLOGIN,
                 ResultCode::TOKEN_INVALID,
+                ResultCode::USER_ALREADY_BEEN_INVITE,
             ])
         ){
             Log::error('exception handler listen', [

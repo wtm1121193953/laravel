@@ -9,6 +9,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Oper\OperBizMember;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -39,6 +40,7 @@ class MerchantController extends Controller
             }
             $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
             $item->account = MerchantAccount::where('merchant_id', $item->id)->first();
+            $item->operBizMemberName = OperBizMember::where('oper_id', $item->oper_id)->where('code', $item->oper_biz_member_code)->value('name') ?: '无';
         });
 
         return Result::success([
@@ -65,6 +67,7 @@ class MerchantController extends Controller
             'name' => 'required',
             'merchant_category_id' => 'required',
             'business_licence_pic_url' => 'required',
+            'organization_code' => 'required',
         ]);
         $merchant = new Merchant();
         $merchant->fillMerchantPoolInfoFromRequest();
@@ -75,15 +78,21 @@ class MerchantController extends Controller
         $merchant->audit_oper_id = $currentOperId;
         $merchant->creator_oper_id = $currentOperId;
 
-        // 商户营业执照代码不能重复
-        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->first();
-        if(!empty($existMerchant)) {
-            throw new BaseResponseException('商户营业执照代码已存在');
+        // 商户名不能重复
+        $exists = Merchant::where('name', $merchant->name)->first();
+        if($exists){
+            throw new ParamInvalidException('商户名称不能重复');
         }
+
         $merchant->save();
 
         // 添加审核记录
         MerchantAudit::addRecord($merchant->id, $currentOperId);
+
+        // 更新业务员已激活商户数量
+        if($merchant->oper_biz_member_code){
+            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
 
         return Result::success($merchant);
     }
@@ -98,6 +107,7 @@ class MerchantController extends Controller
             'name' => 'required',
             'merchant_category_id' => 'required',
             'business_licence_pic_url' => 'required',
+            'organization_code' => 'required',
         ]);
         $currentOperId = request()->get('current_user')->oper_id;
         $merchant = Merchant::where('id', request('id'))
@@ -107,10 +117,11 @@ class MerchantController extends Controller
         $merchant->fillMerchantPoolInfoFromRequest();
         $merchant->fillMerchantActiveInfoFromRequest();
 
-        // 商户营业执照代码不能重复
-        $existMerchant = Merchant::where('organization_code', $merchant->organization_code)->offset(1)->first();
-        if(!empty($existMerchant)) {
-            throw new BaseResponseException('商户营业执照代码已存在');
+        // 商户名不能重复
+        $exists = Merchant::where('name', $merchant->name)
+            ->where('id', '<>', $merchant->id)->first();
+        if($exists){
+            throw new ParamInvalidException('商户名称不能重复');
         }
 
         if($merchant->oper_id > 0){
@@ -123,6 +134,11 @@ class MerchantController extends Controller
 
         $merchant->save();
 
+        // 更新业务员已激活商户数量
+        if($merchant->oper_biz_member_code){
+            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
+
         return Result::success($merchant);
     }
 
@@ -131,7 +147,6 @@ class MerchantController extends Controller
      */
     public function addFromMerchantPool()
     {
-//        throw new BaseResponseException('等待完成');
         $merchantId = request('id');
         $merchant = Merchant::findOrFail($merchantId);
         if($merchant->oper_id > 0){
@@ -148,9 +163,21 @@ class MerchantController extends Controller
         $merchant->audit_oper_id = $currentOperId;
         $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
 
+        // 商户名不能重复
+        $exists = Merchant::where('name', $merchant->name)
+            ->where('id', '<>', $merchant->id)->first();
+        if($exists){
+            throw new ParamInvalidException('商户名称不能重复');
+        }
+
         $merchant->save();
         // 添加审核记录
         MerchantAudit::addRecord($merchant->id, $currentOperId);
+
+        // 更新业务员已激活商户数量
+        if($merchant->oper_biz_member_code){
+            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
 
         return Result::success('操作成功', $merchant);
     }
@@ -200,7 +227,7 @@ class MerchantController extends Controller
             'account' => 'required',
             'password' => 'required|min:6',
         ]);
-        $account = MerchantAccount::where('merchant_id', request('id'))->first();
+        $account = MerchantAccount::where('merchant_id', request('merchant_id'))->first();
         if(!empty($account)){
             throw new BaseResponseException('该商户账户已存在, 不能重复创建');
         }

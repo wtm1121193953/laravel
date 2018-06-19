@@ -283,7 +283,8 @@ class OrderController extends Controller
                     '$orderPay->transaction_no' => $orderPay->transaction_no,
                     '$orderRefund->id' => $orderRefund->id,
                     '$orderPay->amount' => $orderPay->amount,
-                    'refundAmount' => $orderPay->amount
+                    'refundAmount' => $orderPay->amount,
+                    'currentOper' => request()->get('current_oper')
                 ]
             ]);
             throw new BaseResponseException('微信退款失败');

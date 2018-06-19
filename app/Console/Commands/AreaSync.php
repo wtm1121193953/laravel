@@ -97,7 +97,7 @@ class AreaSync extends Command
                     $model = new Area();
                     $model->area_id = $area['adcode'];
                     $model->name = $area['name'];
-                    $model->path = 2;
+                    $model->path = 3;
                     $model->area_code = empty($area['citycode']) ? '' : $area['citycode'];
                     $model->spell = strtoupper(pinyin_permalink($model->name, ''));
                     $model->letter = strtoupper(pinyin_abbr($model->name));

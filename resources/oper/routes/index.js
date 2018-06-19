@@ -6,6 +6,11 @@ import welcome from '../components/welcome.vue'
 
 import merchant from './merchant'
 import settlements from './settlements'
+import operBizMembers from './operBizMember'
+
+import InviteChannel from '../components/invite-channel'
+
+import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
 /**
  *
@@ -16,6 +21,25 @@ const routes = [
 
     ...merchant,
     ...settlements,
+    ...operBizMembers,
+
+    // 我的会员
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'invite/statistics/daily', component: InviteStatisticsDaily, name: 'InviteStatisticsDaily'},
+        ]
+    },
+
+    // 二维码模块
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'invite-channel', component: InviteChannel, name: 'InviteChannel'},
+        ]
+    },
 
     {
         path: '/',

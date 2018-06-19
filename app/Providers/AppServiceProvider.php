@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Modules\Merchant\Merchant;
+use App\Modules\User\UserOpenIdMapping;
 use App\Observers\MerchantObserver;
+use App\Observers\UserOpenIdMappingObserver;
 use Debugbar;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -32,8 +34,10 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
-        // 商户模型操作监听
+        // 商户模型观察者
         Merchant::observe(MerchantObserver::class);
+        // 用户绑定运营中心模型观察者
+        UserOpenIdMapping::observe(UserOpenIdMappingObserver::class);
     }
 
     /**

@@ -12,16 +12,24 @@ namespace App\Http\Controllers\User;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteService;
 use App\Modules\Sms\SmsVerifyCode;
 use App\Modules\User\User;
 use App\Modules\User\UserOpenIdMapping;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Result;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {
 
+    /**
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function login()
     {
         $this->validate(request(), [
@@ -33,23 +41,39 @@ class LoginController extends Controller
             throw new ParamInvalidException('手机号码不合法');
         }
         $verifyCode = request('verify_code');
-        $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
-            ->where('verify_code', $verifyCode)
-            ->where('status', 1)
-            ->where('expire_time', '>', Carbon::now())
-            ->first();
-        if(empty($verifyCodeRecord)){
-            throw new ParamInvalidException('验证码错误');
+        // 开始事务, 如果登陆失败, 验证码回滚为为验证状态
+        DB::beginTransaction();
+        // 非正式环境时, 验证码为6666为通过验证
+        if(App::environment('production') || $verifyCode != '6666'){
+            $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
+                ->where('verify_code', $verifyCode)
+                ->where('status', 1)
+                ->where('expire_time', '>', Carbon::now())
+                ->first();
+            if(empty($verifyCodeRecord)){
+                throw new ParamInvalidException('验证码错误');
+            }
+            $verifyCodeRecord->status = 2;
+            $verifyCodeRecord->save();
         }
-        $verifyCodeRecord->status = 2;
-        $verifyCodeRecord->save();
 
-        // 验证通过, 查询当前用户是否存在
+        // 验证通过, 查询当前用户是否存在, 不存在则创建用户
         if(! $user = User::where('mobile', $mobile)->first()){
             $user = new User();
             $user->mobile = $mobile;
             $user->save();
         }
+
+        // 如果存在邀请渠道ID, 查询用户是否已被邀请过
+        $inviteChannelId = request('inviteChannelId');
+        if($inviteChannelId){
+            $inviteChannel = InviteChannel::find($inviteChannelId);
+            if(empty($inviteChannel)){
+                throw new ParamInvalidException('邀请渠道不存在');
+            }
+            InviteService::bindInviter($user->id, $inviteChannel);
+        }
+
         // 保存用户与openId的映射关系, 并覆盖旧的关联关系
         $openId = request()->get('current_open_id');
         $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
@@ -64,6 +88,7 @@ class LoginController extends Controller
             $userOpenIdMapping->user_id = $user->id;
             $userOpenIdMapping->save();
         }
+        DB::commit();
         return Result::success([
             'userInfo' => $user
         ]);
@@ -103,5 +128,21 @@ class LoginController extends Controller
             'userInfo' => $user,
             'payload' => $payload,
         ]);
+    }
+
+    /**
+     * 退出登录
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
+    public function logout()
+    {
+        // 解除openId关联
+        $openId = request()->get('current_open_id');
+        $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
+        if($userOpenIdMapping){
+            $userOpenIdMapping->delete();
+        }
+        return Result::success();
     }
 }

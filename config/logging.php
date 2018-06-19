@@ -45,13 +45,13 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
             'level' => 'debug',
-            'days' => 7,
+            'days' => 30,
         ],
         'error-daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/error.log'),
             'level' => 'error',
-            'days' => 7,
+            'days' => 300,
         ],
 
         'slack' => [

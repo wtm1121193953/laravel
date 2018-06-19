@@ -24,6 +24,7 @@ class ResultCode
     const ACCOUNT_PASSWORD_ERROR = 10005;  // 账号密码错误
     const ACCOUNT_EXISTS = 10006;  // 账号已存在
     const TOKEN_INVALID = 10007;  // token无效
+    const USER_ALREADY_BEEN_INVITE = 10008; // 用户已经被邀请过
 
     const DB_QUERY_FAIL = 10010;  // 数据库查询失败
     const DB_INSERT_FAIL = 10011;   // 数据库插入失败
@@ -42,6 +43,7 @@ class ResultCode
     const UPLOAD_ERROR = 20001;   // 文件上传失败
 
     const SMS_SEND_ERROR = 30001;   // 短信发送失败
+    const SMS_BUSINESS_LIMIT_CONTROL = 30015;  // 短信发送频率超过限制
 
 
     /************ 微信接口相关  **************/

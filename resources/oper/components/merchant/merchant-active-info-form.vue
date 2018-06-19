@@ -6,15 +6,35 @@
         </el-col>
         <!-- 商户激活信息左侧块 -->
         <el-col :span="11">
+            <el-form-item prop="oper_biz_member_code" label="业务员推广码">
+                <el-select
+                        v-model="form.oper_biz_member_code"
+                        filterable
+                        remote
+                        reserve-keyword
+                        placeholder="请输入业务员名称、手机号或推广码"
+                        :remote-method="searchOperBizMember"
+                        :loading="searchOperBizMemberLoading">
+                    <el-option
+                            v-for="item in operBizMembers"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.code">
+                        <span class="c-gray">{{item.code}}</span>
+                        <span class="c-blue">{{item.name}}</span>
+                        <span class="c-light-gray">{{item.mobile}}</span>
+                    </el-option>
+                </el-select>
+            </el-form-item>
             <el-form-item prop="brand" label="品牌">
                 <el-input v-model="form.brand"/>
             </el-form-item>
-            <el-form-item prop="invoice_title" label="发票抬头">
+            <!--<el-form-item prop="invoice_title" label="发票抬头">
                 <el-input v-model="form.invoice_title"/>
             </el-form-item>
             <el-form-item prop="invoice_no" label="发票税号">
                 <el-input v-model="form.invoice_no"/>
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item prop="status" label="商户状态">
                 <el-radio-group v-model="form.status">
                     <el-radio :label="1">正常</el-radio>
@@ -23,13 +43,22 @@
             </el-form-item>
             <el-form-item prop="business_time" label="营业时间">
                 <el-time-picker
+                        v-model="form.business_start_time"
+                        placeholder="开始时间"
+                />
+                <span style="margin: 0 20px;">至</span>
+                <el-time-picker
+                        v-model="form.business_end_time"
+                        placeholder="结束时间"
+                />
+                <!--<el-time-picker
                         is-range
                         v-model="form.business_time"
                         range-separator="至"
                         start-placeholder="开始时间"
                         end-placeholder="结束时间"
                         placeholder="选择时间范围">
-                </el-time-picker>
+                </el-time-picker>-->
             </el-form-item>
             <el-form-item prop="logo" label="商家logo">
                 <image-upload :width="190" :height="190" v-model="form.logo" :limit="1"/>
@@ -45,10 +74,10 @@
             <el-form-item prop="settlement_cycle_type" required label="结算周期">
                 <el-select :disabled="!!data && data.audit_oper_id != 0" v-model="form.settlement_cycle_type" placeholder="请选择">
                     <el-option label="周结" :value="1"/>
-                    <el-option label="半月结" :value="2"/>
+                    <!--<el-option label="半月结" :value="2"/>
                     <el-option label="月结" :value="3"/>
                     <el-option label="半年结" :value="4"/>
-                    <el-option label="年结" :value="5"/>
+                    <el-option label="年结" :value="5"/>-->
                 </el-select>
             </el-form-item>
             <el-form-item prop="settlement_rate" required label="分利比例">
@@ -90,6 +119,13 @@
                 <image-upload v-model="form.legal_id_card_pic_b" :limit="1"/>
             </el-form-item>
 
+            <el-form-item prop="business_licence_pic_url" label="营业执照">
+                <image-upload v-model="form.business_licence_pic_url" :limit="1"/>
+            </el-form-item>
+            <el-form-item prop="organization_code" label="营业执照代码">
+                <el-input v-model="form.organization_code"/>
+            </el-form-item>
+
             <el-form-item prop="contract_pic_url" label="合同">
                 <image-upload v-model="form.contract_pic_url" :limit="10"/>
             </el-form-item>
@@ -110,9 +146,6 @@
             <el-form-item prop="service_phone" label="客服电话">
                 <el-input v-model="form.service_phone"/>
             </el-form-item>
-            <el-form-item prop="oper_salesman" label="运营中心业务人员姓名">
-                <el-input v-model="form.oper_salesman"/>
-            </el-form-item>
             <el-form-item prop="site_acreage" label="商户面积">
                 <el-input v-model="form.site_acreage" placeholder="单位: ㎡"/>
             </el-form-item>
@@ -130,11 +163,12 @@
 
     let defaultForm = {
         /////// 商户激活信息
+        oper_biz_member_code: '',
         brand: '',
-        invoice_title: '',
-        invoice_no: '',
         status: 1,
-        business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
+        // business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
+        business_start_time: new Date('1970-01-01 00:00:00'),
+        business_end_time: new Date('1970-01-01 23:59:59'),
         logo: '',
         desc_pic_list: [],
         desc: '',
@@ -151,6 +185,8 @@
         // 法人信息
         legal_id_card_pic_a: '',
         legal_id_card_pic_b: '',
+        business_licence_pic_url: '',
+        organization_code: '',
         contract_pic_url: '',
         other_card_pic_urls: '',
         // 商户负责人
@@ -162,6 +198,8 @@
         employees_number: '',
 
         //////// 没有了的字段
+        invoice_title: '',
+        invoice_no: '',
         region: 1,
         tax_cert_pic_url: '',
         hygienic_licence_pic_url: '',
@@ -201,8 +239,14 @@
                     invoice_no: [
                         {required: true, message: '发票税号 不能为空'},
                     ],*/
-                    business_time: [
+                    /*business_time: [
                         {type: 'array', required: true, message: '营业时间不能为空'},
+                    ],*/
+                    business_start_time: [
+                        {type: 'date', required: true, message: '营业时间不能为空'},
+                    ],
+                    business_end_time: [
+                        {type: 'date', required: true, message: '营业时间不能为空'},
                     ],
                     logo: [
                         {required: true, message: '商家logo不能为空', trigger: 'change'}
@@ -252,6 +296,12 @@
                     legal_id_card_pic_b: [
                         {required: true, message: '法人身份证照片 不能为空'},
                     ],
+                    business_licence_pic_url: [
+                        {required: true, message: '营业执照不能为空'},
+                    ],
+                    organization_code: [
+                        {required: true, message: '营业执照代码不能为空'},
+                    ],
                     contract_pic_url: [
                         {required: true, message: '合同照片 不能为空'},
                     ],
@@ -276,20 +326,41 @@
                         {required: true, message: '商户员工人数 不能为空'},
                     ],
                 },
+                searchOperBizMemberLoading: false,
+                operBizMembers: []
             }
         },
         methods: {
+            searchOperBizMember(query){
+                if (query !== '') {
+                    this.searchOperBizMemberLoading = true;
+                    api.get('/operBizMembers/search', {keyword: query, status: 1}).then(data => {
+                        this.operBizMembers = data.list;
+                    }).finally(() => {
+                        this.searchOperBizMemberLoading = false;
+                    })
+                } else {
+                    this.operBizMembers = [];
+                }
+            },
             initForm(){
                 if(this.data){
                     let data = this.data;
                     for (let key in defaultForm){
                         this.form[key] = this.data[key];
                     }
-                    this.form.business_time = data.business_time ? ['1970-01-01 '+JSON.parse(data.business_time)[0], '1970-01-01 '+JSON.parse(data.business_time)[1]] : [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')];
+                    // this.form.business_time = data.business_time
+                    //     ? ['1970-01-01 '+JSON.parse(data.business_time)[0], '1970-01-01 '+JSON.parse(data.business_time)[1]]
+                    //     : [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')];
+                    let business_time = JSON.parse(data.business_time);
+                    this.form.business_start_time = data.business_time ? new Date('1970-01-01 '+business_time[0]) : new Date('1970-01-01 00:00:00');
+                    this.form.business_end_time = data.business_time ? new Date('1970-01-01 '+business_time[1]) : new Date('1970-01-01 23:59:59');
+                    console.log(this.form.business_start_time, this.form.business_end_time)
                     this.form.region = parseInt(data.region);
                     this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                     this.form.status = parseInt(data.status);
                     this.form.bank_card_type = parseInt(data.bank_card_type);
+                    this.searchOperBizMember(this.form.oper_biz_member_code);
                 }else {
                     this.form = deepCopy(defaultForm);
                 }
@@ -305,7 +376,7 @@
                 if(this.data && this.data.id){
                     data.id = this.data.id;
                 }
-                data.business_time = JSON.stringify([new Date(data.business_time[0]).format('hh:mm:ss'), new Date(data.business_time[1]).format('hh:mm:ss')]);
+                data.business_time = JSON.stringify([new Date(data.business_start_time).format('hh:mm:ss'), new Date(data.business_end_time).format('hh:mm:ss')]);
                 return data;
             },
             validate(callback){

@@ -30,6 +30,7 @@
                             <span> {{ scope.row.area }} </span>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="operBizMemberName" label="业务员"/>
                     <el-table-column prop="status" label="商户状态">
                         <template slot-scope="scope" v-if="scope.row.audit_status == 1 || scope.row.audit_status == 3">
                             <span v-if="scope.row.status === 1" class="c-green">正常</span>

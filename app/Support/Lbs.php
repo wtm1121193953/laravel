@@ -10,6 +10,7 @@ namespace App\Support;
 
 use App\Modules\Area\Area;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 
@@ -33,9 +34,14 @@ class Lbs
         $result = $amap->regeo($lng, $lat);
         $addressArr = $result['addressComponent'];
         $areaCode = $addressArr['adcode'];
-        $area = Area::where('area_id', $areaCode)->firstOrFail();
-        $city = Area::where('area_id', substr($areaCode, 0, 4) . '00')->firstOrFail();
-        $province = Area::where('area_id', substr($areaCode, 0, 2))->firstOrFail();
+        $area = Area::where('area_id', $areaCode)->first();
+        $city = Area::where('area_id', substr($areaCode, 0, 4) . '00')->first();
+        $province = Area::where('area_id', substr($areaCode, 0, 2))->first();
+        if(empty($area) || empty($city) || empty($province)){
+            Log::error('根据经纬度获取位置信息失败', [
+                'regeo result' => $addressArr,
+            ]);
+        }
 
         return [
             'area' => $area->name,

@@ -47,8 +47,6 @@ class Merchant extends BaseModel
         // 商户基本信息
         $this->merchant_category_id = request('merchant_category_id', 0);
         $this->name = request('name');
-        $this->business_licence_pic_url = request('business_licence_pic_url','');
-        $this->organization_code = request('organization_code','');
 
         // 位置信息
         $provinceId = request('province_id', 0);
@@ -70,6 +68,7 @@ class Merchant extends BaseModel
      */
     public function fillMerchantActiveInfoFromRequest()
     {
+        $this->oper_biz_member_code = request('oper_biz_member_code','');
         $this->brand = request('brand','');
         $this->invoice_title = request('invoice_title','');
         $this->invoice_no = request('invoice_no','');
@@ -93,6 +92,8 @@ class Merchant extends BaseModel
 
         $this->legal_id_card_pic_a = request('legal_id_card_pic_a','');
         $this->legal_id_card_pic_b = request('legal_id_card_pic_b','');
+        $this->business_licence_pic_url = request('business_licence_pic_url','');
+        $this->organization_code = request('organization_code','');
         $this->contract_pic_url = request('contract_pic_url','');
         $otherCardPicUrls = request('other_card_pic_urls', '');
         if(is_array($otherCardPicUrls)) $otherCardPicUrls = implode(',', $descPicList);
