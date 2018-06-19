@@ -10,7 +10,8 @@ import operBizMembers from './operBizMember'
 
 import OrderList from '../components/order/list'
 
-import InviteChannel from '../components/invite-channel'
+import InviteChannelList from '../components/invite-channel/list'
+import InviteRecords from '../components/invite-record/list'
 
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
@@ -49,7 +50,8 @@ const routes = [
         path: '/',
         component: Home,
         children: [
-            {path: 'invite-channel', component: InviteChannel, name: 'InviteChannel'},
+            {path: 'invite-channel', component: InviteChannelList, name: 'InviteChannelList'},
+            {path: 'invite-records', component: InviteRecords, name: 'InviteRecords'},
         ]
     },
 

@@ -8,7 +8,7 @@
                 <el-input type="text" v-model="query.mobile" class="w-150"/>
             </el-form-item>
             <el-form-item label="所属商户">
-                <el-select v-model="query.merchantId">
+                <el-select v-model="query.merchantId" filterable>
                     <el-option value="" label="全部"/>
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
@@ -153,7 +153,7 @@
                 })
             },
             getMerchants(){
-                api.get('/merchants').then(data => {
+                api.get('/merchant/allNames').then(data => {
                     this.merchants = data.list;
                 })
             }

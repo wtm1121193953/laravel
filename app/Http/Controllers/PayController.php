@@ -88,11 +88,18 @@ class PayController extends Controller
             || $order->status === Order::STATUS_CLOSED
         ){
             $order->pay_time = Carbon::now(); // 更新支付时间为当前时间
-            $order->status = Order::STATUS_PAID;
-            $order->save();
+            if($order->type == Order::TYPE_SCAN_QRCODE_PAY){
+                // 如果是扫码付款, 直接改变订单状态为已完成
+                $order->status = Order::STATUS_FINISHED;
+                $order->finish_time = Carbon::now();
+                $order->save();
+            }else {
+                $order->status = Order::STATUS_PAID;
+                $order->save();
+            }
 
             // 添加商品已售数量
-            Goods::where('id', $order->goods_id)->increment('sell_number');
+            Goods::where('id', $order->goods_id)->increment('sell_number', max($order->buy_number, 1));
 
             // 生成核销码, 线上需要放到支付成功通知中
             for ($i = 0; $i < $order->buy_number; $i ++){

@@ -35,6 +35,11 @@ Route::get('/merchant', function () {
     return view('merchant');
 });
 
+// 商户中心h5页面
+Route::get('/merchant-h5', function () {
+    return view('merchant-h5');
+});
+
 Route::get('/miniprogram_bridge/pay', function(){
     $targetOperId = request('targetOperId');
     if(empty($targetOperId)) throw new BaseResponseException('targetOperId不能为空');
