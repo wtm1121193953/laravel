@@ -25,7 +25,6 @@ class MerchantSettingController extends Controller
         $data = request()->all([
             'dishes_enabled'
         ]);
-    // var_dump($data);die();
         foreach ($data as $key => $value){
             MerchantSettingService::set(request()->get('current_user')->oper_id, request()->get('current_user')->merchant_id, $key, $value);
         }

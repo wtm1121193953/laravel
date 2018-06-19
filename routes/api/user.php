@@ -44,5 +44,6 @@ Route::prefix('user')
 
         Route::get('merchant/dishesCategory', 'MerchantDishesController@getDishesCategory');
         Route::get('merchant/dishesGoods', 'MerchantDishesController@getDishesGoods');
+        Route::post('merchant/dishesSettle','MerchantDishesController@dishesSettle')->middleware(UserLoginFilter::class);
 
     });

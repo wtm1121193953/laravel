@@ -8,7 +8,6 @@
 
 namespace App\Http\Controllers\User;
 
-
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
@@ -29,8 +28,8 @@ class MerchantDishesController extends Controller
     public function __construct()
     {
         $merchantId = request('merchant_id');
-        dd($merchantId);
-        $key = request('key');
+        //        $key = request('key');
+        $key = "dishes_enabled";
         if (!$merchantId || !$key){
             throw new BaseResponseException('商户ID和商户单品购买设置的键不能为空');
         }
@@ -46,12 +45,13 @@ class MerchantDishesController extends Controller
      */
     public function getDishesCategory()
     {
-        $merchantId = request('merchant_id');
 
+        $merchantId = request('merchant_id');
         $list = DishesCategory::where('merchant_id', $merchantId)
             ->where('status', 1)
             ->orderBy('sort')
             ->get();
+
         return Result::success([
             'list' => $list
         ]);
@@ -70,18 +70,25 @@ class MerchantDishesController extends Controller
         }
         $list = DishesGoods::where('merchant_id', $merchantId)
             ->where('status', 1)
+            ->where('dishes_category_id',$categoryId)
             ->get();
+
         return Result::success([
             'list' => $list,
         ]);
     }
 
+
+   //点菜操作
+
     public function dishesSettle()
     {
+        $userId = request()->get('current_user')->id;
         $this->validate(request(), [
             'merchant_id' => 'required|integer|min:1',
         ]);
-        $dishesList = request('dishes_list');
+//        $dishesList = request('goods_list');
+        $dishesList=   [['id'=>'1','number'=>2],['id'=>2,'number'=>'2']];
         $merchantId = request('merchant_id');
         if (empty($dishesList)){
             throw new ParamInvalidException('单品列表为空');
@@ -95,23 +102,22 @@ class MerchantDishesController extends Controller
             }
         }
         $merchant = Merchant::findOrFail($merchantId);
-
         $dishes = new Dishes();
         $dishes->oper_id = $merchant->oper_id;
         $dishes->merchant_id = $merchant->id;
+        $dishes->user_id = $userId;
         $dishes->save();
 
         foreach ($dishesList as $item){
             $dishesGoods = DishesGoods::findOrFail($item['id']);
-
             if ($dishesGoods['oper_id'] !== $merchant->oper_id){
                 continue;
             }
-
             $dishesItem = new DishesItem();
             $dishesItem->oper_id = $merchant->oper_id;
             $dishesItem->merchant_id = $merchant->id;
             $dishesItem->dishes_id = $dishes->id;
+            $dishesItem->user_id = $userId;
             $dishesItem->dishes_goods_id = $item['id'];
             $dishesItem->number = $item['number'];
             $dishesItem->dishes_goods_sale_price = $dishesGoods['sale_price'];
@@ -119,7 +125,6 @@ class MerchantDishesController extends Controller
             $dishesItem->dishes_goods_name = $dishesGoods['name'];
             $dishesItem->save();
         }
-
         return Result::success($dishes);
     }
 }
