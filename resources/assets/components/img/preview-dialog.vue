@@ -3,7 +3,7 @@
         <div style="vertical-align: middle;text-align: center;">
             <el-carousel v-if="multi">
                 <el-carousel-item v-for="item in url" :key="item">
-                    <img :src="item" alt="">
+                    <img :src="item" alt="" style="max-height: 100%; max-width: 100%;">
                 </el-carousel-item>
             </el-carousel>
             <img v-else style="max-width: 100%;max-height: 100%;" :src="url">
