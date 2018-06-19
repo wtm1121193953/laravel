@@ -84,7 +84,7 @@ class MerchantController extends Controller
                 return $item;
             })
                 ->sortBy('distance')->values()
-                ->forPage(request('page', 1), 15);
+                ->forPage(request('page', 1), 15)->values();
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
             $data = $query->paginate();
