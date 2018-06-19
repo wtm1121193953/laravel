@@ -182,4 +182,17 @@ class OperController extends Controller
         return Result::success($oper);
     }
 
+    /**
+     * 支付到平台状态修改
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function setPayToPlatformStatus()
+    {
+        $oper = Oper::findOrFail(request('id'));
+        $oper->pay_to_platform = 1;
+        $oper->save();
+
+        return Result::success($oper);
+    }
+
 }

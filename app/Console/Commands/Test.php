@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\SettlementForMerchant;
+use App\Jobs\OrderPaidJob;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteService;
@@ -52,6 +52,14 @@ class Test extends Command
      */
     public function handle()
     {
+        Order::whereIn('status', [4, 5, 6, 7])->chunk(100, function(Collection $list){
+            $list->each(function($item){
+                OrderPaidJob::dispatch($item);
+            });
+        });
+        dd();
+        OrderPaidJob::dispatch(Order::where('status', 4)->first());
+        dd();
 //        SettlementJob::dispatch(Merchant::SETTLE_WEEKLY);
         //
         $this->repayO20180601132436766626();

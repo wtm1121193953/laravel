@@ -18,7 +18,7 @@
         <el-button class="fr" type="primary" @click="add">添加运营中心</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
-            <el-table-column prop="name" label="运营中心名称"/>
+            <el-table-column prop="name" label="运营中心名称" width="300px"/>
             <el-table-column prop="contacter" label="负责人" />
             <el-table-column prop="tel" label="联系电话" />
             <el-table-column prop="status" label="合作状态">
@@ -29,7 +29,7 @@
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="450px">
+            <el-table-column label="操作" width="550px">
                 <template slot-scope="scope">
                     <oper-item-options
                             :scope="scope"

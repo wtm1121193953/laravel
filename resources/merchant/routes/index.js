@@ -13,6 +13,10 @@ import PayQrcode from '../components/pay-qrcode'
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
 import OrdersList from '../components/orders/list.vue'
+
+//系统设置
+import SettingMappingUser from '../components/setting/mapping-user.vue'
+
 /**
  *
  */
@@ -48,6 +52,15 @@ const routes = [
         component: Home,
         children: [
             {path: 'orders', component: OrdersList, name: 'OrdersList'},
+        ]
+    },
+
+    //系统设置
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'setting/mapping_user', component: SettingMappingUser, name: 'SettingMappingUser'},
         ]
     },
 

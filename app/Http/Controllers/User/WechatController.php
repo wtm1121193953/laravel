@@ -43,6 +43,7 @@ class WechatController extends Controller
         $userId = UserOpenIdMapping::where('open_id', $openid)->value('user_id');
         if($userId){
             $user = User::findOrFail($userId);
+            $user->level_text = User::getLevelText($user->level);
         }
 
         return Result::success([

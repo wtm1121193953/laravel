@@ -27,10 +27,13 @@ Route::prefix('oper')
 
         Route::get('invite/statistics/dailyList', 'InviteStatisticsController@dailyList');
 
+        Route::get('sms/getVerifyCode', 'SmsController@sendVerifyCode');
+
         Route::get('orders', 'OrderController@getList');
         Route::get('order/export', 'OrderController@export');
 
         Route::group([], base_path('routes/api/oper/merchant.php'));
         Route::group([], base_path('routes/api/oper/settlements.php'));
         Route::group([], base_path('routes/api/oper/operBizMember.php'));
+        Route::group([], base_path('routes/api/oper/mapping_user.php'));
     });

@@ -19,6 +19,8 @@ use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
 use App\Modules\Setting\SettingService;
+use App\Modules\User\User;
+use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -75,6 +77,14 @@ class OrderController extends Controller
         $currentOperId = request()->get('current_oper')->id;
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
+            ->where('type', 1)
+            ->first();
+        if (!empty($creditRecord)){
+            $detail->user_level = $creditRecord->user_level;
+            $detail->user_level_text = User::getLevelText($creditRecord->user_level);
+            $detail->credit = $creditRecord->credit;
+        }
         return Result::success($detail);
     }
 

@@ -26,4 +26,9 @@ class User extends BaseModel
     protected $hidden = [
         'password', 'salt',
     ];
+
+    public static function getLevelText($level)
+    {
+        return ['','萌新', '粉丝', '铁杆', '骨灰'][$level];
+    }
 }

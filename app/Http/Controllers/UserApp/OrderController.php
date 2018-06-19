@@ -18,8 +18,11 @@ use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
+use App\Modules\User\User;
+use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use App\Support\Alipay;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 
@@ -58,8 +61,21 @@ class OrderController extends Controller
         $this->validate(request(), [
             'order_no' => 'required'
         ]);
-        $detail = Order::where('order_no', request('order_no'))->firstOrFail();
+        $user = request()->get('current_user');
+        $detail = Order::where('order_no', request('order_no'))
+            ->where('user_id', $user->id)
+            ->firstOrFail();
         $detail->items = OrderItem::where('order_id', $detail->id)->get();
+
+        $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
+            ->where('type', 1)
+            ->where('user_id', $user->id)
+            ->first();
+        if (!empty($creditRecord)){
+            $detail->user_level = $creditRecord->user_level;
+            $detail->user_level_text = User::getLevelText($creditRecord->user_level);
+            $detail->credit = $creditRecord->credit;
+        }
         return Result::success($detail);
     }
 
@@ -138,7 +154,6 @@ class OrderController extends Controller
 
         $order->oper_id = $merchant->oper_id;
         $order->user_id = $user->id;
-        $order->open_id = request()->get('current_open_id');
         $order->user_name = $user->name ?? '';
         $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
         $order->merchant_id = $merchant->id;
@@ -152,12 +167,14 @@ class OrderController extends Controller
         $order->pay_price = $price;
 
         $payType = request('pay_type', 1);
-        $order->payType = $payType;
+        $order->pay_type = $payType;
         $order->save();
 
         if($payType == 1){
             // 如果是微信支付
-            $sdkConfig = $this->_wechatUnifyPay($order);
+            // todo 微信支付暂时跳过
+//            $sdkConfig = $this->_wechatUnifyPay($order);
+            $sdkConfig = [];
             return Result::success([
                 'order' => $order,
                 'order_no' => $orderNo,
@@ -165,7 +182,12 @@ class OrderController extends Controller
             ]);
         }else {
             // 如果是支付宝支付
-            throw new ParamInvalidException('暂未开通支付宝支付');
+            $sdkConfig = Alipay::pay($order);
+            return Result::success([
+                'order' => $order,
+                'order_no' => $orderNo,
+                'alipay_sdk_config' => $sdkConfig,
+            ]);
         }
     }
 
@@ -193,18 +215,24 @@ class OrderController extends Controller
         }
 
         $payType = request('pay_type', 1);
-        $order->payType = $payType;
+        $order->pay_type = $payType;
         $order->save();
         if($payType == 1){
             // 如果是微信支付
-            $sdkConfig = $this->_wechatUnifyPay($order);
+            // todo 暂时跳过微信支付
+//            $sdkConfig = $this->_wechatUnifyPay($order);
+            $sdkConfig = [];
             return Result::success([
                 'order_no' => $orderNo,
                 'sdk_config' => $sdkConfig,
             ]);
         }else {
             // 如果是支付宝支付
-            throw new ParamInvalidException('暂未开通支付宝支付');
+            $sdkConfig = Alipay::pay($order);
+            return Result::success([
+                'order_no' => $orderNo,
+                'alipay_sdk_config' => $sdkConfig,
+            ]);
         }
     }
 
@@ -230,10 +258,20 @@ class OrderController extends Controller
         $orderRefund->order_no = $order->order_no;
         $orderRefund->amount = $orderPay->amount;
         $orderRefund->save();
-        if($order->payType == 1){
+        if($order->pay_type == 1){
+            // todo 暂时跳过支付, 直接返回成功
+            // 微信退款成功
+            $orderRefund->refund_id = 'mock refund id';
+            $orderRefund->status = 2;
+            $orderRefund->save();
+
+            $order->status = Order::STATUS_REFUNDED;
+            $order->save();
+            return Result::success($orderRefund);
+
             // 发起微信支付退款
             // todo 获取平台的微信支付实例
-            $payApp = WechatService::getWechatPayAppForOper(request()->get('current_oper')->id);
+            $payApp = WechatService::getWechatPayAppForOper(0);
             $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->id, $orderPay->amount * 100, $orderPay->amount * 100, [
                 'refund_desc' => '用户发起退款',
             ]);
@@ -257,7 +295,26 @@ class OrderController extends Controller
                 throw new BaseResponseException('微信退款失败');
             }
         }else {
-            throw new ParamInvalidException('暂未开通微信外的其他支付方式');
+            $result = Alipay::refund($orderPay, $orderRefund);
+            if (!empty($result->code)&& $result->code == 10000){
+                // 支付宝退款成功
+                $orderRefund->refund_id = '';
+                $orderRefund->status = 2;
+                $orderRefund->save();
+
+                $order->status = Order::STATUS_REFUNDED;
+                $order->save();
+                return Result::success($orderRefund);
+            }else{
+                Log::error('支付宝退款失败 :', [
+                    'result' => $result,
+                    'params' => [
+                        'orderPay' => $orderPay->toArray(),
+                        'orderRefund' => $orderRefund->toArray(),
+                    ]
+                ]);
+                throw new BaseResponseException('支付宝退款失败');
+            }
         }
     }
 

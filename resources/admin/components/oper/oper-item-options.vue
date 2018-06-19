@@ -7,6 +7,7 @@
         <el-button v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改账户密码</el-button>
         <el-button type="text" @click="editMiniprogramDialog = true">{{!scope.row.miniprogram ? '配置小程序' : '修改小程序配置'}}</el-button>
         <el-button v-if="scope.row.miniprogram" type="text" @click="uploadCert">上传支付证书</el-button>
+        <el-button v-if="!scope.row.pay_to_platform" type="text" @click="payToPlatform">支付到平台</el-button>
 
         <el-dialog title="编辑小程序配置信息" :visible.sync="editMiniprogramDialog">
             <miniprogram-form
@@ -220,6 +221,20 @@
                     return false;
                 }
             },
+            payToPlatform() {
+                this.$confirm('确认支付到平台后不可更改，是否继续？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                }).then(() => {
+                    api.post('/oper/setPayToPlatformStatus', {id: this.scope.row.id}).then(() => {
+                        this.scope.row.pay_to_platform = 1;
+                        this.$message.success('成功修改为支付到平台');
+                    })
+                }).catch(() => {
+                    this.$message.info('已取消');
+                })
+            }
         },
         created(){
         },
