@@ -10,6 +10,7 @@ namespace App\Http\Controllers\User;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
@@ -18,11 +19,10 @@ use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
 use App\Modules\Setting\SettingService;
-use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\App;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
@@ -36,8 +36,14 @@ class OrderController extends Controller
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
 
         $currentOperId = request()->get('current_oper')->id;
-        $data = Order
-            ::where('user_id', $user->id)
+        $data = Order::where('user_id', $user->id)
+            ->where(function (Builder $query){
+                $query->where('type', Order::TYPE_GROUP_BUY)
+                    ->orWhere(function(Builder $query){
+                        $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
+                            ->whereIn('status', [4, 6, 7]);
+                    });
+            })
             ->when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
                 $query->where('oper_id', $currentOperId);
             })
@@ -63,7 +69,9 @@ class OrderController extends Controller
             'order_no' => 'required'
         ]);
         $detail = Order::where('order_no', request('order_no'))->firstOrFail();
-        $detail->items = OrderItem::where('order_id', $detail->id)->get();
+        // 只返回一个核销码
+        $orderItem = OrderItem::where('order_id', $detail->id)->first();
+        $detail->items = !empty($orderItem) ? [$orderItem] : [];
         $currentOperId = request()->get('current_oper')->id;
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
@@ -108,6 +116,7 @@ class OrderController extends Controller
         $order->buy_number = $number;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $goods->price * $number;
+        $order->remark = request('remark', '');
         $order->save();
 
         $isOperSelf = $merchant->oper_id === $oper->id ? 1 : 0;
@@ -136,41 +145,73 @@ class OrderController extends Controller
             $sdkConfig = null;
         }
 
-        if(App::environment() === 'local'){
-            // 生成核销码, 线上需要放到支付成功通知中
-            $items = [];
-            for ($i = 0; $i < $number; $i ++){
-                $orderItem = new OrderItem();
-                $orderItem->oper_id = $merchant->oper_id;
-                $orderItem->merchant_id = $merchant->id;
-                $orderItem->order_id = $order->id;
-                $orderItem->verify_code = OrderItem::createVerifyCode($merchant->id);
-                $orderItem->status = 1;
-                $orderItem->save();
-                $items[] = $orderItem;
-            }
-            $order->status = Order::STATUS_PAID;
-            $order->save();
-        }
-
-        if(request('scene') == 1){
-            // 模拟生成sceneId并返回
-            $scene = new MiniprogramScene();
-            $scene->oper_id = $merchant->oper_id;
-            $scene->page = request('page', '');
-            $scene->type = 1;
-            $scene->payload = json_encode([
-                'order_no' => $orderNo,
-                'user_id' => $user->id
-            ]);
-            $scene->save();
-        }
-
         return Result::success([
             'order_no' => $orderNo,
             'isOperSelf' => $isOperSelf,
             'sdk_config' => $sdkConfig,
-            'sceneId' => isset($scene) ? $scene->id : '',
+        ]);
+    }
+
+    /**
+     * 扫码付款
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     */
+    public function scanQrcodePay()
+    {
+        $this->validate(request(), [
+            'merchant_id' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0',
+        ]);
+        $price = request('price');
+        if($price <= 0 ){
+            throw new ParamInvalidException('价格不合法');
+        }
+        $user = request()->get('current_user');
+        $merchant = Merchant::findOrFail(request('merchant_id'));
+
+        // 查询该用户在该商家下是否有未支付的直接付款订单, 若有直接修改原订单信息
+        $order = Order::where('type', Order::TYPE_SCAN_QRCODE_PAY)
+            ->where('merchant_id', $merchant->id)
+            ->where('user_id', $user->id)
+            ->where('status', Order::STATUS_UN_PAY)
+            ->first();
+        if(empty($order)){
+            $order = new Order();
+        }else {
+            $order->created_at = Carbon::now();
+        }
+
+        // 生成另外的订单号, 微信支付统一下单同一个订单号重复下单时金额不能不同
+        $orderNo = Order::genOrderNo();
+        $order->order_no = $orderNo;
+        $order->oper_id = $merchant->oper_id;
+        $order->user_id = $user->id;
+        $order->open_id = request()->get('current_open_id');
+        $order->user_name = $user->name ?? '';
+        $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
+        $order->merchant_id = $merchant->id;
+        $order->merchant_name = $merchant->name ?? '';
+        $order->type = Order::TYPE_SCAN_QRCODE_PAY;
+        $order->goods_id = 0;
+        $order->goods_name = $merchant->name;
+        $order->goods_pic = $merchant->logo;
+        $order->price = $price;
+        $order->status = Order::STATUS_UN_PAY;
+        $order->pay_price = $price;
+        $order->save();
+
+        $isOperSelf = $merchant->oper_id === request()->get('current_oper')->id ? 1 : 0;
+        if($isOperSelf == 1) {
+            $sdkConfig = $this->_wechatUnifyPay($order);
+        }else {
+            $sdkConfig = null;
+        }
+
+        return Result::success([
+            'order' => $order,
+            'order_no' => $orderNo,
+            'isOperSelf' => $isOperSelf,
+            'sdk_config' => $sdkConfig,
         ]);
     }
 
@@ -194,45 +235,7 @@ class OrderController extends Controller
             throw new BaseResponseException('该订单不是当前运营中心的订单');
         }
 
-        $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
-        $data = [
-            'body' => $order->goods_name,
-            'out_trade_no' => $orderNo,
-            'total_fee' => $order->pay_price * 100,
-            'trade_type' => 'JSAPI',
-            'openid' => request()->get('current_open_id'),
-        ];
-
-        $unifyResult = $payApp->order->unify($data);
-        if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
-            $order->save();
-        }else {
-            Log::error('微信统一下单失败', [
-                'payConfig' => $payApp->getConfig(),
-                'data' => $data,
-                'result' => $unifyResult,
-            ]);
-            throw new BaseResponseException('微信统一下单失败');
-        }
-
-        if(App::environment() === 'local'){
-            // 生成核销码, 线上需要放到支付成功通知中
-            $items = [];
-            for ($i = 0; $i < $order->buy_number; $i ++){
-                $orderItem = new OrderItem();
-                $orderItem->oper_id = $order->oper_id;
-                $orderItem->merchant_id = $order->merchant_id;
-                $orderItem->order_id = $order->id;
-                $orderItem->verify_code = OrderItem::createVerifyCode($order->merchant_id);
-                $orderItem->status = 1;
-                $orderItem->save();
-                $items[] = $orderItem;
-            }
-            $order->status = Order::STATUS_PAID;
-            $order->save();
-        }
-
-        $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+        $sdkConfig = $this->_wechatUnifyPay($order);
 
         return Result::success([
             'order_no' => $orderNo,
@@ -289,5 +292,36 @@ class OrderController extends Controller
             ]);
             throw new BaseResponseException('微信退款失败');
         }
+    }
+
+    /**
+     * 微信下单并获取支付参数
+     * @param $order
+     * @return array
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     */
+    private function _wechatUnifyPay(Order $order)
+    {
+        $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
+        $data = [
+            'body' => $order->goods_name,
+            'out_trade_no' => $order->order_no,
+            'total_fee' => $order->pay_price * 100,
+            'trade_type' => 'JSAPI',
+            'openid' => $order->open_id,
+        ];
+        $unifyResult = $payApp->order->unify($data);
+        if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
+            $order->save();
+        }else {
+            Log::error('微信统一下单失败', [
+                'payConfig' => $payApp->getConfig(),
+                'data' => $data,
+                'result' => $unifyResult,
+            ]);
+            throw new BaseResponseException('微信统一下单失败');
+        }
+        $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+        return $sdkConfig;
     }
 }

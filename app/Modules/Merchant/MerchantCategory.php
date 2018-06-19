@@ -4,18 +4,22 @@ namespace App\Modules\Merchant;
 
 use App\BaseModel;
 use App\Support\Utils;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 
 class MerchantCategory extends BaseModel
 {
 
-    public static function getTree()
+    public static function getTree($withDisabled = false)
     {
-        $tree = Cache::get('merchant_category_tree');
+        $cacheKey = $withDisabled ? 'merchant_category_tree_with_disabled' : 'merchant_category_tree';
+        $tree = Cache::get($cacheKey);
         if(!$tree){
-            $list = MerchantCategory::where('status', 1)->get();
+            $list = MerchantCategory::when(!$withDisabled, function(Builder $query){
+                $query->where('status', 1);
+            })->get();
             $tree = Utils::convertListToTree($list);
-            Cache::forever('merchant_category_tree', $tree);
+            Cache::forever($cacheKey, $tree);
         }
         return $tree;
     }
@@ -30,5 +34,11 @@ class MerchantCategory extends BaseModel
         }
         array_unshift($parentPath, $category);
         return $parentPath;
+    }
+
+    public static function clearCache()
+    {
+        Cache::forget('merchant_category_tree');
+        Cache::forget('merchant_category_tree_with_disabled');
     }
 }

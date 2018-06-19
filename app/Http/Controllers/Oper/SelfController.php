@@ -18,7 +18,7 @@ use App\Modules\Oper\OperAccount;
 use App\Result;
 use Illuminate\Support\Facades\Session;
 
-class LoginController extends Controller
+class SelfController extends Controller
 {
 
     /**
@@ -47,11 +47,11 @@ class LoginController extends Controller
             throw new NoPermissionException('运营中心已被冻结');
         }
 
-        $user->username = $user->username ?? $user->account;
-
         session([
             config('oper.user_session') => $user,
         ]);
+
+        $user->operName = $oper->name;
 
         return Result::success([
             'user' => $user,
@@ -65,6 +65,34 @@ class LoginController extends Controller
         return Result::success();
     }
 
+    public function modifyPassword()
+    {
+        $this->validate(request(), [
+            'password' => 'required',
+            'newPassword' => 'required',
+            'reNewPassword' => 'required|same:newPassword'
+        ]);
+        $user = request()->get('current_user');
+        // 检查原密码是否正确
+        if(OperAccount::genPassword(request('password'), $user->salt) !== $user->password){
+            throw new PasswordErrorException();
+        }
+        $user = OperAccount::findOrFail($user->id);
+        $salt = str_random();
+        $user->salt = $salt;
+        $user->password = OperAccount::genPassword(request('newPassword'), $salt);
+        $user->save();
+
+        // 修改密码成功后更新session中的user
+        session([
+            config('oper.user_session') => $user,
+        ]);
+
+        $user->operName = Oper::where('id', $user->oper_id)->value('name');
+
+        return Result::success($user);
+    }
+
     private function getMenus()
     {
         return [
@@ -74,6 +102,7 @@ class LoginController extends Controller
                     [ 'id' => 3, 'name' => '商户池', 'level' => 2, 'url' => '/oper/merchant/pool', 'pid' => 1,],
                 ]
             ],
+            [ 'id' => 10, 'name' => '订单管理', 'level' => 1, 'url' => '/oper/orders' ],
             [ 'id' => 4, 'name' => '人员管理', 'level' => 1, 'url' => 'user', 'sub' =>
                 [
 //                    [ 'id' => 5, 'name' => '我的会员', 'level' => 2, 'url' => '/oper/invite/statistics/daily', 'pid' => 4,],

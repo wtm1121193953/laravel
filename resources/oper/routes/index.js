@@ -8,6 +8,8 @@ import merchant from './merchant'
 import settlements from './settlements'
 import operBizMembers from './operBizMember'
 
+import OrderList from '../components/order/list'
+
 import InviteChannel from '../components/invite-channel'
 
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
@@ -22,6 +24,16 @@ const routes = [
     ...merchant,
     ...settlements,
     ...operBizMembers,
+
+    // 订单模块
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'orders', component: OrderList, name: 'OrderList'},
+        ]
+    },
+
 
     // 我的会员
     {

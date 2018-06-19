@@ -36,7 +36,7 @@ class OrderExpired implements ShouldQueue
         Log::info('开始执行订单超时自动关闭定时任务');
         Order::where('status', 1)
             ->where('created_at', '<', Carbon::now()->subDay())
-            ->update(['status' => 3]);
+            ->update(['status' => Order::STATUS_CLOSED]);
         Log::info('订单超时自动关闭定时任务执行完成');
     }
 }

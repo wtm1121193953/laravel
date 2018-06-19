@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SettlementJob implements ShouldQueue
 {
@@ -36,11 +37,11 @@ class SettlementJob implements ShouldQueue
     public function handle()
     {
         // 计算要结算的开始日期与结束日期
+        Log::info('开始执行结算任务');
         switch ($this->settlementCycleType){
             case Merchant::SETTLE_WEEKLY:
-                $subWeek = Carbon::now()->subWeek();
-                $end = $subWeek->endOfWeek();
-                $start = $subWeek->startOfWeek();
+                $end = Carbon::now()->subWeek()->endOfWeek();
+                $start = Carbon::now()->subWeek()->startOfWeek();
                 break;
             case Merchant::SETTLE_HALF_MONTHLY:
                 if(Carbon::now()->day > 15){
@@ -72,12 +73,15 @@ class SettlementJob implements ShouldQueue
                 throw new \Exception('错误的结算方式:' . $this->settlementCycleType);
         }
         // 查询周结的商家列表
-        $merchants = Merchant::where('settlement_cycle_type', $this->settlementCycleType)->get();
+        Merchant::where('settlement_cycle_type', $this->settlementCycleType)
+            ->where('oper_id', '>', 0)
+            ->chunk(100, function($merchants) use ($start, $end){
+                $merchants->each(function ($item) use ($start, $end){
+                    SettlementForMerchant::dispatch($item->id, $start, $end);
+                });
+            });
 
-        $merchants->each(function ($item) use ($start, $end){
-            SettlementForMerchant::dispatch($item->id, $start, $end);
-        });
-
+        Log::info('结算任务执行完成');
         //
     }
 }

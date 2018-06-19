@@ -36,14 +36,7 @@ class MerchantController extends Controller
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
         }
 
-        $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
-
-        $currentOperId = request()->get('current_oper')->id;
-        $query = Merchant
-            ::when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
-                $query->where('oper_id', $currentOperId);
-            })
-            ->where('oper_id', '>', 0)
+        $query = Merchant::where('oper_id', '>', 0)
             ->where('status', 1)
             ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT])
             ->when($city_id, function(Builder $query) use ($city_id){
@@ -89,8 +82,9 @@ class MerchantController extends Controller
             $data = $query->paginate();
             // 如果传递了经纬度信息, 需要计算用户与商家之间的距离
             if($lng && $lat){
-                $data->each(function ($item) use ($lng, $lat){
-                    $distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
+                $tempToken = !empty(request()->get('current_user')) ? request()->get('current_user')->id : str_random();
+                $data->each(function ($item) use ($lng, $lat, $tempToken){
+                    $distance = Lbs::getDistanceOfMerchant($item->id, $tempToken, $lng, $lat);
                     // 格式化距离
                     $item->distance = $this->_getFormativeDistance($distance);
                 });
@@ -101,20 +95,13 @@ class MerchantController extends Controller
 
         // 补充商家其他信息
         $list = collect($list);
-        $list->each(function ($item) use ($currentOperId) {
+        $list->each(function ($item) {
             $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
             if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
             $category = MerchantCategory::find($item->merchant_category_id);
             $item->merchantCategoryName = $category->name;
             // 最低消费
-            $lowestAmount = Goods::where('merchant_id', $item->id)->orderBy('price')->value('price');
-            if($lowestAmount > 0){
-                $item->lowestAmount = $lowestAmount;
-            }else {
-                $item->lowestAmount = 0;
-            }
-            // 判断商户是否是当前小程序关联运营中心下的商户
-            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
+            $item->lowestAmount = Goods::getLowestPriceForMerchant($item->id);
             // 兼容v1.0.0版客服电话字段
             $item->contacter_phone = $item->service_phone;
         });
@@ -139,22 +126,16 @@ class MerchantController extends Controller
         $detail->desc_pic_list = $detail->desc_pic_list ? explode(',', $detail->desc_pic_list) : [];
         if($detail->business_time) $detail->business_time = json_decode($detail->business_time, 1);
         if($lng && $lat){
-            $distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), $lng, $lat);
+            $currentUser = request()->get('current_user');
+            $tempToken = empty($currentUser) ? str_random() : $currentUser->id;
+            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, $lng, $lat);
             // 格式化距离
             $detail->distance = $this->_getFormativeDistance($distance);
         }
         $category = MerchantCategory::find($detail->merchant_category_id);
         $detail->merchantCategoryName = $category->name;
         // 最低消费
-        $lowestAmount = Goods::where('merchant_id', $id)->orderBy('price')->value('price');
-        if($lowestAmount > 0){
-            $detail->lowestAmount = $lowestAmount;
-        }else {
-            $detail->lowestAmount = 0;
-        }
-        $currentOperId = request()->get('current_oper')->id;
-        // 判断商户是否是当前小程序关联运营中心下的商户
-        $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        $detail->lowestAmount = Goods::getLowestPriceForMerchant($detail->id);
         // 兼容v1.0.0版客服电话字段
         $detail->contacter_phone = $detail->service_phone;
 

@@ -96,10 +96,17 @@ class SelfController extends Controller
         if(AdminUser::genPassword(request('password'), $user->salt) !== $user->password){
             throw new PasswordErrorException();
         }
+        $user = AdminUser::findOrFail($user->id);
         $salt = str_random();
         $user->salt = $salt;
         $user->password = AdminUser::genPassword(request('newPassword'), $salt);
         $user->save();
+
+        // 修改密码成功后更新session中的user
+        session([
+            config('admin.user_session') => $user,
+        ]);
+
         return Result::success($user);
     }
 

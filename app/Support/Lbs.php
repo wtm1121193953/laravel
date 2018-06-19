@@ -8,6 +8,7 @@
 
 namespace App\Support;
 
+use App\Exceptions\BaseResponseException;
 use App\Modules\Area\Area;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
@@ -34,23 +35,32 @@ class Lbs
         $result = $amap->regeo($lng, $lat);
         $addressArr = $result['addressComponent'];
         $areaCode = $addressArr['adcode'];
+        if(empty($areaCode)){
+            Log::error('高德地图逆地理解析错误', compact('lng', 'lat', 'result'));
+            throw new BaseResponseException('定位当前城市失败');
+        }
         $area = Area::where('area_id', $areaCode)->first();
         $city = Area::where('area_id', substr($areaCode, 0, 4) . '00')->first();
         $province = Area::where('area_id', substr($areaCode, 0, 2))->first();
         if(empty($area) || empty($city) || empty($province)){
-            Log::error('根据经纬度获取位置信息失败', [
-                'regeo result' => $addressArr,
-            ]);
+            Log::error('根据经纬度获取位置信息失败', compact('lng', 'lat', 'result'));
+            throw new BaseResponseException('定位当前城市失败');
+        }
+        $data = [];
+        if($area){
+            $data['area'] = $area->name;
+            $data['area_id'] = $area->area_id;
+        }
+        if($city){
+            $data['city'] = $city->name;
+            $data['city_id'] = $city->area_id;
+        }
+        if($province){
+            $data['province'] = $province->name;
+            $data['province_id'] = $province->area_id;
         }
 
-        return [
-            'area' => $area->name,
-            'area_id' => $area->area_id,
-            'city' => $city->name,
-            'city_id' => $city->area_id,
-            'province' => $province->name,
-            'province_id' => $province->area_id,
-        ];
+        return $data;
     }
 
     /**
@@ -104,7 +114,9 @@ class Lbs
 
         $arr = [];
         foreach ($result as $item) {
-            $arr[$item[0]] = intval($item[1]);
+            if(is_numeric($item[0])){
+                $arr[$item[0]] = intval($item[1]);
+            }
         }
         return $arr;
     }

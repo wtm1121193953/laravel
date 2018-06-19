@@ -20,6 +20,7 @@ class SettlementController extends Controller
     public function getList()
     {
         $data = Settlement::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->where('amount', '>', 0)
             ->orderBy('id', 'desc')
             ->paginate();
 

@@ -187,7 +187,7 @@
             },
             audit(type){
                 api.post('/merchant/audit', {id: this.data.id, type: type}).then(data => {
-                    this.$alert(['', '审核通过', '审核不通过', '打回商户池'][status] + ' 成功');
+                    this.$alert(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
                     this.$emit('change')
                 })
             }

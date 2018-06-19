@@ -81,7 +81,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item prop="settlement_rate" required label="分利比例">
-                <el-input-number v-model="form.settlement_rate" :min="0" :max="100"/>
+                <el-input-number v-model="form.settlement_rate" :min="10" :max="100"/>
                 <div>返利百分比,如20%请填写20</div>
             </el-form-item>
 

@@ -14,14 +14,30 @@ use App\Http\Controllers\Controller;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Result;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 class OrdersController extends Controller
 {
     public function getList()
     {
+        $orderNo = request('orderNo');
+        $notifyMobile = request('notifyMobile');
         $data = Order::where('merchant_id', request()->get('current_user')->merchant_id)
-                ->orderBy('id', 'desc')->paginate();
+            ->where(function(Builder $query){
+                $query->where('type', Order::TYPE_GROUP_BUY)
+                    ->orWhere(function(Builder $query){
+                        $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
+                            ->whereIn('status', [4, 6, 7]);
+                    });
+            })
+            ->when($orderNo, function (Builder $query) use ($orderNo){
+                $query->where('order_no', $orderNo);
+            })
+            ->when($notifyMobile, function (Builder $query) use ($notifyMobile){
+                $query->where('notify_mobile', 'like', "%$notifyMobile%");
+            })
+            ->orderBy('id', 'desc')->paginate();
 
         return Result::success([
             'list' => $data->items(),

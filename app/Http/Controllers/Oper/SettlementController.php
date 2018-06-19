@@ -14,19 +14,29 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Modules\Settlement\Settlement;
 use App\Result;
+use Illuminate\Database\Eloquent\Builder;
 
 class SettlementController extends Controller
 {
     public function getList()
     {
+        $merchantId = request('merchantId');
+        $status = request('status');
         $data = Settlement::where('oper_id', request()->get('current_user')->oper_id)
+            ->where('amount', '>', 0)
+            ->when($merchantId, function(Builder $query) use ($merchantId){
+                $query->where('merchant_id', $merchantId);
+            })
+            ->when($status, function (Builder $query) use ($status){
+                $query->where('status', $status);
+            })
             ->orderBy('id', 'desc')
             ->paginate();
         $merchant = Merchant::where('oper_id', request()->get('current_user')->oper_id)
             ->get()->keyBy('id');
 
         foreach ($data as &$item){
-            $item['merchant_name'] = $merchant[$item['merchant_id']]['name'];
+            $item['merchant_name'] = isset($merchant[$item['merchant_id']]) ? $merchant[$item['merchant_id']]['name'] : '';
         }
         return Result::success([
             'list' => $data->items(),

@@ -12,6 +12,8 @@ namespace App\Modules\Wechat;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\MiniprogramPageNotExistException;
 use App\Modules\Oper\OperMiniprogram;
+use App\Result;
+use App\ResultCode;
 use EasyWeChat\Factory;
 
 class WechatService
@@ -23,7 +25,10 @@ class WechatService
      */
     public static function getWechatMiniAppForOper($operId)
     {
-        $miniProgram = OperMiniprogram::where('oper_id', $operId)->firstOrFail();
+        $miniProgram = OperMiniprogram::where('oper_id', $operId)->first();
+        if(empty($miniProgram)){
+            throw new BaseResponseException('运营中心小程序配置不存在', ResultCode::MINIPROGRAM_CONFIG_NOT_EXIST);
+        }
         $config = [
             'app_id' => $miniProgram->appid,
             'secret' => $miniProgram->secret,
@@ -68,6 +73,7 @@ class WechatService
     }
 
     /**
+     * 生成小程序码
      * @param $operId
      * @param $sceneId
      * @param string $page
@@ -118,4 +124,5 @@ class WechatService
             return $url;
         }
     }
+
 }

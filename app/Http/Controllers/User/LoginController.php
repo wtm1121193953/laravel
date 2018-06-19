@@ -37,7 +37,7 @@ class LoginController extends Controller
             'verify_code' => 'required|size:4',
         ]);
         $mobile = request('mobile');
-        if(!preg_match('/^1[3,4,5,6,7,8]\d{9}/', $mobile)){
+        if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}/', $mobile)){
             throw new ParamInvalidException('手机号码不合法');
         }
         $verifyCode = request('verify_code');
@@ -65,15 +65,14 @@ class LoginController extends Controller
         }
 
         // 如果存在邀请渠道ID, 查询用户是否已被邀请过
-        // 去掉邀请渠道
-        /*$inviteChannelId = request('inviteChannelId');
+        $inviteChannelId = request('inviteChannelId');
         if($inviteChannelId){
             $inviteChannel = InviteChannel::find($inviteChannelId);
             if(empty($inviteChannel)){
                 throw new ParamInvalidException('邀请渠道不存在');
             }
             InviteService::bindInviter($user->id, $inviteChannel);
-        }*/
+        }
 
         // 保存用户与openId的映射关系, 并覆盖旧的关联关系
         $openId = request()->get('current_open_id');

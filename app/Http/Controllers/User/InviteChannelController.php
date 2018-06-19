@@ -13,20 +13,12 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteService;
-use App\Modules\Merchant\Merchant;
-use App\Modules\Oper\Oper;
-use App\Modules\User\User;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 
 class InviteChannelController extends Controller
 {
-
-    public function __construct()
-    {
-        throw new ParamInvalidException('邀请用户功能已关闭');
-    }
 
     /**
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException

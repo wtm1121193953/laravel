@@ -12,6 +12,7 @@
 ```
 token (不是必填, 需要登录的接口要填)
 version: 当前客户端版本
+app-type: 客户端类型  1-Android 2-iOS
 ```
 
 ##### 统一返回结果:
@@ -70,7 +71,7 @@ version: 当前客户端版本
   ```
   data: {
       version: 版本号,
-      force: 是否强制更新,
+      force: 是否强制更新, 1-强制更新, 0-不强制更新,
       desc: 更新说明 (客户端文档格式需要怎么处理, 简单的换行?)
   }
   ```
@@ -257,16 +258,16 @@ version: 当前客户端版本
   }
   ```
 
-  ​
+  
 
-#### 商家模块
+#### 商家模块	
 
 
 - [ ] 获取商家类别列表
 
-    接口地址: GET `/merchant/categories/tree`
-    
-    返回:
+  接口地址: GET `/merchant/categories/tree`
+
+  返回:
 
   ```
     data: {
@@ -305,7 +306,7 @@ version: 当前客户端版本
   page: 页码
   ```
 
-    返回
+返回
 
   ```
   data: {
@@ -334,10 +335,10 @@ version: 当前客户端版本
         desc: 商家介绍
         contacter: 联系人姓名
         contacter_phone: 负责人联系方式
+        service_phone: 客服电话
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在
         lowestAmount: 最低消费金额
-        isOperSelf: 是否归属于当前小程序的运营中心
       }
     ]
   } 
@@ -363,16 +364,16 @@ version: 当前客户端版本
   同商户列表返回的字段
   ```
 
-  ​
+  
 
 
 - [ ] 商品列表
 
-    接口地址: GET `/goods`
-    
-    参数: `merchant_id` 商家ID
-    
-    返回
+  接口地址: GET `/goods`
+
+  参数: `merchant_id` 商家ID
+
+  返回
 
   ```
   data: {
@@ -404,11 +405,11 @@ version: 当前客户端版本
 
 - [ ] 商品详情
 
-    接口地址: GET `/goods/detail`
-    
-    参数: id 商品ID
-    
-    返回
+  接口地址: GET `/goods/detail`
+
+  参数: id 商品ID
+
+  返回
 
   ```
   同商品列表中的每一项
@@ -455,6 +456,7 @@ version: 当前客户端版本
                 refund_price: 退款金额,
                 refund_time: 退款时间,
                 status: 状态 1-未支付 2-已取消 3-已关闭 (超时自动关闭) 4-已付款  6-已退款 7-已完成 (不可退款),
+                origin_app_type: 订单来源客户端类型  1-安卓 2-ios 3-小程序
                 items: 核销码列表(已支付及之后的状态才存在) [
                     {
                         id: 核销码ID,
@@ -462,8 +464,8 @@ version: 当前客户端版本
                         verify_code: 核销码,
                         status: 状态 1-未核销, 2-已核销 3-已退款,
                     }
-                ]
-                isOperSelf: 是否归属于当前小程序的运营中心
+                ],
+                goods_end_date: 商品截止日期
             }
         ]
     } 
@@ -473,8 +475,9 @@ version: 当前客户端版本
 
 - [ ] 订单详情
 
-    地址: GET`/order/detail`
-    参数
+  地址: GET`/order/detail`
+
+  参数
 
   ```
   order_no 订单号
@@ -505,22 +508,91 @@ version: 当前客户端版本
 
   ```
     data: {
-    	order_no: 订单号,
-    	isOperSelf: 是否归属于当前小程序的运营中心
-    	sdk_config: 调起微信支付配置, isOperSelf 为1时存在 {
-          appId: appid,
-          nonceStr: 随机字符串,
-          package: package,
-          signType: signType,
-          paySign: 支付签名,
-          timestamp: 时间戳,
-    	}
+        id: 订单ID,
+        oper_id: 运营中心ID,
+        order_no: 订单号,
+        user_id: 用户ID,
+        user_name: 用户名,
+        notify_mobile: 用户通知手机号,
+        merchant_id: 商家ID,
+        merchant_name: 商家名,
+        goods_id: 商品ID,
+        goods_name: 商品名,
+        goods_pic: 商品图片,
+        goods_thumb_url: 商品缩略图,
+        price: 商家单价,
+        buy_number: 购买数量,
+        pay_price: 支付金额,
+        pay_time: 支付时间,
+        refund_price: 退款金额,
+        refund_time: 退款时间,
+        status: 状态 1-未支付 2-已取消 3-已关闭 (超时自动关闭) 4-已付款  6-已退款 7-已完成 (不可退款),
+        origin_app_type: 订单来源客户端类型  1-安卓 2-ios 3-小程序
     }
+  ```
+
+  
+
+- [ ] 订单支付接口
+
+  地址: POST `/order/pay`
+
+  参数
+
+  ```
+  order_no: 订单号
+  pay_type: 支付类型 1-微信支付 2-支付宝支付  默认1
+  ```
+
+  返回
+
+  ```
+  data: {
+      order_no: 订单号,
+      sdk_config: 调起支付参数 {
+      	appid,
+      	partnerid,
+      	prepayid,
+      	noncestr,
+      	timestamp,
+      	package,
+      	sign
+      }
+  }
   ```
 
   ​
 
+- [ ] 输入金额直接付款接口
 
+  地址: POST `order/scanQrcodePay`
+
+  参数: 
+
+  ```
+  merchant_id: 商户ID,
+  price: 金额,
+  pay_type: 支付类型,
+  ```
+
+  返回: 
+
+  ```
+    data: {
+        order_no: 订单号,
+        sdk_config: 调起支付参数 {
+        	appid,
+        	partnerid,
+        	prepayid,
+        	noncestr,
+        	timestamp,
+        	package,
+        	sign
+        }
+    }
+  ```
+
+  
 
 - [ ] 退款接口
 
@@ -609,4 +681,4 @@ version: 当前客户端版本
   10008: 用户已经绑定了邀请人
   ```
 
-  ​
+  
