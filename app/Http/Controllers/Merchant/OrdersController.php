@@ -29,7 +29,9 @@ class OrdersController extends Controller
                     ->orWhere(function(Builder $query){
                         $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
                             ->whereIn('status', [4, 6, 7]);
-                    });
+                    })->orWhere(function(Builder $query){
+                    $query->where('type', Order::TYPE_DISHES);
+                });
             })
             ->when($orderNo, function (Builder $query) use ($orderNo){
                 $query->where('order_no', $orderNo);
@@ -38,6 +40,8 @@ class OrdersController extends Controller
                 $query->where('notify_mobile', 'like', "%$notifyMobile%");
             })
             ->orderBy('id', 'desc')->paginate();
+
+
 
         return Result::success([
             'list' => $data->items(),
