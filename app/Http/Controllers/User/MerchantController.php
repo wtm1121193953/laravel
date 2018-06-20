@@ -124,6 +124,8 @@ class MerchantController extends Controller
 
     /**
      * 获取商户详情
+     *
+     * TODO  menchant settting
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function detail()

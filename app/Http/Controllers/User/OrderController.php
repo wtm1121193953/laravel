@@ -78,6 +78,7 @@ class OrderController extends Controller
         return Result::success($detail);
     }
 
+
     /**
      * 订单创建
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
@@ -158,7 +159,7 @@ class OrderController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    public function dishBuy()
+    public function dishesBuy()
     {
         $this->validate(request(), [
             'dishes_id' => 'required|integer|min:1',

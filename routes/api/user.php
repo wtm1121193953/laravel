@@ -35,8 +35,10 @@ Route::prefix('user')
         Route::any('order/pay', 'OrderController@pay')->middleware(UserLoginFilter::class);
         Route::any('order/refund', 'OrderController@refund')->middleware(UserLoginFilter::class);
         Route::any('order/scanQrcodePay', 'OrderController@scanQrcodePay')->middleware(UserLoginFilter::class);
-        Route::any('order/getTotalPrice', 'OrderController@getTotalPrice')->middleware(UserLoginFilter::class);
-        Route::any('order/dishesBuy', 'OrderController@dishBuy')->middleware(UserLoginFilter::class);
+        Route::any('order/dishesBuy', 'OrderController@dishesBuy')->middleware(UserLoginFilter::class);
+        Route::get('order/dishesDetail', 'OrderController@dishesDetail')->middleware(UserLoginFilter::class);
+
+
 
         Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
         Route::get('invite/getInviterBySceneId', 'InviteChannelController@getInviterBySceneId');
@@ -44,8 +46,9 @@ Route::prefix('user')
 
         Route::get('scene/info', 'SceneController@getSceneInfo');
 
-        Route::get('merchant/dishesCategory', 'MerchantDishesController@getDishesCategory');
-        Route::get('merchant/dishesGoods', 'MerchantDishesController@getDishesGoods');
-        Route::post('merchant/dishesSettle','MerchantDishesController@dishesSettle')->middleware(UserLoginFilter::class);
+        Route::get('dishes/category', 'MerchantDishesController@getDishesCategory');
+        Route::get('dishes/goods', 'MerchantDishesController@getDishesGoods');
+        Route::post('dishes/add','MerchantDishesController@dishesAdd')->middleware(UserLoginFilter::class);
+        Route::get('dishes/detail','MerchantDishesController@detail')->middleware(UserLoginFilter::class);
 
     });

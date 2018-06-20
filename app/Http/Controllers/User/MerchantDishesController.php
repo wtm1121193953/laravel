@@ -81,7 +81,7 @@ class MerchantDishesController extends Controller
 
    //点菜操作
 
-    public function dishesSettle()
+    public function dishesAdd()
     {
         $userId = request()->get('current_user')->id;
         $this->validate(request(), [
@@ -127,4 +127,20 @@ class MerchantDishesController extends Controller
         }
         return Result::success($dishes);
     }
+
+//菜单详情
+    public function detail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+
+        $detail = Goods::findOrFail(request('id'));
+        $detail->pic_list = $detail->pic_list ? explode(',', $detail->pic_list) : [];
+        $merchant = Merchant::findOrFail($detail->merchant_id);
+        $detail->business_time = json_decode($merchant->business_time, 1);
+
+        return Result::success($detail);
+    }
+
 }
