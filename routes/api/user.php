@@ -36,8 +36,6 @@ Route::prefix('user')
         Route::any('order/refund', 'OrderController@refund')->middleware(UserLoginFilter::class);
         Route::any('order/scanQrcodePay', 'OrderController@scanQrcodePay')->middleware(UserLoginFilter::class);
         Route::any('order/dishesBuy', 'OrderController@dishesBuy')->middleware(UserLoginFilter::class);
-        Route::get('order/dishesDetail', 'OrderController@dishesDetail')->middleware(UserLoginFilter::class);
-
 
 
         Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
