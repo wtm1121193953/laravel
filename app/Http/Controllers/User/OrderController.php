@@ -13,6 +13,8 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Goods\Goods;
+use App\Modules\Dishes\Dishes;
+use App\Modules\Dishes\DishesItem;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
@@ -149,6 +151,99 @@ class OrderController extends Controller
             'sdk_config' => $sdkConfig,
         ]);
     }
+
+
+    /**
+     * 点菜订单创建
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     */
+    public function dishBuy()
+    {
+        $this->validate(request(), [
+            'dishes_id' => 'required|integer|min:1',
+        ]);
+        $dishesId = request('dishes_id');
+
+        $dishes = Dishes::findOrFail($dishesId);
+
+        $user = request()->get('current_user');
+
+        $merchant = Merchant::findOrFail($dishes->merchant_id);
+        $oper = request()->get('current_oper');
+
+
+        $order = new Order();
+        $orderNo = Order::genOrderNo();
+        $order->oper_id = $merchant->oper_id;
+        $order->order_no = $orderNo;
+        $order->user_id = $user->id;
+        $order->open_id = request()->get('current_open_id');
+        $order->user_name = $user->name ?? '';
+        $order->type = Order::TYPE_DISHES;
+        $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
+        $order->merchant_id = $merchant->id;
+        $order->merchant_name = $merchant->name ?? '';
+        $order->dishes_id = $dishesId;
+
+        $order->status = Order::STATUS_UN_PAY;
+        $order->pay_price = $this->getTotalPrice();
+        $order->remark = request('remark', '');
+        $order->save();
+
+        $isOperSelf = $merchant->oper_id === $oper->id ? 1 : 0;
+        if($isOperSelf == 1) {
+            $payApp = WechatService::getWechatPayAppForOper($merchant->oper_id);
+            $data = [
+                'body' =>  $merchant->name,
+                'out_trade_no' => $orderNo,
+                'total_fee' => $order->pay_price,
+                'trade_type' => 'JSAPI',
+                'openid' => $order->open_id,
+            ];
+            $unifyResult = $payApp->order->unify($data);
+            dd($unifyResult);
+            if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
+                $order->save();
+            }else {
+                Log::error('微信统一下单失败', [
+                    'payConfig' => $payApp->getConfig(),
+                    'data' => $data,
+                    'result' => $unifyResult,
+                ]);
+                throw new BaseResponseException('微信统一下单失败');
+            }
+            $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+        }else {
+            $sdkConfig = null;
+        }
+
+        return Result::success([
+            'order_no' => $orderNo,
+            'isOperSelf' => $isOperSelf,
+            'sdk_config' => $sdkConfig,
+        ]);
+    }
+
+
+
+    /**
+     * 获取总价格
+     */
+    public function getTotalPrice(){
+        $dishesId = request('dishes_id');
+        $list = DishesItem::where('dishes_id',$dishesId)->get();
+        $totalPrice = 0;
+        foreach ($list as  $v){
+                $totalPrice += ($v->dishes_goods_sale_price)*($v->number);
+        }
+       return  $totalPrice;
+
+    }
+
+
+
+
 
     /**
      * 扫码付款
