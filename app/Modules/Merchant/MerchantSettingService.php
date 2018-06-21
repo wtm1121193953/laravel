@@ -25,7 +25,7 @@ class MerchantSettingService
     {
         // set
         Cache::forget("merchant_setting_key_{$merchantId}_$key");
-  // var_dump($operId,$merchantId,$key,$value);die();
+    // var_dump($operId,$merchantId,$key,$value);die();
         $setting = MerchantSetting::where('merchant_id', $merchantId)
             ->where('key', $key)
             ->first();
