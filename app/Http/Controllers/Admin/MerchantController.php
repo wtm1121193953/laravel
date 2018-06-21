@@ -34,7 +34,7 @@ class MerchantController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $name = request('name');
-        $auditStatus = request('audit_status');
+        $auditStatus = request('auditStatus');
         $data = Merchant::where('audit_oper_id', '>', 0)
             ->when($id, function (Builder $query) use ($id){
                 $query->where('id', $id);
@@ -165,7 +165,9 @@ class MerchantController extends Controller
         $id = request('merchantId');
         $startDate = request('startDate');
         $endDate = request('endDate');
+        $name = request('name');
+        $auditStatus = request('auditStatus');
 
-        return (new MerchantExport($id, $startDate, $endDate))->download('merchant_list.xlsx');
+        return (new MerchantExport($id, $startDate, $endDate, $name, $auditStatus))->download('merchant_list.xlsx');
     }
 }

@@ -6,13 +6,13 @@
                 <el-col>
                     <el-form v-model="query" inline>
                         <el-form-item prop="merchantId" label="商户ID">
-                            <el-input v-model="query.merchantId" size="small" clearable></el-input>
+                            <el-input v-model="query.merchantId" size="small" class="w-100" clearable></el-input>
                         </el-form-item>
-                        <el-form-item label="" prop="name">
-                            <el-input v-model="query.name" placeholder="商户名称" @keyup.enter.native="search"/>
+                        <el-form-item prop="name" label="商户名称">
+                            <el-input v-model="query.name" size="small" placeholder="商户名称" @keyup.enter.native="search"/>
                         </el-form-item>
-                        <el-form-item label="审核状态" prop="audit_status">
-                            <el-select v-model="query.audit_status" placeholder="请选择">
+                        <el-form-item label="审核状态" prop="auditStatus">
+                            <el-select v-model="query.auditStatus" size="small" placeholder="请选择" class="w-100">
                                 <el-option label="全部" value=""/>
                                 <el-option label="待审核" value="-1"/>
                                 <el-option label="审核通过" value="1"/>
@@ -138,7 +138,7 @@
                 isLoading: false,
                 query: {
                     name: '',
-                    audit_status: '',
+                    auditStatus: '',
                     page: 1,
                     merchantId: '',
                     startDate: '',
@@ -201,7 +201,7 @@
                 });
             },
             downloadExcel() {
-                window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate;
+                window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&auditStatus=' + this.query.auditStatus;
             }
         },
         created(){
