@@ -103,4 +103,14 @@ class OrdersController extends Controller
         }
 
     }
+
+    //获取商户订单详情页具体菜品具体情况
+    public function getDishesGoods()
+    {
+        $dishes_id = request('dishes_id');
+
+
+    }
+
+
 }
