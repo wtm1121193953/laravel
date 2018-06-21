@@ -33,7 +33,7 @@
         },
         methods: {
             download(type){
-                location.href = '/api/merchant/pay/qrcode/downloadMiniprogramQrcodee?type=' + type
+                location.href = '/api/merchant/pay/qrcode/downloadMiniprogramQrcode?type=' + type
             },
             init(){
                 api.get('/pay/qrcode/miniprogramQrcode').then(data => {
