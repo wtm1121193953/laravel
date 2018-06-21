@@ -72,10 +72,14 @@
                 categories: [],
                 formRules: {
                     name: [
-                        {required: true, message: '名称不能为空'}
+                        {required: true, message: '商品名称不能为空'},
+                        {max: 30, message: '商品名称不能超过30个字'}
                     ],
                     dishes_category_id: [
                         {required: true, message: '类别不能为空'}
+                    ],
+                    intro: [
+                        {max: 200, message: '商品简介不能超过200个字'}
                     ]
                 },
             }

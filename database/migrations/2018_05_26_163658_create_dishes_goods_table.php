@@ -18,8 +18,8 @@ class CreateDishesGoodsTable extends Migration
             $table->integer('oper_id')->index()->default(0)->comment('所属运营中心ID');
             $table->integer('merchant_id')->index()->default(0)->comment('商家ID');
             $table->string('name')->default('')->comment('点菜商品名称');
-            $table->integer('market_price')->default(0)->comment('市场价格');
-            $table->integer('sale_price')->default(0)->comment('销售价格');
+            $table->decimal('market_price')->default(0)->comment('市场价格');
+            $table->decimal('sale_price')->default(0)->comment('销售价格');
             $table->integer('dishes_category_id')->default(0)->comment('分类');
             $table->string('intro')->default('')->comment('商品描述');
             $table->string('logo')->default('')->comment('商品logo图片');
