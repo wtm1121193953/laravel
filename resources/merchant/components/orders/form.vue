@@ -12,7 +12,7 @@
             </el-form-item>
 
             <el-form-item label="商品信息：" v-if="order.type == 3">
-                <div v-for="(index, item) in order.dishes_items" :key="index">
+                <div v-for=" item  in order.dishes_items" :key="index">
                     <span>{{item.dishes_goods_name}}</span>
                     <span>{{item.dishes_goods_sale_price}}¥</span>
                     <span>×{{item.number}}</span><br/>
