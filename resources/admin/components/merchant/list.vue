@@ -3,7 +3,42 @@
         <el-tabs v-model="activeTab" type="card" @tab-click="changeTab">
             <el-tab-pane label="待审核商户列表" name="merchant">
 
-                <el-table :data="list" stripe>
+                <el-col>
+                    <el-form v-model="query" inline>
+                        <el-form-item prop="merchantId" label="商户ID">
+                            <el-input v-model="query.merchantId" size="small" clearable></el-input>
+                        </el-form-item>
+                        <el-form-item prop="startDate" label="添加商户开始时间">
+                            <el-date-picker
+                                v-model="query.startDate"
+                                type="date"
+                                size="small"
+                                placeholder="选择开始日期"
+                                format="yyyy 年 MM 月 dd 日"
+                                value-format="yyyy-MM-dd"
+                            ></el-date-picker>
+                        </el-form-item>
+                        <el-form-item prop="startDate" label="结束时间">
+                            <el-date-picker
+                                v-model="query.endDate"
+                                type="date"
+                                size="small"
+                                placeholder="选择结束日期"
+                                format="yyyy 年 MM 月 dd 日"
+                                value-format="yyyy-MM-dd"
+                                :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(query.startDate) - 8.64e7}}"
+                            ></el-date-picker>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" size="small" @click="search">搜 索</el-button>
+                        </el-form-item>
+                        <el-form-item class="fr">
+                            <el-button type="success" size="small" @click="downloadExcel">导出Excel</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-col>
+
+                <el-table :data="list" v-loading="tableLoading" stripe>
                     <el-table-column prop="created_at" label="添加时间"/>
                     <el-table-column prop="id" label="商户ID"/>
                     <el-table-column prop="operName" label="激活运营中心"/>
@@ -91,10 +126,14 @@
                 isLoading: false,
                 query: {
                     page: 1,
+                    merchantId: '',
+                    startDate: '',
+                    endDate: '',
                 },
                 list: [],
                 total: 0,
                 currentMerchant: null,
+                tableLoading: false,
             }
         },
         computed: {
@@ -108,10 +147,26 @@
                     this.$refs.auditList.getList();
                 }
             },
-            getList(){
-                api.get('/merchants', this.query).then(data => {
+            search() {
+                if (this.query.startDate > this.query.endDate) {
+                    this.$message.error('搜索的开始时间不能大于结束时间！');
+                    return false;
+                }
+                this.query.page = 1;
+                this.getList('search');
+            },
+            getList(type = ''){
+                this.tableLoading = true;
+                let param = {};
+                if (type = ''){
+                    param = {page: this.query.page};
+                } else {
+                    param = this.query;
+                }
+                api.get('/merchants', param).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                    this.tableLoading = false;
                 })
             },
             detail(scope){
@@ -130,6 +185,9 @@
                         this.getList();
                     })
                 });
+            },
+            downloadExcel() {
+                window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate;
             }
         },
         created(){

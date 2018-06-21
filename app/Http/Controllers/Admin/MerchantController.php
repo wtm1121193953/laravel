@@ -14,17 +14,35 @@ use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantExport;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 class MerchantController extends Controller
 {
 
+    /**
+     * 获取商户列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function getList()
     {
+        $id = request('merchantId');
+        $startDate = request('startDate');
+        $endDate = request('endDate');
         $data = Merchant::where('audit_oper_id', '>', 0)
+            ->when($id, function (Builder $query) use ($id){
+                $query->where('id', $id);
+            })
+            ->when($startDate, function (Builder $query) use ($startDate){
+                $query->where('created_at', '>=', $startDate.' 00:00:00');
+            })
+            ->when($endDate, function (Builder $query) use ($endDate){
+                $query->where('created_at', '<=', $endDate.' 23:59:59');
+            })
             ->orderByDesc('id')->paginate();
 
         $data->each(function ($item){
@@ -125,5 +143,18 @@ class MerchantController extends Controller
         $merchant->save();
         $merchantAudit->save();
         return Result::success($merchant);
+    }
+
+    /**
+     * 下载Excel
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function downloadExcel()
+    {
+        $id = request('merchantId');
+        $startDate = request('startDate');
+        $endDate = request('endDate');
+
+        return (new MerchantExport($id, $startDate, $endDate))->download('merchant_list.xlsx');
     }
 }
