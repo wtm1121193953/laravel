@@ -47,7 +47,7 @@ class MerchantDishesController extends Controller
     {
 
         $merchantId = request('merchant_id');
-        $categorys =DishesCategory::has('dishesGood')
+        $categorys =DishesCategory::has('dishesGoods')
             ->where('merchant_id', $merchantId)
             ->where('status', 1)
             ->orderBy('sort')
