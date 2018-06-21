@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static static first(...$columns)
  * @method static static firstOrFail(...$columns)
  * @method static static select(...$columns)
+ * @method static static chunk($count, callable $callback)
  * @method static static create(array $attributes = [])
  * @method static static find($id, $columns = ['*'])
  * @method static static findOrFail($id, $columns = ['*'])

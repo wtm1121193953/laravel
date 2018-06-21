@@ -17,6 +17,7 @@ use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 class MerchantController extends Controller
@@ -24,7 +25,18 @@ class MerchantController extends Controller
 
     public function getList()
     {
+        $name = request('name');
+        $auditStatus = request('audit_status');
         $data = Merchant::where('audit_oper_id', '>', 0)
+            ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus){
+                if($auditStatus == -1){
+                    $auditStatus = 0;
+                }
+                $query->where('audit_status', $auditStatus);
+            })
+            ->when($name, function (Builder $query) use ($name){
+                $query->where('name', 'like', "%$name%");
+            })
             ->orderByDesc('id')->paginate();
 
         $data->each(function ($item){

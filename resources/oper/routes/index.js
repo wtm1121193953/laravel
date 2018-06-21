@@ -10,9 +10,13 @@ import operBizMembers from './operBizMember'
 
 import OrderList from '../components/order/list'
 
-import InviteChannel from '../components/invite-channel'
+import InviteChannelList from '../components/invite-channel/list'
+import InviteRecords from '../components/invite-record/list'
 
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
+
+//系统设置
+import SettingMappingUser from '../components/setting/mapping-user'
 
 /**
  *
@@ -49,7 +53,17 @@ const routes = [
         path: '/',
         component: Home,
         children: [
-            {path: 'invite-channel', component: InviteChannel, name: 'InviteChannel'},
+            {path: 'invite-channel', component: InviteChannelList, name: 'InviteChannelList'},
+            {path: 'invite-records', component: InviteRecords, name: 'InviteRecords'},
+        ]
+    },
+
+    //系统设置
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'setting/mapping_user', component: SettingMappingUser, name: 'SettingMappingUser'},
         ]
     },
 

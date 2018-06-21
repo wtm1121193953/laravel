@@ -40,6 +40,16 @@ class Merchant extends BaseModel
 
 
     /**
+     * 获取商户等级描述
+     * @param $level
+     * @return mixed
+     */
+    public static function getLevelText($level)
+    {
+        return ['', '签约商户', '联盟商户', '品牌商户'][$level];
+    }
+
+    /**
      * 从请求中获取商户池数据, 并填充到当前实例中
      */
     public function fillMerchantPoolInfoFromRequest()
