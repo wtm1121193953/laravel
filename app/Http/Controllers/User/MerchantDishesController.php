@@ -81,7 +81,7 @@ class MerchantDishesController extends Controller
 
    //点菜操作
 
-    public function dishesSettle()
+    public function dishesAdd()
     {
         $userId = request()->get('current_user')->id;
         $this->validate(request(), [
@@ -127,4 +127,31 @@ class MerchantDishesController extends Controller
         }
         return Result::success($dishes);
     }
+
+//点菜的菜单详情
+
+    public function detail()
+    {
+        $this->validate(request(), [
+            'dishes_id' => 'required|integer|min:1',
+        ]);
+
+        $list = DishesItem::where('dishes_id',request('dishes_id'))->get();
+        $detailDishes = [];
+        foreach ($list as  $k=>$item){
+            $detailDishes[$k]['dishes_goods_name'] = $item->dishes_goods_name;
+            $detailDishes[$k]['number'] = $item->number;
+            $detailDishes[$k]['total_price'] = ($item->number)*($item->dishes_goods_sale_price);
+            $detailDishes[$k]['dishes_goods_logo'] = $item->dishes_goods_logo;
+            $detailDishes[$k]['user_id'] = $item->user_id;
+            $detailDishes[$k]['oper_id'] = $item->oper_id;
+        }
+
+        return Result::success($detailDishes);
+    }
+
+
+
+
+
 }

@@ -33,6 +33,8 @@ class MerchantController extends Controller
         $id = request('merchantId');
         $startDate = request('startDate');
         $endDate = request('endDate');
+        $name = request('name');
+        $auditStatus = request('audit_status');
         $data = Merchant::where('audit_oper_id', '>', 0)
             ->when($id, function (Builder $query) use ($id){
                 $query->where('id', $id);
@@ -42,6 +44,15 @@ class MerchantController extends Controller
             })
             ->when($endDate, function (Builder $query) use ($endDate){
                 $query->where('created_at', '<=', $endDate.' 23:59:59');
+            })
+            ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus){
+                if($auditStatus == -1){
+                    $auditStatus = 0;
+                }
+                $query->where('audit_status', $auditStatus);
+            })
+            ->when($name, function (Builder $query) use ($name){
+                $query->where('name', 'like', "%$name%");
             })
             ->orderByDesc('id')->paginate();
 

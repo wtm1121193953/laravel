@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Setting\SettingService;
 use App\Result;
 use App\Support\Lbs;
@@ -30,13 +31,15 @@ class MerchantController extends Controller
         $keyword = request('keyword');
         $lng = request('lng');
         $lat = request('lat');
-        $radius = request('radius');
 
-        $distances = null;
+        // 暂时去掉商户列表中的距离限制
+//        $radius = request('radius');
+
+        /*$distances = null;
         if($lng && $lat && $radius){
             // 如果经纬度及范围都存在, 则按距离筛选出附近的商家
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
-        }
+        }*/
 
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
 
@@ -70,16 +73,17 @@ class MerchantController extends Controller
                 // 如果只传了类别, 没有关键字
                 $query->where('merchant_category_id', $merchant_category_id);
             })
-            ->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
+            /*->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
                 // 如果范围存在, 按距离搜索, 并按距离排序
                 $query->whereIn('id', array_keys($distances));
-            });
-        if($lng && $lat && $radius){
+            })*/;
+            // 统一按距离排序
+        if($lng && $lat){
             // 如果是按距离搜索, 需要在程序中排序
             $allList = $query->get();
             $total = $query->count();
-            $list = $allList->map(function ($item) use ($distances) {
-                $item->distance = isset($distances[$item->id]) ? $distances[$item->id] : 10000;
+            $list = $allList->map(function ($item) use ($lng, $lat) {
+                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
                 return $item;
             })
                 ->sortBy('distance')
@@ -92,14 +96,6 @@ class MerchantController extends Controller
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
             $data = $query->paginate();
-            // 如果传递了经纬度信息, 需要计算用户与商家之间的距离
-            if($lng && $lat){
-                $data->each(function ($item) use ($lng, $lat){
-                    $distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
-                    // 格式化距离
-                    $item->distance = $this->_getFormativeDistance($distance);
-                });
-            }
             $list = $data->items();
             $total = $data->total();
         }
@@ -124,6 +120,7 @@ class MerchantController extends Controller
 
     /**
      * 获取商户详情
+     *
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function detail()
@@ -144,7 +141,10 @@ class MerchantController extends Controller
             $detail->distance = $this->_getFormativeDistance($distance);
         }
         $category = MerchantCategory::find($detail->merchant_category_id);
+
         $detail->merchantCategoryName = $category->name;
+        //商家是否开启单品模式
+        $detail->isOpenDish = MerchantSettingService::getValueByKey($id,'dishes_enabled');
         // 最低消费
         $detail->lowestAmount = Goods::getLowestPriceForMerchant($detail->id);
         $currentOperId = request()->get('current_oper')->id;

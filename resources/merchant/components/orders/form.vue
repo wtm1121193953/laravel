@@ -22,6 +22,12 @@
             <el-form-item label="总价：">
                 {{order.pay_price}}
             </el-form-item>
+            <!--<el-form-item label="身份：">
+                {{order.user_level_text}}
+            </el-form-item>
+            <el-form-item label="返利积分：">
+                {{order.credit}}
+            </el-form-item>-->
             <el-form-item label="订单状态：">
                 {{order.statusText}}
             </el-form-item>

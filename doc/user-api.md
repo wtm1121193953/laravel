@@ -199,7 +199,6 @@ token (wxLogin接口除外)
 
   ​
 
-  
 
 - [ ] 根据经纬度获取所在城市
 
@@ -233,7 +232,7 @@ token (wxLogin接口除外)
 - [ ] 获取商家类别列表
 
     接口地址: GET `/merchant/categories/tree`
-    
+
     返回:
 
   ```
@@ -337,9 +336,9 @@ token (wxLogin接口除外)
 - [ ] 商品列表
 
     接口地址: GET `/goods`
-    
+
     参数: `merchant_id` 商家ID
-    
+
     返回
 
   ```
@@ -373,9 +372,9 @@ token (wxLogin接口除外)
 - [ ] 商品详情
 
     接口地址: GET `/goods/detail`
-    
+
     参数: id 商品ID
-    
+
     返回
 
   ```
@@ -537,4 +536,171 @@ token (wxLogin接口除外)
 通过scene值请求接口登陆, 获取用户信息, 并调起支付
 ```
 
-- [ ] sceneId快捷登陆接口
+
+
+**点菜相关**
+
+- [ ] 获取该商家菜单的所有种类接口
+
+  地址: Get `dishes/category`
+
+  参数
+
+  ```
+  merchant_id   商家id
+  ```
+
+  返回
+
+  ```
+  {
+    "code": 0,
+    "message": "请求成功",
+    "data": {
+        "list": [
+            {
+                "id": 1,     种类ID
+                "oper_id": 3,   运营ID
+                "merchant_id": 19,  商家ID
+                "name": "海鲜",
+                "sort": 1,
+                "status": 1,   状态 1上架  2下架
+                "created_at": "2018-06-15 14:24:43",
+                "updated_at": "2018-06-15 16:50:02",
+                "deleted_at": null
+            },
+  		....
+        ]
+    },
+    "timestamp": 1529477361
+  }
+  ```
+
+
+- [ ] 获取菜单各种类菜品接口
+
+  地址: Get `dishes/goods`
+
+  参数
+
+  ```
+  merchant_id   商家id
+  category_id   菜的种类
+  ```
+
+  返回
+
+  ```
+  {
+    "code": 0,
+    "message": "请求成功",
+    "data": {
+        "list": [
+            {
+                "id": 3,
+                "oper_id": 3,
+                "merchant_id": 19,  
+                "name": "龙虾",
+                "market_price": 111,  市场价格
+                "sale_price": 110,  零售价
+                "dishes_category_id": 1,  分类ID
+                "intro": "11111",  商品描述
+                "logo": "http://www.daqian.com/storage/image/item/1SrUrHdLJkumxE8fWWk3zEricLsf7MciNDlgljFp.jpeg",  logo图片
+                "detail_image": "http://www.daqian.com/storage/image/item/z5tBnB2XoBvXEYUQWyQ3odPz49OPrEKLMEIYmnj6.jpeg",  商品详情图片
+                "status": 1,  1上架 2下架
+                "created_at": "2018-06-15 14:26:09",
+                "updated_at": "2018-06-15 14:26:09",
+                "deleted_at": null
+            },
+           .....
+  }
+  ```
+
+
+
+
+- [ ] 点菜接口
+
+  地址: post `dishes/add`
+
+  参数   
+  ```
+  merchant_id   商家id
+  goods_list :[
+    [id=>'',number=>''],
+    [id=>'',number=>'']
+  ] id:菜的ID  number 数量
+
+  ```
+
+  返回
+
+  ```
+  {
+    "code": 0,
+    "message": "请求成功",
+    "data": {
+        "oper_id": 3,
+        "merchant_id": 19,
+        "user_id": 1,  用户ID
+        "updated_at": "2018-06-20 15:05:15",
+        "created_at": "2018-06-20 15:05:15",
+        "id": 3   菜单ID
+    },
+    "timestamp": 1529478315
+  }
+  ```
+
+
+- [ ] 菜单详情
+
+  地址: get `dishes/detail`
+
+  参数   
+  ```
+   id  :菜单id
+
+  ```
+
+  返回
+
+  ```
+  {
+   再写
+  }
+  ```
+
+  - [ ] 点菜下单接口
+
+  地址: POST `/order/dishesBuy`
+
+  参数
+
+  ```
+  dishes_id  ：菜单id
+  ```
+
+  返回
+
+  ```
+    data: {
+    	order_no: 订单号,
+    	isOperSelf: 是否归属于当前小程序的运营中心
+    	sdk_config: 调起微信支付配置, isOperSelf 为1时存在 {
+          appId: appid,
+          nonceStr: 随机字符串,
+          package: package,
+          signType: signType,
+          paySign: 支付签名,
+          timestamp: 时间戳,
+    	}
+    }
+    参照商品 本地不好测试
+    
+   
+  ```
+
+
+
+订单详情，订单列表接口不变
+

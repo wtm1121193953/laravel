@@ -22,6 +22,7 @@
                 <template slot-scope="scope">
                     <span v-if="scope.row.type == 1">团购</span>
                     <span v-else-if="scope.row.type == 2">买单</span>
+                    <span v-else-if="scope.row.type == 3">点菜</span>
                     <span v-else>未知({{scope.row.type}})</span>
                 </template>
             </el-table-column>

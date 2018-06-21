@@ -22,6 +22,8 @@ class MerchantController extends Controller
      */
     public function getList()
     {
+        $name = request('name');
+        $auditStatus = request('audit_status');
         $status = request('status');
         $data = Merchant::where(function (Builder $query){
                 $currentOperId = request()->get('current_user')->oper_id;
@@ -30,6 +32,15 @@ class MerchantController extends Controller
             })
             ->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
+            })
+            ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus){
+                if($auditStatus == -1){
+                    $auditStatus = 0;
+                }
+                $query->where('audit_status', $auditStatus);
+            })
+            ->when($name, function (Builder $query) use ($name){
+                $query->where('name', 'like', "%$name%");
             })
             ->orderBy('updated_at', 'desc')
             ->paginate();
@@ -46,6 +57,35 @@ class MerchantController extends Controller
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
+        ]);
+    }
+
+    /**
+     * 获取全部的商户名称
+     */
+    public function allNames()
+    {
+        $auditStatus = request('audit_status');
+        $status = request('status');
+        $list = Merchant::where(function (Builder $query){
+            $currentOperId = request()->get('current_user')->oper_id;
+            $query->where('oper_id', $currentOperId)
+                ->orWhere('audit_oper_id', $currentOperId);
+        })
+            ->when($status, function (Builder $query) use ($status){
+                $query->where('status', $status);
+            })
+            ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus){
+                if($auditStatus == -1){
+                    $auditStatus = 0;
+                }
+                $query->where('audit_status', $auditStatus);
+            })
+            ->orderBy('updated_at', 'desc')
+            ->select('id', 'name')
+            ->get();
+        return Result::success([
+            'list' => $list
         ]);
     }
 
@@ -68,6 +108,7 @@ class MerchantController extends Controller
             'merchant_category_id' => 'required',
             'business_licence_pic_url' => 'required',
             'organization_code' => 'required',
+            'settlement_rate' => 'required|numeric|min:10',
         ]);
         $merchant = new Merchant();
         $merchant->fillMerchantPoolInfoFromRequest();
@@ -108,6 +149,7 @@ class MerchantController extends Controller
             'merchant_category_id' => 'required',
             'business_licence_pic_url' => 'required',
             'organization_code' => 'required',
+            'settlement_rate' => 'required|numeric|min:10',
         ]);
         $currentOperId = request()->get('current_user')->oper_id;
         $merchant = Merchant::where('id', request('id'))
@@ -147,6 +189,13 @@ class MerchantController extends Controller
      */
     public function addFromMerchantPool()
     {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'business_licence_pic_url' => 'required',
+            'organization_code' => 'required',
+            'settlement_rate' => 'required|numeric|min:10',
+        ]);
+
         $merchantId = request('id');
         $merchant = Merchant::findOrFail($merchantId);
         if($merchant->oper_id > 0){

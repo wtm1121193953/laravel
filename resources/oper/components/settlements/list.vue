@@ -2,7 +2,7 @@
     <page title="财务管理" v-loading="isLoading">
         <el-form size="small" :model="query" inline>
             <el-form-item label="商户">
-                <el-select v-model="query.merchantId">
+                <el-select v-model="query.merchantId" filterable>
                     <el-option label="全部" value=""/>
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
@@ -12,6 +12,12 @@
                     <el-option label="全部" value=""/>
                     <el-option label="未打款" :value="1"/>
                     <el-option label="已打款" :value="2"/>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="结算金额为0的数据">
+                <el-select v-model="query.showAmount">
+                    <el-option label="显示" value=""/>
+                    <el-option label="不显示" :value="1"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -24,7 +30,7 @@
                     {{scope.row.merchant_name}}
                     <el-button type="text"
                                v-if="!query.merchantId"
-                               @click="() => {query.merchantId = scope.row.merchant_id; search();}"
+                               @click="selectMerchant(scope.row.merchant_id)"
                     >只看他的</el-button>
                 </template>
             </el-table-column>
@@ -98,6 +104,7 @@
                     page: 1,
                     merchantId: '',
                     status: '',
+                    showAmount: '',
                 },
                 total: 0,
                 settlement: {},
@@ -106,9 +113,13 @@
         },
         methods: {
             getMerchants(){
-                api.get('/merchants').then(data => {
+                api.get('/merchant/allNames').then(data => {
                     this.merchants = data.list;
                 })
+            },
+            selectMerchant(merchantId){
+                this.query.merchantId = merchantId;
+                this.search();
             },
             search(){
                 this.query.page = 1;

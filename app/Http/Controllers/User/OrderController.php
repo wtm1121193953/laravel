@@ -21,6 +21,8 @@ use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
 use App\Modules\Setting\SettingService;
+use App\Modules\User\User;
+use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -71,12 +73,23 @@ class OrderController extends Controller
             'order_no' => 'required'
         ]);
         $detail = Order::where('order_no', request('order_no'))->firstOrFail();
-        $detail->items = OrderItem::where('order_id', $detail->id)->get();
+        // 只返回一个核销码
+        $orderItem = OrderItem::where('order_id', $detail->id)->first();
+        $detail->items = !empty($orderItem) ? [$orderItem] : [];
         $currentOperId = request()->get('current_oper')->id;
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
+            ->where('type', 1)
+            ->first();
+        if (!empty($creditRecord)){
+            $detail->user_level = $creditRecord->user_level;
+            $detail->user_level_text = User::getLevelText($creditRecord->user_level);
+            $detail->credit = $creditRecord->credit;
+        }
         return Result::success($detail);
     }
+
 
     /**
      * 订单创建
@@ -158,7 +171,7 @@ class OrderController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    public function dishBuy()
+    public function dishesBuy()
     {
         $this->validate(request(), [
             'dishes_id' => 'required|integer|min:1',
@@ -184,6 +197,7 @@ class OrderController extends Controller
         $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->name ?? '';
+        $order->goods_name = $merchant->name ?? '';
         $order->dishes_id = $dishesId;
 
         $order->status = Order::STATUS_UN_PAY;
@@ -202,7 +216,6 @@ class OrderController extends Controller
                 'openid' => $order->open_id,
             ];
             $unifyResult = $payApp->order->unify($data);
-            dd($unifyResult);
             if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
                 $order->save();
             }else {
@@ -237,6 +250,7 @@ class OrderController extends Controller
         foreach ($list as  $v){
                 $totalPrice += ($v->dishes_goods_sale_price)*($v->number);
         }
+
        return  $totalPrice;
 
     }
@@ -262,19 +276,7 @@ class OrderController extends Controller
         $user = request()->get('current_user');
         $merchant = Merchant::findOrFail(request('merchant_id'));
 
-        // 查询该用户在该商家下是否有未支付的直接付款订单, 若有直接修改原订单信息
-        $order = Order::where('type', Order::TYPE_SCAN_QRCODE_PAY)
-            ->where('merchant_id', $merchant->id)
-            ->where('user_id', $user->id)
-            ->where('status', Order::STATUS_UN_PAY)
-            ->first();
-        if(empty($order)){
-            $order = new Order();
-        }else {
-            $order->created_at = Carbon::now();
-        }
-
-        // 生成另外的订单号, 微信支付统一下单同一个订单号重复下单时金额不能不同
+        $order = new Order();
         $orderNo = Order::genOrderNo();
         $order->order_no = $orderNo;
         $order->oper_id = $merchant->oper_id;
@@ -401,7 +403,7 @@ class OrderController extends Controller
             'out_trade_no' => $order->order_no,
             'total_fee' => $order->pay_price * 100,
             'trade_type' => 'JSAPI',
-            'openid' => $order->open_id,
+            'openid' => request()->get('current_open_id'),
         ];
         $unifyResult = $payApp->order->unify($data);
         if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
