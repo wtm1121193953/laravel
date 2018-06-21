@@ -17,7 +17,8 @@ Route::prefix('app/user')
 
         Route::any('login', 'LoginController@login');
         Route::any('logout', 'LoginController@logout');
-        Route::any('loginWithSceneId', 'LoginController@loginWithSceneId');
+
+        Route::any('user/info', 'UserController@getInfo')->middleware(UserLoginFilter::class);
 
         Route::get('area/tree', 'AreaController@getTree');
         Route::get('area/cities/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
@@ -40,8 +41,17 @@ Route::prefix('app/user')
 
         Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
         Route::get('invite/getInviterByInviteChannelId', 'InviteChannelController@getInviterByChannelId');
-        Route::post('invite/bindInviter', 'InviteChannelController@bindInviter');
+        Route::post('invite/bindInviter', 'InviteChannelController@bindInviter')->middleware(UserLoginFilter::class);
+
+        Route::get('invite/getInviterInfo', 'UnbindInviterController@getBindInfo')->middleware(UserLoginFilter::class);
+        Route::post('invite/unbind', 'UnbindInviterController@unbind')->middleware(UserLoginFilter::class);
+
         Route::get('scene/info', 'SceneController@getSceneInfo');
+
+        Route::get('credit/payAmountToCreditRatio', 'CreditController@payAmountToCreditRatio')->middleware(UserLoginFilter::class);
+        Route::get('credit/getCreditList', 'CreditController@getCreditList')->middleware(UserLoginFilter::class);
+        Route::get('credit/getUserCredit', 'CreditController@getUserCredit')->middleware(UserLoginFilter::class);
+        Route::get('credit/getConsumeQuotaRecordList', 'CreditController@getConsumeQuotaRecordList')->middleware(UserLoginFilter::class);
 
         Route::get('merchant/dishesCategory', 'MerchantDishesController@getDishesCategory');
         Route::get('merchant/dishesGoods', 'MerchantDishesController@getDishesGoods');

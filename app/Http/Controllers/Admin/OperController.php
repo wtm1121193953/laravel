@@ -20,10 +20,16 @@ class OperController extends Controller
      */
     public function getList()
     {
+        $name = request('name');
         $status = request('status');
         $data = Oper::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
-        })->orderBy('id', 'desc')->paginate();
+        })
+            ->when($name, function(Builder $query) use ($name){
+                $query->where('name', 'like', "%$name%");
+            })
+            ->orderBy('id', 'desc')
+            ->paginate();
 
         $data->each(function ($item){
             $item->account = OperAccount::where('oper_id', $item->id)->first() ?: null;
@@ -173,6 +179,19 @@ class OperController extends Controller
         ]);
         $oper = Oper::findOrFail(request('id'));
         $oper->delete();
+        return Result::success($oper);
+    }
+
+    /**
+     * 支付到平台状态修改
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function setPayToPlatformStatus()
+    {
+        $oper = Oper::findOrFail(request('id'));
+        $oper->pay_to_platform = 1;
+        $oper->save();
+
         return Result::success($oper);
     }
 

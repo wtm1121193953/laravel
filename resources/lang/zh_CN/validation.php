@@ -94,6 +94,12 @@ return [
         'price' => [
             'required' => '销售价格不能为空',
         ],
+
+        'settlement_rate' => [
+            'required' => '结算费率不能为空',
+            'numeric' => '结算费率只能是数字',
+            'min' => '结算费率不能低于百分之 :min'
+        ]
     ],
 
     /*

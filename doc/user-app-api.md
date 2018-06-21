@@ -1,3 +1,5 @@
+
+
 ### 用户端App接口列表
 
 ##### 域名信息: 
@@ -112,7 +114,7 @@ app-type: 客户端类型  1-Android 2-iOS
 
 - [ ] 登陆接口(绑定手机号) 
 
-   接口地址: `POST` `/login`
+   接口地址: `POST` `/login` 
 
   参数:
 
@@ -128,7 +130,9 @@ app-type: 客户端类型  1-Android 2-iOS
   data: {
       userInfo: 用户信息 {
           name: 用户名称,
-          mobile: 手机号
+          mobile: 手机号,
+          mapping_merchant_name: 与用户绑定的商户名称,
+          mapping_oper_name: 与用户绑定的运营中心名称,
       },
       token: 返回用户token
   }
@@ -146,7 +150,7 @@ app-type: 客户端类型  1-Android 2-iOS
 - [ ] 退出登陆
 
     接口地址: POST `/logout`
-    
+
     参数: 
 
   ```
@@ -364,7 +368,6 @@ app-type: 客户端类型  1-Android 2-iOS
   同商户列表返回的字段
   ```
 
-  
 
 
 - [ ] 商品列表
@@ -486,7 +489,12 @@ app-type: 客户端类型  1-Android 2-iOS
   返回
 
   ```
-  同订单列表中的每一项
+  data: {
+  	同订单列表中的每一项,
+      user_level: 产生积分时的用户等级,
+      user_level_text: 用户等级名称(可以为空, 前端为空时不显示),
+      credit: 该订单产生的积分(可以为空, 前端为空时不显示),
+  }
   ```
 
   ​
@@ -531,7 +539,6 @@ app-type: 客户端类型  1-Android 2-iOS
     }
   ```
 
-  
 
 - [ ] 订单支付接口
 
@@ -549,7 +556,7 @@ app-type: 客户端类型  1-Android 2-iOS
   ```
   data: {
       order_no: 订单号,
-      sdk_config: 调起支付参数 {
+      sdk_config: 微信调起支付参数(支付类型为微信支付时存在) {
       	appid,
       	partnerid,
       	prepayid,
@@ -557,7 +564,8 @@ app-type: 客户端类型  1-Android 2-iOS
       	timestamp,
       	package,
       	sign
-      }
+      },
+      alipay_sdk_config: 支付宝支付调起字符串, 支付类型为支付宝支付时存在
   }
   ```
 
@@ -580,7 +588,7 @@ app-type: 客户端类型  1-Android 2-iOS
   ```
     data: {
         order_no: 订单号,
-        sdk_config: 调起支付参数 {
+        sdk_config: 微信调起支付参数(支付类型为微信支付时存在) {
         	appid,
         	partnerid,
         	prepayid,
@@ -588,11 +596,11 @@ app-type: 客户端类型  1-Android 2-iOS
         	timestamp,
         	package,
         	sign
-        }
+        },
+        alipay_sdk_config: 支付宝支付调起字符串, 支付类型为支付宝支付时存在
     }
   ```
 
-  
 
 - [ ] 退款接口
 
@@ -621,7 +629,7 @@ app-type: 客户端类型  1-Android 2-iOS
 
 
 
-####邀请渠道
+#### 邀请渠道
 
 - [ ] 获取邀请二维码
 
@@ -681,4 +689,202 @@ app-type: 客户端类型  1-Android 2-iOS
   10008: 用户已经绑定了邀请人
   ```
 
+
+
+
+
+
+
+
+## 新增接口
+
+#### 积分
+
+- [ ] 获取积分转换率接口
+
+  > 根据商户ID与用户等级获取订单金额转换为最终得到积分的比例
+
+  地址: GET ```/credit/payAmountToCreditRatio``` 
+
+  参数
+
+  ```
+  merchantId: 商户ID
+  page: 当前页码
+  ```
+
+  返回
+
+  ```
+  data: {
+      creditRatio: 积分转换比例
+  }
+  ```
+
+
+- [ ] 我的积分列表
+
+  地址: GET ```/credit/getCreditList``` 
+
+  参数
+
+  ```
+  month: 月份, 为空时则查询当月  如: 2016-02-01
+  ```
+
+  返回
+
+  ```
+  data: {
+      list: [
+          // 积分记录
+          {
+              id: 主键ID,
+              user_id: 用户ID,
+              credit: 产生积分,
+              inout_type: 收支类型(1-收入 2-支出),
+              type: 来源类型(1-自返 2-分享提成 3-商家提成 4-退款退回 5-消费支出),
+              user_level: 产生积分时的用户等级,
+              merchant_level: 积分产生时的商家等级(类型为商家提成时存在),
+              order_no: 关联订单号(类型为消费支出时为积分订单号, 其他为正常的订单号),
+              consume_user_mobile: 消费用户手机号,
+              order_profit_amount: 订单利润,
+              ratio: 返利比例[=用户等级对应比例 * 用户所关联的商户等级加成(若存在), 是一个百分比, 如20则表示百分之20],
+              credit_multiplier_of_amount: 积分系数, 系统配置项, 用于记录积分生成时配置的值, 用于订单金额与积分之间的换算,
+              created_at: 创建时间,
+          },
+          ......
+      ],
+      total: 总记录数
+  }
+  ```
+
+
+- [ ] 我的累计积分和累计消费额
+
+  地址: GET ```/credit/getUserCredit```
+
+  参数: 无
+
+  返回: 
+
+  ```
+  data: {
+  	  user_id: 用户ID,
+      total_credit: 总积分,
+      used_credit: 消费积分,
+      consume_quota: 累计消费额,
+      created_at: 创建时间,
+  }
+  ```
+
+
+- [ ] 我的消费额列表
+
+  地址: GET ```/credit/getConsumeQuotaRecordList```
+
+  参数
+
+  ```
+  month: 月份, 为空时则查询当月 如: 2018-06-01
+  page: 当前页码
+  ```
+
+  返回
+
+  ```
+  data: {
+      list: [
+          // 消费额记录
+          {
+              id: 主键ID,
+              user_id: 用户ID,
+              consume_quota: 产生消费额,
+              type: 来源类型 (1-消费自返 2-直接下级消费返),
+              order_no: 关联订单号,
+              consume_user_mobile: 消费用户手机号,
+              created_at: 创建时间,
+          },
+          ......
+      ],
+      total: 总记录数
+  }
+  ```
+
+
+
+- [ ] 用户邀请人信息
+
+  地址: GET ```invite/getInviterInfo```
+
+  参数
+
+  ```
+   
+  ```
+
+  返回
+
+  ```  
+        "data": {
+        "origin_type": 1,  邀请人类型 1-用户 2-商户 3-运营中心
+        "user": {        邀请的用户信息, origin_type 为1 时存在
+            "id": 2,
+            "name": "",
+            "mobile": "13923756372",
+            "email": "",
+            "account": "",
+            "status": 1,
+            "created_at": "2018-05-11 15:41:50",
+            "updated_at": "2018-05-11 15:41:50",
+            "level": 1
+        },
+        "merchant":邀请的商户信息 origin_type为2时存在 {
+          name:...
+        },   
+        "oper":  邀请的运营中心信息 origin_type为3时存在 {
+          name:...       
+        },     
+        "mappingUser":  邀请的运营中心或商户绑定的用户信息, origin_type 为2或3, 以及商户或运营中心已绑定用户时存在 {
+          mobile:...
+        }    
+    },
+    
+  ```
+
+  ​
+
+  - [ ] 用户解绑
+
+  地址: POST     ```invite/unbind```
+
+  参数
+
+  ```
+   
+  ```
+
+  首次解绑 成功返回
+
+  ```  
+
+  {
+    "code": 0,
+    "message": "请求成功",
+    "data": [],
+    "timestamp": 1528947476
+  }
+     
+  ```
+  若第二次解绑
+
+  ````
+  {
+    "code": 500,
+    "message": "该用户已解绑一次，不能再次解绑",
+    "timestamp": 1528947551
+  }
+  ````
+```
   
+```

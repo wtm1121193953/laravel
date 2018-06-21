@@ -57,6 +57,10 @@ class InviteChannelController extends Controller
             throw new ParamInvalidException('场景不存在');
         }
 
+        if($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER){
+            throw new ParamInvalidException('会员二维码已经失效');
+        }
+
         $inviteChannel->origin_name = InviteService::getInviteChannelOriginName($inviteChannel);
         return Result::success($inviteChannel);
     }

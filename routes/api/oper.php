@@ -17,10 +17,17 @@ Route::prefix('oper')
 
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
 
-        Route::get('inviteChannel/inviteQrcode', 'InviteChannelController@getInviteQrcode');
+        Route::get('inviteChannels', 'InviteChannelController@getList');
+        Route::get('inviteChannel/export', 'InviteChannelController@export');
+        Route::post('inviteChannel/add', 'InviteChannelController@add');
+        Route::post('inviteChannel/edit', 'InviteChannelController@edit');
         Route::get('inviteChannel/downloadInviteQrcode', 'InviteChannelController@downloadInviteQrcode');
+        Route::get('inviteChannel/inviteRecords', 'InviteChannelController@getInviteRecords');
+        Route::get('inviteChannel/inviteRecords/export', 'InviteChannelController@exportInviteRecords');
 
         Route::get('invite/statistics/dailyList', 'InviteStatisticsController@dailyList');
+
+        Route::get('sms/getVerifyCode', 'SmsController@sendVerifyCode');
 
         Route::get('orders', 'OrderController@getList');
         Route::get('order/export', 'OrderController@export');
@@ -28,4 +35,5 @@ Route::prefix('oper')
         Route::group([], base_path('routes/api/oper/merchant.php'));
         Route::group([], base_path('routes/api/oper/settlements.php'));
         Route::group([], base_path('routes/api/oper/operBizMember.php'));
+        Route::group([], base_path('routes/api/oper/mapping_user.php'));
     });

@@ -38,6 +38,7 @@
         "vuex": "^3.0.1"
     },
     "dependencies": {
-        "vue-amap": "^0.5.4"
+        "vue-amap": "^0.5.4",
+        "vue-scroller": "^2.2.4"
     }
 }

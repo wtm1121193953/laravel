@@ -8,9 +8,20 @@
                 <el-input type="text" v-model="query.mobile" class="w-150"/>
             </el-form-item>
             <el-form-item label="所属商户">
-                <el-select v-model="query.merchantId">
+                <el-select v-model="query.merchantId" filterable>
                     <el-option value="" label="全部"/>
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="订单状态">
+                <el-select v-model="query.status" class="w-100">
+                    <el-option label="全部" value=""/>
+                    <el-option label="待支付" :value="1"/>
+                    <el-option label="已取消" :value="2"/>
+                    <el-option label="已关闭[超时自动关闭]" :value="3"/>
+                    <el-option label="已支付" :value="4"/>
+                    <el-option label="已退款" :value="6"/>
+                    <el-option label="已完成" :value="7"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -122,6 +133,7 @@
                     timeType: 'payTime',
                     startTime: '',
                     endTime: '',
+                    status: '',
                 },
                 list: [],
                 total: 0,
@@ -153,7 +165,7 @@
                 })
             },
             getMerchants(){
-                api.get('/merchants').then(data => {
+                api.get('/merchant/allNames').then(data => {
                     this.merchants = data.list;
                 })
             }

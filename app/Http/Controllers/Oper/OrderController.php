@@ -28,6 +28,7 @@ class OrderController extends Controller
         $timeType = request('timeType', 'payTime');
         $startTime = request('startTime');
         $endTime = request('endTime');
+        $status = request('status');
 
         $query = Order::where('oper_id', request()->get('current_user')->oper_id)
             ->when($orderNo, function(Builder $query) use ($orderNo){
@@ -45,6 +46,8 @@ class OrderController extends Controller
                         $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
                             ->whereIn('status', [4, 6, 7]);
                     });
+            })->when($status, function (Builder $query) use ($status){
+                $query->where('status', $status);
             });
 
         if($timeType == 'payTime'){
