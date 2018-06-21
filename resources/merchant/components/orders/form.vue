@@ -13,9 +13,9 @@
 
             <el-form-item label="商品信息：" v-if="order.type == 3">
                 {{order.goods_name}}
-                <div v-for="item in order.dishes.items" :key="item.id">
-                    {{item.name}} x{{item.nu}}
-                </div>
+                <!--<div v-for="item in order.dishes.items" :key="item">-->
+                    <!---->
+                <!--</div>-->
             </el-form-item>
 
             <el-form-item label="所属店铺：">
