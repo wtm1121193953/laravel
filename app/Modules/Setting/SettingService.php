@@ -100,20 +100,6 @@ class SettingService
     }
 
     /**
-     * 排除指定的key 来获取
-     * @param mixed ...$keys
-     * @return Collection
-     */
-    public static function exceptKeys(...$keys)
-    {
-        $settings = self::getAll();
-        if (empty($keys)){
-            return $settings;
-        }
-        return $settings->except($keys);
-    }
-
-    /**
      * 获取全部系统设置项
      * @return Collection
      */
