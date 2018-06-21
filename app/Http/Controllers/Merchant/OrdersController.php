@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Merchant;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Dishes\DishesItem;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\User\User;
@@ -63,6 +64,8 @@ class OrdersController extends Controller
                 $data[$key]['credit'] = 0;
                 $data[$key]['user_level_text'] = '';
             }
+            $dishesItems = DishesItem::where('dishes_id', $item['dishes_id'])->get();
+            $data[$key]['dishes_items'] = $dishesItems;
         }
 
         return Result::success([
@@ -103,14 +106,5 @@ class OrdersController extends Controller
         }
 
     }
-
-    //获取商户订单详情页具体菜品具体情况
-    public function getDishesGoods()
-    {
-        $dishes_id = request('dishes_id');
-
-
-    }
-
 
 }

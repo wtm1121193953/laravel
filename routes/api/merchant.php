@@ -26,9 +26,6 @@ Route::prefix('merchant')
         Route::post('setting/edit', 'MerchantSettingController@edit');
         Route::get('setting/getSetting', 'MerchantSettingController@getSetting');
 
-        Route::get('dishes/goods', 'OrdersController@getDishesGoods');
-
-
         Route::group([], base_path('routes/api/merchant/goods.php'));
         Route::group([], base_path('routes/api/merchant/orders.php'));
         Route::group([], base_path('routes/api/merchant/settlements.php'));
