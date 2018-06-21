@@ -10,7 +10,7 @@ class DishesCategory extends BaseModel
     //
     use SoftDeletes;
 
-    public function dishGood()
+    public function dishesGoods()
     {
         return $this->hasMany('App\Modules\Dishes\DishesGoods');
     }
