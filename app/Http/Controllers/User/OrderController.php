@@ -216,7 +216,6 @@ class OrderController extends Controller
                 'openid' => $order->open_id,
             ];
             $unifyResult = $payApp->order->unify($data);
-            dd($unifyResult);
             if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
                 $order->save();
             }else {
