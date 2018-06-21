@@ -13,7 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
-use App\Modules\Merchant\MerchantSetting;
+use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Setting\SettingService;
 use App\Result;
 use App\Support\Lbs;
@@ -143,9 +143,8 @@ class MerchantController extends Controller
         $category = MerchantCategory::find($detail->merchant_category_id);
 
         $detail->merchantCategoryName = $category->name;
-
         //商家是否开启单品模式
-        $detail->ifOpenDish = MerchantSetting::where("merchant_id",$id)->value('value');
+        $detail->isOpenDish = MerchantSettingService::getValueByKey($id,'dishes_enabled');
         // 最低消费
         $detail->lowestAmount = Goods::getLowestPriceForMerchant($detail->id);
         $currentOperId = request()->get('current_oper')->id;

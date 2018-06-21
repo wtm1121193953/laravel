@@ -197,6 +197,7 @@ class OrderController extends Controller
         $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->name ?? '';
+        $order->goods_name = $merchant->name ?? '';
         $order->dishes_id = $dishesId;
 
         $order->status = Order::STATUS_UN_PAY;
@@ -250,6 +251,7 @@ class OrderController extends Controller
         foreach ($list as  $v){
                 $totalPrice += ($v->dishes_goods_sale_price)*($v->number);
         }
+
        return  $totalPrice;
 
     }
