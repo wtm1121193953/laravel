@@ -47,13 +47,14 @@ class MerchantDishesController extends Controller
     {
 
         $merchantId = request('merchant_id');
-        $list = DishesCategory::where('merchant_id', $merchantId)
+        $categorys =DishesCategory::has('dishesGood')
+            ->where('merchant_id', $merchantId)
             ->where('status', 1)
             ->orderBy('sort')
             ->get();
 
         return Result::success([
-            'list' => $list
+            'list' => $categorys
         ]);
     }
 
@@ -73,9 +74,10 @@ class MerchantDishesController extends Controller
             ->where('dishes_category_id',$categoryId)
             ->get();
 
-        return Result::success([
-            'list' => $list,
-        ]);
+         return Result::success([
+             'list' => $list,
+         ]);
+
     }
 
 
@@ -87,8 +89,8 @@ class MerchantDishesController extends Controller
         $this->validate(request(), [
             'merchant_id' => 'required|integer|min:1',
         ]);
-//        $dishesList = request('goods_list');
-        $dishesList=   [['id'=>'1','number'=>2],['id'=>2,'number'=>'2']];
+        $dishesList = request('goods_list');
+       // $dishesList=   [['id'=>'1','number'=>2],['id'=>2,'number'=>'2']];
         $merchantId = request('merchant_id');
         if (empty($dishesList)){
             throw new ParamInvalidException('单品列表为空');

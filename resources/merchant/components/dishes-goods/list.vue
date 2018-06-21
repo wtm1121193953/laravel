@@ -9,7 +9,7 @@
             <el-table-column prop="logo" label="商品图片">
                 <template slot-scope="scope">
                     <div style="height: 50px; width: 50px">
-                        <img :src="scope.row.logo" width="100%">
+                        <preview-img class="img" :url="scope.row.logo"/>
                     </div>
                 </template>
             </el-table-column>
@@ -57,6 +57,7 @@
 
     import DishesGoodsItemOptions from './dishes-goods-item-options'
     import DishesGoodsForm from './dishes-goods-form'
+    import PreviewImg from '../../../assets/components/img/preview-img'
 
     export default {
         name: "dishesGoods-list",
@@ -105,6 +106,7 @@
         components: {
             DishesGoodsItemOptions,
             DishesGoodsForm,
+            PreviewImg
         }
     }
 </script>

@@ -5,11 +5,19 @@
                 {{order.order_no}}
             </el-form-item>
             <el-form-item label="订单类型：">
-                {{['', '团购', '买单'][order.type]}}
+                {{['','团购', '买单','单品'][order.type]}}
             </el-form-item>
             <el-form-item label="商品名称：" v-if="order.type == 1">
                 {{order.goods_name}}
             </el-form-item>
+
+            <el-form-item label="商品信息：" v-if="order.type == 3">
+                {{order.goods_name}}
+                <div v-for="item in order.dishes.items" :key="item.id">
+                    {{item.name}} x{{item.nu}}
+                </div>
+            </el-form-item>
+
             <el-form-item label="所属店铺：">
                 {{order.merchant_name}}
             </el-form-item>
@@ -45,6 +53,7 @@
 </template>
 
 <script>
+
     export default {
         props: {
             scope: {type: Object, required: true}
@@ -69,6 +78,7 @@
                 this.initOrder()
             }
         }
+
     }
 </script>
 
