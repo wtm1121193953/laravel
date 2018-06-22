@@ -11,6 +11,8 @@ namespace App\Http\Controllers;
 
 use App\Jobs\OrderPaidJob;
 use App\Modules\Goods\Goods;
+use App\Modules\Dishes\DishesItem;
+use App\Modules\Dishes\DishesGoods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteService;
 use App\Modules\Invite\InviteUserRecord;
@@ -104,8 +106,17 @@ class PayController extends Controller
                     $order->save();
                 }
 
-                // 添加商品已售数量
-                Goods::where('id', $order->goods_id)->increment('sell_number', max($order->buy_number, 1));
+                if($order->type== Order::TYPE_DISHES){
+                    //添加菜单已售数量
+                    $DishesItems = DishesItem::where('dishes_id',$order->dishes_id)->get();
+                    foreach ($DishesItems as $k=>$item){
+                        DishesGoods::where('id', $item->dishes_goods_id)->increment('sell_number', max($item->number, 1));
+                    }
+                }else{
+                    // 添加商品已售数量
+                    Goods::where('id', $order->goods_id)->increment('sell_number', max($order->buy_number, 1));
+                }
+
 
                 // 生成核销码, 线上需要放到支付成功通知中
                 for ($i = 0; $i < $order->buy_number; $i ++){
