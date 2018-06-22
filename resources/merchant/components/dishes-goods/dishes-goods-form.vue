@@ -5,9 +5,9 @@
                 <el-form-item prop="name" label="商品名称">
                     <el-input v-model="form.name"/>
                 </el-form-item>
-                <!--<el-form-item prop="market_price" label="市场价">
+                <el-form-item prop="market_price" label="市场价">
                     <el-input-number v-model="form.market_price" :min="0"></el-input-number>
-                </el-form-item>-->
+                </el-form-item>
                 <el-form-item prop="sale_price" label="销售价">
                     <el-input-number v-model="form.sale_price" :min="0"></el-input-number>
                 </el-form-item>
