@@ -52,11 +52,29 @@ class MerchantDishesController extends Controller
             ->where('status', 1)
             ->orderBy('sort')
             ->get();
-
         return Result::success([
             'list' => $categorys
         ]);
     }
+
+
+    /**
+     * 获取热门菜品
+     *
+     */
+    public function getHotDishesGoods()
+    {
+
+        $merchantId = request('merchant_id');
+        $hotDishesGoods =DishesGoods::where('merchant_id', $merchantId)
+            ->where('status', 1)
+            ->where('is_hot',1)
+            ->get();
+        return Result::success([
+            'list' => $hotDishesGoods
+        ]);
+    }
+
 
     /**
      * 获取单品指定分类的商品

@@ -53,6 +53,7 @@ Route::prefix('user')
 
         Route::get('dishes/category', 'MerchantDishesController@getDishesCategory');
         Route::get('dishes/goods', 'MerchantDishesController@getDishesGoods');
+        Route::get('dishes/hot', 'MerchantDishesController@getHotDishesGoods');
         Route::post('dishes/add','MerchantDishesController@dishesAdd')->middleware(UserLoginFilter::class);
         Route::get('dishes/detail','MerchantDishesController@detail')->middleware(UserLoginFilter::class);
 
