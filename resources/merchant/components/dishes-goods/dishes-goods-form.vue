@@ -75,6 +75,20 @@
 
         },
         data(){
+            var validateSalePrice = (rule, value, callback) => {
+                if (value <= 0) {
+                    callback(new Error('销售价必须大于0元'));
+                }else {
+                    callback();
+                }
+            };
+            var validateMarketPrice = (rule, value, callback) => {
+                if (value <= 0) {
+                    callback(new Error('市场价必须大于0元'));
+                }else {
+                    callback();
+                }
+            };
             return {
                 form: deepCopy(defaultForm),
                 categories: [],
@@ -84,10 +98,10 @@
                         {max: 30, message: '商品名称不能超过30个字'}
                     ],
                     market_price: [
-                        {required: true, message: '市场价不能为空'}
+                        {validator: validateMarketPrice, trigger: 'blur'}
                     ],
                     sale_price: [
-                        {required: true, message: '销售价不能为空'}
+                        {validator: validateSalePrice, trigger: 'blur'}
                     ],
                     dishes_category_id: [
                         {required: true, message: '类别不能为空'}
