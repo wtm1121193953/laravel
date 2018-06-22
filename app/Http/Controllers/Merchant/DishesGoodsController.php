@@ -65,6 +65,7 @@ class DishesGoodsController extends Controller
         $dishesGoods->logo = request('logo', '');
         $dishesGoods->detail_image = request('detail_image', '');
         $dishesGoods->status = request('status', 1);
+        $dishesGoods->is_hot = request('is_hot', 0);
 
         $dishesGoods->save();
 
@@ -89,6 +90,7 @@ class DishesGoodsController extends Controller
         $dishesGoods->logo = request('logo', '');
         $dishesGoods->detail_image = request('detail_image', '');
         $dishesGoods->status = request('status', 1);
+        $dishesGoods->is_hot = request('is_hot', 0);
 
         $dishesGoods->save();
 

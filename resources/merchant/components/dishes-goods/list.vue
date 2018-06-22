@@ -20,6 +20,15 @@
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
+
+            <el-table-column prop="is_hot" label="是否热销">
+                <template slot-scope="scope">
+                    <span v-if="parseInt(scope.row.is_hot) === 0" class="c-danger">否</span>
+                    <span v-else-if="parseInt(scope.row.is_hot) === 1" class="c-green">是</span>
+                    <span v-else>未知 ({{scope.row.is_hot}})</span>
+                </template>
+            </el-table-column>
+
             <el-table-column prop="created_at" label="添加时间">
                 <template slot-scope="scope">
                     {{scope.row.created_at.substr(0, 10)}}

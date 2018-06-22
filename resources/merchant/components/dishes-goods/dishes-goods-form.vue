@@ -36,6 +36,13 @@
                         <el-radio :label="2">禁用</el-radio>
                     </el-radio-group>
                 </el-form-item>
+                <el-form-item prop="is_hot" label="是否热销">
+                    <el-radio-group v-model="form.is_hot">
+                        <el-radio :label="1">是</el-radio>
+                        <el-radio :label="0">否</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+
                 <el-form-item>
                     <el-button @click="cancel">取消</el-button>
                     <el-button type="primary" @click="save">保存</el-button>
@@ -57,6 +64,7 @@
         detail_image: '',
         intro: '',
         status: 1,
+        is_hot:0
     };
     export default {
         name: 'dishesGoods-form',
