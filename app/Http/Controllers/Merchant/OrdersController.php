@@ -64,8 +64,10 @@ class OrdersController extends Controller
                 $data[$key]['credit'] = 0;
                 $data[$key]['user_level_text'] = '';
             }
-            $dishesItems = DishesItem::where('dishes_id', $item['dishes_id'])->get();
-            $data[$key]['dishes_items'] = $dishesItems;
+            if ($item->type == 3){
+                $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
+                $data[$key]['dishes_items'] = $dishesItems;
+            }
         }
 
         return Result::success([
