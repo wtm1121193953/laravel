@@ -64,7 +64,7 @@
         detail_image: '',
         intro: '',
         status: 1,
-        is_hot:0
+        is_hot: 0,
     };
     export default {
         name: 'dishesGoods-form',
@@ -83,8 +83,20 @@
                         {required: true, message: '商品名称不能为空'},
                         {max: 30, message: '商品名称不能超过30个字'}
                     ],
+                    market_price: [
+                        {required: true, message: '市场价不能为空'}
+                    ],
+                    sale_price: [
+                        {required: true, message: '销售价不能为空'}
+                    ],
                     dishes_category_id: [
                         {required: true, message: '类别不能为空'}
+                    ],
+                    logo: [
+                        {required: true, message: '商品logo不能为空'}
+                    ],
+                    detail_image: [
+                        {required: true, message: '商品详情不能为空'}
                     ],
                     intro: [
                         {max: 200, message: '商品简介不能超过200个字'}
