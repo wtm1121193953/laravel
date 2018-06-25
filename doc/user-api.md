@@ -179,7 +179,7 @@ token (wxLogin接口除外)
 
 - [ ] 获取城市及热门城市列表
 
-  接口地址: GET `/area/cities/withHot`
+  接口地址: GET `/area/cites/withHot`
 
   参数: 无
 
@@ -187,17 +187,23 @@ token (wxLogin接口除外)
 
   ```
   data: {
-        热门: [
-            同地区列表的每一项, 没有sub元素
-          ],
-          A: [
-             同地区列表的每一项, 没有sub元素
-         ],
+  		{
+            tag: 热门,
+            list: [
+                同地区列表的每一项, 没有sub元素
+            ]
+  		},
+  		{
+            tag: A,
+            list: [
+                同地区列表的每一项, 没有sub元素
+            ]
+  		}
         ...
       }
   ```
 
-  ​
+  
 
 
 - [ ] 根据经纬度获取所在城市
@@ -231,9 +237,11 @@ token (wxLogin接口除外)
 
 - [ ] 获取商家类别列表
 
-    接口地址: GET `/merchant/categories/tree`
-    
-    返回:
+接口地址： GET    `/merchant/categories/tree`
+
+参数： 无
+
+返回：
 
   ```
     data: {
@@ -254,8 +262,6 @@ token (wxLogin接口除外)
 
   ​
 
-  ​
-
 - [ ] 获取商家列表 (关键字搜索, 附近商家等)
 
   接口地址: GET `/merchants`
@@ -272,7 +278,7 @@ token (wxLogin接口除外)
   page: 获取的页数
   ```
 
-    返回
+返回：
 
   ```
   data: {
@@ -319,7 +325,7 @@ token (wxLogin接口除外)
   参数: 
 
   ```
-  id: 商户ID
+  id : 商户ID
   lng: 用户所在经度,
   lat: 用户所在纬度
   ```
@@ -335,11 +341,15 @@ token (wxLogin接口除外)
 
 - [ ] 商品列表
 
-    接口地址: GET `/goods`
-    
-    参数: `merchant_id` 商家ID
-    
-    返回
+接口地址：GET   `/goods`
+
+参数：
+
+```
+ merchant_id： 商家ID
+```
+
+返回：
 
   ```
   data: {
@@ -366,16 +376,20 @@ token (wxLogin接口除外)
     }
   ```
 
-  ​
+  
 
 
 - [ ] 商品详情
 
-    接口地址: GET `/goods/detail`
-    
-    参数: id 商品ID
-    
-    返回
+接口地址： GET  `/goods/detail`
+
+参数
+
+```
+id: 商品id
+```
+
+返回：
 
   ```
   同商品列表中的每一项
@@ -415,7 +429,7 @@ token (wxLogin接口除外)
                 goods_name: 商品名,
                 goods_pic: 商品图片,
                 goods_thumb_url: 商品缩略图,
-                price: 商家单价,
+                price: 商品单价,
                 buy_number: 购买数量,
                 pay_price: 支付金额,
                 pay_time: 支付时间,
@@ -431,6 +445,7 @@ token (wxLogin接口除外)
                     }
                 ]
                 isOperSelf: 是否归属于当前小程序的运营中心
+                goods_end_date: 商品有效期结束日期
             }
         ]
     } 
@@ -440,20 +455,53 @@ token (wxLogin接口除外)
 
 - [ ] 订单详情
 
-    地址: GET`/order/detail`
-    参数
+地址：GET  `/order/detail`
+
+参数：
 
   ```
-  order_no 订单号
+order_no 订单号
   ```
 
   返回
 
   ```
-  同订单列表中的每一项
+     data: {
+         id: 订单ID,
+         oper_id: 运营中心ID,
+         order_no: 订单号,
+         user_id: 用户ID,
+         user_name: 用户名,
+         notify_mobile: 用户通知手机号,
+         merchant_id: 商家ID,
+         merchant_name: 商家名,
+         goods_id: 商品ID,
+         goods_name: 商品名,
+         goods_pic: 商品图片,
+         goods_thumb_url: 商品缩略图,
+         price: 商品单价,
+         buy_number: 购买数量,
+         pay_price: 支付金额,
+         pay_time: 支付时间,
+         refund_price: 退款金额,
+         refund_time: 退款时间,
+         status: 状态 1-未支付 2-已取消 3-已关闭 (超时自动关闭) 4-已付款  6-已退款 7-已完成 (不可退款),
+         items: 核销码列表(已支付及之后的状态才存在) [
+             {
+             id: 核销码ID,
+             order_id: 订单ID,
+             verify_code: 核销码,
+             status: 状态 1-未核销, 2-已核销 3-已退款,
+             }
+         ]
+         isOperSelf: 是否归属于当前小程序的运营中心,
+         user_level: 获取积分时的用户等级（该订单有自反积分时存在）,
+         user_level_text: 获取积分时的用户等级文字版（该订单有自反积分时存在）,
+         credit: 该订单获取的自反积分（该订单有自反积分时存在）
+    } 
   ```
 
-  ​
+  
 
 
 - [ ] 下单接口
@@ -503,14 +551,14 @@ token (wxLogin接口除外)
 
   ```
   data: {
-      id: 16,
-      order_id: 893846835,
-      order_no: "O20180415222010166615",
-      amount: "0.01",
-      updated_at: "2018-04-16 19:30:45",
-      created_at: "2018-04-16 19:30:44",
-      refund_id: "50000206712018041604196575582",
-      status: 2
+      id: 16,  退款id
+      order_id: 893846835,  订单id
+      order_no: "O20180415222010166615",  订单号
+      amount: "0.01",  退款金额
+      updated_at: "2018-04-16 19:30:45",  更新时间
+      created_at: "2018-04-16 19:30:44",  创建时间
+      refund_id: "50000206712018041604196575582", 微信退款单号
+      status: 2  退款状态 1-未退款 2-已退款
   }
   ```
 
@@ -518,7 +566,7 @@ token (wxLogin接口除外)
 
 - [ ] 小程序间跳转h5
 
-  地址: H5页面 https://o2o.niucha.ren/miniprogram_bridge/pay
+  地址:  GET `H5页面 https://o2o.niucha.ren/miniprogram_bridge/pay` 
 
   参数
 
@@ -658,7 +706,8 @@ token (wxLogin接口除外)
 
   参数   
   ```
-   id  :菜单id
+   dishes_id  : 菜单id
+   merchant_id: 商户id
   ```
 
   返回
