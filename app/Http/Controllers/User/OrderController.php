@@ -184,25 +184,27 @@ class OrderController extends Controller
         $merchant = Merchant::findOrFail($dishes->merchant_id);
         $oper = request()->get('current_oper');
 
-        if($userIdByDish===$user->id){
-            $order = new Order();
-            $orderNo = Order::genOrderNo();
-            $order->oper_id = $merchant->oper_id;
-            $order->order_no = $orderNo;
-            $order->user_id = $user->id;
-            $order->open_id = request()->get('current_open_id');
-            $order->user_name = $user->name ?? '';
-            $order->type = Order::TYPE_DISHES;
-            $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
-            $order->merchant_id = $merchant->id;
-            $order->merchant_name = $merchant->name ?? '';
-            $order->goods_name = $merchant->name ?? '';
-            $order->dishes_id = $dishesId;
-            $order->status = Order::STATUS_UN_PAY;
-            $order->pay_price = $this->getTotalPrice();
-            $order->remark = request('remark', '');
-            $order->save();
+        if($userIdByDish!=$user->id){
+            throw new ParamInvalidException('参数错误');
         }
+
+        $order = new Order();
+        $orderNo = Order::genOrderNo();
+        $order->oper_id = $merchant->oper_id;
+        $order->order_no = $orderNo;
+        $order->user_id = $user->id;
+        $order->open_id = request()->get('current_open_id');
+        $order->user_name = $user->name ?? '';
+        $order->type = Order::TYPE_DISHES;
+        $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
+        $order->merchant_id = $merchant->id;
+        $order->merchant_name = $merchant->name ?? '';
+        $order->goods_name = $merchant->name ?? '';
+        $order->dishes_id = $dishesId;
+        $order->status = Order::STATUS_UN_PAY;
+        $order->pay_price = $this->getTotalPrice();
+        $order->remark = request('remark', '');
+        $order->save();
 
         $isOperSelf = $merchant->oper_id === $oper->id ? 1 : 0;
         if($isOperSelf == 1) {
