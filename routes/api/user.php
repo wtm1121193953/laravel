@@ -51,10 +51,10 @@ Route::prefix('user')
         Route::get('credit/getUserCredit', 'CreditController@getUserCredit')->middleware(UserLoginFilter::class);
         Route::get('credit/getConsumeQuotaRecordList', 'CreditController@getConsumeQuotaRecordList')->middleware(UserLoginFilter::class);
 
-        Route::get('dishes/category', 'MerchantDishesController@getDishesCategory');
-        Route::get('dishes/goods', 'MerchantDishesController@getDishesGoods');
-        Route::get('dishes/hot', 'MerchantDishesController@getHotDishesGoods');
-        Route::post('dishes/add','MerchantDishesController@dishesAdd')->middleware(UserLoginFilter::class);
-        Route::get('dishes/detail','MerchantDishesController@detail')->middleware(UserLoginFilter::class);
+        Route::get('dishes/category', 'DishesController@getDishesCategory');
+        Route::get('dishes/goods', 'DishesController@getDishesGoods');
+        Route::get('dishes/hot', 'DishesController@getHotDishesGoods');
+        Route::post('dishes/add','DishesController@add')->middleware(UserLoginFilter::class);
+        Route::get('dishes/detail','DishesController@detail')->middleware(UserLoginFilter::class);
 
     });

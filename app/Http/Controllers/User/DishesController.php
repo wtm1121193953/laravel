@@ -19,7 +19,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Result;
 
-class MerchantDishesController extends Controller
+class DishesController extends Controller
 {
     /**
      * 判断单品购买功能是否开启
@@ -28,12 +28,10 @@ class MerchantDishesController extends Controller
     public function __construct()
     {
         $merchantId = request('merchant_id');
-        //        $key = request('key');
-        $key = "dishes_enabled";
-        if (!$merchantId || !$key){
-            throw new BaseResponseException('商户ID和商户单品购买设置的键不能为空');
+        if (!$merchantId){
+            throw new BaseResponseException('商户ID不能为空');
         }
-        $result = MerchantSettingService::getValueByKey($merchantId, $key);
+        $result = MerchantSettingService::getValueByKey($merchantId, 'dishes_enabled');
         if (!$result){
             throw new BaseResponseException('单品购买功能尚未开启！');
         }
@@ -101,14 +99,13 @@ class MerchantDishesController extends Controller
 
    //点菜操作
 
-    public function dishesAdd()
+    public function add()
     {
         $userId = request()->get('current_user')->id;
         $this->validate(request(), [
             'merchant_id' => 'required|integer|min:1',
         ]);
         $dishesList = request('goods_list');
-       // $dishesList=   [['id'=>'1','number'=>2],['id'=>2,'number'=>'2']];
         $merchantId = request('merchant_id');
         if (empty($dishesList)){
             throw new ParamInvalidException('单品列表为空');
@@ -148,8 +145,10 @@ class MerchantDishesController extends Controller
         return Result::success($dishes);
     }
 
-//点菜的菜单详情
-
+    /**
+     * 点菜的菜单详情
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function detail()
     {
         $this->validate(request(), [
