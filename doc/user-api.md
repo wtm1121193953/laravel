@@ -260,7 +260,7 @@ token (wxLogin接口除外)
     }
   ```
 
-  ​
+  
 
 - [ ] 获取商家列表 (关键字搜索, 附近商家等)
 
@@ -756,7 +756,49 @@ order_no 订单号
                 timestamp: 时间戳,
                 }
     }
+
+
   ```
+
+- [ ] 获取热门菜品
+
+  地址：GET  `/dishes/hot`
+
+  参数：
+
+  ```
+  merchant_id: 商户id
+  ```
+
+  返回：
+
+  ```
+  data: {
+      list:[
+          {
+              id: 商品id
+              oper_id: 所属运营中心ID
+              merchant_id: 商家ID
+              name：点菜商品名称
+              market_price：市场价格
+              sale_price：销售价格
+              dishes_category_id：分类
+              intro：商品描述
+              sell_number：已销售数量
+              is_hot：是否热销
+              logo：商品logo图片
+              detail_image：商品详情图片
+              status：1-上架，2-下架
+              created_at：创建时间
+              updated_at：更新时间
+              deleted_at：删除时间
+          }
+          ......
+      ]
+  }
+  ```
+
+  
 
 
 
