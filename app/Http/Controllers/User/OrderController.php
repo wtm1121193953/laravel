@@ -211,7 +211,7 @@ class OrderController extends Controller
             $data = [
                 'body' =>  $merchant->name,
                 'out_trade_no' => $orderNo,
-                'total_fee' => $order->pay_price,
+                'total_fee' => $order->pay_price * 100,
                 'trade_type' => 'JSAPI',
                 'openid' => $order->open_id,
             ];
