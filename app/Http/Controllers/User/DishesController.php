@@ -106,7 +106,9 @@ class DishesController extends Controller
             'merchant_id' => 'required|integer|min:1',
         ]);
         $dishesList = request('goods_list');
-        $dishesList = json_decode($dishesList,true);
+        if(is_string($dishesList)){
+            $dishesList = json_decode($dishesList,true);
+        }
 
         $merchantId = request('merchant_id');
         if (empty($dishesList)){
