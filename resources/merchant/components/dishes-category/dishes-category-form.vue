@@ -38,7 +38,8 @@
                 form: deepCopy(defaultForm),
                 formRules: {
                     name: [
-                        {required: true, message: '名称不能为空'}
+                        {required: true, message: '名称不能为空'},
+                        {max: 10, message: '分类名称不能超过10个字'}
                     ]
                 },
             }

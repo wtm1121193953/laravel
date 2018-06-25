@@ -95,7 +95,7 @@
                 formRules: {
                     name: [
                         {required: true, message: '商品名称不能为空'},
-                        {max: 30, message: '商品名称不能超过30个字'}
+                        {max: 10, message: '商品名称不能超过10个字'}
                     ],
                     market_price: [
                         {validator: validateMarketPrice, trigger: 'blur'}
