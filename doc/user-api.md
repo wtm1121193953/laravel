@@ -131,49 +131,49 @@ token (wxLogin接口除外)
 
 
 
-- [ ] 短信接口
+- [ ] 短信接口 （测试验证码使用6666）
 
-      接口地址: `POST`  `/sms/verify_code`
+  接口地址: `POST`  `/sms/verify_code`
 
-      参数:
+  参数:
 
-      ```
-      mobile 手机号
-      ```
+  ```
+  mobile 手机号
+  ```
 
-      返回值: 
+  返回值: 
 
-      ```
-      data: {
-        verify_code: 验证码, 测试时存在
-      }
-      ```
+  ```
+  data: {
+    verify_code: 验证码, 测试时存在
+  }
+  ```
 
 
 
 - [x] 获取地区列表(树形结构)
 
-      接口地址: GET `/area/tree`
+  接口地址: GET `/area/tree`
 
-      参数: `tier ` 要获取的层级数 1-3 (省/市/县) , 默认为3
+  参数: `tier ` 要获取的层级数 1-3 (省/市/县) , 默认为3
 
-      返回: 
+  返回: 
 
-      ```
-      data: {
-        list: [
-          {
-            id: id,
-            area_id: 地区ID,
-            name: 地区名,
-            parent_id: 父级地区ID
-            sub: [
-              子地区列表, 有下级时存在, 结构同父级结构
-            ]
-          }
+  ```
+  data: {
+    list: [
+      {
+        id: id,
+        area_id: 地区ID,
+        name: 地区名,
+        parent_id: 父级地区ID
+        sub: [
+          子地区列表, 有下级时存在, 结构同父级结构
         ]
       }
-      ```
+    ]
+  }
+  ```
 
 
 
@@ -232,7 +232,7 @@ token (wxLogin接口除外)
 - [ ] 获取商家类别列表
 
     接口地址: GET `/merchant/categories/tree`
-
+    
     返回:
 
   ```
@@ -336,9 +336,9 @@ token (wxLogin接口除外)
 - [ ] 商品列表
 
     接口地址: GET `/goods`
-
+    
     参数: `merchant_id` 商家ID
-
+    
     返回
 
   ```
@@ -372,9 +372,9 @@ token (wxLogin接口除外)
 - [ ] 商品详情
 
     接口地址: GET `/goods/detail`
-
+    
     参数: id 商品ID
-
+    
     返回
 
   ```
@@ -659,14 +659,26 @@ token (wxLogin接口除外)
   参数   
   ```
    id  :菜单id
-
   ```
 
   返回
 
   ```
   {
-   再写
+  code: 返回码，
+  message：返回消息，
+  data：[
+      {
+          "user_id": "",  用户id
+          "oper_id": "",   运营中心id
+          "dishes_goods_name": "",   商品名称
+          "number": "",   商品数量
+          "total_price": "",   该商品总价格
+          "dishes_goods_logo": ""  商品logo
+      }
+      ......
+  ],
+  timestamp: 当前时间戳
   }
   ```
 
@@ -687,17 +699,14 @@ token (wxLogin接口除外)
     	order_no: 订单号,
     	isOperSelf: 是否归属于当前小程序的运营中心
     	sdk_config: 调起微信支付配置, isOperSelf 为1时存在 {
-          appId: appid,
-          nonceStr: 随机字符串,
-          package: package,
-          signType: signType,
-          paySign: 支付签名,
-          timestamp: 时间戳,
-    	}
+                appId: appid,
+                nonceStr: 随机字符串,
+                package: package,
+                signType: signType,
+                paySign: 支付签名,
+                timestamp: 时间戳,
+                }
     }
-    参照商品 本地不好测试
-    
-   
   ```
 
 
