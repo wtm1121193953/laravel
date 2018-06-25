@@ -61,7 +61,9 @@ class OrderController extends Controller
             // 判断商户是否是当前小程序关联运营中心下的商户
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
             $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
-            $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
+            if ($item->type == Order::TYPE_DISHES){
+                $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
+            }
         });
         return Result::success([
             'list' => $data->items(),
@@ -87,6 +89,9 @@ class OrderController extends Controller
             $detail->user_level = $creditRecord->user_level;
             $detail->user_level_text = User::getLevelText($creditRecord->user_level);
             $detail->credit = $creditRecord->credit;
+        }
+        if ($detail->type == Order::TYPE_DISHES){
+            $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
         }
         return Result::success($detail);
     }
