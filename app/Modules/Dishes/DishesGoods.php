@@ -12,6 +12,6 @@ class DishesGoods extends BaseModel
 
     public function dishesCategory()
     {
-        return $this->belongsTo('App\Modules\Dishes\DishesCategory');
+        return $this->belongsTo(DishesCategory::class);
     }
 }
