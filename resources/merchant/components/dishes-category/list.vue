@@ -39,7 +39,7 @@
                 :page-size="query.pageSize"
                 :total="total"/>
 
-        <el-dialog title="添加分类" :visible.sync="isAdd" width="25%">
+        <el-dialog title="添加分类" :visible.sync="isAdd" @close="resetForm" width="25%">
             <dishes-category-form
                     ref="form"
                     :data="{}"
@@ -100,6 +100,9 @@
                     this.isLoading = false;
                 })
             },
+            resetForm() {
+                this.$refs.form.reset();
+            }
         },
         created(){
             this.getList();

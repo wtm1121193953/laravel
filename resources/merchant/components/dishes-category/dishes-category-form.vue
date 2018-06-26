@@ -57,12 +57,12 @@
                 this.reset();
             },
             save(){
-                this.form.name = this.form.name.trim();
-                if (!this.form.name) {
-                    return false;
-                }
                 this.$refs.form.validate(valid => {
                     if(valid){
+                        this.form.name = this.form.name.trim();
+                        if (!this.form.name) {
+                            return false;
+                        }
                         let data = deepCopy(this.form);
                         this.$emit('save', data);
                     }
