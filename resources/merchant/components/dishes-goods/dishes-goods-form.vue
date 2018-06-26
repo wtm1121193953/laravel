@@ -6,10 +6,10 @@
                     <el-input v-model="form.name"/>
                 </el-form-item>
                 <el-form-item prop="market_price" label="市场价">
-                    <el-input-number v-model="form.market_price" :min="0"></el-input-number>
+                    <el-input-number v-model="form.market_price" :min="0" :max="999999"></el-input-number>
                 </el-form-item>
                 <el-form-item prop="sale_price" label="销售价">
-                    <el-input-number v-model="form.sale_price" :min="0"></el-input-number>
+                    <el-input-number v-model="form.sale_price" :min="0" :max="999999"></el-input-number>
                 </el-form-item>
                 <el-form-item prop="dishes_category_id" label="类别">
                     <el-select v-model="form.dishes_category_id" placeholder="请选择">
