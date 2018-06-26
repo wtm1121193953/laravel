@@ -101,6 +101,10 @@ class PayController extends Controller
                     $order->status = Order::STATUS_FINISHED;
                     $order->finish_time = Carbon::now();
                     $order->save();
+                }else if($order->type == Order::TYPE_DISHES){
+                    $order->status = Order::STATUS_FINISHED;
+                    $order->finish_time = Carbon::now();
+                    $order->save();
                 }else {
                     $order->status = Order::STATUS_PAID;
                     $order->save();
@@ -126,6 +130,8 @@ class PayController extends Controller
                         DishesGoods::where('id', $item->dishes_goods_id)->increment('sell_number', max($item->number, 1));
                     }
                 }
+
+
 
                 // 生成订单支付记录
                 $orderPay = new OrderPay();

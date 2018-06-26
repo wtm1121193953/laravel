@@ -142,7 +142,7 @@
                 })
             },
             getCategorys() {
-                api.get('/dishes/categories/all').then(data => {
+                api.get('/dishes/categories/all',{'status':defaultForm.status}).then(data => {
                     this.categories = data.list;
                 })
             }
