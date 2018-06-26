@@ -87,7 +87,7 @@
                             <el-form-item label="商品信息：" v-if="scope.row.type == 3">
                                 <div v-for="(item, index) in scope.row.dishes_items" :key="index">
                                     <span>{{item.dishes_goods_name}}</span>&nbsp;&nbsp;&nbsp;
-                                    <span>{{item.dishes_goods_sale_price}}¥</span>&nbsp;&nbsp;&nbsp;
+                                    <span>¥{{item.dishes_goods_sale_price}}</span>&nbsp;&nbsp;&nbsp;
                                     <span>×{{item.number}}</span><br/>
                                 </div>
                             </el-form-item>
