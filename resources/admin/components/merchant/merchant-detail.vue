@@ -63,7 +63,7 @@
                             <preview-img :url="data.logo" width="50px" height="50px"/>
                         </el-form-item>
                         <el-form-item prop="desc_pic" label="商家介绍图片">
-                            <preview-img :url="data.desc_pic" width="200px" height="100px"/>
+                            <el-button type="text" @click="previewImage(data.desc_pic_list)">查看</el-button>
                         </el-form-item>
                         <el-form-item prop="desc_pic" label="商家介绍">
                             {{data.desc}}
