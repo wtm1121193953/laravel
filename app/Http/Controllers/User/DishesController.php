@@ -15,6 +15,7 @@ use App\Modules\Dishes\Dishes;
 use App\Modules\Dishes\DishesCategory;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Dishes\DishesItem;
+use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Result;
@@ -120,6 +121,10 @@ class DishesController extends Controller
         foreach ($dishesList as $item) {
             if(!isset($item['id']) || !isset($item['number'])){
                 throw new ParamInvalidException('参数不合法2');
+            }
+            $dishesGoods = DishesGoods::findOrFail($item['id']);
+            if ($dishesGoods->status == DishesGoods::STATUS_OFF){
+                throw new BaseResponseException('商品'.$dishesGoods->name.'已下架, 商品ID为:'.$dishesGoods->id);
             }
         }
         $merchant = Merchant::findOrFail($merchantId);

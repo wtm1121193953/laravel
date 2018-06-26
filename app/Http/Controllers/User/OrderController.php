@@ -12,10 +12,12 @@ namespace App\Http\Controllers\User;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
@@ -192,6 +194,20 @@ class OrderController extends Controller
 
         if($userIdByDish!=$user->id){
             throw new ParamInvalidException('参数错误');
+        }
+        $result = MerchantSettingService::getValueByKey($dishes->merchant_id, 'dishes_enabled');
+        if (!$result){
+            throw new BaseResponseException('单品购买功能尚未开启！');
+        }
+        //判断商品上下架状态
+        $dishesItems = DishesItem::where('dishes_id', $dishesId)
+            ->where('user_id', $dishes->user_id)
+            ->get();
+        foreach ($dishesItems as $item){
+            $dishesGoods = DishesGoods::findOrFail($item->dishes_goods_id);
+            if ($dishesGoods->status == DishesGoods::STATUS_OFF){
+                throw new BaseResponseException('商品'.$dishesGoods->name.'已下架, 商品ID为:'.$dishesGoods->id);
+            }
         }
 
         $order = new Order();

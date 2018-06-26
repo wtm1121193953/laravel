@@ -333,7 +333,37 @@ token (wxLogin接口除外)
   返回
 
   ```
-  同商户列表返回的字段
+  data: {
+    list: {
+        id: 商家id,
+        oper_id: 运营中心ID
+        merchant_category_id: 商家分类ID,
+        merchantCategoryName: 商家分类名,
+        name: 商家名,
+        brand: 品牌,
+        region: 运营地区/大区 1-中国 2-美国 3-韩国 4-香港
+        address: 详细地址,
+        province: 所在省份,
+        province_id: 省份ID,
+        city: 城市,
+        city_id: 城市ID,
+        area: 县区,
+        area_id: 县区ID,
+        lng: 商家所在位置经度,
+        lat: 商家所在位置纬度,
+        business_time: 商家营业时间 数组格式:[开始时间, 结束时间], 如: ['10:30:00', '18:30:00'],
+        logo: 商家logo
+        desc_pic: 商家描述图片
+        desc: 商家介绍
+        contacter: 联系人姓名
+        contacter_phone: 负责人联系方式
+        status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
+        distance: 距离, 当传递经纬度信息时才存在
+        lowestAmount: 最低消费金额
+        isOperSelf: 是否归属于当前小程序的运营中心,
+        isOpenDish: 商家是否开启单品模式,
+      }
+  } 
   ```
 
   ​
