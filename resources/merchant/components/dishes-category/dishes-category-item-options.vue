@@ -1,14 +1,15 @@
 <template>
     <!-- xxxxxx列表项操作 -->
     <div>
-        <el-button type="text" @click="saveOrder(scope.row, 'up')">上移</el-button>
-        <el-button type="text" @click="saveOrder(scope.row, 'down')">下移</el-button>
+        <el-button type="text" :disabled="isFirst" @click="saveOrder(scope.row, 'up')">上移</el-button>
+        <el-button type="text" :disabled="isLast" @click="saveOrder(scope.row, 'down')">下移</el-button>
         <el-button type="text" @click="edit">编辑</el-button>
         <el-button type="text" @click="changeStatus">{{parseInt(scope.row.status) === 1 ? '禁用' : '启用'}}</el-button>
         <el-button type="text" @click="del">删除</el-button>
 
-        <el-dialog title="编辑分类信息" :visible.sync="isEdit" width="25%">
+        <el-dialog title="编辑分类信息" :visible.sync="isEdit" @close="dialogClose" width="25%">
             <dishes-category-form
+                    ref="form"
                     :data="scope.row"
                     @cancel="isEdit = false"
                     @save="doEdit"/>
@@ -23,7 +24,9 @@
     export default {
             name: "dishes-category-item-options",
         props: {
-            scope: {type: Object, required: true}
+            scope: {type: Object, required: true},
+            isFirst: {type: Boolean, default: false},
+            isLast: {type: Boolean, default: false},
         },
         data(){
             return {
@@ -71,11 +74,14 @@
                 api.post('/dishes/category/saveOrder', {id: row.id, type: type}).then(() => {
                     this.$emit('refresh');
                 })
+            },
+            dialogClose() {
+                this.$refs.form.reset();
             }
         },
         components: {
             DishesCategoryForm
-        }
+        },
     }
 </script>
 
