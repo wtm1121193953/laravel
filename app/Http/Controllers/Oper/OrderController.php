@@ -12,6 +12,7 @@ namespace App\Http\Controllers\Oper;
 use App\Exports\OperOrderExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Dishes\DishesItem;
 use App\Modules\Order\Order;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,6 +30,7 @@ class OrderController extends Controller
         $startTime = request('startTime');
         $endTime = request('endTime');
         $status = request('status');
+        $type = request('type');
 
         $query = Order::where('oper_id', request()->get('current_user')->oper_id)
             ->when($orderNo, function(Builder $query) use ($orderNo){
@@ -45,9 +47,13 @@ class OrderController extends Controller
                     ->orWhere(function(Builder $query){
                         $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
                             ->whereIn('status', [4, 6, 7]);
+                    })->orWhere(function(Builder $query){
+                        $query->where('type', Order::TYPE_DISHES);
                     });
             })->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
+            })->when($type, function (Builder $query) use ($type){
+                $query->where('type', $type);
             });
 
         if($timeType == 'payTime'){
@@ -67,13 +73,20 @@ class OrderController extends Controller
             ->paginate();
         $merchantIds = $data->pluck('merchant_id');
         $merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
-        $data->each(function($item) use ($merchants){
+
+        foreach ($data as $key => $item){
             $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
-        });
+            if ($item->type == 3){
+                $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
+                $data[$key]['dishes_items'] = $dishesItems;
+            }
+        }
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+
+
     }
 
     /**
@@ -87,6 +100,7 @@ class OrderController extends Controller
         $timeType = request('timeType', 'payTime');
         $startTime = request('startTime');
         $endTime = request('endTime');
+        $type = request('type');
 
         $query = Order::where('oper_id', request()->get('current_user')->oper_id)
             ->when($orderNo, function(Builder $query) use ($orderNo){
@@ -98,11 +112,17 @@ class OrderController extends Controller
             ->when($merchantId, function (Builder $query) use ($merchantId){
                 $query->where('merchant_id', $merchantId);
             })
+            ->when($type, function (Builder $query) use ($type){
+                $query->where('type', $type);
+            })
             ->where(function(Builder $query){
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function(Builder $query){
                         $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
                             ->whereIn('status', [4, 6, 7]);
+                    })
+                    ->orWhere(function(Builder $query){
+                        $query->where('type', Order::TYPE_DISHES);
                     });
             });
 

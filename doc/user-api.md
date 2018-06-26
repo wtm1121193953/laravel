@@ -131,55 +131,55 @@ token (wxLogin接口除外)
 
 
 
-- [ ] 短信接口
+- [ ] 短信接口 （测试验证码使用6666）
 
-      接口地址: `POST`  `/sms/verify_code`
+  接口地址: `POST`  `/sms/verify_code`
 
-      参数:
+  参数:
 
-      ```
-      mobile 手机号
-      ```
+  ```
+  mobile 手机号
+  ```
 
-      返回值: 
+  返回值: 
 
-      ```
-      data: {
-        verify_code: 验证码, 测试时存在
-      }
-      ```
+  ```
+  data: {
+    verify_code: 验证码, 测试时存在
+  }
+  ```
 
 
 
 - [x] 获取地区列表(树形结构)
 
-      接口地址: GET `/area/tree`
+  接口地址: GET `/area/tree`
 
-      参数: `tier ` 要获取的层级数 1-3 (省/市/县) , 默认为3
+  参数: `tier ` 要获取的层级数 1-3 (省/市/县) , 默认为3
 
-      返回: 
+  返回: 
 
-      ```
-      data: {
-        list: [
-          {
-            id: id,
-            area_id: 地区ID,
-            name: 地区名,
-            parent_id: 父级地区ID
-            sub: [
-              子地区列表, 有下级时存在, 结构同父级结构
-            ]
-          }
+  ```
+  data: {
+    list: [
+      {
+        id: id,
+        area_id: 地区ID,
+        name: 地区名,
+        parent_id: 父级地区ID
+        sub: [
+          子地区列表, 有下级时存在, 结构同父级结构
         ]
       }
-      ```
+    ]
+  }
+  ```
 
 
 
 - [ ] 获取城市及热门城市列表
 
-  接口地址: GET `/area/cities/withHot`
+  接口地址: GET `/area/cites/withHot`
 
   参数: 无
 
@@ -187,19 +187,24 @@ token (wxLogin接口除外)
 
   ```
   data: {
-        热门: [
-            同地区列表的每一项, 没有sub元素
-          ],
-          A: [
-             同地区列表的每一项, 没有sub元素
-         ],
+  		{
+            tag: 热门,
+            list: [
+                同地区列表的每一项, 没有sub元素
+            ]
+  		},
+  		{
+            tag: A,
+            list: [
+                同地区列表的每一项, 没有sub元素
+            ]
+  		}
         ...
       }
   ```
 
-  ​
-
   
+
 
 - [ ] 根据经纬度获取所在城市
 
@@ -232,9 +237,11 @@ token (wxLogin接口除外)
 
 - [ ] 获取商家类别列表
 
-    接口地址: GET `/merchant/categories/tree`
-    
-    返回:
+接口地址： GET    `/merchant/categories/tree`
+
+参数： 无
+
+返回：
 
   ```
     data: {
@@ -253,9 +260,7 @@ token (wxLogin接口除外)
     }
   ```
 
-  ​
-
-  ​
+  
 
 - [ ] 获取商家列表 (关键字搜索, 附近商家等)
 
@@ -273,7 +278,7 @@ token (wxLogin接口除外)
   page: 获取的页数
   ```
 
-    返回
+返回：
 
   ```
   data: {
@@ -320,7 +325,7 @@ token (wxLogin接口除外)
   参数: 
 
   ```
-  id: 商户ID
+  id : 商户ID
   lng: 用户所在经度,
   lat: 用户所在纬度
   ```
@@ -328,7 +333,37 @@ token (wxLogin接口除外)
   返回
 
   ```
-  同商户列表返回的字段
+  data: {
+    list: {
+        id: 商家id,
+        oper_id: 运营中心ID
+        merchant_category_id: 商家分类ID,
+        merchantCategoryName: 商家分类名,
+        name: 商家名,
+        brand: 品牌,
+        region: 运营地区/大区 1-中国 2-美国 3-韩国 4-香港
+        address: 详细地址,
+        province: 所在省份,
+        province_id: 省份ID,
+        city: 城市,
+        city_id: 城市ID,
+        area: 县区,
+        area_id: 县区ID,
+        lng: 商家所在位置经度,
+        lat: 商家所在位置纬度,
+        business_time: 商家营业时间 数组格式:[开始时间, 结束时间], 如: ['10:30:00', '18:30:00'],
+        logo: 商家logo
+        desc_pic: 商家描述图片
+        desc: 商家介绍
+        contacter: 联系人姓名
+        contacter_phone: 负责人联系方式
+        status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
+        distance: 距离, 当传递经纬度信息时才存在
+        lowestAmount: 最低消费金额
+        isOperSelf: 是否归属于当前小程序的运营中心,
+        isOpenDish: 商家是否开启单品模式,
+      }
+  } 
   ```
 
   ​
@@ -336,11 +371,15 @@ token (wxLogin接口除外)
 
 - [ ] 商品列表
 
-    接口地址: GET `/goods`
-    
-    参数: `merchant_id` 商家ID
-    
-    返回
+接口地址：GET   `/goods`
+
+参数：
+
+```
+ merchant_id： 商家ID
+```
+
+返回：
 
   ```
   data: {
@@ -367,16 +406,20 @@ token (wxLogin接口除外)
     }
   ```
 
-  ​
+  
 
 
 - [ ] 商品详情
 
-    接口地址: GET `/goods/detail`
-    
-    参数: id 商品ID
-    
-    返回
+接口地址： GET  `/goods/detail`
+
+参数
+
+```
+id: 商品id
+```
+
+返回：
 
   ```
   同商品列表中的每一项
@@ -412,11 +455,12 @@ token (wxLogin接口除外)
                 notify_mobile: 用户通知手机号,
                 merchant_id: 商家ID,
                 merchant_name: 商家名,
+                merchant_logo: 商家logo,
                 goods_id: 商品ID,
                 goods_name: 商品名,
                 goods_pic: 商品图片,
                 goods_thumb_url: 商品缩略图,
-                price: 商家单价,
+                price: 商品单价,
                 buy_number: 购买数量,
                 pay_price: 支付金额,
                 pay_time: 支付时间,
@@ -431,7 +475,25 @@ token (wxLogin接口除外)
                         status: 状态 1-未核销, 2-已核销 3-已退款,
                     }
                 ]
-                isOperSelf: 是否归属于当前小程序的运营中心
+                isOperSelf: 是否归属于当前小程序的运营中心,
+                goods_end_date: 商品有效期结束日期,
+                dishes_items:[   订单为点菜订单时存在
+                    {
+                        id: 列表id, 
+                        user_id: 用户ID, 
+                        oper_id: 所属运营中心ID, 
+                        merchant_id: 商家ID, 
+                        dishes_id: dishes表的id, 
+                        dishes_goods_id: 单品id, 
+                        number: 商品数量, 
+                        dishes_goods_sale_price: 单品售价, 
+                        dishes_goods_logo: 单品logo, 
+                        dishes_goods_name: 单品名称, 
+                        created_at: 创建时间, 
+                        updated_at: 更新时间,
+                    }
+                    ......
+                ]
             }
         ]
     } 
@@ -441,20 +503,70 @@ token (wxLogin接口除外)
 
 - [ ] 订单详情
 
-    地址: GET`/order/detail`
-    参数
+地址：GET  `/order/detail`
+
+参数：
 
   ```
-  order_no 订单号
+order_no 订单号
   ```
 
   返回
 
   ```
-  同订单列表中的每一项
+     data: {
+         id: 订单ID,
+         oper_id: 运营中心ID,
+         order_no: 订单号,
+         user_id: 用户ID,
+         user_name: 用户名,
+         notify_mobile: 用户通知手机号,
+         merchant_id: 商家ID,
+         merchant_name: 商家名,
+         goods_id: 商品ID,
+         goods_name: 商品名,
+         goods_pic: 商品图片,
+         goods_thumb_url: 商品缩略图,
+         price: 商品单价,
+         buy_number: 购买数量,
+         pay_price: 支付金额,
+         pay_time: 支付时间,
+         refund_price: 退款金额,
+         refund_time: 退款时间,
+         status: 状态 1-未支付 2-已取消 3-已关闭 (超时自动关闭) 4-已付款  6-已退款 7-已完成 (不可退款),
+         items: 核销码列表(已支付及之后的状态才存在) [
+             {
+             id: 核销码ID,
+             order_id: 订单ID,
+             verify_code: 核销码,
+             status: 状态 1-未核销, 2-已核销 3-已退款,
+             }
+         ]
+         isOperSelf: 是否归属于当前小程序的运营中心,
+         user_level: 获取积分时的用户等级（该订单有自反积分时存在）,
+         user_level_text: 获取积分时的用户等级文字版（该订单有自反积分时存在）,
+         credit: 该订单获取的自反积分（该订单有自反积分时存在）,
+         dishes_items:[   订单为点菜订单时存在
+             {
+                 id: 列表id, 
+                 user_id: 用户ID, 
+                 oper_id: 所属运营中心ID, 
+                 merchant_id: 商家ID, 
+                 dishes_id: dishes表的id, 
+                 dishes_goods_id: 单品id, 
+                 number: 商品数量, 
+                 dishes_goods_sale_price: 单品售价, 
+                 dishes_goods_logo: 单品logo, 
+                 dishes_goods_name: 单品名称, 
+                 created_at: 创建时间, 
+                 updated_at: 更新时间,
+             }
+             ......
+         ]
+    } 
   ```
 
-  ​
+  
 
 
 - [ ] 下单接口
@@ -504,14 +616,14 @@ token (wxLogin接口除外)
 
   ```
   data: {
-      id: 16,
-      order_id: 893846835,
-      order_no: "O20180415222010166615",
-      amount: "0.01",
-      updated_at: "2018-04-16 19:30:45",
-      created_at: "2018-04-16 19:30:44",
-      refund_id: "50000206712018041604196575582",
-      status: 2
+      id: 16,  退款id
+      order_id: 893846835,  订单id
+      order_no: "O20180415222010166615",  订单号
+      amount: "0.01",  退款金额
+      updated_at: "2018-04-16 19:30:45",  更新时间
+      created_at: "2018-04-16 19:30:44",  创建时间
+      refund_id: "50000206712018041604196575582", 微信退款单号
+      status: 2  退款状态 1-未退款 2-已退款
   }
   ```
 
@@ -519,7 +631,7 @@ token (wxLogin接口除外)
 
 - [ ] 小程序间跳转h5
 
-  地址: H5页面 https://o2o.niucha.ren/miniprogram_bridge/pay
+  地址:  GET `H5页面 https://o2o.niucha.ren/miniprogram_bridge/pay` 
 
   参数
 
@@ -537,4 +649,223 @@ token (wxLogin接口除外)
 通过scene值请求接口登陆, 获取用户信息, 并调起支付
 ```
 
-- [ ] sceneId快捷登陆接口
+
+
+**点菜相关**
+
+- [ ] 获取该商家菜单的所有种类接口
+
+  地址: Get `dishes/category`
+
+  参数
+
+  ```
+  merchant_id   商家id
+  ```
+
+  返回
+
+  ```
+  {
+    "code": 0,
+    "message": "请求成功",
+    "data": {
+        "list": [
+            {
+                "id": 1,     种类ID
+                "oper_id": 3,   运营ID
+                "merchant_id": 19,  商家ID
+                "name": "海鲜",
+                "sort": 1,
+                "status": 1,   状态 1上架  2下架
+                "created_at": "2018-06-15 14:24:43",
+                "updated_at": "2018-06-15 16:50:02",
+                "deleted_at": null
+            },
+  		....
+        ]
+    },
+    "timestamp": 1529477361
+  }
+  ```
+
+
+- [ ] 获取菜单各种类菜品接口
+
+  地址: Get `dishes/goods`
+
+  参数
+
+  ```
+  merchant_id   商家id
+  category_id   菜的种类
+  ```
+
+  返回
+
+  ```
+  {
+    "code": 0,
+    "message": "请求成功",
+    "data": {
+        "list": [
+            {
+                "id": 3,
+                "oper_id": 3,
+                "merchant_id": 19,  
+                "name": "龙虾",
+                "market_price": 111,  市场价格
+                "sale_price": 110,  零售价
+                "dishes_category_id": 1,  分类ID
+                "intro": "11111",  商品描述
+                "logo": "http://www.daqian.com/storage/image/item/1SrUrHdLJkumxE8fWWk3zEricLsf7MciNDlgljFp.jpeg",  logo图片
+                "detail_image": "http://www.daqian.com/storage/image/item/z5tBnB2XoBvXEYUQWyQ3odPz49OPrEKLMEIYmnj6.jpeg",  商品详情图片
+                "status": 1,  1上架 2下架
+                "created_at": "2018-06-15 14:26:09",
+                "updated_at": "2018-06-15 14:26:09",
+                "deleted_at": null
+            },
+           .....
+  }
+  ```
+
+
+
+
+- [ ] 点菜接口
+
+  地址: post `dishes/add`
+
+  参数   
+  ```
+  merchant_id   商家id
+  goods_list :[
+    [id=>'',number=>''],
+    [id=>'',number=>'']
+  ] id:菜的ID  number 数量
+
+  ```
+
+  返回
+
+  ```
+  {
+    "code": 0,
+    "message": "请求成功",
+    "data": {
+        "oper_id": 3,
+        "merchant_id": 19,
+        "user_id": 1,  用户ID
+        "updated_at": "2018-06-20 15:05:15",
+        "created_at": "2018-06-20 15:05:15",
+        "id": 3   菜单ID
+    },
+    "timestamp": 1529478315
+  }
+  ```
+
+
+- [ ] 菜单详情
+
+  地址: get `dishes/detail`
+
+  参数   
+  ```
+   dishes_id  : 菜单id
+   merchant_id: 商户id
+  ```
+
+  返回
+
+  ```
+  {
+  code: 返回码，
+  message：返回消息，
+  data：[
+      {
+          "user_id": "",  用户id
+          "oper_id": "",   运营中心id
+          "dishes_goods_name": "",   商品名称
+          "number": "",   商品数量
+          "total_price": "",   该商品总价格
+          "dishes_goods_logo": ""  商品logo
+      }
+      ......
+  ],
+  timestamp: 当前时间戳
+  }
+  ```
+
+  - [ ] 点菜下单接口
+
+  地址: POST `/order/dishesBuy`
+
+  参数
+
+  ```
+  dishes_id  ：菜单id
+  ```
+
+  返回
+
+  ```
+    data: {
+    	order_no: 订单号,
+    	isOperSelf: 是否归属于当前小程序的运营中心
+    	sdk_config: 调起微信支付配置, isOperSelf 为1时存在 {
+                appId: appid,
+                nonceStr: 随机字符串,
+                package: package,
+                signType: signType,
+                paySign: 支付签名,
+                timestamp: 时间戳,
+                }
+    }
+
+
+  ```
+
+- [ ] 获取热门菜品
+
+  地址：GET  `/dishes/hot`
+
+  参数：
+
+  ```
+  merchant_id: 商户id
+  ```
+
+  返回：
+
+  ```
+  data: {
+      list:[
+          {
+              id: 商品id
+              oper_id: 所属运营中心ID
+              merchant_id: 商家ID
+              name：点菜商品名称
+              market_price：市场价格
+              sale_price：销售价格
+              dishes_category_id：分类
+              intro：商品描述
+              sell_number：已销售数量
+              is_hot：是否热销
+              logo：商品logo图片
+              detail_image：商品详情图片
+              status：1-上架，2-下架
+              created_at：创建时间
+              updated_at：更新时间
+              deleted_at：删除时间
+          }
+          ......
+      ]
+  }
+  ```
+
+  
+
+
+
+订单详情，订单列表接口不变
+

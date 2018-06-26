@@ -12,8 +12,12 @@ namespace App\Http\Controllers\User;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
+use App\Modules\Dishes\Dishes;
+use App\Modules\Dishes\DishesItem;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
@@ -44,7 +48,7 @@ class OrderController extends Controller
                     ->orWhere(function(Builder $query){
                         $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
                             ->whereIn('status', [4, 6, 7]);
-                    });
+                    })->orWhere('type', Order::TYPE_DISHES);
             })
             ->when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
                 $query->where('oper_id', $currentOperId);
@@ -59,6 +63,10 @@ class OrderController extends Controller
             // 判断商户是否是当前小程序关联运营中心下的商户
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
             $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
+            $item->merchant_logo = Merchant::where('id', $item->merchant_id)->value('logo');
+            if ($item->type == Order::TYPE_DISHES){
+                $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
+            }
         });
         return Result::success([
             'list' => $data->items(),
@@ -85,8 +93,12 @@ class OrderController extends Controller
             $detail->user_level_text = User::getLevelText($creditRecord->user_level);
             $detail->credit = $creditRecord->credit;
         }
+        if ($detail->type == Order::TYPE_DISHES){
+            $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
+        }
         return Result::success($detail);
     }
+
 
     /**
      * 订单创建
@@ -161,6 +173,114 @@ class OrderController extends Controller
             'sdk_config' => $sdkConfig,
         ]);
     }
+
+
+    /**
+     * 点菜订单创建
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     */
+    public function dishesBuy()
+    {
+        $this->validate(request(), [
+            'dishes_id' => 'required|integer|min:1',
+        ]);
+        $dishesId = request('dishes_id');
+        $dishes = Dishes::findOrFail($dishesId);
+        $userIdByDish = $dishes->user_id;
+        $user = request()->get('current_user');
+        $merchant = Merchant::findOrFail($dishes->merchant_id);
+        $oper = request()->get('current_oper');
+
+        if($userIdByDish!=$user->id){
+            throw new ParamInvalidException('参数错误');
+        }
+        $result = MerchantSettingService::getValueByKey($dishes->merchant_id, 'dishes_enabled');
+        if (!$result){
+            throw new BaseResponseException('单品购买功能尚未开启！');
+        }
+        //判断商品上下架状态
+        $dishesItems = DishesItem::where('dishes_id', $dishesId)
+            ->where('user_id', $dishes->user_id)
+            ->get();
+        foreach ($dishesItems as $item){
+            $dishesGoods = DishesGoods::findOrFail($item->dishes_goods_id);
+            if ($dishesGoods->status == DishesGoods::STATUS_OFF){
+                throw new BaseResponseException('菜单已变更, 请刷新页面');
+            }
+        }
+
+        $order = new Order();
+        $orderNo = Order::genOrderNo();
+        $order->oper_id = $merchant->oper_id;
+        $order->order_no = $orderNo;
+        $order->user_id = $user->id;
+        $order->open_id = request()->get('current_open_id');
+        $order->user_name = $user->name ?? '';
+        $order->type = Order::TYPE_DISHES;
+        $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
+        $order->merchant_id = $merchant->id;
+        $order->merchant_name = $merchant->name ?? '';
+        $order->goods_name = $merchant->name ?? '';
+        $order->dishes_id = $dishesId;
+        $order->status = Order::STATUS_UN_PAY;
+        $order->pay_price = $this->getTotalPrice();
+        $order->remark = request('remark', '');
+        $order->save();
+
+        $isOperSelf = $merchant->oper_id === $oper->id ? 1 : 0;
+        if($isOperSelf == 1) {
+            $payApp = WechatService::getWechatPayAppForOper($merchant->oper_id);
+            $data = [
+                'body' =>  $merchant->name,
+                'out_trade_no' => $orderNo,
+                'total_fee' => $order->pay_price * 100,
+                'trade_type' => 'JSAPI',
+                'openid' => $order->open_id,
+            ];
+            $unifyResult = $payApp->order->unify($data);
+            if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
+                $order->save();
+            }else {
+                Log::error('微信统一下单失败', [
+                    'payConfig' => $payApp->getConfig(),
+                    'data' => $data,
+                    'result' => $unifyResult,
+                ]);
+                throw new BaseResponseException('微信统一下单失败');
+            }
+            $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+        }else {
+            $sdkConfig = null;
+        }
+
+        return Result::success([
+            'order_no' => $orderNo,
+            'isOperSelf' => $isOperSelf,
+            'sdk_config' => $sdkConfig,
+        ]);
+    }
+
+
+
+    /**
+     * 获取总价格
+     */
+    public function getTotalPrice(){
+        $dishesId = request('dishes_id');
+        $list = DishesItem::where('dishes_id',$dishesId)->get();
+        $totalPrice = 0;
+        foreach ($list as  $v){
+                $totalPrice += ($v->dishes_goods_sale_price)*($v->number);
+        }
+
+       return  $totalPrice;
+
+    }
+
+
+
+
 
     /**
      * 扫码付款

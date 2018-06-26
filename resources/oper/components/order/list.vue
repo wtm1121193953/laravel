@@ -13,6 +13,17 @@
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
             </el-form-item>
+
+            <el-form-item label="订单类型">
+                <el-select v-model="query.type" class="w-100">
+                    <el-option label="全部" value=""/>
+                    <el-option label="团购" :value="1"/>
+                    <el-option label="买单" :value="2"/>
+                    <el-option label="单品" :value="3"/>
+                </el-select>
+            </el-form-item>
+
+
             <el-form-item label="订单状态">
                 <el-select v-model="query.status" class="w-100">
                     <el-option label="全部" value=""/>
@@ -72,6 +83,15 @@
                             <el-form-item label="手机号">
                                 <span>{{ scope.row.notify_mobile }}</span>
                             </el-form-item>
+
+                            <el-form-item label="商品信息：" v-if="scope.row.type == 3">
+                                <div v-for="(item, index) in scope.row.dishes_items" :key="index">
+                                    <span>{{item.dishes_goods_name}}</span>&nbsp;&nbsp;&nbsp;
+                                    <span>{{item.dishes_goods_sale_price}}¥</span>&nbsp;&nbsp;&nbsp;
+                                    <span>×{{item.number}}</span><br/>
+                                </div>
+                            </el-form-item>
+
                             <el-form-item label="备注">
                                 <span>{{ scope.row.remark }}</span>
                             </el-form-item>
@@ -87,6 +107,7 @@
                 <template slot-scope="scope">
                     <span v-if="scope.row.type == 1">团购</span>
                     <span v-else-if="scope.row.type == 2">买单</span>
+                    <span v-else-if="scope.row.type == 3">单品</span>
                     <span v-else>未知({{scope.row.type}})</span>
                 </template>
             </el-table-column>

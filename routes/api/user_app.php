@@ -52,4 +52,7 @@ Route::prefix('app/user')
         Route::get('credit/getCreditList', 'CreditController@getCreditList')->middleware(UserLoginFilter::class);
         Route::get('credit/getUserCredit', 'CreditController@getUserCredit')->middleware(UserLoginFilter::class);
         Route::get('credit/getConsumeQuotaRecordList', 'CreditController@getConsumeQuotaRecordList')->middleware(UserLoginFilter::class);
+
+        Route::get('merchant/dishesCategory', 'MerchantDishesController@getDishesCategory');
+        Route::get('merchant/dishesGoods', 'MerchantDishesController@getDishesGoods');
     });

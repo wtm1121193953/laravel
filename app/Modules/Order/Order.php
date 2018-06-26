@@ -63,7 +63,7 @@ class Order extends BaseModel
 
     public static function getTypeText($type)
     {
-        return ['', '团购', '买单'][$type];
+        return ['', '团购', '买单','单品'][$type];
     }
 
     public static function getStatusText($status)

@@ -11,6 +11,7 @@ namespace App\Http\Controllers\Merchant;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Dishes\DishesItem;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\User\User;
@@ -32,7 +33,9 @@ class OrdersController extends Controller
                     ->orWhere(function(Builder $query){
                         $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
                             ->whereIn('status', [4, 6, 7]);
-                    });
+                    })->orWhere(function(Builder $query){
+                    $query->where('type', Order::TYPE_DISHES);
+                });
             })
             ->when($orderNo, function (Builder $query) use ($orderNo){
                 $query->where('order_no', $orderNo);
@@ -60,6 +63,10 @@ class OrdersController extends Controller
             }else{
                 $data[$key]['credit'] = 0;
                 $data[$key]['user_level_text'] = '';
+            }
+            if ($item->type == 3){
+                $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
+                $data[$key]['dishes_items'] = $dishesItems;
             }
         }
 
@@ -101,4 +108,5 @@ class OrdersController extends Controller
         }
 
     }
+
 }

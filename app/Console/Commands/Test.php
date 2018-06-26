@@ -16,6 +16,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use  App\Modules\Merchant\MerchantSettingService;
 
 class Test extends Command
 {
@@ -52,6 +53,8 @@ class Test extends Command
      */
     public function handle()
     {
+     //   MerchantSettingService::set();
+
         Order::whereIn('status', [4, 5, 6, 7])->chunk(100, function(Collection $list){
             $list->each(function($item){
                 OrderPaidJob::dispatch($item);
@@ -61,6 +64,7 @@ class Test extends Command
         OrderPaidJob::dispatch(Order::where('status', 4)->first());
         dd();
 //        SettlementJob::dispatch(Merchant::SETTLE_WEEKLY);
+     //   $this->remedySettlementsOf20180521and20180528();
         //
         $this->repayO20180601132436766626();
     }

@@ -37,6 +37,8 @@ Route::prefix('user')
         Route::any('order/pay', 'OrderController@pay')->middleware(UserLoginFilter::class);
         Route::any('order/refund', 'OrderController@refund')->middleware(UserLoginFilter::class);
         Route::any('order/scanQrcodePay', 'OrderController@scanQrcodePay')->middleware(UserLoginFilter::class);
+        Route::any('order/dishesBuy', 'OrderController@dishesBuy')->middleware(UserLoginFilter::class);
+
 
         Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
         Route::get('invite/getInviterBySceneId', 'InviteChannelController@getInviterBySceneId');
@@ -48,5 +50,11 @@ Route::prefix('user')
         Route::get('credit/getCreditList', 'CreditController@getCreditList')->middleware(UserLoginFilter::class);
         Route::get('credit/getUserCredit', 'CreditController@getUserCredit')->middleware(UserLoginFilter::class);
         Route::get('credit/getConsumeQuotaRecordList', 'CreditController@getConsumeQuotaRecordList')->middleware(UserLoginFilter::class);
+
+        Route::get('dishes/category', 'DishesController@getDishesCategory');
+        Route::get('dishes/goods', 'DishesController@getDishesGoods');
+        Route::get('dishes/hot', 'DishesController@getHotDishesGoods');
+        Route::post('dishes/add','DishesController@add')->middleware(UserLoginFilter::class);
+        Route::get('dishes/detail','DishesController@detail')->middleware(UserLoginFilter::class);
 
     });
