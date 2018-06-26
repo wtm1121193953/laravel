@@ -83,7 +83,7 @@
                 }
             };
             var validateMarketPrice = (rule, value, callback) => {
-                if (value <= 0 || value>10000000) {
+                if (value <= 0 || value>1000000) {
                     callback(new Error('市场价必须在0到1000000元之间'));
                 }else {
                     callback();
