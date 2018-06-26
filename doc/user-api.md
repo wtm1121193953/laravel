@@ -425,6 +425,7 @@ id: 商品id
                 notify_mobile: 用户通知手机号,
                 merchant_id: 商家ID,
                 merchant_name: 商家名,
+                merchant_logo: 商家logo,
                 goods_id: 商品ID,
                 goods_name: 商品名,
                 goods_pic: 商品图片,
@@ -444,8 +445,25 @@ id: 商品id
                         status: 状态 1-未核销, 2-已核销 3-已退款,
                     }
                 ]
-                isOperSelf: 是否归属于当前小程序的运营中心
-                goods_end_date: 商品有效期结束日期
+                isOperSelf: 是否归属于当前小程序的运营中心,
+                goods_end_date: 商品有效期结束日期,
+                dishes_items:[   订单为点菜订单时存在
+                    {
+                        id: 列表id, 
+                        user_id: 用户ID, 
+                        oper_id: 所属运营中心ID, 
+                        merchant_id: 商家ID, 
+                        dishes_id: dishes表的id, 
+                        dishes_goods_id: 单品id, 
+                        number: 商品数量, 
+                        dishes_goods_sale_price: 单品售价, 
+                        dishes_goods_logo: 单品logo, 
+                        dishes_goods_name: 单品名称, 
+                        created_at: 创建时间, 
+                        updated_at: 更新时间,
+                    }
+                    ......
+                ]
             }
         ]
     } 
@@ -497,7 +515,24 @@ order_no 订单号
          isOperSelf: 是否归属于当前小程序的运营中心,
          user_level: 获取积分时的用户等级（该订单有自反积分时存在）,
          user_level_text: 获取积分时的用户等级文字版（该订单有自反积分时存在）,
-         credit: 该订单获取的自反积分（该订单有自反积分时存在）
+         credit: 该订单获取的自反积分（该订单有自反积分时存在）,
+         dishes_items:[   订单为点菜订单时存在
+             {
+                 id: 列表id, 
+                 user_id: 用户ID, 
+                 oper_id: 所属运营中心ID, 
+                 merchant_id: 商家ID, 
+                 dishes_id: dishes表的id, 
+                 dishes_goods_id: 单品id, 
+                 number: 商品数量, 
+                 dishes_goods_sale_price: 单品售价, 
+                 dishes_goods_logo: 单品logo, 
+                 dishes_goods_name: 单品名称, 
+                 created_at: 创建时间, 
+                 updated_at: 更新时间,
+             }
+             ......
+         ]
     } 
   ```
 
