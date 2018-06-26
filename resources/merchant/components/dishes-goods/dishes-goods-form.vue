@@ -76,15 +76,15 @@
         },
         data(){
             var validateSalePrice = (rule, value, callback) => {
-                if (value <= 0) {
-                    callback(new Error('销售价必须大于0元'));
+                if (value <= 0 || value>1000000){
+                    callback(new Error('销售价必须在0到1000000元之间'));
                 }else {
                     callback();
                 }
             };
             var validateMarketPrice = (rule, value, callback) => {
-                if (value <= 0) {
-                    callback(new Error('市场价必须大于0元'));
+                if (value <= 0 || value>1000000) {
+                    callback(new Error('市场价必须在0到1000000元之间'));
                 }else {
                     callback();
                 }
