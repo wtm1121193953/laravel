@@ -111,7 +111,19 @@
                     <span v-else>未知({{scope.row.type}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="goods_name" label="商品名称"/>
+            <el-table-column prop="goods_name" label="商品名称">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.type == 3 && scope.row.dishes_items.length == 1">
+                        {{scope.row.dishes_items[0].dishes_goods_name}}
+                    </span>
+                    <span v-else-if="scope.row.type == 3 && scope.row.dishes_items.length > 1">
+                        {{scope.row.dishes_items[0].dishes_goods_name}}等{{scope.row.dishes_items.length}}件商品
+                    </span>
+                    <span v-else>
+                        {{scope.row.goods_name}}
+                    </span>
+                </template>
+            </el-table-column>
             <el-table-column prop="pay_price" label="总价"/>
             <el-table-column prop="status" label="订单状态">
                 <template slot-scope="scope">
@@ -182,6 +194,7 @@
                 api.get('/orders', queryData).then(data => {
                     this.isLoading = false;
                     this.list = data.list;
+                    console.log(this.list)
                     this.total = data.total;
                 })
             },
