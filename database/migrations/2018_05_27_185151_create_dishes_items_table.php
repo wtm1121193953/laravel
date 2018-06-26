@@ -21,7 +21,7 @@ class CreateDishesItemsTable extends Migration
             $table->integer('dishes_id')->index()->default(0)->comment('dishes表的id');
             $table->integer('dishes_goods_id')->index()->default(0)->comment('单品id');
             $table->integer('number')->default(0)->comment('商品数量');
-            $table->integer('dishes_goods_sale_price')->default(0)->comment('单品售价');
+            $table->decimal('dishes_goods_sale_price', 10, 2)->default(0)->comment('单品售价');
             $table->string('dishes_goods_logo')->default('')->comment('单品logo');
             $table->string('dishes_goods_name')->default('')->comment('单品名称');
             $table->timestamps();

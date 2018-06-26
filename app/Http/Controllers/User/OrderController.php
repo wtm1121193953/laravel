@@ -206,7 +206,7 @@ class OrderController extends Controller
         foreach ($dishesItems as $item){
             $dishesGoods = DishesGoods::findOrFail($item->dishes_goods_id);
             if ($dishesGoods->status == DishesGoods::STATUS_OFF){
-                throw new BaseResponseException('商品'.$dishesGoods->name.'已下架, 商品ID为:'.$dishesGoods->id);
+                throw new BaseResponseException('菜单已变更, 请刷新页面');
             }
         }
 

@@ -124,7 +124,7 @@ class DishesController extends Controller
             }
             $dishesGoods = DishesGoods::findOrFail($item['id']);
             if ($dishesGoods->status == DishesGoods::STATUS_OFF){
-                throw new BaseResponseException('商品'.$dishesGoods->name.'已下架, 商品ID为:'.$dishesGoods->id);
+                throw new BaseResponseException('菜单已变更, 请刷新页面');
             }
         }
         $merchant = Merchant::findOrFail($merchantId);
