@@ -2,11 +2,7 @@
     <page title="单品分类" v-loading="isLoading">
         <el-button class="fr" type="primary" @click="add">添加分类</el-button>
         <el-table :data="list" stripe>
-            <el-table-column prop="id" label="ID">
-                <template slot-scope="scope">
-                    {{(query.page - 1) * query.pageSize + scope.$index + 1}}
-                </template>
-            </el-table-column>
+            <el-table-column prop="id" label="ID"/>
             <el-table-column prop="name" label="分类名称"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
