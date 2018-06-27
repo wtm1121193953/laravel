@@ -26,7 +26,19 @@
                     <span v-else>未知({{scope.row.type}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="goods_name" label="商品名称"/>
+            <el-table-column prop="goods_name" label="商品名称">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.type == 3 && scope.row.dishes_items.length == 1">
+                        {{scope.row.dishes_items[0].dishes_goods_name}}
+                    </span>
+                    <span v-else-if="scope.row.type == 3 && scope.row.dishes_items.length > 1">
+                        {{scope.row.dishes_items[0].dishes_goods_name}}等{{getNumber(scope.row.dishes_items)}}件商品
+                    </span>
+                    <span v-else>
+                        {{scope.row.goods_name}}
+                    </span>
+                </template>
+            </el-table-column>
             <el-table-column prop="pay_price" label="总价"/>
             <el-table-column prop="notify_mobile" label="手机号"/>
             <el-table-column prop="status" label="订单状态">
@@ -147,6 +159,13 @@
                         this.$message.error(result.message);
                     }
                 })
+            },
+            getNumber(row) {
+                let num = 0;
+                row.forEach(function (item) {
+                    num = num + item.number;
+                })
+                return num;
             }
         },
         created() {

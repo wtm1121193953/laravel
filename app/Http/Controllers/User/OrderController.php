@@ -444,7 +444,10 @@ class OrderController extends Controller
         return $sdkConfig;
     }
 
-
+    /**
+     * 退款返还商品数量
+     * @param $order
+     */
     private function decSellNumber($order)
     {
         if ($order->type == Order::TYPE_GROUP_BUY){
