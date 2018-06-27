@@ -98,7 +98,7 @@ class WechatService
         try {
             $filename = $response->save(storage_path('app/public/miniprogram/app_code'), "_{$sceneId}_{$width}");
         } catch (InvalidArgumentException $e) {
-            throw new BaseResponseException('小程序码生成失败' . $e->getMessage());
+            throw new BaseResponseException('小程序码生成失败');
         }
         if($getWithFilename){
             return $filename;

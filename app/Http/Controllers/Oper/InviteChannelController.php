@@ -133,7 +133,7 @@ class InviteChannelController extends Controller
         try {
             $inviteQrcodeFilename = WechatService::genMiniprogramAppCode($operId, $scene->id, $scene->page, $width, true);
         } catch (\Exception $e) {
-            throw new BaseResponseException('小程序码生成失败' . $e->getMessage());
+            throw new BaseResponseException('小程序码生成失败');
         }
         $filename = storage_path('app/public/miniprogram/app_code') . '/' . $inviteQrcodeFilename;
         if(request()->ajax()){
