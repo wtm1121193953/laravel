@@ -64,6 +64,7 @@
         <el-dialog title="编辑推广渠道" :visible.sync="isEdit">
             <invite-channel-form ref="editForm" :data="currentEditData" @cancel="isEdit = false" @save="doEdit"/>
         </el-dialog>
+        <a :href="downloadUrl" ref="downloadBtn" style="display: none;"></a>
     </page>
 </template>
 
@@ -84,6 +85,7 @@
                 isEdit: false,
                 currentEditData: null,
                 qrcodeSizeType: 1,
+                downloadUrl: '',
             }
         },
         components: {
@@ -135,7 +137,10 @@
             },
             download(data){
                 api.get('inviteChannel/downloadInviteQrcode', {id: data.id, qrcodeSizeType: this.qrcodeSizeType}).then(() => {
-                    window.open(`/api/oper/inviteChannel/downloadInviteQrcode?id=${data.id}&qrcodeSizeType=${this.qrcodeSizeType}` )
+                    this.downloadUrl = `/api/oper/inviteChannel/downloadInviteQrcode?id=${data.id}&qrcodeSizeType=${this.qrcodeSizeType}`;
+                    this.$nextTick(() => {
+                        this.$refs.downloadBtn.click()
+                    })
                 })
             },
             inviteRecords(data){
