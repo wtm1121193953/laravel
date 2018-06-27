@@ -30,7 +30,7 @@
                 layout="total, prev, pager, next"
                 :current-page.sync="query.page"
                 @current-change="getList"
-                :page-size="15"
+                :page-size="query.pageSize"
                 :total="total"/>
 
         <el-dialog title="添加商品" :visible.sync="isAdd">
@@ -56,6 +56,7 @@
                 isLoading: false,
                 query: {
                     page: 1,
+                    pageSize: 15,
                 },
                 list: [],
                 total: 0,

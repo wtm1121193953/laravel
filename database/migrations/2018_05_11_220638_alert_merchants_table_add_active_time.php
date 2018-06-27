@@ -29,7 +29,7 @@ class AlertMerchantsTableAddActiveTime extends Migration
         //
         Schema::table('merchants', function (Blueprint $table) {
             $table->dropColumn([
-                'oper_biz_member_code',
+                'active_time',
             ]);
         });
     }

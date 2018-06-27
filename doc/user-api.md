@@ -307,6 +307,7 @@ token (wxLogin接口除外)
         desc: 商家介绍
         contacter: 联系人姓名
         contacter_phone: 负责人联系方式
+        audit_status: 商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在
         lowestAmount: 最低消费金额
@@ -357,6 +358,7 @@ token (wxLogin接口除外)
         desc: 商家介绍
         contacter: 联系人姓名
         contacter_phone: 负责人联系方式
+        audit_status: 商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在
         lowestAmount: 最低消费金额
@@ -401,7 +403,9 @@ token (wxLogin接口除外)
           buy_info: 购买须知,
           status: 状态 1-上架 2-下架,
           sell_number: 商品已售数量,
+          business_time: 营业时间，数组
         }
+        ......
       ]
     }
   ```
@@ -422,7 +426,25 @@ id: 商品id
 返回：
 
   ```
-  同商品列表中的每一项
+  data: {
+      id: 商品ID,
+      oper_id: 运营中心ID
+      merchant_id: 商家ID,
+      name: 商品名,
+      desc: 商品描述,
+      market_price: 市场价(商品原价),
+      price; 商品价格,
+      start_date: 商品有效期开始日期,
+      end_date: 商品有效期结束日期,
+      business_time: 可用时间 数组格式:[开始时间, 结束时间], 如: ['10:30:00', '18:30:00'],
+      thumb_url: 商品缩略图,
+      pic: 商品默认图,
+      pic_list: 商品小图列表, 数组
+      buy_info: 购买须知,
+      status: 状态 1-上架 2-下架,
+      sell_number: 商品已售数量,
+      business_time: 营业时间，数组
+    }
   ```
 
 
@@ -487,7 +509,7 @@ id: 商品id
                         dishes_goods_id: 单品id, 
                         number: 商品数量, 
                         dishes_goods_sale_price: 单品售价, 
-                        dishes_goods_logo: 单品logo, 
+                        dishes_goods_detail_image: 单品logo, 
                         dishes_goods_name: 单品名称, 
                         created_at: 创建时间, 
                         updated_at: 更新时间,
@@ -556,7 +578,7 @@ order_no 订单号
                  dishes_goods_id: 单品id, 
                  number: 商品数量, 
                  dishes_goods_sale_price: 单品售价, 
-                 dishes_goods_logo: 单品logo, 
+                 dishes_goods_detail_image: 单品logo, 
                  dishes_goods_name: 单品名称, 
                  created_at: 创建时间, 
                  updated_at: 更新时间,
@@ -718,7 +740,6 @@ order_no 订单号
                 "sale_price": 110,  零售价
                 "dishes_category_id": 1,  分类ID
                 "intro": "11111",  商品描述
-                "logo": "http://www.daqian.com/storage/image/item/1SrUrHdLJkumxE8fWWk3zEricLsf7MciNDlgljFp.jpeg",  logo图片
                 "detail_image": "http://www.daqian.com/storage/image/item/z5tBnB2XoBvXEYUQWyQ3odPz49OPrEKLMEIYmnj6.jpeg",  商品详情图片
                 "status": 1,  1上架 2下架
                 "created_at": "2018-06-15 14:26:09",
@@ -788,7 +809,7 @@ order_no 订单号
           "dishes_goods_name": "",   商品名称
           "number": "",   商品数量
           "total_price": "",   该商品总价格
-          "dishes_goods_logo": ""  商品logo
+          "dishes_goods_detail_image": ""  商品logo
       }
       ......
   ],
@@ -821,8 +842,6 @@ order_no 订单号
                 timestamp: 时间戳,
                 }
     }
-
-
   ```
 
 - [ ] 获取热门菜品
@@ -851,7 +870,6 @@ order_no 订单号
               intro：商品描述
               sell_number：已销售数量
               is_hot：是否热销
-              logo：商品logo图片
               detail_image：商品详情图片
               status：1-上架，2-下架
               created_at：创建时间

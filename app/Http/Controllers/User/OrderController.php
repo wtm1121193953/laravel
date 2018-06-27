@@ -396,6 +396,7 @@ class OrderController extends Controller
 
             $order->status = Order::STATUS_REFUNDED;
             $order->save();
+            $this->decSellNumber($order);
             return Result::success($orderRefund);
         }else {
             Log::error('微信退款失败 :', [
@@ -441,5 +442,24 @@ class OrderController extends Controller
         }
         $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
         return $sdkConfig;
+    }
+
+
+    private function decSellNumber($order)
+    {
+        if ($order->type == Order::TYPE_GROUP_BUY){
+            Goods::where('id', $order->goods_id)
+                ->where('merchant_id', $order->merchant_id)
+                ->decrement('sell_number', $order->buy_number);
+        }elseif ($order->type == Order::TYPE_DISHES){
+            $dishesItems = DishesItem::where('merchant_id', $order->merchant_id)
+                ->where('dishes_id', $order->dishes_id)
+                ->get();
+            foreach ($dishesItems as $item){
+                DishesGoods::where('id', $item->dishes_goods_id)
+                    ->where('merchant_id', $item->merchant_id)
+                    ->decrement('sell_number', $item->number);
+            }
+        }
     }
 }

@@ -6,10 +6,10 @@
                     <el-input v-model="form.name"/>
                 </el-form-item>
                 <el-form-item prop="market_price" label="市场价">
-                    <el-input-number v-model="form.market_price"/>
+                    <el-input-number v-model="form.market_price" :min="0"/>
                 </el-form-item>
                 <el-form-item prop="price" label="销售价">
-                    <el-input-number v-model="form.price"/>
+                    <el-input-number v-model="form.price" :min="0"/>
                 </el-form-item>
                 <el-form-item label="有效期" required>
                     <el-date-picker
@@ -77,6 +77,20 @@
 
         },
         data(){
+            var validatePrice = (rule, value, callback) => {
+                if (value <= 0 || value>=1000000){
+                    callback(new Error('销售价必须在0到1000000元之间'));
+                }else {
+                    callback();
+                }
+            };
+            var validateMarketPrice = (rule, value, callback) => {
+                if (value <= 0 || value>=1000000) {
+                    callback(new Error('市场价必须在0到1000000元之间'));
+                }else {
+                    callback();
+                }
+            };
             return {
                 form: deepCopy(defaultForm),
                 formRules: {
@@ -84,10 +98,12 @@
                         {required: true, message: '名称不能为空'}
                     ],
                     market_price: [
-                        {required: true, message: '市场价不能为空'}
+                        {required: true, message: '市场价不能为空'},
+                        {validator: validateMarketPrice, trigger: 'blur'}
                     ],
                     price: [
-                        {required: true, message: '销售价不能为空'}
+                        {required: true, message: '销售价不能为空'},
+                        {validator: validatePrice, trigger: 'blur'}
                     ],
                     thumb_url: [
                         {required: true, message: '缩略图不能为空'}

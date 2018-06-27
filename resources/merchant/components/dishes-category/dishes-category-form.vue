@@ -11,10 +11,10 @@
                         <el-radio :label="2">禁用</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item>
+                <el-col style="text-align: center;">
                     <el-button @click="cancel">取消</el-button>
                     <el-button type="primary" @click="save">保存</el-button>
-                </el-form-item>
+                </el-col>
             </el-form>
         </el-col>
     </el-row>
@@ -54,10 +54,15 @@
             },
             cancel(){
                 this.$emit('cancel');
+                this.reset();
             },
             save(){
                 this.$refs.form.validate(valid => {
                     if(valid){
+                        this.form.name = this.form.name.trim();
+                        if (!this.form.name) {
+                            return false;
+                        }
                         let data = deepCopy(this.form);
                         this.$emit('save', data);
                     }

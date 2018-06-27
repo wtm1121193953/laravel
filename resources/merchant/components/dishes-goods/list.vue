@@ -6,10 +6,10 @@
             <el-table-column prop="name" label="商品名称"/>
             <el-table-column prop="sale_price" label="销售价"/>
             <el-table-column prop="dishes_category.name" label="类别"/>
-            <el-table-column prop="logo" label="商品图片">
+            <el-table-column prop="detail_image" label="商品图片">
                 <template slot-scope="scope">
                     <div style="height: 50px; width: 50px">
-                        <preview-img class="img" :url="scope.row.logo"/>
+                        <preview-img class="img" :url="scope.row.detail_image"/>
                     </div>
                 </template>
             </el-table-column>
@@ -51,7 +51,7 @@
                 :page-size="query.pageSize"
                 :total="total"/>
 
-        <el-dialog title="添加商品" :visible.sync="isAdd">
+        <el-dialog title="添加商品" :visible.sync="isAdd" :close-on-click-modal="false">
             <dishes-goods-form
                     ref="form"
                     :data="{}"
@@ -99,13 +99,10 @@
                 this.isAdd = true;
             },
             doAdd(data){
-                this.isLoading = true;
                 api.post('/dishes/goods/add', data).then(() => {
                     this.isAdd = false;
                     this.getList();
                     this.$refs.form.reset();
-                }).finally(() => {
-                    this.isLoading = false;
                 })
             },
         },

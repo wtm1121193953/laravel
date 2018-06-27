@@ -105,7 +105,8 @@
                 areaOptions: [],
                 formRules: {
                     name: [
-                        {required: true, message: '商家名称不能为空'}
+                        {required: true, message: '商家名称不能为空'},
+                        {max: 20, message: '商户名称不能超过20个字'}
                     ],
                     merchant_category: [
                         {type: 'array', required: true, message: '所属行业不能为空'}
