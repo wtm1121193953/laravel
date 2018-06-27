@@ -5,11 +5,11 @@
                 <el-form-item prop="name" label="商品名称">
                     <el-input v-model="form.name"/>
                 </el-form-item>
-                <el-form-item prop="market_price" label="市场价">
-                    <el-input-number v-model="form.market_price" :min="0" :max="999999"></el-input-number>
+                <el-form-item prop="market_price" label="市场价" required>
+                    <el-input-number v-model="form.market_price" :min="0"></el-input-number>
                 </el-form-item>
-                <el-form-item prop="sale_price" label="销售价">
-                    <el-input-number v-model="form.sale_price" :min="0" :max="999999"></el-input-number>
+                <el-form-item prop="sale_price" label="销售价" required>
+                    <el-input-number v-model="form.sale_price" :min="0"></el-input-number>
                 </el-form-item>
                 <el-form-item prop="dishes_category_id" label="类别">
                     <el-select v-model="form.dishes_category_id" placeholder="请选择">
@@ -21,10 +21,7 @@
                         ></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item prop="logo" label="商品logo图">
-                    <image-upload v-model="form.logo" :limit="1"></image-upload>
-                </el-form-item>
-                <el-form-item prop="detail_image" label="商品详情图">
+                <el-form-item prop="detail_image" label="商品图片">
                     <image-upload v-model="form.detail_image" :limit="1"></image-upload>
                 </el-form-item>
                 <el-form-item prop="intro" label="商品简介">
@@ -60,7 +57,6 @@
         market_price: 0,
         sale_price: 0,
         dishes_category_id: '',
-        logo: '',
         detail_image: '',
         intro: '',
         status: 1,
@@ -76,14 +72,14 @@
         },
         data(){
             var validateSalePrice = (rule, value, callback) => {
-                if (value <= 0 || value>1000000){
+                if (value <= 0 || value>=1000000){
                     callback(new Error('销售价必须在0到1000000元之间'));
                 }else {
                     callback();
                 }
             };
             var validateMarketPrice = (rule, value, callback) => {
-                if (value <= 0 || value>1000000) {
+                if (value <= 0 || value>=1000000) {
                     callback(new Error('市场价必须在0到1000000元之间'));
                 }else {
                     callback();
@@ -105,9 +101,6 @@
                     ],
                     dishes_category_id: [
                         {required: true, message: '类别不能为空'}
-                    ],
-                    logo: [
-                        {required: true, message: '商品logo不能为空'}
                     ],
                     detail_image: [
                         {required: true, message: '商品详情不能为空'}

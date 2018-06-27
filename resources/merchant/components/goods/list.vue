@@ -2,7 +2,11 @@
     <page title="商品管理" v-loading="isLoading">
         <el-button class="fr" type="primary" @click="add">添加商品</el-button>
         <el-table :data="list" stripe>
-            <el-table-column prop="id" label="ID"/>
+            <el-table-column prop="id" label="ID">
+                <template slot-scope="scope">
+                    {{(query.page - 1) * query.pageSize + scope.$index + 1}}
+                </template>
+            </el-table-column>
             <el-table-column prop="name" label="商品名称"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
@@ -30,7 +34,7 @@
                 layout="total, prev, pager, next"
                 :current-page.sync="query.page"
                 @current-change="getList"
-                :page-size="15"
+                :page-size="query.pageSize"
                 :total="total"/>
 
         <el-dialog title="添加商品" :visible.sync="isAdd">
@@ -56,6 +60,7 @@
                 isLoading: false,
                 query: {
                     page: 1,
+                    pageSize: 15,
                 },
                 list: [],
                 total: 0,

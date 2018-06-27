@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Merchant;
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
 use App\Result;
@@ -54,15 +55,22 @@ class DishesGoodsController extends Controller
         $this->validate(request(), [
             'name' => 'required',
         ]);
+        $merchantId = request()->get('current_user')->merchant_id;
+        $dishesGoodsList = DishesGoods::where('merchant_id', $merchantId)
+            ->where('name', request('name'))
+            ->get();
+        if (count($dishesGoodsList) > 0){
+            throw new BaseResponseException('商品名称重复！');
+        }
+
         $dishesGoods = new DishesGoods();
         $dishesGoods->oper_id = request()->get('current_user')->oper_id;
-        $dishesGoods->merchant_id = request()->get('current_user')->merchant_id;
+        $dishesGoods->merchant_id = $merchantId;
         $dishesGoods->name = request('name');
         $dishesGoods->market_price = request('market_price', 0);
         $dishesGoods->sale_price = request('sale_price', 0);
         $dishesGoods->dishes_category_id = request('dishes_category_id',0);
         $dishesGoods->intro = request('intro', '');
-        $dishesGoods->logo = request('logo', '');
         $dishesGoods->detail_image = request('detail_image', '');
         $dishesGoods->status = request('status', 1);
         $dishesGoods->is_hot = request('is_hot', 0);
@@ -82,12 +90,19 @@ class DishesGoodsController extends Controller
             'name' => 'required',
         ]);
         $dishesGoods = DishesGoods::findOrFail(request('id'));
+        $dishesGoodsList = DishesGoods::where('merchant_id', $dishesGoods->merchant_id)
+            ->where('name', request('name'))
+            ->where('name', '<>', $dishesGoods->name)
+            ->get();
+        if (count($dishesGoodsList) > 0){
+            throw new BaseResponseException('商品名称重复！');
+        }
+
         $dishesGoods->name = request('name');
         $dishesGoods->market_price = request('market_price', 0);
         $dishesGoods->sale_price = request('sale_price', 0);
         $dishesGoods->dishes_category_id = request('dishes_category_id', 0);
         $dishesGoods->intro = request('intro', '');
-        $dishesGoods->logo = request('logo', '');
         $dishesGoods->detail_image = request('detail_image', '');
         $dishesGoods->status = request('status', 1);
         $dishesGoods->is_hot = request('is_hot', 0);

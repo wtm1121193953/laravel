@@ -422,7 +422,24 @@ id: 商品id
 返回：
 
   ```
-  同商品列表中的每一项
+  data: {
+      id: 商品ID,
+      oper_id: 运营中心ID
+      merchant_id: 商家ID,
+      name: 商品名,
+      desc: 商品描述,
+      market_price: 市场价(商品原价),
+      price; 商品价格,
+      start_date: 商品有效期开始日期,
+      end_date: 商品有效期结束日期,
+      business_time: 可用时间 数组格式:[开始时间, 结束时间], 如: ['10:30:00', '18:30:00'],
+      thumb_url: 商品缩略图,
+      pic: 商品默认图,
+      pic_list: 商品小图列表, 数组
+      buy_info: 购买须知,
+      status: 状态 1-上架 2-下架,
+      sell_number: 商品已售数量,
+    }
   ```
 
 
