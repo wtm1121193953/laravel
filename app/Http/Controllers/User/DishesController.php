@@ -147,7 +147,7 @@ class DishesController extends Controller
             $dishesItem->dishes_goods_id = $item['id'];
             $dishesItem->number = $item['number'];
             $dishesItem->dishes_goods_sale_price = $dishesGoods['sale_price'];
-            $dishesItem->dishes_goods_logo = $dishesGoods['detail_image'];
+            $dishesItem->dishes_goods_detail_image = $dishesGoods['detail_image'];
             $dishesItem->dishes_goods_name = $dishesGoods['name'];
             $dishesItem->save();
         }
@@ -170,7 +170,7 @@ class DishesController extends Controller
             $detailDishes[$k]['dishes_goods_name'] = $item->dishes_goods_name;
             $detailDishes[$k]['number'] = $item->number;
             $detailDishes[$k]['total_price'] = ($item->number)*($item->dishes_goods_sale_price);
-            $detailDishes[$k]['dishes_goods_logo'] = $item->dishes_goods_logo;
+            $detailDishes[$k]['dishes_goods_detail_image'] = $item->dishes_goods_detail_image;
             $detailDishes[$k]['user_id'] = $item->user_id;
             $detailDishes[$k]['oper_id'] = $item->oper_id;
         }

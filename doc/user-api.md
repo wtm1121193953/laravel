@@ -403,7 +403,9 @@ token (wxLogin接口除外)
           buy_info: 购买须知,
           status: 状态 1-上架 2-下架,
           sell_number: 商品已售数量,
+          business_time: 营业时间，数组
         }
+        ......
       ]
     }
   ```
@@ -441,6 +443,7 @@ id: 商品id
       buy_info: 购买须知,
       status: 状态 1-上架 2-下架,
       sell_number: 商品已售数量,
+      business_time: 营业时间，数组
     }
   ```
 
@@ -506,7 +509,7 @@ id: 商品id
                         dishes_goods_id: 单品id, 
                         number: 商品数量, 
                         dishes_goods_sale_price: 单品售价, 
-                        dishes_goods_logo: 单品logo, 
+                        dishes_goods_detail_image: 单品logo, 
                         dishes_goods_name: 单品名称, 
                         created_at: 创建时间, 
                         updated_at: 更新时间,
@@ -575,7 +578,7 @@ order_no 订单号
                  dishes_goods_id: 单品id, 
                  number: 商品数量, 
                  dishes_goods_sale_price: 单品售价, 
-                 dishes_goods_logo: 单品logo, 
+                 dishes_goods_detail_image: 单品logo, 
                  dishes_goods_name: 单品名称, 
                  created_at: 创建时间, 
                  updated_at: 更新时间,
@@ -806,7 +809,7 @@ order_no 订单号
           "dishes_goods_name": "",   商品名称
           "number": "",   商品数量
           "total_price": "",   该商品总价格
-          "dishes_goods_logo": ""  商品logo
+          "dishes_goods_detail_image": ""  商品logo
       }
       ......
   ],
@@ -839,8 +842,6 @@ order_no 订单号
                 timestamp: 时间戳,
                 }
     }
-
-
   ```
 
 - [ ] 获取热门菜品
