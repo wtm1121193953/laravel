@@ -134,7 +134,9 @@
                 })
             },
             download(data){
-                window.open(`/api/oper/inviteChannel/downloadInviteQrcode?id=${data.id}&qrcodeSizeType=${this.qrcodeSizeType}` )
+                api.get('inviteChannel/downloadInviteQrcode', {id: data.id, qrcodeSizeType: this.qrcodeSizeType}).then(() => {
+                    window.open(`/api/oper/inviteChannel/downloadInviteQrcode?id=${data.id}&qrcodeSizeType=${this.qrcodeSizeType}` )
+                })
             },
             inviteRecords(data){
                 router.push(`/invite-records?id=${data.id}&name=${data.name}`)

@@ -15,6 +15,7 @@ use App\Modules\Oper\OperMiniprogram;
 use App\Result;
 use App\ResultCode;
 use EasyWeChat\Factory;
+use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 
 class WechatService
 {
@@ -80,7 +81,6 @@ class WechatService
      * @param int $width
      * @param bool $getWithFilename
      * @return string
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public static function genMiniprogramAppCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false)
     {
@@ -95,7 +95,11 @@ class WechatService
             }
             throw new BaseResponseException('小程序码生成失败' . $response);
         }
-        $filename = $response->save(storage_path('app/public/miniprogram/app_code'), "_{$sceneId}_{$width}");
+        try {
+            $filename = $response->save(storage_path('app/public/miniprogram/app_code'), "_{$sceneId}_{$width}");
+        } catch (InvalidArgumentException $e) {
+            throw new BaseResponseException('小程序码生成失败' . $e->getMessage());
+        }
         if($getWithFilename){
             return $filename;
         }

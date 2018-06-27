@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Oper;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
 use App\Exports\OperInviteChannelExport;
@@ -112,7 +113,6 @@ class InviteChannelController extends Controller
 
     /**
      * 下载邀请注册的小程序码
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function downloadInviteQrcode()
     {
@@ -129,9 +129,18 @@ class InviteChannelController extends Controller
             ->firstOrFail();
         $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
         $width = $qrcodeSizeType == 3 ? 1280 : ($qrcodeSizeType == 2 ? 430 : 258);
-        $inviteQrcodeFilename = WechatService::genMiniprogramAppCode($operId, $scene->id, $scene->page, $width, true);
+
+        try {
+            $inviteQrcodeFilename = WechatService::genMiniprogramAppCode($operId, $scene->id, $scene->page, $width, true);
+        } catch (\Exception $e) {
+            throw new BaseResponseException('小程序码生成失败' . $e->getMessage());
+        }
         $filename = storage_path('app/public/miniprogram/app_code') . '/' . $inviteQrcodeFilename;
-        return response()->download($filename, '推广小程序码-' . $inviteChannel->name . '-' . ['', '小', '中', '大'][$qrcodeSizeType] . '.jpg');
+        if(request()->ajax()){
+            return Result::success(['name' => $filename]);
+        }else {
+            return response()->download($filename, '推广小程序码-' . $inviteChannel->name . '-' . ['', '小', '中', '大'][$qrcodeSizeType] . '.jpg');
+        }
     }
 
     /**
