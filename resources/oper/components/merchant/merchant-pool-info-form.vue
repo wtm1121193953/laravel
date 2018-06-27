@@ -120,6 +120,7 @@
                     ],
                     address: [
                         {required: true, message: '商户详细地址不能为空'},
+                        {max: 40, message: '商户详细地址不能超过40个字'}
                     ],
                 },
             }
