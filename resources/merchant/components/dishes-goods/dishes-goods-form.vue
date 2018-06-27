@@ -22,7 +22,8 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item prop="detail_image" label="商品图片">
-                    <image-upload v-model="form.detail_image" :limit="1"></image-upload>
+                    <image-upload v-model="form.detail_image" :limit="1" :width="imageWidth" :height="imageHeight"></image-upload>
+                    <span>图片尺寸：{{imageWidth}}px * {{imageHeight}}px</span>
                 </el-form-item>
                 <el-form-item prop="intro" label="商品简介">
                     <el-input type="textarea" v-model="form.intro"></el-input>
@@ -86,6 +87,8 @@
                 }
             };
             return {
+                imageWidth: 750,
+                imageHeight: 750,
                 form: deepCopy(defaultForm),
                 categories: [],
                 formRules: {
