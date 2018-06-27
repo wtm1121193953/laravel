@@ -117,7 +117,7 @@
                         {{scope.row.dishes_items[0].dishes_goods_name}}
                     </span>
                     <span v-else-if="scope.row.type == 3 && scope.row.dishes_items.length > 1">
-                        {{scope.row.dishes_items[0].dishes_goods_name}}等{{scope.row.dishes_items.length}}件商品
+                        {{scope.row.dishes_items[0].dishes_goods_name}}等{{getNumber(scope.row.dishes_items)}}件商品
                     </span>
                     <span v-else>
                         {{scope.row.goods_name}}
@@ -194,7 +194,6 @@
                 api.get('/orders', queryData).then(data => {
                     this.isLoading = false;
                     this.list = data.list;
-                    console.log(this.list)
                     this.total = data.total;
                 })
             },
@@ -202,6 +201,13 @@
                 api.get('/merchant/allNames').then(data => {
                     this.merchants = data.list;
                 })
+            },
+            getNumber(row) {
+                let num = 0;
+                row.forEach(function (item) {
+                    num = num + item.number;
+                })
+                return num;
             }
         },
         created(){
