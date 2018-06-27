@@ -147,7 +147,7 @@ class DishesController extends Controller
             $dishesItem->dishes_goods_id = $item['id'];
             $dishesItem->number = $item['number'];
             $dishesItem->dishes_goods_sale_price = $dishesGoods['sale_price'];
-            $dishesItem->dishes_goods_logo = $dishesGoods['logo'];
+            $dishesItem->dishes_goods_logo = $dishesGoods['detail_image'];
             $dishesItem->dishes_goods_name = $dishesGoods['name'];
             $dishesItem->save();
         }

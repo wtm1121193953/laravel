@@ -735,7 +735,6 @@ order_no 订单号
                 "sale_price": 110,  零售价
                 "dishes_category_id": 1,  分类ID
                 "intro": "11111",  商品描述
-                "logo": "http://www.daqian.com/storage/image/item/1SrUrHdLJkumxE8fWWk3zEricLsf7MciNDlgljFp.jpeg",  logo图片
                 "detail_image": "http://www.daqian.com/storage/image/item/z5tBnB2XoBvXEYUQWyQ3odPz49OPrEKLMEIYmnj6.jpeg",  商品详情图片
                 "status": 1,  1上架 2下架
                 "created_at": "2018-06-15 14:26:09",
@@ -868,7 +867,6 @@ order_no 订单号
               intro：商品描述
               sell_number：已销售数量
               is_hot：是否热销
-              logo：商品logo图片
               detail_image：商品详情图片
               status：1-上架，2-下架
               created_at：创建时间
