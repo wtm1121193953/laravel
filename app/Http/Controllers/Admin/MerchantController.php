@@ -35,9 +35,45 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $auditStatus = request('auditStatus');
+        $operId = request('operId');
+        $operName = request('operName');
+        $operIds = [];
+        if($operName) {
+            $result = Oper::where('name', 'like', "%$operName%")->get();
+            if (!$result) {
+                foreach ($result as $k => $v) {
+                    $operIds[$k] = $v->id;
+                }
+            }
+        }
+
+        $creatorOperId = request('creatorOperId');
+        $creatorOperName = request('creatorOperName');
+        $createResult = Oper::where('name', 'like', "%$creatorOperName%")->get();
+        if($creatorOperName){
+            $createOperIds=[];
+            foreach ($createResult as $k=>$v){
+                $createOperIds[$k]=$v->id;
+            }
+        }else{
+            $createOperIds='';
+        }
         $data = Merchant::where('audit_oper_id', '>', 0)
             ->when($id, function (Builder $query) use ($id){
                 $query->where('id', $id);
+            })->when($operId, function (Builder $query) use ($operId){
+                if($operId==0){
+                    $query->where('audit_oper_id', $operId);
+                }else{
+                    $query->where('oper_id', $operId);
+                }
+            })->when($creatorOperId, function (Builder $query) use ($creatorOperId){
+                $query->where('creator_oper_id', $creatorOperId);
+
+            })->when($operIds, function (Builder $query) use ($operIds){
+                $query->whereIn('oper_id', $operIds);
+            })->when($createOperIds, function (Builder $query) use ($createOperIds){
+                $query->whereIn('creator_oper_id', $createOperIds);
             })
             ->when($startDate, function (Builder $query) use ($startDate){
                 $query->where('created_at', '>=', $startDate.' 00:00:00');
@@ -60,7 +96,10 @@ class MerchantController extends Controller
             $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
             $item->business_time = json_decode($item->business_time, 1);
             $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
+            $item->operID =$item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
+            $item->creatorOperId =  $item->creator_oper_id;
             $item->creatorOperName = Oper::where('id', $item->creator_oper_id)->value('name');
+
         });
 
         return Result::success([

@@ -41,6 +41,20 @@
                                 :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(query.startDate) - 8.64e7}}"
                             ></el-date-picker>
                         </el-form-item>
+
+                        <el-form-item prop="operName" label="激活运营中心名称">
+                            <el-input v-model="query.operName" size="small"  clearable></el-input>
+                        </el-form-item>
+                        <el-form-item prop="operId" label="激活运营中心ID">
+                            <el-input v-model="query.operId" size="small" />
+                        </el-form-item>
+                        <el-form-item prop="creatorOperName" label="录入运营中心名称">
+                            <el-input v-model="query.creatorOperName" size="small" clearable></el-input>
+                        </el-form-item>
+                        <el-form-item prop="creatorOperId" label="录入运营中心ID">
+                            <el-input v-model="query.creatorOperId" size="small"  />
+                        </el-form-item>
+
                         <el-form-item>
                             <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                         </el-form-item>
@@ -53,8 +67,10 @@
                 <el-table :data="list" v-loading="tableLoading" stripe>
                     <el-table-column prop="created_at" label="添加时间"/>
                     <el-table-column prop="id" label="商户ID"/>
-                    <el-table-column prop="operName" label="激活运营中心"/>
-                    <el-table-column prop="creatorOperName" label="录入运营中心"/>
+                    <el-table-column prop="operID" label="激活运营中心ID"/>
+                    <el-table-column prop="operName" label="激活运营中心名称"/>
+                    <el-table-column prop="creatorOperId" label="录入运营中心ID"/>
+                    <el-table-column prop="creatorOperName" label="录入运营中心名称"/>
                     <el-table-column prop="name" label="商户名称"/>
                     <el-table-column prop="categoryPath" label="行业">
                         <template slot-scope="scope">
@@ -143,6 +159,10 @@
                     merchantId: '',
                     startDate: '',
                     endDate: '',
+                    operName:'',
+                    operId:'',
+                    creatorOperName:'',
+                    creatorOperId:''
                 },
                 list: [],
                 total: 0,
