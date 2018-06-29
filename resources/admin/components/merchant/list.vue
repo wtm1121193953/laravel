@@ -67,11 +67,11 @@
                 <el-table :data="list" v-loading="tableLoading" stripe>
                     <el-table-column prop="created_at" label="添加时间"/>
                     <el-table-column prop="id" label="商户ID"/>
+                    <el-table-column prop="name" label="商户名称"/>
                     <el-table-column prop="operID" label="激活运营中心ID"/>
                     <el-table-column prop="operName" label="激活运营中心名称"/>
                     <el-table-column prop="creatorOperId" label="录入运营中心ID"/>
                     <el-table-column prop="creatorOperName" label="录入运营中心名称"/>
-                    <el-table-column prop="name" label="商户名称"/>
                     <el-table-column prop="categoryPath" label="行业">
                         <template slot-scope="scope">
                     <span v-for="item in scope.row.categoryPath" :key="item.id">

@@ -40,36 +40,35 @@ class MerchantController extends Controller
         $operIds = [];
         if($operName) {
             $result = Oper::where('name', 'like', "%$operName%")->get();
-            if (!$result) {
+            if (!$result->isEmpty()){
                 foreach ($result as $k => $v) {
                     $operIds[$k] = $v->id;
                 }
+            }else{
+                $operIds=[0.000001];
             }
         }
 
         $creatorOperId = request('creatorOperId');
         $creatorOperName = request('creatorOperName');
-        $createResult = Oper::where('name', 'like', "%$creatorOperName%")->get();
+        $createOperIds=[];
         if($creatorOperName){
-            $createOperIds=[];
-            foreach ($createResult as $k=>$v){
-                $createOperIds[$k]=$v->id;
+            $createResult = Oper::where('name', 'like', "%$creatorOperName%")->get();
+            if(!$createResult->isEmpty()){
+                foreach ($createResult as $k=>$v){
+                    $createOperIds[$k]=$v->id;
+                }
+            }else{
+                $createOperIds=[0.000001];
             }
-        }else{
-            $createOperIds='';
         }
         $data = Merchant::where('audit_oper_id', '>', 0)
             ->when($id, function (Builder $query) use ($id){
                 $query->where('id', $id);
             })->when($operId, function (Builder $query) use ($operId){
-                if($operId==0){
-                    $query->where('audit_oper_id', $operId);
-                }else{
-                    $query->where('oper_id', $operId);
-                }
+                $query->where('oper_id', $operId);
             })->when($creatorOperId, function (Builder $query) use ($creatorOperId){
                 $query->where('creator_oper_id', $creatorOperId);
-
             })->when($operIds, function (Builder $query) use ($operIds){
                 $query->whereIn('oper_id', $operIds);
             })->when($createOperIds, function (Builder $query) use ($createOperIds){
