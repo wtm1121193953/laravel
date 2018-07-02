@@ -1,6 +1,8 @@
 <template>
     <!-- xxxxxx列表项操作 -->
     <div>
+        <el-button type="text" :disabled="isFirst" @click="saveOrder(scope.row, 'up')">上移</el-button>
+        <el-button type="text" :disabled="isLast" @click="saveOrder(scope.row, 'down')">下移</el-button>
         <el-button type="text" @click="edit">编辑</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '禁用' : '启用'}}</el-button>
         <el-button type="text" @click="del">删除</el-button>
@@ -65,6 +67,11 @@
                     }).finally(() => {
                         this.$emit('after-request')
                     })
+                })
+            },
+            saveOrder(row, type) {
+                api.post('/dishes/goods/saveOrder', {id: row.id, type: type}).then(() => {
+                    this.$emit('refresh');
                 })
             },
         },
