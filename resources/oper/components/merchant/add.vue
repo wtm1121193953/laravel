@@ -1,5 +1,5 @@
 <template>
-    <page title="添加商户" :breadcrumbs="{'我的商户': '/merchants'}">
+    <page title="添加商户" :breadcrumbs="breadcrumbs">
         <merchant-form v-loading="isLoading" @cancel="cancel" @save="doAdd" @saveDraft="addDraft"/>
     </page>
 </template>
@@ -16,6 +16,8 @@
         data() {
             return {
                 isLoading: false,
+                isDraft: false,
+                breadcrumbs: {},
             }
         },
         methods: {
@@ -38,6 +40,17 @@
                 }).finally(() => {
                     this.isLoading = false;
                 })
+            }
+        },
+        created() {
+            console.log(this.$route.query.type)
+            if (this.$route.query.type == 'draft-list') {
+                this.isDraft = true;
+            }
+            if (this.isDraft){
+                this.breadcrumbs = {'草稿箱': '/merchant/drafts'};
+            } else {
+                this.breadcrumbs = {'我的商户': '/merchants'};
             }
         }
     }

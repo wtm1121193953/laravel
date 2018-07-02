@@ -28,3 +28,4 @@ Route::post('/merchant/pool/edit', 'MerchantPoolController@edit');
 Route::post('/merchant/draft/add', 'MerchantDraftController@add');
 Route::get('/merchant/drafts', 'MerchantDraftController@getList');
 Route::get('/merchant/draft/detail', 'MerchantDraftController@detail');
+Route::post('/merchant/draft/edit', 'MerchantDraftController@edit');

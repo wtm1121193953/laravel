@@ -156,8 +156,10 @@ class OperBizMemberController extends Controller
             'code' => 'required',
         ]);
         $code = request('code');
-        $data = Merchant::where('oper_id', request()->get('current_user')->oper_id)
-            ->where('oper_biz_member_code', $code)
+        $data = Merchant::where(function (Builder $query){
+            $query->where('oper_id', request()->get('current_user')->oper_id)
+                ->orWhere('audit_oper_id',  request()->get('current_user')->oper_id);
+        })->where('oper_biz_member_code', $code)
             ->select('id', 'active_time', 'name', 'status')
             ->paginate();
 
