@@ -4,9 +4,10 @@
                 v-loading="isLoading"
                 v-if="merchant"
                 :data="merchant"
+                :isDraft="isDraft"
                 @cancel="cancel"
                 @save="doEdit"
-                @saveDraft=""
+                @saveDraft="doEditDraft"
         />
     </page>
 </template>
@@ -31,12 +32,23 @@
         methods: {
             doEdit(data){
                 this.isLoading = true;
-                api.post('/merchant/edit', data).then(() => {
-                    this.$message.success('保存成功');
-                    router.push('/merchants');
-                }).finally(() => {
-                    this.isLoading = false;
-                })
+                if (!this.isDraft){
+                    api.post('/merchant/edit', data).then(() => {
+                        this.$message.success('保存成功');
+                        router.push('/merchants');
+                    }).finally(() => {
+                        this.isLoading = false;
+                    })
+                }else {
+                    api.post('/merchant/draft/delete', {id: data.id}).then(() => {
+                        api.post('/merchant/add', data).then(() => {
+                            this.$message.success('保存成功');
+                            router.push('/merchants');
+                        })
+                    }).finally(() => {
+                        this.isLoading = false;
+                    })
+                }
             },
             getDetail(){
                 this.isLoading = true;
@@ -58,6 +70,15 @@
                 }else {
                     router.push('/merchants');
                 }
+            },
+            doEditDraft(data) {
+                this.isLoading = true;
+                api.post('/merchant/draft/edit', data).then(() => {
+                    this.$message.success('保存成功');
+                    router.push('/merchant/drafts');
+                }).finally(() => {
+                    this.isLoading = false;
+                })
             }
         },
         created(){

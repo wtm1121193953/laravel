@@ -128,4 +128,17 @@ class MerchantDraftController extends Controller
         return Result::success($merchantDraft);
     }
 
+    /**
+     * 删除草稿
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function delete()
+    {
+        $this->validate(request(), [
+           'id' => 'required|integer|min:1'
+        ]);
+        $result = MerchantDraft::destroy(request('id'));
+
+        return Result::success($result);
+    }
 }
