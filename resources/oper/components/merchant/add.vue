@@ -1,6 +1,6 @@
 <template>
     <page title="添加商户" :breadcrumbs="{'我的商户': '/merchants'}">
-        <merchant-form v-loading="isLoading" @cancel="cancel" @save="doAdd"/>
+        <merchant-form v-loading="isLoading" @cancel="cancel" @save="doAdd" @saveDraft="addDraft"/>
     </page>
 </template>
 
@@ -31,6 +31,14 @@
             cancel(){
                 router.push('/merchants');
             },
+            addDraft(data) {
+                api.post('/merchant/draft/add', data).then(() => {
+                    this.$message.success('保存成功');
+                    router.push('/merchants');
+                }).finally(() => {
+                    this.isLoading = false;
+                })
+            }
         }
     }
 </script>

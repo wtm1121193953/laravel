@@ -146,7 +146,11 @@
                     }
                     this.form.merchant_category = merchant_category_array;
                     this.form.area = [parseInt(data.province_id), parseInt(data.city_id), parseInt(data.area_id)];
-                    this.form.lng_and_lat = [data.lng, data.lat];
+                    if (!data.lng && !data.lat){
+                        this.form.lng_and_lat = null;
+                    } else {
+                        this.form.lng_and_lat = [data.lng, data.lat];
+                    }
                 }else {
                     this.form = deepCopy(defaultForm);
                 }

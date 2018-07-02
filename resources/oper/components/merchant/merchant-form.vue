@@ -8,7 +8,8 @@
         <el-col>
             <el-form-item>
                 <el-button @click="cancel">取消</el-button>
-                <el-button type="primary" @click="save">保存</el-button>
+                <el-button type="primary" @click="saveIntoDraft">存入草稿箱</el-button>
+                <el-button type="success" @click="save">保存并提审</el-button>
             </el-form-item>
         </el-col>
     </el-form>
@@ -52,6 +53,13 @@
                     })
                 })
             },
+            saveIntoDraft() {
+                let poolForm = this.$refs.poolForm;
+                let activeForm = this.$refs.activeForm;
+                let data = poolForm.getData();
+                Object.assign(data, activeForm.getData())
+                this.$emit('saveDraft', data)
+            }
         },
         created(){
         },
