@@ -31,12 +31,16 @@
                 })
             },
             cancel(){
-                router.push('/merchants');
+                if (this.isDraft){
+                    router.push('/merchant/drafts');
+                } else {
+                    router.push('/merchants')
+                }
             },
             addDraft(data) {
                 api.post('/merchant/draft/add', data).then(() => {
                     this.$message.success('保存成功');
-                    router.push('/merchants');
+                    router.push('/merchant/drafts');
                 }).finally(() => {
                     this.isLoading = false;
                 })

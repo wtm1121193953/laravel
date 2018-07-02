@@ -4,6 +4,7 @@
                 v-loading="isLoading"
                 v-if="merchant"
                 :data="merchant"
+                :isDraft="isDraft"
                 @cancel="cancel"
                 @save="doEdit"
                 @saveDraft="doEditDraft"
