@@ -21,6 +21,9 @@ Route::prefix('admin')
     Route::post('user/changeStatus', 'UserController@changeStatus');
     Route::post('user/resetPassword', 'UserController@resetPassword');
 
+    Route::get('members','UsersController@getList');
+    Route::post('users/unBind','UsersController@unBind');
+
     Route::get('groups', 'GroupController@getList');
     Route::post('group/add', 'GroupController@add');
     Route::post('group/edit', 'GroupController@edit');

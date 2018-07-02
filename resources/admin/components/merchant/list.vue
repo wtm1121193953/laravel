@@ -1,7 +1,7 @@
 <template>
     <page title="商户审核管理" v-loading="isLoading">
-        <el-tabs v-model="activeTab" type="card" @tab-click="changeTab">
-            <el-tab-pane label="待审核商户列表" name="merchant">
+        <!--<el-tabs v-model="activeTab" type="card" @tab-click="changeTab">-->
+            <!--<el-tab-pane label="待审核商户列表" name="merchant">-->
 
                 <el-col>
                     <el-form v-model="query" inline>
@@ -130,11 +130,11 @@
                         :page-size="15"
                         :total="total"/>
 
-            </el-tab-pane>
-            <el-tab-pane label="审核记录" name="audit">
-                <audit-list ref="auditList"/>
-            </el-tab-pane>
-        </el-tabs>
+            <!--</el-tab-pane>-->
+            <!--&lt;!&ndash;<el-tab-pane label="审核记录" name="audit">&ndash;&gt;-->
+                <!--&lt;!&ndash;<audit-list ref="auditList"/>&ndash;&gt;-->
+            <!--&lt;!&ndash;</el-tab-pane>&ndash;&gt;-->
+        <!--</el-tabs>-->
         <el-dialog :visible.sync="showDetail" width="70%" title="商户详情">
             <merchant-detail :data="currentMerchant" @change="() => {getList(); showDetail = false;}"/>
         </el-dialog>
@@ -175,13 +175,13 @@
 
         },
         methods: {
-            changeTab(tab){
-                if(tab == 'merchant'){
-                    this.getList();
-                }else {
-                    this.$refs.auditList.getList();
-                }
-            },
+            // changeTab(tab){
+            //     if(tab == 'merchant'){
+            //         this.getList();
+            //     }else {
+            //         this.$refs.auditList.getList();
+            //     }
+            // },
             search() {
                 if (this.query.startDate > this.query.endDate) {
                     this.$message.error('搜索的开始时间不能大于结束时间！');
