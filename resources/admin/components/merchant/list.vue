@@ -1,7 +1,7 @@
 <template>
     <page title="商户审核管理" v-loading="isLoading">
-        <el-tabs v-model="activeTab" type="card" @tab-click="changeTab">
-            <el-tab-pane label="待审核商户列表" name="merchant">
+        <!--<el-tabs v-model="activeTab" type="card" @tab-click="changeTab">-->
+            <!--<el-tab-pane label="待审核商户列表" name="merchant">-->
 
                 <el-col>
                     <el-form v-model="query" inline>
@@ -41,6 +41,20 @@
                                 :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(query.startDate) - 8.64e7}}"
                             ></el-date-picker>
                         </el-form-item>
+
+                        <el-form-item prop="operName" label="激活运营中心名称">
+                            <el-input v-model="query.operName" size="small"  clearable></el-input>
+                        </el-form-item>
+                        <el-form-item prop="operId" label="激活运营中心ID">
+                            <el-input v-model="query.operId" size="small" />
+                        </el-form-item>
+                        <el-form-item prop="creatorOperName" label="录入运营中心名称">
+                            <el-input v-model="query.creatorOperName" size="small" clearable></el-input>
+                        </el-form-item>
+                        <el-form-item prop="creatorOperId" label="录入运营中心ID">
+                            <el-input v-model="query.creatorOperId" size="small"  />
+                        </el-form-item>
+
                         <el-form-item>
                             <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                         </el-form-item>
@@ -53,9 +67,11 @@
                 <el-table :data="list" v-loading="tableLoading" stripe>
                     <el-table-column prop="created_at" label="添加时间"/>
                     <el-table-column prop="id" label="商户ID"/>
-                    <el-table-column prop="operName" label="激活运营中心"/>
-                    <el-table-column prop="creatorOperName" label="录入运营中心"/>
                     <el-table-column prop="name" label="商户名称"/>
+                    <el-table-column prop="operID" label="激活运营中心ID"/>
+                    <el-table-column prop="operName" label="激活运营中心名称"/>
+                    <el-table-column prop="creatorOperId" label="录入运营中心ID"/>
+                    <el-table-column prop="creatorOperName" label="录入运营中心名称"/>
                     <el-table-column prop="categoryPath" label="行业">
                         <template slot-scope="scope">
                     <span v-for="item in scope.row.categoryPath" :key="item.id">
@@ -82,6 +98,7 @@
                     <el-table-column label="操作" width="150px">
                         <template slot-scope="scope">
                             <el-button type="text" @click="detail(scope)">查看</el-button>
+                            <el-button type="text" @click="detail(scope,3)">审核</el-button>
                             <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
 
                                 <el-dropdown trigger="click"
@@ -113,11 +130,11 @@
                         :page-size="15"
                         :total="total"/>
 
-            </el-tab-pane>
-            <el-tab-pane label="审核记录" name="audit">
-                <audit-list ref="auditList"/>
-            </el-tab-pane>
-        </el-tabs>
+            <!--</el-tab-pane>-->
+            <!--&lt;!&ndash;<el-tab-pane label="审核记录" name="audit">&ndash;&gt;-->
+                <!--&lt;!&ndash;<audit-list ref="auditList"/>&ndash;&gt;-->
+            <!--&lt;!&ndash;</el-tab-pane>&ndash;&gt;-->
+        <!--</el-tabs>-->
         <el-dialog :visible.sync="showDetail" width="70%" title="商户详情">
             <merchant-detail :data="currentMerchant" @change="() => {getList(); showDetail = false;}"/>
         </el-dialog>
@@ -143,6 +160,10 @@
                     merchantId: '',
                     startDate: '',
                     endDate: '',
+                    operName:'',
+                    operId:'',
+                    creatorOperName:'',
+                    creatorOperId:''
                 },
                 list: [],
                 total: 0,
@@ -154,13 +175,13 @@
 
         },
         methods: {
-            changeTab(tab){
-                if(tab == 'merchant'){
-                    this.getList();
-                }else {
-                    this.$refs.auditList.getList();
-                }
-            },
+            // changeTab(tab){
+            //     if(tab == 'merchant'){
+            //         this.getList();
+            //     }else {
+            //         this.$refs.auditList.getList();
+            //     }
+            // },
             search() {
                 if (this.query.startDate > this.query.endDate) {
                     this.$message.error('搜索的开始时间不能大于结束时间！');
@@ -183,10 +204,10 @@
                     this.tableLoading = false;
                 })
             },
-            detail(scope){
+            detail(scope,type){
                 router.push({
                     path: '/merchant/detail',
-                    query: {id: scope.row.id},
+                    query: {id: scope.row.id,auditType:type},
                 })
                 return false;
             },

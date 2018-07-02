@@ -5,6 +5,12 @@
                 <el-col>
                     <div class="title">商户录入信息</div>
                 </el-col>
+
+                <el-form-item prop="status" label="商户状态">
+                    <span v-if="data.status === 1" class="c-green">已启用</span>
+                    <span v-else-if="data.status === 2" class="c-danger">已冻结</span>
+                    <span v-else>未知 ({{data.status}})</span>
+                </el-form-item>
                 <!--商户录入信息左侧块-->
                 <el-col :span="11">
                     <el-form-item prop="id" label="商户ID">{{data.id}}</el-form-item>
@@ -20,6 +26,15 @@
                     </el-form-item>
                     <el-form-item label="营业执照代码">
                         {{ data.organization_code}}
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12" :offset="1">
+                    <el-form-item prop="audit_status" label="审核状态">
+                        <span v-if="data.audit_status === 0" class="c-warning">待审核</span>
+                        <span v-else-if="data.audit_status === 1" class="c-green">审核通过</span>
+                        <span v-else-if="data.audit_status === 2" class="c-danger">审核不通过</span>
+                        <span v-else-if="data.audit_status === 3" class="c-warning">重新提交审核</span>
+                        <span v-else>未知 ({{data.audit_status}})</span>
                     </el-form-item>
                 </el-col>
 
@@ -51,11 +66,7 @@
                         <el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>
                         <el-form-item prop="invoice_title" label="发票抬头">{{data.invoice_title}}</el-form-item>
                         <el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>
-                        <el-form-item prop="status" label="商户状态">
-                            <span v-if="data.status === 1" class="c-green">已启用</span>
-                            <span v-else-if="data.status === 2" class="c-danger">已冻结</span>
-                            <span v-else>未知 ({{data.status}})</span>
-                        </el-form-item>
+
                         <el-form-item prop="business_time" label="营业时间">
                             {{data.business_time[0]}} 至 {{data.business_time[1]}}
                         </el-form-item>
@@ -121,6 +132,7 @@
                         </el-col>
                     </el-col>
 
+
                     <!-- 商户激活信息右侧块 -->
                     <el-col :span="11" :offset="1">
                         <el-form-item prop="contacter" label="负责人姓名">
@@ -140,23 +152,15 @@
                         </el-form-item>
                     </el-col>
 
-                    <el-col :span="11" :offset="1">
-                        <el-form-item prop="audit_status" label="审核状态">
-                            <span v-if="data.audit_status === 0" class="c-warning">待审核</span>
-                            <span v-else-if="data.audit_status === 1" class="c-green">审核通过</span>
-                            <span v-else-if="data.audit_status === 2" class="c-danger">审核不通过</span>
-                            <span v-else-if="data.audit_status === 3" class="c-warning">重新提交审核</span>
-                            <span v-else>未知 ({{data.audit_status}})</span>
-                        </el-form-item>
-                    </el-col>
                 </el-col>
-
-                <el-col v-if="type != 'poolOnly'">
+                <!-- 商户激活信息右侧块 -->
+                <el-col v-if="auditType == 3 && type != 'poolOnly'"  >
                     <el-form-item v-if="data.audit_status == 0 || data.audit_status == 3">
                         <el-button type="success" @click="audit(1)">审核通过</el-button>
                         <el-button type="warning" @click="audit(2)">审核不通过</el-button>
                         <el-button v-if="data.audit_status != 3" type="danger" @click="audit(3)">打回商户池</el-button>
                     </el-form-item>
+
                 </el-col>
             </el-form>
 
@@ -168,15 +172,16 @@
 </template>
 
 <script>
+
     import previewImg from '../../../assets/components/img/preview-img'
     import imgPreviewDialog from '../../../assets/components/img/preview-dialog'
     import api from '../../../assets/js/api'
-
     export default {
         name: 'merchant-detail',
         props: {
             data: Object,
             type: String,
+            auditType:Number
         },
         computed:{
 
@@ -206,6 +211,7 @@
             imgPreviewDialog,
         }
     }
+
 </script>
 
 <style scoped>

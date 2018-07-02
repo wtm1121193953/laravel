@@ -20,7 +20,7 @@
                             :key="item.id"
                             :label="item.name"
                             :value="item.code">
-                        <span class="c-gray">{{item.code}}</span>
+                        <!--<span class="c-gray">{{item.code}}</span>-->
                         <span class="c-blue">{{item.name}}</span>
                         <span class="c-light-gray">{{item.mobile}}</span>
                     </el-option>
@@ -28,6 +28,9 @@
             </el-form-item>
             <el-form-item prop="brand" label="品牌">
                 <el-input v-model="form.brand"/>
+            </el-form-item>
+            <el-form-item prop="signboard_name" label="招牌名称">
+                <el-input v-model="form.signboard_name"/>
             </el-form-item>
             <!--<el-form-item prop="invoice_title" label="发票抬头">
                 <el-input v-model="form.invoice_title"/>
@@ -164,6 +167,7 @@
     let defaultForm = {
         /////// 商户激活信息
         oper_biz_member_code: '',
+        signboard_name: '',
         brand: '',
         status: 1,
         // business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],

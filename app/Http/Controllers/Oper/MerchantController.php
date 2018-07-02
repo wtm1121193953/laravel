@@ -9,6 +9,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantDraft;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -121,7 +122,8 @@ class MerchantController extends Controller
 
         // 商户名不能重复
         $exists = Merchant::where('name', $merchant->name)->first();
-        if($exists){
+        $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
+        if($exists || $existsDraft){
             throw new ParamInvalidException('商户名称不能重复');
         }
 
@@ -162,7 +164,8 @@ class MerchantController extends Controller
         // 商户名不能重复
         $exists = Merchant::where('name', $merchant->name)
             ->where('id', '<>', $merchant->id)->first();
-        if($exists){
+        $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
+        if($exists || $existsDraft){
             throw new ParamInvalidException('商户名称不能重复');
         }
 
