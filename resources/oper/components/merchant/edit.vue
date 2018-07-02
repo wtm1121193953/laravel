@@ -39,7 +39,14 @@
                         this.isLoading = false;
                     })
                 }else {
-
+                    api.post('/merchant/draft/delete', {id: data.id}).then(() => {
+                        api.post('/merchant/add', data).then(() => {
+                            this.$message.success('保存成功');
+                            router.push('/merchants');
+                        })
+                    }).finally(() => {
+                        this.isLoading = false;
+                    })
                 }
             },
             getDetail(){
