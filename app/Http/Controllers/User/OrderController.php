@@ -258,6 +258,7 @@ class OrderController extends Controller
             'order_no' => $orderNo,
             'isOperSelf' => $isOperSelf,
             'sdk_config' => $sdkConfig,
+            'order' => $order,
         ]);
     }
 
