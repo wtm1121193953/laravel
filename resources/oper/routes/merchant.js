@@ -11,6 +11,8 @@ import MerchantPoolEdit from '../components/merchant-pool/edit'
 
 import MerchantAuditList from '../components/merchant/audit-list'
 
+import MerchantDraftList from '../components/merchant/draft-list'
+
 /**
  * category 模块
  */
@@ -29,6 +31,7 @@ export default [
             {path: '/merchant/pool/edit', component: MerchantPoolEdit, name: 'MerchantPoolEdit'},
 
             {path: '/merchant/audits', component: MerchantAuditList, name: 'MerchantAuditList'},
+            {path: '/merchant/drafts', component: MerchantDraftList, name: 'MerchantDraftList'},
         ]
     },
 ];

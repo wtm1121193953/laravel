@@ -89,6 +89,7 @@
                     path: '/merchant/edit',
                     query: {
                         id: this.scope.row.id,
+                        type: 'merchant-list'
                     }
                 })
             },

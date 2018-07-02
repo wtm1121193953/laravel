@@ -1,11 +1,13 @@
 <template>
-    <page title="编辑商户信息" :breadcrumbs="{'我的商户': '/merchants'}">
+    <page title="编辑商户信息" :breadcrumbs="breadcrumbs">
         <merchant-form
                 v-loading="isLoading"
                 v-if="merchant"
                 :data="merchant"
                 @cancel="cancel"
-                @save="doEdit"/>
+                @save="doEdit"
+                @saveDraft=""
+        />
     </page>
 </template>
 
@@ -22,6 +24,8 @@
                 isLoading: false,
                 id: null,
                 merchant: null,
+                isDraft: false,
+                breadcrumbs: {},
             }
         },
         methods: {
@@ -36,21 +40,41 @@
             },
             getDetail(){
                 this.isLoading = true;
-                api.get('/merchant/detail', {id: this.id}).then(data => {
+                let url = '';
+                if (this.isDraft) {
+                    url = '/merchant/draft/detail';
+                }else {
+                    url = '/merchant/detail';
+                }
+                api.get(url , {id: this.id}).then(data => {
                     this.merchant = data;
                 }).finally(() => {
                     this.isLoading = false;
                 })
             },
             cancel(){
-                router.push('/merchants');
+                if (this.isDraft) {
+                    router.push('/merchant/drafts');
+                }else {
+                    router.push('/merchants');
+                }
             }
         },
         created(){
             this.id = this.$route.query.id;
+            this.isDraft = this.$route.query.type == 'draft-list';
+            if (this.isDraft){
+                this.breadcrumbs = {'草稿箱': '/merchant/drafts'};
+            } else {
+                this.breadcrumbs = {'我的商户': '/merchants'}
+            }
             if(!this.id){
                 this.$message.error('id不能为空');
-                router.push('/merchants');
+                if (this.isDraft) {
+                    router.push('/merchant/drafts');
+                }else {
+                    router.push('/merchants');
+                }
                 return false;
             }
             this.getDetail();
