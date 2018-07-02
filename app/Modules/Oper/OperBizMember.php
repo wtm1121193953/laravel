@@ -5,6 +5,7 @@ namespace App\Modules\Oper;
 use App\BaseModel;
 use App\Exceptions\BaseResponseException;
 use App\Modules\Merchant\Merchant;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -38,7 +39,11 @@ class OperBizMember extends BaseModel
     {
         $number = Cache::get('oper_biz_member_active_merchant_number_' . $operBizMember->id);
         if (is_null($number)){
-            $number = Merchant::where('oper_biz_member_code', $operBizMember->code)->count();
+            $number = Merchant::where(function (Builder $query){
+                $query->where('oper_id', request()->get('current_user')->oper_id)
+                    ->orWhere('audit_oper_id',  request()->get('current_user')->oper_id);
+            })
+            ->where('oper_biz_member_code', $operBizMember->code)->count();
             Cache::forever('oper_biz_member_active_merchant_number_' . $operBizMember->id, $number);
             return $number;
         }else{
@@ -50,7 +55,11 @@ class OperBizMember extends BaseModel
     {
         $operBizMember = self::where('code', $code)->first();
         if($operBizMember){
-            $count = Merchant::where('oper_biz_member_code', $code)->count();
+            $count = Merchant::where(function (Builder $query){
+                $query->where('oper_id', request()->get('current_user')->oper_id)
+                    ->orWhere('audit_oper_id',  request()->get('current_user')->oper_id);
+            })
+            ->where('oper_biz_member_code', $code)->count();
             Cache::forever('oper_biz_member_active_merchant_number_' . $operBizMember->id, $count);
         }else {
             Log::warning('更新运营中心业务人员已激活商家数量缓存时, 所传的code对应的业务人员不存在', [
