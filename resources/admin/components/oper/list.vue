@@ -11,6 +11,11 @@
                     <el-option label="已冻结" value="2"/>
                 </el-select>
             </el-form-item>
+
+            <el-form-item prop="tel" label="手机号码">
+                <el-input v-model="query.tel" @keyup.enter.native="search" />
+            </el-form-item>
+
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
@@ -67,6 +72,7 @@
                     name: '',
                     status: '',
                     page: 1,
+                    tel:''
                 },
                 list: [],
                 total: 0,
