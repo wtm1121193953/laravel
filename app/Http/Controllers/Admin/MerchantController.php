@@ -124,6 +124,10 @@ class MerchantController extends Controller
         if($merchant->oper_biz_member_code){
             $merchant->operBizMemberName = OperBizMember::where('code', $merchant->oper_biz_member_code)->value('name');
         }
+        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
+        if ($oper){
+            $merchant->operAddress = $oper->province.$oper->city.$oper->area.$oper->address;
+        }
         return Result::success($merchant);
     }
 

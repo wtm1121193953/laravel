@@ -43,6 +43,9 @@
                     <el-form-item prop="location" label="商户位置">
                         {{data.lng}} , {{data.lat}}
                     </el-form-item>
+                    <el-form-item prop="operAddress" label="运营中心位置">
+                        {{data.operAddress}}
+                    </el-form-item>
                     <el-form-item prop="area" label="省市区">
                         {{data.privince}} {{data.city}} {{data.area}}
                     </el-form-item>

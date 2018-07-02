@@ -1,7 +1,6 @@
 <template>
 
     <page :title="'业务-' + operBizMember.name" :breadcrumbs="{我的业务员: '/operBizMembers'}" v-loading="isLoading">
-        <el-button class="fr" type="primary" @click="add">添加业务员</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="active_time" label="激活时间"/>
             <el-table-column prop="name" label="商户名称"/>

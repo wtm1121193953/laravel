@@ -8,7 +8,7 @@
         <el-col>
             <el-form-item>
                 <el-button @click="cancel">取消</el-button>
-                <el-button type="primary" @click="saveIntoDraft">存入草稿箱</el-button>
+                <el-button type="primary" v-if="isDraft" @click="saveIntoDraft">存入草稿箱</el-button>
                 <el-button type="success" @click="save">保存并提审</el-button>
             </el-form-item>
         </el-col>
@@ -26,6 +26,7 @@
             poolInfoData: Object,
             activeInfoData: Object,
             poolInfoReadonly: {type: Boolean, default: false}, // 商户录入信息是否只读
+            isDraft: {type: Boolean, default: true}
         },
         computed:{
 

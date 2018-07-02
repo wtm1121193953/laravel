@@ -137,7 +137,12 @@
                 }
             },
             add(){
-                router.push('/merchant/add');
+                router.push({
+                    path: '/merchant/add',
+                    query: {
+                        type: 'merchant-list'
+                    }
+                });
             },
             accountChanged(scope, account){
                 let row = this.list[scope.$index];
