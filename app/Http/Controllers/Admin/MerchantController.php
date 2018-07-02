@@ -35,6 +35,9 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $auditStatus = request('auditStatus');
+        if($auditStatus[0]==null){
+            $auditStatus=["0","1","2","3"];
+        }
         $operId = request('operId');
         $operName = request('operName');
         $operIds = [];
@@ -80,11 +83,9 @@ class MerchantController extends Controller
             ->when($endDate, function (Builder $query) use ($endDate){
                 $query->where('created_at', '<=', $endDate.' 23:59:59');
             })
-            ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus){
-                if($auditStatus == -1){
-                    $auditStatus = 0;
-                }
-                $query->where('audit_status', $auditStatus);
+            ->when(!empty($auditStatus) && isset($auditStatus), function (Builder $query) use ($auditStatus){
+
+                    $query->whereIn('audit_status', $auditStatus);
             })
             ->when($name, function (Builder $query) use ($name){
                 $query->where('name', 'like', "%$name%");
