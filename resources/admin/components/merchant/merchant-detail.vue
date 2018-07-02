@@ -113,6 +113,12 @@
                                 <preview-img :url="pic" width="200px" height="100px"/>
                             </template>
                         </el-form-item>
+                        <el-col v-if="type != 'poolOnly' ">
+                            <el-form-item prop="audit_suggestion" label="审核意见">
+                                <el-input v-if="data.audit_status == 0 || data.audit_status == 3" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
+                                <span v-else>{{data.audit_suggestion}}</span>
+                            </el-form-item>
+                        </el-col>
                     </el-col>
 
                     <!-- 商户激活信息右侧块 -->
@@ -187,7 +193,7 @@
                 this.isShowPreviewImage = true;
             },
             audit(type){
-                api.post('/merchant/audit', {id: this.data.id, type: type}).then(data => {
+                api.post('/merchant/audit', {id: this.data.id, type: type,audit_suggestion:this.data.audit_suggestion}).then(data => {
                     this.$alert(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
                     this.$emit('change')
                 })
