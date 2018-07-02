@@ -51,7 +51,6 @@ class SelfController extends Controller
             config('admin.user_session') => $user,
             config('admin.user_rule_session') => $rules
         ]);
-
         return Result::success([
             'user' => $user,
             'menus' => $menuTree

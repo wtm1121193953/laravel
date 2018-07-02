@@ -98,6 +98,7 @@
                     <el-table-column label="操作" width="150px">
                         <template slot-scope="scope">
                             <el-button type="text" @click="detail(scope)">查看</el-button>
+                            <el-button type="text" @click="detail(scope,3)">审核</el-button>
                             <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
 
                                 <el-dropdown trigger="click"
@@ -203,10 +204,10 @@
                     this.tableLoading = false;
                 })
             },
-            detail(scope){
+            detail(scope,type){
                 router.push({
                     path: '/merchant/detail',
-                    query: {id: scope.row.id},
+                    query: {id: scope.row.id,auditType:type},
                 })
                 return false;
             },
