@@ -26,3 +26,4 @@ Route::post('/dishes/goods/add', 'DishesGoodsController@add');
 Route::post('/dishes/goods/edit', 'DishesGoodsController@edit');
 Route::post('/dishes/goods/changeStatus', 'DishesGoodsController@changeStatus');
 Route::post('/dishes/goods/del', 'DishesGoodsController@del');
+Route::post('/dishes/goods/saveOrder', 'DishesGoodsController@saveOrder');

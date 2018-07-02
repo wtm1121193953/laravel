@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class DishesGoodsController extends Controller
 {
@@ -21,7 +22,7 @@ class DishesGoodsController extends Controller
         $data = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
             ->when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
-        })->orderBy('id', 'desc')->with('dishesCategory:id,name')->paginate($pageSize);
+        })->orderBy('sort', 'asc')->with('dishesCategory:id,name')->paginate($pageSize);
 
 
 
@@ -141,6 +142,47 @@ class DishesGoodsController extends Controller
         $dishesGoods = DishesGoods::findOrFail(request('id'));
         $dishesGoods->delete();
         return Result::success($dishesGoods);
+    }
+
+    /**
+     * 单品排序
+     */
+    public function saveOrder(){
+        $type = request('type');
+        if ($type == 'up'){
+            $option = '<';
+            $order = 'desc';
+        }else{
+            $option = '>';
+            $order = 'asc';
+        }
+
+        $dishesGoods = DishesGoods::findOrFail(request('id'));
+        if (empty($dishesGoods)){
+            throw new BaseResponseException('该单品不存在');
+        }
+        $dishesGoodsExchange = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->where('sort', $option, $dishesGoods['sort'])
+            ->orderBy('sort', $order)
+            ->first();
+        if (empty($dishesGoodsExchange)){
+            throw new BaseResponseException('交换位置的单品不存在');
+        }
+
+        $item = $dishesGoods['sort'];
+        $dishesGoods['sort'] = $dishesGoodsExchange['sort'];
+        $dishesGoodsExchange['sort'] = $item;
+
+        try{
+            DB::beginTransaction();
+            $dishesGoods->save();
+            $dishesGoodsExchange->save();
+            DB::commit();
+            return Result::success();
+        }catch (\Exception $e){
+            DB::rollBack();
+            throw new BaseResponseException('交换位置失败');
+        }
     }
 
 }
