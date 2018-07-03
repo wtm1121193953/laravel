@@ -1,5 +1,5 @@
 <template>
-    <page title="商户审核管理" v-loading="isLoading">
+    <page title="商户审核管理" v-loading="isLoading" >
         <!--<el-tabs v-model="activeTab" type="card" @tab-click="changeTab">-->
             <!--<el-tab-pane label="待审核商户列表" name="merchant">-->
 
@@ -98,7 +98,17 @@
                         <template slot-scope="scope">
                             <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
                             <span v-else-if="scope.row.audit_status === 1" class="c-green">审核通过</span>
-                            <span v-else-if="scope.row.audit_status === 2" class="c-danger">审核不通过</span>
+                            <el-popover v-else-if="scope.row.audit_status === 2"  placement="bottom"  title="标题"  width="200"  trigger="hover"
+                                        show="showMessage">
+                                <!--<el-table :data="gridData">-->
+                                    <!--<el-table-column width="150" property="date" label="日期"></el-table-column>-->
+                                    <!--<el-table-column width="100" property="name" label="姓名"></el-table-column>-->
+                                    <!--<el-table-column width="300" property="address" label="地址"></el-table-column>-->
+                                <!--</el-table>-->
+                                <span   slot="reference" class="c-danger">审核不通过</span>
+                            </el-popover>
+
+
                             <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
                             <span v-else>未知 ({{scope.row.audit_status}})</span>
                         </template>
@@ -196,13 +206,9 @@
                     path: '/merchants'
                 });
             },
-            // changeTab(tab){
-            //     if(tab == 'merchant'){
-            //         this.getList();
-            //     }else {
-            //         this.$refs.auditList.getList();
-            //     }
-            // },
+            showMessage(){
+              alert(1111);
+            },
             search() {
                 if (this.query.startDate > this.query.endDate) {
                     this.$message.error('搜索的开始时间不能大于结束时间！');
@@ -228,27 +234,22 @@
             },
             //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
             audit(scope, type){
-                if(type==2){
+                if(type==2 ||type==1){
                     api.get('merchant/detail', {id: scope.row.id}).then(data => {
                         this.detailMerchant = data;
+                        this.detailMerchant.type = type;
+
                         this.unAudit = true;
                     });
-
                 }else{
                     let message = ['', '审核通过', '审核不通过', '打回到商户池'][type];
                     this.$confirm(`确定 ${message} 吗?`, scope.row.name).then(() => {
-                        return false;
                         api.post('/merchant/audit', {id: scope.row.id, type: type}).then(data => {
                             this.$alert(message + ' 操作成功');
                             this.getList();
                         })
                     });
-
                 }
-
-            },
-            save(){
-
 
             },
 
