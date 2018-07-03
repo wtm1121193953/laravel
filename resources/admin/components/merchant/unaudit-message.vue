@@ -55,7 +55,6 @@
                 this.$emit('cancel');
             },
             audit(type){
-                console.log(type);
                 api.post('/merchant/audit', {id: this.data.id, type: type,audit_suggestion:this.data.audit_suggestion}).then(data => {
                     this.$message(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
                     this.$emit('cancel');

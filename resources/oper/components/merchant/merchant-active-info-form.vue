@@ -6,7 +6,7 @@
         </el-col>
         <!-- 商户激活信息左侧块 -->
         <el-col :span="11">
-            <el-form-item prop="oper_biz_member_code" label="业务员推广码">
+            <el-form-item prop="oper_biz_member_code" label="推荐人">
                 <el-select
                         v-model="form.oper_biz_member_code"
                         filterable
@@ -245,8 +245,8 @@
                 }
             };
             let validateServicePhone = (rule, value, callback) => {
-                if (!(/^1[34578]\d{9}$/.test(value))) {
-                    callback(new Error('请输入正确的手机号码'));
+                if (!(/^1[34578]\d{9}$/.test(value)) && !(/^(0[0-9]{2,3}\-)([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$/.test(value))) {
+                    callback(new Error('请输入正确的手机号或带区号的固定电话'));
                 }else {
                     callback();
                 }
@@ -284,7 +284,8 @@
                         {required: true, message: '商家介绍图片不能为空'}
                     ],
                     desc: [
-                        {required: true, message: '商家介绍不能为空'}
+                        {required: true, message: '商家介绍不能为空'},
+                        {max: 100, message: '商家介绍不能超过100个字'}
                     ],
                     settlement_rate: [
                         {
@@ -341,6 +342,7 @@
                     ],
                     contacter_phone: [
                         {required: true, message: '商户负责人联系方式 不能为空'},
+                        {validator: validateServicePhone}
                     ],
                     service_phone: [
                         {required: true, message: '客服电话 不能为空'},

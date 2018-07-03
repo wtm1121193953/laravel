@@ -24,8 +24,8 @@ class UsersController extends Controller
         $mobile = request('keyword');
         $users  = User::select('id','name','mobile','email','created_at')
             ->when($mobile, function (Builder $query) use ($mobile){
-                $query->where('mobile',$mobile);
-            })->paginate();
+                $query->where('mobile','like','%'.$mobile.'%');
+            })->orderByDesc('created_at')->paginate();
         $users->each(function ($item){
             $inviteRecord = InviteUserRecord::select('origin_id','origin_type')->where('user_id',$item->id)->first();
             if(empty($inviteRecord)){

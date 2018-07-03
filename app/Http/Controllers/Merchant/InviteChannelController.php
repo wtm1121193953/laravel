@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Merchant;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteService;
@@ -27,7 +28,12 @@ class InviteChannelController extends Controller
         $currentUser = request()->get('current_user');
         $inviteChannel = InviteService::getInviteChannel($currentUser->merchant_id, InviteChannel::ORIGIN_TYPE_MERCHANT, $currentUser->oper_id);
         $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
-        $url = WechatService::getMiniprogramAppCodeUrl($scene);
+        try{
+            $url = WechatService::getMiniprogramAppCodeUrl($scene);
+        }catch (\Exception $e){
+            throw new BaseResponseException('小程序码生成失败');
+        }
+
         return Result::success([
             'qrcode_url' => $url,
         ]);
