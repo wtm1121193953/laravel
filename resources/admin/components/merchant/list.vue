@@ -11,15 +11,23 @@
                         <el-form-item prop="name" label="商户名称">
                             <el-input v-model="query.name" size="small" placeholder="商户名称" @keyup.enter.native="search"/>
                         </el-form-item>
-                        <el-form-item label="审核状态" prop="auditStatus">
-                            <el-select v-model="query.auditStatus" size="small" placeholder="请选择" class="w-100">
-                                <el-option label="全部" value=""/>
-                                <el-option label="待审核" value="-1"/>
+                        <el-form-item label="审核状态" prop="auditStatus"  v-if="isAudit">
+                            <el-select v-model="query.auditStatus" size="small" multiple  placeholder="请选择" class="w-150">
+                                <el-option label="待审核" value="0" />
+                                <el-option label="重新提交审核" value="3"/>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="审核状态" prop="auditStatus"  v-else>
+                            <el-select v-model="query.auditStatus" size="small"  multiple placeholder="请选择" class="w-150">
+                                <el-option label="全部" value="" />
+                                <el-option label="待审核" value="0"/>
                                 <el-option label="审核通过" value="1"/>
                                 <el-option label="审核不通过" value="2"/>
                                 <el-option label="重新提交审核" value="3"/>
                             </el-select>
                         </el-form-item>
+
+
                         <el-form-item prop="startDate" label="添加商户开始时间">
                             <el-date-picker
                                 v-model="query.startDate"
@@ -101,18 +109,15 @@
                             <el-button type="text" @click="detail(scope,3)">审核</el-button>
                             <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
 
-                                <el-dropdown trigger="click"
-                                             style="margin-left: 10px;"
-                                             @command="(command) => {audit(scope, command)}">
+                                <el-dropdown trigger="click" style="margin-left: 10px;" @command="(command) => {audit(scope, command)}">
+
                                     <el-button type="text">
-                                      审核商户 <i class="el-icon-arrow-down"></i>
+                                      快捷审核 <i class="el-icon-arrow-down"></i>
                                     </el-button>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item command="1">审核通过</el-dropdown-item>
                                         <el-dropdown-item command="2">审核不通过</el-dropdown-item>
-                                        <el-dropdown-item
-                                                v-if="scope.row.oper_id == 0"
-                                                command="3">打回到商户池</el-dropdown-item>
+                                        <el-dropdown-item  v-if="scope.row.oper_id == 0"  command="3">打回到商户池</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
                                 <!--<el-button type="text" @click="audit(scope, 1)">审核通过</el-button>-->
@@ -138,13 +143,19 @@
         <el-dialog :visible.sync="showDetail" width="70%" title="商户详情">
             <merchant-detail :data="currentMerchant" @change="() => {getList(); showDetail = false;}"/>
         </el-dialog>
+
+        <el-dialog title="审核不通过" :visible.sync="unAudit" :close-on-click-modal="false">
+            <unaudit-message   @cancel="unAudit = false"  :data="detailMerchant" @save="save" />
+        </el-dialog>
+
     </page>
 </template>
 
 <script>
     import api from '../../../assets/js/api'
     import MerchantDetail from './merchant-detail'
-    import AuditList from './audit-list'
+    import AuditList from './audit-record-list'
+    import UnauditMessage from './unaudit-message'
 
     export default {
         name: "merchant-list",
@@ -153,9 +164,11 @@
                 activeTab: 'merchant',
                 showDetail: false,
                 isLoading: false,
+                unAudit:false,
+                detailMerchant:null,
                 query: {
                     name: '',
-                    auditStatus: '',
+                    auditStatus: [],
                     page: 1,
                     merchantId: '',
                     startDate: '',
@@ -172,7 +185,10 @@
             }
         },
         computed: {
-
+            isAudit(){
+                let abc = this.$route.path;
+                return abc=="/merchant/unaudits"
+            }
         },
         methods: {
             // changeTab(tab){
@@ -188,17 +204,12 @@
                     return false;
                 }
                 this.query.page = 1;
-                this.getList('search');
+                this.getList();
             },
             getList(type = ''){
                 this.tableLoading = true;
-                let param = {};
-                if (type = ''){
-                    param = {page: this.query.page};
-                } else {
-                    param = this.query;
-                }
-                api.get('/merchants', param).then(data => {
+                console.log(this.query)
+                api.get('/merchants', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                     this.tableLoading = false;
@@ -212,15 +223,28 @@
                 return false;
             },
             audit(scope, type){
+                if(type==2){
+                    this.unAudit=true
+                    api.get('merchant/detail', {id: scope.row.id}).then(data => {
+                        this.detailMerchant = data;
+                    });
+
+                }
                 //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
                 let message = ['', '审核通过', '审核不通过', '打回到商户池'][type];
                 this.$confirm(`确定 ${message} 吗?`, scope.row.name).then(() => {
+                    return false;
                     api.post('/merchant/audit', {id: scope.row.id, type: type}).then(data => {
                         this.$alert(message + ' 操作成功');
                         this.getList();
                     })
                 });
             },
+            save(){
+
+
+            },
+
             downloadExcel() {
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
@@ -228,11 +252,18 @@
             }
         },
         created(){
-            this.getList();
+            if(this.isAudit){
+                this.query.auditStatus=['0', '3']
+                this.getList()
+            }else{
+                this.getList();
+            }
+
         },
         components: {
             MerchantDetail,
             AuditList,
+            UnauditMessage
         }
     }
 </script>
