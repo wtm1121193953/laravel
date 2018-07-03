@@ -235,6 +235,22 @@
                     callback();
                 }
             };
+            let validateNumber = (rule, value, callback) => {
+                if (parseFloat(value).toString() == 'NaN'){
+                    callback(new Error('请输入数字'));
+                } else if (value < 0){
+                    callback(new Error('输入值得大于零'))
+                } else {
+                    callback();
+                }
+            };
+            let validateServicePhone = (rule, value, callback) => {
+                if (!(/^1[34578]\d{9}$/.test(value))) {
+                    callback(new Error('请输入正确的手机号码'));
+                }else {
+                    callback();
+                }
+            }
             return {
                 form: deepCopy(defaultForm),
                 formRules: {
@@ -327,15 +343,18 @@
                     ],
                     service_phone: [
                         {required: true, message: '客服电话 不能为空'},
+                        {validator: validateServicePhone}
                     ],
                     oper_salesman: [
                         {required: true, message: '业务人员姓名 不能为空'},
                     ],
                     site_acreage: [
                         {required: true, message: '商户面积 不能为空'},
+                        {validator: validateNumber}
                     ],
                     employees_number: [
                         {required: true, message: '商户员工人数 不能为空'},
+                        {validator: validateNumber}
                     ],
                 },
                 searchOperBizMemberLoading: false,
