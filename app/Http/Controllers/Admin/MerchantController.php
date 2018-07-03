@@ -163,20 +163,26 @@ class MerchantController extends Controller
             'type' => 'required|integer|in:1,2,3',
             'audit_suggestion' =>  'max:50',
         ]);
-        //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
+
         $type = request('type');
         $merchantId = request('id');
         $auditSuggestion = request('audit_suggestion');
-
         $merchant = Merchant::findOrFail($merchantId);
-        $merchantAudit = MerchantAudit::where('merchant_id', $merchantId)
-            ->where('oper_id', $merchant->audit_oper_id)
-            ->first();
-        if(empty($merchantAudit)){
-            // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
-            $merchantAudit = MerchantAudit::addRecord($merchantId, $merchant->audit_oper_id);
-        }
 
+        $merchantAudit = new MerchantAudit();
+        $merchantAudit->merchant_id = $merchantId;
+        $merchantAudit->oper_id = $merchant->audit_oper_id;
+        $merchantAudit->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
+
+
+//        $merchantAudit = MerchantAudit::where('merchant_id', $merchantId)
+//            ->where('oper_id', $merchant->audit_oper_id)
+//            ->first();
+//        if(empty($merchantAudit)){
+//            // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
+//            $merchantAudit = MerchantAudit::addRecord($merchantId, $merchant->audit_oper_id);
+//        }
+   //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
         if($type == 3){
             if($merchant->oper_id > 0){
                 throw new ParamInvalidException('该商户已有所属运营中心, 不能打回商户池');

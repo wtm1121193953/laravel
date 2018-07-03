@@ -106,9 +106,9 @@
                     <el-table-column label="操作" width="150px">
                         <template slot-scope="scope">
                             <el-button type="text" @click="detail(scope)">查看</el-button>
-                            <el-button type="text" @click="detail(scope,3)">审核</el-button>
-                            <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
 
+                            <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
+                                <el-button type="text" @click="detail(scope,3)">审核</el-button>
                                 <el-dropdown trigger="click" style="margin-left: 10px;" @command="(command) => {audit(scope, command)}">
 
                                     <el-button type="text">
@@ -145,7 +145,7 @@
         </el-dialog>
 
         <el-dialog title="审核不通过" :visible.sync="unAudit" :close-on-click-modal="false">
-            <unaudit-message   @cancel="unAudit = false"  :data="detailMerchant" @save="save" />
+            <unaudit-message   @cancel="unAudit = false"  :data="detailMerchant"   @change="merchantChange"/>
         </el-dialog>
 
     </page>
@@ -191,6 +191,11 @@
             }
         },
         methods: {
+            merchantChange(){
+                router.push({
+                    path: '/merchants'
+                });
+            },
             // changeTab(tab){
             //     if(tab == 'merchant'){
             //         this.getList();
@@ -222,6 +227,7 @@
                 })
                 return false;
             },
+            //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
             audit(scope, type){
                 if(type==2){
                     this.unAudit=true
@@ -229,16 +235,18 @@
                         this.detailMerchant = data;
                     });
 
+                }else{
+                    let message = ['', '审核通过', '审核不通过', '打回到商户池'][type];
+                    this.$confirm(`确定 ${message} 吗?`, scope.row.name).then(() => {
+                        return false;
+                        api.post('/merchant/audit', {id: scope.row.id, type: type}).then(data => {
+                            this.$alert(message + ' 操作成功');
+                            this.getList();
+                        })
+                    });
+
                 }
-                //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
-                let message = ['', '审核通过', '审核不通过', '打回到商户池'][type];
-                this.$confirm(`确定 ${message} 吗?`, scope.row.name).then(() => {
-                    return false;
-                    api.post('/merchant/audit', {id: scope.row.id, type: type}).then(data => {
-                        this.$alert(message + ' 操作成功');
-                        this.getList();
-                    })
-                });
+
             },
             save(){
 
