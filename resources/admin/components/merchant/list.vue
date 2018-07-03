@@ -8,8 +8,8 @@
                         <el-form-item prop="merchantId" label="商户ID">
                             <el-input v-model="query.merchantId" size="small" class="w-100" clearable></el-input>
                         </el-form-item>
-                        <el-form-item prop="name" label="商户名称">
-                            <el-input v-model="query.name" size="small" placeholder="商户名称" @keyup.enter.native="search"/>
+                        <el-form-item prop="name" label="商户名称" >
+                            <el-input v-model="query.name" size="small" placeholder="商户名称" clearable @keyup.enter.native="search"/>
                         </el-form-item>
                         <el-form-item label="审核状态" prop="auditStatus"  v-if="isAudit">
                             <el-select v-model="query.auditStatus" size="small" multiple  placeholder="请选择" class="w-150">
@@ -54,13 +54,13 @@
                             <el-input v-model="query.operName" size="small"  clearable></el-input>
                         </el-form-item>
                         <el-form-item prop="operId" label="激活运营中心ID">
-                            <el-input v-model="query.operId" size="small" />
+                            <el-input v-model="query.operId" size="small" clearable />
                         </el-form-item>
                         <el-form-item prop="creatorOperName" label="录入运营中心名称">
                             <el-input v-model="query.creatorOperName" size="small" clearable></el-input>
                         </el-form-item>
                         <el-form-item prop="creatorOperId" label="录入运营中心ID">
-                            <el-input v-model="query.creatorOperId" size="small"  />
+                            <el-input v-model="query.creatorOperId" size="small"  clearable />
                         </el-form-item>
 
                         <el-form-item>
@@ -76,7 +76,7 @@
                     <el-table-column prop="created_at" label="添加时间"/>
                     <el-table-column prop="id" label="商户ID"/>
                     <el-table-column prop="name" label="商户名称"/>
-                    <el-table-column prop="operID" label="激活运营中心ID"/>
+                    <el-table-column prop="operId" label="激活运营中心ID"/>
                     <el-table-column prop="operName" label="激活运营中心名称"/>
                     <el-table-column prop="creatorOperId" label="录入运营中心ID"/>
                     <el-table-column prop="creatorOperName" label="录入运营中心名称"/>
@@ -98,14 +98,15 @@
                         <template slot-scope="scope">
                             <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
                             <span v-else-if="scope.row.audit_status === 1" class="c-green">审核通过</span>
-                            <el-popover v-else-if="scope.row.audit_status === 2"  placement="bottom"  title="标题"  width="200"  trigger="hover"
-                                        show="showMessage">
-                                <!--<el-table :data="gridData">-->
-                                    <!--<el-table-column width="150" property="date" label="日期"></el-table-column>-->
-                                    <!--<el-table-column width="100" property="name" label="姓名"></el-table-column>-->
-                                    <!--<el-table-column width="300" property="address" label="地址"></el-table-column>-->
-                                <!--</el-table>-->
-                                <span   slot="reference" class="c-danger">审核不通过</span>
+                              <el-popover
+                                  v-else-if="scope.row.audit_status === 2"
+                                  placement="right"  title="标题"
+                                  width="250"  trigger="hover"
+                                  @show="showMessage(scope)"  >
+
+                                     <span   slot="reference" class="c-danger">审核不通过</span>
+                                  <unaudit-record-reason    :data="auditRecord"  />
+
                             </el-popover>
 
 
@@ -166,6 +167,7 @@
     import MerchantDetail from './merchant-detail'
     import AuditList from './audit-record-list'
     import UnauditMessage from './unaudit-message'
+    import UnauditRecordReason from './unaudit-record-reason'
 
     export default {
         name: "merchant-list",
@@ -189,6 +191,7 @@
                     creatorOperId:''
                 },
                 list: [],
+                auditRecord:[],
                 total: 0,
                 currentMerchant: null,
                 tableLoading: false,
@@ -196,18 +199,22 @@
         },
         computed: {
             isAudit(){
-                let abc = this.$route.path;
-                return abc=="/merchant/unaudits"
+                let isAudit = this.$route.path;
+                return isAudit=="/merchant/unaudits"
             }
         },
         methods: {
-            merchantChange(){
+                merchantChange(){
                 router.push({
                     path: '/merchants'
                 });
             },
-            showMessage(){
-              alert(1111);
+            showMessage(scope){
+                    api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {
+                        this.auditRecord = data.list;
+                        this.tableLoading = false;
+
+                    })
             },
             search() {
                 if (this.query.startDate > this.query.endDate) {
@@ -238,7 +245,6 @@
                     api.get('merchant/detail', {id: scope.row.id}).then(data => {
                         this.detailMerchant = data;
                         this.detailMerchant.type = type;
-
                         this.unAudit = true;
                     });
                 }else{
@@ -263,6 +269,7 @@
             if(this.isAudit){
                 this.query.auditStatus=['0', '3']
                 this.getList()
+
             }else{
                 this.getList();
             }
@@ -271,7 +278,8 @@
         components: {
             MerchantDetail,
             AuditList,
-            UnauditMessage
+            UnauditMessage,
+            UnauditRecordReason
         }
     }
 </script>

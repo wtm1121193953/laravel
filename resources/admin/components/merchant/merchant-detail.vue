@@ -191,6 +191,14 @@
                     </el-form-item>
 
                 </el-col>
+
+                <el-col  >
+                    <el-form-item >
+                        <el-button type="primary" @click="back()">返回</el-button>
+                        <!-- <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button> -->
+                    </el-form-item>
+
+                </el-col>
             </el-form>
 
             <img-preview-dialog :visible.sync="isShowPreviewImage" :url="currentPreviewImage"/>
@@ -236,6 +244,9 @@
                     this.$alert(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
                     this.$emit('change')
                 })
+            },
+            back(){
+                router.back(-1)
             }
         },
         created(){
