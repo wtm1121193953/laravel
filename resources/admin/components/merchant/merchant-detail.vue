@@ -71,8 +71,8 @@
                             </template>
                         </el-form-item>
                         <el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>
-                        <el-form-item prop="invoice_title" label="发票抬头">{{data.invoice_title}}</el-form-item>
-                        <el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>
+                        <!--<el-form-item prop="invoice_title" label="发票抬头">{{data.invoice_title}}</el-form-item>-->
+                        <!--<el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>-->
 
                         <el-form-item prop="business_time" label="营业时间">
                             {{data.business_time[0]}} 至 {{data.business_time[1]}}
