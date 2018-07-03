@@ -3,6 +3,7 @@
 namespace App\Modules\Merchant;
 
 use App\BaseModel;
+use App\Modules\Area\Area;
 
 class MerchantDraft extends BaseModel
 {
@@ -38,6 +39,7 @@ class MerchantDraft extends BaseModel
     {
         $this->oper_biz_member_code = request('oper_biz_member_code','');
         $this->brand = request('brand','');
+        $this->signboard_name = request('signboard_name', '');
         $this->invoice_title = request('invoice_title','');
         $this->invoice_no = request('invoice_no','');
         $this->status = request('status', 1);

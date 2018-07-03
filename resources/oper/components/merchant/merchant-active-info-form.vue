@@ -14,7 +14,9 @@
                         reserve-keyword
                         placeholder="请输入业务员名称、手机号或推广码"
                         :remote-method="searchOperBizMember"
-                        :loading="searchOperBizMemberLoading">
+                        :loading="searchOperBizMemberLoading"
+                        class="w-300"
+                >
                     <el-option
                             v-for="item in operBizMembers"
                             :key="item.id"
@@ -111,7 +113,7 @@
                 <image-upload v-model="form.licence_pic_url" :limit="1"/>
             </el-form-item>
             <el-form-item v-if="form.bank_card_type == 2" required label="法人银行卡正面照" prop="bank_card_pic_a">
-                <image-upload v-model="form.bank_card_pic_a"/>
+                <image-upload v-model="form.bank_card_pic_a" :limit="2"/>
             </el-form-item>
             <!-- 银行卡信息 end -->
 
@@ -233,6 +235,22 @@
                     callback();
                 }
             };
+            let validateNumber = (rule, value, callback) => {
+                if (parseFloat(value).toString() == 'NaN'){
+                    callback(new Error('请输入数字'));
+                } else if (value < 0){
+                    callback(new Error('输入值得大于零'))
+                } else {
+                    callback();
+                }
+            };
+            let validateServicePhone = (rule, value, callback) => {
+                if (!(/^1[34578]\d{9}$/.test(value))) {
+                    callback(new Error('请输入正确的手机号码'));
+                }else {
+                    callback();
+                }
+            }
             return {
                 form: deepCopy(defaultForm),
                 formRules: {
@@ -246,6 +264,13 @@
                     /*business_time: [
                         {type: 'array', required: true, message: '营业时间不能为空'},
                     ],*/
+                    brand: [
+                        {max: 20, message: '品牌名称不能超过20个字'}
+                    ],
+                    signboard_name: [
+                        {required: true, message: '招牌名称不能为空'},
+                        {max: 20, message: '招牌名称不能超过20个字'}
+                    ],
                     business_start_time: [
                         {type: 'date', required: true, message: '营业时间不能为空'},
                     ],
@@ -319,15 +344,18 @@
                     ],
                     service_phone: [
                         {required: true, message: '客服电话 不能为空'},
+                        {validator: validateServicePhone}
                     ],
                     oper_salesman: [
                         {required: true, message: '业务人员姓名 不能为空'},
                     ],
                     site_acreage: [
                         {required: true, message: '商户面积 不能为空'},
+                        {validator: validateNumber}
                     ],
                     employees_number: [
                         {required: true, message: '商户员工人数 不能为空'},
+                        {validator: validateNumber}
                     ],
                 },
                 searchOperBizMemberLoading: false,

@@ -114,6 +114,9 @@ class OrderController extends Controller
         $goodsId = request('goods_id');
         $number = request('number', 1);
         $goods = Goods::findOrFail($goodsId);
+        if ($goods->status == Goods::STATUS_OFF){
+            throw new BaseResponseException('此商品已下架，请您选择其他商品');
+        }
 
         $user = request()->get('current_user');
 
@@ -351,6 +354,13 @@ class OrderController extends Controller
 
         if($order->oper_id !== request()->get('current_oper')->id){
             throw new BaseResponseException('该订单不是当前运营中心的订单');
+        }
+
+        if ($order->type == Order::TYPE_GROUP_BUY){
+            $goods = Goods::findOrFail($order->goods_id);
+            if ($goods->status == Goods::STATUS_OFF){
+                throw new BaseResponseException('此商品已下架，请您选择其他商品');
+            }
         }
 
         $sdkConfig = $this->_wechatUnifyPay($order);

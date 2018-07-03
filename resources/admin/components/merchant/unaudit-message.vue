@@ -14,15 +14,14 @@
                 </el-col>
                 <el-col >
                     <el-form-item prop="audit_suggestion" label="审核意见">
-                        <el-input v-if="data.audit_status == 0 || data.audit_status == 3" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
-                        <span v-else>{{data.audit_suggestion}}</span>
+                        <el-input  placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
                     </el-form-item>
                 </el-col>
 
 
                 <!-- 商户激活信息右侧块 -->
                 <el-col   >
-                    <el-form-item v-if="data.audit_status == 0 || data.audit_status == 3">
+                    <el-form-item >
                         <el-button @click="cancel">取消</el-button>
                         <el-button type="primary" @click="audit(2)">确定不通过</el-button>
                     </el-form-item>
@@ -56,12 +55,8 @@
                 this.$emit('cancel');
                 this.reset();
             },
-            reset() {
-                this.$refs.form.resetFields();
-            },
 
             audit(type){
-                this.isAdd = true;
                 api.post('/merchant/audit', {id: this.data.id, type: type,audit_suggestion:this.data.audit_suggestion}).then(data => {
                     this.$alert(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
                     this.$emit('change')
@@ -69,7 +64,7 @@
             }
         },
         created(){
-
+            console.log(this.data);
         },
         components: {
 

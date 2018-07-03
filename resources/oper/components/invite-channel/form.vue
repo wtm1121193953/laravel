@@ -46,6 +46,7 @@
                 }
             },
             cancel(){
+                this.resetForm();
                 this.$emit('cancel');
             },
             resetForm(){
