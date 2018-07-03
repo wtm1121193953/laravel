@@ -268,6 +268,7 @@
                         {max: 20, message: '品牌名称不能超过20个字'}
                     ],
                     signboard_name: [
+                        {required: true, message: '招牌名称不能为空'},
                         {max: 20, message: '招牌名称不能超过20个字'}
                     ],
                     business_start_time: [
