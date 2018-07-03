@@ -6,7 +6,7 @@
         </el-col>
         <!-- 商户激活信息左侧块 -->
         <el-col :span="11">
-            <el-form-item prop="oper_biz_member_code" label="业务员推广码">
+            <el-form-item prop="oper_biz_member_code" label="推荐人">
                 <el-select
                         v-model="form.oper_biz_member_code"
                         filterable
