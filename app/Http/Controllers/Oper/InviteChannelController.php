@@ -65,7 +65,7 @@ class InviteChannelController extends Controller
         $remark = request('remark', '');
         $operId = request()->get('current_user')->oper_id;
 
-        $exist = InviteChannel::where('name', $name)->first();
+        $exist = InviteChannel::where('name', $name)->where('oper_id', $operId)->first();
         if ($exist){
             throw new ParamInvalidException('渠道名称不能重复');
         }
@@ -107,7 +107,10 @@ class InviteChannelController extends Controller
             throw new ParamInvalidException('邀请渠道不存在');
         }
 
-        $exist = InviteChannel::where('name', $name)->where('id', '<>', request('id'))->first();
+        $exist = InviteChannel::where('name', $name)
+            ->where('oper_id', $operId)
+            ->where('id', '<>', request('id'))
+            ->first();
         if ($exist){
             throw new ParamInvalidException('渠道名称不能重复');
         }
