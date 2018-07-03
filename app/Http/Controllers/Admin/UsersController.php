@@ -39,10 +39,10 @@ class UsersController extends Controller
                     $item->parent = !empty($user) ? ($user->name ? $user->name:$user->mobile) : '未知-推荐人';
                 }elseif ($inviteRecord->origin_type == 2){
                     $merchant = Merchant::where('id',$inviteRecord->origin_id)->first(['name']);
-                    $item->parent = !empty($merchant->name) ? $merchant->name : '未知-推荐商户';
+                    $item->parent = !empty($merchant) ? $merchant->name : '未知-推荐商户';
                 }elseif ($inviteRecord->origin_type == 3){
                     $oper = Oper::where('id',$inviteRecord->origin_id)->first(['name']);
-                    $item->parent = !empty($oper->name) ? $oper->name : '未知-推荐运营中心';
+                    $item->parent = !empty($oper) ? $oper->name : '未知-推荐运营中心';
                 }else{
                     $item->parent = '未知-推荐信息';
                 }
