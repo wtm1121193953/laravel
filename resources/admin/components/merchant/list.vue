@@ -213,7 +213,6 @@
             },
             getList(type = ''){
                 this.tableLoading = true;
-                console.log(this.query)
                 api.get('/merchants', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
@@ -230,9 +229,9 @@
             //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
             audit(scope, type){
                 if(type==2){
-                    this.unAudit=true
                     api.get('merchant/detail', {id: scope.row.id}).then(data => {
                         this.detailMerchant = data;
+                        this.unAudit = true;
                     });
 
                 }else{

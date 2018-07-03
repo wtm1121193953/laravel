@@ -64,7 +64,7 @@
             }
         },
         created(){
-
+            console.log(this.data);
         },
         components: {
 
