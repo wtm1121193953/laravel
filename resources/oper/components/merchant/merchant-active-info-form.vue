@@ -113,7 +113,7 @@
                 <image-upload v-model="form.licence_pic_url" :limit="1"/>
             </el-form-item>
             <el-form-item v-if="form.bank_card_type == 2" required label="法人银行卡正面照" prop="bank_card_pic_a">
-                <image-upload v-model="form.bank_card_pic_a"/>
+                <image-upload v-model="form.bank_card_pic_a" :limit="2"/>
             </el-form-item>
             <!-- 银行卡信息 end -->
 
