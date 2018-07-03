@@ -341,6 +341,7 @@
                     ],
                     contacter_phone: [
                         {required: true, message: '商户负责人联系方式 不能为空'},
+                        {validator: validateServicePhone}
                     ],
                     service_phone: [
                         {required: true, message: '客服电话 不能为空'},
