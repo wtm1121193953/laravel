@@ -284,7 +284,8 @@
                         {required: true, message: '商家介绍图片不能为空'}
                     ],
                     desc: [
-                        {required: true, message: '商家介绍不能为空'}
+                        {required: true, message: '商家介绍不能为空'},
+                        {max: 100, message: '商家介绍不能超过100个字'}
                     ],
                     settlement_rate: [
                         {
