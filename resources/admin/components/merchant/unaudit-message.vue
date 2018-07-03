@@ -23,7 +23,7 @@
                 <el-col   >
                     <el-form-item >
                         <el-button @click="cancel">取消</el-button>
-                        <el-button type="primary" @click="audit(2)">确定不通过</el-button>
+                        <el-button type="primary" @click="audit(data.type)">确定</el-button>
                     </el-form-item>
 
                 </el-col>
@@ -53,18 +53,18 @@
         methods: {
             cancel(){
                 this.$emit('cancel');
-                this.reset();
             },
-
             audit(type){
+                console.log(type);
                 api.post('/merchant/audit', {id: this.data.id, type: type,audit_suggestion:this.data.audit_suggestion}).then(data => {
                     this.$alert(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
-                    this.$emit('change')
+                    this.$emit('cancel');
+                    this.$emit('change');
                 })
             }
         },
         created(){
-            console.log(this.data);
+
         },
         components: {
 
