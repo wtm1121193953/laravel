@@ -3,6 +3,7 @@
 namespace App\Modules\Merchant;
 
 use App\BaseModel;
+use App\Modules\Area\Area;
 
 class MerchantDraft extends BaseModel
 {

@@ -14,7 +14,9 @@
                         reserve-keyword
                         placeholder="请输入业务员名称、手机号或推广码"
                         :remote-method="searchOperBizMember"
-                        :loading="searchOperBizMemberLoading">
+                        :loading="searchOperBizMemberLoading"
+                        class="w-300"
+                >
                     <el-option
                             v-for="item in operBizMembers"
                             :key="item.id"
@@ -246,6 +248,12 @@
                     /*business_time: [
                         {type: 'array', required: true, message: '营业时间不能为空'},
                     ],*/
+                    brand: [
+                        {max: 20, message: '品牌名称不能超过20个字'}
+                    ],
+                    signboard_name: [
+                        {max: 20, message: '招牌名称不能超过20个字'}
+                    ],
                     business_start_time: [
                         {type: 'date', required: true, message: '营业时间不能为空'},
                     ],
