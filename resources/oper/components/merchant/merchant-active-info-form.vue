@@ -12,7 +12,7 @@
                         filterable
                         remote
                         reserve-keyword
-                        placeholder="请输入业务员名称、手机号或推广码"
+                        placeholder="请输入业务员姓名或手机号码"
                         :remote-method="searchOperBizMember"
                         :loading="searchOperBizMemberLoading"
                         class="w-300"
@@ -28,9 +28,9 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item prop="brand" label="品牌">
+            <!--<el-form-item prop="brand" label="品牌">
                 <el-input v-model="form.brand"/>
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item prop="signboard_name" label="招牌名称">
                 <el-input v-model="form.signboard_name"/>
             </el-form-item>
@@ -113,7 +113,7 @@
                 <image-upload v-model="form.licence_pic_url" :limit="1"/>
             </el-form-item>
             <el-form-item v-if="form.bank_card_type == 2" required label="法人银行卡正面照" prop="bank_card_pic_a">
-                <image-upload v-model="form.bank_card_pic_a"/>
+                <image-upload v-model="form.bank_card_pic_a" :limit="2"/>
             </el-form-item>
             <!-- 银行卡信息 end -->
 
@@ -268,6 +268,7 @@
                         {max: 20, message: '品牌名称不能超过20个字'}
                     ],
                     signboard_name: [
+                        {required: true, message: '招牌名称不能为空'},
                         {max: 20, message: '招牌名称不能超过20个字'}
                     ],
                     business_start_time: [

@@ -22,7 +22,11 @@
                         </span>
                     </el-form-item>
                     <el-form-item label="营业执照">
-                        <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button>
+                        <div class="licence" v-viewer style="display: none;">
+                                <img :src="data.business_licence_pic_url" />
+                            </div>
+                        <el-button type="text" @click="previewImage('licence')">查看</el-button>
+                        <!-- <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button> -->
                     </el-form-item>
                     <el-form-item label="营业执照代码">
                         {{ data.organization_code}}
@@ -47,7 +51,7 @@
                         {{data.operAddress}}
                     </el-form-item>
                     <el-form-item prop="area" label="省市区">
-                        {{data.privince}} {{data.city}} {{data.area}}
+                        {{data.province}} {{data.city}} {{data.area}}
                     </el-form-item>
                     <el-form-item prop="address" label="详细地址">
                         {{data.address}}
@@ -67,17 +71,24 @@
                             </template>
                         </el-form-item>
                         <el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>
-                        <el-form-item prop="invoice_title" label="发票抬头">{{data.invoice_title}}</el-form-item>
-                        <el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>
+                        <!--<el-form-item prop="invoice_title" label="发票抬头">{{data.invoice_title}}</el-form-item>-->
+                        <!--<el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>-->
 
                         <el-form-item prop="business_time" label="营业时间">
                             {{data.business_time[0]}} 至 {{data.business_time[1]}}
                         </el-form-item>
                         <el-form-item prop="logo" label="商家logo">
-                            <preview-img :url="data.logo" width="50px" height="50px"/>
+                            <div v-viewer>
+                                <img :src="data.logo" alt="商家logo" width="50px" height="50px" />
+                            </div>
+                            <!-- <preview-img :url="data.logo" width="50px" height="50px"/> -->
                         </el-form-item>
                         <el-form-item prop="desc_pic" label="商家介绍图片">
-                            <el-button type="text" @click="previewImage(data.desc_pic_list)">查看</el-button>
+                            <div class="desc" v-viewer style="display: none;">
+                                <img :src="data.desc_pic_list" />
+                            </div>
+                            <el-button type="text" @click="previewImage('desc')">查看</el-button>
+                            <!-- <el-button type="text" @click="previewImage(data.desc_pic_list)">查看</el-button> -->
                         </el-form-item>
                         <el-form-item prop="desc_pic" label="商家介绍">
                             {{data.desc}}
@@ -110,22 +121,37 @@
                             <preview-img :url="data.licence_pic_url" width="100px" height="100px"/>
                         </el-form-item>
                         <el-form-item v-if="data.bank_card_type == 2" required label="法人银行卡正面照" prop="bank_card_pic_a">
-                            <preview-img :url="data.bank_card_pic_a" width="100px" height="100px"/>
+                            <div v-viewer>
+                                <img :src="data.bank_card_pic_a" alt="法人银行卡正面照" width="100px" height="100px" />
+                            </div>
+                            <!-- <preview-img :url="data.bank_card_pic_a" width="100px" height="100px"/> -->
                         </el-form-item>
                         <!-- 银行卡信息 end -->
 
                         <el-form-item label="法人身份证正反面">
-                            <preview-img :url="data.legal_id_card_pic_a" width="200px" height="100px"/>
-                            <preview-img :url="data.legal_id_card_pic_b" width="200px" height="100px"/>
+                            <div v-viewer>
+                                <img :src="data.legal_id_card_pic_a" width="200px" height="100px" />
+                            </div>
+                            <div v-viewer>
+                                <img :src="data.legal_id_card_pic_b" width="200px" height="100px" />
+                            </div>
+                            <!-- <preview-img :url="data.legal_id_card_pic_a" width="200px" height="100px"/>
+                            <preview-img :url="data.legal_id_card_pic_b" width="200px" height="100px"/> -->
                         </el-form-item>
                         <el-form-item label="合同">
-                            <el-button type="text" @click="previewImage(data.contract_pic_url)">查看</el-button>
+                            <div class="contract" v-viewer style="display: none;">
+                                <img :src="data.contract_pic_url" />
+                            </div>
+                            <el-button type="text" @click="previewImage('contract')">查看</el-button>
                         </el-form-item>
 
                         <el-form-item prop="other_card_pic_urls" label="其他证件">
-                            <template v-for="pic in data.other_card_pic_urls">
+                            <viewer :images="data.other_card_pic_urls">
+                                <img v-for="src in data.other_card_pic_urls" :src="src" :key="src">
+                            </viewer>
+                            <!-- <template v-for="pic in data.other_card_pic_urls">
                                 <preview-img :url="pic" width="200px" height="100px"/>
-                            </template>
+                            </template> -->
                         </el-form-item>
                         <el-col v-if="type != 'poolOnly' ">
                             <el-form-item prop="audit_suggestion" label="审核意见">
@@ -179,6 +205,8 @@
     import previewImg from '../../../assets/components/img/preview-img'
     import imgPreviewDialog from '../../../assets/components/img/preview-dialog'
     import api from '../../../assets/js/api'
+    import 'viewerjs/dist/viewer.css'
+
     export default {
         name: 'merchant-detail',
         props: {
@@ -196,9 +224,12 @@
             }
         },
         methods: {
-            previewImage(url){
-                this.currentPreviewImage = url;
-                this.isShowPreviewImage = true;
+            previewImage(viewerEl){
+                // this.currentPreviewImage = url;
+                // this.isShowPreviewImage = true;
+
+                const viewer = this.$el.querySelector('.' + viewerEl).$viewer
+                viewer.show()
             },
             audit(type){
                 api.post('/merchant/audit', {id: this.data.id, type: type,audit_suggestion:this.data.audit_suggestion}).then(data => {
