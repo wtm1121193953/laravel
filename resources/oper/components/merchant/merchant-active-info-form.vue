@@ -12,7 +12,7 @@
                         filterable
                         remote
                         reserve-keyword
-                        placeholder="请输入业务员名称、手机号或推广码"
+                        placeholder="请输入业务员姓名或手机号码"
                         :remote-method="searchOperBizMember"
                         :loading="searchOperBizMemberLoading"
                         class="w-300"

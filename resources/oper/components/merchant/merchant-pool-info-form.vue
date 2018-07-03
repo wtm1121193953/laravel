@@ -182,6 +182,7 @@
                 if(this.readonly){
                     callback()
                 }else {
+                    console.log(this.form);
                     this.$refs.form.validate((valid) => {
                         if(valid){
                             callback()
