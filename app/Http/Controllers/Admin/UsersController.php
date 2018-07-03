@@ -35,8 +35,8 @@ class UsersController extends Controller
                 $item->isBind = 1;
                 //1-用户 2-商户 3-运营中心
                 if($inviteRecord->origin_type == 1){
-                    $user = User::where('id',$inviteRecord->origin_id)->first(['name']);
-                    $item->parent = !empty($user->name) ? $user->name : '未知-推荐人';
+                    $user = User::where('id',$inviteRecord->origin_id)->first(['name','mobile']);
+                    $item->parent = !empty($user) ? ($user->name ? $user->name:$user->mobile) : '未知-推荐人';
                 }elseif ($inviteRecord->origin_type == 2){
                     $merchant = Merchant::where('id',$inviteRecord->origin_id)->first(['name']);
                     $item->parent = !empty($merchant->name) ? $merchant->name : '未知-推荐商户';
