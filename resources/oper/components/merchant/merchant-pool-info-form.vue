@@ -145,7 +145,12 @@
                         })
                     }
                     this.form.merchant_category = merchant_category_array;
-                    this.form.area = [parseInt(data.province_id), parseInt(data.city_id), parseInt(data.area_id)];
+                    if (parseInt(data.province_id) == 0 && parseInt(data.city_id) == 0 && parseInt(data.area_id) == 0) {
+                        this.form.area = [];
+                    }else {
+                        this.form.area = [parseInt(data.province_id), parseInt(data.city_id), parseInt(data.area_id)];
+                    }
+
                     if (!data.lng && !data.lat){
                         this.form.lng_and_lat = null;
                     } else {
@@ -182,7 +187,6 @@
                 if(this.readonly){
                     callback()
                 }else {
-                    console.log(this.form);
                     this.$refs.form.validate((valid) => {
                         if(valid){
                             callback()

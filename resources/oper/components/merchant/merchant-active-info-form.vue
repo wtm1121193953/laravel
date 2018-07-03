@@ -28,9 +28,9 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item prop="brand" label="品牌">
+            <!--<el-form-item prop="brand" label="品牌">
                 <el-input v-model="form.brand"/>
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item prop="signboard_name" label="招牌名称">
                 <el-input v-model="form.signboard_name"/>
             </el-form-item>
