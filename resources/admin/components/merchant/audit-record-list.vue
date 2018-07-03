@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <page title="商户审核记录">
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="提交审核时间"/>
             <el-table-column prop="updated_at" label="审核时间"/>
@@ -23,8 +23,7 @@
                 @current-change="getList"
                 :page-size="15"
                 :total="total"/>
-
-    </div>
+    </page>
 </template>
 
 <script>
