@@ -51,7 +51,7 @@
                         {{data.operAddress}}
                     </el-form-item>
                     <el-form-item prop="area" label="省市区">
-                        {{data.privince}} {{data.city}} {{data.area}}
+                        {{data.province}} {{data.city}} {{data.area}}
                     </el-form-item>
                     <el-form-item prop="address" label="详细地址">
                         {{data.address}}
