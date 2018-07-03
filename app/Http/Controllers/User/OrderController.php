@@ -114,6 +114,9 @@ class OrderController extends Controller
         $goodsId = request('goods_id');
         $number = request('number', 1);
         $goods = Goods::findOrFail($goodsId);
+        if ($goods->status == Goods::STATUS_OFF){
+            throw new BaseResponseException('商品已变更, 请刷新页面');
+        }
 
         $user = request()->get('current_user');
 
