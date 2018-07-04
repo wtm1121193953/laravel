@@ -126,6 +126,7 @@ class MerchantController extends Controller
         $merchant->desc_pic_list = explode(',', $merchant->desc_pic_list);
         $merchant->contract_pic_url = explode(',', $merchant->contract_pic_url);
         $merchant->other_card_pic_urls = explode(',', $merchant->other_card_pic_urls);
+        $merchant->bank_card_pic_a = explode(',', $merchant->bank_card_pic_a);
         if($merchant->oper_biz_member_code){
             $merchant->operBizMemberName = OperBizMember::where('code', $merchant->oper_biz_member_code)->value('name');
         }
