@@ -50,7 +50,7 @@
             </el-form-item>
             <el-form-item prop="merchant_category" label="所属行业">
                 <span v-for="item in data.categoryPath" :key="item.id">
-                    {{ data.name }}
+                    {{ item.name }}
                 </span>
             </el-form-item>
 

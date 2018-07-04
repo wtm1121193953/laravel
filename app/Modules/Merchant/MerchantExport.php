@@ -26,7 +26,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
     protected $name;
     protected $auditStatus;
 
-    public function __construct($id = '', $startDate = '', $endDate = '', $name = '', $auditStatus = '')
+    public function __construct($id = '', $startDate = '', $endDate = '', $name = '', $auditStatus = [])
     {
         $this->id = $id;
         $this->startDate = $startDate;
@@ -46,6 +46,9 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
         $endDate = $this->endDate;
         $name = $this->name;
         $auditStatus = $this->auditStatus;
+        if(empty($auditStatus)){
+            $auditStatus=["0","1","2","3"];
+        }
 
         $data = Merchant::query()
             ->where('audit_oper_id', '>', 0)
@@ -58,11 +61,8 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             ->when($endDate, function (Builder $query) use ($endDate){
                 $query->where('created_at', '<=', $endDate.' 23:59:59');
             })
-            ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus){
-                if($auditStatus == -1){
-                    $auditStatus = 0;
-                }
-                $query->where('audit_status', $auditStatus);
+            ->when(!empty($auditStatus) && isset($auditStatus), function (Builder $query) use ($auditStatus){
+                $query->whereIn('audit_status', $auditStatus);
             })
             ->when($name, function (Builder $query) use ($name){
                 $query->where('name', 'like', "%$name%");

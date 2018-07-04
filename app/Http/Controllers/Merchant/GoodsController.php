@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Merchant;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Goods\Goods;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class GoodsController extends Controller
 {
@@ -20,7 +22,7 @@ class GoodsController extends Controller
         $data = Goods::where('merchant_id', request()->get('current_user')->merchant_id)
             ->when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
-        })->orderBy('id', 'desc')->paginate();
+        })->orderBy('sort', 'desc')->paginate();
 
         $data->each(function($item){
             $item->pic_list = $item->pic_list ? explode(',', $item->pic_list) : [];
@@ -88,7 +90,7 @@ class GoodsController extends Controller
         $goods->desc = request('desc', '');
         $goods->buy_info = request('buy_info', '');
         $goods->status = request('status', 1);
-
+        $goods->sort = Goods::max('sort') + 1;
         $goods->save();
 
         $goods->pic_list = $goods->pic_list ? explode(',', $goods->pic_list) : [];
@@ -167,6 +169,47 @@ class GoodsController extends Controller
             ->firstOrFail();
         $goods->delete();
         return Result::success($goods);
+    }
+
+    /**
+     * 团购商品排序
+     */
+    public function saveOrder(){
+        $type = request('type');
+        if ($type == 'down'){
+            $option = '<';
+            $order = 'desc';
+        }else{
+            $option = '>';
+            $order = 'asc';
+        }
+
+        $goods = Goods::findOrFail(request('id'));
+        if (empty($goods)){
+            throw new BaseResponseException('该团购商品不存在');
+        }
+        $goodsExchange = $goods::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->where('sort', $option, $goods['sort'])
+            ->orderBy('sort', $order)
+            ->first();
+        if (empty($goodsExchange)){
+            throw new BaseResponseException('交换位置的团购商品不存在');
+        }
+
+        $item = $goods['sort'];
+        $goods['sort'] = $goodsExchange['sort'];
+        $goodsExchange['sort'] = $item;
+
+        try{
+            DB::beginTransaction();
+            $goods->save();
+            $goodsExchange->save();
+            DB::commit();
+            return Result::success();
+        }catch (\Exception $e){
+            DB::rollBack();
+            throw new BaseResponseException('交换位置失败');
+        }
     }
 
 }

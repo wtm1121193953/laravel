@@ -28,7 +28,9 @@ class AddAuditSuggestionToMerchantsTable extends Migration
     public function down()
     {
         Schema::table('merchants', function (Blueprint $table) {
-            //
+            $table->dropColumn([
+                'audit_suggestion',
+            ]);
         });
     }
 }
