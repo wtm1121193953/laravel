@@ -182,9 +182,7 @@ class MerchantController extends Controller
 
         $data->categoryName= MerchantCategory::where("id",$merchant->merchant_category_id)->value("name");
         $data->merchantName = Merchant::where('id', $merchantId)->value('name');
-        return Result::success([
-            'list' => $data,
-        ]);
+        return Result::success($data);
 
     }
 
@@ -260,12 +258,10 @@ class MerchantController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $name = request('name');
-
         $auditStatus = request('auditStatus');
-        if ($auditStatus){
+        if ($auditStatus || $auditStatus==="0"){
             $auditStatus = explode(',', $auditStatus);
         }
-
         $operId = request('operId');
         $operName = request('operName');
 
