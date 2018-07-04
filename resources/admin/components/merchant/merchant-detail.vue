@@ -70,7 +70,8 @@
                                 {{data.operBizMemberName}} [ {{data.oper_biz_member_code}} ]
                             </template>
                         </el-form-item>
-                        <el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>
+                        <!--<el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>-->
+                        <el-form-item prop="signboard_name" label="招牌名称">{{data.signboard_name}}</el-form-item>
                         <!--<el-form-item prop="invoice_title" label="发票抬头">{{data.invoice_title}}</el-form-item>-->
                         <!--<el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>-->
 
@@ -194,6 +195,14 @@
                     </el-form-item>
 
                 </el-col>
+
+                <el-col  >
+                    <el-form-item >
+                        <el-button type="primary" @click="back()">返回</el-button>
+                        <!-- <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button> -->
+                    </el-form-item>
+
+                </el-col>
             </el-form>
 
             <img-preview-dialog :visible.sync="isShowPreviewImage" :url="currentPreviewImage"/>
@@ -239,6 +248,9 @@
                     this.$alert(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
                     this.$emit('change')
                 })
+            },
+            back(){
+                router.back(-1)
             }
         },
         created(){

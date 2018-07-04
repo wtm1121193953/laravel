@@ -43,7 +43,7 @@ class MerchantController extends Controller
             ->when($name, function (Builder $query) use ($name){
                 $query->where('name', 'like', "%$name%");
             })
-            ->orderBy('updated_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate();
 
         $data->each(function ($item){

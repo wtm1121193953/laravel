@@ -68,10 +68,15 @@ class MerchantController extends Controller
         $data = Merchant::where('audit_oper_id', '>', 0)
             ->when($id, function (Builder $query) use ($id){
                 $query->where('id', $id);
-            })->when($operId, function (Builder $query) use ($operId){
-                $query->where('oper_id', $operId);
-            })->when($creatorOperId, function (Builder $query) use ($creatorOperId){
+            }) ->when($creatorOperId, function (Builder $query) use ($creatorOperId){
                 $query->where('creator_oper_id', $creatorOperId);
+            }) ->when($operId, function (Builder $query) use ($operId){
+                if($operId>0){
+                    $query->where('oper_id', $operId);
+                }else{
+                    $query->where('audit_oper_id', $operId);
+                }
+
             })->when($operIds, function (Builder $query) use ($operIds){
                 $query->whereIn('oper_id', $operIds);
             })->when($createOperIds, function (Builder $query) use ($createOperIds){
@@ -92,14 +97,14 @@ class MerchantController extends Controller
             })
             ->orderByDesc('id')->paginate();
 
+
         $data->each(function ($item){
             $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
             $item->business_time = json_decode($item->business_time, 1);
             $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
-            $item->operID =$item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
+            $item->operId =$item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
             $item->creatorOperId =  $item->creator_oper_id;
             $item->creatorOperName = Oper::where('id', $item->creator_oper_id)->value('name');
-
         });
 
         return Result::success([
@@ -154,6 +159,29 @@ class MerchantController extends Controller
     }
 
     /**
+     * 获取最新审核记录
+     */
+    public function getNewAuditList()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $merchantId = request('id');
+        $merchant = Merchant::findOrFail(request('id'));
+        $data = MerchantAudit::where('status', Merchant::AUDIT_STATUS_FAIL)
+            ->where("merchant_id",$merchantId)
+            ->orderByDesc('updated_at')
+            ->first();
+
+        $data->categoryName= MerchantCategory::where("id",$merchant->merchant_category_id)->value("name");
+        $data->merchantName = Merchant::where('id', $merchantId)->value('name');
+        return Result::success([
+            'list' => $data,
+        ]);
+
+    }
+
+    /**
      * 审核商户
      */
     public function audit()
@@ -172,7 +200,7 @@ class MerchantController extends Controller
         $merchantAudit = new MerchantAudit();
         $merchantAudit->merchant_id = $merchantId;
         $merchantAudit->oper_id = $merchant->audit_oper_id;
-        $merchantAudit->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
+
 
 
 //        $merchantAudit = MerchantAudit::where('merchant_id', $merchantId)
@@ -182,6 +210,8 @@ class MerchantController extends Controller
 //            // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
 //            $merchantAudit = MerchantAudit::addRecord($merchantId, $merchant->audit_oper_id);
 //        }
+
+
    //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
         if($type == 3){
             if($merchant->oper_id > 0){
@@ -192,6 +222,7 @@ class MerchantController extends Controller
             $merchant->audit_oper_id = 0;
             $merchantAudit->status = Merchant::AUDIT_STATUS_FAIL_TO_POOL;
         }else {
+
             $merchant->audit_status = $type;
             $merchantAudit->status = $type;
             if($type == 1){
@@ -202,8 +233,10 @@ class MerchantController extends Controller
                     $merchant->active_time = new Carbon();
                 }
             }
+            $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
+            $merchantAudit->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
+
         }
-        $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
 
         $merchant->save();
         $merchantAudit->save();
