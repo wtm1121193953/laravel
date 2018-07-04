@@ -169,8 +169,7 @@ class MerchantController extends Controller
         ]);
         $merchantId = request('id');
         $merchant = Merchant::findOrFail(request('id'));
-        $data = MerchantAudit::where('status', Merchant::AUDIT_STATUS_FAIL)
-            ->where("merchant_id",$merchantId)
+        $data = MerchantAudit::where("merchant_id",$merchantId)
             ->orderByDesc('updated_at')
             ->first();
 

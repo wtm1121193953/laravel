@@ -165,7 +165,7 @@
                         </el-form-item>
                         <el-col v-if="type != 'poolOnly' ">
                             <el-form-item prop="audit_suggestion" label="审核意见">
-                                <el-input v-if="data.audit_status == 0 || data.audit_status == 3" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
+                                <el-input v-if="(data.audit_status == 0 || data.audit_status == 3) && auditType == 3" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
                                 <span v-else>{{data.audit_suggestion}}</span>
                             </el-form-item>
                         </el-col>
