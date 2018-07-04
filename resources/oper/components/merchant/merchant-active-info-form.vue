@@ -238,7 +238,7 @@
             let validateNumber = (rule, value, callback) => {
                 if (parseFloat(value).toString() == 'NaN'){
                     callback(new Error('请输入数字'));
-                } else if (value < 0){
+                } else if (value <= 0){
                     callback(new Error('输入值得大于零'))
                 } else {
                     callback();
