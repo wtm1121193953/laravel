@@ -24,7 +24,7 @@ class DishesCategoryController extends Controller
         $data = DishesCategory::where('merchant_id', request()->get('current_user')->merchant_id)
             ->when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
-        })->orderBy('sort', 'asc')->paginate($pageSize);
+        })->orderBy('sort', 'desc')->paginate($pageSize);
 
         return Result::success([
             'list' => $data->items(),
