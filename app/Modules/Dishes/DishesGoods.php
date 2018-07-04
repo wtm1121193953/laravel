@@ -18,4 +18,17 @@ class DishesGoods extends BaseModel
     {
         return $this->belongsTo(DishesCategory::class);
     }
+
+    /**
+     * 初始化新加排序字段sort的数值
+     * @author andy
+     */
+    public static function initSortData(){
+        self::chunk(500, function ($dishes) {
+            foreach ($dishes as $one) {
+                $one->sort = $one->id;
+                $one->update();
+            }
+        });
+    }
 }
