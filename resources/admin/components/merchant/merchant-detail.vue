@@ -67,7 +67,7 @@
                     <el-col :span="11">
                         <el-form-item prop="oper_biz_member_code" label="业务员">
                             <template v-if="data.oper_biz_member_code">
-                                {{data.operBizMemberName}} [ {{data.oper_biz_member_code}} ]
+                                {{data.operBizMemberName}}
                             </template>
                         </el-form-item>
                         <!--<el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>-->
@@ -126,7 +126,9 @@
                         </el-form-item>
                         <el-form-item v-if="data.bank_card_type == 2" required label="法人银行卡正面照" prop="bank_card_pic_a">
                             <div v-viewer>
-                                <img :src="data.bank_card_pic_a" alt="法人银行卡正面照" width="100px" height="100px" />
+                                <img v-if="data.bank_card_pic_a.length == 1" :src="data.bank_card_pic_a" alt="法人银行卡正面照" width="100px" height="100px" />
+                                <img v-if="data.bank_card_pic_a.length == 2" :src="data.bank_card_pic_a[0]" alt="法人银行卡正面照" width="100px" height="100px" />
+                                <img v-if="data.bank_card_pic_a.length == 2" :src="data.bank_card_pic_a[1]" alt="法人银行卡正面照" width="100px" height="100px" />
                             </div>
                             <!-- <preview-img :url="data.bank_card_pic_a" width="100px" height="100px"/> -->
                         </el-form-item>
