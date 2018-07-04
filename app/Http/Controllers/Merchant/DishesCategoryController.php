@@ -132,11 +132,11 @@ class DishesCategoryController extends Controller
     {
         $type = request('type');
         if ($type == 'up'){
-            $option = '<';
-            $order = 'desc';
-        }else{
             $option = '>';
             $order = 'asc';
+        }else{
+            $option = '<';
+            $order = 'desc';
         }
 
         $dishesCategory = DishesCategory::findOrFail(request('id'));
