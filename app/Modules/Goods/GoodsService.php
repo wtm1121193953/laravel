@@ -34,7 +34,7 @@ class GoodsService
         Goods::chunk(500, function ($goods) {
             foreach ($goods as $good) {
                 $good->sort = $good->id;
-                $good->update();
+                $good->save();
                 }
             });
     }
