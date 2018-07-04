@@ -1,7 +1,6 @@
 <template>
     <page title="商户审核管理" v-loading="isLoading" >
 
-
                 <el-col>
                     <el-form v-model="query" inline>
                         <el-form-item prop="merchantId" label="商户ID">
@@ -153,7 +152,6 @@
 <script>
     import api from '../../../assets/js/api'
     import MerchantDetail from './merchant-detail'
-    import AuditList from './audit-record-list'
     import UnauditMessage from './unaudit-message'
     import UnauditRecordReason from './unaudit-record-reason'
 
@@ -265,7 +263,6 @@
         },
         components: {
             MerchantDetail,
-            AuditList,
             UnauditMessage,
             UnauditRecordReason,
         }
