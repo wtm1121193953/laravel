@@ -134,7 +134,9 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
         return [
             $data->created_at,
             $data->id,
+            $data->operId = $data->oper_id > 0 ? $data->oper_id : $data->audit_oper_id,
             Oper::where('id', $data->oper_id > 0 ? $data->oper_id : $data->audit_oper_id)->value('name'),
+            $data->creator_oper_id,
             Oper::where('id', $data->creator_oper_id)->value('name'),
             $data->name,
             $this->getCategoryPathName($data->merchant_category_id),
@@ -167,8 +169,10 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
         return [
             '添加时间',
             '商户ID',
-            '激活运营中心',
-            '录入运营中心',
+            '激活运营中心ID',
+            '激活运营中心名称',
+            '录入运营中心ID',
+            '录入运营中心名称',
             '商户名称',
             '行业',
             '城市',
