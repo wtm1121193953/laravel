@@ -33,7 +33,7 @@ class OperController extends Controller
                 $query->where('name', 'like', "%$name%");
             })
             ->when($tel, function(Builder $query) use ($tel){
-                $query->where('tel', $tel);
+                $query->where('tel', 'like', "%$tel%");
             })
             ->orderBy('id', 'desc')
             ->paginate();
