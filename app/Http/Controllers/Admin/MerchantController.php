@@ -69,18 +69,21 @@ class MerchantController extends Controller
             $data = Merchant::where('audit_oper_id', '>', 0)
                 ->when($id, function (Builder $query) use ($id) {
                     $query->where('id', $id);
-                })->when($creatorOperId, function (Builder $query) use ($creatorOperId) {
+                })
+                ->when($creatorOperId, function (Builder $query) use ($creatorOperId) {
                     $query->where('creator_oper_id', $creatorOperId);
-                })->when($operId, function (Builder $query) use ($operId) {
+                })
+                ->when($operId, function (Builder $query) use ($operId) {
                     if ($operId > 0) {
                         $query->where('oper_id', $operId);
                     } else {
                         $query->where('audit_oper_id', $operId);
                     }
-
-                })->when(!empty($operIds), function (Builder $query) use ($operIds) {
+                })
+                ->when(!empty($operIds), function (Builder $query) use ($operIds) {
                     $query->whereIn('oper_id', $operIds);
-                })->when(!empty($createOperIds), function (Builder $query) use ($createOperIds) {
+                })
+                ->when(!empty($createOperIds), function (Builder $query) use ($createOperIds) {
                     $query->whereIn('creator_oper_id', $createOperIds);
                 })
                 ->when($startDate, function (Builder $query) use ($startDate) {
@@ -258,11 +261,18 @@ class MerchantController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $name = request('name');
+
         $auditStatus = request('auditStatus');
         if ($auditStatus){
             $auditStatus = explode(',', $auditStatus);
         }
 
-        return (new MerchantExport($id, $startDate, $endDate, $name, $auditStatus))->download('merchant_list.xlsx');
+        $operId = request('operId');
+        $operName = request('operName');
+
+        $creatorOperId = request('creatorOperId');
+        $creatorOperName = request('creatorOperName');
+
+        return (new MerchantExport($id, $startDate, $endDate, $name, $auditStatus, $operId, $operName, $creatorOperId, $creatorOperName))->download('merchant_list.xlsx');
     }
 }

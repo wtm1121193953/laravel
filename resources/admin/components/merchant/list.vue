@@ -250,7 +250,7 @@
             downloadExcel() {
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
-                window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&auditStatus=' + this.query.auditStatus;
+                window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&auditStatus=' + this.query.auditStatus + '&operName=' + this.query.operName + '&operId=' + this.query.operId + '&creatorOperName=' + this.query.creatorOperName + '&creatorOperId=' + this.query.creatorOperId;
             }
         },
         created(){
