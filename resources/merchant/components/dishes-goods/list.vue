@@ -1,6 +1,26 @@
 <template>
     <page title="单品管理" v-loading="isLoading">
-        <el-button class="fr" type="primary" @click="add">添加商品</el-button>
+        <el-col>
+            <el-form class="fl" size="small" inline>
+                <el-form-item prop="name" label="单品名称">
+                    <el-input v-model="query.name"/>
+                </el-form-item>
+                <el-form-item prop="category_id" label="单品分类">
+                    <el-select v-model="query.category_id" filterable clearable size="small" placeholder="请选择">
+                        <el-option
+                                v-for="(item, index) in categoryList"
+                                :key="index"
+                                :label="item.name"
+                                :value="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
+                </el-form-item>
+            </el-form>
+            <el-button class="fr" type="primary" @click="add">添加商品</el-button>
+        </el-col>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="name" label="商品名称"/>
@@ -84,9 +104,13 @@
                 query: {
                     page: 1,
                     pageSize: 10,
+                    name: '',
+                    category_id: '',
                 },
                 list: [],
                 total: 0,
+                categoryList: [],
+
             }
         },
         computed: {
@@ -99,6 +123,7 @@
         },
         methods: {
             getList(){
+                console.log(this.query);
                 api.get('/dishes/goods', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
@@ -117,9 +142,19 @@
                     this.$refs.form.reset();
                 })
             },
+            search() {
+                this.query.page = 1;
+                this.getList();
+            },
+            getCategoryList() {
+                api.get('/dishes/categories/all').then((data) => {
+                    this.categoryList = data.list;
+                })
+            }
         },
         created(){
             this.getList();
+            this.getCategoryList();
         },
         components: {
             DishesGoodsItemOptions,

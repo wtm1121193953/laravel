@@ -19,10 +19,21 @@ class DishesGoodsController extends Controller
     {
         $status = request('status');
         $pageSize = request('pageSize');
+        $name = request('name', '');
+        $categoryId = request('category_id', '');
         $data = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
             ->when($status, function (Builder $query) use ($status){
-            $query->where('status', $status);
-        })->orderBy('sort', 'desc')->with('dishesCategory:id,name')->paginate($pageSize);
+                $query->where('status', $status);
+            })
+            ->when($name, function (Builder $query) use ($name) {
+                $query->where('name', 'like', "%$name%");
+            })
+            ->when($categoryId, function (Builder $query) use ($categoryId) {
+                $query->where('dishes_category_id', $categoryId);
+            })
+            ->orderBy('sort', 'desc')
+            ->with('dishesCategory:id,name')
+            ->paginate($pageSize);
 
 
 
