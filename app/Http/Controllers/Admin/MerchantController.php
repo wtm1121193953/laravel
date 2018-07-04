@@ -35,7 +35,7 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $auditStatus = request('auditStatus');
-        if($auditStatus[0]==null){
+        if(empty($auditStatus)){
             $auditStatus=["0","1","2","3"];
         }
         $operId = request('operId');
@@ -47,8 +47,6 @@ class MerchantController extends Controller
                 foreach ($result as $k => $v) {
                     $operIds[$k] = $v->id;
                 }
-            }else{
-                $operIds=[0.000001];
             }
         }
 
@@ -61,8 +59,6 @@ class MerchantController extends Controller
                 foreach ($createResult as $k=>$v){
                     $createOperIds[$k]=$v->id;
                 }
-            }else{
-                $createOperIds=[0.000001];
             }
         }
         $data = Merchant::where('audit_oper_id', '>', 0)
@@ -77,9 +73,9 @@ class MerchantController extends Controller
                     $query->where('audit_oper_id', $operId);
                 }
 
-            })->when($operIds, function (Builder $query) use ($operIds){
+            })->when(!empty($operIds), function (Builder $query) use ($operIds){
                 $query->whereIn('oper_id', $operIds);
-            })->when($createOperIds, function (Builder $query) use ($createOperIds){
+            })->when(!empty($createOperIds), function (Builder $query) use ($createOperIds){
                 $query->whereIn('creator_oper_id', $createOperIds);
             })
             ->when($startDate, function (Builder $query) use ($startDate){
@@ -89,7 +85,6 @@ class MerchantController extends Controller
                 $query->where('created_at', '<=', $endDate.' 23:59:59');
             })
             ->when(!empty($auditStatus) && isset($auditStatus), function (Builder $query) use ($auditStatus){
-
                     $query->whereIn('audit_status', $auditStatus);
             })
             ->when($name, function (Builder $query) use ($name){
@@ -255,6 +250,9 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $auditStatus = request('auditStatus');
+        if ($auditStatus){
+            $auditStatus = explode(',', $auditStatus);
+        }
 
         return (new MerchantExport($id, $startDate, $endDate, $name, $auditStatus))->download('merchant_list.xlsx');
     }

@@ -10,7 +10,7 @@
                             <el-input v-model="query.name" size="small" placeholder="商户名称" clearable @keyup.enter.native="search"/>
                         </el-form-item>
                         <el-form-item label="审核状态" prop="auditStatus"  v-if="isAudit">
-                            <el-select v-model="query.auditStatus" size="small" multiple  placeholder="请选择" class="w-150">
+                            <el-select v-model="query.auditStatus" size="small" multiple  placeholder="请选择" class="w-250">
                                 <el-option label="待审核" value="0" />
                                 <el-option label="重新提交审核" value="3"/>
                             </el-select>
@@ -210,7 +210,7 @@
                 this.query.page = 1;
                 this.getList();
             },
-            getList(type = ''){
+            getList(){
                 this.tableLoading = true;
                 api.get('/merchants', this.query).then(data => {
                     this.list = data.list;
