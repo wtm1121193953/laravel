@@ -119,7 +119,10 @@
                             {{data.bank_open_address}}
                         </el-form-item>
                         <el-form-item v-if="data.bank_card_type == 1" required prop="licence_pic_url" label="开户许可证">
-                            <preview-img :url="data.licence_pic_url" width="100px" height="100px"/>
+                            <div v-viewer>
+                                <img :src="data.licence_pic_url" alt="商家logo" width="50px" height="50px" />
+                            </div>
+                            <!-- <preview-img :url="data.licence_pic_url" width="100px" height="100px"/> -->
                         </el-form-item>
                         <el-form-item v-if="data.bank_card_type == 2" required label="法人银行卡正面照" prop="bank_card_pic_a">
                             <div v-viewer>
