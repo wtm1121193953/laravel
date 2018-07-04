@@ -58,10 +58,10 @@
                 :total="total"/>
 
 
-        <el-dialog title="添加推广渠道" :visible.sync="isAdd">
+        <el-dialog title="添加推广渠道" :visible.sync="isAdd" :close-on-click-modal="false" @close="resetAddForm">
             <invite-channel-form ref="addForm" @cancel="isAdd = false" @save="doAdd"/>
         </el-dialog>
-        <el-dialog title="编辑推广渠道" :visible.sync="isEdit">
+        <el-dialog title="编辑推广渠道" :visible.sync="isEdit" :close-on-click-modal="false" @close="resetEditForm">
             <invite-channel-form ref="editForm" :data="currentEditData" @cancel="isEdit = false" @save="doEdit"/>
         </el-dialog>
         <a :href="downloadUrl" ref="downloadBtn" style="display: none;"></a>
@@ -145,6 +145,12 @@
             },
             inviteRecords(data){
                 router.push(`/invite-records?id=${data.id}&name=${data.name}`)
+            },
+            resetEditForm() {
+                this.$refs.editForm.resetForm();
+            },
+            resetAddForm() {
+                this.$refs.addForm.resetForm();
             }
         },
         created(){
