@@ -14,7 +14,7 @@
                 </el-col>
                 <el-col >
                     <el-form-item prop="audit_suggestion" label="审核意见">
-                        <el-input  placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
+                        <el-input  placeholder="最多输入50个汉字，可不填"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
                     </el-form-item>
                 </el-col>
 
@@ -59,7 +59,6 @@
                     this.$message(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
                     this.$emit('cancel');
                     this.$emit('change');
-
                 })
             }
         },

@@ -99,12 +99,13 @@
                             <span v-else-if="scope.row.audit_status === 1" class="c-green">审核通过</span>
                                   <el-popover
                                       v-else-if="scope.row.audit_status === 2"
-                                      placement="right"  title="标题"
+                                      placement="bottom"
                                       width="250"  trigger="hover"
                                       @show="showMessage(scope)"  >
-                                        <span   slot="reference" class="c-danger">审核不通过</span>
+                                      <div   slot="reference" class="c-danger">审核不通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
                                         <unaudit-record-reason    :data="auditRecord"  />
                                  </el-popover>
+
                             <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
                             <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
@@ -142,7 +143,7 @@
             <merchant-detail :data="currentMerchant" @change="() => {getList(); showDetail = false;}"/>
         </el-dialog>
 
-        <el-dialog title="审核不通过" :visible.sync="unAudit" :close-on-click-modal="false">
+        <el-dialog title="审核意见" :visible.sync="unAudit" :close-on-click-modal="false">
             <unaudit-message   @cancel="unAudit = false"  :data="detailMerchant"   @change="merchantChange"/>
         </el-dialog>
 
@@ -250,7 +251,7 @@
             downloadExcel() {
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
-                window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&auditStatus=' + this.query.auditStatus;
+                window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&auditStatus=' + this.query.auditStatus + '&operName=' + this.query.operName + '&operId=' + this.query.operId + '&creatorOperName=' + this.query.creatorOperName + '&creatorOperId=' + this.query.creatorOperId;
             }
         },
         created(){
@@ -272,5 +273,13 @@
 </script>
 
 <style scoped>
+    .message{
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+        width:120px;
+        font-size:12px;
+        color:gray;
+    }
 
 </style>
