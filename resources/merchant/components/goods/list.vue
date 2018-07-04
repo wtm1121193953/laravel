@@ -25,6 +25,8 @@
                 <template slot-scope="scope">
                     <goods-item-options
                             :scope="scope"
+                            :isFirst="isFirstPage && scope.$index == 0"
+                            :isLast="isLastPage && scope.$index == list.length - 1"
                             @change="itemChanged"
                             @refresh="getList"/>
                 </template>
@@ -68,7 +70,12 @@
             }
         },
         computed: {
-
+            isFirstPage(){
+                return this.query.page == 1;
+            },
+            isLastPage(){
+                return this.query.page * this.query.pageSize >= this.total;
+            }
         },
         methods: {
             getList(){

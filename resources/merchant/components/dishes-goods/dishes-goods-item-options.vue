@@ -24,7 +24,9 @@
     export default {
         name: "dishesGoods-item-options",
         props: {
-            scope: {type: Object, required: true}
+            scope: {type: Object, required: true},
+            isFirst: {type: Boolean, default: false},
+            isLast: {type: Boolean, default: false},
         },
         data(){
             return {

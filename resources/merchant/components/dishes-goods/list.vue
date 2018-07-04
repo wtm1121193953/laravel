@@ -44,6 +44,8 @@
                     <dishes-goods-item-options
                             :scope="scope"
                             @change="itemChanged"
+                            :isFirst="isFirstPage && scope.$index == 0"
+                            :isLast="isLastPage && scope.$index == list.length - 1"
                             @refresh="getList"/>
                 </template>
             </el-table-column>
@@ -88,7 +90,12 @@
             }
         },
         computed: {
-
+            isFirstPage(){
+                return this.query.page == 1;
+            },
+            isLastPage(){
+                return this.query.page * this.query.pageSize >= this.total;
+            }
         },
         methods: {
             getList(){
