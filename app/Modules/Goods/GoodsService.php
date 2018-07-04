@@ -26,4 +26,17 @@ class GoodsService
         return $goods;
     }
 
+    /**
+     * 初始化新加排序字段sort的数值
+     * @author andy
+     */
+    public static function initSortData(){
+        Goods::chunk(500, function ($goods) {
+            foreach ($goods as $good) {
+                $good->sort = $good->id;
+                $good->update();
+                }
+            });
+    }
+
 }

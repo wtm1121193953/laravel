@@ -157,6 +157,7 @@
 
     export default {
         name: "merchant-list",
+        inject:['reloads'],
         data(){
             return {
                 activeTab: 'merchant',
@@ -194,6 +195,7 @@
                 router.push({
                     path: '/merchants'
                 });
+                this.reloads()
             },
             showMessage(scope){
                     api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {

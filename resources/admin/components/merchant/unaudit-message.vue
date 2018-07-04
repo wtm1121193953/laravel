@@ -59,6 +59,7 @@
                     this.$message(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
                     this.$emit('cancel');
                     this.$emit('change');
+
                 })
             }
         },

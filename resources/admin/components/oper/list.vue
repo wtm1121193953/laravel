@@ -2,7 +2,7 @@
     <page title="运营中心管理" v-loading="isLoading">
         <el-form class="fl" inline size="small">
             <el-form-item prop="name" label="">
-                <el-input v-model="query.name" @keyup.enter.native="search" placeholder="运营中心名称"/>
+                <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="运营中心名称"/>
             </el-form-item>
             <el-form-item label="状态" prop="status">
                 <el-select v-model="query.status" placeholder="请选择">
@@ -13,7 +13,7 @@
             </el-form-item>
 
             <el-form-item prop="tel" label="手机号码">
-                <el-input v-model="query.tel" @keyup.enter.native="search" />
+                <el-input v-model="query.tel"   clearable @keyup.enter.native="search" />
             </el-form-item>
 
             <el-form-item>
