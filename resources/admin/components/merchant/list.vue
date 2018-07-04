@@ -102,8 +102,7 @@
                                       placement="bottom"
                                       width="250"  trigger="hover"
                                       @show="showMessage(scope)"  >
-                                      <div   slot="reference" class="c-danger">审核不通过<p>{{scope.row.audit_suggestion}}</p></div>
-
+                                      <div   slot="reference" class="c-danger">审核不通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
                                         <unaudit-record-reason    :data="auditRecord"  />
                                  </el-popover>
 
@@ -274,5 +273,13 @@
 </script>
 
 <style scoped>
+    .message{
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+        width:120px;
+        font-size:12px;
+        color:gray;
+    }
 
 </style>
