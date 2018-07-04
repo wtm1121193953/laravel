@@ -27,7 +27,7 @@ class DishesGoods extends BaseModel
         self::chunk(500, function ($dishes) {
             foreach ($dishes as $one) {
                 $one->sort = $one->id;
-                $one->update();
+                $one->save();
             }
         });
     }
