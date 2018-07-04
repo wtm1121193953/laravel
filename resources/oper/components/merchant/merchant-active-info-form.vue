@@ -12,6 +12,7 @@
                         filterable
                         remote
                         reserve-keyword
+                        clearable
                         placeholder="请输入业务员姓名或手机号码"
                         :remote-method="searchOperBizMember"
                         :loading="searchOperBizMemberLoading"
