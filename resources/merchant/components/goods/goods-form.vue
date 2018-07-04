@@ -13,17 +13,19 @@
                 </el-form-item>
                 <el-form-item label="有效期" required>
                     <el-date-picker
-                            v-model="form.start_date"
-                            type="date"
-                            placeholder="选择开始日期"
-                            value-format="yyyy-MM-dd">
+                        v-model="form.start_date"
+                        type="date"
+                        :picker-options="{disabledDate: (time) => {return time.getTime() < Date.now() - 8.64e7}}"
+                        placeholder="选择开始日期"
+                        value-format="yyyy-MM-dd">
                     </el-date-picker>
                     -
                     <el-date-picker
-                            v-model="form.end_date"
-                            type="date"
-                            placeholder="选择结束日期"
-                            value-format="yyyy-MM-dd">
+                        v-model="form.end_date"
+                        type="date"
+                        :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(form.start_date) - 8.64e7}}"
+                        placeholder="选择结束日期"
+                        value-format="yyyy-MM-dd">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item prop="thumb_url" label="产品缩略图">
