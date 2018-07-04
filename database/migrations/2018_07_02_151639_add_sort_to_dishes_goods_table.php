@@ -26,7 +26,9 @@ class AddSortToDishesGoodsTable extends Migration
     public function down()
     {
         Schema::table('dishes_goods', function (Blueprint $table) {
-            //
+            $table->dropColumn([
+                'sort',
+            ]);
         });
     }
 }
