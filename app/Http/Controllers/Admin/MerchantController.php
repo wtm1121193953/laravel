@@ -61,50 +61,59 @@ class MerchantController extends Controller
                 }
             }
         }
-        $data = Merchant::where('audit_oper_id', '>', 0)
-            ->when($id, function (Builder $query) use ($id){
-                $query->where('id', $id);
-            }) ->when($creatorOperId, function (Builder $query) use ($creatorOperId){
-                $query->where('creator_oper_id', $creatorOperId);
-            }) ->when($operId, function (Builder $query) use ($operId){
-                if($operId>0){
-                    $query->where('oper_id', $operId);
-                }else{
-                    $query->where('audit_oper_id', $operId);
-                }
 
-            })->when(!empty($operIds), function (Builder $query) use ($operIds){
-                $query->whereIn('oper_id', $operIds);
-            })->when(!empty($createOperIds), function (Builder $query) use ($createOperIds){
-                $query->whereIn('creator_oper_id', $createOperIds);
-            })
-            ->when($startDate, function (Builder $query) use ($startDate){
-                $query->where('created_at', '>=', $startDate.' 00:00:00');
-            })
-            ->when($endDate, function (Builder $query) use ($endDate){
-                $query->where('created_at', '<=', $endDate.' 23:59:59');
-            })
-            ->when(!empty($auditStatus) && isset($auditStatus), function (Builder $query) use ($auditStatus){
+        if (($operName && empty($operIds)) || ($creatorOperName && empty($createOperIds))){
+            $list = [];
+            $total = 0;
+        }else {
+            $data = Merchant::where('audit_oper_id', '>', 0)
+                ->when($id, function (Builder $query) use ($id) {
+                    $query->where('id', $id);
+                })->when($creatorOperId, function (Builder $query) use ($creatorOperId) {
+                    $query->where('creator_oper_id', $creatorOperId);
+                })->when($operId, function (Builder $query) use ($operId) {
+                    if ($operId > 0) {
+                        $query->where('oper_id', $operId);
+                    } else {
+                        $query->where('audit_oper_id', $operId);
+                    }
+
+                })->when(!empty($operIds), function (Builder $query) use ($operIds) {
+                    $query->whereIn('oper_id', $operIds);
+                })->when(!empty($createOperIds), function (Builder $query) use ($createOperIds) {
+                    $query->whereIn('creator_oper_id', $createOperIds);
+                })
+                ->when($startDate, function (Builder $query) use ($startDate) {
+                    $query->where('created_at', '>=', $startDate . ' 00:00:00');
+                })
+                ->when($endDate, function (Builder $query) use ($endDate) {
+                    $query->where('created_at', '<=', $endDate . ' 23:59:59');
+                })
+                ->when(!empty($auditStatus) && isset($auditStatus), function (Builder $query) use ($auditStatus) {
                     $query->whereIn('audit_status', $auditStatus);
-            })
-            ->when($name, function (Builder $query) use ($name){
-                $query->where('name', 'like', "%$name%");
-            })
-            ->orderByDesc('id')->paginate();
+                })
+                ->when($name, function (Builder $query) use ($name) {
+                    $query->where('name', 'like', "%$name%");
+                })
+                ->orderByDesc('id')->paginate();
 
 
-        $data->each(function ($item){
-            $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
-            $item->business_time = json_decode($item->business_time, 1);
-            $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
-            $item->operId =$item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
-            $item->creatorOperId =  $item->creator_oper_id;
-            $item->creatorOperName = Oper::where('id', $item->creator_oper_id)->value('name');
-        });
+            $data->each(function ($item) {
+                $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
+                $item->business_time = json_decode($item->business_time, 1);
+                $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
+                $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
+                $item->creatorOperId = $item->creator_oper_id;
+                $item->creatorOperName = Oper::where('id', $item->creator_oper_id)->value('name');
+            });
+
+            $list = $data->items();
+            $total = $data->total();
+        }
 
         return Result::success([
-            'list' => $data->items(),
-            'total' => $data->total(),
+            'list' => $list,
+            'total' => $total,
         ]);
     }
 
