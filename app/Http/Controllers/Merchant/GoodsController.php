@@ -22,7 +22,7 @@ class GoodsController extends Controller
         $data = Goods::where('merchant_id', request()->get('current_user')->merchant_id)
             ->when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
-        })->orderBy('sort', 'asc')->paginate();
+        })->orderBy('sort', 'desc')->paginate();
 
         $data->each(function($item){
             $item->pic_list = $item->pic_list ? explode(',', $item->pic_list) : [];
@@ -176,7 +176,7 @@ class GoodsController extends Controller
      */
     public function saveOrder(){
         $type = request('type');
-        if ($type == 'up'){
+        if ($type == 'down'){
             $option = '<';
             $order = 'desc';
         }else{

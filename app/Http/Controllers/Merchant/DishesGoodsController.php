@@ -22,7 +22,7 @@ class DishesGoodsController extends Controller
         $data = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
             ->when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
-        })->orderBy('sort', 'asc')->with('dishesCategory:id,name')->paginate($pageSize);
+        })->orderBy('sort', 'desc')->with('dishesCategory:id,name')->paginate($pageSize);
 
 
 
@@ -150,7 +150,7 @@ class DishesGoodsController extends Controller
      */
     public function saveOrder(){
         $type = request('type');
-        if ($type == 'up'){
+        if ($type == 'down'){
             $option = '<';
             $order = 'desc';
         }else{

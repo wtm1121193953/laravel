@@ -16,11 +16,11 @@
                     {{scope.row.created_at.substr(0, 10)}}
                 </template>
             </el-table-column>
-            <el-table-column prop="sort" label="排序">
-                <template slot-scope="scope">
-                    {{scope.row.sort}}
-                </template>
-            </el-table-column>
+            <!--<el-table-column prop="sort" label="排序">-->
+                <!--<template slot-scope="scope">-->
+                    <!--{{scope.row.sort}}-->
+                <!--</template>-->
+            <!--</el-table-column>-->
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
                     <goods-item-options
