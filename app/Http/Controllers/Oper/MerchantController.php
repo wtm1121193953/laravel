@@ -10,6 +10,7 @@ use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantDraft;
+use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -90,12 +91,44 @@ class MerchantController extends Controller
         ]);
     }
 
+    /**
+     * 详情
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function detail()
     {
         $id = request('id');
         $merchant = Merchant::findOrFail($id);
         $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
         $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
+        return Result::success($merchant);
+    }
+
+    /**
+     * 查看详情
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function detailByCheck()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $merchant = Merchant::findOrFail(request('id'));
+        $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
+        $merchant->business_time = json_decode($merchant->business_time, 1);
+        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
+        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
+        $merchant->desc_pic_list = explode(',', $merchant->desc_pic_list);
+        $merchant->contract_pic_url = explode(',', $merchant->contract_pic_url);
+        $merchant->other_card_pic_urls = explode(',', $merchant->other_card_pic_urls);
+        $merchant->bank_card_pic_a = explode(',', $merchant->bank_card_pic_a);
+        if($merchant->oper_biz_member_code){
+            $merchant->operBizMemberName = OperBizMember::where('code', $merchant->oper_biz_member_code)->value('name');
+        }
+        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
+        if ($oper){
+            $merchant->operAddress = $oper->province.$oper->city.$oper->area.$oper->address;
+        }
         return Result::success($merchant);
     }
 

@@ -5,6 +5,7 @@
 </template>
 
 <script>
+    import api from '../../../assets/js/api'
     import MerchantDetail from './merchant-detail'
     export default {
         name: "detail",
@@ -16,7 +17,7 @@
         },
         methods: {
             getDetail(){
-                api.get('merchant/detail', {id: this.id,}).then(data => {
+                api.get('merchant/detail/check', {id: this.id,}).then(data => {
                     this.merchant = data;
                 });
             }

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/merchants', 'MerchantController@getList');
 Route::get('/merchant/allNames', 'MerchantController@allNames');
 Route::get('/merchant/detail', 'MerchantController@detail');
+Route::get('/merchant/detail/check', 'MerchantController@detailByCheck');
 Route::get('/merchant/getMerchantById', 'MerchantController@detail');
 Route::post('/merchant/add', 'MerchantController@add');
 Route::post('/merchant/edit', 'MerchantController@edit');

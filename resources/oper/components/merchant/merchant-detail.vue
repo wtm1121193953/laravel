@@ -209,7 +209,6 @@
 
     import previewImg from '../../../assets/components/img/preview-img'
     import imgPreviewDialog from '../../../assets/components/img/preview-dialog'
-    import api from '../../../assets/js/api'
     import 'viewerjs/dist/viewer.css'
 
     export default {
