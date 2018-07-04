@@ -1,10 +1,12 @@
 <template>
     <!-- 商户列表项操作 -->
     <div>
+        <el-button  type="text" @click="showMearchant(scope)">查看</el-button>
         <el-button type="text" @click="edit">重新提交资料</el-button>
         <el-button v-if="parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="changeStatus">{{parseInt(scope.row.status) === 1 ? '冻结' : '解冻'}}</el-button>
         <el-button v-if="!scope.row.account && parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="showCreateAccountDialog = true">生成账户</el-button>
         <el-button v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改账户密码</el-button>
+
 
 
         <el-dialog title="创建商户账号" :visible.sync="showCreateAccountDialog">
@@ -92,6 +94,15 @@
                         type: 'merchant-list'
                     }
                 })
+            },
+
+            showMearchant(scope){
+                router.push({
+                    path: '/merchant/detail',
+                    query: {id: scope.row.id},
+                })
+                return false;
+
             },
             changeStatus(){
                 let status = this.scope.row.status === 1 ? 2 : 1;
