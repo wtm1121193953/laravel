@@ -66,6 +66,8 @@
                             @change="itemChanged"
                             :isFirst="isFirstPage && scope.$index == 0"
                             :isLast="isLastPage && scope.$index == list.length - 1"
+                            :showSort="isShowSort"
+                            :categoryId="query.category_id"
                             @refresh="getList"/>
                 </template>
             </el-table-column>
@@ -110,7 +112,7 @@
                 list: [],
                 total: 0,
                 categoryList: [],
-
+                showSort:0,
             }
         },
         computed: {
@@ -119,6 +121,9 @@
             },
             isLastPage(){
                 return this.query.page * this.query.pageSize >= this.total;
+            },
+            isShowSort(){
+                return this.showSort!==0;
             }
         },
         methods: {
@@ -127,6 +132,7 @@
                 api.get('/dishes/goods', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                    this.showSort=data.showSort;
                 })
             },
             itemChanged(index, data){

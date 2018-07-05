@@ -40,6 +40,7 @@ class DishesGoodsController extends Controller
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
+            'showSort'=>$categoryId ? 1:0,
         ]);
     }
 
@@ -161,6 +162,7 @@ class DishesGoodsController extends Controller
      */
     public function saveOrder(){
         $type = request('type');
+        $categoryId = request('category_id', '');
         if ($type == 'down'){
             $option = '<';
             $order = 'desc';
@@ -175,6 +177,9 @@ class DishesGoodsController extends Controller
         }
         $dishesGoodsExchange = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
             ->where('sort', $option, $dishesGoods['sort'])
+            ->when($categoryId, function (Builder $query) use ($categoryId) {
+                $query->where('dishes_category_id', $categoryId);
+            })
             ->orderBy('sort', $order)
             ->first();
         if (empty($dishesGoodsExchange)){

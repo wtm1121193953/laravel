@@ -95,9 +95,7 @@
                     <el-table-column prop="audit_status" label="审核状态">
                         <template slot-scope="scope">
                             <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
-
                                 <el-popover
-
                                         v-else-if="scope.row.audit_status === 1"
                                         placement="bottom-start"
                                         width="200px"  trigger="hover"
@@ -105,9 +103,7 @@
                                     :disabled="scope.row.audit_suggestion == ''">
                                     <div   slot="reference" class="c-green">审核通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
                                     <unaudit-record-reason    :data="auditRecord"  />
-
                                 </el-popover>
-
                                   <el-popover
                                       v-else-if="scope.row.audit_status === 2"
 
@@ -118,9 +114,7 @@
                                       <div   slot="reference" class="c-danger">审核不通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
                                         <unaudit-record-reason    :data="auditRecord"  />
 
-                                 </el-popover>
-
-
+                                  </el-popover>
                             <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
                             <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
@@ -128,11 +122,9 @@
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
-
                     <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
                         <el-button type="text" @click="detail(scope,3)">审核</el-button>
                         <el-dropdown trigger="click" style="margin-left: 10px;" @command="(command) => {audit(scope, command)}">
-
                             <el-button type="text">
                               快捷审核 <i class="el-icon-arrow-down"></i>
                             </el-button>
@@ -153,15 +145,12 @@
                 @current-change="getList"
                 :page-size="15"
                 :total="total"/>
-
         <el-dialog :visible.sync="showDetail" width="70%" title="商户详情">
             <merchant-detail :data="currentMerchant" @change="() => {getList(); showDetail = false;}"/>
         </el-dialog>
-
         <el-dialog title="审核意见" :visible.sync="unAudit" :close-on-click-modal="false">
             <unaudit-message   @cancel="unAudit = false"  :data="detailMerchant"   @change="merchantChange"/>
         </el-dialog>
-
     </page>
 </template>
 
@@ -229,7 +218,6 @@
                 if( this.query.auditStatus .length == 0  && this.isAudit ){
                     this.query.auditStatus = ['0', '3']
                 }
-
                 this.query.page = 1;
                 this.getList();
             },
@@ -267,7 +255,6 @@
                 }
 
             },
-
             downloadExcel() {
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
