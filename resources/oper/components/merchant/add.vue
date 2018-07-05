@@ -38,6 +38,10 @@
                 }
             },
             addDraft(data) {
+                if (!data.name) {
+                    this.$message.error('商户名称不能为空');
+                    return false;
+                }
                 api.post('/merchant/draft/add', data).then(() => {
                     this.$message.success('保存成功');
                     router.push('/merchant/drafts');

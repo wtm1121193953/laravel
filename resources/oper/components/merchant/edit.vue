@@ -72,6 +72,10 @@
                 }
             },
             doEditDraft(data) {
+                if (!data.name) {
+                    this.$message.error('商户名称不能为空');
+                    return false;
+                }
                 this.isLoading = true;
                 api.post('/merchant/draft/edit', data).then(() => {
                     this.$message.success('保存成功');
