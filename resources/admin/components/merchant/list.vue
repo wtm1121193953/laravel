@@ -97,6 +97,7 @@
                             <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
 
                                 <el-popover
+
                                         v-else-if="scope.row.audit_status === 1"
                                         placement="bottom-start"
                                         width="200px"  trigger="hover"
@@ -104,16 +105,19 @@
                                     :disabled="scope.row.audit_suggestion == ''">
                                     <div   slot="reference" class="c-green">审核通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
                                     <unaudit-record-reason    :data="auditRecord"  />
+
                                 </el-popover>
 
                                   <el-popover
                                       v-else-if="scope.row.audit_status === 2"
+
                                       placement="bottom-start"
                                       width="200px"  trigger="hover"
                                       @show="showMessage(scope)"
                                       :disabled="scope.row.audit_suggestion == ''" >
                                       <div   slot="reference" class="c-danger">审核不通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
                                         <unaudit-record-reason    :data="auditRecord"  />
+
                                  </el-popover>
 
 
@@ -169,7 +173,6 @@
 
     export default {
         name: "merchant-list",
-        inject:['reloads'],
         data(){
             return {
                 activeTab: 'merchant',
@@ -203,12 +206,9 @@
             }
         },
         methods: {
-          merchantChange(){
-                router.push({
-                    path: '/merchants'
-                });
-                this.reloads()
-            },
+                merchantChange(){
+                    router.replace({path: '/refresh', query: {name: 'MerchantList'}})
+                 },
             showMessage(scope){
                      api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {
                         this.auditRecord = data;
