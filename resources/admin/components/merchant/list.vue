@@ -115,6 +115,8 @@
                                       <div   slot="reference" class="c-danger">审核不通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
                                         <unaudit-record-reason    :data="auditRecord"  />
                                  </el-popover>
+
+
                             <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
                             <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
@@ -188,11 +190,10 @@
                     creatorOperId:''
                 },
                 list: [],
-                auditRecord:null,
+                auditRecord:{},
                 total: 0,
                 currentMerchant: null,
                 tableLoading: false,
-                isDisabled:false,
             }
         },
         computed: {
@@ -212,7 +213,6 @@
                      api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {
                         this.auditRecord = data;
                     })
-
             },
             search() {
                 if (this.query.startDate > this.query.endDate) {
