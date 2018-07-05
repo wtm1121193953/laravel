@@ -17,7 +17,6 @@
                         </el-form-item>
                         <el-form-item label="审核状态" prop="auditStatus"  v-else>
                             <el-select v-model="query.auditStatus" size="small"  multiple placeholder="请选择" class="w-150">
-                                <el-option label="全部" value="" />
                                 <el-option label="待审核" value="0"/>
                                 <el-option label="审核通过" value="1"/>
                                 <el-option label="审核不通过" value="2"/>
