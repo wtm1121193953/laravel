@@ -78,7 +78,7 @@ class MerchantPoolController extends Controller
             'lat' => 'required|numeric',
             'province_id' => 'required|integer|min:1',
             'city_id' => 'required|integer|min:1',
-            'area_id' => 'required|integer|min:1',
+//            'area_id' => 'required|integer|min:1',   //有些地区，如港澳台没有地区
             'address' => 'required',
         ]);
     }

@@ -63,8 +63,27 @@
             <el-table-column prop="audit_status" label="审核状态">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.audit_status) === 0" class="c-warning">待审核</span>
-                    <span v-else-if="parseInt(scope.row.audit_status) === 1" class="c-green">审核通过</span>
-                    <span v-else-if="parseInt(scope.row.audit_status) === 2" class="c-danger">审核不通过</span>
+                    <el-popover
+                            v-else-if="scope.row.audit_status === 1"
+                            placement="bottom-start"
+                            width="200px"  trigger="hover"
+                            @show="showMessage(scope)"
+                            :disabled="scope.row.audit_suggestion == ''">
+                        <div   slot="reference" class="c-green">审核通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
+                        <unaudit-record-reason    :data="auditRecord"  />
+                    </el-popover>
+
+                    <el-popover
+                            v-else-if="parseInt(scope.row.audit_status) === 2"
+                            placement="bottom-start"
+                            width="200px"  trigger="hover"
+                            @show="showMessage(scope)"
+                            :disabled="scope.row.audit_suggestion == ''" >
+                        <div   slot="reference" class="c-danger">审核不通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
+                        <unaudit-record-reason    :data="auditRecord"  />
+                    </el-popover>
+
+
                     <span v-else-if="parseInt(scope.row.audit_status) === 3" class="c-warning">重新提交审核中</span>
                     <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
@@ -94,11 +113,13 @@
 
     import MerchantItemOptions from './merchant-item-options'
     import MerchantForm from './merchant-form'
+    import UnauditRecordReason from './unaudit-record-reason'
 
     export default {
         name: "merchant-list",
         data(){
             return {
+                auditRecord:{},
                 isLoading: false,
                 query: {
                     name: '',
@@ -144,6 +165,13 @@
                     }
                 });
             },
+            showMessage(scope){
+                api.get('/merchant/audit/newlist', {id: scope.row.id}).then(data => {
+                    this.auditRecord = data;
+                })
+
+            },
+
             accountChanged(scope, account){
                 let row = this.list[scope.$index];
                 row.account = account;
@@ -151,16 +179,28 @@
                 this.getList();
             },
         },
+
+
+
+
         created(){
             this.getList();
         },
         components: {
             MerchantItemOptions,
             MerchantForm,
+            UnauditRecordReason
         }
     }
 </script>
 
 <style scoped>
-
+    .message{
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+        width:120px;
+        font-size:12px;
+        color:gray;
+    }
 </style>

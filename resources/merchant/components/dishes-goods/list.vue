@@ -2,10 +2,10 @@
     <page title="单品管理" v-loading="isLoading">
         <el-col>
             <el-form class="fl" size="small" inline>
-                <el-form-item prop="name" label="单品名称">
+                <el-form-item prop="name" label="商品名称">
                     <el-input v-model="query.name"/>
                 </el-form-item>
-                <el-form-item prop="category_id" label="单品分类">
+                <el-form-item prop="category_id" label="类别">
                     <el-select v-model="query.category_id" filterable clearable size="small" placeholder="请选择">
                         <el-option
                                 v-for="(item, index) in categoryList"

@@ -17,6 +17,7 @@ use App\Modules\Goods\Goods;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantDraft;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
@@ -64,6 +65,7 @@ class OrderController extends Controller
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
             $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
             $item->merchant_logo = Merchant::where('id', $item->merchant_id)->value('logo');
+            $item->signboard_name = Merchant::where('id', $item->merchant_id)->value('signboard_name');
             if ($item->type == Order::TYPE_DISHES){
                 $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
             }
@@ -85,6 +87,7 @@ class OrderController extends Controller
         $currentOperId = request()->get('current_oper')->id;
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        $detail->signboard_name = Merchant::where('id', $detail->merchant_id)->value('signboard_name');
         $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
             ->where('type', 1)
             ->first();

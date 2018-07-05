@@ -60,7 +60,7 @@ class OperAccountController extends Controller
         }
         // 查询账号是否重复
         if(!empty(OperAccount::where('account', request('account'))->first())){
-            throw new BaseResponseException('账号重复, 请更换账号');
+            throw new BaseResponseException('帐号重复, 请更换帐号');
         }
         $account = new OperAccount();
 

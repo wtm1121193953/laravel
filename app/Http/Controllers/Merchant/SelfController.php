@@ -36,7 +36,7 @@ class SelfController extends Controller
             throw new PasswordErrorException();
         }
         if($user->status != 1){
-            throw new NoPermissionException('账号已被禁用');
+            throw new NoPermissionException('帐号已被禁用');
         }
         $merchant = Merchant::findOrFail($user->merchant_id);
         if($merchant->status != 1){
