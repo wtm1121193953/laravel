@@ -38,7 +38,7 @@ class OrdersController extends Controller
                 });
             })
             ->when($orderNo, function (Builder $query) use ($orderNo){
-                $query->where('order_no', $orderNo);
+                $query->where('order_no','like', "%$orderNo%");
             })
             ->when($notifyMobile, function (Builder $query) use ($notifyMobile){
                 $query->where('notify_mobile', 'like', "%$notifyMobile%");
