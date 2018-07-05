@@ -5,14 +5,13 @@
                 <el-col>
                     <div class="title">商户录入信息</div>
                 </el-col>
-
-                <el-form-item prop="status" label="商户状态">
-                    <span v-if="data.status === 1" class="c-green">已启用</span>
-                    <span v-else-if="data.status === 2" class="c-danger">已冻结</span>
-                    <span v-else>未知 ({{data.status}})</span>
-                </el-form-item>
                 <!--商户录入信息左侧块-->
                 <el-col :span="11">
+                    <el-form-item prop="status" label="商户状态">
+                        <span v-if="data.status === 1" class="c-green">已启用</span>
+                        <span v-else-if="data.status === 2" class="c-danger">已冻结</span>
+                        <span v-else>未知 ({{data.status}})</span>
+                    </el-form-item>
                     <el-form-item prop="id" label="商户ID">{{data.id}}</el-form-item>
                     <el-form-item v-if="data.operName" prop="operName" label="运营中心">{{data.operName}}</el-form-item>
                     <el-form-item prop="name" label="商户名称">{{data.name}}</el-form-item>
@@ -28,9 +27,7 @@
                         <el-button type="text" @click="previewImage('licence')">查看</el-button>
                         <!-- <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button> -->
                     </el-form-item>
-                    <el-form-item label="营业执照代码">
-                        {{ data.organization_code}}
-                    </el-form-item>
+
                 </el-col>
                 <el-col :span="12" :offset="1">
                     <el-form-item prop="audit_status" label="审核状态">
@@ -55,6 +52,9 @@
                     </el-form-item>
                     <el-form-item prop="address" label="详细地址">
                         {{data.address}}
+                    </el-form-item>
+                    <el-form-item label="营业执照代码">
+                        {{ data.organization_code}}
                     </el-form-item>
                 </el-col>
 
