@@ -372,4 +372,26 @@ class MerchantController extends Controller
             'total' => $data->total(),
         ]);
     }
+
+    /**
+     * 获取最新审核记录
+     */
+    public function getNewAuditList()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $merchantId = request('id');
+        $merchant = Merchant::findOrFail(request('id'));
+        $data = MerchantAudit::where("merchant_id",$merchantId)
+            ->orderByDesc('updated_at')
+            ->first();
+
+        $data->categoryName= MerchantCategory::where("id",$merchant->merchant_category_id)->value("name");
+        $data->merchantName = Merchant::where('id', $merchantId)->value('name');
+        return Result::success($data);
+
+    }
+
+
 }
