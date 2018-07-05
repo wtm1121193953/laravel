@@ -20,7 +20,7 @@
                         v-model="form.merchant_category">
                 </el-cascader>
             </el-form-item>
-            <el-form-item ref="lngAndLat" prop="lng_and_lat" label="商户位置">
+            <el-form-item ref="lngAndLat" prop="lng_and_lat" label="商户坐标">
                 {{form.lng_and_lat || '请选择位置'}}
             </el-form-item>
             <el-form-item>
