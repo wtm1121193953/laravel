@@ -42,16 +42,19 @@
                     this.$message.error('商户名称不能为空');
                     return false;
                 }
-                api.post('/merchant/draft/add', data).then(() => {
+                api.post('/merchant/draft/add', data).then((data) => {
                     this.$message.success('保存成功');
                     router.push('/merchant/drafts');
+
+                    let menu_copy = Lockr.get('userMenuList');
+                    menu_copy[0].sub[3].name = '草稿箱(' + data.count + ')';
+                    store.commit('setMenus', menu_copy);
                 }).finally(() => {
                     this.isLoading = false;
                 })
             }
         },
         created() {
-            console.log(this.$route.query.type)
             if (this.$route.query.type == 'draft-list') {
                 this.isDraft = true;
             }

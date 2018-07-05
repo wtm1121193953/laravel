@@ -95,7 +95,11 @@ class MerchantDraftController extends Controller
         }
 
         $merchantDraft->save();
-        return Result::success($merchantDraft);
+        $count = MerchantDraft::count();
+        return Result::success([
+            'data' => $merchantDraft,
+            'count' => $count,
+        ]);
     }
 
     /**
@@ -139,6 +143,10 @@ class MerchantDraftController extends Controller
         ]);
         $result = MerchantDraft::destroy(request('id'));
 
-        return Result::success($result);
+        $count = MerchantDraft::count();
+        return Result::success([
+            'result' => $result,
+            'count' => $count,
+        ]);
     }
 }

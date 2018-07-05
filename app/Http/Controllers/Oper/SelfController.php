@@ -13,6 +13,7 @@ use App\Exceptions\AccountNotFoundException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\PasswordErrorException;
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\MerchantDraft;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperAccount;
 use App\Result;
@@ -95,13 +96,14 @@ class SelfController extends Controller
 
     private function getMenus()
     {
+        $merchantDraftCount = MerchantDraft::count();
         return [
             [ 'id' => 1, 'name' => '商户管理', 'level' => 1, 'url' => 'merchant', 'sub' =>
                 [
                     [ 'id' => 2, 'name' => '我的商户', 'level' => 2, 'url' => '/oper/merchants', 'pid' => 1,],
                     [ 'id' => 3, 'name' => '商户池', 'level' => 2, 'url' => '/oper/merchant/pool', 'pid' => 1,],
                     [ 'id' => 13, 'name' => '商户审核记录', 'level' => 2, 'url' => '/oper/merchant/audits', 'pid' => 1],
-                    [ 'id' => 14, 'name' => '草稿箱', 'level' => 2, 'url' => '/oper/merchant/drafts', 'pid' => 1],
+                    [ 'id' => 14, 'name' => '草稿箱('.$merchantDraftCount.')', 'level' => 2, 'url' => '/oper/merchant/drafts', 'pid' => 1],
                 ]
 
             ],
