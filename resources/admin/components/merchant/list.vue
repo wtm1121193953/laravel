@@ -73,11 +73,11 @@
 
                 <el-table :data="list" v-loading="tableLoading" stripe>
                     <el-table-column prop="created_at" label="添加时间"/>
-                    <el-table-column prop="id" label="商户ID"/>
+                    <el-table-column prop="id" size="mini"	 label="商户ID"/>
                     <el-table-column prop="name" label="商户名称"/>
-                    <el-table-column prop="operId" label="激活运营中心ID"/>
+                    <el-table-column prop="operId" size="mini" label="激活运营中心ID"/>
                     <el-table-column prop="operName" label="激活运营中心名称"/>
-                    <el-table-column prop="creatorOperId" label="录入运营中心ID"/>
+                    <el-table-column prop="creatorOperId"  size="mini" label="录入运营中心ID"/>
                     <el-table-column prop="creatorOperName" label="录入运营中心名称"/>
                     <el-table-column prop="categoryPath" label="行业">
                         <template slot-scope="scope">
@@ -96,7 +96,17 @@
                     <el-table-column prop="audit_status" label="审核状态">
                         <template slot-scope="scope">
                             <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
-                            <span v-else-if="scope.row.audit_status === 1" class="c-green">审核通过</span>
+
+
+                                <el-popover
+                                        v-else-if="scope.row.audit_status === 1"
+                                        placement="bottom"
+                                        width="250"  trigger="hover"
+                                        @show="showMessage(scope)"  >
+                                    <div   slot="reference" class="c-green">审核通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
+                                    <unaudit-record-reason    :data="auditRecord"  />
+                                </el-popover>
+
                                   <el-popover
                                       v-else-if="scope.row.audit_status === 2"
                                       placement="bottom"
@@ -105,6 +115,7 @@
                                       <div   slot="reference" class="c-danger">审核不通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
                                         <unaudit-record-reason    :data="auditRecord"  />
                                  </el-popover>
+
 
                             <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
                             <span v-else>未知 ({{scope.row.audit_status}})</span>
@@ -179,7 +190,7 @@
                     creatorOperId:''
                 },
                 list: [],
-                auditRecord:[],
+                auditRecord:null,
                 total: 0,
                 currentMerchant: null,
                 tableLoading: false,
@@ -199,10 +210,8 @@
                 this.reloads()
             },
             showMessage(scope){
-                    api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {
-                        this.auditRecord = data.list;
-                        this.tableLoading = false;
-
+                 api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {
+                        this.auditRecord = data;
                     })
             },
             search() {
