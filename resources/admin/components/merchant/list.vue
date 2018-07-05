@@ -203,7 +203,7 @@
             }
         },
         methods: {
-                merchantChange(){
+            merchantChange(){
                 router.replace({path: '/refresh', query: {name: 'MerchantList'}})
             },
             showMessage(scope){
