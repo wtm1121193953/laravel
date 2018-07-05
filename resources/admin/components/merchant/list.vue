@@ -207,7 +207,13 @@
         },
         methods: {
             merchantChange(){
-                router.replace({path: '/refresh', query: {name: 'MerchantList'}})
+                router.replace({
+                    path: '/refresh',
+                    query: {
+                        name: 'MerchantList',
+                        key: '/merchants'
+                    }
+                })
             },
             showMessage(scope){
                  api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {
