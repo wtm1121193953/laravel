@@ -142,7 +142,7 @@ class MerchantController extends Controller
             'merchant_category_id' => 'required',
             'business_licence_pic_url' => 'required',
             'organization_code' => 'required',
-            'settlement_rate' => 'required|numeric|min:10',
+            'settlement_rate' => 'required|numeric|min:0',
         ]);
         $merchant = new Merchant();
         $merchant->fillMerchantPoolInfoFromRequest();
@@ -184,7 +184,7 @@ class MerchantController extends Controller
             'merchant_category_id' => 'required',
             'business_licence_pic_url' => 'required',
             'organization_code' => 'required',
-            'settlement_rate' => 'required|numeric|min:10',
+            'settlement_rate' => 'required|numeric|min:0',
         ]);
         $currentOperId = request()->get('current_user')->oper_id;
         $merchant = Merchant::where('id', request('id'))
@@ -229,7 +229,7 @@ class MerchantController extends Controller
             'id' => 'required|integer|min:1',
             'business_licence_pic_url' => 'required',
             'organization_code' => 'required',
-            'settlement_rate' => 'required|numeric|min:10',
+            'settlement_rate' => 'required|numeric|min:0',
         ]);
 
         $merchantId = request('id');
