@@ -34,7 +34,7 @@ class UserController extends Controller
         ]);
         $user = AdminUser::where('username', request('username'))->first();
         if($user){
-            throw new BaseResponseException('账号已存在', ResultCode::ACCOUNT_EXISTS);
+            throw new BaseResponseException('帐号已存在', ResultCode::ACCOUNT_EXISTS);
         }
         $user = new AdminUser();
         $user->username = request('username');
