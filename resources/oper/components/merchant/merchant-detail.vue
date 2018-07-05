@@ -86,7 +86,7 @@
                         </el-form-item>
                         <el-form-item prop="desc_pic" label="商家介绍图片">
                             <div class="desc" v-viewer style="display: none;">
-                                <img :src="data.desc_pic_list" />
+                                <img v-for="(item,index) in data.desc_pic_list" :src="item" :key="index" />
                             </div>
                             <el-button type="text" @click="previewImage('desc')">查看</el-button>
                             <!-- <el-button type="text" @click="previewImage(data.desc_pic_list)">查看</el-button> -->
@@ -150,7 +150,7 @@
                         </el-form-item>
                         <el-form-item label="合同">
                             <div class="contract" v-viewer style="display: none;">
-                                <img :src="data.contract_pic_url" />
+                                <img v-for="(item, index) in data.contract_pic_url" :src="item" :key="index" />
                             </div>
                             <el-button type="text" @click="previewImage('contract')">查看</el-button>
                         </el-form-item>
@@ -158,7 +158,7 @@
                         <el-form-item prop="other_card_pic_urls" label="其他证件">
 
                             <viewer :images="data.other_card_pic_urls">
-                                <img v-for="src in data.other_card_pic_urls" :src="src" :key="src">
+                                <img v-for="(src,index) in data.other_card_pic_urls" :src="src" :key="index">
                             </viewer>
                             <!-- <template v-for="pic in data.other_card_pic_urls">
                                 <preview-img :url="pic" width="200px" height="100px"/>
