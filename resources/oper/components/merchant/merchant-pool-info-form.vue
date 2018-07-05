@@ -54,7 +54,7 @@
                 </span>
             </el-form-item>
 
-            <el-form-item prop="location" label="商户位置">
+            <el-form-item prop="location" label="商户坐标">
                 {{[data.lng, data.lat]}}
                 <qmap-choose-point width="100%" height="500px" :shown-markers="[[data.lng, data.lat]]" disabled/>
             </el-form-item>
