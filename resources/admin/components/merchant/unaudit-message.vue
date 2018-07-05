@@ -18,7 +18,6 @@
                     </el-form-item>
                 </el-col>
 
-
                 <!-- 商户激活信息右侧块 -->
                 <el-col   >
                     <el-form-item >

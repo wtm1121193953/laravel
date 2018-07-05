@@ -96,26 +96,25 @@
                         <template slot-scope="scope">
                             <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
 
-
                                 <el-popover
                                         v-else-if="scope.row.audit_status === 1"
-                                        placement="bottom"
-                                        width="250"  trigger="hover"
-                                        @show="showMessage(scope)"  >
+                                        placement="bottom-start"
+                                        width="200px"  trigger="hover"
+                                        @show="showMessage(scope)"
+                                    :disabled="scope.row.audit_suggestion == ''">
                                     <div   slot="reference" class="c-green">审核通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
                                     <unaudit-record-reason    :data="auditRecord"  />
                                 </el-popover>
 
                                   <el-popover
                                       v-else-if="scope.row.audit_status === 2"
-                                      placement="bottom"
-                                      width="250"  trigger="hover"
-                                      @show="showMessage(scope)"  >
+                                      placement="bottom-start"
+                                      width="200px"  trigger="hover"
+                                      @show="showMessage(scope)"
+                                      :disabled="scope.row.audit_suggestion == ''" >
                                       <div   slot="reference" class="c-danger">审核不通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
                                         <unaudit-record-reason    :data="auditRecord"  />
                                  </el-popover>
-
-
                             <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
                             <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
@@ -193,6 +192,7 @@
                 total: 0,
                 currentMerchant: null,
                 tableLoading: false,
+                isDisabled:false,
             }
         },
         computed: {
@@ -202,16 +202,17 @@
             }
         },
         methods: {
-                merchantChange(){
+          merchantChange(){
                 router.push({
                     path: '/merchants'
                 });
                 this.reloads()
             },
             showMessage(scope){
-                 api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {
+                     api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {
                         this.auditRecord = data;
                     })
+
             },
             search() {
                 if (this.query.startDate > this.query.endDate) {
@@ -277,6 +278,8 @@
             }
 
         },
+
+
         components: {
             MerchantDetail,
             UnauditMessage,
