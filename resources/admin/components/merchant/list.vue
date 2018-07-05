@@ -98,21 +98,23 @@
 
 
                                 <el-popover
-                                        v-else-if="scope.row.audit_status === 1"
-                                        placement="bottom"
-                                        width="250"  trigger="hover"
-                                        @show="showMessage(scope)"  >
-                                    <div   slot="reference" class="c-green">审核通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
-                                    <unaudit-record-reason    :data="auditRecord"  />
+                                    v-else-if="scope.row.audit_status === 1"
+                                    placement="bottom"
+                                    width="250"
+                                    trigger="hover"
+                                    @show="showMessage(scope)">
+                                    <div slot="reference" class="c-green">审核通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
+                                    <unaudit-record-reason :data="auditRecord"/>
                                 </el-popover>
 
                                   <el-popover
                                       v-else-if="scope.row.audit_status === 2"
                                       placement="bottom"
-                                      width="250"  trigger="hover"
-                                      @show="showMessage(scope)"  >
-                                      <div   slot="reference" class="c-danger">审核不通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
-                                        <unaudit-record-reason    :data="auditRecord"  />
+                                      width="250"
+                                      trigger="hover"
+                                      @show="showMessage(scope)">
+                                      <div slot="reference" class="c-danger">审核不通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
+                                      <unaudit-record-reason :data="auditRecord"/>
                                  </el-popover>
 
 
@@ -168,7 +170,6 @@
 
     export default {
         name: "merchant-list",
-        inject:['reloads'],
         data(){
             return {
                 activeTab: 'merchant',
@@ -189,7 +190,7 @@
                     creatorOperId:''
                 },
                 list: [],
-                auditRecord:null,
+                auditRecord:{},
                 total: 0,
                 currentMerchant: null,
                 tableLoading: false,
@@ -203,10 +204,7 @@
         },
         methods: {
                 merchantChange(){
-                router.push({
-                    path: '/merchants'
-                });
-                this.reloads()
+                router.replace({path: '/refresh', query: {name: 'MerchantList'}})
             },
             showMessage(scope){
                  api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {
