@@ -25,7 +25,7 @@
                         <div class="licence" v-viewer style="display: none;">
                                 <img :src="data.business_licence_pic_url" />
                             </div>
-                        <el-button type="text" @click="previewImage('licence')">查看</el-button>
+                        <el-button v-if="data.business_licence_pic_url" type="text" @click="previewImage('licence')">查看</el-button>
                         <!-- <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button> -->
                     </el-form-item>
                     <el-form-item label="营业执照代码">
@@ -88,7 +88,7 @@
                             <div class="desc" v-viewer style="display: none;">
                                 <img v-for="(item,index) in data.desc_pic_list" :src="item" :key="index" />
                             </div>
-                            <el-button type="text" @click="previewImage('desc')">查看</el-button>
+                            <el-button v-if="data.desc_pic_list.length > 0" type="text" @click="previewImage('desc')">查看</el-button>
                             <!-- <el-button type="text" @click="previewImage(data.desc_pic_list)">查看</el-button> -->
                         </el-form-item>
                         <el-form-item prop="desc_pic" label="商家介绍">
