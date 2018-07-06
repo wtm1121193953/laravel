@@ -2,7 +2,7 @@
     <page title="我的商户" v-loading="isLoading">
         <el-form class="fl" inline size="small">
             <el-form-item label="" prop="name">
-                <el-input v-model="query.name" @keyup.enter.native="search" placeholder="商户名称"/>
+                <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="商户名称"/>
             </el-form-item>
             <el-form-item label="状态" prop="status">
                 <el-select v-model="query.status">
