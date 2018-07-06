@@ -92,6 +92,7 @@
                 <template slot-scope="scope">
                     <merchant-item-options
                             :scope="scope"
+                            :query="query"
                             @change="itemChanged"
                             @accountChanged="accountChanged"
                             @refresh="getList"/>
