@@ -59,9 +59,11 @@ class MerchantController extends Controller
                 $category = MerchantCategory::where('name', $keyword)->first();
                 if($category){
                     $query->where('merchant_category_id', $category->id)
-                        ->orWhere('name', 'like', "%$keyword%");
+                        ->orWhere('name', 'like', "%$keyword%")
+                        ->orWhere('signboard_name', 'like', "%$keyword%");
                 }else {
-                    $query->where('name', 'like', "%$keyword%");
+                    $query->where('name', 'like', "%$keyword%")
+                        ->orWhere('signboard_name', 'like', "%$keyword%");
                 }
             })
             ->when($merchant_category_id && $keyword, function(Builder $query) use ($merchant_category_id, $keyword){
@@ -69,7 +71,7 @@ class MerchantController extends Controller
                 $query->where('merchant_category_id', $merchant_category_id)
                     ->where(function (Builder $query) use ($keyword) {
                         $query->where('name', 'like', "%$keyword%")
-                            ->orWhere('signboard_name', "%$keyword%");
+                            ->orWhere('signboard_name', 'like', "%$keyword%");
                     });
             })
             ->when($merchant_category_id && empty($keyword), function(Builder $query) use ($merchant_category_id, $keyword){
