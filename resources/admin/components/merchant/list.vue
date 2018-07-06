@@ -101,7 +101,7 @@
                                         width="200px"  trigger="hover"
                                         @show="showMessage(scope)"
                                     :disabled="scope.row.audit_suggestion == ''">
-                                    <div   slot="reference" class="c-green">审核通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
+                                    <div   slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
                                     <unaudit-record-reason    :data="auditRecord"  />
                                 </el-popover>
                                   <el-popover
@@ -111,7 +111,7 @@
                                       width="200px"  trigger="hover"
                                       @show="showMessage(scope)"
                                       :disabled="scope.row.audit_suggestion == ''" >
-                                      <div   slot="reference" class="c-danger">审核不通过<p class="message">{{scope.row.audit_suggestion}}</p></div>
+                                      <div   slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
                                         <unaudit-record-reason    :data="auditRecord"  />
 
                                   </el-popover>
@@ -124,7 +124,7 @@
                     <el-button type="text" @click="detail(scope)">查看</el-button>
                     <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
                         <el-button type="text" @click="detail(scope,3)">审核</el-button>
-                        <el-dropdown trigger="click" style="margin-left: 10px;" @command="(command) => {audit(scope, command)}">
+                        <el-dropdown trigger="click" @command="(command) => {audit(scope, command)}">
                             <el-button type="text">
                               快捷审核 <i class="el-icon-arrow-down"></i>
                             </el-button>
