@@ -12,6 +12,7 @@ Route::prefix('merchant')
         Route::post('login', 'SelfController@login');
         Route::post('logout', 'SelfController@logout');
         Route::post('self/modifyPassword', 'SelfController@modifyPassword');
+        Route::get('self/getMerchantInfo', 'SelfController@getMerchantInfo');
 
         Route::get('inviteChannel/inviteQrcode', 'InviteChannelController@getInviteQrcode');
         Route::get('inviteChannel/downloadInviteQrcode', 'InviteChannelController@downloadInviteQrcode');
