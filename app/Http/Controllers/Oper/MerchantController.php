@@ -27,6 +27,7 @@ class MerchantController extends Controller
         $name = request('name');
         $auditStatus = request('audit_status');
         $status = request('status');
+        $signBoardName=request('signBoardName');
         $data = Merchant::where(function (Builder $query){
                 $currentOperId = request()->get('current_user')->oper_id;
                 $query->where('oper_id', $currentOperId)
@@ -43,6 +44,9 @@ class MerchantController extends Controller
             })
             ->when($name, function (Builder $query) use ($name){
                 $query->where('name', 'like', "%$name%");
+            })
+            ->when($signBoardName, function (Builder $query) use ($signBoardName){
+                $query->where('signboard_name', 'like', "%$signBoardName%");
             })
             ->orderBy('created_at', 'desc')
             ->paginate();
