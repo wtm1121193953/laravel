@@ -55,7 +55,7 @@
         name: "merchant-item-options",
         props: {
             scope: {type: Object, required: true},
-            query: {type: Object, required: true}
+            query: {type: Object}
         },
         data(){
             return {
@@ -88,12 +88,15 @@
         },
         methods: {
             edit(){
+                let self = this;
                 router.push({
                     path: '/merchant/edit',
+                    name: 'MerchantEdit',
                     query: {
                         id: this.scope.row.id,
                         type: 'merchant-list'
-                    }
+                    },
+                    params: self.query,
                 })
             },
 

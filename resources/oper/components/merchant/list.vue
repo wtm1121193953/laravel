@@ -192,6 +192,9 @@
 
 
         created(){
+            if (this.$route.params){
+                this.query = this.$route.params;
+            }
             this.getList();
         },
         components: {

@@ -44,7 +44,13 @@
                 }
                 api.post('/merchant/draft/add', data).then((data) => {
                     this.$message.success('保存成功');
-                    router.push('/merchant/drafts');
+                    router.replace({
+                        path: '/refresh',
+                        query: {
+                            name: 'MerchantDraftList',
+                            key: '/merchant/drafts'
+                        }
+                    });
 
                     let menu_copy = Lockr.get('userMenuList');
                     menu_copy[0].sub[3].name = '草稿箱(' + data.count + ')';

@@ -35,7 +35,11 @@
                 if (!this.isDraft){
                     api.post('/merchant/edit', data).then(() => {
                         this.$message.success('保存成功');
-                        router.push('/merchants');
+                        router.push({
+                            path: '/merchants',
+                            name: 'MerchantList',
+                            params: this.$route.params,
+                        });
                     }).finally(() => {
                         this.isLoading = false;
                     })
