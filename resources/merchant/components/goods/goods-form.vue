@@ -97,7 +97,8 @@
                 form: deepCopy(defaultForm),
                 formRules: {
                     name: [
-                        {required: true, message: '名称不能为空'}
+                        {required: true, message: '商品名称不能为空'},
+                        {max: 30, message: '商品名称不能超过30个字'}
                     ],
                     market_price: [
                         {required: true, message: '市场价不能为空'},
