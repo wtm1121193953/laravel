@@ -67,7 +67,10 @@ class MerchantController extends Controller
             ->when($merchant_category_id && $keyword, function(Builder $query) use ($merchant_category_id, $keyword){
                 // 如果传了类别及关键字, 则类别和关键字都搜索
                 $query->where('merchant_category_id', $merchant_category_id)
-                    ->where('name', 'like', "%$keyword%");
+                    ->where(function (Builder $query) use ($keyword) {
+                        $query->where('name', 'like', "%$keyword%")
+                            ->orWhere('signboard_name', "%$keyword%");
+                    });
             })
             ->when($merchant_category_id && empty($keyword), function(Builder $query) use ($merchant_category_id, $keyword){
                 // 如果只传了类别, 没有关键字
