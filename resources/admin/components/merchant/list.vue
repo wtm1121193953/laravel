@@ -9,22 +9,9 @@
                         <el-form-item prop="name" label="商户名称" >
                             <el-input v-model="query.name" size="small" placeholder="商户名称" clearable @keyup.enter.native="search"/>
                         </el-form-item>
-                        <el-form-item label="审核状态" prop="auditStatus"  v-if="isAudit">
-                            <el-select v-model="query.auditStatus" size="small" multiple  placeholder="请选择" class="w-250">
-                                <el-option label="待审核" value="0" />
-                                <el-option label="重新提交审核" value="3"/>
-                            </el-select>
+                        <el-form-item prop="signBoardName" label="商户招牌名" >
+                            <el-input v-model="query.signBoardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
                         </el-form-item>
-                        <el-form-item label="审核状态" prop="auditStatus"  v-else>
-                            <el-select v-model="query.auditStatus" size="small"  multiple placeholder="请选择" class="w-150">
-                                <el-option label="待审核" value="0"/>
-                                <el-option label="审核通过" value="1"/>
-                                <el-option label="审核不通过" value="2"/>
-                                <el-option label="重新提交审核" value="3"/>
-                            </el-select>
-                        </el-form-item>
-
-
                         <el-form-item prop="startDate" label="添加商户开始时间">
                             <el-date-picker
                                 v-model="query.startDate"
@@ -46,20 +33,32 @@
                                 :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(query.startDate) - 8.64e7}}"
                             ></el-date-picker>
                         </el-form-item>
-
+                        <el-form-item label="审核状态" prop="auditStatus"  v-if="isAudit">
+                            <el-select v-model="query.auditStatus" size="small" multiple  placeholder="请选择" class="w-250">
+                                <el-option label="待审核" value="0" />
+                                <el-option label="重新提交审核" value="3"/>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="审核状态" prop="auditStatus"  v-else>
+                            <el-select v-model="query.auditStatus" size="small"  multiple placeholder="请选择" class="w-150">
+                                <el-option label="待审核" value="0"/>
+                                <el-option label="审核通过" value="1"/>
+                                <el-option label="审核不通过" value="2"/>
+                                <el-option label="重新提交审核" value="3"/>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item prop="operId" label="激活运营中心ID">
+                            <el-input v-model="query.operId" size="small"   class="w-100" clearable />
+                        </el-form-item>
                         <el-form-item prop="operName" label="激活运营中心名称">
                             <el-input v-model="query.operName" size="small"  clearable></el-input>
                         </el-form-item>
-                        <el-form-item prop="operId" label="激活运营中心ID">
-                            <el-input v-model="query.operId" size="small" clearable />
+                        <el-form-item prop="creatorOperId" label="录入运营中心ID">
+                            <el-input v-model="query.creatorOperId" size="small"  class="w-100" clearable />
                         </el-form-item>
                         <el-form-item prop="creatorOperName" label="录入运营中心名称">
                             <el-input v-model="query.creatorOperName" size="small" clearable></el-input>
                         </el-form-item>
-                        <el-form-item prop="creatorOperId" label="录入运营中心ID">
-                            <el-input v-model="query.creatorOperId" size="small"  clearable />
-                        </el-form-item>
-
                         <el-form-item>
                             <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                         </el-form-item>
@@ -74,6 +73,7 @@
                     <el-table-column prop="created_at" label="添加时间"/>
                     <el-table-column prop="id" size="mini"	 label="商户ID"/>
                     <el-table-column prop="name" label="商户名称"/>
+                    <el-table-column prop="signboard_name" label="商户招牌名"/>
                     <el-table-column prop="operId" size="mini" label="激活运营中心ID"/>
                     <el-table-column prop="operName" label="激活运营中心名称"/>
                     <el-table-column prop="creatorOperId"  size="mini" label="录入运营中心ID"/>
@@ -118,7 +118,7 @@
                             <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
                             <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
-            </el-table-column>
+             </el-table-column>
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
@@ -171,6 +171,7 @@
                 detailMerchant:null,
                 query: {
                     name: '',
+                    signBoardName:'',
                     auditStatus: [],
                     page: 1,
                     merchantId: '',

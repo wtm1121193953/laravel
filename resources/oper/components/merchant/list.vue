@@ -4,6 +4,11 @@
             <el-form-item label="" prop="name">
                 <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="商户名称"/>
             </el-form-item>
+
+            <el-form-item prop="signBoardName" label="商户招牌名" >
+                <el-input v-model="query.signBoardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
+            </el-form-item>
+
             <el-form-item label="状态" prop="status">
                 <el-select v-model="query.status">
                     <el-option label="全部" value=""/>
@@ -38,6 +43,7 @@
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="name" label="商户名称"/>
+            <el-table-column prop="signboard_name" label="商户招牌名"/>
             <el-table-column prop="categoryPath" label="行业">
                 <template slot-scope="scope">
                     <span v-for="item in scope.row.categoryPath" :key="item.id">
@@ -127,6 +133,7 @@
                     status: '',
                     audit_status: '',
                     page: 1,
+                    signBoardName:''
                 },
                 list: [],
                 total: 0,
