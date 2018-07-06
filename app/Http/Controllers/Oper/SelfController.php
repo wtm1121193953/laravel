@@ -54,9 +54,10 @@ class SelfController extends Controller
 
         $user->operName = $oper->name;
 
+        $merchantDraftCount = MerchantDraft::where('creator_oper_id', $user->oper_id)->count();
         return Result::success([
             'user' => $user,
-            'menus' => $this->getMenus(),
+            'menus' => $this->getMenus($merchantDraftCount),
         ]);
     }
 
@@ -94,9 +95,8 @@ class SelfController extends Controller
         return Result::success($user);
     }
 
-    private function getMenus()
+    private function getMenus($merchantDraftCount = 0)
     {
-        $merchantDraftCount = MerchantDraft::count();
         return [
             [ 'id' => 1, 'name' => '商户管理', 'level' => 1, 'url' => 'merchant', 'sub' =>
                 [
