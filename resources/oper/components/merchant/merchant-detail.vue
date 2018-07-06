@@ -44,10 +44,10 @@
 
                 <!-- 商户录入信息右侧块 -->
                 <el-col :span="11" :offset="1">
-                    <el-form-item prop="location" label="商户位置">
+                    <el-form-item prop="location" label="商户坐标">
                         {{data.lng}} , {{data.lat}}
                     </el-form-item>
-                    <el-form-item prop="operAddress" label="运营中心位置">
+                    <el-form-item prop="operAddress" label="运营中心地址">
                         {{data.operAddress}}
                     </el-form-item>
                     <el-form-item prop="area" label="省市区">
