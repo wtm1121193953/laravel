@@ -161,9 +161,11 @@
                 })
             },
             previewImage(event){
+                event.stopPropagation()
                 //预览商品图片
                 const viewer = event.currentTarget.$viewer
                 viewer.show()
+                return
             },
         },
         created(){
