@@ -19,7 +19,7 @@
                     <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                 </el-form-item>
             </el-form>
-            <el-button class="fr" type="primary" @click="add">添加商品</el-button>
+            <el-button class="fr" type="primary" @click="add">添加单品</el-button>
         </el-col>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>

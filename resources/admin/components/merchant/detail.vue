@@ -29,7 +29,7 @@
         },
         created(){
             this.id = this.$route.query.id;
-            this.auditType = this.$route.query.auditType;
+            this.auditType = parseInt(this.$route.query.auditType);
             if(!this.id){
                 this.$message.error('id不能为空');
                 return false;
