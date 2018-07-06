@@ -28,7 +28,7 @@
             <el-table-column prop="dishes_category.name" label="类别"/>
             <el-table-column prop="detail_image" label="商品图片">
                 <template slot-scope="scope">
-                    <div style="height: 50px; width: 50px" v-viewer>
+                    <div class="detail_image" style="height: 50px; width: 50px" v-viewer @click="previewImage($event)">
                         <img class="img" :src="scope.row.detail_image" width="100%" height="100%" />
                     </div>
                 </template>
@@ -159,7 +159,14 @@
                 api.get('/dishes/categories/all').then((data) => {
                     this.categoryList = data.list;
                 })
-            }
+            },
+            previewImage(event){
+                event.stopPropagation()
+                //预览商品图片
+                const viewer = event.currentTarget.$viewer
+                viewer.show()
+                return
+            },
         },
         created(){
             this.getList();
