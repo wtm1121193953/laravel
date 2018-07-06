@@ -183,7 +183,7 @@
                     creatorOperId:''
                 },
                 list: [],
-                auditRecord:{},
+                auditRecord:[],
                 total: 0,
                 currentMerchant: null,
                 tableLoading: false,
@@ -207,7 +207,7 @@
             },
             showMessage(scope){
                  api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {
-                        this.auditRecord = data;
+                        this.auditRecord = [data];
                     })
             },
             search() {
@@ -225,7 +225,9 @@
             getList(){
                 this.tableLoading = true;
                 api.get('/merchants', this.query).then(data => {
+
                     this.list = data.list;
+                    console.log(typeof (this.list));
                     this.total = data.total;
                     this.tableLoading = false;
                 })
