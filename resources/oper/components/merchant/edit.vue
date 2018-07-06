@@ -40,11 +40,14 @@
                         this.isLoading = false;
                     })
                 }else {
-                    api.post('/merchant/draft/delete', {id: data.id}).then(() => {
+                    api.post('/merchant/draft/delete', {id: data.id}).then((res) => {
                         api.post('/merchant/add', data).then(() => {
                             this.$message.success('保存成功');
                             router.push('/merchants');
                         })
+                        let menu_copy = Lockr.get('userMenuList');
+                        menu_copy[0].sub[3].name = '草稿箱(' + res.count + ')';
+                        store.commit('setMenus', menu_copy);
                     }).finally(() => {
                         this.isLoading = false;
                     })
@@ -72,6 +75,10 @@
                 }
             },
             doEditDraft(data) {
+                if (!data.name) {
+                    this.$message.error('商户名称不能为空');
+                    return false;
+                }
                 this.isLoading = true;
                 api.post('/merchant/draft/edit', data).then(() => {
                     this.$message.success('保存成功');

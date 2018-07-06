@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
+        \App\Console\Commands\Test::class,
     ];
 
     /**
@@ -32,6 +33,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        $schedule->command('test')->everyMinute();
         /** 用户邀请记录每日统计, 每日统计昨日的注册数 */
         $schedule->job(new InviteUserStatisticsDailyJob((new Carbon())->subDay()))->daily();
         /** 订单超时自动关闭 */

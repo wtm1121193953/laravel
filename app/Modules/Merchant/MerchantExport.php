@@ -29,8 +29,9 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
     protected $operName;
     protected $creatorOperId;
     protected $creatorOperName;
+    protected $signBoardName;
 
-    public function __construct($id = '', $startDate = '', $endDate = '', $name = '', $auditStatus = [], $operId = '', $operName = '', $creatorOperId = '', $creatorOperName = '')
+    public function __construct($id = '', $startDate = '',$endDate = '',$signBoardName='', $name = '', $auditStatus = [], $operId = '', $operName = '', $creatorOperId = '', $creatorOperName = '')
     {
         $this->id = $id;
         $this->startDate = $startDate;
@@ -39,6 +40,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
         $this->auditStatus = $auditStatus;
         $this->operId = $operId;
         $this->operName = $operName;
+        $this->signBoardName = $signBoardName;
         $this->creatorOperId = $creatorOperId;
         $this->creatorOperName = $creatorOperName;
     }
@@ -61,6 +63,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
         $operName = $this->operName;
         $creatorOperId = $this->creatorOperId;
         $creatorOperName = $this->creatorOperName;
+        $signBoardName = $this->signBoardName;
 
         $operIds = [];
         if($operName) {
@@ -118,6 +121,9 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
                 ->when($name, function (Builder $query) use ($name) {
                     $query->where('name', 'like', "%$name%");
                 })
+                ->when($signBoardName, function (Builder $query) use ($signBoardName) {
+                    $query->where('signboard_name', 'like', "%$signBoardName%");
+                })
                 ->orderByDesc('id');
         }
 
@@ -139,6 +145,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             $data->creator_oper_id,
             Oper::where('id', $data->creator_oper_id)->value('name'),
             $data->name,
+            $data->signboard_name,
             $this->getCategoryPathName($data->merchant_category_id),
             $data->city . ' ' . $data->area,
             ['待审核', '审核通过', '审核不通过', '待审核(重新提交)'][$data->audit_status],
@@ -174,6 +181,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             '录入运营中心ID',
             '录入运营中心名称',
             '商户名称',
+            '商户招牌名',
             '行业',
             '城市',
             '审核状态',

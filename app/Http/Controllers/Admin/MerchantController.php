@@ -35,6 +35,7 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $auditStatus = request('auditStatus');
+        $signBoardName = request('signBoardName');
         if(empty($auditStatus)){
             $auditStatus=["0","1","2","3"];
         }
@@ -72,6 +73,9 @@ class MerchantController extends Controller
                 })
                 ->when($creatorOperId, function (Builder $query) use ($creatorOperId) {
                     $query->where('creator_oper_id', $creatorOperId);
+                })
+                ->when($signBoardName, function (Builder $query) use ($signBoardName) {
+                    $query->where('signboard_name', 'like', "%$signBoardName%");
                 })
                 ->when($operId, function (Builder $query) use ($operId) {
                     if ($operId > 0) {
@@ -259,15 +263,15 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $auditStatus = request('auditStatus');
+        $signBoardName = request('signBoardName');
         if ($auditStatus || $auditStatus==="0"){
             $auditStatus = explode(',', $auditStatus);
         }
         $operId = request('operId');
         $operName = request('operName');
-
         $creatorOperId = request('creatorOperId');
         $creatorOperName = request('creatorOperName');
 
-        return (new MerchantExport($id, $startDate, $endDate, $name, $auditStatus, $operId, $operName, $creatorOperId, $creatorOperName))->download('merchant_list.xlsx');
+        return (new MerchantExport($id, $startDate, $endDate,$signBoardName, $name,$auditStatus, $operId, $operName, $creatorOperId, $creatorOperName))->download('merchant_list.xlsx');
     }
 }

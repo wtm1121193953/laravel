@@ -95,7 +95,11 @@ class MerchantDraftController extends Controller
         }
 
         $merchantDraft->save();
-        return Result::success($merchantDraft);
+        $count = MerchantDraft::where('creator_oper_id', $currentOperId)->count();
+        return Result::success([
+            'data' => $merchantDraft,
+            'count' => $count,
+        ]);
     }
 
     /**
@@ -139,6 +143,11 @@ class MerchantDraftController extends Controller
         ]);
         $result = MerchantDraft::destroy(request('id'));
 
-        return Result::success($result);
+        $currentOperId = request()->get('current_user')->oper_id;
+        $count = MerchantDraft::where('creator_oper_id', $currentOperId)->count();
+        return Result::success([
+            'result' => $result,
+            'count' => $count,
+        ]);
     }
 }

@@ -54,7 +54,8 @@
     export default {
         name: "merchant-item-options",
         props: {
-            scope: {type: Object, required: true}
+            scope: {type: Object, required: true},
+            query: {type: Object, required: true}
         },
         data(){
             return {
