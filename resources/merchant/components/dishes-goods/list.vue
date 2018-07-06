@@ -28,8 +28,8 @@
             <el-table-column prop="dishes_category.name" label="类别"/>
             <el-table-column prop="detail_image" label="商品图片">
                 <template slot-scope="scope">
-                    <div style="height: 50px; width: 50px">
-                        <preview-img class="img" :url="scope.row.detail_image"/>
+                    <div style="height: 50px; width: 50px" v-viewer>
+                        <img class="img" :src="scope.row.detail_image" width="100%" height="100%" />
                     </div>
                 </template>
             </el-table-column>
@@ -96,6 +96,9 @@
     import DishesGoodsItemOptions from './dishes-goods-item-options'
     import DishesGoodsForm from './dishes-goods-form'
     import PreviewImg from '../../../assets/components/img/preview-img'
+
+    //引入预览样式
+    import 'viewerjs/dist/viewer.css'
 
     export default {
         name: "dishesGoods-list",
