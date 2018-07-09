@@ -1,23 +1,30 @@
+
 <template>
-    <div>
-        <h2>欢迎使用 {{projectName}} - {{systemName}}，请展开左侧功能菜单进行操作</h2>
-    </div>
+    <el-row>
+        <el-col :span="8"><div class="grid-content "></div></el-col>
+        <el-col :span="8"><div class="grid-content ">
+            <img src="../../assets/images/welcome.png" class="welcome">
+            <h2 >欢迎使用大千生活运营平台</h2>
+        </div></el-col>
+        <el-col :span="8"><div class="grid-content "></div></el-col>
+    </el-row>
 </template>
+
 <script type="text/javascript">
-	import {mapState} from 'vuex'
 
     export default {
-        data: function () {
-            return {}
-        },
-        computed: {
-            ...mapState([
-                'projectName',
-                'systemName',
-            ]),
-        },
-        created: function () {
-            bus.$emit('globalLoading', false)
+
+        created: function(){
+
         }
     }
 </script>
+
+<style scoped>
+    .grid-content {
+        text-align: center;
+        border-radius: 4px;
+        min-height: 36px;
+    }
+
+</style>

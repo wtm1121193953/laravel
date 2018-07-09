@@ -146,7 +146,7 @@
                 if (this.$route.query && this.$route.query._from) {
                     router.push(this.$route.query._from);
                 }else{
-                    router.push('/');
+                    router.push('/welcome');
                 }
             },
             doLogin(){
