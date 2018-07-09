@@ -359,23 +359,8 @@ class OrderController extends Controller
             throw new BaseResponseException('该订单不是当前运营中心的订单');
         }
 
-        if ($order->type == Order::TYPE_GROUP_BUY){
-            $goods = Goods::findOrFail($order->goods_id);
-            if ($goods->status == Goods::STATUS_OFF){
-                throw new BaseResponseException('此商品已下架，请您选择其他商品');
-            }
-        } elseif ($order->type == Order::TYPE_DISHES){
-            //判断商品上下架状态
-            $dishesItems = DishesItem::where('dishes_id', $order->dishes_id)
-                ->where('user_id', $order->user_id)
-                ->get();
-            foreach ($dishesItems as $item){
-                $dishesGoods = DishesGoods::findOrFail($item->dishes_goods_id);
-                if ($dishesGoods->status == DishesGoods::STATUS_OFF){
-                    throw new BaseResponseException('菜单已变更, 请刷新页面');
-                }
-            }
-        }
+        // 检查订单中商品的状态，状态异常则关闭订单
+        $this->_checkOrder($order);
 
         $sdkConfig = $this->_wechatUnifyPay($order);
 
@@ -486,6 +471,35 @@ class OrderController extends Controller
                 DishesGoods::where('id', $item->dishes_goods_id)
                     ->where('merchant_id', $item->merchant_id)
                     ->decrement('sell_number', $item->number);
+            }
+        }
+    }
+
+    /**
+     * 检查订单中商品的状态，状态异常关闭订单
+     * @param Order $order
+     */
+    private function _checkOrder(Order $order)
+    {
+        if ($order->type == Order::TYPE_GROUP_BUY){
+            $goods = Goods::findOrFail($order->goods_id);
+            if ($goods->status == Goods::STATUS_OFF){
+                $order->status = Order::STATUS_CLOSED;
+                $order->save();
+                throw new BaseResponseException('此商品已下架，请您选择其他商品');
+            }
+        } elseif ($order->type == Order::TYPE_DISHES){
+            //判断商品上下架状态
+            $dishesItems = DishesItem::where('dishes_id', $order->dishes_id)
+                ->where('user_id', $order->user_id)
+                ->get();
+            foreach ($dishesItems as $item){
+                $dishesGoods = DishesGoods::findOrFail($item->dishes_goods_id);
+                if ($dishesGoods->status == DishesGoods::STATUS_OFF){
+                    $order->status = Order::STATUS_CLOSED;
+                    $order->save();
+                    throw new BaseResponseException('菜单已变更, 请刷新页面');
+                }
             }
         }
     }

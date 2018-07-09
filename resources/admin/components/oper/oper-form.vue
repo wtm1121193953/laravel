@@ -122,14 +122,41 @@
 
         },
         data(){
+            let validateTel = (rule, value, callback) => {
+                if (!(/^1[3456789]\d{9}$/.test(value)) && !(/^(0[0-9]{2,3}\-)([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$/.test(value))) {
+                    callback(new Error('请输入正确的手机号或带区号的固定电话'));
+                }else {
+                    callback();
+                }
+            };
+            let validateIdCard = (rule, value, callback) => {
+                if (!(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value))) {
+                    callback(new Error('请输入正确的身份证号码'));
+                }else {
+                    callback();
+                }
+            };
             return {
                 form: deepCopy(defaultForm),
                 formRules: {
                     name: [
-                        {required: true, message: '名称不能为空'}
+                        {required: true, message: '名称不能为空'},
+                        {max: 20, message: '运营中心名称不能超过20个字'},
                     ],
                     selectAreas: [
                         {required: true, type: 'array', message: '地区不能为空' }
+                    ],
+                    tel: [
+                        {validator: validateTel}
+                    ],
+                    email: [
+                        {type: 'email', message: '请输入正确的邮箱'},
+                    ],
+                    legal_id_card: [
+                        {validator: validateIdCard}
+                    ],
+                    bank_card_no: [
+                        {type: 'number', message: '请输入正确的公司账号'},
                     ]
                 },
                 areas: [],
