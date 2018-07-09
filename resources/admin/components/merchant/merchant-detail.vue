@@ -81,7 +81,7 @@
                         </el-form-item>
                         <el-form-item prop="logo" label="商家logo">
                             <div v-viewer>
-                                <img :src="data.logo" alt="商家logo" width="50px" height="50px" />
+                                <img :src="data.logo" alt="商家logo" width="200px" height="100px" />
                             </div>
                             <!-- <preview-img :url="data.logo" width="50px" height="50px"/> -->
                         </el-form-item>
@@ -158,7 +158,7 @@
 
                         <el-form-item prop="other_card_pic_urls" label="其他证件">
                             <viewer :images="data.other_card_pic_urls">
-                                <img v-for="(src,index) in data.other_card_pic_urls" :src="src" :key="index">
+                                <img v-for="(src,index) in data.other_card_pic_urls" :src="src" :key="index"width="200px" height="100px" />
                             </viewer>
                             <!-- <template v-for="pic in data.other_card_pic_urls">
                                 <preview-img :url="pic" width="200px" height="100px"/>
