@@ -101,7 +101,14 @@
                 })
             },
             itemChanged(index, data){
-                this.list.splice(index, 1, data)
+                this.list.splice(index, 1, data);
+                    router.replace({
+                        path: '/refresh',
+                        query: {
+                            name: 'OperBizMemberList',
+                            key: '/operBizMembers'
+                        }
+                    })
             },
             add(){
                 this.isAdd = true;
@@ -115,9 +122,6 @@
                 }).finally(() => {
                     this.isLoading = false;
                 })
-            },
-            itemChanged(index, data){
-                this.list.splice(index, 1, data)
             },
         },
         created(){
