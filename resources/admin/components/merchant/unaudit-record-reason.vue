@@ -2,7 +2,6 @@
     <el-table  :data = "data" >
         <el-table-column width="150" property="audit_suggestion" label="审核意见"></el-table-column>
     </el-table>
-
 </template>
 
 <script>
@@ -13,9 +12,7 @@
                 type:Array,
             },
         },
-
     }
-
 </script>
 
 <style scoped>

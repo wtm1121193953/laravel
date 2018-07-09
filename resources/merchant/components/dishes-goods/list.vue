@@ -80,7 +80,7 @@
                 :page-size="query.pageSize"
                 :total="total"/>
 
-        <el-dialog title="添加商品" :visible.sync="isAdd" :close-on-click-modal="false">
+        <el-dialog title="添加单品" :visible.sync="isAdd" :close-on-click-modal="false">
             <dishes-goods-form
                     ref="form"
                     :data="{}"
