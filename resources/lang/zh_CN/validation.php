@@ -93,6 +93,13 @@ return [
         ],
         'price' => [
             'required' => '销售价格不能为空',
+            'min' => '价格需大于 :min',
+            'numeric' => '价格必须为数字',
+        ],
+        'merchant_id' => [
+            'required' => '商户ID不能为空',
+            'integer' => '商户ID必须为整数',
+            'min' => '商户ID不能小于 :min',
         ],
 
         'settlement_rate' => [
