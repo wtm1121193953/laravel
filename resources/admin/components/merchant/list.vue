@@ -62,7 +62,7 @@
                         <el-form-item>
                             <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                         </el-form-item>
-                        <el-form-item class="fr">
+                        <el-form-item>
                             <el-button type="success" size="small" @click="downloadExcel">导出Excel</el-button>
                         </el-form-item>
              </el-form>
