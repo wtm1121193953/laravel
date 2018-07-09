@@ -1,5 +1,5 @@
 <template>
-    <page title="商品管理" v-loading="isLoading">
+    <page title="团购商品" v-loading="isLoading">
         <el-button class="fr" type="primary" @click="add">添加商品</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>

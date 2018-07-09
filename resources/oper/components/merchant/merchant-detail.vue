@@ -182,7 +182,7 @@
                             {{data.site_acreage}} ㎡
                         </el-form-item>
                         <el-form-item prop="employees_number" label="商户员工人数">
-                            {{data.employees_number}}
+                            {{data.employees_number}} 人
                         </el-form-item>
                     </el-col>
 

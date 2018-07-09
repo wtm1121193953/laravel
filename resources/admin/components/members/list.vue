@@ -1,5 +1,5 @@
 <template>
-    <page title="会员列表" v-loading="isLoading">
+    <page title="会员解绑" v-loading="isLoading">
         <el-form :model="query" inline size="small" class="fl" @submit.native.prevent>
             <el-form-item>
                 <el-input v-model="query.keyword" placeholder="请输入用户手机搜索" @keyup.native.enter="search"/>
