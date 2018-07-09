@@ -299,7 +299,7 @@ class OrderController extends Controller
             'price' => 'required|numeric|min:0',
         ]);
         $price = request('price');
-        if($price <= 0 ){
+        if($price <= 0 || $price > 999999.99){
             throw new ParamInvalidException('价格不合法');
         }
         $user = request()->get('current_user');
