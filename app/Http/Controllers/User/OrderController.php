@@ -364,6 +364,17 @@ class OrderController extends Controller
             if ($goods->status == Goods::STATUS_OFF){
                 throw new BaseResponseException('此商品已下架，请您选择其他商品');
             }
+        } elseif ($order->type == Order::TYPE_DISHES){
+            //判断商品上下架状态
+            $dishesItems = DishesItem::where('dishes_id', $order->dishes_id)
+                ->where('user_id', $order->user_id)
+                ->get();
+            foreach ($dishesItems as $item){
+                $dishesGoods = DishesGoods::findOrFail($item->dishes_goods_id);
+                if ($dishesGoods->status == DishesGoods::STATUS_OFF){
+                    throw new BaseResponseException('菜单已变更, 请刷新页面');
+                }
+            }
         }
 
         $sdkConfig = $this->_wechatUnifyPay($order);
