@@ -19,7 +19,7 @@
                     <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                 </el-form-item>
             </el-form>
-            <el-button class="fr" type="primary" @click="add">添加商品</el-button>
+            <el-button class="fr" type="primary" @click="add">添加单品</el-button>
         </el-col>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
@@ -28,8 +28,8 @@
             <el-table-column prop="dishes_category.name" label="类别"/>
             <el-table-column prop="detail_image" label="商品图片">
                 <template slot-scope="scope">
-                    <div style="height: 50px; width: 50px">
-                        <preview-img class="img" :url="scope.row.detail_image"/>
+                    <div class="detail_image" style="height: 50px; width: 50px" v-viewer @click="previewImage($event)">
+                        <img class="img" :src="scope.row.detail_image" width="100%" height="100%" />
                     </div>
                 </template>
             </el-table-column>
@@ -80,7 +80,7 @@
                 :page-size="query.pageSize"
                 :total="total"/>
 
-        <el-dialog title="添加商品" :visible.sync="isAdd" :close-on-click-modal="false">
+        <el-dialog title="添加单品" :visible.sync="isAdd" :close-on-click-modal="false">
             <dishes-goods-form
                     ref="form"
                     :data="{}"
@@ -96,6 +96,9 @@
     import DishesGoodsItemOptions from './dishes-goods-item-options'
     import DishesGoodsForm from './dishes-goods-form'
     import PreviewImg from '../../../assets/components/img/preview-img'
+
+    //引入预览样式
+    import 'viewerjs/dist/viewer.css'
 
     export default {
         name: "dishesGoods-list",
@@ -156,7 +159,14 @@
                 api.get('/dishes/categories/all').then((data) => {
                     this.categoryList = data.list;
                 })
-            }
+            },
+            previewImage(event){
+                event.stopPropagation()
+                //预览商品图片
+                const viewer = event.currentTarget.$viewer
+                viewer.show()
+                return
+            },
         },
         created(){
             this.getList();

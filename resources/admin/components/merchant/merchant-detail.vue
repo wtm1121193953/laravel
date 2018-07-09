@@ -198,17 +198,16 @@
                     <el-form-item v-if="data.audit_status == 0 || data.audit_status == 3">
                         <el-button type="success" @click="audit(1)">审核通过</el-button>
                         <el-button type="warning" @click="audit(2)">审核不通过</el-button>
+                        <el-button type="primary" @click="back()">返回</el-button>
                         <el-button v-if="data.audit_status != 3" type="danger" @click="audit(3)">打回商户池</el-button>
                     </el-form-item>
-
                 </el-col>
 
-                <el-col  >
+                <el-col  v-else >
                     <el-form-item >
                         <el-button type="primary" @click="back()">返回</el-button>
                         <!-- <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button> -->
                     </el-form-item>
-
                 </el-col>
             </el-form>
 
@@ -231,7 +230,7 @@
         props: {
             data: Object,
             type: String,
-            auditType:Number
+            auditType:Number,
         },
         computed:{
 

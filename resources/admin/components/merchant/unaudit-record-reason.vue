@@ -1,28 +1,18 @@
 <template>
-    <el-row>
-        <el-col :span="24">
-            <el-form  size="small">
-                <el-col  :span="10">
-                    <el-form-item prop="audit_suggestion" >
-                        <p>审核意见</p>
-                        <span>{{data.audit_suggestion}}</span>
-                    </el-form-item>
-                </el-col>
-            </el-form>
-        </el-col>
-    </el-row>
+    <el-table  :data = "data" >
+        <el-table-column width="150" property="audit_suggestion" label="审核意见"></el-table-column>
+    </el-table>
 </template>
 
 <script>
-
     export default {
         name: 'unaudit-record-reason',
         props: {
-            data: Object,
+            data: {
+                type:Array,
+            },
         },
-
     }
-
 </script>
 
 <style scoped>

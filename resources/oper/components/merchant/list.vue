@@ -126,7 +126,7 @@
         name: "merchant-list",
         data(){
             return {
-                auditRecord:{},
+                auditRecord:[],
                 isLoading: false,
                 query: {
                     name: '',
@@ -175,7 +175,7 @@
             },
             showMessage(scope){
                 api.get('/merchant/audit/newlist', {id: scope.row.id}).then(data => {
-                    this.auditRecord = data;
+                    this.auditRecord = [data];
                 })
 
             },
