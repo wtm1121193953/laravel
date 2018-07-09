@@ -39,7 +39,7 @@
                     </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="pay_price" label="总价¥"/>
+            <el-table-column prop="pay_price" label="总价 ¥"/>
             <el-table-column prop="notify_mobile" label="手机号"/>
             <el-table-column prop="status" label="订单状态">
                 <template slot-scope="scope">

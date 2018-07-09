@@ -124,7 +124,7 @@
                     </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="pay_price" label="总价"/>
+            <el-table-column prop="pay_price" label="总价 ¥"/>
             <el-table-column prop="status" label="订单状态">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.status) === 1">未支付</span>

@@ -40,7 +40,7 @@
                     {{scope.row.start_date}} 至 {{scope.row.end_date}}
                 </template>
             </el-table-column>
-            <el-table-column prop="amount" label="订单金额" align="center"/>
+            <el-table-column prop="amount" label="订单金额 ¥" align="center"/>
             <el-table-column prop="settlement_rate" label="费率" align="center">
                 <template slot-scope="scope">
                     {{scope.row.settlement_rate}} %

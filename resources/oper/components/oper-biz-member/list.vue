@@ -2,10 +2,10 @@
     <page title="我的业务员" v-loading="isLoading">
         <el-form class="fl" size="small" inline>
             <el-form-item label="" prop="name">
-                <el-input v-model="query.name" @keyup.enter.native="search" placeholder="姓名"/>
+                <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="姓名"/>
             </el-form-item>
             <el-form-item label="" prop="mobile">
-                <el-input v-model="query.mobile" @keyup.enter.native="search" placeholder="手机号"/>
+                <el-input v-model="query.mobile" @keyup.enter.native="search"  clearable  placeholder="手机号"/>
             </el-form-item>
             <el-form-item label="状态" prop="status">
                 <el-select v-model="query.status" placeholder="请选择">
