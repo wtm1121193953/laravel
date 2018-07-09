@@ -15,7 +15,7 @@
             <el-button type="primary" class="fr" @click="showItems">核销</el-button>
         </el-col>
         <el-table :data="list" stripe>
-            <el-table-column prop="id" label="ID"/>
+            <el-table-column prop="id" label="ID" width="100px"/>
             <el-table-column prop="created_at" label="创建时间"/>
             <el-table-column prop="order_no" label="订单号"/>
             <el-table-column prop="type" label="订单类型">
