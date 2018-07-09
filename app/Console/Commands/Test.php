@@ -53,8 +53,6 @@ class Test extends Command
      */
     public function handle()
     {
-        Log::info('定时任务测试test');
-        return;
      //   MerchantSettingService::set();
 
         Order::whereIn('status', [4, 5, 6, 7])->chunk(100, function(Collection $list){

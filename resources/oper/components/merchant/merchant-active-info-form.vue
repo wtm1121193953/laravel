@@ -16,6 +16,7 @@
                         placeholder="请输入推荐人姓名或手机号码"
                         :remote-method="searchOperBizMember"
                         :loading="searchOperBizMemberLoading"
+                        @clear="resetCode"
                         class="w-300"
                 >
                     <el-option
@@ -424,6 +425,10 @@
                         }
                     })
                 }
+            },
+            resetCode() {
+                this.form.oper_biz_member_code = '';
+                this.operBizMembers = [];
             },
         },
         created(){
