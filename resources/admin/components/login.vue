@@ -144,9 +144,10 @@
             },
             relocation() {
                 if (this.$route.query && this.$route.query._from) {
+                    console.log(this.$route.query,this.$route.query._from,222);
                     router.push(this.$route.query._from);
                 }else{
-                    router.push('/');
+                    router.push('/welcome');
                 }
             },
             doLogin(){
