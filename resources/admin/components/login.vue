@@ -132,7 +132,8 @@
             ...mapState([
                 'projectName',
                 'systemName',
-                'user'
+                'user',
+                'currentMenu'
             ])
         },
         methods: {
@@ -144,9 +145,10 @@
             },
             relocation() {
                 if (this.$route.query && this.$route.query._from) {
-                    console.log(this.$route.query,this.$route.query._from,222);
                     router.push(this.$route.query._from);
-                }else{
+                }else if(this.currentMenu){
+                    router.push('/');
+                }else {
                     router.push('/welcome');
                 }
             },
@@ -240,6 +242,7 @@
             }
         },
         created: function () {
+
         },
         mounted () {
             const that = this;
