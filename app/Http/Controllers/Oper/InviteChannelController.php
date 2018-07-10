@@ -52,7 +52,8 @@ class InviteChannelController extends Controller
             ->when('keyword', function (Builder $query) use ($keyword){
                 $query->where('name', 'like', "%$keyword%");
             })
-            ->withCount('inviteUserRecords');
+            ->withCount('inviteUserRecords')
+            ->orderByDesc('id');
         return (new OperInviteChannelExport($query))->download('推广渠道列表.xlsx');
     }
 
