@@ -136,6 +136,13 @@
                     callback();
                 }
             };
+            let validateBankCardNo = (rule, value, callback) => {
+                if (!(/^[1-9]\d*$/.test(value))) {
+                    callback(new Error('请输入正确的公司账号'));
+                } else {
+                    callback();
+                }
+            };
             return {
                 form: deepCopy(defaultForm),
                 formRules: {
@@ -156,7 +163,16 @@
                         {validator: validateIdCard}
                     ],
                     bank_card_no: [
-                        {type: 'number', message: '请输入正确的公司账号'},
+                        {validator: validateBankCardNo}
+                    ],
+                    contacter: [
+                        {max: 60, message: '负责人不能超过60个字'}
+                    ],
+                    address: [
+                        {max: 60, message: '详细地址不能超过60个字'}
+                    ],
+                    legal_name: [
+                        {max: 60, message: '法人姓名不能超过60个字'}
                     ]
                 },
                 areas: [],
