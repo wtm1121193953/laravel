@@ -1,5 +1,5 @@
 <template>
-    <page title="推广列表">
+    <page title="渠道列表">
         <el-form inline class="fl" :model="query" size="small">
             <el-form-item prop="keyword">
                 <el-input v-model="query.keyword" placeholder="渠道名称" @keyup.enter.native="search"></el-input>
