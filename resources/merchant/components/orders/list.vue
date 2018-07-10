@@ -17,7 +17,7 @@
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID" width="100px"/>
             <el-table-column prop="created_at" label="创建时间"/>
-            <el-table-column prop="order_no" label="订单号"/>
+            <el-table-column prop="order_no" label="订单号" width="300px"/>
             <el-table-column prop="type" label="订单类型">
                 <template slot-scope="scope">
                     <span v-if="scope.row.type == 1">团购</span>
@@ -26,7 +26,7 @@
                     <span v-else>未知({{scope.row.type}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="goods_name" label="商品名称">
+            <el-table-column prop="goods_name" label="商品名称" width="300px">
                 <template slot-scope="scope">
                     <span v-if="scope.row.type == 3 && scope.row.dishes_items.length == 1">
                         {{scope.row.dishes_items[0].dishes_goods_name}}
