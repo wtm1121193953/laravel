@@ -110,7 +110,7 @@
                 layout="total, prev, pager, next"
                 :current-page.sync="query.page"
                 @current-change="getList"
-                :page-size="2"
+                :page-size="15"
                 :total="total"/>
     </page>
 </template>
