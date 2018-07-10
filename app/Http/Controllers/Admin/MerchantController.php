@@ -39,6 +39,7 @@ class MerchantController extends Controller
         if(empty($auditStatus)){
             $auditStatus=["0","1","2","3"];
         }
+
         $operId = request('operId');
         $operName = request('operName');
         $operIds = [];
@@ -78,11 +79,10 @@ class MerchantController extends Controller
                     $query->where('signboard_name', 'like', "%$signBoardName%");
                 })
                 ->when($operId, function (Builder $query) use ($operId) {
-                    if ($operId > 0) {
-                        $query->where('oper_id', $operId);
-                    } else {
-                        $query->where('audit_oper_id', $operId);
-                    }
+                    $query->where(function ($query) use ($operId) {
+                        $query ->where('oper_id',  $operId)
+                            ->orWhere('audit_oper_id', $operId);
+                    });
                 })
                 ->when(!empty($operIds), function (Builder $query) use ($operIds) {
                     $query->whereIn('oper_id', $operIds);
