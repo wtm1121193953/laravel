@@ -106,7 +106,7 @@
                         {required: true, message: '类别不能为空'}
                     ],
                     detail_image: [
-                        {required: true, message: '商品详情不能为空'}
+                        {required: true, message: '商品图片不能为空'}
                     ],
                     intro: [
                         {max: 200, message: '商品简介不能超过200个字'}
