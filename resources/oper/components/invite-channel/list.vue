@@ -2,7 +2,7 @@
     <page title="推广列表">
         <el-form inline class="fl" :model="query" size="small">
             <el-form-item prop="keyword">
-                <el-input v-model="query.keyword" placeholder="渠道名称" @keyup.enter.native="search"></el-input>
+                <el-input v-model="query.keyword" placeholder="渠道名称" clearable @keyup.enter.native="search"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
