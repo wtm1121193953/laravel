@@ -13,7 +13,7 @@
                     {{scope.row.settlement_rate}} %
                 </template>
             </el-table-column>
-            <el-table-column prop="real_amount" label="结算金额" align="center"/>
+            <el-table-column prop="real_amount" label="结算金额 ¥" align="center"/>
             <el-table-column prop="status" label="结算状态" align="center">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.status) === 1">审核中</span>

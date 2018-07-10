@@ -20,10 +20,11 @@ class InviteStatisticsController
     public function dailyList()
     {
         $merchantId = request()->get('current_user')->merchant_id;
+        $pageSize = request('pageSize');
         $data = InviteUserStatisticsDaily::where('origin_id', $merchantId)
             ->where('origin_type', InviteChannel::ORIGIN_TYPE_MERCHANT)
             ->orderByDesc('date')
-            ->paginate();
+            ->paginate($pageSize);
         // 如果是第一页, 获取当日数据统计并添加到列表中
         if(request('page') <= 1){
             $today = new InviteUserStatisticsDaily();
@@ -38,7 +39,7 @@ class InviteStatisticsController
         }
         return Result::success([
             'list' => $data->items(),
-            'total' => $data->total() + 1,
+            'total' => $data->total(),
         ]);
     }
 }
