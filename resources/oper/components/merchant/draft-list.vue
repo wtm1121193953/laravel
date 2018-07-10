@@ -4,22 +4,6 @@
             <el-form-item label="" prop="name">
                 <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="商户名称"/>
             </el-form-item>
-            <el-form-item label="状态" prop="status">
-                <el-select v-model="query.status">
-                    <el-option label="全部" value=""/>
-                    <el-option label="正常" value="1"/>
-                    <el-option label="已冻结" value="2"/>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="审核状态" prop="audit_status">
-                <el-select v-model="query.audit_status" placeholder="请选择">
-                    <el-option label="全部" value=""/>
-                    <el-option label="待审核" value="-1"/>
-                    <el-option label="审核通过" value="1"/>
-                    <el-option label="审核不通过" value="2"/>
-                    <el-option label="重新提交审核" value="3"/>
-                </el-select>
-            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
@@ -52,10 +36,9 @@
                     <span> {{ scope.row.area }} </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="operBizMemberName" label="业务员"/>
-            <el-table-column label="状态">
-                <template>
-                    暂存
+            <el-table-column prop="status" label="状态">
+                <template slot-scope="scope">
+                    <span>暂存</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="250px">
