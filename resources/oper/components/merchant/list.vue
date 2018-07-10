@@ -110,7 +110,7 @@
                 layout="total, prev, pager, next"
                 :current-page.sync="query.page"
                 @current-change="getList"
-                :page-size="15"
+                :page-size="2"
                 :total="total"/>
     </page>
 </template>
@@ -131,8 +131,8 @@
                 query: {
                     name: '',
                     status: '',
-                    audit_status: '',
                     page: 1,
+                    audit_status: '',
                     signBoardName:''
                 },
                 list: [],
@@ -149,7 +149,10 @@
             },
             getList(){
                 this.isLoading = true;
-                api.get('/merchants', this.query).then(data => {
+                let params = {};
+                Object.assign(params, this.query);
+                api.get('/merchants', params).then(data => {
+                    this.query.page = params.page;
                     this.isLoading = false;
                     this.list = data.list;
                     this.total = data.total;
@@ -193,7 +196,7 @@
 
         created(){
             if (this.$route.params){
-                this.query = this.$route.params;
+                Object.assign(this.query, this.$route.params);
             }
             this.getList();
         },

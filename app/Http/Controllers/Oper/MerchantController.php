@@ -49,7 +49,7 @@ class MerchantController extends Controller
                 $query->where('signboard_name', 'like', "%$signBoardName%");
             })
             ->orderBy('created_at', 'desc')
-            ->paginate();
+            ->paginate(2);
 
         $data->each(function ($item){
             if ($item->merchant_category_id){
