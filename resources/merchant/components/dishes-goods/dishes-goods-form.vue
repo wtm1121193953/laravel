@@ -21,7 +21,7 @@
                         ></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item prop="detail_image" label="商品图片">
+                <el-form-item prop="detail_image" label="单品图片">
                     <image-upload v-model="form.detail_image" :limit="1" :width="imageWidth" :height="imageHeight"></image-upload>
                     <span>图片尺寸：{{imageWidth}}px * {{imageHeight}}px</span>
                 </el-form-item>

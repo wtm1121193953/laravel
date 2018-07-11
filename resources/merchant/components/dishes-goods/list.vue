@@ -2,8 +2,8 @@
     <page title="单品管理" v-loading="isLoading">
         <el-col>
             <el-form class="fl" size="small" inline>
-                <el-form-item prop="name" label="商品名称">
-                    <el-input v-model="query.name"   placeholder="商品名称" clearable/>
+                <el-form-item prop="name" label="单品名称">
+                    <el-input v-model="query.name"   placeholder="单品名称" clearable/>
                 </el-form-item>
                 <el-form-item prop="category_id" label="类别">
                     <el-select v-model="query.category_id" filterable clearable size="small" placeholder="请选择">
@@ -23,7 +23,7 @@
         </el-col>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
-            <el-table-column prop="name" label="商品名称"/>
+            <el-table-column prop="name" label="单品名称"/>
             <el-table-column prop="sale_price" label="销售价 ¥"/>
             <el-table-column prop="dishes_category.name" label="类别"/>
             <el-table-column prop="detail_image" label="商品图片">
