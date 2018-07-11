@@ -4,7 +4,7 @@
         <el-table :data="list" stripe>
             <el-table-column prop="active_time" label="激活时间"/>
             <el-table-column prop="name" label="商户名称"/>
-            <el-table-column prop="status" label="状态">
+            <el-table-column prop="status" label="商户状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>
                     <span v-else-if="scope.row.status === 2" class="c-danger">已冻结</span>
