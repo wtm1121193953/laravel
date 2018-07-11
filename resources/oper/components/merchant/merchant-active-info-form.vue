@@ -247,7 +247,7 @@
                 }
             };
             let validateServicePhone = (rule, value, callback) => {
-                if (!(/^1[3456789]\d{9}$/.test(value)) && !(/^(0[0-9]{2,3}\-)([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$/.test(value))) {
+                if (!(/^[1-9]\d{0,14}$/.test(value))) {
                     callback(new Error('请输入正确的手机号或带区号的固定电话'));
                 }else {
                     callback();
