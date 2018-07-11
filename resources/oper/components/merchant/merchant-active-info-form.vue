@@ -134,7 +134,7 @@
             </el-form-item>
 
             <el-form-item prop="contract_pic_url" label="合同">
-                <image-upload v-model="form.contract_pic_url" :limit="10"/>
+                <image-upload v-model="form.contract_pic_url" @before="beforeUpload" @complete="completeUpload" :limit="10"/>
             </el-form-item>
 
             <el-form-item prop="other_card_pic_urls" label="其他证件">
@@ -363,7 +363,8 @@
                     ],
                 },
                 searchOperBizMemberLoading: false,
-                operBizMembers: []
+                operBizMembers: [],
+                uploadVoucher: 0,
             }
         },
         methods: {
@@ -430,6 +431,14 @@
                 this.form.oper_biz_member_code = '';
                 this.operBizMembers = [];
             },
+            beforeUpload() {
+                this.uploadVoucher ++ ;
+                // console.log('+', this.uploadVoucher);
+            },
+            completeUpload() {
+                this.uploadVoucher -- ;
+                // console.log('-', this.uploadVoucher);
+            }
         },
         created(){
             this.initForm();
