@@ -220,16 +220,6 @@
                     this.query.page = params.page;
                     this.list = data.list;
                     this.total = data.total;
-
-                    if (this.list.length <= 0 && this.isAudit){
-                        router.replace({
-                            path: '/refresh',
-                            query: {
-                                name: 'MerchantUnauditList'
-                            }
-                        })
-                    }
-
                     this.tableLoading = false;
                 })
             },
