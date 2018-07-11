@@ -63,7 +63,7 @@ class OrderController extends Controller
             $item->items = OrderItem::where('order_id', $item->id)->get();
             // 判断商户是否是当前小程序关联运营中心下的商户
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
-            $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
+            $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
             $item->merchant_logo = Merchant::where('id', $item->merchant_id)->value('logo');
             $item->signboard_name = Merchant::where('id', $item->merchant_id)->value('signboard_name');
             if ($item->type == Order::TYPE_DISHES){
@@ -482,8 +482,8 @@ class OrderController extends Controller
     private function _checkOrder(Order $order)
     {
         if ($order->type == Order::TYPE_GROUP_BUY){
-            $goods = Goods::findOrFail($order->goods_id);
-            if ($goods->status == Goods::STATUS_OFF){
+            $goods = Goods::where('id', $order->goods_id)->first();
+            if (empty($goods) || $goods->status == Goods::STATUS_OFF){
                 $order->status = Order::STATUS_CLOSED;
                 $order->save();
                 throw new BaseResponseException('此商品已下架，请您选择其他商品');
@@ -494,8 +494,8 @@ class OrderController extends Controller
                 ->where('user_id', $order->user_id)
                 ->get();
             foreach ($dishesItems as $item){
-                $dishesGoods = DishesGoods::findOrFail($item->dishes_goods_id);
-                if ($dishesGoods->status == DishesGoods::STATUS_OFF){
+                $dishesGoods = DishesGoods::where('id', $item->dishes_goods_id)->first();
+                if (empty($dishesGoods) || $dishesGoods->status == DishesGoods::STATUS_OFF){
                     $order->status = Order::STATUS_CLOSED;
                     $order->save();
                     throw new BaseResponseException('菜单已变更, 请刷新页面');
