@@ -2,14 +2,14 @@
     <page :title=" isAudit ? '审核商户': '商户列表'"     v-loading="isLoading" >
         <el-col>
             <el-form v-model="query" inline>
-                <el-form-item prop="merchantId" label="商户ID">
-                    <el-input v-model="query.merchantId" size="small" class="w-100" clearable></el-input>
+                <el-form-item prop="merchantId" label="商户ID" >
+                    <el-input v-model="query.merchantId" size="small"  placeholder="商户ID"  class="w-100" clearable></el-input>
                 </el-form-item>
                 <el-form-item prop="name" label="商户名称" >
-                    <el-input v-model="query.name" size="small" placeholder="商户名称" clearable @keyup.enter.native="search"/>
+                    <el-input v-model="query.name" size="small"  placeholder="商户名称" clearable @keyup.enter.native="search"/>
                 </el-form-item>
                 <el-form-item prop="signBoardName" label="商户招牌名" >
-                    <el-input v-model="query.signBoardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
+                    <el-input v-model="query.signBoardName" size="small"  placeholder="商户口招牌名" clearable @keyup.enter.native="search"/>
                 </el-form-item>
                 <el-form-item prop="startDate" label="添加商户开始时间">
                     <el-date-picker
@@ -46,17 +46,17 @@
                         <el-option label="重新提交审核" value="3"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item prop="operId" label="激活运营中心ID">
-                    <el-input v-model="query.operId" size="small"   class="w-100" clearable />
+                <el-form-item prop="operId" label="激活运营中心ID"  >
+                    <el-input v-model="query.operId" size="small"   placeholder="激活运营中心ID"  class="w-100" clearable />
                 </el-form-item>
-                <el-form-item prop="operName" label="激活运营中心名称">
-                    <el-input v-model="query.operName" size="small"  clearable></el-input>
+                <el-form-item prop="operName" label="激活运营中心名称"  >
+                    <el-input v-model="query.operName" size="small"  placeholder="激活运营中心名称"  clearable></el-input>
                 </el-form-item>
-                <el-form-item prop="creatorOperId" label="录入运营中心ID">
-                    <el-input v-model="query.creatorOperId" size="small"  class="w-100" clearable />
+                <el-form-item prop="creatorOperId" label="录入运营中心ID"   >
+                    <el-input v-model="query.creatorOperId" size="small"  placeholder="录入运营中心ID"  class="w-100" clearable />
                 </el-form-item>
-                <el-form-item prop="creatorOperName" label="录入运营中心名称">
-                    <el-input v-model="query.creatorOperName" size="small" class="w-100"   clearable></el-input>
+                <el-form-item prop="creatorOperName" label="录入运营中心名称"  >
+                    <el-input v-model="query.creatorOperName" size="small"  placeholder="录入运营中心名称" class="w-100"   clearable></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>

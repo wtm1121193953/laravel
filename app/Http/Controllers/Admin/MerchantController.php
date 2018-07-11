@@ -206,20 +206,20 @@ class MerchantController extends Controller
         $auditSuggestion = request('audit_suggestion');
         $merchant = Merchant::findOrFail($merchantId);
 
+        $merchantAuditOld = MerchantAudit::where('merchant_id', $merchantId)
+            ->where('oper_id', $merchant->audit_oper_id)
+            ->whereIn('status', [0,3])
+            ->orderBy('created_at','desc')
+            ->first();
+        if(empty($merchantAuditOld)){
+            // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
+            $merchantAuditOld = MerchantAudit::addRecord($merchantId, $merchant->audit_oper_id);
+        }
+
         $merchantAudit = new MerchantAudit();
         $merchantAudit->merchant_id = $merchantId;
         $merchantAudit->oper_id = $merchant->audit_oper_id;
-
-
-
-//        $merchantAudit = MerchantAudit::where('merchant_id', $merchantId)
-//            ->where('oper_id', $merchant->audit_oper_id)
-//            ->first();
-//        if(empty($merchantAudit)){
-//            // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
-//            $merchantAudit = MerchantAudit::addRecord($merchantId, $merchant->audit_oper_id);
-//        }
-
+        $merchantAudit->created_at = $merchantAuditOld->created_at;
 
    //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
         if($type == 3){
