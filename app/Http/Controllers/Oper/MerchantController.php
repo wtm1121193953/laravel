@@ -15,6 +15,7 @@ use App\Modules\Oper\OperBizMember;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
+
 class MerchantController extends Controller
 {
 
@@ -211,6 +212,7 @@ class MerchantController extends Controller
             MerchantAudit::resubmit($merchant->id, $currentOperId);
             $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
         }else {
+            MerchantAudit::addRecord($merchant->id, $currentOperId);
             $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
         }
 
