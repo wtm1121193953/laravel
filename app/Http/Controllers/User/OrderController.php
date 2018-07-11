@@ -483,7 +483,7 @@ class OrderController extends Controller
     {
         if ($order->type == Order::TYPE_GROUP_BUY){
             $goods = Goods::where('id', $order->goods_id)->first();
-            if ($goods->status == Goods::STATUS_OFF || empty($goods)){
+            if (empty($goods) || $goods->status == Goods::STATUS_OFF){
                 $order->status = Order::STATUS_CLOSED;
                 $order->save();
                 throw new BaseResponseException('此商品已下架，请您选择其他商品');
@@ -495,7 +495,7 @@ class OrderController extends Controller
                 ->get();
             foreach ($dishesItems as $item){
                 $dishesGoods = DishesGoods::where('id', $item->dishes_goods_id)->first();
-                if ($dishesGoods->status == DishesGoods::STATUS_OFF || empty($dishesGoods)){
+                if (empty($dishesGoods) || $dishesGoods->status == DishesGoods::STATUS_OFF){
                     $order->status = Order::STATUS_CLOSED;
                     $order->save();
                     throw new BaseResponseException('菜单已变更, 请刷新页面');
