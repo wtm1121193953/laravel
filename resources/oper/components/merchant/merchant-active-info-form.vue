@@ -6,14 +6,14 @@
         </el-col>
         <!-- 商户激活信息左侧块 -->
         <el-col :span="11">
-            <el-form-item prop="oper_biz_member_code" label="推荐人">
+            <el-form-item prop="oper_biz_member_code" label="业务员">
                 <el-select
                         v-model="form.oper_biz_member_code"
                         filterable
                         remote
                         reserve-keyword
                         clearable
-                        placeholder="请输入推荐人姓名或手机号码"
+                        placeholder="请输入业务员姓名或手机号码"
                         :remote-method="searchOperBizMember"
                         :loading="searchOperBizMemberLoading"
                         @clear="resetCode"

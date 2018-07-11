@@ -2,7 +2,7 @@
     <page title="会员解绑" v-loading="isLoading">
         <el-form :model="query" inline size="small" class="fl" @submit.native.prevent>
             <el-form-item>
-                <el-input v-model="query.keyword" placeholder="请输入用户手机搜索" @keyup.native.enter="search"/>
+                <el-input v-model="query.keyword" placeholder="请输入用户手机搜索"  clearable  @keyup.native.enter="search"/>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search">搜索</el-button>
@@ -12,7 +12,7 @@
             <!--<el-table-column prop="name" label="会员名称"/>-->
             <el-table-column prop="mobile" label="手机号"/>
             <!--<el-table-column prop="email" label="邮箱"/>-->
-            <el-table-column prop="parent" label="推荐人"/>
+            <el-table-column prop="parent" label="业务员"/>
             <el-table-column prop="created_at" label="添加时间"/>
             <!--<el-table-column prop="city" label="城市">-->
                 <!--<template slot-scope="scope">-->
