@@ -256,7 +256,7 @@
                 })
             },
             back(){
-                router.back(-1)
+                this.$emit('change')
             }
         },
         created(){

@@ -17,9 +17,19 @@
         },
         methods: {
             merchantChange(){
-                router.push({
-                    path: '/merchants'
-                });
+                if (this.$route.query.isAudit){
+                    router.push({
+                        path: '/merchant/unaudits',
+                        name: 'MerchantUnauditList',
+                        params: this.$route.params,
+                    });
+                } else {
+                    router.push({
+                        path: '/merchants',
+                        name: 'MerchantList',
+                        params: this.$route.params,
+                    });
+                }
             },
             getDetail(){
                 api.get('merchant/detail', {id: this.id,}).then(data => {

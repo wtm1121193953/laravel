@@ -193,13 +193,7 @@
         },
         methods: {
             merchantChange(){
-                router.replace({
-                    path: '/refresh',
-                    query: {
-                        name: 'MerchantList',
-                        key: '/merchants'
-                    }
-                })
+                this.getList();
             },
             showMessage(scope){
                  api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {
@@ -220,18 +214,37 @@
             },
             getList(){
                 this.tableLoading = true;
-                api.get('/merchants', this.query).then(data => {
+                let params = {};
+                Object.assign(params, this.query);
+                api.get('/merchants', params).then(data => {
+                    this.query.page = params.page;
                     this.list = data.list;
                     this.total = data.total;
+
+                    if (this.list.length <= 0 && this.isAudit){
+                        router.replace({
+                            path: '/refresh',
+                            query: {
+                                name: 'MerchantUnauditList'
+                            }
+                        })
+                    }
+
                     this.tableLoading = false;
                 })
             },
             detail(scope,type){
+                let self = this;
                 router.push({
                     path: '/merchant/detail',
-                    query: {id: scope.row.id,auditType:type},
+                    name: 'MerchantDetail',
+                    query: {
+                        id: scope.row.id,
+                        auditType: type,
+                        isAudit: this.isAudit,
+                    },
+                    params: self.query,
                 })
-                return false;
             },
             //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
             audit(scope, type){
@@ -263,10 +276,11 @@
         },
         created(){
             if(this.isAudit){
-                this.query.auditStatus=['0', '3']
-                this.getList()
-
+                this.query.auditStatus=['0', '3'];
+                Object.assign(this.query, this.$route.params);
+                this.getList();
             }else{
+                Object.assign(this.query, this.$route.params);
                 this.getList();
             }
 
