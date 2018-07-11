@@ -158,7 +158,7 @@
 
                         <el-form-item prop="other_card_pic_urls" label="其他证件">
                             <div v-viewer>
-                                <img v-if="!data.other_card_pic_urls" v-for="(src,index) in data.other_card_pic_urls" :src="src" :key="index"width="200px" height="100px" />
+                                <img v-for="(src,index) in data.other_card_pic_urls" :src="src" :key="index"width="200px" height="100px" />
                             </div>
                             <!-- <template v-for="pic in data.other_card_pic_urls">
                                 <preview-img :url="pic" width="200px" height="100px"/>
