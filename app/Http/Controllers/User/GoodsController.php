@@ -39,7 +39,7 @@ class GoodsController extends Controller
             'id' => 'required|integer|min:1',
         ]);
 
-        $detail = Goods::findOrFail(request('id'));
+        $detail = Goods::withTrashed()->where('id', request('id'))->firstOrFail();
         $detail->pic_list = $detail->pic_list ? explode(',', $detail->pic_list) : [];
         $merchant = Merchant::findOrFail($detail->merchant_id);
         $detail->business_time = json_decode($merchant->business_time, 1);
