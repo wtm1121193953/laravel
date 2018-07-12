@@ -119,7 +119,7 @@
                 let data = this.accountForm;
                 data.merchant_id = this.scope.row.id;
                 api.post('/merchant/createAccount', data).then(data => {
-                    this.$alert('创建账户成功');
+                    this.$alert('创建帐户成功');
                     this.showCreateAccountDialog = false;
                     this.$emit('accountChanged', this.scope, data)
                 })
