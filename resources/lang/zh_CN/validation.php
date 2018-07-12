@@ -85,7 +85,7 @@ return [
         ],
 
         'mobile' => [
-            'required' => '手机号码不能位空',
+            'required' => '手机号码不能为空',
             'size' => '手机号码位数不正确',
         ],
 
