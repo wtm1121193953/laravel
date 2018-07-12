@@ -43,7 +43,7 @@ class MerchantDraft extends BaseModel
         $this->invoice_title = request('invoice_title','');
         $this->invoice_no = request('invoice_no','');
         $this->status = request('status', 1);
-        $this->business_time = request('business_time');
+        $this->business_time = request('business_time', '');
         $this->logo = request('logo','');
         $descPicList = request('desc_pic_list', '');
         if(is_array($descPicList)) $descPicList = implode(',', $descPicList);
