@@ -102,7 +102,7 @@
                         </el-form-item>
 
                         <!-- 银行卡信息 start -->
-                        <el-form-item label="银行账户类型">
+                        <el-form-item label="银行帐户类型">
                             <span v-if="data.bank_card_type === 1" class="c-gray">公司</span>
                             <span v-if="data.bank_card_type === 2" class="c-green">个人</span>
                         </el-form-item>

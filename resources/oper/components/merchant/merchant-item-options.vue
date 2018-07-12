@@ -4,7 +4,7 @@
         <el-button  type="text" @click="showMearchant(scope)">查看</el-button>
         <el-button type="text" @click="edit">重新提交资料</el-button>
         <el-button v-if="parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="changeStatus">{{parseInt(scope.row.status) === 1 ? '冻结' : '解冻'}}</el-button>
-        <el-button  style=" margin-left: 0px;" v-if="!scope.row.account && parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="showCreateAccountDialog = true">生成账户</el-button>
+        <el-button  style=" margin-left: 0px;" v-if="!scope.row.account && parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="showCreateAccountDialog = true">生成帐户</el-button>
         <el-button  style=" margin-left: 0px;" v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改帐户密码</el-button>
         <el-dialog title="创建商户帐号" :visible.sync="showCreateAccountDialog">
             <el-row>
