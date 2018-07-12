@@ -49,7 +49,7 @@ class DishesController extends Controller
         $categorys =DishesCategory::has('dishesGoods')
             ->where('merchant_id', $merchantId)
             ->where('status', 1)
-            ->orderBy('sort')
+            ->orderBy('sort', 'desc')
             ->get();
         return Result::success([
             'list' => $categorys
@@ -89,6 +89,7 @@ class DishesController extends Controller
         $list = DishesGoods::where('merchant_id', $merchantId)
             ->where('status', 1)
             ->where('dishes_category_id',$categoryId)
+            ->orderBy('sort', 'desc')
             ->get();
 
          return Result::success([

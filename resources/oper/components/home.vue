@@ -81,7 +81,7 @@
                     <el-form-item label="新密码" prop="newPassword">
                         <el-input type="password" v-model="modifyPasswordForm.newPassword" placeholder="请输入新密码"/>
                     </el-form-item>
-                    <el-form-item label="确认新密码" prop="reNewPassword">
+                    <el-form-item label="确认新密码" prop="reNewPassword" required>
                         <el-input type="password" v-model="modifyPasswordForm.reNewPassword" placeholder="请再次输入新密码"/>
                     </el-form-item>
                     <el-form-item>

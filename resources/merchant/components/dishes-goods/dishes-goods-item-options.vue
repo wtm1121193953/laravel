@@ -1,6 +1,8 @@
 <template>
     <!-- xxxxxx列表项操作 -->
     <div>
+        <el-button v-if="showSort" type="text" :disabled="isFirst" @click="saveOrder(scope.row, 'up',categoryId)">上移</el-button>
+        <el-button v-if="showSort" type="text" :disabled="isLast" @click="saveOrder(scope.row, 'down',categoryId)">下移</el-button>
         <el-button type="text" @click="edit">编辑</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '禁用' : '启用'}}</el-button>
         <el-button type="text" @click="del">删除</el-button>
@@ -22,7 +24,11 @@
     export default {
         name: "dishesGoods-item-options",
         props: {
-            scope: {type: Object, required: true}
+            scope: {type: Object, required: true},
+            isFirst: {type: Boolean, default: false},
+            isLast: {type: Boolean, default: false},
+            showSort:{type: Boolean, default: false},
+            categoryId:{type: String, default: ''},
         },
         data(){
             return {
@@ -65,6 +71,11 @@
                     }).finally(() => {
                         this.$emit('after-request')
                     })
+                })
+            },
+            saveOrder(row, type,categoryId) {
+                api.post('/dishes/goods/saveOrder', {id: row.id, type: type,category_id:categoryId}).then(() => {
+                    this.$emit('refresh');
                 })
             },
         },

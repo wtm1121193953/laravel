@@ -5,8 +5,14 @@
                 <el-col>
                     <div class="title">商户录入信息</div>
                 </el-col>
+
                 <!--商户录入信息左侧块-->
                 <el-col :span="11">
+                    <el-form-item prop="status" label="商户状态">
+                        <span v-if="data.status === 1" class="c-green">已启用</span>
+                        <span v-else-if="data.status === 2" class="c-danger">已冻结</span>
+                        <span v-else>未知 ({{data.status}})</span>
+                    </el-form-item>
                     <el-form-item prop="id" label="商户ID">{{data.id}}</el-form-item>
                     <el-form-item v-if="data.operName" prop="operName" label="运营中心">{{data.operName}}</el-form-item>
                     <el-form-item prop="name" label="商户名称">{{data.name}}</el-form-item>
@@ -16,23 +22,40 @@
                         </span>
                     </el-form-item>
                     <el-form-item label="营业执照">
-                        <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button>
+                        <div class="licence" v-viewer style="display: none;">
+                                <img :src="data.business_licence_pic_url" />
+                            </div>
+                        <el-button v-if="data.business_licence_pic_url" type="text" @click="previewImage('licence')">查看</el-button>
+                        <!-- <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button> -->
                     </el-form-item>
-                    <el-form-item label="营业执照代码">
-                        {{ data.organization_code}}
+
+                </el-col>
+                <el-col :span="12" :offset="1">
+                    <el-form-item prop="audit_status" label="审核状态">
+                        <span v-if="data.audit_status === 0" class="c-warning">待审核</span>
+                        <span v-else-if="data.audit_status === 1" class="c-green">审核通过</span>
+                        <span v-else-if="data.audit_status === 2" class="c-danger">审核不通过</span>
+                        <span v-else-if="data.audit_status === 3" class="c-warning">重新提交审核</span>
+                        <span v-else>未知 ({{data.audit_status}})</span>
                     </el-form-item>
                 </el-col>
 
                 <!-- 商户录入信息右侧块 -->
                 <el-col :span="11" :offset="1">
-                    <el-form-item prop="location" label="商户位置">
+                    <el-form-item prop="location" label="商户坐标">
                         {{data.lng}} , {{data.lat}}
                     </el-form-item>
+                    <el-form-item prop="operAddress" label="运营中心地址">
+                        {{data.operAddress}}
+                    </el-form-item>
                     <el-form-item prop="area" label="省市区">
-                        {{data.privince}} {{data.city}} {{data.area}}
+                        {{data.province}} {{data.city}} {{data.area}}
                     </el-form-item>
                     <el-form-item prop="address" label="详细地址">
                         {{data.address}}
+                    </el-form-item>
+                    <el-form-item label="营业执照代码">
+                        {{ data.organization_code}}
                     </el-form-item>
                 </el-col>
 
@@ -45,25 +68,29 @@
                     <el-col :span="11">
                         <el-form-item prop="oper_biz_member_code" label="业务员">
                             <template v-if="data.oper_biz_member_code">
-                                {{data.operBizMemberName}} [ {{data.oper_biz_member_code}} ]
+                                {{data.operBizMemberName}}
                             </template>
                         </el-form-item>
-                        <el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>
-                        <el-form-item prop="invoice_title" label="发票抬头">{{data.invoice_title}}</el-form-item>
-                        <el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>
-                        <el-form-item prop="status" label="商户状态">
-                            <span v-if="data.status === 1" class="c-green">已启用</span>
-                            <span v-else-if="data.status === 2" class="c-danger">已冻结</span>
-                            <span v-else>未知 ({{data.status}})</span>
-                        </el-form-item>
+                        <!--<el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>-->
+                        <el-form-item prop="signboard_name" label="招牌名称">{{data.signboard_name}}</el-form-item>
+                        <!--<el-form-item prop="invoice_title" label="发票抬头">{{data.invoice_title}}</el-form-item>-->
+                        <!--<el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>-->
+
                         <el-form-item prop="business_time" label="营业时间">
                             {{data.business_time[0]}} 至 {{data.business_time[1]}}
                         </el-form-item>
                         <el-form-item prop="logo" label="商家logo">
-                            <preview-img :url="data.logo" width="50px" height="50px"/>
+                            <div v-viewer>
+                                <img :src="data.logo" alt="商家logo" width="200px" height="100px" />
+                            </div>
+                            <!-- <preview-img :url="data.logo" width="50px" height="50px"/> -->
                         </el-form-item>
                         <el-form-item prop="desc_pic" label="商家介绍图片">
-                            <el-button type="text" @click="previewImage(data.desc_pic_list)">查看</el-button>
+                            <div class="desc" v-viewer style="display: none;">
+                                <img v-for="(item,index) in data.desc_pic_list" :src="item" :key="index" />
+                            </div>
+                            <el-button v-if="data.desc_pic_list.length > 0" type="text" @click="previewImage('desc')">查看</el-button>
+                            <!-- <el-button type="text" @click="previewImage(data.desc_pic_list)">查看</el-button> -->
                         </el-form-item>
                         <el-form-item prop="desc_pic" label="商家介绍">
                             {{data.desc}}
@@ -93,27 +120,58 @@
                             {{data.bank_open_address}}
                         </el-form-item>
                         <el-form-item v-if="data.bank_card_type == 1" required prop="licence_pic_url" label="开户许可证">
-                            <preview-img :url="data.licence_pic_url" width="100px" height="100px"/>
+                            <div v-viewer>
+                                <img :src="data.licence_pic_url" alt="开户许可证" width="50px" height="50px" />
+                            </div>
+                            <!-- <preview-img :url="data.licence_pic_url" width="100px" height="100px"/> -->
                         </el-form-item>
                         <el-form-item v-if="data.bank_card_type == 2" required label="法人银行卡正面照" prop="bank_card_pic_a">
-                            <preview-img :url="data.bank_card_pic_a" width="100px" height="100px"/>
+                            <div v-viewer>
+                                <img v-if="data.bank_card_pic_a.length == 1" :src="data.bank_card_pic_a" alt="法人银行卡正面照" width="200px" height="100px" />
+                                <div>
+                                    <img v-if="data.bank_card_pic_a.length == 2" :src="data.bank_card_pic_a[0]" alt="法人银行卡正面照" width="200px" height="100px" />
+                                </div>
+                                <div>
+                                    <img v-if="data.bank_card_pic_a.length == 2" :src="data.bank_card_pic_a[1]" alt="法人银行卡正面照" width="200px" height="100px" />
+                                </div>
+                            </div>
+                            <!-- <preview-img :url="data.bank_card_pic_a" width="100px" height="100px"/> -->
                         </el-form-item>
                         <!-- 银行卡信息 end -->
 
                         <el-form-item label="法人身份证正反面">
-                            <preview-img :url="data.legal_id_card_pic_a" width="200px" height="100px"/>
-                            <preview-img :url="data.legal_id_card_pic_b" width="200px" height="100px"/>
+                            <div v-viewer>
+                                <img :src="data.legal_id_card_pic_a" width="200px" height="100px" alt="法人身份证正反面" />
+                            </div>
+                            <div v-viewer>
+                                <img :src="data.legal_id_card_pic_b" width="200px" height="100px" alt="法人身份证正反面" />
+                            </div>
+                            <!-- <preview-img :url="data.legal_id_card_pic_a" width="200px" height="100px"/>
+                            <preview-img :url="data.legal_id_card_pic_b" width="200px" height="100px"/> -->
                         </el-form-item>
                         <el-form-item label="合同">
-                            <el-button type="text" @click="previewImage(data.contract_pic_url)">查看</el-button>
+                            <div class="contract" v-viewer style="display: none;">
+                                <img v-for="(item, index) in data.contract_pic_url" :src="item" :key="index" alt="合同" />
+                            </div>
+                            <el-button type="text" @click="previewImage('contract')">查看</el-button>
                         </el-form-item>
 
                         <el-form-item prop="other_card_pic_urls" label="其他证件">
-                            <template v-for="pic in data.other_card_pic_urls">
+                            <div v-viewer>
+                                <img v-for="(src,index) in data.other_card_pic_urls" :src="src" :key="index"width="200px" height="100px" alt="其他证件" />
+                            </div>
+                            <!-- <template v-for="pic in data.other_card_pic_urls">
                                 <preview-img :url="pic" width="200px" height="100px"/>
-                            </template>
+                            </template> -->
                         </el-form-item>
+                        <el-col v-if="type != 'poolOnly' ">
+                            <el-form-item prop="audit_suggestion" label="审核意见">
+                                <el-input v-if="(data.audit_status == 0 || data.audit_status == 3) && auditType == 3" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
+                                <span v-else>{{data.audit_suggestion}}</span>
+                            </el-form-item>
+                        </el-col>
                     </el-col>
+
 
                     <!-- 商户激活信息右侧块 -->
                     <el-col :span="11" :offset="1">
@@ -130,26 +188,25 @@
                             {{data.site_acreage}} ㎡
                         </el-form-item>
                         <el-form-item prop="employees_number" label="商户员工人数">
-                            {{data.employees_number}}
+                            {{data.employees_number}} 人
                         </el-form-item>
                     </el-col>
 
-                    <el-col :span="11" :offset="1">
-                        <el-form-item prop="audit_status" label="审核状态">
-                            <span v-if="data.audit_status === 0" class="c-warning">待审核</span>
-                            <span v-else-if="data.audit_status === 1" class="c-green">审核通过</span>
-                            <span v-else-if="data.audit_status === 2" class="c-danger">审核不通过</span>
-                            <span v-else-if="data.audit_status === 3" class="c-warning">重新提交审核</span>
-                            <span v-else>未知 ({{data.audit_status}})</span>
-                        </el-form-item>
-                    </el-col>
                 </el-col>
-
-                <el-col v-if="type != 'poolOnly'">
+                <!-- 商户激活信息右侧块 -->
+                <el-col v-if="auditType == 3 && type != 'poolOnly'"  >
                     <el-form-item v-if="data.audit_status == 0 || data.audit_status == 3">
                         <el-button type="success" @click="audit(1)">审核通过</el-button>
                         <el-button type="warning" @click="audit(2)">审核不通过</el-button>
+                        <el-button type="primary" @click="back()">返回</el-button>
                         <el-button v-if="data.audit_status != 3" type="danger" @click="audit(3)">打回商户池</el-button>
+                    </el-form-item>
+                </el-col>
+
+                <el-col  v-else >
+                    <el-form-item >
+                        <el-button type="primary" @click="back()">返回</el-button>
+                        <!-- <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button> -->
                     </el-form-item>
                 </el-col>
             </el-form>
@@ -162,15 +219,18 @@
 </template>
 
 <script>
+
     import previewImg from '../../../assets/components/img/preview-img'
     import imgPreviewDialog from '../../../assets/components/img/preview-dialog'
     import api from '../../../assets/js/api'
+    import 'viewerjs/dist/viewer.css'
 
     export default {
         name: 'merchant-detail',
         props: {
             data: Object,
             type: String,
+            auditType:Number,
         },
         computed:{
 
@@ -182,15 +242,21 @@
             }
         },
         methods: {
-            previewImage(url){
-                this.currentPreviewImage = url;
-                this.isShowPreviewImage = true;
+            previewImage(viewerEl){
+                // this.currentPreviewImage = url;
+                // this.isShowPreviewImage = true;
+
+                const viewer = this.$el.querySelector('.' + viewerEl).$viewer
+                viewer.show()
             },
             audit(type){
-                api.post('/merchant/audit', {id: this.data.id, type: type}).then(data => {
+                api.post('/merchant/audit', {id: this.data.id, type: type,audit_suggestion:this.data.audit_suggestion}).then(data => {
                     this.$alert(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
                     this.$emit('change')
                 })
+            },
+            back(){
+                this.$emit('change')
             }
         },
         created(){
@@ -200,6 +266,7 @@
             imgPreviewDialog,
         }
     }
+
 </script>
 
 <style scoped>

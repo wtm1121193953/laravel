@@ -1,18 +1,17 @@
 <template>
     <!-- 商户列表项操作 -->
     <div>
+        <el-button  type="text" @click="showMearchant(scope)">查看</el-button>
         <el-button type="text" @click="edit">重新提交资料</el-button>
         <el-button v-if="parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="changeStatus">{{parseInt(scope.row.status) === 1 ? '冻结' : '解冻'}}</el-button>
-        <el-button v-if="!scope.row.account && parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="showCreateAccountDialog = true">生成账户</el-button>
-        <el-button v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改账户密码</el-button>
-
-
-        <el-dialog title="创建商户账号" :visible.sync="showCreateAccountDialog">
+        <el-button  style=" margin-left: 0px;" v-if="!scope.row.account && parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="showCreateAccountDialog = true">生成账户</el-button>
+        <el-button  style=" margin-left: 0px;" v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改帐户密码</el-button>
+        <el-dialog title="创建商户帐号" :visible.sync="showCreateAccountDialog">
             <el-row>
                 <el-col :span="16">
                     <el-form size="mini" :model="accountForm" :rules="accountFormRules" label-width="150px">
-                        <el-form-item label="账户名" prop="account">
-                            <el-input v-model="accountForm.account" placeholder="请输入账户"/>
+                        <el-form-item label="帐户名" prop="account">
+                            <el-input v-model="accountForm.account" placeholder="请输入帐户"/>
                         </el-form-item>
                         <el-form-item label="密码" prop="password">
                             <el-input type="password" v-model="accountForm.password" placeholder="请输入密码"/>
@@ -25,11 +24,11 @@
             </el-row>
         </el-dialog>
 
-        <el-dialog title="修改账户密码" v-if="scope.row.account" :visible.sync="showModifyAccountDialog">
+        <el-dialog title="修改帐户密码" v-if="scope.row.account" :visible.sync="showModifyAccountDialog">
             <el-row>
                 <el-col :span="16">
                     <el-form size="mini" :model="accountModifyPasswordForm" :rules="accountModifyFormRules" label-width="150px">
-                        <el-form-item label="账户名" prop="account">
+                        <el-form-item label="帐户名" prop="account">
                             <div>{{scope.row.account.account}}</div>
                         </el-form-item>
                         <el-form-item label="密码" prop="password">
@@ -52,7 +51,8 @@
     export default {
         name: "merchant-item-options",
         props: {
-            scope: {type: Object, required: true}
+            scope: {type: Object, required: true},
+            query: {type: Object}
         },
         data(){
             return {
@@ -63,7 +63,7 @@
                 },
                 accountFormRules: {
                     account: [
-                        {required: true, message: '账号名不能为空'},
+                        {required: true, message: '帐号名不能为空'},
                     ],
                     password: [
                         {required: true, min: 6, message: '密码不能为空且不能少于6位'}
@@ -85,12 +85,25 @@
         },
         methods: {
             edit(){
+                let self = this;
                 router.push({
                     path: '/merchant/edit',
+                    name: 'MerchantEdit',
                     query: {
                         id: this.scope.row.id,
-                    }
+                        type: 'merchant-list'
+                    },
+                    params: self.query,
                 })
+            },
+
+            showMearchant(scope){
+                router.push({
+                    path: '/merchant/detail',
+                    query: {id: scope.row.id},
+                })
+                return false;
+
             },
             changeStatus(){
                 let status = this.scope.row.status === 1 ? 2 : 1;
@@ -106,7 +119,7 @@
                 let data = this.accountForm;
                 data.merchant_id = this.scope.row.id;
                 api.post('/merchant/createAccount', data).then(data => {
-                    this.$alert('创建账户成功');
+                    this.$alert('创建帐户成功');
                     this.showCreateAccountDialog = false;
                     this.$emit('accountChanged', this.scope, data)
                 })

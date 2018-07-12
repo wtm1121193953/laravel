@@ -12,6 +12,7 @@ import goods from './goods'
 import oper from './oper'
 import oper_accounts from './oper_account'
 import merchant from './merchant'
+import members from './members'
 
 /*系统设置*/
 import MiniMerchantShareSetting from '../components/setting/mini-merhant-share'
@@ -53,6 +54,7 @@ const routes = [
     ...oper,
     ...oper_accounts,
     ...merchant,
+    ...members,
 
     {
         path: '/',

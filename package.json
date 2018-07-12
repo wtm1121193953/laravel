@@ -38,6 +38,8 @@
         "vuex": "^3.0.1"
     },
     "dependencies": {
+        "v-viewer": "^1.0.1",
+        "viewerjs": "^1.1.0",
         "vue-amap": "^0.5.4",
         "vue-scroller": "^2.2.4"
     }

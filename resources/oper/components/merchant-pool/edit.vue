@@ -1,11 +1,19 @@
 <template>
     <page title="编辑商户信息" :breadcrumbs="{'商户池': '/merchant/pool'}">
-        <merchant-pool-form
-                v-loading="isLoading"
-                v-if="merchant"
-                :data="merchant"
-                @cancel="cancel"
-                @save="doEdit"/>
+        <el-form size="small" label-width="120px">
+            <merchant-pool-form
+                    ref="poolForm"
+                    v-loading="isLoading"
+                    v-if="merchant"
+                    :data="merchant"/>
+            <!-- 确定按钮 -->
+            <el-col>
+                <el-form-item>
+                    <el-button @click="cancel">取消</el-button>
+                    <el-button type="primary" @click="doEdit">提交</el-button>
+                </el-form-item>
+            </el-col>
+        </el-form>
     </page>
 </template>
 
@@ -26,12 +34,16 @@
         },
         methods: {
             doEdit(data){
-                this.isLoading = true;
-                api.post('/merchant/pool/edit', data).then(() => {
-                    this.$message.success('保存成功');
-                    router.push('/merchant/pool');
-                }).finally(() => {
-                    this.isLoading = false;
+                let poolForm = this.$refs.poolForm;
+                poolForm.validate(() => {
+                    let data = poolForm.getData();
+                    this.isLoading = true;
+                    api.post('/merchant/pool/edit', data).then(() => {
+                        this.$message.success('保存成功');
+                        router.push('/merchant/pool');
+                    }).finally(() => {
+                        this.isLoading = false;
+                    })
                 })
             },
             getDetail(){

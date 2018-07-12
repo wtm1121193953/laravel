@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Merchant;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Wechat\MiniprogramScene;
@@ -39,7 +40,12 @@ class PayQrcodeController extends Controller
             ]);
             $scene->save();
         }
-        $qrcode_url = WechatService::getMiniprogramAppCodeUrl($scene);
+        try{
+            $qrcode_url = WechatService::getMiniprogramAppCodeUrl($scene);
+        }catch (\Exception $e){
+            throw new BaseResponseException('小程序码生成失败');
+        }
+
         return Result::success([
             'qrcode_url' => $qrcode_url,
         ]);

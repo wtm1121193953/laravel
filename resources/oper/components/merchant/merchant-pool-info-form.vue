@@ -20,7 +20,7 @@
                         v-model="form.merchant_category">
                 </el-cascader>
             </el-form-item>
-            <el-form-item prop="lng_and_lat" label="商户位置">
+            <el-form-item ref="lngAndLat" prop="lng_and_lat" label="商户坐标">
                 {{form.lng_and_lat || '请选择位置'}}
             </el-form-item>
             <el-form-item>
@@ -50,11 +50,11 @@
             </el-form-item>
             <el-form-item prop="merchant_category" label="所属行业">
                 <span v-for="item in data.categoryPath" :key="item.id">
-                    {{ data.name }}
+                    {{ item.name }}
                 </span>
             </el-form-item>
 
-            <el-form-item prop="location" label="商户位置">
+            <el-form-item prop="location" label="商户坐标">
                 {{[data.lng, data.lat]}}
                 <qmap-choose-point width="100%" height="500px" :shown-markers="[[data.lng, data.lat]]" disabled/>
             </el-form-item>
@@ -105,7 +105,7 @@
                 areaOptions: [],
                 formRules: {
                     name: [
-                        {required: true, message: '商家名称不能为空'},
+                        {required: true, message: '商家名称不能为空', trigger: 'change'},
                         {max: 20, message: '商户名称不能超过20个字'}
                     ],
                     merchant_category: [
@@ -119,8 +119,8 @@
                         {type: 'array', required: true, message: '省/市/区不能为空'},
                     ],
                     address: [
-                        {required: true, message: '商户详细地址不能为空'},
-                        {max: 40, message: '商户详细地址不能超过40个字'}
+                        {required: true, message: '商户详细地址不能为空', trigger: 'change'},
+                        {max: 60, message: '商户详细地址不能超过60个字'}
                     ],
                 },
             }
@@ -145,8 +145,17 @@
                         })
                     }
                     this.form.merchant_category = merchant_category_array;
-                    this.form.area = [parseInt(data.province_id), parseInt(data.city_id), parseInt(data.area_id)];
-                    this.form.lng_and_lat = [data.lng, data.lat];
+                    if (parseInt(data.province_id) == 0 && parseInt(data.city_id) == 0 && parseInt(data.area_id) == 0) {
+                        this.form.area = [];
+                    }else {
+                        this.form.area = [parseInt(data.province_id), parseInt(data.city_id), parseInt(data.area_id)];
+                    }
+
+                    if (!data.lng && !data.lat){
+                        this.form.lng_and_lat = null;
+                    } else {
+                        this.form.lng_and_lat = [data.lng, data.lat];
+                    }
                 }else {
                     this.form = deepCopy(defaultForm);
                 }
@@ -191,6 +200,7 @@
                         marker.getPosition().getLng(),
                         marker.getPosition().getLat(),
                     ];
+                    this.$refs.lngAndLat.clearValidate();
                 })
             }
         },

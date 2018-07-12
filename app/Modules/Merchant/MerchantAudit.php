@@ -3,6 +3,7 @@
 namespace App\Modules\Merchant;
 
 use App\BaseModel;
+use Illuminate\Support\Carbon;
 
 class MerchantAudit extends BaseModel
 {
@@ -25,22 +26,21 @@ class MerchantAudit extends BaseModel
     }
 
     /**
-     * 重新提交审核
+     * 重新提交审核生成新记录
      * @param $merchantId
      * @param $operId
      * @return MerchantAudit
      */
     public static function resubmit($merchantId, $operId)
     {
-        $audit = static::where('merchant_id', $merchantId)
-            ->where('oper_id', $operId)
-            ->first();
-        if(!$audit){
             $audit = static::addRecord($merchantId, $operId);
-        }else {
             $audit->status = Merchant::AUDIT_STATUS_RESUBMIT;
             $audit->save();
-        }
-        return $audit;
+            return $audit;
     }
+
+
+
+
+
 }

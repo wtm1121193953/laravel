@@ -25,6 +25,7 @@
                             </el-button>
                             <el-dropdown-menu slot="dropdown">
                                 <!--<el-dropdown-item command="refresh-rules">刷新权限</el-dropdown-item>-->
+                                <el-dropdown-item command="merchant-info">商户资料</el-dropdown-item>
                                 <el-dropdown-item command="theme-setting">主题设置</el-dropdown-item>
                                 <el-dropdown-item command="modify-password">修改密码</el-dropdown-item>
                                 <el-dropdown-item command="logout">退出</el-dropdown-item>
@@ -34,6 +35,19 @@
                 </el-main>
 
             </el-container>
+
+            <!-- 展示商户信息 -->
+            <el-dialog :visible.sync="showMerchantInfo" title="商户信息">
+                <el-form :model="showMerchantInfoForm" label-width="100px" ref="showMerchantInfoForm" :rules="showMerchantInfoFormRules">
+                    <el-form-item label="商户ID:">{{showMerchantInfoForm.id}}</el-form-item>
+                    <el-form-item label="商户名称:">{{showMerchantInfoForm.name}}</el-form-item>
+                    <el-form-item label="商户招牌名称:">{{showMerchantInfoForm.signboardName}}</el-form-item>
+                    <el-form-item label="商户行业:">{{showMerchantInfoForm.merchantCategoryName}}</el-form-item>
+                    <el-form-item label="商户省市区:">{{showMerchantInfoForm.province}}-{{showMerchantInfoForm.city}}-{{showMerchantInfoForm.area}}</el-form-item>
+                    <el-form-item label="详细地址:">{{showMerchantInfoForm.address}}</el-form-item>
+                    <el-form-item label="商户简介:">{{showMerchantInfoForm.desc}}</el-form-item>
+                </el-form>
+            </el-dialog>
 
             <!-- 主题设置面板 -->
             <el-dialog :visible.sync="showThemeSetting" title="主题设置">
@@ -80,7 +94,7 @@
                     <el-form-item label="新密码" prop="newPassword">
                         <el-input type="password" v-model="modifyPasswordForm.newPassword" placeholder="请输入新密码"/>
                     </el-form-item>
-                    <el-form-item label="确认新密码" prop="reNewPassword">
+                    <el-form-item label="确认新密码" prop="reNewPassword" required>
                         <el-input type="password" v-model="modifyPasswordForm.reNewPassword" placeholder="请再次输入新密码"/>
                     </el-form-item>
                     <el-form-item>
@@ -89,6 +103,7 @@
                     </el-form-item>
                 </el-form>
             </el-dialog>
+
         </el-header>
         <el-container>
             <leftMenu :collapse="collapseLeftMenu" :menus="menus" ref="leftMenu"/>
@@ -149,7 +164,10 @@
                     reNewPassword: [
                         { validator: validateReNewPassword }
                     ]
-                }
+                },
+                showMerchantInfo:false,
+                showMerchantInfoForm:{},
+                showMerchantInfoFormRules:{},
             }
         },
         computed: {
@@ -217,7 +235,12 @@
                     case 'modify-password':
                         this.showModifyPasswordForm = true;
                         break;
-
+                    case 'merchant-info':
+                        this.showMerchantInfo = true;
+                        api.get('/self/getMerchantInfo').then(data => {
+                            this.showMerchantInfoForm  = data;
+                        });
+                        break;
                 }
             },
             modifyPassword(){

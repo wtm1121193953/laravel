@@ -9,7 +9,7 @@
                 layout="total, prev, pager, next"
                 :current-page.sync="query.page"
                 @current-change="getList"
-                :page-size="15"
+                :page-size="query.pageSize"
                 :total="total"/>
     </page>
 </template>
@@ -24,6 +24,7 @@
                 total: 0,
                 query: {
                     page: 1,
+                    pageSize: 10,
                 },
             }
         },

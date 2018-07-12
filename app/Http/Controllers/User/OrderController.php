@@ -17,6 +17,7 @@ use App\Modules\Goods\Goods;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantDraft;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
@@ -62,8 +63,9 @@ class OrderController extends Controller
             $item->items = OrderItem::where('order_id', $item->id)->get();
             // 判断商户是否是当前小程序关联运营中心下的商户
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
-            $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
+            $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
             $item->merchant_logo = Merchant::where('id', $item->merchant_id)->value('logo');
+            $item->signboard_name = Merchant::where('id', $item->merchant_id)->value('signboard_name');
             if ($item->type == Order::TYPE_DISHES){
                 $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
             }
@@ -85,6 +87,7 @@ class OrderController extends Controller
         $currentOperId = request()->get('current_oper')->id;
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        $detail->signboard_name = Merchant::where('id', $detail->merchant_id)->value('signboard_name');
         $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
             ->where('type', 1)
             ->first();
@@ -114,6 +117,9 @@ class OrderController extends Controller
         $goodsId = request('goods_id');
         $number = request('number', 1);
         $goods = Goods::findOrFail($goodsId);
+        if ($goods->status == Goods::STATUS_OFF){
+            throw new BaseResponseException('此商品已下架，请您选择其他商品');
+        }
 
         $user = request()->get('current_user');
 
@@ -294,7 +300,7 @@ class OrderController extends Controller
             'price' => 'required|numeric|min:0',
         ]);
         $price = request('price');
-        if($price <= 0 ){
+        if($price <= 0 || $price > 999999.99){
             throw new ParamInvalidException('价格不合法');
         }
         $user = request()->get('current_user');
@@ -353,6 +359,9 @@ class OrderController extends Controller
         if($order->oper_id !== request()->get('current_oper')->id){
             throw new BaseResponseException('该订单不是当前运营中心的订单');
         }
+
+        // 检查订单中商品的状态，状态异常则关闭订单
+        $this->_checkOrder($order);
 
         $sdkConfig = $this->_wechatUnifyPay($order);
 
@@ -463,6 +472,35 @@ class OrderController extends Controller
                 DishesGoods::where('id', $item->dishes_goods_id)
                     ->where('merchant_id', $item->merchant_id)
                     ->decrement('sell_number', $item->number);
+            }
+        }
+    }
+
+    /**
+     * 检查订单中商品的状态，状态异常关闭订单
+     * @param Order $order
+     */
+    private function _checkOrder(Order $order)
+    {
+        if ($order->type == Order::TYPE_GROUP_BUY){
+            $goods = Goods::where('id', $order->goods_id)->first();
+            if (empty($goods) || $goods->status == Goods::STATUS_OFF){
+                $order->status = Order::STATUS_CLOSED;
+                $order->save();
+                throw new BaseResponseException('此商品已下架，请您选择其他商品');
+            }
+        } elseif ($order->type == Order::TYPE_DISHES){
+            //判断商品上下架状态
+            $dishesItems = DishesItem::where('dishes_id', $order->dishes_id)
+                ->where('user_id', $order->user_id)
+                ->get();
+            foreach ($dishesItems as $item){
+                $dishesGoods = DishesGoods::where('id', $item->dishes_goods_id)->first();
+                if (empty($dishesGoods) || $dishesGoods->status == DishesGoods::STATUS_OFF){
+                    $order->status = Order::STATUS_CLOSED;
+                    $order->save();
+                    throw new BaseResponseException('菜单已变更, 请刷新页面');
+                }
             }
         }
     }

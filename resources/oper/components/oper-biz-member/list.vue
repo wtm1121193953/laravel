@@ -2,10 +2,10 @@
     <page title="我的业务员" v-loading="isLoading">
         <el-form class="fl" size="small" inline>
             <el-form-item label="" prop="name">
-                <el-input v-model="query.name" @keyup.enter.native="search" placeholder="姓名"/>
+                <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="姓名"/>
             </el-form-item>
             <el-form-item label="" prop="mobile">
-                <el-input v-model="query.mobile" @keyup.enter.native="search" placeholder="手机号"/>
+                <el-input v-model="query.mobile" @keyup.enter.native="search"  clearable  placeholder="手机号"/>
             </el-form-item>
             <el-form-item label="状态" prop="status">
                 <el-select v-model="query.status" placeholder="请选择">
@@ -28,7 +28,7 @@
             </el-table-column>
             <el-table-column prop="name" label="姓名"/>
             <el-table-column prop="mobile" label="手机号"/>
-            <el-table-column prop="code" label="推荐码"/>
+            <!--<el-table-column prop="code" label="推荐码"/>-->
             <el-table-column prop="activeMerchantNumber" label="激活商户（家）"/>
             <el-table-column prop="remark" label="备注"/>
             <el-table-column prop="status" label="状态">
@@ -101,7 +101,14 @@
                 })
             },
             itemChanged(index, data){
-                this.list.splice(index, 1, data)
+                this.list.splice(index, 1, data);
+                    router.replace({
+                        path: '/refresh',
+                        query: {
+                            name: 'OperBizMemberList',
+                            key: '/operBizMembers'
+                        }
+                    })
             },
             add(){
                 this.isAdd = true;
@@ -115,9 +122,6 @@
                 }).finally(() => {
                     this.isLoading = false;
                 })
-            },
-            itemChanged(index, data){
-                this.list.splice(index, 1, data)
             },
         },
         created(){

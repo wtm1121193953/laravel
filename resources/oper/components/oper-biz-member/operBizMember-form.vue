@@ -35,14 +35,24 @@
 
         },
         data(){
+            let validateTel = (rule, value, callback) => {
+                if (!(/^1[3456789]\d{9}$/.test(value))){
+                    callback(new Error('请输入正确的手机号'));
+                }else {
+                    callback();
+                }
+            };
+
             return {
                 form: deepCopy(defaultForm),
                 formRules: {
                     name: [
-                        {required: true, message: '名称不能为空'}
+                        {required: true, message: '姓名不能为空'},
+                        {max: 10, message: '姓名名称不能超过10个字'},
                     ],
                     mobile: [
-                        {required: true, message: '手机号不能为空'}
+                        {required: true, message: '手机号不能为空'},
+                        {validator: validateTel}
                     ],
                 },
             }

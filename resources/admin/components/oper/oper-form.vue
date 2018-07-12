@@ -122,14 +122,57 @@
 
         },
         data(){
+            let validateTel = (rule, value, callback) => {
+                if (!(/^[1-9]\d{0,14}$/.test(value))) {
+                    callback(new Error('请输入正确的手机号或带区号的固定电话'));
+                }else {
+                    callback();
+                }
+            };
+            let validateIdCard = (rule, value, callback) => {
+                if (!(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value))) {
+                    callback(new Error('请输入正确的身份证号码'));
+                }else {
+                    callback();
+                }
+            };
+            let validateBankCardNo = (rule, value, callback) => {
+                if (!(/^[1-9]\d*$/.test(value))) {
+                    callback(new Error('请输入正确的公司账号'));
+                } else {
+                    callback();
+                }
+            };
             return {
                 form: deepCopy(defaultForm),
                 formRules: {
                     name: [
-                        {required: true, message: '名称不能为空'}
+                        {required: true, message: '名称不能为空'},
+                        {max: 20, message: '运营中心名称不能超过20个字'},
                     ],
                     selectAreas: [
                         {required: true, type: 'array', message: '地区不能为空' }
+                    ],
+                    tel: [
+                        {validator: validateTel}
+                    ],
+                    email: [
+                        {type: 'email', message: '请输入正确的邮箱'},
+                    ],
+                    legal_id_card: [
+                        {validator: validateIdCard}
+                    ],
+                    bank_card_no: [
+                        {validator: validateBankCardNo}
+                    ],
+                    contacter: [
+                        {max: 60, message: '负责人不能超过60个字'}
+                    ],
+                    address: [
+                        {max: 60, message: '详细地址不能超过60个字'}
+                    ],
+                    legal_name: [
+                        {max: 60, message: '法人姓名不能超过60个字'}
                     ]
                 },
                 areas: [],

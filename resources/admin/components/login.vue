@@ -75,7 +75,7 @@
                          label-position="left"
                          label-width="0px">
                     <el-form-item prop="username">
-                        <el-input type="text" v-model="form.username" auto-complete="off" placeholder="账号"/>
+                        <el-input type="text" v-model="form.username" auto-complete="off" placeholder="帐号"/>
                     </el-form-item>
                     <el-form-item prop="password">
                         <el-input type="password" v-model="form.password" auto-complete="off" placeholder="密码"/>
@@ -111,7 +111,7 @@
                 },
                 formRules: {
                     username: [
-                        {required: true, message: '请输入账号', trigger: 'blur'}
+                        {required: true, message: '请输入帐号', trigger: 'blur'}
                     ],
                     password: [
                         {required: true, message: '请输入密码', trigger: 'blur'}
@@ -132,7 +132,8 @@
             ...mapState([
                 'projectName',
                 'systemName',
-                'user'
+                'user',
+                'currentMenu'
             ])
         },
         methods: {
@@ -145,8 +146,10 @@
             relocation() {
                 if (this.$route.query && this.$route.query._from) {
                     router.push(this.$route.query._from);
-                }else{
+                }else if(this.currentMenu){
                     router.push('/');
+                }else {
+                    router.push('/welcome');
                 }
             },
             doLogin(){
@@ -239,6 +242,7 @@
             }
         },
         created: function () {
+
         },
         mounted () {
             const that = this;

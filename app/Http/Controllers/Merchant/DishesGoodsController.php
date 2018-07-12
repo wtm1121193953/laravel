@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class DishesGoodsController extends Controller
 {
@@ -18,16 +19,28 @@ class DishesGoodsController extends Controller
     {
         $status = request('status');
         $pageSize = request('pageSize');
+        $name = request('name', '');
+        $categoryId = request('category_id', '');
         $data = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
             ->when($status, function (Builder $query) use ($status){
-            $query->where('status', $status);
-        })->orderBy('id', 'desc')->with('dishesCategory:id,name')->paginate($pageSize);
+                $query->where('status', $status);
+            })
+            ->when($name, function (Builder $query) use ($name) {
+                $query->where('name', 'like', "%$name%");
+            })
+            ->when($categoryId, function (Builder $query) use ($categoryId) {
+                $query->where('dishes_category_id', $categoryId);
+            })
+            ->orderBy('sort', 'desc')
+            ->with('dishesCategory:id,name')
+            ->paginate($pageSize);
 
 
 
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
+            'showSort'=>$categoryId ? 1:0,
         ]);
     }
 
@@ -74,6 +87,7 @@ class DishesGoodsController extends Controller
         $dishesGoods->detail_image = request('detail_image', '');
         $dishesGoods->status = request('status', 1);
         $dishesGoods->is_hot = request('is_hot', 0);
+        $dishesGoods->sort = DishesGoods::max('sort') + 1;
 
         $dishesGoods->save();
 
@@ -141,6 +155,51 @@ class DishesGoodsController extends Controller
         $dishesGoods = DishesGoods::findOrFail(request('id'));
         $dishesGoods->delete();
         return Result::success($dishesGoods);
+    }
+
+    /**
+     * 单品排序
+     */
+    public function saveOrder(){
+        $type = request('type');
+        $categoryId = request('category_id', '');
+        if ($type == 'down'){
+            $option = '<';
+            $order = 'desc';
+        }else{
+            $option = '>';
+            $order = 'asc';
+        }
+
+        $dishesGoods = DishesGoods::findOrFail(request('id'));
+        if (empty($dishesGoods)){
+            throw new BaseResponseException('该单品不存在');
+        }
+        $dishesGoodsExchange = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
+            ->where('sort', $option, $dishesGoods['sort'])
+            ->when($categoryId, function (Builder $query) use ($categoryId) {
+                $query->where('dishes_category_id', $categoryId);
+            })
+            ->orderBy('sort', $order)
+            ->first();
+        if (empty($dishesGoodsExchange)){
+            throw new BaseResponseException('交换位置的单品不存在');
+        }
+
+        $item = $dishesGoods['sort'];
+        $dishesGoods['sort'] = $dishesGoodsExchange['sort'];
+        $dishesGoodsExchange['sort'] = $item;
+
+        try{
+            DB::beginTransaction();
+            $dishesGoods->save();
+            $dishesGoodsExchange->save();
+            DB::commit();
+            return Result::success();
+        }catch (\Exception $e){
+            DB::rollBack();
+            throw new BaseResponseException('交换位置失败');
+        }
     }
 
 }

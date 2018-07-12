@@ -15,6 +15,7 @@ use App\Exceptions\PasswordErrorException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
+use App\Modules\Merchant\MerchantCategory;
 use App\Result;
 use Illuminate\Support\Facades\Session;
 
@@ -36,7 +37,7 @@ class SelfController extends Controller
             throw new PasswordErrorException();
         }
         if($user->status != 1){
-            throw new NoPermissionException('账号已被禁用');
+            throw new NoPermissionException('帐号已被禁用');
         }
         $merchant = Merchant::findOrFail($user->merchant_id);
         if($merchant->status != 1){
@@ -122,4 +123,30 @@ class SelfController extends Controller
         ];
     }
 
+    /**
+     * 获取商户信息
+     */
+    public function getMerchantInfo(){
+        $merchant = Merchant::select(['id','name','signboard_name','merchant_category_id','province','city','area','address','desc'])
+                              ->where('id', request()->get('current_user')->merchant_id)->first();
+
+        $mc = MerchantCategory::where('id',$merchant->merchant_category_id)->first(['name','pid']);
+
+        if($mc){
+            //父类别
+            $merchant->merchantCategoryName = $mc->name;
+            while ($mc->pid != 0){
+                $mc = MerchantCategory::where('id',$mc->pid)->first(['name','pid']);
+                $merchant->merchantCategoryName =  $mc->name . ' ' .$merchant->merchantCategoryName;
+            }
+        }else{
+            $merchant->merchantCategoryName = '';
+        }
+
+        $merchant->signboardName = $merchant->signboard_name;
+        unset($merchant->merchant_category_id);
+        unset($merchant->signboard_name);
+
+        return Result::success($merchant);
+    }
 }
