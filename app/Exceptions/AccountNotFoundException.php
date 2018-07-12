@@ -14,7 +14,7 @@ class AccountNotFoundException extends BaseResponseException
 {
 
 
-    public function __construct($message = "账号不存在")
+    public function __construct($message = "帐号不存在")
     {
         parent::__construct($message, ResultCode::ACCOUNT_NOT_FOUND);
     }
