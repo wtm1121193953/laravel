@@ -70,6 +70,9 @@ return [
             'numeric' => '状态只能是数字',
             'integer' => '状态只能是整数',
         ],
+        'account' => [
+            'required' => '帐户名不能为空',
+        ],
 
 
         'base_url' => [
