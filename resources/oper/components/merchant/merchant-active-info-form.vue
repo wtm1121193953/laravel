@@ -68,11 +68,11 @@
                 </el-time-picker>-->
             </el-form-item>
             <el-form-item prop="logo" label="商家logo">
-                <image-upload :width="190" :height="190" v-model="form.logo" :limit="1"/>
+                <image-upload :width="190" :height="190" v-model="form.logo" @change="uploadChange" :limit="1"/>
                 <div>图片尺寸: 190 px * 190 px</div>
             </el-form-item>
             <el-form-item prop="desc_pic_list" label="商家介绍图片">
-                <image-upload :width="750" :height="526" v-model="form.desc_pic_list" :limit="6"/>
+                <image-upload :width="750" :height="526" v-model="form.desc_pic_list" @change="uploadChange" :limit="6"/>
                 <div>图片尺寸: 750 px * 526 px</div>
             </el-form-item>
             <el-form-item prop="desc" label="商家介绍">
@@ -112,33 +112,33 @@
                 <el-input v-model="form.bank_open_address"/>
             </el-form-item>
             <el-form-item v-if="form.bank_card_type == 1" required prop="licence_pic_url" label="开户许可证">
-                <image-upload v-model="form.licence_pic_url" :limit="1"/>
+                <image-upload v-model="form.licence_pic_url" @change="uploadChange" :limit="1"/>
             </el-form-item>
             <el-form-item v-if="form.bank_card_type == 2" required label="法人银行卡正面照" prop="bank_card_pic_a">
-                <image-upload v-model="form.bank_card_pic_a" @before="beforeUpload" @complete="completeUpload" :limit="2"/>
+                <image-upload v-model="form.bank_card_pic_a" @change="uploadChange" :limit="2"/>
             </el-form-item>
             <!-- 银行卡信息 end -->
 
             <el-form-item prop="legal_id_card_pic_a" label="法人身份证正面">
-                <image-upload v-model="form.legal_id_card_pic_a" :limit="1"/>
+                <image-upload v-model="form.legal_id_card_pic_a" @change="uploadChange" :limit="1"/>
             </el-form-item>
             <el-form-item prop="legal_id_card_pic_b" label="法人身份证反面">
-                <image-upload v-model="form.legal_id_card_pic_b" :limit="1"/>
+                <image-upload v-model="form.legal_id_card_pic_b" @change="uploadChange" :limit="1"/>
             </el-form-item>
 
             <el-form-item prop="business_licence_pic_url" label="营业执照">
-                <image-upload v-model="form.business_licence_pic_url" :limit="1"/>
+                <image-upload v-model="form.business_licence_pic_url" @change="uploadChange" :limit="1"/>
             </el-form-item>
             <el-form-item prop="organization_code" label="营业执照代码">
                 <el-input v-model="form.organization_code"/>
             </el-form-item>
 
             <el-form-item prop="contract_pic_url" label="合同">
-                <image-upload v-model="form.contract_pic_url" @before="beforeUpload" @complete="completeUpload" :limit="10"/>
+                <image-upload v-model="form.contract_pic_url" @change="uploadChange" :limit="10"/>
             </el-form-item>
 
             <el-form-item prop="other_card_pic_urls" label="其他证件">
-                <image-upload v-model="form.other_card_pic_urls" @before="beforeUpload" @complete="completeUpload" :limit="10"/>
+                <image-upload v-model="form.other_card_pic_urls" @change="uploadChange" :limit="10"/>
             </el-form-item>
         </el-col>
 
@@ -436,14 +436,13 @@
                 this.form.oper_biz_member_code = '';
                 this.operBizMembers = [];
             },
-            beforeUpload() {
-                this.uploadVoucher ++ ;
-                console.log('+', this.uploadVoucher);
+            uploadChange(file) {
+                if (file.status == 'ready'){
+                    this.uploadVoucher ++ ;
+                } else {
+                    this.uploadVoucher -- ;
+                }
             },
-            completeUpload() {
-                this.uploadVoucher -- ;
-                console.log('-', this.uploadVoucher);
-            }
         },
         created(){
             this.initForm();
