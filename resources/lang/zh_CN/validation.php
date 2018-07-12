@@ -58,6 +58,12 @@ return [
             'captcha' => '验证码不正确',
             'size' => '验证码位数不正确',
         ],
+
+        'verify_code' => [
+            'required' => '请输入手机验证码',
+            'size' => '验证码位数为4位',
+        ],
+
         'captcha' => [
             'required' => '请输入验证码',
             'captcha' => '验证码不正确',
@@ -70,9 +76,27 @@ return [
             'numeric' => '状态只能是数字',
             'integer' => '状态只能是整数',
         ],
+        'audit_suggestion' => [
+            'max' => '最多输入 :max 字',
+        ],
+
         'account' => [
             'required' => '帐户名不能为空',
         ],
+
+        'mobile' => [
+            'required' => '手机号码不能各位空',
+            'size' => '手机号码位数不正确',
+        ],
+
+        'province_id' => [
+            'required' => '省份不能为空',
+        ],
+
+        'city_id' => [
+            'required' => '城市不能为空',
+        ],
+
 
 
         'base_url' => [
