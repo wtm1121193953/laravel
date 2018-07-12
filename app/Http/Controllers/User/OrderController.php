@@ -394,7 +394,7 @@ class OrderController extends Controller
         $orderRefund->amount = $orderPay->amount;
         $orderRefund->save();
         // 发起微信支付退款
-        $payApp = WechatService::getWechatPayAppForOper(request()->get('current_oper')->id);
+        $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
         $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->id, $orderPay->amount * 100, $orderPay->amount * 100, [
             'refund_desc' => '用户发起退款',
         ]);
@@ -416,7 +416,7 @@ class OrderController extends Controller
                     '$orderRefund->id' => $orderRefund->id,
                     '$orderPay->amount' => $orderPay->amount,
                     'refundAmount' => $orderPay->amount,
-                    'currentOper' => request()->get('current_oper')
+                    'refundOper' => $order->oper_id,
                 ]
             ]);
             throw new BaseResponseException('微信退款失败');
