@@ -122,13 +122,6 @@
 
         },
         data(){
-            let validateTel = (rule, value, callback) => {
-                if (!(/^[1-9]\d{0,14}$/.test(value))) {
-                    callback(new Error('请输入正确的手机号或带区号的固定电话'));
-                }else {
-                    callback();
-                }
-            };
             let validateIdCard = (rule, value, callback) => {
                 if (!(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value))) {
                     callback(new Error('请输入正确的身份证号码'));
@@ -154,7 +147,7 @@
                         {required: true, type: 'array', message: '地区不能为空' }
                     ],
                     tel: [
-                        {validator: validateTel}
+                        {max: 15, message: '联系电话不能超过15个字'}
                     ],
                     email: [
                         {type: 'email', message: '请输入正确的邮箱'},

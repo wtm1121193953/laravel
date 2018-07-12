@@ -246,13 +246,6 @@
                     callback();
                 }
             };
-            let validateServicePhone = (rule, value, callback) => {
-                if (!(/^[1-9]\d{0,14}$/.test(value))) {
-                    callback(new Error('请输入正确的手机号或带区号的固定电话'));
-                }else {
-                    callback();
-                }
-            }
             return {
                 form: deepCopy(defaultForm),
                 formRules: {
@@ -344,11 +337,11 @@
                     ],
                     contacter_phone: [
                         {required: true, message: '商户负责人联系方式 不能为空'},
-                        {validator: validateServicePhone}
+                        {max: 15, message: '商户负责人联系方式不能超过15个字'}
                     ],
                     service_phone: [
                         {required: true, message: '客服电话 不能为空'},
-                        {validator: validateServicePhone}
+                        {max: 15, message: '客服电话不能超过15个字'}
                     ],
                     oper_salesman: [
                         {required: true, message: '业务人员姓名 不能为空'},

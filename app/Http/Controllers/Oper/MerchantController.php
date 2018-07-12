@@ -148,6 +148,7 @@ class MerchantController extends Controller
             'business_licence_pic_url' => 'required',
             'organization_code' => 'required',
             'settlement_rate' => 'required|numeric|min:0',
+            'signboard_name' => 'required',
         ]);
         $merchant = new Merchant();
         $merchant->fillMerchantPoolInfoFromRequest();

@@ -17,6 +17,7 @@ use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Setting\SettingService;
 use App\Result;
 use App\Support\Lbs;
+use Beta\B;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 use Psy\Util\Json;
@@ -58,12 +59,16 @@ class MerchantController extends Controller
                 // 不传商家类别id且关键字存在时, 若关键字等同于类别, 则搜索该类别以及携带该关键字的商家
                 $category = MerchantCategory::where('name', $keyword)->first();
                 if($category){
-                    $query->where('merchant_category_id', $category->id)
-                        ->orWhere('name', 'like', "%$keyword%")
-                        ->orWhere('signboard_name', 'like', "%$keyword%");
+                    $query->where(function(Builder $query) use ($keyword) {
+                            $query->where('merchant_category_id', $category->id)
+                                ->orWhere('name', 'like', "%$keyword%")
+                                ->orWhere('signboard_name', 'like', "%$keyword%");
+                        });
                 }else {
-                    $query->where('name', 'like', "%$keyword%")
-                        ->orWhere('signboard_name', 'like', "%$keyword%");
+                    $query->where(function (Builder $query) use ($keyword){
+                        $query->where('name', 'like', "%$keyword%")
+                            ->orWhere('signboard_name', 'like', "%$keyword%");
+                    });
                 }
             })
             ->when($merchant_category_id && $keyword, function(Builder $query) use ($merchant_category_id, $keyword){
