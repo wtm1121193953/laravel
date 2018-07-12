@@ -9,9 +9,12 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantDraft;
+use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+
 
 class MerchantController extends Controller
 {
@@ -25,6 +28,7 @@ class MerchantController extends Controller
         $name = request('name');
         $auditStatus = request('audit_status');
         $status = request('status');
+        $signBoardName=request('signBoardName');
         $data = Merchant::where(function (Builder $query){
                 $currentOperId = request()->get('current_user')->oper_id;
                 $query->where('oper_id', $currentOperId)
@@ -42,7 +46,10 @@ class MerchantController extends Controller
             ->when($name, function (Builder $query) use ($name){
                 $query->where('name', 'like', "%$name%");
             })
-            ->orderBy('updated_at', 'desc')
+            ->when($signBoardName, function (Builder $query) use ($signBoardName){
+                $query->where('signboard_name', 'like', "%$signBoardName%");
+            })
+            ->orderBy('created_at', 'desc')
             ->paginate();
 
         $data->each(function ($item){
@@ -89,12 +96,44 @@ class MerchantController extends Controller
         ]);
     }
 
+    /**
+     * 详情
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function detail()
     {
         $id = request('id');
         $merchant = Merchant::findOrFail($id);
         $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
         $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
+        return Result::success($merchant);
+    }
+
+    /**
+     * 查看详情
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function detailByCheck()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $merchant = Merchant::findOrFail(request('id'));
+        $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
+        $merchant->business_time = json_decode($merchant->business_time, 1);
+        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
+        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
+        $merchant->desc_pic_list = explode(',', $merchant->desc_pic_list);
+        $merchant->contract_pic_url = explode(',', $merchant->contract_pic_url);
+        $merchant->other_card_pic_urls = explode(',', $merchant->other_card_pic_urls);
+        $merchant->bank_card_pic_a = explode(',', $merchant->bank_card_pic_a);
+        if($merchant->oper_biz_member_code){
+            $merchant->operBizMemberName = OperBizMember::where('code', $merchant->oper_biz_member_code)->value('name');
+        }
+        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
+        if ($oper){
+            $merchant->operAddress = $oper->province.$oper->city.$oper->area.$oper->address;
+        }
         return Result::success($merchant);
     }
 
@@ -108,7 +147,7 @@ class MerchantController extends Controller
             'merchant_category_id' => 'required',
             'business_licence_pic_url' => 'required',
             'organization_code' => 'required',
-            'settlement_rate' => 'required|numeric|min:10',
+            'settlement_rate' => 'required|numeric|min:0',
         ]);
         $merchant = new Merchant();
         $merchant->fillMerchantPoolInfoFromRequest();
@@ -121,7 +160,8 @@ class MerchantController extends Controller
 
         // 商户名不能重复
         $exists = Merchant::where('name', $merchant->name)->first();
-        if($exists){
+        $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
+        if($exists || $existsDraft){
             throw new ParamInvalidException('商户名称不能重复');
         }
 
@@ -149,7 +189,7 @@ class MerchantController extends Controller
             'merchant_category_id' => 'required',
             'business_licence_pic_url' => 'required',
             'organization_code' => 'required',
-            'settlement_rate' => 'required|numeric|min:10',
+            'settlement_rate' => 'required|numeric|min:0',
         ]);
         $currentOperId = request()->get('current_user')->oper_id;
         $merchant = Merchant::where('id', request('id'))
@@ -162,7 +202,8 @@ class MerchantController extends Controller
         // 商户名不能重复
         $exists = Merchant::where('name', $merchant->name)
             ->where('id', '<>', $merchant->id)->first();
-        if($exists){
+        $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
+        if($exists || $existsDraft){
             throw new ParamInvalidException('商户名称不能重复');
         }
 
@@ -171,6 +212,7 @@ class MerchantController extends Controller
             MerchantAudit::resubmit($merchant->id, $currentOperId);
             $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
         }else {
+            MerchantAudit::addRecord($merchant->id, $currentOperId);
             $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
         }
 
@@ -193,7 +235,7 @@ class MerchantController extends Controller
             'id' => 'required|integer|min:1',
             'business_licence_pic_url' => 'required',
             'organization_code' => 'required',
-            'settlement_rate' => 'required|numeric|min:10',
+            'settlement_rate' => 'required|numeric|min:0',
         ]);
 
         $merchantId = request('id');
@@ -282,7 +324,7 @@ class MerchantController extends Controller
         }
         // 查询账号是否重复
         if(!empty(MerchantAccount::where('account', request('account'))->first())){
-            throw new BaseResponseException('账号重复, 请更换账号');
+            throw new BaseResponseException('帐号重复, 请更换帐号');
         }
         $account = new MerchantAccount();
 
@@ -336,4 +378,27 @@ class MerchantController extends Controller
             'total' => $data->total(),
         ]);
     }
+
+    /**
+     * 获取最新审核记录
+     */
+    public function getNewAuditList()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $merchantId = request('id');
+        $merchant = Merchant::findOrFail(request('id'));
+        $data = MerchantAudit::where("merchant_id",$merchantId)
+            ->where('status',"<>",0)
+            ->orderByDesc('updated_at')
+            ->first();
+
+        $data->categoryName= MerchantCategory::where("id",$merchant->merchant_category_id)->value("name");
+        $data->merchantName = Merchant::where('id', $merchantId)->value('name');
+        return Result::success($data);
+
+    }
+
+
 }

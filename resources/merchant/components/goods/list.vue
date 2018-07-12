@@ -1,5 +1,5 @@
 <template>
-    <page title="商品管理" v-loading="isLoading">
+    <page title="团购商品" v-loading="isLoading">
         <el-button class="fr" type="primary" @click="add">添加商品</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
@@ -16,10 +16,17 @@
                     {{scope.row.created_at.substr(0, 10)}}
                 </template>
             </el-table-column>
+            <!--<el-table-column prop="sort" label="排序">-->
+                <!--<template slot-scope="scope">-->
+                    <!--{{scope.row.sort}}-->
+                <!--</template>-->
+            <!--</el-table-column>-->
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
                     <goods-item-options
                             :scope="scope"
+                            :isFirst="isFirstPage && scope.$index == 0"
+                            :isLast="isLastPage && scope.$index == list.length - 1"
                             @change="itemChanged"
                             @refresh="getList"/>
                 </template>
@@ -63,7 +70,12 @@
             }
         },
         computed: {
-
+            isFirstPage(){
+                return this.query.page == 1;
+            },
+            isLastPage(){
+                return this.query.page * this.query.pageSize >= this.total;
+            }
         },
         methods: {
             getList(){

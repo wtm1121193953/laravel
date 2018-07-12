@@ -16,17 +16,24 @@ class OperController extends Controller
 {
 
     /**
-     * 获取列表 (分页)
+     * @author  xianghua
+     * 2018/6/28
+     * 获取列表
      */
     public function getList()
     {
         $name = request('name');
         $status = request('status');
+        $tel = request('tel');
+
         $data = Oper::when($status, function (Builder $query) use ($status){
             $query->where('status', $status);
         })
             ->when($name, function(Builder $query) use ($name){
                 $query->where('name', 'like', "%$name%");
+            })
+            ->when($tel, function(Builder $query) use ($tel){
+                $query->where('tel', 'like', "%$tel%");
             })
             ->orderBy('id', 'desc')
             ->paginate();

@@ -7,7 +7,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/merchants', 'MerchantController@getList');
 Route::get('/merchant/allNames', 'MerchantController@allNames');
 Route::get('/merchant/detail', 'MerchantController@detail');
+Route::get('/merchant/detail/check', 'MerchantController@detailByCheck');
 Route::get('/merchant/getMerchantById', 'MerchantController@detail');
+
+Route::get('/merchant/audit/newlist', 'MerchantController@getNewAuditList');
+
 Route::post('/merchant/add', 'MerchantController@add');
 Route::post('/merchant/edit', 'MerchantController@edit');
 Route::post('/merchant/changeStatus', 'MerchantController@changeStatus');
@@ -24,3 +28,9 @@ Route::get('/merchant/pool', 'MerchantPoolController@getList');
 Route::get('/merchant/pool/detail', 'MerchantPoolController@detail');
 Route::post('/merchant/pool/add', 'MerchantPoolController@add');
 Route::post('/merchant/pool/edit', 'MerchantPoolController@edit');
+
+Route::post('/merchant/draft/add', 'MerchantDraftController@add');
+Route::get('/merchant/drafts', 'MerchantDraftController@getList');
+Route::get('/merchant/draft/detail', 'MerchantDraftController@detail');
+Route::post('/merchant/draft/edit', 'MerchantDraftController@edit');
+Route::post('/merchant/draft/delete', 'MerchantDraftController@delete');

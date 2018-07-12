@@ -18,12 +18,12 @@ class AdminService
         if($user->isSuper()){
             $rules = AdminAuthRule::when($enable, function($query){
                 $query->where('status', AdminAuthRule::STATUS_ON);
-            })->get();
+            })->orderBy('sort')->get();
         }else {
             $ruleIds = AdminAuthGroup::where('id', $user->group_id)->value('rule_ids');
             $rules = AdminAuthRule::when($enable, function($query){
                 $query->where('status', AdminAuthRule::STATUS_ON);
-            })->whereIn('id', explode(',', $ruleIds))->get();
+            })->whereIn('id', explode(',', $ruleIds))->orderBy('sort')->get();
         }
         return $rules;
     }

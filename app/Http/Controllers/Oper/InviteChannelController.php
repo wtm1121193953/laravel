@@ -52,7 +52,8 @@ class InviteChannelController extends Controller
             ->when('keyword', function (Builder $query) use ($keyword){
                 $query->where('name', 'like', "%$keyword%");
             })
-            ->withCount('inviteUserRecords');
+            ->withCount('inviteUserRecords')
+            ->orderByDesc('id');
         return (new OperInviteChannelExport($query))->download('推广渠道列表.xlsx');
     }
 
@@ -64,6 +65,11 @@ class InviteChannelController extends Controller
         $name = request('name');
         $remark = request('remark', '');
         $operId = request()->get('current_user')->oper_id;
+
+        $exist = InviteChannel::where('name', $name)->where('oper_id', $operId)->first();
+        if ($exist){
+            throw new ParamInvalidException('渠道名称不能重复');
+        }
 
         $inviteChannel = new InviteChannel();
         $inviteChannel->oper_id = $operId;
@@ -100,6 +106,14 @@ class InviteChannelController extends Controller
         $inviteChannel = InviteChannel::find(request('id'));
         if(empty($inviteChannel)){
             throw new ParamInvalidException('邀请渠道不存在');
+        }
+
+        $exist = InviteChannel::where('name', $name)
+            ->where('oper_id', $operId)
+            ->where('id', '<>', request('id'))
+            ->first();
+        if ($exist){
+            throw new ParamInvalidException('渠道名称不能重复');
         }
 
         if($inviteChannel->origin_id != $operId){

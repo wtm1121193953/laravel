@@ -1,5 +1,5 @@
 <template>
-    <page title="二维码下载">
+    <page title="分享会员二维码">
         <div class="qrcode-container">
             <div class="title">分享会员二维码 <el-button type="text" @click="showExample = true">示例</el-button></div>
             <img class="image" :src="qrcodeUrl" alt="">

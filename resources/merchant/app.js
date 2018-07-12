@@ -39,6 +39,10 @@ Vue.use(VueRouter)
 import ElementUI from 'element-ui'
 Vue.use(ElementUI)
 
+//图片预览、缩放、图片墙
+import Viewer from 'v-viewer'
+Vue.use(Viewer)
+
 import page from './components/page'
 Vue.component('page', page)
 

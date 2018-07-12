@@ -3,6 +3,7 @@
 namespace App\Modules\Goods;
 
 use App\BaseModel;
+use App\Modules\Dishes\DishesGoods;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Goods extends BaseModel
@@ -21,10 +22,15 @@ class Goods extends BaseModel
      */
     public static function getLowestPriceForMerchant($merchantId)
     {
-        $lowestAmount = Goods::where('merchant_id', $merchantId)
+        $goodsLowestAmount = Goods::where('merchant_id', $merchantId)
             ->where('status', 1)
             ->orderBy('price')
             ->value('price');
+        $dishesGoodsLowestAmount = DishesGoods::where('merchant_id', $merchantId)
+            ->where('status', 1)
+            ->orderBy('sale_price')
+            ->value('sale_price');
+        $lowestAmount = $goodsLowestAmount > $dishesGoodsLowestAmount ? $dishesGoodsLowestAmount : $goodsLowestAmount;
         return $lowestAmount;
     }
 }

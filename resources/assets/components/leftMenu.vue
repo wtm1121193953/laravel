@@ -14,7 +14,7 @@
                 <template slot="title">
                     <i>{{collapse ? secMenu.name.substr(0, 2) : ''}}</i><span slot="title">{{secMenu.name}}</span>
                 </template>
-                <el-menu-item v-for="item in secMenu.sub" :key="item.url" :index="item.url">{{item.name}}</el-menu-item>
+                <el-menu-item v-for="(item,index) in secMenu.sub" :key="index" :index="item.url">{{item.name}}</el-menu-item>
             </el-submenu>
             <el-menu-item v-if="!secMenu.sub || secMenu.sub.length <= 0" :index="secMenu.url">
                 <i>{{collapse ? secMenu.name.substr(0, 2) : ''}}</i><span slot="title">{{secMenu.name}}</span>

@@ -21,7 +21,7 @@
                         ></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item prop="detail_image" label="商品图片">
+                <el-form-item prop="detail_image" label="单品图片">
                     <image-upload v-model="form.detail_image" :limit="1" :width="imageWidth" :height="imageHeight"></image-upload>
                     <span>图片尺寸：{{imageWidth}}px * {{imageHeight}}px</span>
                 </el-form-item>
@@ -106,7 +106,7 @@
                         {required: true, message: '类别不能为空'}
                     ],
                     detail_image: [
-                        {required: true, message: '商品详情不能为空'}
+                        {required: true, message: '商品图片不能为空'}
                     ],
                     intro: [
                         {max: 200, message: '商品简介不能超过200个字'}

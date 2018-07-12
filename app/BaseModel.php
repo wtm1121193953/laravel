@@ -7,6 +7,7 @@ use Closure;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * 基础模型
@@ -25,9 +26,12 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static static whereDate($column, $operator, $value = null, $boolean = 'and')
  * @method static static orderBy($column, $direction = 'asc')
  * @method static static orderByDesc($column)
+ * @method static static withTrashed()
  * @method static static has($relation, $operator = '>=', $count = 1, $boolean = 'and', Closure $callback = null)
  * @method static LengthAwarePaginator paginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null)
  * @method int increment($column, $amount = 1, array $extra = [])
+ * @method
+ * @mixin SoftDeletes
  */
 class BaseModel extends Model
 {

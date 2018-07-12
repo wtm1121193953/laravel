@@ -2,20 +2,20 @@
     <page title="订单管理" v-loading="isLoading">
         <el-form inline :model="query" size="small">
             <el-form-item label="订单号">
-                <el-input type="text" v-model="query.orderNo"/>
+                <el-input type="text" clearable v-model="query.orderNo"/>
             </el-form-item>
             <el-form-item label="手机号">
-                <el-input type="text" v-model="query.mobile" class="w-150"/>
+                <el-input type="text" clearable v-model="query.mobile" class="w-150"/>
             </el-form-item>
             <el-form-item label="所属商户">
-                <el-select v-model="query.merchantId" filterable>
+                <el-select v-model="query.merchantId" filterable clearable >
                     <el-option value="" label="全部"/>
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
             </el-form-item>
 
             <el-form-item label="订单类型">
-                <el-select v-model="query.type" class="w-100">
+                <el-select v-model="query.type" class="w-100" clearable>
                     <el-option label="全部" value=""/>
                     <el-option label="团购" :value="1"/>
                     <el-option label="买单" :value="2"/>
@@ -25,7 +25,7 @@
 
 
             <el-form-item label="订单状态">
-                <el-select v-model="query.status" class="w-100">
+                <el-select v-model="query.status" class="w-100" clearable>
                     <el-option label="全部" value=""/>
                     <el-option label="待支付" :value="1"/>
                     <el-option label="已取消" :value="2"/>
@@ -124,7 +124,7 @@
                     </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="pay_price" label="总价"/>
+            <el-table-column prop="pay_price" label="总价 ¥"/>
             <el-table-column prop="status" label="订单状态">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.status) === 1">未支付</span>
@@ -167,6 +167,7 @@
                     startTime: '',
                     endTime: '',
                     status: '',
+                    type: '',
                 },
                 list: [],
                 total: 0,

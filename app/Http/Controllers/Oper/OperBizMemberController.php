@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Oper;
 
-
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperBizMember;
@@ -98,6 +98,12 @@ class OperBizMemberController extends Controller
             'name' => 'required',
             'mobile' => 'required',
         ]);
+
+        $haveMemberMobile = OperBizMember::where( 'mobile' , request('mobile')) ->get();
+        if (count($haveMemberMobile) > 0){
+            throw new BaseResponseException('手机号码重复');
+        }
+
         $operBizMember = new OperBizMember();
         $operBizMember->oper_id = request()->get('current_user')->oper_id;
         $operBizMember->name = request('name');
@@ -159,8 +165,7 @@ class OperBizMemberController extends Controller
         $data = Merchant::where(function (Builder $query){
             $query->where('oper_id', request()->get('current_user')->oper_id)
                 ->orWhere('audit_oper_id',  request()->get('current_user')->oper_id);
-            })
-            ->where('oper_biz_member_code', $code)
+        })->where('oper_biz_member_code', $code)
             ->select('id', 'active_time', 'name', 'status')
             ->paginate();
 

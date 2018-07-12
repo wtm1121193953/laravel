@@ -32,7 +32,7 @@
 
                 <!-- 商户录入信息右侧块 -->
                 <el-col :span="11" :offset="1">
-                    <el-form-item prop="lng_and_lat" label="商户位置">
+                    <el-form-item prop="lng_and_lat" label="商户坐标">
                         {{form.lng_and_lat}}
                         <el-button @click="isShowMap = true">选择位置</el-button>
                         <el-dialog title="更换地理位置" :visible.sync="isShowMap" :modal="false">

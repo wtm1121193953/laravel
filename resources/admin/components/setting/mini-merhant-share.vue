@@ -1,5 +1,5 @@
 <template>
-    <page title="小程序端商户共享设置">
+    <page title="小程序端商户共享设置" v-show="show">
         <el-form v-model="form" label-width="150px">
             <el-form-item
                           label="小程序端商户共享"
@@ -29,7 +29,8 @@
             return {
                 form: {
                     merchant_share_in_miniprogram: ''
-                }
+                },
+                show: false,
             }
         },
         methods: {
@@ -42,6 +43,7 @@
             getSetting(){
                 api.get('/settings').then(data => {
                     this.form = data.list;
+                    this.show = true;
                 });
             }
         },
