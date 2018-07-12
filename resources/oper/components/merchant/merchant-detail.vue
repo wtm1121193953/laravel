@@ -80,7 +80,7 @@
                         </el-form-item>
                         <el-form-item prop="logo" label="商家logo">
                             <div v-viewer>
-                                <img :src="data.logo" alt="商家logo" width="50px" height="50px" />
+                                <img :src="data.logo" alt="商家logo" width="200px" height="100px" />
                             </div>
                             <!-- <preview-img :url="data.logo" width="50px" height="50px"/> -->
                         </el-form-item>
@@ -120,7 +120,7 @@
                         </el-form-item>
                         <el-form-item v-if="data.bank_card_type == 1" required prop="licence_pic_url" label="开户许可证">
                             <div v-viewer>
-                                <img :src="data.licence_pic_url" alt="商家logo" width="50px" height="50px" />
+                                <img :src="data.licence_pic_url" alt="开户许可证" width="200px" height="100px" />
                             </div>
                             <!-- <preview-img :url="data.licence_pic_url" width="100px" height="100px"/> -->
                         </el-form-item>
@@ -140,17 +140,17 @@
 
                         <el-form-item label="法人身份证正反面">
                             <div v-viewer>
-                                <img :src="data.legal_id_card_pic_a" width="200px" height="100px" />
+                                <img :src="data.legal_id_card_pic_a" width="200px" height="100px" alt="法人身份证正反面" />
                             </div>
                             <div v-viewer>
-                                <img :src="data.legal_id_card_pic_b" width="200px" height="100px" />
+                                <img :src="data.legal_id_card_pic_b" width="200px" height="100px" alt="法人身份证正反面" />
                             </div>
                             <!-- <preview-img :url="data.legal_id_card_pic_a" width="200px" height="100px"/>
                             <preview-img :url="data.legal_id_card_pic_b" width="200px" height="100px"/> -->
                         </el-form-item>
                         <el-form-item label="合同">
                             <div class="contract" v-viewer style="display: none;">
-                                <img v-for="(item, index) in data.contract_pic_url" :src="item" :key="index" />
+                                <img v-for="(item, index) in data.contract_pic_url" :src="item" :key="index" alt="合同" />
                             </div>
                             <el-button type="text" @click="previewImage('contract')">查看</el-button>
                         </el-form-item>
@@ -158,7 +158,7 @@
                         <el-form-item prop="other_card_pic_urls" label="其他证件">
 
                             <viewer :images="data.other_card_pic_urls">
-                                <img v-for="(src,index) in data.other_card_pic_urls" :src="src" :key="index">
+                                <img v-for="(src,index) in data.other_card_pic_urls" :src="src" :key="index" width="200px" height="100px" alt="其他证件" />
                             </viewer>
                             <!-- <template v-for="pic in data.other_card_pic_urls">
                                 <preview-img :url="pic" width="200px" height="100px"/>
