@@ -9,7 +9,7 @@
                     <el-input v-model="query.name" size="small"  placeholder="商户名称" clearable @keyup.enter.native="search"/>
                 </el-form-item>
                 <el-form-item prop="signBoardName" label="商户招牌名" >
-                    <el-input v-model="query.signBoardName" size="small"  placeholder="商户口招牌名" clearable @keyup.enter.native="search"/>
+                    <el-input v-model="query.signBoardName" size="small"  placeholder="商户招牌名" clearable @keyup.enter.native="search"/>
                 </el-form-item>
                 <el-form-item prop="startDate" label="添加商户开始时间">
                     <el-date-picker
