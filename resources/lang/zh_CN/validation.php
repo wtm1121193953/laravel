@@ -85,18 +85,17 @@ return [
         ],
 
         'mobile' => [
-            'required' => '手机号码不能各位空',
+            'required' => '手机号码不能位空',
             'size' => '手机号码位数不正确',
         ],
 
         'province_id' => [
-            'required' => '省份不能为空',
+            'required' => '省份ID不能为空',
         ],
 
         'city_id' => [
-            'required' => '城市不能为空',
+            'required' => '城市ID不能为空',
         ],
-
 
 
         'base_url' => [
