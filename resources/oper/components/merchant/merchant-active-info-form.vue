@@ -115,7 +115,7 @@
                 <image-upload v-model="form.licence_pic_url" :limit="1"/>
             </el-form-item>
             <el-form-item v-if="form.bank_card_type == 2" required label="法人银行卡正面照" prop="bank_card_pic_a">
-                <image-upload v-model="form.bank_card_pic_a" :limit="2"/>
+                <image-upload v-model="form.bank_card_pic_a" @before="beforeUpload" @complete="completeUpload" :limit="2"/>
             </el-form-item>
             <!-- 银行卡信息 end -->
 
@@ -138,7 +138,7 @@
             </el-form-item>
 
             <el-form-item prop="other_card_pic_urls" label="其他证件">
-                <image-upload v-model="form.other_card_pic_urls" :limit="10"/>
+                <image-upload v-model="form.other_card_pic_urls" @before="beforeUpload" @complete="completeUpload" :limit="10"/>
             </el-form-item>
         </el-col>
 
@@ -409,12 +409,17 @@
                 this.$refs.form.resetFields();
             },
             getData(){
-                let data = deepCopy(this.form);
-                if(this.data && this.data.id){
-                    data.id = this.data.id;
+                if (this.uploadVoucher == 0){
+                    let data = deepCopy(this.form);
+                    if(this.data && this.data.id){
+                        data.id = this.data.id;
+                    }
+                    data.business_time = JSON.stringify([new Date(data.business_start_time).format('hh:mm:ss'), new Date(data.business_end_time).format('hh:mm:ss')]);
+                    return data;
+                } else {
+                    this.$message.warning('图片上传中, 请稍后重试');
+                    return false;
                 }
-                data.business_time = JSON.stringify([new Date(data.business_start_time).format('hh:mm:ss'), new Date(data.business_end_time).format('hh:mm:ss')]);
-                return data;
             },
             validate(callback){
                 if(this.readonly){
@@ -433,11 +438,11 @@
             },
             beforeUpload() {
                 this.uploadVoucher ++ ;
-                // console.log('+', this.uploadVoucher);
+                console.log('+', this.uploadVoucher);
             },
             completeUpload() {
                 this.uploadVoucher -- ;
-                // console.log('-', this.uploadVoucher);
+                console.log('-', this.uploadVoucher);
             }
         },
         created(){
