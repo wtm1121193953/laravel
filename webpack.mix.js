@@ -61,6 +61,21 @@ mix.webpackConfig(webpack => {
                         },
                         publicPath: Config.resourceRoot
                     }
+                },
+                //单独转换：例外模块没有经过编译，造成ie浏览器不兼容
+                {
+                    test: /\.jsx?$/,
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            "es2015"
+                        ]
+                    },
+                    include: [
+                        path.resolve('node_modules/element-ui/src/mixins/emitter'),
+                        path.resolve('node_modules/quill-image-extend-module/index'),
+                        path.resolve('node_modules/ImageExtend'),
+                    ]
                 }
             ]
         }
