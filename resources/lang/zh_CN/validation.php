@@ -129,11 +129,9 @@ return [
         ],
         'signboard_name' => [
             'required' => '商户招牌名不能为空',
-
         ],
         'organization_code' => [
             'required' => '营业执照代码不能为空',
-
         ],
 
         'settlement_rate' => [
