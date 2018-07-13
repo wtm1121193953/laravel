@@ -127,6 +127,10 @@ return [
             'integer' => '商户ID必须为整数',
             'min' => '商户ID不能小于 :min',
         ],
+        'signboard_name' => [
+            'required' => '商户招牌名不能为空',
+
+        ],
 
         'settlement_rate' => [
             'required' => '结算费率不能为空',
