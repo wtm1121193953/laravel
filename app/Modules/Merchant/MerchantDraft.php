@@ -49,10 +49,10 @@ class MerchantDraft extends BaseModel
         if(is_array($descPicList)) $descPicList = implode(',', $descPicList);
         $this->desc_pic_list = $descPicList;
         $this->desc = request('desc','');
-        $this->settlement_cycle_type = request('settlement_cycle_type');
-        $this->settlement_rate = request('settlement_rate');
+        $this->settlement_cycle_type = request('settlement_cycle_type', 1);
+        $this->settlement_rate = request('settlement_rate', 0);
         // 银行卡信息
-        $this->bank_card_type = request('bank_card_type');
+        $this->bank_card_type = request('bank_card_type', 1);
         $this->bank_open_name = request('bank_open_name','');
         $this->bank_card_no = request('bank_card_no','');
         $this->sub_bank_name = request('sub_bank_name','');
