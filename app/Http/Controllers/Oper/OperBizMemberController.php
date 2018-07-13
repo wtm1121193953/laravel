@@ -99,7 +99,9 @@ class OperBizMemberController extends Controller
             'mobile' => 'required',
         ]);
 
-        $haveMemberMobile = OperBizMember::where( 'mobile' , request('mobile')) ->get();
+        $haveMemberMobile = OperBizMember::where( 'mobile' , request('mobile'))
+            ->where('oper_id', request()->get('current_user')->oper_id)
+            ->get();
         if (count($haveMemberMobile) > 0){
             throw new BaseResponseException('手机号码重复');
         }
@@ -127,9 +129,18 @@ class OperBizMemberController extends Controller
             'id' => 'required|integer|min:1',
             'name' => 'required',
         ]);
+
+        $haveMemberMobile = OperBizMember::where( 'mobile' , request('mobile'))
+            ->where('oper_id', request()->get('current_user')->oper_id)
+            ->where('id', '<>', request('id'))
+            ->get();
+        if (count($haveMemberMobile) > 0){
+            throw new BaseResponseException('手机号码重复');
+        }
+
         $operBizMember = OperBizMember::findOrFail(request('id'));
         $operBizMember->name = request('name');
-//        $operBizMember->mobile = request('mobile');
+        $operBizMember->mobile = request('mobile');
         $operBizMember->remark = request('remark', '');
 
         $operBizMember->save();
