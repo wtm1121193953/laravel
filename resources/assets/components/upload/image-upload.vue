@@ -7,6 +7,7 @@
                 :file-list="fileList"
                 :on-preview="preview ? handlePreview : null"
                 :on-success="handleUploadSuccess"
+                :on-error="handleError"
                 :before-upload="beforeUpload"
                 :on-remove="handleRemove"
                 :on-change="handleChange"
@@ -48,6 +49,7 @@
      *      fail: 图片上传失败
      *      complete: 上传后(不区分成功与失败, 都会执行)
      *      change: 文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用, 第一个参数为file, 其中status会有ready,success,fail 三种状态
+     *      error: 上传失败时的钩子
      */
     export default {
         name: "image-upload",
@@ -158,6 +160,9 @@
             },
             handleChange(file){
                 this.$emit('change', file);
+            },
+            handleError() {
+                this.$emit('error');
             },
             initFileList(){
 
