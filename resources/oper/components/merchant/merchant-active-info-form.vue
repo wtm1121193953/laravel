@@ -418,11 +418,15 @@
                 if(this.readonly){
                     callback()
                 }else {
-                    this.$refs.form.validate((valid) => {
-                        if(valid){
-                            callback()
-                        }
-                    })
+                    if (this.uploadVoucher > 0){
+                        this.$message.warning('图片上传中, 请稍后重试');
+                    }else {
+                        this.$refs.form.validate((valid) => {
+                            if(valid){
+                                callback()
+                            }
+                        })
+                    }
                 }
             },
             resetCode() {

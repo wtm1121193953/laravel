@@ -121,6 +121,7 @@
                         file.url = res.data.url;
                         this.fileList = fileList;
                         this.emitInput();
+                        this.$emit('success')
                     } else {
                         fileList.forEach(function (item, index) {
                             if(item === file){
@@ -128,9 +129,8 @@
                             }
                         })
                         this.$message.error('请上传图片尺寸为' + width + 'px*' + height + 'px且大小不能超过2MB的图片')
-                        return false;
+                        this.$emit('fail')
                     }
-                    this.$emit('success')
                 }else{
                     fileList.forEach(function (item, index) {
                         if(item === file){
