@@ -6,7 +6,7 @@
  * Time: 18:27
  */
 
-namespace App\Modules\Merchant;
+namespace App\Exports;
 
 
 use App\Modules\Oper\Oper;
