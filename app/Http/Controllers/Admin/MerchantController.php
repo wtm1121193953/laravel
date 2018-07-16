@@ -35,7 +35,7 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $auditStatus = request('auditStatus');
-        $signBoardName = request('signBoardName');
+        $signboardName = request('signboardName');
         if(empty($auditStatus)){
             $auditStatus=["0","1","2","3"];
         }
@@ -75,8 +75,8 @@ class MerchantController extends Controller
                 ->when($creatorOperId, function (Builder $query) use ($creatorOperId) {
                     $query->where('creator_oper_id', $creatorOperId);
                 })
-                ->when($signBoardName, function (Builder $query) use ($signBoardName) {
-                    $query->where('signboard_name', 'like', "%$signBoardName%");
+                ->when($signboardName, function (Builder $query) use ($signboardName) {
+                    $query->where('signboard_name', 'like', "%$signboardName%");
                 })
                 ->when($operId, function (Builder $query) use ($operId) {
                     $query->where(function ($query) use ($operId) {
@@ -264,7 +264,7 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $auditStatus = request('auditStatus');
-        $signBoardName = request('signBoardName');
+        $signboardName = request('signboardName');
         if ($auditStatus || $auditStatus==="0"){
             $auditStatus = explode(',', $auditStatus);
         }
@@ -273,6 +273,6 @@ class MerchantController extends Controller
         $creatorOperId = request('creatorOperId');
         $creatorOperName = request('creatorOperName');
 
-        return (new MerchantExport($id, $startDate, $endDate,$signBoardName, $name,$auditStatus, $operId, $operName, $creatorOperId, $creatorOperName))->download('merchant_list.xlsx');
+        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name,$auditStatus, $operId, $operName, $creatorOperId, $creatorOperName))->download('merchant_list.xlsx');
     }
 }
