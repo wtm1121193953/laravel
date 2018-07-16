@@ -33,7 +33,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method
  * @mixin SoftDeletes
  */
-class BaseModel extends Model
+abstract class BaseModel extends Model
 {
 
 }
