@@ -465,3 +465,7 @@ a {
 .inline {
   display: inline-block;
 }
+
+.tips {
+  color: #C0C4CC;
+}
