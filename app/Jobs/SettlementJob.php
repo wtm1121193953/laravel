@@ -17,15 +17,23 @@ class SettlementJob implements ShouldQueue
 
     protected $settlementCycleType;
 
+    protected $date;
+
     /**
      * Create a new job instance.
      *
      * @param $settlementCycleType
+     * @param Carbon $date
      */
-    public function __construct($settlementCycleType)
+    public function __construct($settlementCycleType, $date = null)
     {
         //
         $this->settlementCycleType = $settlementCycleType;
+        if(is_null($date)){
+            $this->date = Carbon::now();
+        }else {
+            $this->date = $date;
+        }
     }
 
     /**
@@ -38,36 +46,37 @@ class SettlementJob implements ShouldQueue
     {
         // 计算要结算的开始日期与结束日期
         Log::info('开始执行结算任务');
+        $date = $this->date;
         switch ($this->settlementCycleType){
             case Merchant::SETTLE_WEEKLY:
-                $end = Carbon::now()->subWeek()->endOfWeek();
-                $start = Carbon::now()->subWeek()->startOfWeek();
+                $end = $date->copy()->subWeek()->endOfWeek();
+                $start = $date->copy()->subWeek()->startOfWeek();
                 break;
             case Merchant::SETTLE_HALF_MONTHLY:
-                if(Carbon::now()->day > 15){
-                    $start = Carbon::now()->startOfMonth();
-                    $end = Carbon::now()->startOfMonth()->addDays(14)->endOfDay();
+                if($date->day > 15){
+                    $start = $date->copy()->startOfMonth();
+                    $end = $date->copy()->startOfMonth()->addDays(14)->endOfDay();
                 } else {
-                    $start = Carbon::now()->subMonth()->startOfMonth()->addDays(15);
-                    $end = Carbon::now()->subMonth()->endOfMonth();
+                    $start = $date->copy()->subMonth()->startOfMonth()->addDays(15);
+                    $end = $date->copy()->subMonth()->endOfMonth();
                 }
                 break;
             case Merchant::SETTLE_MONTHLY:
-                $start = Carbon::now()->subMonth()->startOfMonth();
-                $end = Carbon::now()->subMonth()->endOfMonth();
+                $start = $date->copy()->subMonth()->startOfMonth();
+                $end = $date->copy()->subMonth()->endOfMonth();
                 break;
             case Merchant::SETTLE_HALF_YEARLY:
-                if(Carbon::now()->month > 6){
-                    $start = Carbon::now()->startOfYear();
-                    $end = Carbon::now()->startOfYear()->addMonths(5)->endOfMonth();
+                if($date->month > 6){
+                    $start = $date->copy()->startOfYear();
+                    $end = $date->copy()->startOfYear()->addMonths(5)->endOfMonth();
                 }else {
-                    $start = Carbon::now()->subYear()->startOfYear()->addMonths(6)->startOfMonth();
-                    $end = Carbon::now()->subYear()->endOfYear();
+                    $start = $date->copy()->subYear()->startOfYear()->addMonths(6)->startOfMonth();
+                    $end = $date->copy()->subYear()->endOfYear();
                 }
                 break;
             case Merchant::SETTLE_YEARLY:
-                $start = Carbon::now()->subYear()->startOfYear();
-                $end = Carbon::now()->subYear()->endOfYear();
+                $start = $date->copy()->subYear()->startOfYear();
+                $end = $date->copy()->subYear()->endOfYear();
                 break;
             default :
                 throw new \Exception('错误的结算方式:' . $this->settlementCycleType);
