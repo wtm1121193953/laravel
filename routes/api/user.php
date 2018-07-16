@@ -23,6 +23,7 @@ Route::prefix('user')
         Route::get('area/cites/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
         Route::get('area/cites/withHot', 'AreaController@getCitiesWithHot');
         Route::get('area/getByGps', 'AreaController@getAreaByGps');
+        Route::get('area/search', 'AreaController@searchCityList');
 
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
         Route::get('merchants', 'MerchantController@getList');
