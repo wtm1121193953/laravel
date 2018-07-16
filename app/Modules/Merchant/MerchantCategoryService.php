@@ -15,29 +15,69 @@ use App\Exceptions\ParamInvalidException;
 class MerchantCategoryService extends BaseService
 {
 
+    /**
+     * 查询列表
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
     public static function getList()
     {
-        // todo 查询列表
+        $data = MerchantCategory::paginate();
+        return $data;
     }
 
-    public static function getAll()
+    /**
+     * 获取树形分类信息
+     * @param bool $withDisabled
+     * @return array|mixed
+     */
+    public static function getTree($withDisabled = false)
     {
-        // todo 查询全部列表
+        return MerchantCategory::getTree($withDisabled);
     }
 
-    public static function getTree()
+    /**
+     * 添加分类信息
+     * @param $name
+     * @param int $status
+     * @param int $pid
+     * @return MerchantCategory
+     */
+    public static function add($name, $status = 1, $pid = 0)
     {
-        // todo 获取树形分类信息
+        $category = new MerchantCategory();
+        $category->name = $name;
+        $category->status = $status;
+        $category->pid = $pid;
+        $category->save();
+
+        MerchantCategory::clearCache();
+
+        return $category;
     }
 
-    public static function add()
+    /**
+     * 编辑分类信息
+     * @param $id
+     * @param $name
+     * @param int $status
+     * @param int $pid
+     * @return MerchantCategory
+     */
+    public static function edit($id, $name, $status = 1, $pid = 0)
     {
-        // todo 添加分类信息
-    }
 
-    public static function edit()
-    {
-        // todo 编辑分类信息
+        $category = MerchantCategory::find($id);
+        if(empty($category)){
+            throw new ParamInvalidException('类目不存在或已被删除');
+        }
+        $category->name = $name;
+        $category->status = $status;
+        $category->pid = $pid;
+        $category->save();
+
+        MerchantCategory::clearCache();
+
+        return $category;
     }
 
     /**

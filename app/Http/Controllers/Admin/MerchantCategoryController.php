@@ -20,13 +20,13 @@ class MerchantCategoryController extends Controller
 
     public function getTree()
     {
-        $tree = MerchantCategory::getTree(true);
+        $tree = MerchantCategoryService::getTree(true);
         return Result::success(['list' => $tree]);
     }
 
     public function getList()
     {
-        $data = MerchantCategory::paginate();
+        $data = MerchantCategoryService::getList();
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -38,13 +38,11 @@ class MerchantCategoryController extends Controller
         $this->validate(request(), [
             'name' => 'required'
         ]);
-        $category = new MerchantCategory();
-        $category->name = request('name');
-        $category->status = request('status', 1);
-        $category->pid = request('pid', 0);
-        $category->save();
-
-        MerchantCategory::clearCache();
+        $category = MerchantCategoryService::add(
+            request('name'),
+            request('status', 1),
+            request('pid', 0)
+        );
 
         return Result::success($category);
     }
@@ -55,17 +53,12 @@ class MerchantCategoryController extends Controller
             'id' => 'required|integer|min:1',
             'name' => 'required',
         ]);
-        $category = MerchantCategory::find(request('id'));
-        if(empty($category)){
-            throw new ParamInvalidException('类目不存在或已被删除');
-        }
-        $category->name = request('name');
-        $category->status = request('status', 1);
-        $category->pid = request('pid', 0);
-        $category->save();
-
-        MerchantCategory::clearCache();
-
+        $category = MerchantCategoryService::edit(
+            request('id'),
+            request('name'),
+            request('status', 1),
+            request('pid', 0)
+        );
         return Result::success($category);
     }
 
