@@ -402,6 +402,7 @@ token (wxLogin接口除外)
           pic_list: 商品小图列表, 数组
           buy_info: 购买须知,
           status: 状态 1-上架 2-下架,
+          sort: 排序，
           sell_number: 商品已售数量,
           business_time: 营业时间，数组
         }
@@ -442,6 +443,7 @@ id: 商品id
       pic_list: 商品小图列表, 数组
       buy_info: 购买须知,
       status: 状态 1-上架 2-下架,
+      sort: 排序，
       sell_number: 商品已售数量,
       business_time: 营业时间，数组
     }
@@ -744,6 +746,9 @@ order_no 订单号
                 "intro": "11111",  商品描述
                 "detail_image": "http://www.daqian.com/storage/image/item/z5tBnB2XoBvXEYUQWyQ3odPz49OPrEKLMEIYmnj6.jpeg",  商品详情图片
                 "status": 1,  1上架 2下架
+                "sell_number": 已销售数量,
+                "is_hot": 是否热销,
+                "sort": 排序，
                 "created_at": "2018-06-15 14:26:09",
                 "updated_at": "2018-06-15 14:26:09",
                 "deleted_at": null
@@ -874,6 +879,7 @@ order_no 订单号
               is_hot：是否热销
               detail_image：商品详情图片
               status：1-上架，2-下架
+              sort: 排序
               created_at：创建时间
               updated_at：更新时间
               deleted_at：删除时间

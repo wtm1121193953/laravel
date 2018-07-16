@@ -17,8 +17,14 @@
         },
         methods: {
             getDetail(){
-                api.get('merchant/detail/check', {id: this.id,}).then(data => {
+                api.get('merchant/detail', {id: this.id,}).then(data => {
                     this.merchant = data;
+
+                    this.merchant.business_time = JSON.parse(data.business_time);
+                    this.merchant.desc_pic_list = data.desc_pic_list ? data.desc_pic_list.split(',') : [];
+                    this.merchant.contract_pic_url = data.contract_pic_url ? data.contract_pic_url.split(',') : [];
+                    this.merchant.other_card_pic_urls = data.other_card_pic_urls ? data.other_card_pic_urls.split(',') : [];
+                    this.merchant.bank_card_pic_a = data.bank_card_pic_a ? data.bank_card_pic_a.split(',') : [];
                 });
             }
         },
