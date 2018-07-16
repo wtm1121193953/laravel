@@ -18,7 +18,7 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class MerchantExport implements FromQuery, WithMapping, WithHeadings, FromCollection
+class MerchantExport implements FromQuery, WithMapping, WithHeadings
 {
     use Exportable;
 
@@ -31,9 +31,9 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings, FromCollec
     protected $operName;
     protected $creatorOperId;
     protected $creatorOperName;
-    protected $signBoardName;
+    protected $signboardName;
 
-    public function __construct($id = '', $startDate = '',$endDate = '',$signBoardName='', $name = '', $auditStatus = [], $operId = '', $operName = '', $creatorOperId = '', $creatorOperName = '')
+    public function __construct($id = '', $startDate = '',$endDate = '',$signboardName='', $name = '', $auditStatus = [], $operId = '', $operName = '', $creatorOperId = '', $creatorOperName = '')
     {
         $this->id = $id;
         $this->startDate = $startDate;
@@ -42,7 +42,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings, FromCollec
         $this->auditStatus = $auditStatus;
         $this->operId = $operId;
         $this->operName = $operName;
-        $this->signBoardName = $signBoardName;
+        $this->signboardName = $signboardName;
         $this->creatorOperId = $creatorOperId;
         $this->creatorOperName = $creatorOperName;
     }
@@ -65,7 +65,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings, FromCollec
         $operName = $this->operName;
         $creatorOperId = $this->creatorOperId;
         $creatorOperName = $this->creatorOperName;
-        $signBoardName = $this->signBoardName;
+        $signboardName = $this->signboardName;
 
         $operIds = null;
         if($operName) {
@@ -83,43 +83,16 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings, FromCollec
                 ->pluck('id');
         }
 
-        $query = Merchant::query()
-            ->where('audit_oper_id', '>', 0)
-            ->when($id, function (Builder $query) use ($id) {
-                $query->where('id', $id);
-            })
-            ->when($creatorOperId, function (Builder $query) use ($creatorOperId) {
-                $query->where('creator_oper_id', $creatorOperId);
-            })
-            ->when($operId, function (Builder $query) use ($operId) {
-                if ($operId > 0) {
-                    $query->where('oper_id', $operId);
-                } else {
-                    $query->where('audit_oper_id', $operId);
-                }
-            })
-            ->when(!is_null($operIds), function (Builder $query) use ($operIds) {
-                $query->whereIn('oper_id', $operIds);
-            })
-            ->when(!is_null($createOperIds), function (Builder $query) use ($createOperIds) {
-                $query->whereIn('creator_oper_id', $createOperIds);
-            })
-            ->when($startDate, function (Builder $query) use ($startDate) {
-                $query->where('created_at', '>=', $startDate . ' 00:00:00');
-            })
-            ->when($endDate, function (Builder $query) use ($endDate) {
-                $query->where('created_at', '<=', $endDate . ' 23:59:59');
-            })
-            ->when(!empty($auditStatus) && isset($auditStatus), function (Builder $query) use ($auditStatus) {
-                $query->whereIn('audit_status', $auditStatus);
-            })
-            ->when($name, function (Builder $query) use ($name) {
-                $query->where('name', 'like', "%$name%");
-            })
-            ->when($signBoardName, function (Builder $query) use ($signBoardName) {
-                $query->where('signboard_name', 'like', "%$signBoardName%");
-            })
-            ->orderByDesc('id');
+        $query = MerchantService::getList([
+            'id' => $id,
+            'name' => $name,
+            'signboardName' => $signboardName,
+            'operId' => $operIds ?? $operId,
+            'creatorOperId' => $createOperIds ?? $creatorOperId,
+            'auditStatus' => $auditStatus,
+            'startCreatedAt' => $startDate,
+            'endCreatedAt' => $endDate,
+        ], true);
 
         return $query;
     }
