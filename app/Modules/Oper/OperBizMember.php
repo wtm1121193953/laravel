@@ -35,13 +35,13 @@ class OperBizMember extends BaseModel
      * @param static $operBizMember
      * @return int
      */
-    public static function getActiveMerchantNumber($operBizMember)
+    public static function getActiveMerchantNumber($operBizMember, $operId)
     {
         $number = Cache::get('oper_biz_member_active_merchant_number_' . $operBizMember->id);
         if (is_null($number)){
-            $number = Merchant::where(function (Builder $query){
-                $query->where('oper_id', request()->get('current_user')->oper_id)
-                    ->orWhere('audit_oper_id',  request()->get('current_user')->oper_id);
+            $number = Merchant::where(function (Builder $query) use ($operId){
+                $query->where('oper_id', $operId)
+                    ->orWhere('audit_oper_id',  $operId);
             })
             ->where('oper_biz_member_code', $operBizMember->code)->count();
             Cache::forever('oper_biz_member_active_merchant_number_' . $operBizMember->id, $number);
@@ -54,17 +54,6 @@ class OperBizMember extends BaseModel
     public static function updateActiveMerchantNumberByCode($code)
     {
         $operBizMember = self::where('code', $code)->first();
-        if($operBizMember){
-            $count = Merchant::where(function (Builder $query){
-                $query->where('oper_id', request()->get('current_user')->oper_id)
-                    ->orWhere('audit_oper_id',  request()->get('current_user')->oper_id);
-            })
-            ->where('oper_biz_member_code', $code)->count();
-            Cache::forever('oper_biz_member_active_merchant_number_' . $operBizMember->id, $count);
-        }else {
-            Log::warning('更新运营中心业务人员已激活商家数量缓存时, 所传的code对应的业务人员不存在', [
-                'code' => $code,
-            ]);
-        }
+        Cache::forget('oper_biz_member_active_merchant_number_' . $operBizMember->id);
     }
 }

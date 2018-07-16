@@ -309,9 +309,10 @@ token (wxLogin接口除外)
         contacter_phone: 负责人联系方式
         audit_status: 商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
-        distance: 距离, 当传递经纬度信息时才存在
-        lowestAmount: 最低消费金额
-        isOperSelf: 是否归属于当前小程序的运营中心
+        distance: 距离, 当传递经纬度信息时才存在,
+        lowestAmount: 最低消费金额,
+        isOperSelf: 是否归属于当前小程序的运营中心,
+        grade: 商户评级,目前默认为5
       }
     ]
   } 
