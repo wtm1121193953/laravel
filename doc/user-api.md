@@ -230,7 +230,44 @@ token (wxLogin接口除外)
   }
   ```
 
-  ​
+
+
+- [ ] 通过关键字搜索城市列表
+
+  接口地址：GET  `area/search`
+
+  参数：
+
+  ```
+  name: 城市关键字
+  ```
+
+  返回：
+
+  ```
+  data: {
+      list: [ 城市列表
+          {
+              id: 主键
+              area_id: 地区id
+              name: 地区名称
+              type: 类型，保留字段
+              path: 路径，从1开始
+              area_code: 区号
+              spell: 拼音
+              letter: 简拼
+              first_letter: 首字母
+              status: 状态 1-正常 2-禁用
+              parent_id: 父ID，如果是省份，则父ID为0
+          }
+          ......
+      ]
+  }
+  ```
+
+  
+
+
 
 #### 商家模块
 
