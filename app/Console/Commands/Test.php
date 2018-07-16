@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\OrderPaidJob;
 use App\Jobs\SettlementJob;
+use App\Modules\Area\Area;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteService;
@@ -14,6 +15,7 @@ use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Settlement\Settlement;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -54,6 +56,15 @@ class Test extends Command
      */
     public function handle()
     {
+        $operId = collect();
+        dump($operId);
+
+        $area = Merchant::where('audit_oper_id', '>', 0)
+            ->where(function (Builder $query) use ($operId) {
+                $query->whereIn('oper_id',  $operId)
+                    ->orWhereIn('audit_oper_id', $operId);
+            })->get();
+        dump($area);
         dump('test');
     }
 
