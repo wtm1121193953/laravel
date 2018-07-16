@@ -10,14 +10,14 @@ namespace App\Http\Controllers\Oper;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantCategoryService;
 use App\Result;
 
 class MerchantCategoryController extends Controller
 {
     public function getTree()
     {
-        $tree = MerchantCategory::getTree();
+        $tree = MerchantCategoryService::getTree();
         return Result::success(['list' => $tree]);
     }
 }

@@ -8,10 +8,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-
-use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
-use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantCategoryService;
 use App\Result;
 

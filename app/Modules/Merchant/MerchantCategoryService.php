@@ -11,6 +11,9 @@ namespace App\Modules\Merchant;
 
 use App\BaseService;
 use App\Exceptions\ParamInvalidException;
+use App\Support\Utils;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 class MerchantCategoryService extends BaseService
 {
@@ -32,7 +35,16 @@ class MerchantCategoryService extends BaseService
      */
     public static function getTree($withDisabled = false)
     {
-        return MerchantCategory::getTree($withDisabled);
+        $cacheKey = $withDisabled ? 'merchant_category_tree_with_disabled' : 'merchant_category_tree';
+        $tree = Cache::get($cacheKey);
+        if(!$tree){
+            $list = MerchantCategory::when(!$withDisabled, function(Builder $query){
+                $query->where('status', 1);
+            })->get();
+            $tree = Utils::convertListToTree($list);
+            Cache::forever($cacheKey, $tree);
+        }
+        return $tree;
     }
 
     /**
@@ -50,7 +62,7 @@ class MerchantCategoryService extends BaseService
         $category->pid = $pid;
         $category->save();
 
-        MerchantCategory::clearCache();
+        self::clearCache();
 
         return $category;
     }
@@ -75,7 +87,7 @@ class MerchantCategoryService extends BaseService
         $category->pid = $pid;
         $category->save();
 
-        MerchantCategory::clearCache();
+        self::clearCache();
 
         return $category;
     }
@@ -95,7 +107,7 @@ class MerchantCategoryService extends BaseService
         $category->status = $status;
         $category->save();
 
-        MerchantCategory::clearCache();
+        self::clearCache();
 
         return $category;
     }
@@ -123,7 +135,7 @@ class MerchantCategoryService extends BaseService
 
         $category->delete();
 
-        MerchantCategory::clearCache();
+        self::clearCache();
 
         return $category;
     }
@@ -146,5 +158,14 @@ class MerchantCategoryService extends BaseService
     public static function hasSubCategory($categoryId) : bool
     {
         return !empty( MerchantCategory::where('pid', $categoryId)->first() );
+    }
+
+    /**
+     * 清除类目缓存
+     */
+    public static function clearCache()
+    {
+        Cache::forget('merchant_category_tree');
+        Cache::forget('merchant_category_tree_with_disabled');
     }
 }
