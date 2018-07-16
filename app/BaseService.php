@@ -16,4 +16,6 @@ namespace App;
 abstract class BaseService
 {
 
+//    abstract public static function getList();
+
 }
