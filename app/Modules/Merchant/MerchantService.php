@@ -19,7 +19,7 @@ class MerchantService extends BaseService
 
     public static function getAllNames(array $data)
     {
-
+        // todo 获取所有的商户名, 可以传入查询条件, 后期可以对查询结果做缓存
     }
 
     /**
@@ -117,26 +117,26 @@ class MerchantService extends BaseService
 
     public static function detail()
     {
-
+        // todo 商户详情
     }
 
     public static function edit()
     {
-
+        // todo 编辑商户信息
     }
 
     public static function add()
     {
-
+        // todo 添加商户信息
     }
 
     public static function addFromDraft()
     {
-
+        // todo 从草稿箱添加
     }
 
     public static function addFromMerchantPool()
     {
-
+        // todo 从商户池添加
     }
 }
