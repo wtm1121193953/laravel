@@ -11,8 +11,9 @@ namespace App\Modules\Merchant;
 
 use App\BaseService;
 use App\Modules\Oper\Oper;
+use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class MerchantService extends BaseService
 {
@@ -120,6 +121,11 @@ class MerchantService extends BaseService
         // todo 商户详情
     }
 
+    public static function audit()
+    {
+        // todo 审核商户
+    }
+
     public static function edit()
     {
         // todo 编辑商户信息
@@ -138,5 +144,29 @@ class MerchantService extends BaseService
     public static function addFromMerchantPool()
     {
         // todo 从商户池添加
+    }
+
+
+    /**
+     * 同步商户地区数据到Redis中
+     * @param $merchant Collection|Merchant
+     */
+    public static function geoAddToRedis($merchant)
+    {
+        if($merchant instanceof Collection){
+            Lbs::merchantGpsAdd($merchant);
+        }else {
+            Lbs::merchantGpsAdd($merchant->id, $merchant->lng, $merchant->lat);
+        }
+    }
+
+    /**
+     * 同步所有商户的LBS数据到Redis中
+     */
+    public static function geoAddAllToRedis()
+    {
+        Merchant::chunk(100, function (Collection $list){
+            self::geoAddToRedis($list);
+        });
     }
 }
