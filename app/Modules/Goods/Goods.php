@@ -23,14 +23,30 @@ class Goods extends BaseModel
     public static function getLowestPriceForMerchant($merchantId)
     {
         $goodsLowestAmount = Goods::where('merchant_id', $merchantId)
-            ->where('status', 1)
+            ->where('status', self::STATUS_ON)
             ->orderBy('price')
             ->value('price');
         $dishesGoodsLowestAmount = DishesGoods::where('merchant_id', $merchantId)
-            ->where('status', 1)
+            ->where('status', self::STATUS_ON)
             ->orderBy('sale_price')
             ->value('sale_price');
         $lowestAmount = $goodsLowestAmount > $dishesGoodsLowestAmount ? $dishesGoodsLowestAmount : $goodsLowestAmount;
         return $lowestAmount;
+    }
+
+    /**
+     * 首页商户列表，显示价格最低的n个团购商品
+     * @param $merchantId
+     * @param $number
+     * @return Goods[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getLowestPriceGoodsForMerchant($merchantId, $number)
+    {
+        $list = Goods::where('merchant_id', $merchantId)
+            ->where('status', self::STATUS_ON)
+            ->orderBy('price')
+            ->limit($number)
+            ->get();
+        return $list;
     }
 }

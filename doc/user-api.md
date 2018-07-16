@@ -309,9 +309,32 @@ token (wxLogin接口除外)
         contacter_phone: 负责人联系方式
         audit_status: 商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
-        distance: 距离, 当传递经纬度信息时才存在
-        lowestAmount: 最低消费金额
-        isOperSelf: 是否归属于当前小程序的运营中心
+        distance: 距离, 当传递经纬度信息时才存在,
+        lowestAmount: 最低消费金额,
+        isOperSelf: 是否归属于当前小程序的运营中心,
+        grade: 商户评级,目前默认为5,
+        lowestGoods: [	价格最低的两个团购商品
+            {
+                id: 商品ID,
+                oper_id: 运营中心ID
+                merchant_id: 商家ID,
+                name: 商品名,
+                desc: 商品描述,
+                market_price: 市场价(商品原价),
+                price; 商品价格,
+                start_date: 商品有效期开始日期,
+                end_date: 商品有效期结束日期,
+                business_time: 可用时间 数组格式:[开始时间, 结束时间], 如: ['10:30:00', '18:30:00'],
+                thumb_url: 商品缩略图,
+                pic: 商品默认图,
+                pic_list: 商品小图列表, 数组
+                buy_info: 购买须知,
+                status: 状态 1-上架 2-下架,
+                sell_number: 商品已售数量,
+                business_time: 营业时间，数组
+            }
+            ......
+        ]
       }
     ]
   } 
@@ -402,7 +425,6 @@ token (wxLogin接口除外)
           pic_list: 商品小图列表, 数组
           buy_info: 购买须知,
           status: 状态 1-上架 2-下架,
-          sort: 排序，
           sell_number: 商品已售数量,
           business_time: 营业时间，数组
         }
@@ -443,7 +465,6 @@ id: 商品id
       pic_list: 商品小图列表, 数组
       buy_info: 购买须知,
       status: 状态 1-上架 2-下架,
-      sort: 排序，
       sell_number: 商品已售数量,
       business_time: 营业时间，数组
     }
@@ -746,9 +767,6 @@ order_no 订单号
                 "intro": "11111",  商品描述
                 "detail_image": "http://www.daqian.com/storage/image/item/z5tBnB2XoBvXEYUQWyQ3odPz49OPrEKLMEIYmnj6.jpeg",  商品详情图片
                 "status": 1,  1上架 2下架
-                "sell_number": 已销售数量,
-                "is_hot": 是否热销,
-                "sort": 排序，
                 "created_at": "2018-06-15 14:26:09",
                 "updated_at": "2018-06-15 14:26:09",
                 "deleted_at": null
@@ -879,7 +897,6 @@ order_no 订单号
               is_hot：是否热销
               detail_image：商品详情图片
               status：1-上架，2-下架
-              sort: 排序
               created_at：创建时间
               updated_at：更新时间
               deleted_at：删除时间
