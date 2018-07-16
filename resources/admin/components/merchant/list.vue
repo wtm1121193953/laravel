@@ -8,8 +8,8 @@
                 <el-form-item prop="name" label="商户名称" >
                     <el-input v-model="query.name" size="small"  placeholder="商户名称" clearable @keyup.enter.native="search"/>
                 </el-form-item>
-                <el-form-item prop="signBoardName" label="商户招牌名" >
-                    <el-input v-model="query.signBoardName" size="small"  placeholder="商户招牌名" clearable @keyup.enter.native="search"/>
+                <el-form-item prop="signboardName" label="商户招牌名" >
+                    <el-input v-model="query.signboardName" size="small"  placeholder="商户招牌名" clearable @keyup.enter.native="search"/>
                 </el-form-item>
                 <el-form-item prop="startDate" label="添加商户开始时间">
                     <el-date-picker
@@ -167,7 +167,7 @@
                 detailMerchant:null,
                 query: {
                     name: '',
-                    signBoardName:'',
+                    signboardName:'',
                     auditStatus: [],
                     page: 1,
                     merchantId: '',
@@ -260,7 +260,7 @@
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
                 this.$confirm(message).then(() => {
-                    window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&signBoardName='+ this.query.signBoardName+ '&auditStatus=' + this.query.auditStatus + '&operName=' + this.query.operName + '&operId=' + this.query.operId + '&creatorOperName=' + this.query.creatorOperName + '&creatorOperId=' + this.query.creatorOperId;
+                    window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&signboardName='+ this.query.signboardName+ '&auditStatus=' + this.query.auditStatus + '&operName=' + this.query.operName + '&operId=' + this.query.operId + '&creatorOperName=' + this.query.creatorOperName + '&creatorOperId=' + this.query.creatorOperId;
                 })
             }
         },

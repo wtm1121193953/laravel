@@ -6,7 +6,7 @@
  * Time: 15:25
  */
 
-namespace App\Jobs;
+namespace App\Exports;
 use Illuminate\Database\Query\Builder;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
