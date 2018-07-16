@@ -250,6 +250,12 @@ class MerchantController extends Controller
 
         $merchant->save();
         $merchantAudit->save();
+
+        // 保存之后 更新业务员已激活商户数量
+        if($type == 3 && $merchant->oper_biz_member_code){
+            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
+
         return Result::success($merchant);
     }
 
