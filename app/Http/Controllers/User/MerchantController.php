@@ -123,6 +123,8 @@ class MerchantController extends Controller
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
             // 兼容v1.0.0版客服电话字段
             $item->contacter_phone = $item->service_phone;
+            // 商户评级字段，暂时全部默认为5星
+            $item->grade = 5;
         });
 
         return Result::success(['list' => $list, 'total' => $total]);
