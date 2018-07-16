@@ -183,6 +183,11 @@ class MerchantController extends Controller
             ->where('audit_oper_id', $currentOperId)
             ->firstOrFail();
 
+        if(!empty($merchant->oper_biz_member_code)){
+            // 记录原业务员ID
+            $originOperBizMemberCode = $merchant->oper_biz_member_code;
+        }
+
         $merchant->fillMerchantPoolInfoFromRequest();
         $merchant->fillMerchantActiveInfoFromRequest();
 
@@ -208,6 +213,11 @@ class MerchantController extends Controller
         // 更新业务员已激活商户数量
         if($merchant->oper_biz_member_code){
             OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
+
+        // 如果存在原有的业务员, 并且不等于现有的业务员, 更新原有业务员邀请用户数量
+        if(isset($originOperBizMemberCode) && $originOperBizMemberCode != $merchant->oper_biz_member_code){
+            OperBizMember::updateActiveMerchantNumberByCode($originOperBizMemberCode);
         }
 
         return Result::success($merchant);
