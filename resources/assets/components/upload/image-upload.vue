@@ -163,6 +163,7 @@
             },
             handleError() {
                 this.$emit('error');
+                this.$emit('complete')
             },
             initFileList(){
 

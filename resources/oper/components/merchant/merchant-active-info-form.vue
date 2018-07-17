@@ -68,11 +68,11 @@
                 </el-time-picker>-->
             </el-form-item>
             <el-form-item prop="logo" label="商家logo">
-                <image-upload :width="190" :height="190" v-model="form.logo" @before="plusUpload" @complete="descUpload" @error="descUpload" :limit="1"/>
+                <image-upload :width="190" :height="190" v-model="form.logo" :limit="1"/>
                 <div>图片尺寸: 190 px * 190 px</div>
             </el-form-item>
             <el-form-item prop="desc_pic_list" label="商家介绍图片">
-                <image-upload :width="750" :height="526" v-model="form.desc_pic_list" @before="plusUpload" @complete="descUpload" @error="descUpload" :limit="6"/>
+                <image-upload :width="750" :height="526" v-model="form.desc_pic_list" :limit="6"/>
                 <div>图片尺寸: 750 px * 526 px</div>
             </el-form-item>
             <el-form-item prop="desc" label="商家介绍">
@@ -112,33 +112,33 @@
                 <el-input v-model="form.bank_open_address"/>
             </el-form-item>
             <el-form-item v-if="form.bank_card_type == 1" required prop="licence_pic_url" label="开户许可证">
-                <image-upload v-model="form.licence_pic_url" @before="plusUpload" @complete="descUpload" @error="descUpload" :limit="1"/>
+                <image-upload v-model="form.licence_pic_url" :limit="1"/>
             </el-form-item>
             <el-form-item v-if="form.bank_card_type == 2" required label="法人银行卡正面照" prop="bank_card_pic_a">
-                <image-upload v-model="form.bank_card_pic_a" @before="plusUpload" @complete="descUpload" @error="descUpload" :limit="2"/>
+                <image-upload v-model="form.bank_card_pic_a" :limit="2"/>
             </el-form-item>
             <!-- 银行卡信息 end -->
 
             <el-form-item prop="legal_id_card_pic_a" label="法人身份证正面">
-                <image-upload v-model="form.legal_id_card_pic_a" @before="plusUpload" @complete="descUpload" @error="descUpload" :limit="1"/>
+                <image-upload v-model="form.legal_id_card_pic_a" :limit="1"/>
             </el-form-item>
             <el-form-item prop="legal_id_card_pic_b" label="法人身份证反面">
-                <image-upload v-model="form.legal_id_card_pic_b" @before="plusUpload" @complete="descUpload" @error="descUpload" :limit="1"/>
+                <image-upload v-model="form.legal_id_card_pic_b" :limit="1"/>
             </el-form-item>
 
             <el-form-item prop="business_licence_pic_url" label="营业执照">
-                <image-upload v-model="form.business_licence_pic_url" @before="plusUpload" @complete="descUpload" @error="descUpload" :limit="1"/>
+                <image-upload v-model="form.business_licence_pic_url" :limit="1"/>
             </el-form-item>
             <el-form-item prop="organization_code" label="营业执照代码">
                 <el-input v-model="form.organization_code"/>
             </el-form-item>
 
             <el-form-item prop="contract_pic_url" label="合同">
-                <image-upload v-model="form.contract_pic_url" @before="plusUpload" @complete="descUpload" @error="descUpload" :limit="10"/>
+                <image-upload v-model="form.contract_pic_url" :limit="10"/>
             </el-form-item>
 
             <el-form-item prop="other_card_pic_urls" label="其他证件">
-                <image-upload v-model="form.other_card_pic_urls" @before="plusUpload" @complete="descUpload" @error="descUpload" :limit="10"/>
+                <image-upload v-model="form.other_card_pic_urls" :limit="10"/>
             </el-form-item>
         </el-col>
 
@@ -357,7 +357,6 @@
                 },
                 searchOperBizMemberLoading: false,
                 operBizMembers: [],
-                uploadVoucher: 0,
             }
         },
         methods: {
@@ -379,9 +378,6 @@
                     for (let key in defaultForm){
                         this.form[key] = this.data[key];
                     }
-                    // this.form.business_time = data.business_time
-                    //     ? ['1970-01-01 '+JSON.parse(data.business_time)[0], '1970-01-01 '+JSON.parse(data.business_time)[1]]
-                    //     : [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')];
                     let business_time = JSON.parse(data.business_time);
                     this.form.business_start_time = data.business_time ? new Date('1970-01-01 '+business_time[0]) : new Date('1970-01-01 00:00:00');
                     this.form.business_end_time = data.business_time ? new Date('1970-01-01 '+business_time[1]) : new Date('1970-01-01 23:59:59');
@@ -402,43 +398,28 @@
                 this.$refs.form.resetFields();
             },
             getData(){
-                if (this.uploadVoucher == 0){
-                    let data = deepCopy(this.form);
-                    if(this.data && this.data.id){
-                        data.id = this.data.id;
-                    }
-                    data.business_time = JSON.stringify([new Date(data.business_start_time).format('hh:mm:ss'), new Date(data.business_end_time).format('hh:mm:ss')]);
-                    return data;
-                } else {
-                    this.$message.warning('图片上传中, 请稍后重试');
-                    return false;
+                let data = deepCopy(this.form);
+                if(this.data && this.data.id){
+                    data.id = this.data.id;
                 }
+                data.business_time = JSON.stringify([new Date(data.business_start_time).format('hh:mm:ss'), new Date(data.business_end_time).format('hh:mm:ss')]);
+                return data;
             },
             validate(callback){
                 if(this.readonly){
                     callback()
                 }else {
-                    if (this.uploadVoucher > 0){
-                        this.$message.warning('图片上传中, 请稍后重试');
-                    }else {
-                        this.$refs.form.validate((valid) => {
-                            if(valid){
-                                callback()
-                            }
-                        })
-                    }
+                    this.$refs.form.validate((valid) => {
+                        if(valid){
+                            callback()
+                        }
+                    })
                 }
             },
             resetCode() {
                 this.form.oper_biz_member_code = '';
                 this.operBizMembers = [];
             },
-            plusUpload() {
-                this.uploadVoucher ++ ;
-            },
-            descUpload() {
-                this.uploadVoucher -- ;
-            }
         },
         created(){
             this.initForm();
