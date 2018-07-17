@@ -10,38 +10,134 @@ namespace App\Modules\Merchant;
 
 
 use App\BaseService;
+use App\Exceptions\ParamInvalidException;
+use App\Support\Utils;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
 
 class MerchantCategoryService extends BaseService
 {
 
+    /**
+     * 查询列表
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
     public static function getList()
     {
-        // todo 查询列表
+        $data = MerchantCategory::paginate();
+        return $data;
     }
 
-    public static function getAll()
+    /**
+     * 获取树形分类信息
+     * @param bool $withDisabled
+     * @return array|mixed
+     */
+    public static function getTree($withDisabled = false)
     {
-        // todo 查询全部列表
+        $cacheKey = $withDisabled ? 'merchant_category_tree_with_disabled' : 'merchant_category_tree';
+        $tree = Cache::get($cacheKey);
+        if(!$tree){
+            $list = MerchantCategory::when(!$withDisabled, function(Builder $query){
+                $query->where('status', 1);
+            })->get();
+            $tree = Utils::convertListToTree($list);
+            Cache::forever($cacheKey, $tree);
+        }
+        return $tree;
     }
 
-    public static function getTree()
+    /**
+     * 添加分类信息
+     * @param $name
+     * @param int $status
+     * @param int $pid
+     * @return MerchantCategory
+     */
+    public static function add($name, $status = 1, $pid = 0)
     {
-        // todo 获取树形分类信息
+        $category = new MerchantCategory();
+        $category->name = $name;
+        $category->status = $status;
+        $category->pid = $pid;
+        $category->save();
+
+        self::clearCache();
+
+        return $category;
     }
 
-    public static function add()
+    /**
+     * 编辑分类信息
+     * @param $id
+     * @param $name
+     * @param int $status
+     * @param int $pid
+     * @return MerchantCategory
+     */
+    public static function edit($id, $name, $status = 1, $pid = 0)
     {
-        // todo 添加分类信息
+
+        $category = MerchantCategory::find($id);
+        if(empty($category)){
+            throw new ParamInvalidException('类目不存在或已被删除');
+        }
+        $category->name = $name;
+        $category->status = $status;
+        $category->pid = $pid;
+        $category->save();
+
+        self::clearCache();
+
+        return $category;
     }
 
-    public static function edit()
+    /**
+     * 更新类目状态
+     * @param $id
+     * @param $status
+     * @return MerchantCategory
+     */
+    public static function changeStatus($id, $status)
     {
-        // todo 编辑分类信息
+        $category = MerchantCategory::find($id);
+        if(empty($category)){
+            throw new ParamInvalidException('类目不存在或已被删除');
+        }
+        $category->status = $status;
+        $category->save();
+
+        self::clearCache();
+
+        return $category;
     }
 
-    public static function delete()
+    /**
+     * 删除分类信息
+     * @param $id
+     * @return MerchantCategory
+     * @throws \Exception
+     */
+    public static function delete($id)
     {
-        // todo 删除分类信息
+        $category = MerchantCategory::find($id);
+        if(empty($category)){
+            throw new ParamInvalidException('类目不存在或已被删除');
+        }
+
+        // 判断该类别下是否有子类别
+        if( self::hasSubCategory($category->id) ){
+            throw new ParamInvalidException('该类目下存在子类目, 请先删除子类目再删除该类目');
+        }
+        if( self::hasMerchant($category->id) ){
+            throw new ParamInvalidException('该类目下存在商家, 请先修改商家所属类目信息');
+        }
+
+        $category->delete();
+
+        self::clearCache();
+
+        return $category;
     }
 
     /**
@@ -52,5 +148,24 @@ class MerchantCategoryService extends BaseService
     public static function hasMerchant($categoryId) : bool
     {
         return !empty(Merchant::where('merchant_category_id', $categoryId)->first());
+    }
+
+    /**
+     * 返回商户分类下是否有子分类
+     * @param $categoryId
+     * @return bool
+     */
+    public static function hasSubCategory($categoryId) : bool
+    {
+        return !empty( MerchantCategory::where('pid', $categoryId)->first() );
+    }
+
+    /**
+     * 清除类目缓存
+     */
+    public static function clearCache()
+    {
+        Cache::forget('merchant_category_tree');
+        Cache::forget('merchant_category_tree_with_disabled');
     }
 }
