@@ -21,7 +21,7 @@ class AddLowestAmountToMerchantsTable extends Migration
         });
         $merchants = Merchant::all();
         foreach ($merchants as $merchant){
-            $merchant->lowest_amount = Goods::getLowestPriceForMerchant($merchant->id) ?: 0;
+            $merchant->lowest_amount = Goods::getLowestPriceForMerchant($merchant->id);
             $merchant->save();
         }
     }

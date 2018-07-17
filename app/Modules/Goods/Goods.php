@@ -31,8 +31,17 @@ class Goods extends BaseModel
             ->where('status', self::STATUS_ON)
             ->orderBy('sale_price')
             ->value('sale_price');
-        $lowestAmount = $goodsLowestAmount > $dishesGoodsLowestAmount ? $dishesGoodsLowestAmount : $goodsLowestAmount;
-        return $lowestAmount;
+
+        if (is_null($goodsLowestAmount) && !is_null($dishesGoodsLowestAmount)){
+            return $dishesGoodsLowestAmount;
+        }elseif (is_null($dishesGoodsLowestAmount) && !is_null($goodsLowestAmount)){
+            return $goodsLowestAmount;
+        }elseif (!is_null($goodsLowestAmount) && !is_null($dishesGoodsLowestAmount)){
+            $lowestAmount = $goodsLowestAmount > $dishesGoodsLowestAmount ? $dishesGoodsLowestAmount : $goodsLowestAmount;
+            return $lowestAmount;
+        }else{
+            return 0;
+        }
     }
 
     /**
