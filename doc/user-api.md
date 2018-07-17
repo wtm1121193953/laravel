@@ -521,7 +521,7 @@ id: 商品id
   参数:
 
   ```
-   status: 状态	
+   status: 状态 1-未支付 2-已取消 3-已关闭 (超时自动关闭) 4-已支付 5-退款中[保留状态] 6-已退款 7-已完成 (不可退款)
   ```
 
   返回
@@ -541,6 +541,7 @@ id: 商品id
                 merchant_name: 商家名,
                 merchant_logo: 商家logo,
                 signboard_name：商家招牌名称,
+                tyep: 订单类型 1-团购订单 2-扫码支付订单 3-点菜订单,
                 goods_id: 商品ID,
                 goods_name: 商品名,
                 goods_pic: 商品图片,
@@ -609,6 +610,7 @@ order_no 订单号
          merchant_id: 商家ID,
          merchant_name: 商家名,
          signboard_name：商家招牌名称,
+         tyep: 订单类型 1-团购订单 2-扫码支付订单 3-点菜订单,
          goods_id: 商品ID,
          goods_name: 商品名,
          goods_pic: 商品图片,
