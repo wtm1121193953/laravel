@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Setting\SettingService;
 use App\Result;
@@ -76,15 +77,27 @@ class MerchantController extends Controller
             })
             ->when($merchant_category_id && $keyword, function(Builder $query) use ($merchant_category_id, $keyword){
                 // 如果传了类别及关键字, 则类别和关键字都搜索
-                $query->where('merchant_category_id', $merchant_category_id)
-                    ->where(function (Builder $query) use ($keyword) {
+                $merchantCategorySubArray = MerchantCategoryService::getSubCategory($merchant_category_id);
+                $query->where(function (Builder $query) use ($keyword) {
                         $query->where('name', 'like', "%$keyword%")
                             ->orWhere('signboard_name', 'like', "%$keyword%");
+                    })
+                    ->when($merchantCategorySubArray, function (Builder $query) use ($merchantCategorySubArray) {
+                        $query->whereIn('merchant_category_id', $merchantCategorySubArray);
+                    })
+                    ->when(!$merchantCategorySubArray, function (Builder $query) use ($merchant_category_id) {
+                        $query->where('merchant_category_id', $merchant_category_id);
                     });
             })
             ->when($merchant_category_id && empty($keyword), function(Builder $query) use ($merchant_category_id, $keyword){
                 // 如果只传了类别, 没有关键字
-                $query->where('merchant_category_id', $merchant_category_id);
+                $merchantCategorySubArray = MerchantCategoryService::getSubCategory($merchant_category_id);
+                $query->when($merchantCategorySubArray, function (Builder $query) use ($merchantCategorySubArray) {
+                        $query->whereIn('merchant_category_id', $merchantCategorySubArray);
+                    })
+                    ->when(!$merchantCategorySubArray, function (Builder $query) use ($merchant_category_id) {
+                        $query->where('merchant_category_id', $merchant_category_id);
+                    });
             })
             ->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
                 // 如果范围存在, 按距离搜索, 并按距离排序
@@ -177,6 +190,11 @@ class MerchantController extends Controller
         return Result::success(['list' => $detail]);
     }
 
+    /**
+     * 格式化距离
+     * @param $distance
+     * @return string
+     */
     private function _getFormativeDistance($distance)
     {
         return $distance >= 1000 ? (number_format($distance / 1000, 1) . '千米') : ($distance . '米');

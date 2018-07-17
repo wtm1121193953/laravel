@@ -172,4 +172,21 @@ class MerchantCategoryService extends BaseService
         Cache::forget('merchant_category_tree');
         Cache::forget('merchant_category_tree_with_disabled');
     }
+
+    /**
+     * 获取分类子集的id数组
+     * @param $categoryId
+     * @return bool|\Illuminate\Support\Collection
+     */
+    public static function getSubCategory($categoryId)
+    {
+        $subArray = MerchantCategory::where('pid', $categoryId)
+            ->get()
+            ->pluck('id');
+        if (count($subArray) > 0){
+            return $subArray;
+        }else{
+            return false;
+        }
+    }
 }
