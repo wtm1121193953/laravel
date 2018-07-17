@@ -50,14 +50,16 @@ class MerchantCategoryService extends BaseService
     /**
      * 添加分类信息
      * @param $name
+     * @param string $icon
      * @param int $status
      * @param int $pid
      * @return MerchantCategory
      */
-    public static function add($name, $status = 1, $pid = 0)
+    public static function add($name, $icon = '', $status = 1, $pid = 0)
     {
         $category = new MerchantCategory();
         $category->name = $name;
+        $category->icon = $icon;
         $category->status = $status;
         $category->pid = $pid;
         $category->save();
@@ -71,11 +73,12 @@ class MerchantCategoryService extends BaseService
      * 编辑分类信息
      * @param $id
      * @param $name
+     * @param string $icon
      * @param int $status
      * @param int $pid
      * @return MerchantCategory
      */
-    public static function edit($id, $name, $status = 1, $pid = 0)
+    public static function edit($id, $name, $icon = '', $status = 1, $pid = 0)
     {
 
         $category = MerchantCategory::find($id);
@@ -83,6 +86,7 @@ class MerchantCategoryService extends BaseService
             throw new ParamInvalidException('类目不存在或已被删除');
         }
         $category->name = $name;
+        $category->icon = $icon;
         $category->status = $status;
         $category->pid = $pid;
         $category->save();

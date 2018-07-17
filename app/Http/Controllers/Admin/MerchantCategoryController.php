@@ -37,6 +37,7 @@ class MerchantCategoryController extends Controller
         ]);
         $category = MerchantCategoryService::add(
             request('name'),
+            request('icon'),
             request('status', 1),
             request('pid', 0)
         );
@@ -53,6 +54,7 @@ class MerchantCategoryController extends Controller
         $category = MerchantCategoryService::edit(
             request('id'),
             request('name'),
+            request('icon'),
             request('status', 1),
             request('pid', 0)
         );
