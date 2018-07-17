@@ -72,6 +72,10 @@ class GoodsController extends Controller
             'price' => 'required',
         ]);
         $goods = new Goods();
+        if(request('market_price', 0)<=request('price', 0)){
+            throw new BaseResponseException('市场价必须大于销售价！');
+        }
+
         $goods->oper_id = request()->get('current_user')->oper_id;
         $goods->merchant_id = request()->get('current_user')->merchant_id;
         $goods->name = request('name');
@@ -112,6 +116,10 @@ class GoodsController extends Controller
         $goods = Goods::where('merchant_id', request()->get('current_user')->merchant_id)
             ->where('id', request('id'))
             ->firstOrFail();
+        if(request('market_price', 0)<=request('price', 0)){
+            throw new BaseResponseException('市场价必须大于销售价！');
+        }
+
         $goods->oper_id = request()->get('current_user')->oper_id;
         $goods->merchant_id = request()->get('current_user')->merchant_id;
         $goods->name = request('name');

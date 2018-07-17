@@ -76,6 +76,9 @@ class DishesGoodsController extends Controller
         if (count($dishesGoodsList) > 0){
             throw new BaseResponseException('商品名称重复！');
         }
+        if(request('market_price', 0)<=request('sale_price', 0)){
+            throw new BaseResponseException('市场价必须大于销售价！');
+        }
 
         $dishesGoods = new DishesGoods();
         $dishesGoods->oper_id = request()->get('current_user')->oper_id;
@@ -112,6 +115,10 @@ class DishesGoodsController extends Controller
             ->get();
         if (count($dishesGoodsList) > 0){
             throw new BaseResponseException('商品名称重复！');
+        }
+
+        if(request('market_price', 0)<=request('sale_price', 0)){
+            throw new BaseResponseException('市场价必须大于销售价！');
         }
 
         $dishesGoods->name = request('name');
