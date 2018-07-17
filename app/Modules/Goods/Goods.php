@@ -4,6 +4,7 @@ namespace App\Modules\Goods;
 
 use App\BaseModel;
 use App\Modules\Dishes\DishesGoods;
+use App\Modules\Merchant\Merchant;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Goods extends BaseModel
@@ -48,5 +49,16 @@ class Goods extends BaseModel
             ->limit($number)
             ->get();
         return $list;
+    }
+
+    /**
+     * 更新商户的最低价格
+     * @param $merchant_id
+     */
+    public static function updateMerchantLowestAmount($merchant_id)
+    {
+        $merchant = Merchant::findOrFail($merchant_id);
+        $merchant->lowest_amount = self::getLowestPriceForMerchant($merchant_id);
+        $merchant->save();
     }
 }

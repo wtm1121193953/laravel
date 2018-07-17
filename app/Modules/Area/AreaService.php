@@ -51,7 +51,7 @@ class AreaService
      * @param $name
      * @return Area[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getCityListByName($name)
+    public static function getCityListByKeyword($name)
     {
         $list = Area::where('path', '<>', 1)
             ->where(function (Builder $query) use ($name){

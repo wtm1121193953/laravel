@@ -94,6 +94,7 @@ class GoodsController extends Controller
         $goods->save();
 
         $goods->pic_list = $goods->pic_list ? explode(',', $goods->pic_list) : [];
+        Goods::updateMerchantLowestAmount(request()->get('current_user')->merchant_id);
         return Result::success($goods);
     }
 
@@ -132,6 +133,7 @@ class GoodsController extends Controller
 
         $goods->save();
         $goods->pic_list = $goods->pic_list ? explode(',', $goods->pic_list) : [];
+        Goods::updateMerchantLowestAmount(request()->get('current_user')->merchant_id);
 
         return Result::success($goods);
     }
@@ -151,6 +153,7 @@ class GoodsController extends Controller
         $goods->status = request('status');
 
         $goods->save();
+        Goods::updateMerchantLowestAmount(request()->get('current_user')->merchant_id);
         return Result::success($goods);
     }
 
@@ -168,6 +171,7 @@ class GoodsController extends Controller
             ->where('id', request('id'))
             ->firstOrFail();
         $goods->delete();
+        Goods::updateMerchantLowestAmount(request()->get('current_user')->merchant_id);
         return Result::success($goods);
     }
 

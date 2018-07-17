@@ -312,6 +312,8 @@ token (wxLogin接口除外)
   lng: 用户当前经度
   lat: 用户当前纬度
   radius: 范围, 范围参数只有在经纬度信息存在时才有效, 当传递范围参数时, 会获取用户位置所指定范围内的商家并根据距离排序
+  lowest_price: 价格筛选，最低的最低消费价格
+  highest_price：价格筛选，最高的最低消费价格，有价格筛选时，按照价格由低到高排序
   page: 获取的页数
   ```
 
@@ -347,7 +349,7 @@ token (wxLogin接口除外)
         audit_status: 商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在,
-        lowestAmount: 最低消费金额,
+        lowest_amount: 最低消费金额,
         isOperSelf: 是否归属于当前小程序的运营中心,
         grade: 商户评级,目前默认为5,
         lowestGoods: [	价格最低的两个团购商品

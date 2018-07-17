@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Merchant;
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
+use App\Modules\Goods\Goods;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -90,6 +91,7 @@ class DishesGoodsController extends Controller
         $dishesGoods->sort = DishesGoods::max('sort') + 1;
 
         $dishesGoods->save();
+        Goods::updateMerchantLowestAmount(request()->get('current_user')->merchant_id);
 
         return Result::success($dishesGoods);
     }
@@ -122,6 +124,7 @@ class DishesGoodsController extends Controller
         $dishesGoods->is_hot = request('is_hot', 0);
 
         $dishesGoods->save();
+        Goods::updateMerchantLowestAmount(request()->get('current_user')->merchant_id);
 
         return Result::success($dishesGoods);
     }
@@ -139,6 +142,8 @@ class DishesGoodsController extends Controller
         $dishesGoods->status = request('status');
 
         $dishesGoods->save();
+        Goods::updateMerchantLowestAmount(request()->get('current_user')->merchant_id);
+
         return Result::success($dishesGoods);
     }
 
@@ -154,6 +159,8 @@ class DishesGoodsController extends Controller
         ]);
         $dishesGoods = DishesGoods::findOrFail(request('id'));
         $dishesGoods->delete();
+        Goods::updateMerchantLowestAmount(request()->get('current_user')->merchant_id);
+
         return Result::success($dishesGoods);
     }
 

@@ -69,7 +69,7 @@ class AreaController extends Controller
     public function searchCityList()
     {
         $name = request('name');
-        $list = AreaService::getCityListByName($name);
+        $list = AreaService::getCityListByKeyword($name);
         return Result::success([
             'list' => $list,
         ]);

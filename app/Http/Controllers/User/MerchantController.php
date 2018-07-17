@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\User;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
@@ -17,10 +18,7 @@ use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Setting\SettingService;
 use App\Result;
 use App\Support\Lbs;
-use Beta\B;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Log;
-use Psy\Util\Json;
 
 class MerchantController extends Controller
 {
@@ -34,19 +32,24 @@ class MerchantController extends Controller
         $lat = request('lat');
 
         // 暂时去掉商户列表中的距离限制
-//        $radius = request('radius');
+        $radius = request('radius');
+        // 价格搜索
+        $lowestPrice = request('lowest_price', 0);
+        $highestPrice = request('highest_price', 0);
+        if ($lowestPrice > $highestPrice){
+            throw new BaseResponseException('搜索条件的最低价格不能高于最高价格');
+        }
 
-        /*$distances = null;
+        $distances = null;
         if($lng && $lat && $radius){
             // 如果经纬度及范围都存在, 则按距离筛选出附近的商家
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
-        }*/
+        }
 
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
 
         $currentOperId = request()->get('current_oper')->id;
-        $query = Merchant
-            ::when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
+        $query = Merchant::when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
                 $query->where('oper_id', $currentOperId);
             })
             ->where('oper_id', '>', 0)
@@ -83,13 +86,19 @@ class MerchantController extends Controller
                 // 如果只传了类别, 没有关键字
                 $query->where('merchant_category_id', $merchant_category_id);
             })
-            /*->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
+            ->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
                 // 如果范围存在, 按距离搜索, 并按距离排序
                 $query->whereIn('id', array_keys($distances));
-            })*/;
-            // 统一按距离排序
+            })
+            ->when($lowestPrice || $highestPrice, function (Builder $query) use ($lowestPrice, $highestPrice){
+                // 有价格限制时 按照价格区间筛选 并按照价格排序
+                $query->where('lowest_amount', '>', 0)
+                    ->whereBetween('lowest_amount', [$lowestPrice, $highestPrice])
+                    ->orderBy('lowest_amount');
+            });
+
         if($lng && $lat){
-            // 如果是按距离搜索, 需要在程序中排序
+            // 如果是按距离搜索, 需要在程序中按距离排序
             $allList = $query->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat) {
@@ -117,8 +126,6 @@ class MerchantController extends Controller
             if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
             $category = MerchantCategory::find($item->merchant_category_id);
             $item->merchantCategoryName = $category->name;
-            // 最低消费
-            $item->lowestAmount = Goods::getLowestPriceForMerchant($item->id);
             // 判断商户是否是当前小程序关联运营中心下的商户
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
             // 兼容v1.0.0版客服电话字段
@@ -159,13 +166,13 @@ class MerchantController extends Controller
         $detail->merchantCategoryName = $category->name;
         //商家是否开启单品模式
         $detail->isOpenDish = MerchantSettingService::getValueByKey($id,'dishes_enabled');
-        // 最低消费
-        $detail->lowestAmount = Goods::getLowestPriceForMerchant($detail->id);
         $currentOperId = request()->get('current_oper')->id;
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
         // 兼容v1.0.0版客服电话字段
         $detail->contacter_phone = $detail->service_phone;
+        // 商户评级字段，暂时全部默认为5星
+        $detail->grade = 5;
 
         return Result::success(['list' => $detail]);
     }
