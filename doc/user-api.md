@@ -947,9 +947,103 @@ order_no 订单号
   }
   ```
 
+订单详情，订单列表接口不变
+
+
+
+**分享相关**
+
+- [ ] 获取分享二维码
+
+  地址：GET     `invite/qrcode`
+
+  参数：无
+
+  返回：
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应消息,
+      "data": {
+          "qrcode_url": 分享二维码url,
+          "inviteChannel": {
+              "id": 推广渠道id,
+              "oper_id": 运营中心id,
+              "origin_id": 推广人ID(用户ID, 商户ID 或 运营中心ID),
+              "origin_type": 推广人类型  1-用户 2-商户 3-运营中心,
+              "scene_id": 场景ID (miniprogram_scenes表id) 基于app的邀请码, 没有场景ID与运营中心ID,
+              "created_at": 创建时间,
+              "updated_at": 更新时间,
+              "name": 渠道名称,
+              "remark": 备注,
+              "origin_name": 推广渠道邀请者名称
+          }
+      },
+      "timestamp": 当前时间戳
+  }
+  ```
+
+  
+
+- [ ] 根据场景id获取邀请人信息
+
+  地址：GET     `invite/getInviterBySceneId`
+
+  参数：
+
+  ```
+  sceneId: 场景ID
+  ```
+
+  返回：
+
+  ```
+  "data": {
+      "id": 推广渠道id,
+      "oper_id": 运营中心id,
+      "origin_id": 推广人ID(用户ID, 商户ID 或 运营中心ID),
+      "origin_type": 推广人类型  1-用户 2-商户 3-运营中心,
+      "scene_id": 场景ID (miniprogram_scenes表id) 基于app的邀请码, 没有场景ID与运营中心ID,
+      "created_at": 创建时间,
+      "updated_at": 更新时间,
+      "name": 渠道名称,
+      "remark": 备注,
+      "origin_name": 推广渠道邀请者名称
+  },
+  ```
+
+
+
+- [ ] 绑定推荐人
+
+  地址：POST     `invite/bindInviter`
+
+  参数：
+
+  ```
+  inviteChannelId: 邀请渠道ID
+  ```
+
+  返回：
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应消息,
+      "data": {}
+      },
+      "timestamp": 当前时间戳
+  }
+  ```
+
   
 
 
 
-订单详情，订单列表接口不变
+
+
+
+
+
 
