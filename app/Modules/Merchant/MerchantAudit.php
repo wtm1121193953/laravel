@@ -33,10 +33,12 @@ class MerchantAudit extends BaseModel
      */
     public static function resubmit($merchantId, $operId)
     {
-            $audit = static::addRecord($merchantId, $operId);
-            $audit->status = Merchant::AUDIT_STATUS_RESUBMIT;
-            $audit->save();
-            return $audit;
+        $audit = new static();
+        $audit->merchant_id = $merchantId;
+        $audit->oper_id = $operId;
+        $audit->status = Merchant::AUDIT_STATUS_RESUBMIT;
+        $audit->save();
+        return $audit;
     }
 
 
