@@ -141,7 +141,7 @@
                 formRules: {
                     name: [
                         {required: true, message: '名称不能为空'},
-                        {max: 20, message: '运营中心名称不能超过20个字'},
+                        {max: 50, message: '运营中心名称不能超过50个字'},
                     ],
                     selectAreas: [
                         {required: true, type: 'array', message: '地区不能为空' }
