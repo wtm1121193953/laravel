@@ -11,6 +11,7 @@ use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantDraft;
 use App\Modules\Oper\Oper;
+use Illuminate\Support\Collection;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,6 +30,20 @@ class MerchantController extends Controller
         $auditStatus = request('audit_status');
         $status = request('status');
         $signBoardName=request('signBoardName');
+        $merchant_category = request('merchant_category');
+
+        if(!empty($merchant_category)){
+            if(count($merchant_category)==1){
+                $merchant_category_id = intval($merchant_category[0]);
+                $merchant_category_final_id = MerchantCategory::where('pid',$merchant_category_id)
+                        ->select('id')->get()
+                        ->pluck('id');
+            }else{
+                $merchant_category_final_id = intval($merchant_category[1]);
+            }
+        }else{
+            $merchant_category_final_id= '';
+        }
         $data = Merchant::where(function (Builder $query){
                 $currentOperId = request()->get('current_user')->oper_id;
                 $query->where('oper_id', $currentOperId)
@@ -36,6 +51,13 @@ class MerchantController extends Controller
             })
             ->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
+            })
+            ->when($merchant_category_final_id, function (Builder $query) use ($merchant_category_final_id){
+                if(is_array($merchant_category_final_id) || $merchant_category_final_id instanceof Collection ){
+                    $query->whereIn('merchant_category_id',$merchant_category_final_id);
+                }else{
+                    $query->where('merchant_category_id', $merchant_category_final_id);
+                }
             })
             ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus){
                 if($auditStatus == -1){

@@ -11,6 +11,8 @@
 
             <el-form-item prop="merchant_category" label="所属行业">
                 <el-cascader
+                        change-on-select
+                        clearable
                         filterable
                         :options="categoryOptions"
                         :props="{
