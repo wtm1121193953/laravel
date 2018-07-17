@@ -98,6 +98,7 @@
                         value.push(item.response.data.url);
                     }
                 })
+                console.log('handle success', this.fileList, value)
                 if(this.valueType === 'string'){
                     value = value.join(',');
                 }
@@ -110,11 +111,13 @@
                 this.isShow = true;
             },
             handleRemove(file, fileList) {
+                console.log('handle remove', file, fileList)
                 this.fileList = fileList;
                 this.$emit('remove');
                 this.emitInput()
             },
             handleUploadSuccess(res, file, fileList) {
+                console.log('handle success', file, fileList)
                 let width = this.width
                 let height = this.height
                 if(res && res.code === 0){
