@@ -21,7 +21,7 @@ class UploadController
         $path = $file->store('/image/item', 'public');
         $url = asset('storage/' . $path);
 
-        $image = Image::make($url);
+        $image = Image::make('storage/' . $path);
 
         return Result::success([
             'url' => $url,
