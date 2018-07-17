@@ -10,6 +10,7 @@ use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
@@ -51,20 +52,9 @@ class Test extends Command
      * Execute the console command.
      *
      * @return mixed
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function handle()
     {
-        $operId = collect();
-        dump($operId);
-
-        $area = Merchant::where('audit_oper_id', '>', 0)
-            ->where(function (Builder $query) use ($operId) {
-                $query->whereIn('oper_id',  $operId)
-                    ->orWhereIn('audit_oper_id', $operId);
-            })->get();
-        dump($area);
         dump('test');
     }
 

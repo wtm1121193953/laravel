@@ -177,7 +177,7 @@ class MerchantController extends Controller
         $merchantAudit->oper_id = $merchant->audit_oper_id;
         $merchantAudit->created_at = $merchantAuditOld->created_at;
 
-   //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
+        // type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
         if($type == 3){
             if($merchant->oper_id > 0){
                 throw new ParamInvalidException('该商户已有所属运营中心, 不能打回商户池');
