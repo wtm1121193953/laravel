@@ -93,12 +93,14 @@
         methods: {
             emitInput(){
                 let value = [];
+                console.log('before input', this.fileList);
                 this.fileList.forEach(item => {
                     if(item.status == "success"){
-                        value.push(item.response.data.url);
+                        // 兼容回显时的 item.url
+                        value.push(item.response ? item.response.data.url : item.url);
                     }
                 })
-                console.log('handle success', this.fileList, value)
+                console.log('handle input', this.fileList, value)
                 if(this.valueType === 'string'){
                     value = value.join(',');
                 }
@@ -186,7 +188,7 @@
                 this.initialFileList = [];
                 value.forEach(item => {
                     this.initialFileList.push({
-                        url: item
+                        url: item,
                     })
                 })
             }
