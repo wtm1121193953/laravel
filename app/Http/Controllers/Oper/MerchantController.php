@@ -142,11 +142,6 @@ class MerchantController extends Controller
         if ($oper){
             $merchant->operAddress = $oper->province.$oper->city.$oper->area.$oper->address;
         }
-        //增加最后审核时间
-        $merchant->lastAuditTime = MerchantAudit::where('merchant_id',$id)
-                                ->where('status',1)
-                                ->orderBY('updated_at','desc')
-                                ->value('updated_at')->toDateTimeString();
         return Result::success($merchant);
     }
 

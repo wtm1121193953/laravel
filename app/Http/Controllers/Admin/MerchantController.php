@@ -96,10 +96,6 @@ class MerchantController extends Controller
             $merchant->operAddress = $oper->province.$oper->city.$oper->area.$oper->address;
         }
         //增加最后审核时间
-        $merchant->lastAuditTime = MerchantAudit::where('merchant_id',request('id'))
-            ->where('status',1)
-            ->orderBY('updated_at','desc')
-            ->value('updated_at')->toDateTimeString();
         return Result::success($merchant);
     }
 
@@ -112,9 +108,9 @@ class MerchantController extends Controller
             Merchant::AUDIT_STATUS_SUCCESS,
             Merchant::AUDIT_STATUS_FAIL,
             Merchant::AUDIT_STATUS_FAIL_TO_POOL,
-        ])
-            ->orderByDesc('updated_at')
-            ->paginate();
+        ]) ->orderByDesc('updated_at')->paginate();
+
+
         $data->each(function($item) {
             $item->merchantName = Merchant::where('id', $item->merchant_id)->value('name');
             $item->operName = Oper::where('id', $item->oper_id)->value('name');
@@ -161,23 +157,17 @@ class MerchantController extends Controller
         $merchantId = request('id');
         $auditSuggestion = request('audit_suggestion');
         $merchant = Merchant::findOrFail($merchantId);
-
-        $merchantAuditOld = MerchantAudit::where('merchant_id', $merchantId)
+        $merchantCurrentAudit = MerchantAudit::where('merchant_id', $merchantId)
             ->where('oper_id', $merchant->audit_oper_id)
             ->whereIn('status', [0,3])
-            ->orderBy('created_at','desc')
+            ->orderBy('updated_at','desc')
             ->first();
-        if(empty($merchantAuditOld)){
+        if(empty($merchantCurrentAudit)){
             // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
-            $merchantAuditOld = MerchantAudit::addRecord($merchantId, $merchant->audit_oper_id);
+            $merchantCurrentAudit = MerchantAudit::addRecord($merchantId, $merchant->audit_oper_id);
         }
 
-        $merchantAudit = new MerchantAudit();
-        $merchantAudit->merchant_id = $merchantId;
-        $merchantAudit->oper_id = $merchant->audit_oper_id;
-        $merchantAudit->created_at = $merchantAuditOld->created_at;
-
-        // type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
+         //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
         if($type == 3){
             if($merchant->oper_id > 0){
                 throw new ParamInvalidException('该商户已有所属运营中心, 不能打回商户池');
@@ -185,26 +175,21 @@ class MerchantController extends Controller
             $merchant->audit_status = Merchant::AUDIT_STATUS_FAIL;
             // 打回商户池操作, 需要将商户信息中的audit_oper_id置空
             $merchant->audit_oper_id = 0;
-            $merchantAudit->status = Merchant::AUDIT_STATUS_FAIL_TO_POOL;
+            $merchantCurrentAudit->status = Merchant::AUDIT_STATUS_FAIL_TO_POOL;
         }else {
-
             $merchant->audit_status = $type;
-            $merchantAudit->status = $type;
+            $merchantCurrentAudit->status = $type;
             if($type == 1){
                 // 如果审核通过, 补充商户所属运营中心ID
                 $merchant->oper_id = $merchant->audit_oper_id;
-                // 如果商户首次激活时间为空, 补充商户首次激活时间
-                if(empty($merchant->active_time)){
-                    $merchant->active_time = new Carbon();
-                }
+                $merchant->active_time = new Carbon();
             }
             $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
-            $merchantAudit->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
+            $merchantCurrentAudit->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
 
         }
-
+        $merchantCurrentAudit->save();
         $merchant->save();
-        $merchantAudit->save();
         return Result::success($merchant);
     }
 
