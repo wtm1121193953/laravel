@@ -4,7 +4,7 @@
                 class="uploader"
                 :action="action"
                 :list-type="listType"
-                :file-list="fileList"
+                :file-list="initialFileList"
                 :on-preview="preview ? handlePreview : null"
                 :on-success="handleUploadSuccess"
                 :on-error="handleError"
@@ -69,6 +69,7 @@
         data(){
             return {
                 valueType: 'array',
+                initialFileList: [], // 初始文件列表
                 fileList: [],
                 isShow: false,
                 previewImage: '',
@@ -93,7 +94,9 @@
             emitInput(){
                 let value = [];
                 this.fileList.forEach(item => {
-                    value.push(item.url)
+                    if(item.status == "success"){
+                        value.push(item.response.data.url);
+                    }
                 })
                 if(this.valueType === 'string'){
                     value = value.join(',');
@@ -108,6 +111,7 @@
             },
             handleRemove(file, fileList) {
                 this.fileList = fileList;
+                this.$emit('remove');
                 this.emitInput()
             },
             handleUploadSuccess(res, file, fileList) {
@@ -118,7 +122,6 @@
                         (!width || width <= 0 || parseInt(res.data.width) === width)
                         && (!height || height <= 0 || parseInt(res.data.height) === height)
                     ) {
-                        file.url = res.data.url;
                         this.fileList = fileList;
                         this.emitInput();
                         this.$emit('success')
@@ -177,9 +180,9 @@
                     this.valueType = 'array';
                     value = this.value || [];
                 }
-                this.fileList = [];
+                this.initialFileList = [];
                 value.forEach(item => {
-                    this.fileList.push({
+                    this.initialFileList.push({
                         url: item
                     })
                 })
@@ -190,7 +193,7 @@
         },
         watch: {
             value (val){
-                this.initFileList()
+
             }
         },
         components: {
