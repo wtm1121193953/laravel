@@ -151,7 +151,7 @@ class MerchantController extends Controller
     public function add()
     {
         $this->validate(request(), [
-            'name' => 'required',
+            'name' => 'required|max:20',
             'merchant_category_id' => 'required',
             'business_licence_pic_url' => 'required',
             'organization_code' => 'required',
