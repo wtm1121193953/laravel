@@ -17,6 +17,7 @@ class MerchantAudit extends BaseModel
      */
     public static function addRecord($merchantId, $operId)
     {
+        // todo 需要增加一个取消审核状态, 将未审核的记录设为取消
         $audit = new static();
         $audit->merchant_id = $merchantId;
         $audit->oper_id = $operId;
@@ -33,6 +34,7 @@ class MerchantAudit extends BaseModel
      */
     public static function resubmit($merchantId, $operId)
     {
+        // todo 需要增加一个取消审核状态, 将未审核的记录设为取消
         $audit = new static();
         $audit->merchant_id = $merchantId;
         $audit->oper_id = $operId;
