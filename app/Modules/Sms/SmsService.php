@@ -70,11 +70,12 @@ class SmsService extends BaseService
 
     /**
      * 购买成功发送通知
-     * @param Order $order
+     * @param $orderNo
      * @return bool
      */
-    public static function sendBuySuccessNotify(Order $order)
+    public static function sendBuySuccessNotify($orderNo)
     {
+        $order = Order::where('order_no', $orderNo)->firstOrFail();
         if ($order->type == Order::TYPE_GROUP_BUY) {
             $templateId = self::GROUP_BUY_TEMPLATE_ID;
             $params = self::getGoodsBuySuccessNotifyParams($order);
@@ -103,7 +104,8 @@ class SmsService extends BaseService
         $orderItems = OrderItem::where('order_id', $order->id)
             ->select('verify_code')
             ->get()
-            ->pluck('verify_code');
+            ->pluck('verify_code')
+            ->toArray();
         $verifyCode = implode(',', $orderItems);
         $params = [
             'orderNo' => $order->order_no,

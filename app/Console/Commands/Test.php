@@ -15,6 +15,7 @@ use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Settlement\Settlement;
+use App\Modules\Sms\SmsService;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -55,11 +56,15 @@ class Test extends Command
      */
     public function handle()
     {
-        $merchants = Merchant::all();
-        foreach ($merchants as $merchant){
-            $merchant->lowest_amount = Goods::getLowestPriceForMerchant($merchant->id);
-            $merchant->save();
-        }
+        SmsService::sendBuySuccessNotify('O20180619165606342090');
+        dd();
+        $orderItems = OrderItem::where('order_id', 102)
+            ->select('verify_code')
+            ->get()
+            ->pluck('verify_code')
+            ->toArray();
+        $verifyCode = implode(',', $orderItems);
+        dd($verifyCode);
     }
 
     /**

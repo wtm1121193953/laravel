@@ -21,6 +21,7 @@ use App\Modules\Oper\OperMiniprogram;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
+use App\Modules\Sms\SmsService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use App\Support\Alipay;
@@ -54,6 +55,7 @@ class PayController extends Controller
             if($message['return_code'] === 'SUCCESS' && array_get($message, 'result_code') === 'SUCCESS'){
                 $orderNo = $message['out_trade_no'];
                 $this->paySuccess($orderNo, $message['transaction_id'], $message['total_fee']);
+                SmsService::sendBuySuccessNotify($orderNo);
             } else {
                 return $fail('通信失败，请稍后再通知我');
             }

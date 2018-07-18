@@ -34,6 +34,7 @@ class MerchantController extends Controller
 
         // 暂时去掉商户列表中的距离限制
         $radius = request('radius');
+        $radius = $radius == 200000 ? 0 : $radius;
         // 价格搜索
         $lowestPrice = request('lowest_price', 0);
         $highestPrice = request('highest_price', 0);
