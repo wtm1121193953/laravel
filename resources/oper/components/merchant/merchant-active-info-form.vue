@@ -283,17 +283,8 @@
                         {max: 100, message: '商家介绍不能超过100个字'}
                     ],
                     settlement_rate: [
-                        {
-                            validator(rule, value, callback){
-                                if(value === ''){
-                                    callback(new Error('分利比例不能为空'));
-                                }else{
-                                    callback();
-                                }
-                            }
-                        }
+                        {required: true, message: '分利比例不能为空'},
                     ],
-
                     // 银行卡信息
                     bank_open_name: [
                         {required: true, message: '开户名 不能为空'},

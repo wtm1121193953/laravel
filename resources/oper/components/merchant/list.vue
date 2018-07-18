@@ -193,10 +193,9 @@
                 });
             },
             showMessage(scope){
-                api.get('/merchant/audit/newlist', {id: scope.row.id}).then(data => {
+                api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
                     this.auditRecord = [data];
                 })
-
             },
 
             accountChanged(scope, account){
