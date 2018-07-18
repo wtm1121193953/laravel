@@ -211,6 +211,7 @@
             },
             beforeCertUpload(file) {
                 let imgTypes = ['application/x-zip-compressed'];
+                console.log('before upload', file.type, imgTypes, file);
                 let size = file.size;
                 if(imgTypes.indexOf(file.type) < 0){
                     this.$message.error('只能上传 zip 格式的文件');
