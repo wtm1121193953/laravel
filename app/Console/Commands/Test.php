@@ -55,7 +55,11 @@ class Test extends Command
      */
     public function handle()
     {
-        dump('test');
+        $merchants = Merchant::all();
+        foreach ($merchants as $merchant){
+            $merchant->lowest_amount = Goods::getLowestPriceForMerchant($merchant->id);
+            $merchant->save();
+        }
     }
 
     /**
