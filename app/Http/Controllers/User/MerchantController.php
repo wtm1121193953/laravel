@@ -37,7 +37,7 @@ class MerchantController extends Controller
         // 价格搜索
         $lowestPrice = request('lowest_price', 0);
         $highestPrice = request('highest_price', 0);
-        if ($lowestPrice > $highestPrice){
+        if ($lowestPrice && $highestPrice && $lowestPrice > $highestPrice){
             throw new BaseResponseException('搜索条件的最低价格不能高于最高价格');
         }
 
@@ -106,7 +106,12 @@ class MerchantController extends Controller
             ->when($lowestPrice || $highestPrice, function (Builder $query) use ($lowestPrice, $highestPrice){
                 // 有价格限制时 按照价格区间筛选 并按照价格排序
                 $query->where('lowest_amount', '>', 0)
-                    ->whereBetween('lowest_amount', [$lowestPrice, $highestPrice])
+                    ->when($lowestPrice && !$highestPrice, function (Builder $query) use ($lowestPrice) {
+                        $query->where('lowest_amount', '>=', $lowestPrice);
+                    })
+                    ->when($highestPrice, function (Builder $query) use ($lowestPrice, $highestPrice) {
+                        $query->whereBetween('lowest_amount', [$lowestPrice, $highestPrice]);
+                    })
                     ->orderBy('lowest_amount');
             });
 
