@@ -55,11 +55,13 @@ class Test extends Command
      */
     public function handle()
     {
-        $merchants = Merchant::all();
-        foreach ($merchants as $merchant){
-            $merchant->lowest_amount = Goods::getLowestPriceForMerchant($merchant->id);
-            $merchant->save();
-        }
+        $orderItems = OrderItem::where('order_id', 102)
+            ->select('verify_code')
+            ->get()
+            ->pluck('verify_code')
+            ->toArray();
+        $verifyCode = implode(',', $orderItems);
+        dd($verifyCode);
     }
 
     /**

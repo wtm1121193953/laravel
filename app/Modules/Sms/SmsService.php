@@ -104,7 +104,8 @@ class SmsService extends BaseService
         $orderItems = OrderItem::where('order_id', $order->id)
             ->select('verify_code')
             ->get()
-            ->pluck('verify_code');
+            ->pluck('verify_code')
+            ->toArray();
         $verifyCode = implode(',', $orderItems);
         $params = [
             'orderNo' => $order->order_no,
