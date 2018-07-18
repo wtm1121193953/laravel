@@ -14,6 +14,7 @@ use App\Exports\MerchantExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
+use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
@@ -164,14 +165,16 @@ class MerchantController extends Controller
             ->first();
         if(empty($merchantCurrentAudit)){
             // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
-            $merchantCurrentAudit = MerchantAudit::addRecord($merchantId, $merchant->audit_oper_id);
+            $merchantCurrentAudit = MerchantAuditService::addAudit($merchantId, $merchant->audit_oper_id);
         }
 
          //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
         if($type == 3){
+
             if($merchant->oper_id > 0){
                 throw new ParamInvalidException('该商户已有所属运营中心, 不能打回商户池');
             }
+
             $merchant->audit_status = Merchant::AUDIT_STATUS_FAIL;
             // 打回商户池操作, 需要将商户信息中的audit_oper_id置空
             $merchant->audit_oper_id = 0;
