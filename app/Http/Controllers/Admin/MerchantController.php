@@ -33,6 +33,7 @@ class MerchantController extends Controller
      */
     public function getList()
     {
+
         $id = request('merchantId');
         $startDate = request('startDate');
         $endDate = request('endDate');
@@ -44,6 +45,9 @@ class MerchantController extends Controller
         }
 
         $operId = request('operId');
+        if($operId  && !is_numeric( $operId )){
+            throw new BaseResponseException('运营中心ID必须为数字');
+        }
         // 根据输入的运营中心名称获取所属运营中心ID列表
         $operName = request('operName');
         if($operName) {
@@ -51,7 +55,6 @@ class MerchantController extends Controller
                 ->select('id')->get()
                 ->pluck('id');
         }
-
         $creatorOperId = request('creatorOperId');
         // 根据输入的运营中心名称获取录入信息的运营中心ID列表
         $creatorOperName = request('creatorOperName');
