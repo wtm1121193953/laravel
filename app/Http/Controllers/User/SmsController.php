@@ -10,6 +10,7 @@ namespace App\Http\Controllers\User;
 
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Order\Order;
 use App\Modules\Sms\SmsVerifyCodeService;
 
 class SmsController extends Controller
@@ -26,5 +27,10 @@ class SmsController extends Controller
 
         $smsVerifyCode = SmsVerifyCodeService::add($mobile);
         SmsVerifyCodeService::sendVerifyCode($smsVerifyCode->mobile, $smsVerifyCode->verify_code);
+    }
+
+    public function sendBuySuccessNotify(Order $order)
+    {
+
     }
 }
