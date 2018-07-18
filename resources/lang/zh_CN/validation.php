@@ -70,6 +70,8 @@ return [
         ],
         'name' => [
             'required' => '名称不能为空',
+            'max' => '名称不能超过 :max字',
+
         ],
         'status' => [
             'required' => '状态不能为空',
@@ -129,6 +131,7 @@ return [
         ],
         'signboard_name' => [
             'required' => '商户招牌名不能为空',
+            'max' => '商户招牌名不能超过 :max字'
         ],
         'organization_code' => [
             'required' => '营业执照代码不能为空',

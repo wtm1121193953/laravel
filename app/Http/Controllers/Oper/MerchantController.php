@@ -151,12 +151,12 @@ class MerchantController extends Controller
     public function add()
     {
         $this->validate(request(), [
-            'name' => 'required',
+            'name' => 'required|max:20',
             'merchant_category_id' => 'required',
             'business_licence_pic_url' => 'required',
             'organization_code' => 'required',
             'settlement_rate' => 'required|numeric|min:0',
-            'signboard_name' => 'required',
+            'signboard_name' => 'required|max:20',
         ]);
         $merchant = new Merchant();
         $merchant->fillMerchantPoolInfoFromRequest();
