@@ -9,7 +9,7 @@ Route::get('/merchant/allNames', 'MerchantController@allNames');
 Route::get('/merchant/detail', 'MerchantController@detail');
 Route::get('/merchant/getMerchantById', 'MerchantController@detail');
 
-Route::get('/merchant/audit/newlist', 'MerchantController@getNewAuditList');
+Route::get('/merchant/audit/record/newest', 'MerchantController@getNewestAuditRecord');
 
 Route::post('/merchant/add', 'MerchantController@add');
 Route::post('/merchant/edit', 'MerchantController@edit');

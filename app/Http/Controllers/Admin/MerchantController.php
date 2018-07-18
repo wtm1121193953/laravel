@@ -110,9 +110,9 @@ class MerchantController extends Controller
     }
 
     /**
-     * 获取最新审核记录
+     * 获取最新一条审核记录
      */
-    public function getNewAuditList()
+    public function getNewestAuditRecord()
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
@@ -125,7 +125,7 @@ class MerchantController extends Controller
             ->first();
 
         $data->categoryName= MerchantCategory::where("id",$merchant->merchant_category_id)->value("name");
-        $data->merchantName = Merchant::where('id', $merchantId)->value('name');
+        $data->merchantName = $merchant->name;
         return Result::success($data);
 
     }
