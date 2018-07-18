@@ -50,6 +50,10 @@ class MerchantPoolController extends Controller
         $merchant = Merchant::findOrFail(request('id'));
         $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
         $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
+        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
+        if ($oper){
+            $merchant->operAddress = $oper->province.$oper->city.$oper->area.$oper->address;
+        }
         return Result::success($merchant);
     }
 
