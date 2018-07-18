@@ -44,6 +44,7 @@
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="edit(scope.row)">编辑</el-button>
+                    <el-button type="text" @click="del(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -127,6 +128,21 @@
                 this.list.splice(scope.$index, 1, row);
                 this.getList();
             },
+            del(row) {
+                this.$confirm('确认要删除该草稿吗？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                }).then(() => {
+                    api.post('/merchant/draft/delete', {id: row.id}).then((res) => {
+                        this.$message.success('删除成功');
+                        this.getList();
+                        let menu_copy = Lockr.get('userMenuList');
+                        menu_copy[0].sub[3].name = '草稿箱(' + res.count + ')';
+                        store.commit('setMenus', menu_copy);
+                    })
+                })
+            }
         },
         created(){
             this.getList();
