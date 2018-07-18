@@ -9,8 +9,10 @@
 namespace App\Modules\Merchant;
 
 
+use App\Exceptions\ParamInvalidException;
 use App\Modules\Oper\Oper;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Pimple\Tests\Fixtures\Service;
 
 class MerchantAuditService extends Service
@@ -31,7 +33,8 @@ class MerchantAuditService extends Service
                 Merchant::AUDIT_STATUS_SUCCESS,
                 Merchant::AUDIT_STATUS_FAIL,
                 Merchant::AUDIT_STATUS_FAIL_TO_POOL,
-            ]) ->orderByDesc('updated_at')->paginate();
+            ])
+            ->orderByDesc('updated_at')->paginate();
 
         $data->each(function($item) {
             $item->merchantName = Merchant::where('id', $item->merchant_id)->value('name');
@@ -50,7 +53,11 @@ class MerchantAuditService extends Service
             ->select('id', 'name', 'merchant_category_id')
             ->first();
         $record = MerchantAudit::where("merchant_id", $merchantId)
-            ->whereNotIn('status', [Merchant::AUDIT_STATUS_AUDITING, Merchant::AUDIT_STATUS_CANCEL])
+            ->whereIn('status', [
+                Merchant::AUDIT_STATUS_SUCCESS,
+                Merchant::AUDIT_STATUS_FAIL,
+                Merchant::AUDIT_STATUS_FAIL_TO_POOL,
+            ])
             ->orderByDesc('updated_at')
             ->first();
 
@@ -80,18 +87,115 @@ class MerchantAuditService extends Service
         // todo 取消审核
     }
 
-    public static function auditSuccess()
+    /**
+     * 根据商户ID获取待审核的审核记录
+     * @param $merchantId
+     * @param $operId
+     * @return MerchantAudit
+     */
+    public static function getUnauditRecordByMerchantId($merchantId, $operId)
     {
-        // todo 审核通过
+        // 获取最后一条审核记录
+        $merchantCurrentAudit = MerchantAudit::where('merchant_id', $merchantId)
+            ->where('oper_id', $operId)
+            ->whereIn('status', [Merchant::AUDIT_STATUS_AUDITING, Merchant::AUDIT_STATUS_RESUBMIT])
+            ->orderByDesc('updated_at')
+            ->first();
+        return $merchantCurrentAudit;
     }
 
-    public static function auditFail()
+    /**
+     * 审核通过
+     * @param $merchant Merchant 要审核的商户
+     * @param $auditSuggestion string 审核意见
+     * @return Merchant
+     */
+    public static function auditSuccess($merchant, $auditSuggestion)
     {
-        // todo 审核不通过
+        if(is_int($merchant)){
+            $merchant = Merchant::findOrFail($merchant);
+            if(empty($merchant)){
+                throw new ParamInvalidException('商户信息不存在');
+            }
+        }
+        // 获取最后一条审核记录
+        $merchantCurrentAudit = self::getUnauditRecordByMerchantId($merchant->id, $merchant->audit_oper_id);
+
+        $merchantCurrentAudit->status = Merchant::AUDIT_STATUS_SUCCESS;
+        $merchantCurrentAudit->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
+        $merchantCurrentAudit->save();
+
+        $merchant->audit_status = Merchant::AUDIT_STATUS_SUCCESS;
+        $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
+
+        // 审核通过时, 补充商户所属运营中心ID及审核通过时间
+        $merchant->oper_id = $merchant->audit_oper_id;
+        $merchant->active_time = Carbon::now();
+        $merchant->save();
+
+        return $merchant;
     }
 
-    public static function auditFailAndPushToPool()
+    /**
+     * 审核不通过
+     * @param $merchant Merchant 要审核的商户
+     * @param $auditSuggestion string 审核意见
+     * @return Merchant
+     */
+    public static function auditFail($merchant, $auditSuggestion)
     {
-        // todo 审核不通过并且打回商户池
+        if(is_int($merchant)){
+            $merchant = Merchant::findOrFail($merchant);
+            if(empty($merchant)){
+                throw new ParamInvalidException('商户信息不存在');
+            }
+        }
+        // 获取最后一条审核记录
+        $merchantCurrentAudit = self::getUnauditRecordByMerchantId($merchant->id, $merchant->audit_oper_id);
+
+        $merchantCurrentAudit->status = Merchant::AUDIT_STATUS_SUCCESS;
+        $merchantCurrentAudit->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
+        $merchantCurrentAudit->save();
+
+        $merchant->audit_status = Merchant::AUDIT_STATUS_SUCCESS;
+        $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
+
+        $merchant->save();
+
+        return $merchant;
+    }
+
+    /**
+     * 审核不通过并且打回商户池
+     * @param $merchant Merchant 要审核的商户
+     * @param $auditSuggestion string 审核意见
+     * @return Merchant
+     */
+    public static function auditFailAndPushToPool($merchant, $auditSuggestion)
+    {
+        if(is_int($merchant)){
+            $merchant = Merchant::findOrFail($merchant);
+            if(empty($merchant)){
+                throw new ParamInvalidException('商户信息不存在');
+            }
+        }
+
+        if($merchant->oper_id > 0){
+            throw new ParamInvalidException('该商户已有所属运营中心, 不能打回商户池');
+        }
+
+        // 获取最后一条审核记录
+        $merchantCurrentAudit = self::getUnauditRecordByMerchantId($merchant->id, $merchant->audit_oper_id);
+        $merchantCurrentAudit->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
+        $merchantCurrentAudit->status = Merchant::AUDIT_STATUS_FAIL_TO_POOL;
+        $merchantCurrentAudit->save();
+
+        $merchant->audit_status = Merchant::AUDIT_STATUS_FAIL;
+        // 打回商户池操作, 需要将商户信息中的audit_oper_id置空
+        $merchant->audit_oper_id = 0;
+        $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
+        $merchant->save();
+
+        return $merchant;
     }
 }
