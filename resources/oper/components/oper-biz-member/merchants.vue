@@ -2,7 +2,8 @@
 
     <page :title="'业务-' + operBizMember.name" :breadcrumbs="{我的业务员: '/operBizMembers'}" v-loading="isLoading">
         <el-table :data="list" stripe>
-            <el-table-column prop="active_time" label="激活时间"/>
+            <el-table-column prop="add_merchant_time" label="添加商户时间"/>
+            <el-table-column prop="audit_done_time" label="商户审核通过时间"/>
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="status" label="商户状态">
                 <template slot-scope="scope">
@@ -19,7 +20,6 @@
                 @current-change="getList"
                 :page-size="15"
                 :total="total"/>
-
     </page>
 </template>
 
