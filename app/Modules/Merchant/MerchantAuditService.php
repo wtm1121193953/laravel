@@ -10,6 +10,7 @@ namespace App\Modules\Merchant;
 
 
 use App\Modules\Oper\Oper;
+use Illuminate\Database\Eloquent\Builder;
 use Pimple\Tests\Fixtures\Service;
 
 class MerchantAuditService extends Service
@@ -17,15 +18,20 @@ class MerchantAuditService extends Service
 
     /**
      * 获取审核结果列表
+     * @param array $params
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getAuditResultList()
+    public static function getAuditResultList(array $params = [])
     {
-        $data = MerchantAudit::whereIn('status', [
-            Merchant::AUDIT_STATUS_SUCCESS,
-            Merchant::AUDIT_STATUS_FAIL,
-            Merchant::AUDIT_STATUS_FAIL_TO_POOL,
-        ]) ->orderByDesc('updated_at')->paginate();
+
+        $data = MerchantAudit::when(isset($params['oper_id']), function (Builder $query) use ($params){
+            $query->where('oper_id', $params['oper_id']);
+        })
+            ->whereIn('status', [
+                Merchant::AUDIT_STATUS_SUCCESS,
+                Merchant::AUDIT_STATUS_FAIL,
+                Merchant::AUDIT_STATUS_FAIL_TO_POOL,
+            ]) ->orderByDesc('updated_at')->paginate();
 
         $data->each(function($item) {
             $item->merchantName = Merchant::where('id', $item->merchant_id)->value('name');
