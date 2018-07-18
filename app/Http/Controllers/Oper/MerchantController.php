@@ -228,7 +228,7 @@ class MerchantController extends Controller
             MerchantAuditService::addAudit($merchant->id, $currentOperId,Merchant::AUDIT_STATUS_RESUBMIT);
             $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
         }else {
-            MerchantAudit::addRecord($merchant->id, $currentOperId);
+            MerchantAuditService::addAudit($merchant->id, $currentOperId);
             $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
         }
 
