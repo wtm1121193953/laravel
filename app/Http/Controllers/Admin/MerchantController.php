@@ -144,13 +144,13 @@ class MerchantController extends Controller
         }
 
         switch ($type){
-            case 1: // 审核通过
+            case '1': // 审核通过
                 $merchant = MerchantAuditService::auditSuccess($merchant, $auditSuggestion);
                 break;
-            case 2: // 审核不通过
+            case '2': // 审核不通过
                 $merchant = MerchantAuditService::auditFail($merchant, $auditSuggestion);
                 break;
-            case 3: // 审核不通过并打回到商户池
+            case '3': // 审核不通过并打回到商户池
                 $merchant = MerchantAuditService::auditFailAndPushToPool($merchant, $auditSuggestion);
                 break;
             default:

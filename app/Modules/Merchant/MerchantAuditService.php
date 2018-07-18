@@ -153,11 +153,11 @@ class MerchantAuditService extends Service
         // 获取最后一条审核记录
         $merchantCurrentAudit = self::getUnauditRecordByMerchantId($merchant->id, $merchant->audit_oper_id);
 
-        $merchantCurrentAudit->status = Merchant::AUDIT_STATUS_SUCCESS;
+        $merchantCurrentAudit->status = Merchant::AUDIT_STATUS_FAIL;
         $merchantCurrentAudit->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
         $merchantCurrentAudit->save();
 
-        $merchant->audit_status = Merchant::AUDIT_STATUS_SUCCESS;
+        $merchant->audit_status = Merchant::AUDIT_STATUS_FAIL;
         $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
 
         $merchant->save();
