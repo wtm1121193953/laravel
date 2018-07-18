@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Oper;
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -177,8 +178,25 @@ class OperBizMemberController extends Controller
             $query->where('oper_id', request()->get('current_user')->oper_id)
                 ->orWhere('audit_oper_id',  request()->get('current_user')->oper_id);
         })->where('oper_biz_member_code', $code)
-            ->select('id', 'active_time', 'name', 'status')
+            ->select('id', 'active_time', 'name', 'status','audit_status')
             ->paginate();
+
+        $data->each(function($item) {
+            if($item->audit_status==1){
+                $item->audit_done_time = $item->active_time;
+                $add_merchant_time =  MerchantAudit::where('updated_at',$item->active_time)->value('created_at');
+                $item->add_merchant_time = empty($add_merchant_time) ? '' : $add_merchant_time->toDateTimeString();
+            }else{
+                $item->audit_done_time='';
+                $add_merchant_time =  MerchantAudit::where('merchant_id', $item->id)
+                                        ->where('oper_id', request()->get('current_user')->oper_id)
+                                        ->whereIn('status', [0,3,2])
+                                        ->orderBy('created_at','desc')
+                                        ->value('created_at');
+                $item->add_merchant_time = empty($add_merchant_time) ? '' : $add_merchant_time->toDateTimeString();
+            }
+
+        });
 
         return Result::success([
             'list' => $data->items(),

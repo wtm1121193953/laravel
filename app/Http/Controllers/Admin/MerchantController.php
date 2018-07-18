@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Exports\MerchantExport;
 use App\Http\Controllers\Controller;
@@ -120,48 +121,42 @@ class MerchantController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
             'type' => 'required|integer|in:1,2,3',
-            'audit_suggestion' =>  'max:50',
+            'audit_suggestion' => 'max:50',
         ]);
 
         $type = request('type');
         $merchantId = request('id');
-        $auditSuggestion = request('audit_suggestion');
+        $auditSuggestion = request('audit_suggestion', '');
+
         $merchant = Merchant::findOrFail($merchantId);
+        if(empty($merchant)){
+            throw new ParamInvalidException('商户信息不存在');
+        }
+
+        // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
         $merchantCurrentAudit = MerchantAudit::where('merchant_id', $merchantId)
             ->where('oper_id', $merchant->audit_oper_id)
             ->whereIn('status', [0,3])
             ->orderBy('updated_at','desc')
             ->first();
         if(empty($merchantCurrentAudit)){
-            // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
-            $merchantCurrentAudit = MerchantAuditService::addAudit($merchantId, $merchant->audit_oper_id);
+            MerchantAuditService::addAudit($merchantId, $merchant->audit_oper_id);
         }
 
-         //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
-        if($type == 3){
-
-            if($merchant->oper_id > 0){
-                throw new ParamInvalidException('该商户已有所属运营中心, 不能打回商户池');
-            }
-
-            $merchant->audit_status = Merchant::AUDIT_STATUS_FAIL;
-            // 打回商户池操作, 需要将商户信息中的audit_oper_id置空
-            $merchant->audit_oper_id = 0;
-            $merchantCurrentAudit->status = Merchant::AUDIT_STATUS_FAIL_TO_POOL;
-        }else {
-            $merchant->audit_status = $type;
-            $merchantCurrentAudit->status = $type;
-            if($type == 1){
-                // 如果审核通过, 补充商户所属运营中心ID
-                $merchant->oper_id = $merchant->audit_oper_id;
-                $merchant->active_time = new Carbon();
-            }
-            $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
-            $merchantCurrentAudit->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
-
+        switch ($type){
+            case '1': // 审核通过
+                $merchant = MerchantAuditService::auditSuccess($merchant, $auditSuggestion);
+                break;
+            case '2': // 审核不通过
+                $merchant = MerchantAuditService::auditFail($merchant, $auditSuggestion);
+                break;
+            case '3': // 审核不通过并打回到商户池
+                $merchant = MerchantAuditService::auditFailAndPushToPool($merchant, $auditSuggestion);
+                break;
+            default:
+                throw new BaseResponseException('错误的操作');
         }
-        $merchantCurrentAudit->save();
-        $merchant->save();
+
         return Result::success($merchant);
     }
 

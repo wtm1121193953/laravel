@@ -9,6 +9,8 @@
 namespace App\Exports;
 
 
+use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
