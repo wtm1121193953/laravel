@@ -11,6 +11,7 @@ namespace App\Modules\Merchant;
 
 use App\BaseService;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperBizMember;
 use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -110,6 +111,7 @@ class MerchantService extends BaseService
                 $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
                 $item->creatorOperId = $item->creator_oper_id;
                 $item->creatorOperName = Oper::where('id', $item->creator_oper_id)->value('name');
+                $item->operBizMemberName = OperBizMember::where('oper_id', $item->operId)->where('code', $item->oper_biz_member_code)->value('name') ?: '';
             });
 
             return $data;
