@@ -95,7 +95,7 @@ class MerchantAuditService extends Service
      */
     public static function getUnauditRecordByMerchantId($merchantId, $operId)
     {
-        // 获取最后一条审核记录
+        // 获取最后一条审核记录用到这方法
         $merchantCurrentAudit = MerchantAudit::where('merchant_id', $merchantId)
             ->where('oper_id', $operId)
             ->whereIn('status', [Merchant::AUDIT_STATUS_AUDITING, Merchant::AUDIT_STATUS_RESUBMIT])

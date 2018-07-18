@@ -178,7 +178,7 @@ class OperBizMemberController extends Controller
             $query->where('oper_id', request()->get('current_user')->oper_id)
                 ->orWhere('audit_oper_id',  request()->get('current_user')->oper_id);
         })->where('oper_biz_member_code', $code)
-//            ->select('id', 'active_time', 'name', 'status')
+            ->select('id', 'active_time', 'name', 'status','audit_status')
             ->paginate();
 
         $data->each(function($item) {
