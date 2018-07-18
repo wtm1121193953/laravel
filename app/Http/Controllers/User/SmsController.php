@@ -8,10 +8,11 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
-use App\Modules\Order\Order;
-use App\Modules\Sms\SmsVerifyCodeService;
+use App\Modules\Sms\SmsService;
+use App\Result;
 
 class SmsController extends Controller
 {
@@ -25,12 +26,13 @@ class SmsController extends Controller
             throw new ParamInvalidException('手机号码不合法');
         }
 
-        $smsVerifyCode = SmsVerifyCodeService::add($mobile);
-        SmsVerifyCodeService::sendVerifyCode($smsVerifyCode->mobile, $smsVerifyCode->verify_code);
-    }
+        $smsVerifyCode = SmsService::add($mobile);
+        $result = SmsService::sendVerifyCode($smsVerifyCode->mobile, $smsVerifyCode->verify_code);
 
-    public function sendBuySuccessNotify(Order $order)
-    {
-
+        if ($result['code'] == 0){
+            return Result::success();
+        }else{
+            throw new BaseResponseException($result['message'], $result['code']);
+        }
     }
 }

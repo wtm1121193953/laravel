@@ -110,7 +110,8 @@ class MerchantController extends Controller
                         $query->where('lowest_amount', '>=', $lowestPrice);
                     })
                     ->when($highestPrice, function (Builder $query) use ($lowestPrice, $highestPrice) {
-                        $query->whereBetween('lowest_amount', [$lowestPrice, $highestPrice]);
+                        $query->where('lowest_amount', '>=', $lowestPrice)
+                            ->where('lowest_amount', '<', $highestPrice);
                     })
                     ->orderBy('lowest_amount');
             });
