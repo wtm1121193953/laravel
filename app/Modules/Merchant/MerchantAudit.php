@@ -17,7 +17,11 @@ class MerchantAudit extends BaseModel
      */
     public static function addRecord($merchantId, $operId)
     {
-        // todo 需要增加一个取消审核状态, 将未审核的记录设为取消
+        // 需要增加一个取消审核状态, 将未审核的记录设为取消
+        MerchantAudit::where('merchant_id', $merchantId)
+            ->where('oper_id', $operId)
+            ->whereIn('status', [Merchant::AUDIT_STATUS_AUDITING, Merchant::AUDIT_STATUS_RESUBMIT])
+            ->update(['status' => Merchant::AUDIT_STATUS_CANCEL]);
         $audit = new static();
         $audit->merchant_id = $merchantId;
         $audit->oper_id = $operId;
@@ -34,7 +38,11 @@ class MerchantAudit extends BaseModel
      */
     public static function resubmit($merchantId, $operId)
     {
-        // todo 需要增加一个取消审核状态, 将未审核的记录设为取消
+        // 需要增加一个取消审核状态, 将未审核的记录设为取消
+        MerchantAudit::where('merchant_id', $merchantId)
+            ->where('oper_id', $operId)
+            ->whereIn('status', [Merchant::AUDIT_STATUS_AUDITING, Merchant::AUDIT_STATUS_RESUBMIT])
+            ->update(['status' => Merchant::AUDIT_STATUS_CANCEL]);
         $audit = new static();
         $audit->merchant_id = $merchantId;
         $audit->oper_id = $operId;
