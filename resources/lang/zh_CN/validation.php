@@ -129,6 +129,7 @@ return [
         ],
         'signboard_name' => [
             'required' => '商户招牌名不能为空',
+            'max' => '商户招牌名字数不能超过 :max'
         ],
         'organization_code' => [
             'required' => '营业执照代码不能为空',
