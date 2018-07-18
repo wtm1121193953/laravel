@@ -144,6 +144,8 @@ class MerchantController extends Controller
             if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
             $category = MerchantCategory::find($item->merchant_category_id);
             $item->merchantCategoryName = $category->name;
+            // 最低消费
+            $item->lowestAmount = Goods::getLowestPriceForMerchant($item->id);
             // 判断商户是否是当前小程序关联运营中心下的商户
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
             // 兼容v1.0.0版客服电话字段
@@ -184,6 +186,8 @@ class MerchantController extends Controller
         $detail->merchantCategoryName = $category->name;
         //商家是否开启单品模式
         $detail->isOpenDish = MerchantSettingService::getValueByKey($id,'dishes_enabled');
+        // 最低消费
+        $detail->lowestAmount = Goods::getLowestPriceForMerchant($detail->id);
         $currentOperId = request()->get('current_oper')->id;
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
