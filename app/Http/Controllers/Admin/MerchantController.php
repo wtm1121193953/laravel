@@ -43,6 +43,7 @@ class MerchantController extends Controller
         }
 
         $operId = request('operId');
+        // 根据输入的运营中心名称获取所属运营中心ID列表
         $operName = request('operName');
         if($operName) {
             $operIds = Oper::where('name', 'like', "%$operName%")
@@ -51,6 +52,7 @@ class MerchantController extends Controller
         }
 
         $creatorOperId = request('creatorOperId');
+        // 根据输入的运营中心名称获取录入信息的运营中心ID列表
         $creatorOperName = request('creatorOperName');
         if($creatorOperName){
             $createOperIds = Oper::where('name', 'like', "%$creatorOperName%")
@@ -80,22 +82,7 @@ class MerchantController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-        $merchant = Merchant::findOrFail(request('id'));
-        $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
-        $merchant->business_time = json_decode($merchant->business_time, 1);
-        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
-        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
-        $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
-        $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
-        $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
-        $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
-        if($merchant->oper_biz_member_code){
-            $merchant->operBizMemberName = OperBizMember::where('code', $merchant->oper_biz_member_code)->value('name');
-        }
-        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
-        if ($oper){
-            $merchant->operAddress = $oper->province.$oper->city.$oper->area.$oper->address;
-        }
+        $merchant = MerchantService::detail(request('id'));
         //增加最后审核时间
         return Result::success($merchant);
     }
