@@ -92,17 +92,7 @@ class MerchantController extends Controller
      */
     public function getAuditList()
     {
-        $data = MerchantAudit::whereIn('status', [
-            Merchant::AUDIT_STATUS_SUCCESS,
-            Merchant::AUDIT_STATUS_FAIL,
-            Merchant::AUDIT_STATUS_FAIL_TO_POOL,
-        ]) ->orderByDesc('updated_at')->paginate();
-
-
-        $data->each(function($item) {
-            $item->merchantName = Merchant::where('id', $item->merchant_id)->value('name');
-            $item->operName = Oper::where('id', $item->oper_id)->value('name');
-        });
+        $data = MerchantAuditService::getAuditResultList();
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -118,16 +108,8 @@ class MerchantController extends Controller
             'id' => 'required|integer|min:1'
         ]);
         $merchantId = request('id');
-        $merchant = Merchant::findOrFail(request('id'));
-        $data = MerchantAudit::where("merchant_id",$merchantId)
-            ->where('status',"<>",0)
-            ->orderByDesc('updated_at')
-            ->first();
-
-        $data->categoryName= MerchantCategory::where("id",$merchant->merchant_category_id)->value("name");
-        $data->merchantName = $merchant->name;
-        return Result::success($data);
-
+        $record = MerchantAuditService::getNewestAuditRecordByMerchantId($merchantId);
+        return Result::success($record);
     }
 
     /**
