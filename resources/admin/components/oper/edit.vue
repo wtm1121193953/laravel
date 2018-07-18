@@ -2,6 +2,7 @@
     <page title="修改运营中心" :breadcrumbs="{运营中心管理: '/opers'}" v-loading="loading">
         <el-col :span="12">
             <oper-form
+                    v-if="oper"
                     :data="oper"
                     ref="addForm"
                     @cancel="cancel"
