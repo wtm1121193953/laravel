@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAudit;
+use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantDraft;
 use App\Modules\Oper\Oper;
@@ -177,7 +178,7 @@ class MerchantController extends Controller
         $merchant->save();
 
         // 添加审核记录
-        MerchantAudit::addRecord($merchant->id, $currentOperId);
+        MerchantAuditService::addAudit($merchant->id, $currentOperId);
 
         // 更新业务员已激活商户数量
         if($merchant->oper_biz_member_code){
@@ -223,7 +224,8 @@ class MerchantController extends Controller
 
         if($merchant->oper_id > 0){
             // 如果当前商户已有所属运营中心, 则此次提交为重新提交审核
-            MerchantAudit::resubmit($merchant->id, $currentOperId);
+            // 添加审核记录
+            MerchantAuditService::addAudit($merchant->id, $currentOperId,Merchant::AUDIT_STATUS_RESUBMIT);
             $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
         }else {
             MerchantAudit::addRecord($merchant->id, $currentOperId);
@@ -282,7 +284,7 @@ class MerchantController extends Controller
 
         $merchant->save();
         // 添加审核记录
-        MerchantAudit::addRecord($merchant->id, $currentOperId);
+        MerchantAuditService::addAudit($merchant->id, $currentOperId);
 
         // 更新业务员已激活商户数量
         if($merchant->oper_biz_member_code){
