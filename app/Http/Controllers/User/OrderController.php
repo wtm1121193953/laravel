@@ -24,6 +24,7 @@ use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
 use App\Modules\Setting\SettingService;
+use App\Modules\Sms\SmsService;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
@@ -442,6 +443,7 @@ class OrderController extends Controller
         $unifyResult = $payApp->order->unify($data);
         if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
             $order->save();
+            SmsService::sendBuySuccessNotify($order);
         }else {
             Log::error('微信统一下单失败', [
                 'payConfig' => $payApp->getConfig(),
