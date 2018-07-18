@@ -70,11 +70,12 @@ class SmsService extends BaseService
 
     /**
      * 购买成功发送通知
-     * @param Order $order
+     * @param $orderNo
      * @return bool
      */
-    public static function sendBuySuccessNotify(Order $order)
+    public static function sendBuySuccessNotify($orderNo)
     {
+        $order = Order::where('order_no', $orderNo)->firstOrFail();
         if ($order->type == Order::TYPE_GROUP_BUY) {
             $templateId = self::GROUP_BUY_TEMPLATE_ID;
             $params = self::getGoodsBuySuccessNotifyParams($order);

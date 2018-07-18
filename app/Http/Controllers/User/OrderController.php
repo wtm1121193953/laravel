@@ -17,20 +17,17 @@ use App\Modules\Goods\Goods;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Merchant\Merchant;
-use App\Modules\Merchant\MerchantDraft;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
 use App\Modules\Setting\SettingService;
-use App\Modules\Sms\SmsService;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
@@ -443,7 +440,6 @@ class OrderController extends Controller
         $unifyResult = $payApp->order->unify($data);
         if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
             $order->save();
-            SmsService::sendBuySuccessNotify($order);
         }else {
             Log::error('微信统一下单失败', [
                 'payConfig' => $payApp->getConfig(),
