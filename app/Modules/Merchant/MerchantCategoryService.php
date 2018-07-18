@@ -178,9 +178,10 @@ class MerchantCategoryService extends BaseService
      * @param $categoryId
      * @return bool|\Illuminate\Support\Collection
      */
-    public static function getSubCategory($categoryId)
+    public static function getSubCategoryIds($categoryId)
     {
         $subArray = MerchantCategory::where('pid', $categoryId)
+            ->select('id')
             ->get()
             ->pluck('id');
         if (count($subArray) > 0){

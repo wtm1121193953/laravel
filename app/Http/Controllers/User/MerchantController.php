@@ -77,7 +77,7 @@ class MerchantController extends Controller
             })
             ->when($merchant_category_id && $keyword, function(Builder $query) use ($merchant_category_id, $keyword){
                 // 如果传了类别及关键字, 则类别和关键字都搜索
-                $merchantCategorySubArray = MerchantCategoryService::getSubCategory($merchant_category_id);
+                $merchantCategorySubArray = MerchantCategoryService::getSubCategoryIds($merchant_category_id);
                 $query->where(function (Builder $query) use ($keyword) {
                         $query->where('name', 'like', "%$keyword%")
                             ->orWhere('signboard_name', 'like', "%$keyword%");
@@ -91,7 +91,7 @@ class MerchantController extends Controller
             })
             ->when($merchant_category_id && empty($keyword), function(Builder $query) use ($merchant_category_id, $keyword){
                 // 如果只传了类别, 没有关键字
-                $merchantCategorySubArray = MerchantCategoryService::getSubCategory($merchant_category_id);
+                $merchantCategorySubArray = MerchantCategoryService::getSubCategoryIds($merchant_category_id);
                 $query->when($merchantCategorySubArray, function (Builder $query) use ($merchantCategorySubArray) {
                         $query->whereIn('merchant_category_id', $merchantCategorySubArray);
                     })
