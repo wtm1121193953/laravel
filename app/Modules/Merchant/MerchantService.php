@@ -71,7 +71,7 @@ class MerchantService extends BaseService
                         ->orWhereIn('audit_oper_id', $operId);
                 });
             }else {
-                $query->where(function ($query) use ($operId) {
+                $query->where(function (Builder $query) use ($operId) {
                     $query->where('oper_id',  $operId)
                         ->orWhere('audit_oper_id', $operId);
                 });
