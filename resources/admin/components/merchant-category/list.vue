@@ -94,7 +94,10 @@
                     name: [
                         {required: true, message: '类目名称不能为空'},
                         {max: 20, message: '类目名称不能超过20个字'},
-                    ]
+                    ],
+                    icon: [
+                        {required: true, message: '类目图标不能为空'},
+                    ],
                 },
                 showForm: false,
                 formTitle: '添加类目',
@@ -153,11 +156,15 @@
                 this.$refs.form.resetFields();
             },
             save(){
-                if(this.form.id){
-                    this.doEdit()
-                }else {
-                    this.doAdd()
-                }
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        if(this.form.id){
+                            this.doEdit()
+                        }else {
+                            this.doAdd()
+                        }
+                    }
+                })
             },
             doEdit(){
                 api.post('/merchant/category/edit', this.form).then(data => {
