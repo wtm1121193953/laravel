@@ -20,6 +20,19 @@ class MicroServiceApi
     const SECRET_KEY = '5756af9812b528f72940af0f3ac74bb8';
     const SIGN_NAME = '微服务';
 
+    /**
+     * 团购商品购买成功通知模板ID
+     * 模板内容:
+     * 订单号${orderNo}：${name}已下单成功，份数：${number}，使用截止日期：${endDate}，请凭券码${verifyCode}到商家进行消费，感谢您的使用。
+     */
+    const GROUP_BUY_TEMPLATE_ID = 'SMS_139985440';
+    /**
+     * 单品商品购买成功通知模板ID
+     * 模板内容:
+     * 订单号${orderNo}：${name}等${number}份商品已下单成功，请及时到商家进行消费，感谢您的使用。
+     */
+    const DISHES_TEMPLATE_ID = 'SMS_139975636';
+
     public static function get($url, $data)
     {
 

@@ -22,8 +22,6 @@ use Illuminate\Support\Facades\Log;
 
 class SmsService extends BaseService
 {
-    const GROUP_BUY_TEMPLATE_ID = 'SMS_139985440';
-    const DISHES_TEMPLATE_ID = 'SMS_139975636';
 
     /**
      * @param $mobile
@@ -77,11 +75,11 @@ class SmsService extends BaseService
     {
         $order = Order::where('order_no', $orderNo)->firstOrFail();
         if ($order->type == Order::TYPE_GROUP_BUY) {
-            $templateId = self::GROUP_BUY_TEMPLATE_ID;
+            $templateId = MicroServiceApi::GROUP_BUY_TEMPLATE_ID;
             $params = self::getGoodsBuySuccessNotifyParams($order);
             MicroServiceApi::sendTemplateSms($order->notify_mobile, $templateId, $params);
         }elseif ($order->type == Order::TYPE_DISHES) {
-            $templateId = self::DISHES_TEMPLATE_ID;
+            $templateId = MicroServiceApi::DISHES_TEMPLATE_ID;
             $params = self::getDishesBuySuccessNotifyParams($order);
             MicroServiceApi::sendTemplateSms($order->notify_mobile, $templateId, $params);
         }else {
