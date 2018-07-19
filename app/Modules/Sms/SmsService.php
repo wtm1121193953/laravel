@@ -120,7 +120,6 @@ class SmsService extends BaseService
     {
         // 单品
         $name = DishesItem::where('dishes_id', $order->dishes_id)
-            ->first()
             ->value('dishes_goods_name');
         $name = mb_strlen($name) > 20 ? mb_substr($name, 0, 19). '…' : $name;
         $dishesItems = DishesItem::where('dishes_id', $order->dishes_id)->get();
