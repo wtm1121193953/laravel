@@ -183,6 +183,6 @@ class MerchantController extends Controller
         $creatorOperId = request('creatorOperId');
         $creatorOperName = request('creatorOperName');
 
-        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name,$auditStatus, $operId, $operName, $creatorOperId, $creatorOperName))->download('merchant_list.xlsx');
+        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name,$auditStatus, $operId, $operName, $creatorOperId, $creatorOperName))->download('商户列表.xlsx');
     }
 }
