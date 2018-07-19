@@ -96,17 +96,13 @@ class SmsService extends BaseService
     private static function getGoodsBuySuccessNotifyParams(Order $order)
     {
         // 团购商品
-        $name = $order->goods_name;
+        $name = mb_strlen($order->goods_name) > 20 ? mb_substr($order->goods_name, 0, 19). '…' : $order->goods_name;
         $number = $order->buy_number;
         $endDate = Goods::where('id', $order->goods_id)->value('end_date');
-        $orderItems = OrderItem::where('order_id', $order->id)
-            ->select('verify_code')
-            ->get()
-            ->pluck('verify_code')
-            ->toArray();
-        $verifyCode = implode(',', $orderItems);
+        $verifyCode = OrderItem::where('order_id', $order->id)
+            ->value('verify_code');
         $params = [
-            'orderNo' => $order->order_no,
+            'orderNo' => substr($order->order_no, 0, 6). '…'. substr($order->order_no, -6),
             'name' => $name,
             'number' => $number,
             'endDate' => $endDate,
@@ -126,13 +122,14 @@ class SmsService extends BaseService
         $name = DishesItem::where('dishes_id', $order->dishes_id)
             ->first()
             ->value('dishes_goods_name');
+        $name = mb_strlen($name) > 20 ? mb_substr($name, 0, 19). '…' : $name;
         $dishesItems = DishesItem::where('dishes_id', $order->dishes_id)->get();
         $number = 0;
         foreach ($dishesItems as $dishesItem){
             $number += $dishesItem->number;
         }
         $params = [
-            'orderNo' => $order->order_no,
+            'orderNo' => substr($order->order_no, 0, 6). '…'. substr($order->order_no, -6),
             'name' => $name,
             'number' => $number,
         ];

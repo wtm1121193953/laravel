@@ -91,7 +91,7 @@ class MicroServiceApi
                 $message = '发送频率超限';
                 $code = ResultCode::SMS_BUSINESS_LIMIT_CONTROL;
             }
-            throw new BaseResponseException($message, $code);
+            Log::error($message, ['code' => $code]);
         }
     }
 }
