@@ -67,6 +67,7 @@
             },
             cancel(){
                 this.$emit('cancel');
+                this.resetForm();
             },
             resetForm(){
                 this.$refs.form.resetFields();
@@ -87,6 +88,8 @@
         watch: {
             data(){
                 this.initForm();
+                console.log(this.initForm(),111222)
+
             }
         },
         components: {
