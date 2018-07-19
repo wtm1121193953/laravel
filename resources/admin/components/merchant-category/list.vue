@@ -14,7 +14,8 @@
                     @node-collapse="treeNodeCollapse"
             >
                 <span class="custom-tree-node" slot-scope="{ node, data }">
-                    <span :class="{'c-gray': data.status != 1}">{{data.name}} <template v-if="data.status != 1">(已禁用)</template></span>
+                    <img v-if="data.pid == 0 && data.icon" :src="data.icon" width="30px" height="30px">
+                    <span :class="{'c-gray': data.status != 1}" class="name-list">{{data.name}} <template v-if="data.status != 1">(已禁用)</template></span>
                     <!--阻止事件冒泡, 方式点击按钮时树展开-->
                     <span @click.stop="() => {}">
                         <el-dropdown @command="(command) => categoryDropdownClicked(command, data)" trigger="click">
@@ -224,5 +225,9 @@
     }
     .dropmenu {
         margin-top: 0;
+    }
+    .name-list {
+        flex: auto;
+        margin-left: 5px;
     }
 </style>
