@@ -29,7 +29,7 @@ class OrderPaidJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param Order $order
      */
     public function __construct(Order $order)
     {
