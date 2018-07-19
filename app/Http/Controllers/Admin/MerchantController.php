@@ -45,9 +45,10 @@ class MerchantController extends Controller
         }
 
         $operId = request('operId');
-        if($operId  && !is_numeric( $operId )){
-            throw new ParamInvalidException('运营中心ID必须为数字');
+        if(!is_null($operId) && is_string($operId)){
+            $operId = -1;
         }
+
         // 根据输入的运营中心名称获取所属运营中心ID列表
         $operName = request('operName');
         if($operName) {
@@ -180,9 +181,9 @@ class MerchantController extends Controller
         }
         $operId = request('operId');
         $operName = request('operName');
-        $creatorOperId = request('creatorOperId');
-        $creatorOperName = request('creatorOperName');
+//        $creatorOperId = request('creatorOperId');
+//        $creatorOperName = request('creatorOperName');
 
-        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name,$auditStatus, $operId, $operName, $creatorOperId, $creatorOperName))->download('商户列表.xlsx');
+        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name,$auditStatus, $operId, $operName))->download('商户列表.xlsx');
     }
 }

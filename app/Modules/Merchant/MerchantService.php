@@ -43,7 +43,7 @@ class MerchantService extends BaseService
     {
         $id = $data['id'];
         $operId = $data['operId'];
-        $creatorOperId = $data['creatorOperId'];
+//        $creatorOperId = $data['creatorOperId'];
         $name = $data['name'];
         $signboardName = $data['signboardName'];
         $auditStatus = $data['auditStatus'];
@@ -57,13 +57,13 @@ class MerchantService extends BaseService
         if($id){
             $query->where('id', $id);
         }
-        if($creatorOperId){
-            if(is_array($creatorOperId) || $creatorOperId instanceof Collection){
-                $query->whereIn('creator_oper_id', $creatorOperId);
-            }else {
-                $query->where('creator_oper_id', $creatorOperId);
-            }
-        }
+//        if($creatorOperId){
+//            if(is_array($creatorOperId) || $creatorOperId instanceof Collection){
+//                $query->whereIn('creator_oper_id', $creatorOperId);
+//            }else {
+//                $query->where('creator_oper_id', $creatorOperId);
+//            }
+//        }
         if($operId){
             if(is_array($operId) || $operId instanceof Collection){
                 $query->where(function (Builder $query) use ($operId) {
@@ -109,8 +109,8 @@ class MerchantService extends BaseService
                 $item->business_time = json_decode($item->business_time, 1);
                 $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
                 $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
-                $item->creatorOperId = $item->creator_oper_id;
-                $item->creatorOperName = Oper::where('id', $item->creator_oper_id)->value('name');
+//                $item->creatorOperId = $item->creator_oper_id;
+//                $item->creatorOperName = Oper::where('id', $item->creator_oper_id)->value('name');
                 $item->operBizMemberName = OperBizMember::where('oper_id', $item->operId)->where('code', $item->oper_biz_member_code)->value('name') ?: '';
             });
 

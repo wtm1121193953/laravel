@@ -60,9 +60,19 @@ class MerchantCategoryService extends BaseService
     {
         $category = new MerchantCategory();
         if($pid==0){
-            $checkPidCategoryName = MerchantCategory::where('name',$name)->where('pid',0)->first();
-            if($checkPidCategoryName){
-                throw new ParamInvalidException('已存在该顶级类目，请勿重复添加');
+            $checkPidCategory = MerchantCategory::where('name',$name)->first();
+            if($checkPidCategory){
+                if($checkPidCategory->pid==0){
+                    throw new ParamInvalidException('已存在该顶级类目，请勿重复添加');
+                }else{
+                    throw new ParamInvalidException('子类目不能成为顶级类目');
+                }
+            }
+        }else{
+            $hadExsitPid = MerchantCategory::where('id',$pid)->value('pid');
+            $AddCategoryPid = MerchantCategory::where('name',$name)->value('pid');
+            if( $hadExsitPid===$AddCategoryPid){
+                throw new ParamInvalidException('顶级类目不能作为子类目');
             }
         }
         $category->name = $name;
@@ -88,6 +98,28 @@ class MerchantCategoryService extends BaseService
     {
 
         $category = MerchantCategory::find($id);
+        $hadExsitPid =$category->pid;
+
+        if($hadExsitPid==0){
+            $AddCategoryPid = MerchantCategory::where('name',$name)->value('pid');
+            if( $hadExsitPid===$AddCategoryPid){
+                throw new ParamInvalidException('顶级分类不能作为子类目');
+            }
+        }else{
+            $childIdsArray = self::getSubCategoryIds($hadExsitPid)->toArray();
+            $childIdsArray = array_diff($childIdsArray,[$id]);
+            $AddCategory = MerchantCategory::where('name',$name)->first();
+            if($pid==0){
+                throw new ParamInvalidException('子类目不能成为顶级类目');
+            }else if($AddCategory){
+                    if($AddCategory->pid ==0){
+                        throw new ParamInvalidException('子类目不能成为顶级类目');
+                    }else if(in_array($AddCategory->id,$childIdsArray)){
+                         throw new ParamInvalidException('顶级类目下的子类目不能重名');
+                  }
+            }
+        }
+
         if(empty($category)){
             throw new ParamInvalidException('类目不存在或已被删除');
         }
