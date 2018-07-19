@@ -10,6 +10,7 @@ namespace App\Modules\Merchant;
 
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
@@ -58,12 +59,17 @@ class MerchantCategoryService extends BaseService
     public static function add($name, $icon = '', $status = 1, $pid = 0)
     {
         $category = new MerchantCategory();
+        if($pid==0){
+            $checkPidCategoryName = MerchantCategory::where('name',$name)->where('pid',0)->first();
+            if($checkPidCategoryName){
+                throw new ParamInvalidException('已存在该顶级类目，请勿重复添加');
+            }
+        }
         $category->name = $name;
         $category->icon = $icon;
         $category->status = $status;
         $category->pid = $pid;
         $category->save();
-
         self::clearCache();
 
         return $category;

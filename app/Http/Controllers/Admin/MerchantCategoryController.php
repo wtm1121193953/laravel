@@ -33,7 +33,7 @@ class MerchantCategoryController extends Controller
     public function add()
     {
         $this->validate(request(), [
-            'name' => 'required'
+            'name' => 'required|max:20'
         ]);
         $category = MerchantCategoryService::add(
             request('name'),
@@ -49,7 +49,7 @@ class MerchantCategoryController extends Controller
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
-            'name' => 'required',
+            'name' => 'required|max:20',
         ]);
         $category = MerchantCategoryService::edit(
             request('id'),
