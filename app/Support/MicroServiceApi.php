@@ -83,6 +83,7 @@ class MicroServiceApi
             'params' => $params,
         ];
         $result = MicroServiceApi::post($url, $data);
+        dd($result, $data);
         if($result['code'] !== 0){
             Log::error('短信发送失败', compact('url', 'data', 'result'));
             $message = '发送失败';
@@ -91,7 +92,7 @@ class MicroServiceApi
                 $message = '发送频率超限';
                 $code = ResultCode::SMS_BUSINESS_LIMIT_CONTROL;
             }
-            throw new BaseResponseException($message, $code);
+            Log::error($message, ['code' => $code]);
         }
     }
 }
