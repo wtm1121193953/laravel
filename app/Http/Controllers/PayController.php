@@ -55,7 +55,6 @@ class PayController extends Controller
             if($message['return_code'] === 'SUCCESS' && array_get($message, 'result_code') === 'SUCCESS'){
                 $orderNo = $message['out_trade_no'];
                 $this->paySuccess($orderNo, $message['transaction_id'], $message['total_fee']);
-                SmsService::sendBuySuccessNotify($orderNo);
             } else {
                 return $fail('通信失败，请稍后再通知我');
             }
@@ -158,6 +157,7 @@ class PayController extends Controller
                 Log::error('订单支付成功回调操作失败,失败信息:'.$e->getMessage());
                 return false;
             }
+            SmsService::sendBuySuccessNotify($orderNo);
 
             return true;
         }else if($order->status == Order::STATUS_PAID){
