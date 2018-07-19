@@ -61,12 +61,15 @@
             initForm(){
                 if(this.data){
                     this.form = deepCopy(this.data)
+                    console.log( this.form);
                 }else {
                     this.form = deepCopy(defaultForm)
+                    console.log( this.form,1111);
                 }
             },
             cancel(){
                 this.$emit('cancel');
+                this.resetForm();
             },
             resetForm(){
                 this.$refs.form.resetFields();
@@ -87,6 +90,8 @@
         watch: {
             data(){
                 this.initForm();
+                console.log(this.initForm(),111222)
+
             }
         },
         components: {
