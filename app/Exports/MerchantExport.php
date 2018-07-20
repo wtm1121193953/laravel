@@ -31,11 +31,11 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
     protected $auditStatus;
     protected $operId;
     protected $operName;
-    protected $creatorOperId;
-    protected $creatorOperName;
+//    protected $creatorOperId;
+//    protected $creatorOperName;
     protected $signboardName;
 
-    public function __construct($id = '', $startDate = '',$endDate = '',$signboardName='', $name = '', $auditStatus = [], $operId = '', $operName = '', $creatorOperId = '', $creatorOperName = '')
+    public function __construct($id = '', $startDate = '',$endDate = '',$signboardName='', $name = '', $auditStatus = [], $operId = '', $operName = '')
     {
         $this->id = $id;
         $this->startDate = $startDate;
@@ -45,8 +45,8 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
         $this->operId = $operId;
         $this->operName = $operName;
         $this->signboardName = $signboardName;
-        $this->creatorOperId = $creatorOperId;
-        $this->creatorOperName = $creatorOperName;
+//        $this->creatorOperId = $creatorOperId;
+//        $this->creatorOperName = $creatorOperName;
     }
 
     /**
@@ -65,8 +65,8 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
         }
         $operId = $this->operId;
         $operName = $this->operName;
-        $creatorOperId = $this->creatorOperId;
-        $creatorOperName = $this->creatorOperName;
+//        $creatorOperId = $this->creatorOperId;
+//        $creatorOperName = $this->creatorOperName;
         $signboardName = $this->signboardName;
 
         $operIds = null;
@@ -77,20 +77,20 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
                 ->pluck('id');
         }
 
-        $createOperIds=null;
-        if($creatorOperName){
-            $createOperIds = Oper::where('name', 'like', "%$creatorOperName%")
-                ->select('id')
-                ->get()
-                ->pluck('id');
-        }
+//        $createOperIds=null;
+//        if($creatorOperName){
+//            $createOperIds = Oper::where('name', 'like', "%$creatorOperName%")
+//                ->select('id')
+//                ->get()
+//                ->pluck('id');
+//        }
 
         $query = MerchantService::getList([
             'id' => $id,
             'name' => $name,
             'signboardName' => $signboardName,
             'operId' => $operIds ?? $operId,
-            'creatorOperId' => $createOperIds ?? $creatorOperId,
+//            'creatorOperId' => $createOperIds ?? $creatorOperId,
             'auditStatus' => $auditStatus,
             'startCreatedAt' => $startDate,
             'endCreatedAt' => $endDate,
@@ -111,8 +111,8 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             $data->id,
             $data->operId = $data->oper_id > 0 ? $data->oper_id : $data->audit_oper_id,
             Oper::where('id', $data->oper_id > 0 ? $data->oper_id : $data->audit_oper_id)->value('name'),
-            $data->creator_oper_id,
-            Oper::where('id', $data->creator_oper_id)->value('name'),
+//            $data->creator_oper_id,
+//            Oper::where('id', $data->creator_oper_id)->value('name'),
             $data->name,
             $data->signboard_name,
             $this->getCategoryPathName($data->merchant_category_id),
@@ -147,8 +147,8 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             '商户ID',
             '激活运营中心ID',
             '激活运营中心名称',
-            '录入运营中心ID',
-            '录入运营中心名称',
+//            '录入运营中心ID',
+//            '录入运营中心名称',
             '商户名称',
             '商户招牌名',
             '行业',

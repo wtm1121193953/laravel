@@ -222,6 +222,8 @@
                     this.list = data.list;
                     this.total = data.total;
                     this.tableLoading = false;
+                }).finally(() => {
+                    this.tableLoading = false;
                 })
             },
             detail(scope,type){
