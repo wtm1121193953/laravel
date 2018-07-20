@@ -28,6 +28,13 @@ let defaultThemes = {
     },
 };
 
+let filterKeywordCategoryList = [
+    {categoryName: '团购商品名称', categoryNumber: 1},
+    {categoryName: '单品名称', categoryNumber: 2},
+    {categoryName: '单品分类名称', categoryNumber: 4},
+];
+
+
 // 去除菜单url中的前缀: /admin
 let trimMenuUrlPrefix = function(menus, prefix = '/admin'){
     menus.forEach((menu) => {
@@ -83,6 +90,7 @@ export default new Vuex.Store({
         user: null,
         menus: [],
         currentMenu: null,
+        filterKeywordCategoryList: deepCopy(filterKeywordCategoryList),
     },
     mutations: {
         setGlobalLoading(state, loading){

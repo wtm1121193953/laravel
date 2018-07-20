@@ -57,16 +57,10 @@ Route::prefix('admin')
     Route::get('merchant/pool', 'MerchantPoolController@getList');
     Route::get('merchant/pool/detail', 'MerchantPoolController@detail');
 
-    Route::get('settings', 'SettingController@getList');
-    Route::post('setting/edit', 'SettingController@edit');
-    Route::get('setting/getCreditRulesList', 'SettingController@getCreditRulesList');
-    Route::post('setting/setCreditRules', 'SettingController@setCreditRules');
-    Route::post('setting/setArticle', 'SettingController@setArticle');
-    Route::get('setting/getArticle', 'SettingController@getArticle');
-
     Route::group([], base_path('routes/api/admin/goods.php'));
     Route::group([], base_path('routes/api/admin/oper.php'));
     Route::group([], base_path('routes/api/admin/oper_account.php'));
     Route::group([], base_path('routes/api/admin/miniprogram.php'));
+    Route::group([], base_path('routes/api/admin/setting.php'));
 
 });
