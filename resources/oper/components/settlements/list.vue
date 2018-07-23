@@ -72,11 +72,11 @@
                 :total="total"
         />
 
-        <el-dialog :visible.sync="isShowSettlementDetail">
+        <el-dialog :visible.sync="isShowSettlementDetail" width="60%">
             <settlement-detail :scope="settlement"/>
         </el-dialog>
 
-        <el-dialog :visible.sync="isShowInvoice">
+        <el-dialog :visible.sync="isShowInvoice"  >
             <invoice :scope="settlement" @cancel="isShowInvoice = false" @save="addInvoice"/>
         </el-dialog>
 
