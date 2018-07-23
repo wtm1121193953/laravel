@@ -149,7 +149,7 @@
                 }else if(this.currentMenu){
                     router.push('/');
                 }else {
-                    router.push('/welcome');
+                    router.push('welcome');
                 }
             },
             doLogin(){
