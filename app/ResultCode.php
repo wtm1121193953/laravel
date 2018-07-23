@@ -57,4 +57,5 @@ class ResultCode
     const WECHAT_APPID_INVALID = 70011; // 微信appid不存在
     const MINIPROGRAM_PAGE_NOT_EXIST = 70020; // 微信小程序页面不存在
     const MINIPROGRAM_CONFIG_NOT_EXIST = 70021; // 微信小程序配置不存在
+    const MINIPROGRAM_CONFIG_ALREADY_EXIST = 70022; // 微信小程序配置已存在
 }

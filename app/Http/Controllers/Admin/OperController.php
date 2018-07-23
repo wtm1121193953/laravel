@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Area\Area;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperAccount;
 use App\Modules\Oper\OperMiniprogram;
+use App\Modules\Oper\OperMiniprogramService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -56,7 +56,7 @@ class OperController extends Controller
         ]);
         $oper = Oper::findOrFail(request('id'));
         $oper->account = OperAccount::where('oper_id', $oper->id)->first() ?: null;
-        $oper->miniprogram = OperMiniprogram::where('oper_id', $oper->id)->first() ?: null;
+        $oper->miniprogram = OperMiniprogramService::getByOperId($oper->id) ?: null;
         return Result::success($oper);
     }
 
