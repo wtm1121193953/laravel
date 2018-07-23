@@ -101,6 +101,7 @@ class OrderController extends Controller
         $startTime = request('startTime');
         $endTime = request('endTime');
         $type = request('type');
+        $status = request('status');
 
         $query = Order::where('oper_id', request()->get('current_user')->oper_id)
             ->when($orderNo, function(Builder $query) use ($orderNo){
@@ -112,19 +113,21 @@ class OrderController extends Controller
             ->when($merchantId, function (Builder $query) use ($merchantId){
                 $query->where('merchant_id', $merchantId);
             })
-            ->when($type, function (Builder $query) use ($type){
-                $query->where('type', $type);
-            })
             ->where(function(Builder $query){
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function(Builder $query){
                         $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
                             ->whereIn('status', [4, 6, 7]);
-                    })
-                    ->orWhere(function(Builder $query){
+                    })->orWhere(function(Builder $query){
                         $query->where('type', Order::TYPE_DISHES);
                     });
+            })->when($status, function (Builder $query) use ($status){
+                $query->where('status', $status);
+            })->when($type, function (Builder $query) use ($type){
+                $query->where('type', $type);
             });
+
+
 
         if($timeType == 'payTime'){
             $timeColumn = 'pay_time';

@@ -11,6 +11,7 @@ namespace App\Modules\FilterKeyword;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\DataNotFoundException;
 
 class FilterKeywordService extends BaseService
 {
@@ -77,7 +78,7 @@ class FilterKeywordService extends BaseService
             $categoryNumber = $categoryNumber | $item;
         }
 
-        $filterKeyword = FilterKeyword::findOrFail($id);
+        $filterKeyword = self::findOrFail($id);
         $filterKeyword->keyword = $keyword;
         $filterKeyword->status = $status;
         $filterKeyword->category_number = $categoryNumber;
@@ -92,7 +93,7 @@ class FilterKeywordService extends BaseService
      */
     public static function changeStatus($id)
     {
-        $filterKeyword = FilterKeyword::findOrFail($id);
+        $filterKeyword = self::findOrFail($id);
         $filterKeyword->status = $filterKeyword->status == 1 ? 2 : 1;
         $filterKeyword->save();
 
@@ -106,7 +107,10 @@ class FilterKeywordService extends BaseService
      */
     public static function delete($id)
     {
-        $filterKeyword = FilterKeyword::findOrFail($id);
+        $filterKeyword = FilterKeyword::find($id);
+        if(empty($filterKeyword)){
+            throw new DataNotFoundException('关键字不存在或已删除');
+        }
         $filterKeyword->delete();
 
         return $filterKeyword;
@@ -162,5 +166,14 @@ class FilterKeywordService extends BaseService
             }
         }
         return $keywordArray;
+    }
+
+    private static function findOrFail($id)
+    {
+        $filterKeyword = FilterKeyword::find($id);
+        if(empty($filterKeyword)){
+            throw new DataNotFoundException('关键字不存在或已删除');
+        }
+        return $filterKeyword;
     }
 }
