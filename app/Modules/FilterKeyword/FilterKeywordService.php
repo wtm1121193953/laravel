@@ -51,7 +51,7 @@ class FilterKeywordService extends BaseService
             ->paginate($pageSize);
 
         $data->each(function ($item) {
-            $category = self::getFilterKeywordCategoryArray($item->category_number);
+            $category = self::getFilterKeywordCategoriesByCategoryNumber($item->category_number);
             $item->category = $category;
         });
 
@@ -115,13 +115,13 @@ class FilterKeywordService extends BaseService
     /**
      * 通过分类类型的值，来判断name中是否包含非法关键字
      * @param $name
-     * @param $number
+     * @param $category
      */
-    public static function filterKeywordByCategory($name, $number)
+    public static function filterKeywordByCategory($name, $category)
     {
         $regex = "/\/|\~|\!|\@|\#|\\$|\%|\^|\&|\*|\(|\)|\（|\）|\_|\+|\{|\}|\:|\：|\<|\>|\?|\？|\[|\]|\,|\，|\.|\/|\;|\'|\`|\-|\=|\\\|\||\s+/";
         $name = preg_replace($regex,"",$name);
-        $keywordArray = self::getFilterKeywordArray($number);
+        $keywordArray = self::getFilterKeywordsByCategory($category);
         foreach ($keywordArray as $value) {
             $position = mb_strpos($name, $value);
             if ($position !== false) {
@@ -135,7 +135,7 @@ class FilterKeywordService extends BaseService
      * @param $categoryNumber
      * @return array
      */
-    private static function getFilterKeywordCategoryArray($categoryNumber)
+    private static function getFilterKeywordCategoriesByCategoryNumber($categoryNumber)
     {
         $category = [];
         for ($i = 0; $i <= 2; $i++) {
@@ -149,15 +149,15 @@ class FilterKeywordService extends BaseService
 
     /**
      * 通过分类类型的值，获取适用于该分类的关键词的数组
-     * @param $number
+     * @param $category
      * @return array
      */
-    private static function getFilterKeywordArray($number)
+    private static function getFilterKeywordsByCategory($category)
     {
         $keywordArray = [];
         $data = FilterKeyword::where('status', FilterKeyword::STATUS_ON)->get();
         foreach ($data as $item) {
-            if ($number == ($item->category_number & $number)) {
+            if ($category == ($item->category_number & $category)) {
                 array_push($keywordArray, $item->keyword);
             }
         }

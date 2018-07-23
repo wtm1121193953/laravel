@@ -81,7 +81,7 @@ class DishesGoodsController extends Controller
         if(request('market_price', 0)<=request('sale_price', 0)){
             throw new BaseResponseException('市场价必须大于销售价！');
         }
-        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::DISHES_GOODS_NAME_CATEGORY_NUMBER);
+        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::CATEGORY_DISHES_GOODS_NAME);
 
         $dishesGoods = new DishesGoods();
         $dishesGoods->oper_id = request()->get('current_user')->oper_id;
@@ -122,7 +122,7 @@ class DishesGoodsController extends Controller
         if(request('market_price', 0)<=request('sale_price', 0)){
             throw new BaseResponseException('市场价必须大于销售价！');
         }
-        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::DISHES_GOODS_NAME_CATEGORY_NUMBER);
+        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::CATEGORY_DISHES_GOODS_NAME);
 
         $dishesGoods->name = request('name');
         $dishesGoods->market_price = request('market_price', 0);

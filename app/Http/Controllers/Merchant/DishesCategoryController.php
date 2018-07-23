@@ -58,7 +58,7 @@ class DishesCategoryController extends Controller
         $this->validate(request(), [
             'name' => 'required',
         ]);
-        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::DISHES_CATEGORY_NAME_CATEGORY_NUMBER);
+        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::CATEGORY_DISHES_CATEGORY_NAME);
 
         $dishesCategory = new DishesCategory();
         $dishesCategory->oper_id = request()->get('current_user')->oper_id;
@@ -81,7 +81,7 @@ class DishesCategoryController extends Controller
             'id' => 'required|integer|min:1',
             'name' => 'required',
         ]);
-        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::DISHES_CATEGORY_NAME_CATEGORY_NUMBER);
+        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::CATEGORY_DISHES_CATEGORY_NAME);
 
         $dishesCategory = DishesCategory::findOrFail(request('id'));
         $dishesCategory->name = request('name');
