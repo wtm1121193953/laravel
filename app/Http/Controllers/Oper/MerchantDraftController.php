@@ -48,7 +48,7 @@ class MerchantDraftController extends Controller
 
         $data->each(function ($item){
             if ($item->merchant_category_id){
-                $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
+                $item->categoryPath = array_reverse(MerchantCategory::getCategoryPath($item->merchant_category_id));
             }
             $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
             $item->account = MerchantAccount::where('merchant_id', $item->id)->first();

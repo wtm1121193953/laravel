@@ -46,8 +46,12 @@ return [
             'min' => '密码不能少于 :min 位',
             'max' => '密码不能多于 :max 位',
         ],
+
         'newPassword' => [
             'required' => '请输入新密码',
+            'between' => '请输入 :min 到 :max 位的新密码',
+            'min' => '密码不能少于 :min 位',
+            'max' => '密码不能多于 :max 位',
         ],
         'reNewPassword' => [
             'required' => '请确认新密码',

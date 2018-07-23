@@ -105,7 +105,7 @@ class MerchantService extends BaseService
             $data = $query->paginate();
 
             $data->each(function ($item) {
-                $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
+                $item->categoryPath = array_reverse(MerchantCategory::getCategoryPath($item->merchant_category_id));
                 $item->business_time = json_decode($item->business_time, 1);
                 $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
                 $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
