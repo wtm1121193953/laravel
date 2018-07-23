@@ -6,16 +6,16 @@
         </div>
         <el-col style="margin-top: 20px">
             <el-form label-width="150px" ref="form">
-                <template v-if="parseInt(form.invoice_type) === 1">
-                    <el-form-item label="上传电子发票：">
+                <template v-if="parseInt(form.invoice_type) === 1" >
+                    <el-form-item label="上传电子发票：" required>
                         <image-upload v-model="form.invoice_pic_url"/>
                     </el-form-item>
                 </template>
                 <template v-else>
-                    <el-form-item prop="logistics_name" label="物流公司">
+                    <el-form-item prop="logistics_name" label="物流公司"  required>
                         <el-input v-model="form.logistics_name" style="width: 400px"/>
                     </el-form-item>
-                    <el-form-item prop="logistics_no" label="物流单号">
+                    <el-form-item prop="logistics_no" label="物流单号"  required>
                         <el-input v-model="form.logistics_no" style="width: 400px"/>
                     </el-form-item>
                 </template>
