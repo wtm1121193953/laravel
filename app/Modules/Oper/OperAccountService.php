@@ -71,6 +71,7 @@ class OperAccountService extends BaseService
      * @param $id
      * @param $operId
      * @param $password
+     * @return OperAccount
      */
     public static function editAccount($id, $operId, $password)
     {
