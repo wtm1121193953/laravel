@@ -9,13 +9,10 @@
 namespace App\Exports;
 
 
-use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -128,7 +125,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
      */
     public function getCategoryPathName($merchant_category_id)
     {
-        $categoryPath = MerchantCategory::getCategoryPath($merchant_category_id);
+        $categoryPath = MerchantCategoryService::getCategoryPath($merchant_category_id);
         $categoryPathName = '';
         foreach ($categoryPath as $item){
             $categoryPathName = $categoryPathName . $item['name'] . ' ';

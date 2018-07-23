@@ -9,11 +9,10 @@
 namespace App\Http\Controllers\Oper;
 
 
-use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
-use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantCategoryService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -41,7 +40,7 @@ class MerchantPoolController extends Controller
 
         $data->each(function ($item){
             if ($item->merchant_category_id){
-                $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
+                $item->categoryPath = MerchantCategoryService::getCategoryPath($item->merchant_category_id);
             }
             $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
         });
@@ -60,7 +59,7 @@ class MerchantPoolController extends Controller
         $id = request('id');
         $merchant = Merchant::findOrFail($id);
         if ($merchant->merchant_category_id){
-            $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
+            $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
         }
         $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : [];
         return Result::success($merchant);

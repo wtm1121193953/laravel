@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\Oper;
 
-use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
-use App\Modules\Merchant\MerchantAudit;
-use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Merchant\MerchantDraft;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
@@ -48,7 +46,7 @@ class MerchantDraftController extends Controller
 
         $data->each(function ($item){
             if ($item->merchant_category_id){
-                $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
+                $item->categoryPath = MerchantCategoryService::getCategoryPath($item->merchant_category_id);
             }
             $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
             $item->account = MerchantAccount::where('merchant_id', $item->id)->first();
@@ -65,7 +63,7 @@ class MerchantDraftController extends Controller
     {
         $id = request('id');
         $merchantDraft = MerchantDraft::findOrFail($id);
-        $merchantDraft->categoryPath = $merchantDraft->merchant_category_id ? MerchantCategory::getCategoryPath($merchantDraft->merchant_category_id) : [];
+        $merchantDraft->categoryPath = $merchantDraft->merchant_category_id ? MerchantCategoryService::getCategoryPath($merchantDraft->merchant_category_id) : [];
         $merchantDraft->account = MerchantAccount::where('merchant_id', $merchantDraft->id)->first();
         return Result::success($merchantDraft);
     }
