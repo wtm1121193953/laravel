@@ -94,18 +94,16 @@ class AreaSync extends Command
 
                 $areas = $city['districts'];
                 foreach ($areas as $area) {
-                    if ($area['level'] != 'street') {
-                        $model = new Area();
-                        $model->area_id = $area['adcode'];
-                        $model->name = $area['name'];
-                        $model->path = 3;
-                        $model->area_code = empty($area['citycode']) ? '' : $area['citycode'];
-                        $model->spell = strtoupper(pinyin_permalink($model->name, ''));
-                        $model->letter = strtoupper(pinyin_abbr($model->name));
-                        $model->first_letter = substr($model->letter, 0, 1);
-                        $model->parent_id = $city['adcode'];
-                        $model->save();
-                    }
+                    $model = new Area();
+                    $model->area_id = $area['adcode'];
+                    $model->name = $area['name'];
+                    $model->path = 3;
+                    $model->area_code = empty($area['citycode']) ? '' : $area['citycode'];
+                    $model->spell = strtoupper(pinyin_permalink($model->name, ''));
+                    $model->letter = strtoupper(pinyin_abbr($model->name));
+                    $model->first_letter = substr($model->letter, 0, 1);
+                    $model->parent_id = $city['adcode'];
+                    $model->save();
                 }
             }
         }

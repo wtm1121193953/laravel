@@ -119,7 +119,7 @@ class FilterKeywordService extends BaseService
      */
     public static function filterKeywordByCategory($name, $category)
     {
-        $regex = "/\/|\~|\!|\@|\#|\\$|\%|\^|\&|\*|\(|\)|\（|\）|\_|\+|\{|\}|\:|\：|\<|\>|\?|\？|\[|\]|\,|\，|\.|\/|\;|\'|\`|\-|\=|\\\|\||\s+/";
+        $regex = "/\/|\~|\!|\@|\#|\\$|\%|\^|\&|\*|\(|\)|\（|\）|\_|\+|\{|\}|\:|\：|\<|\>|\?|\？|\[|\]|\,|\，|\.|\。|\、|\！|\·|\￥|\¥|\/|\;|\'|\`|\-|\=|\\\|\||\s+/";
         $name = preg_replace($regex,"",$name);
         $keywordArray = self::getFilterKeywordsByCategory($category);
         foreach ($keywordArray as $value) {
