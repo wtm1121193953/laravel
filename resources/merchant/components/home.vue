@@ -37,7 +37,7 @@
             </el-container>
 
             <!-- 展示商户信息 -->
-            <el-dialog :visible.sync="showMerchantInfo" title="商户信息">
+            <el-dialog :visible.sync="showMerchantInfo" title="商户资料">
                 <el-form :model="showMerchantInfoForm" label-width="100px" ref="showMerchantInfoForm" :rules="showMerchantInfoFormRules">
                     <el-form-item label="商户ID:">{{showMerchantInfoForm.id}}</el-form-item>
                     <el-form-item label="商户名称:">{{showMerchantInfoForm.name}}</el-form-item>
