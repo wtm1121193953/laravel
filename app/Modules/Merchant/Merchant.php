@@ -5,6 +5,15 @@ namespace App\Modules\Merchant;
 use App\BaseModel;
 use App\Modules\Area\Area;
 
+/**
+ * Class Merchant
+ * @package App\Modules\Merchant
+ *
+ * @property int oper_id
+ * @property int merchant_category_id
+ * @property int creator_oper_id
+ * @property int audit_oper_id
+ */
 class Merchant extends BaseModel
 {
     //
