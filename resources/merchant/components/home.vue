@@ -244,10 +244,14 @@
                 }
             },
             modifyPassword(){
-                api.post('/self/modifyPassword', this.modifyPasswordForm).then(data => {
-                    this.$message.success('修改密码成功')
-                    this.showModifyPasswordForm = false;
-                    this.$refs.modifyPasswordForm.resetFields();
+                this.$refs.modifyPasswordForm.validate(valid => {
+                    if(valid){
+                        api.post('/self/modifyPassword', this.modifyPasswordForm).then(data => {
+                            this.$message.success('修改密码成功')
+                            this.showModifyPasswordForm = false;
+                            this.$refs.modifyPasswordForm.resetFields();
+                        })
+                    }
                 })
             },
         },
