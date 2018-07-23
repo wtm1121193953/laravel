@@ -26,7 +26,7 @@
             <el-table-column prop="name" label="单品名称"/>
             <el-table-column prop="sale_price" label="销售价 ¥"/>
             <el-table-column prop="dishes_category.name" label="分类名称"/>
-            <el-table-column prop="detail_image" label="商品图片">
+            <el-table-column prop="detail_image" label="单品图片">
                 <template slot-scope="scope">
                     <div class="detail_image" style="height: 50px; width: 50px" v-viewer @click="previewImage($event)">
                         <img class="img" :src="scope.row.detail_image" width="100%" height="100%" />

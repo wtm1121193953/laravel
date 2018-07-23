@@ -10,11 +10,8 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Merchant\Merchant;
-use App\Modules\Merchant\MerchantCategoryService;
-use App\Modules\Oper\Oper;
+use App\Modules\Merchant\MerchantPoolService;
 use App\Result;
-use Illuminate\Database\Eloquent\Builder;
 
 class MerchantPoolController extends Controller
 {
@@ -25,17 +22,7 @@ class MerchantPoolController extends Controller
     public function getList()
     {
         $keyword = request('keyword');
-        $data = Merchant::where('audit_oper_id', 0)
-            ->when($keyword, function(Builder $query) use ($keyword){
-                $query->where('name', 'like', "%$keyword%");
-            })
-            ->orderByDesc('id')
-            ->paginate();
-        $data->each(function ($item){
-            $item->categoryPath = MerchantCategoryService::getCategoryPath($item->merchant_category_id);
-            $item->creatorOperName = Oper::where('id', $item->creator_oper_id)->value('name');
-        });
-
+        $data = MerchantPoolService::getList($keyword);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -47,13 +34,8 @@ class MerchantPoolController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-        $merchant = Merchant::findOrFail(request('id'));
-        $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
-        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
-        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
-        if ($oper){
-            $merchant->operAddress = $oper->province.$oper->city.$oper->area.$oper->address;
-        }
+        $id = request('id');
+        $merchant = MerchantPoolService::detail($id);
         return Result::success($merchant);
     }
 

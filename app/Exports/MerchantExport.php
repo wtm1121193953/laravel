@@ -12,6 +12,7 @@ namespace App\Exports;
 use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperBizMember;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -112,6 +113,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
 //            Oper::where('id', $data->creator_oper_id)->value('name'),
             $data->name,
             $data->signboard_name,
+            $this->getOperBizMemberName($data->operId,$data->oper_biz_member_code),
             $this->getCategoryPathName($data->merchant_category_id),
             $data->city . ' ' . $data->area,
             ['待审核', '审核通过', '审核不通过', '待审核(重新提交)'][$data->audit_status],
@@ -134,6 +136,16 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
     }
 
     /**
+     * 获取业务员
+     * @param $oper_id
+     * @param $oper_biz_member_code
+     * @return string
+     */
+    public function getOperBizMemberName($oper_id,$oper_biz_member_code){
+        return OperBizMember::where('oper_id', $oper_id)->where('code', $oper_biz_member_code)->value('name') ?: '';
+    }
+
+    /**
      * 添加表头
      * @return array
      */
@@ -148,6 +160,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
 //            '录入运营中心名称',
             '商户名称',
             '商户招牌名',
+            '业务员',
             '行业',
             '城市',
             '审核状态',

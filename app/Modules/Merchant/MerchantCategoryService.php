@@ -110,7 +110,7 @@ class MerchantCategoryService extends BaseService
 
         if($hadExsitPid==0){
             $AddCategoryPid = MerchantCategory::where('name',$name)->value('pid');
-            if( $hadExsitPid===$AddCategoryPid){
+            if( $hadExsitPid===$AddCategoryPid &&$category->name!=$name){
                 throw new ParamInvalidException('顶级分类不能作为子类目');
             }
         }else{

@@ -2,7 +2,7 @@
     <el-row>
         <el-col :span="22">
             <el-form :model="form" label-width="120px" :rules="formRules" ref="form" @submit.native.prevent>
-                <el-form-item prop="name" label="商品名称">
+                <el-form-item prop="name" label="单品名称">
                     <el-input v-model="form.name"/>
                 </el-form-item>
                 <el-form-item prop="market_price" label="市场价" required>
@@ -25,7 +25,7 @@
                     <image-upload v-model="form.detail_image" :limit="1" :width="imageWidth" :height="imageHeight"></image-upload>
                     <span>图片尺寸：{{imageWidth}}px * {{imageHeight}}px</span>
                 </el-form-item>
-                <el-form-item prop="intro" label="商品简介">
+                <el-form-item prop="intro" label="单品简介">
                     <el-input type="textarea" v-model="form.intro"></el-input>
                 </el-form-item>
                 <el-form-item prop="status" label="状态">
