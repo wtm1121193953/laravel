@@ -2,20 +2,20 @@
     <page title="财务管理" v-loading="isLoading">
         <el-form size="small" :model="query" inline>
             <el-form-item label="商户">
-                <el-select v-model="query.merchantId" filterable>
+                <el-select v-model="query.merchantId" filterable clearable>
                     <el-option label="全部" value=""/>
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
             </el-form-item>
             <el-form-item label="状态">
-                <el-select v-model="query.status">
+                <el-select v-model="query.status" clearable>
                     <el-option label="全部" value=""/>
                     <el-option label="未打款" :value="1"/>
                     <el-option label="已打款" :value="2"/>
                 </el-select>
             </el-form-item>
             <el-form-item label="结算金额为0的数据">
-                <el-select v-model="query.showAmount">
+                <el-select v-model="query.showAmount" clearable>
                     <el-option label="显示" value=""/>
                     <el-option label="不显示" :value="1"/>
                 </el-select>
