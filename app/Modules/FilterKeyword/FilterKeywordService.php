@@ -51,13 +51,7 @@ class FilterKeywordService extends BaseService
             ->paginate($pageSize);
 
         $data->each(function ($item) {
-            $category = [];
-            for ($i = 0; $i <= 2; $i++) {
-                $pair = pow(2, $i);
-                if ($pair == ($item->category_number & $pair)){
-                    array_push($category, $pair);
-                }
-            }
+            $category = self::getFilterKeywordCategoryArray($item->category_number);
             $item->category = $category;
         });
 
@@ -116,5 +110,57 @@ class FilterKeywordService extends BaseService
         $filterKeyword->delete();
 
         return $filterKeyword;
+    }
+
+    /**
+     * 通过分类类型的值，来判断name中是否包含非法关键字
+     * @param $name
+     * @param $number
+     */
+    public static function filterKeywordByCategory($name, $number)
+    {
+        $regex = "/\/|\~|\!|\@|\#|\\$|\%|\^|\&|\*|\(|\)|\（|\）|\_|\+|\{|\}|\:|\：|\<|\>|\?|\？|\[|\]|\,|\，|\.|\/|\;|\'|\`|\-|\=|\\\|\||\s+/";
+        $name = preg_replace($regex,"",$name);
+        $keywordArray = self::getFilterKeywordArray($number);
+        foreach ($keywordArray as $value) {
+            $position = mb_strpos($name, $value);
+            if ($position !== false) {
+                throw new BaseResponseException('名称中包含非法关键词「'. $value .'」');
+            }
+        }
+    }
+
+    /**
+     * 通过分类类型的总值，获取该关键词分类适用的数组
+     * @param $categoryNumber
+     * @return array
+     */
+    private static function getFilterKeywordCategoryArray($categoryNumber)
+    {
+        $category = [];
+        for ($i = 0; $i <= 2; $i++) {
+            $pair = pow(2, $i);
+            if ($pair == ($categoryNumber & $pair)){
+                array_push($category, $pair);
+            }
+        }
+        return $category;
+    }
+
+    /**
+     * 通过分类类型的值，获取适用于该分类的关键词的数组
+     * @param $number
+     * @return array
+     */
+    private static function getFilterKeywordArray($number)
+    {
+        $keywordArray = [];
+        $data = FilterKeyword::where('status', FilterKeyword::STATUS_ON)->get();
+        foreach ($data as $item) {
+            if ($number == ($item->category_number & $number)) {
+                array_push($keywordArray, $item->keyword);
+            }
+        }
+        return $keywordArray;
     }
 }

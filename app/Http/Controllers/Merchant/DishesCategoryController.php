@@ -7,6 +7,8 @@ use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesCategory;
 use App\Modules\Dishes\DishesGoods;
+use App\Modules\FilterKeyword\FilterKeyword;
+use App\Modules\FilterKeyword\FilterKeywordService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -56,6 +58,8 @@ class DishesCategoryController extends Controller
         $this->validate(request(), [
             'name' => 'required',
         ]);
+        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::DISHES_CATEGORY_NAME_CATEGORY_NUMBER);
+
         $dishesCategory = new DishesCategory();
         $dishesCategory->oper_id = request()->get('current_user')->oper_id;
         $dishesCategory->merchant_id = request()->get('current_user')->merchant_id;
@@ -77,6 +81,8 @@ class DishesCategoryController extends Controller
             'id' => 'required|integer|min:1',
             'name' => 'required',
         ]);
+        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::DISHES_CATEGORY_NAME_CATEGORY_NUMBER);
+
         $dishesCategory = DishesCategory::findOrFail(request('id'));
         $dishesCategory->name = request('name');
         $dishesCategory->status = request('status', 1);

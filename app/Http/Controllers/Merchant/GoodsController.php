@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Merchant;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\FilterKeyword\FilterKeyword;
+use App\Modules\FilterKeyword\FilterKeywordService;
 use App\Modules\Goods\Goods;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -75,6 +77,7 @@ class GoodsController extends Controller
         if(request('market_price', 0)<=request('price', 0)){
             throw new BaseResponseException('市场价必须大于销售价！');
         }
+        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::GOODS_NAME_CATEGORY_NUMBER);
 
         $goods->oper_id = request()->get('current_user')->oper_id;
         $goods->merchant_id = request()->get('current_user')->merchant_id;
@@ -119,6 +122,7 @@ class GoodsController extends Controller
         if(request('market_price', 0)<=request('price', 0)){
             throw new BaseResponseException('市场价必须大于销售价！');
         }
+        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::GOODS_NAME_CATEGORY_NUMBER);
 
         $goods->oper_id = request()->get('current_user')->oper_id;
         $goods->merchant_id = request()->get('current_user')->merchant_id;

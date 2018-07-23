@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Merchant;
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
+use App\Modules\FilterKeyword\FilterKeyword;
+use App\Modules\FilterKeyword\FilterKeywordService;
 use App\Modules\Goods\Goods;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -79,6 +81,7 @@ class DishesGoodsController extends Controller
         if(request('market_price', 0)<=request('sale_price', 0)){
             throw new BaseResponseException('市场价必须大于销售价！');
         }
+        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::DISHES_GOODS_NAME_CATEGORY_NUMBER);
 
         $dishesGoods = new DishesGoods();
         $dishesGoods->oper_id = request()->get('current_user')->oper_id;
@@ -116,10 +119,10 @@ class DishesGoodsController extends Controller
         if (count($dishesGoodsList) > 0){
             throw new BaseResponseException('商品名称重复！');
         }
-
         if(request('market_price', 0)<=request('sale_price', 0)){
             throw new BaseResponseException('市场价必须大于销售价！');
         }
+        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::DISHES_GOODS_NAME_CATEGORY_NUMBER);
 
         $dishesGoods->name = request('name');
         $dishesGoods->market_price = request('market_price', 0);
