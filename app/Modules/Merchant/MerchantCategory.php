@@ -19,7 +19,7 @@ class MerchantCategory extends BaseModel
         }else {
             $parentPath = [];
         }
-        array_unshift($parentPath, $category);
+        array_push($parentPath, $category);
         return $parentPath;
     }
 
