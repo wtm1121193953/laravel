@@ -7,9 +7,9 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
-use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Merchant\MerchantDraft;
 use App\Modules\Oper\Oper;
 use Illuminate\Support\Collection;
@@ -77,7 +77,7 @@ class MerchantController extends Controller
 
         $data->each(function ($item){
             if ($item->merchant_category_id){
-                $item->categoryPath = MerchantCategory::getCategoryPath($item->merchant_category_id);
+                $item->categoryPath = MerchantCategoryService::getCategoryPath($item->merchant_category_id);
             }
             $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
             $item->account = MerchantAccount::where('merchant_id', $item->id)->first();
@@ -130,7 +130,7 @@ class MerchantController extends Controller
         ]);
         $id = request('id');
         $merchant = Merchant::findOrFail($id);
-        $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
+        $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
         $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
 
         // 如下是查看 中所需数据
@@ -307,7 +307,7 @@ class MerchantController extends Controller
         $merchant->status = request('status');
         $merchant->save();
 
-        $merchant->categoryPath = MerchantCategory::getCategoryPath($merchant->merchant_category_id);
+        $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
         $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
 
         return Result::success($merchant);

@@ -10,7 +10,6 @@ namespace App\Modules\Merchant;
 
 
 use App\BaseService;
-use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
@@ -83,6 +82,15 @@ class MerchantCategoryService extends BaseService
         self::clearCache();
 
         return $category;
+    }
+
+    /**
+     * 清除类目缓存
+     */
+    public static function clearCache()
+    {
+        Cache::forget('merchant_category_tree');
+        Cache::forget('merchant_category_tree_with_disabled');
     }
 
     /**
@@ -203,15 +211,6 @@ class MerchantCategoryService extends BaseService
     }
 
     /**
-     * 清除类目缓存
-     */
-    public static function clearCache()
-    {
-        Cache::forget('merchant_category_tree');
-        Cache::forget('merchant_category_tree_with_disabled');
-    }
-
-    /**
      * 获取分类子集的id数组
      * @param $categoryId
      * @return bool|\Illuminate\Support\Collection
@@ -228,4 +227,22 @@ class MerchantCategoryService extends BaseService
             return false;
         }
     }
+
+    /**
+     * 获取分类的路径(从顶级分类到当前分类)
+     * @param $id
+     * @return array
+     */
+    public static function getCategoryPath($id)
+    {
+        $category = MerchantCategory::find($id);
+        if($category->pid > 0 && $category->pid != $id){
+            $parentPath = self::getCategoryPath($category->pid);
+        }else {
+            $parentPath = [];
+        }
+        array_push($parentPath, $category);
+        return $parentPath;
+    }
+
 }

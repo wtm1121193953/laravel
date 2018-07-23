@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 /**
  * 基础模型
@@ -32,6 +33,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method int increment($column, $amount = 1, array $extra = [])
  * @method
  * @mixin SoftDeletes
+ *
+ * @property int id
+ * @property Carbon created_at
+ * @property Carbon updated_at
  */
 abstract class BaseModel extends Model
 {
