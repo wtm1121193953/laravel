@@ -131,6 +131,7 @@ class MerchantController extends Controller
         $id = request('id');
         $merchant = Merchant::findOrFail($id);
         $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
+        $merchant->categoryPathOnlyEnable = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id, true);
         $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
 
         // 如下是查看 中所需数据

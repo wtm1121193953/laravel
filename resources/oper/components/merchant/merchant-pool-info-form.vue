@@ -140,9 +140,9 @@
                         this.form[key] = this.data[key];
                     }
                     let merchant_category_array = [];
-                    if(data.merchant_category_id){
-                        data.categoryPath.forEach(function (item) {
-                            merchant_category_array.unshift(parseInt(item.id));
+                    if(data.merchant_category_id && data.categoryPathOnlyEnable){
+                        data.categoryPathOnlyEnable.forEach(function (item) {
+                            merchant_category_array.push(parseInt(item.id));
                         })
                     }
                     this.form.merchant_category = merchant_category_array;

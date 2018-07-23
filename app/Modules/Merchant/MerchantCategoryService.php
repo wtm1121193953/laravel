@@ -157,6 +157,10 @@ class MerchantCategoryService extends BaseService
         $category->status = $status;
         $category->save();
 
+        if ($category->pid == 0) {
+            MerchantCategory::where('pid', $category->id)->update(['status' => $status]);
+        }
+
         self::clearCache();
 
         return $category;
@@ -231,17 +235,24 @@ class MerchantCategoryService extends BaseService
     /**
      * 获取分类的路径(从顶级分类到当前分类)
      * @param $id
+     * @param bool $onlyEnabled
      * @return array
      */
-    public static function getCategoryPath($id)
+    public static function getCategoryPath($id, $onlyEnabled = false)
     {
-        $category = MerchantCategory::find($id);
-        if($category->pid > 0 && $category->pid != $id){
-            $parentPath = self::getCategoryPath($category->pid);
+        $category = MerchantCategory::where('id', $id)
+            ->when($onlyEnabled, function (Builder $query) {
+                $query->where('status', MerchantCategory::STATUS_ON);
+            })
+            ->first();
+        if($category && $category->pid > 0 && $category->pid != $id){
+            $parentPath = self::getCategoryPath($category->pid, $onlyEnabled);
         }else {
             $parentPath = [];
         }
-        array_push($parentPath, $category);
+        if ($category) {
+            array_push($parentPath, $category);
+        }
         return $parentPath;
     }
 
