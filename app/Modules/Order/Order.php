@@ -4,6 +4,41 @@ namespace App\Modules\Order;
 
 use App\BaseModel;
 use App\Exceptions\BaseResponseException;
+use Carbon\Carbon;
+
+/**
+ * Class Order
+ * @package App\Modules\Order
+ *
+ * @property number oper_id
+ * @property number user_id
+ * @property string open_id
+ * @property string order_no
+ * @property string user_name
+ * @property string notify_mobile
+ * @property number merchant_id
+ * @property string merchant_name
+ * @property number type
+ * @property number goods_id
+ * @property number dishes_id
+ * @property string goods_name
+ * @property string goods_pic
+ * @property string goods_thumb_url
+ * @property number price
+ * @property number buy_number
+ * @property number status
+ * @property number  pay_type
+ * @property number pay_price
+ * @property Carbon pay_time
+ * @property number pay_target_type
+ * @property number refund_price
+ * @property Carbon refund_time
+ * @property Carbon finish_time
+ * @property number settlement_status
+ * @property number origin_app_type
+ * @property string remark
+ * @property number settlement_id
+ */
 
 class Order extends BaseModel
 {
