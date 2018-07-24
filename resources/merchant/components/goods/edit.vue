@@ -1,5 +1,5 @@
 <template>
-    <page title="添加商品" :breadcrumbs="{商品管理: '/goods'}">
+    <page title="编辑商品" :breadcrumbs="{商品管理: '/goods'}">
         <el-col :span="16">
             <goods-form
                     v-if="goods"
