@@ -41,9 +41,9 @@ Route::get('/merchant-h5', function () {
 });
 
 // 用户端h5页面
-Route::get('/user-h5', function () {
+/*Route::get('/user-h5', function () {
     return view('user-h5');
-});
+});*/
 
 Route::get('/article/{code}', 'ArticleController@index');
 
