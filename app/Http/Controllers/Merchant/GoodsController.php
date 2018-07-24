@@ -10,11 +10,11 @@ use App\Modules\FilterKeyword\FilterKeywordService;
 use App\Modules\Goods\Goods;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class GoodsController extends Controller
 {
-
     /**
      * 获取列表 (分页)
      */
@@ -78,6 +78,7 @@ class GoodsController extends Controller
             throw new BaseResponseException('市场价必须大于销售价！');
         }
         FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::CATEGORY_GOODS_NAME);
+        self::validateDate(request('end_date'));
 
         $goods->oper_id = request()->get('current_user')->oper_id;
         $goods->merchant_id = request()->get('current_user')->merchant_id;
@@ -123,6 +124,7 @@ class GoodsController extends Controller
             throw new BaseResponseException('市场价必须大于销售价！');
         }
         FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::CATEGORY_GOODS_NAME);
+        self::validateDate(request('end_date'));
 
         $goods->oper_id = request()->get('current_user')->oper_id;
         $goods->merchant_id = request()->get('current_user')->merchant_id;
@@ -162,6 +164,10 @@ class GoodsController extends Controller
         $goods = Goods::where('merchant_id', request()->get('current_user')->merchant_id)
             ->where('id', request('id'))
             ->firstOrFail();
+        if (request('status') == Goods::STATUS_ON) {
+            self::validateDate($goods->end_date);
+        }
+
         $goods->status = request('status');
 
         $goods->save();
@@ -228,4 +234,16 @@ class GoodsController extends Controller
         }
     }
 
+    /**
+     * @param $endDate
+     * @return bool
+     */
+    private static function validateDate($endDate)
+    {
+        if ($endDate < date('Y-m-d', time())) {
+            throw new BaseResponseException('商品有效期结束时间不能小于当前时间');
+        } else {
+            return true;
+        }
+    }
 }

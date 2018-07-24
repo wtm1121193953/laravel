@@ -70,6 +70,7 @@ class Merchant extends BaseModel
         // 商户基本信息
         $this->merchant_category_id = request('merchant_category_id', 0);
         $this->name = request('name');
+        $this->signboard_name = request('signboard_name', '');
 
         // 位置信息
         $provinceId = request('province_id', 0);
@@ -93,7 +94,6 @@ class Merchant extends BaseModel
     {
         $this->oper_biz_member_code = request('oper_biz_member_code','');
         $this->brand = request('brand','');
-        $this->signboard_name = request('signboard_name', '');
         $this->invoice_title = request('invoice_title','');
         $this->invoice_no = request('invoice_no','');
         $this->status = request('status', 1);

@@ -85,12 +85,12 @@ class OrdersController extends Controller
             ->value('order_id');
 
         if(!$order_id){
-            throw new BaseResponseException('该核销码不存在');
+            throw new BaseResponseException('该消费码不存在');
         }
 
         $order = Order::findOrFail($order_id);
         if($order['status'] == Order::STATUS_FINISHED){
-            throw new BaseResponseException('该核销码已核销');
+            throw new BaseResponseException('该消费码已核销');
         }
 
         if($order['status'] == Order::STATUS_PAID){

@@ -88,7 +88,7 @@ class MerchantService extends BaseService
             if($startCreatedAt==$endCreatedAt){
                 $query->whereDate('created_at', $startCreatedAt);
             }else{
-                $query->whereBetween('created_at', [$startCreatedAt, $endCreatedAt]);
+                $query->whereBetween('created_at', [$startCreatedAt . ' 00:00:00', $endCreatedAt . ' 23:59:59']);
             }
         }else if($startCreatedAt){
             $query->where('created_at', '>=', $startCreatedAt . ' 00:00:00');

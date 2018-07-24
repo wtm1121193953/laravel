@@ -33,9 +33,6 @@
             <!--<el-form-item prop="brand" label="品牌">
                 <el-input v-model="form.brand"/>
             </el-form-item>-->
-            <el-form-item prop="signboard_name" label="招牌名称">
-                <el-input v-model="form.signboard_name"/>
-            </el-form-item>
             <!--<el-form-item prop="invoice_title" label="发票抬头">
                 <el-input v-model="form.invoice_title"/>
             </el-form-item>
@@ -171,7 +168,6 @@
     let defaultForm = {
         /////// 商户激活信息
         oper_biz_member_code: '',
-        signboard_name: '',
         brand: '',
         status: 1,
         // business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
@@ -261,10 +257,6 @@
                     ],*/
                     brand: [
                         {max: 20, message: '品牌名称不能超过20个字'}
-                    ],
-                    signboard_name: [
-                        {required: true, message: '招牌名称不能为空'},
-                        {max: 20, message: '招牌名称不能超过20个字'}
                     ],
                     business_start_time: [
                         {type: 'date', required: true, message: '营业时间不能为空'},

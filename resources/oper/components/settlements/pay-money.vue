@@ -13,7 +13,7 @@
             <el-form-item label="开户支行地址：">
                 {{scope.bank_open_address}}
             </el-form-item>
-            <el-form-item label="回款单图片：">
+            <el-form-item label="回款单图片：" required>
                 <image-upload v-model="form.pay_pic_url"/>
             </el-form-item>
             <el-form-item>

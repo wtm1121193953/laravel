@@ -28,7 +28,7 @@
             </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <el-button type="text" @click="changeStatus(scope.row)">{{parseInt(scope.row.status) === 1 ? '下 架' : '上 架'}}</el-button>
+                    <el-button type="text" :class="parseInt(scope.row.status) === 1 ? 'c-warning' : 'c-green'" @click="changeStatus(scope.row)">{{parseInt(scope.row.status) === 1 ? '下 架' : '上 架'}}</el-button>
                     <el-button type="text" @click="edit(scope.row)">编 辑</el-button>
                     <el-button type="text" @click="del(scope.row)">删 除</el-button>
                 </template>

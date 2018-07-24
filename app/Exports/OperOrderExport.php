@@ -48,17 +48,17 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
     public function headings(): array
     {
         return [
-            'order_no' => '订单号',
-            'user_id' => '用户ID',
-            'user_name' => '用户名',
-            'notify_mobile' => '通知手机号',
             'merchant_id' => '商户ID',
             'merchant_name' => '商户名',
+            'order_no' => '订单号',
             'type' => '订单类型',
             'goods_id' => '商品ID',
             'goods_name' => '商品名',
             'price' => '价格',
             'buy_number' => '购买数量',
+            'user_id' => '用户ID',
+            'user_name' => '用户名',
+            'notify_mobile' => '通知手机号',
             'status' => '状态',
             'pay_type' => '支付类型',
             'pay_price' => '支付金额',
@@ -81,17 +81,17 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
     public function map($row): array
     {
         return [
-            $row->order_no,
-            $row->user_id,
-            $row->user_name,
-            $row->notify_mobile,
             $row->merchant_id,
             $row->merchant_name,
+            $row->order_no,
             Order::getTypeText($row->type),
             $row->goods_id,
             $row->goods_name,
             $row->price,
             $row->buy_number,
+            $row->user_id,
+            $row->user_name,
+            $row->notify_mobile,
             Order::getStatusText($row->status),
             Order::getPayTypeText($row->pay_type),
             $row->pay_price,

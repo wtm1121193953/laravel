@@ -150,7 +150,7 @@ app-type: 客户端类型  1-Android 2-iOS
 - [ ] 退出登陆
 
     接口地址: POST `/logout`
-
+    
     参数: 
 
   ```
@@ -817,11 +817,7 @@ app-type: 客户端类型  1-Android 2-iOS
 
   地址: GET ```invite/getInviterInfo```
 
-  参数
-
-  ```
-   
-  ```
+  参数：无
 
   返回
 
@@ -858,11 +854,7 @@ app-type: 客户端类型  1-Android 2-iOS
 
   地址: POST     ```invite/unbind```
 
-  参数
-
-  ```
-   
-  ```
+  参数： 无   
 
   首次解绑 成功返回
 
@@ -885,6 +877,4 @@ app-type: 客户端类型  1-Android 2-iOS
     "timestamp": 1528947551
   }
   ````
-```
   
-```

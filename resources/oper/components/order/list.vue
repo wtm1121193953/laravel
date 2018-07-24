@@ -27,7 +27,6 @@
             <el-form-item label="订单状态">
                 <el-select v-model="query.status" class="w-100" clearable>
                     <el-option label="全部" value=""/>
-                    <el-option label="未支付" :value="1"/>
                     <el-option label="已取消" :value="2"/>
                     <el-option label="已关闭[超时自动关闭]" :value="3"/>
                     <el-option label="已支付" :value="4"/>
@@ -127,10 +126,10 @@
             <el-table-column prop="pay_price" label="总价 ¥"/>
             <el-table-column prop="status" label="订单状态">
                 <template slot-scope="scope">
-                    <span v-if="parseInt(scope.row.status) === 1">未支付</span>
+                    <span v-if="parseInt(scope.row.status) === 1" class="c-danger">未支付</span>
                     <span v-else-if="parseInt(scope.row.status) === 2">已取消</span>
                     <span v-else-if="parseInt(scope.row.status) === 3">已关闭[超时自动关闭]</span>
-                    <span v-else-if="parseInt(scope.row.status) === 4">已支付</span>
+                    <span v-else-if="parseInt(scope.row.status) === 4" class="c-green" >已支付</span>
                     <span v-else-if="parseInt(scope.row.status) === 5">退款中[保留状态]</span>
                     <span v-else-if="parseInt(scope.row.status) === 6">已退款</span>
                     <span v-else-if="parseInt(scope.row.status) === 7">已完成</span>
