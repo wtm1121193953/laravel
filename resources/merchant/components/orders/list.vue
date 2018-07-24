@@ -144,7 +144,7 @@
                 this.verify_success = false;
                 this.verify_fail = false;
                 if (!this.verify_code){
-                    this.$message.error('请填写核销码');
+                    this.$message.error('请填写消费码');
                     return false;
                 }
                 api.post('/verification', {verify_code: this.verify_code}, false).then(result => {
