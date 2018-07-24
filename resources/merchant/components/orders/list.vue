@@ -82,7 +82,7 @@
                 <el-col :span="7" :offset="1">
                     <el-button type="primary" ref="verifyInput" @click="verification">核销</el-button>
                 </el-col>
-                <div v-if="verify_success">核销成功！<el-button type="text" @click="showDetail(order)">查看订单</el-button></div>
+                <div v-if="verify_success" class="fl">核销成功！<el-button type="text" @click="showDetail(order)">查看订单</el-button></div>
                 <div v-if="verify_fail">核销失败！请检查消费码</div>
             </el-row>
         </el-dialog>
