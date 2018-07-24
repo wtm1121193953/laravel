@@ -9,6 +9,19 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
+
+/**
+ * Class OperBizMember
+ * @package App\Modules\Oper
+ *
+ * @property number oper_id
+ * @property string name
+ * @property string mobile
+ * @property string code
+ * @property string remark
+ * @property number status
+ */
+
 class OperBizMember extends BaseModel
 {
     //

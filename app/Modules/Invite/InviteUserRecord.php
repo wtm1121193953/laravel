@@ -5,6 +5,15 @@ namespace App\Modules\Invite;
 use App\BaseModel;
 use App\Modules\User\User;
 
+/**
+ * Class InviteUserRecord
+ * @package App\Modules\Invite
+ *
+ * @property number user_id`
+ * @property number invite_channel_id
+ * @property number origin_id
+ * @property number origin_type
+ */
 class InviteUserRecord extends BaseModel
 {
     //推广人类型  1-用户
