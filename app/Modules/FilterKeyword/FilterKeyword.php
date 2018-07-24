@@ -4,6 +4,14 @@ namespace App\Modules\FilterKeyword;
 
 use App\BaseModel;
 
+/**
+ * Class FilterKeyword
+ * @package App\Modules\FilterKeyword
+ *
+ * @property string keyword
+ * @property number status
+ * @property number category_number
+ */
 class FilterKeyword extends BaseModel
 {
     //

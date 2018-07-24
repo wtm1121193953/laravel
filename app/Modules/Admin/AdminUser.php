@@ -5,6 +5,18 @@ namespace App\Modules\Admin;
 use App\BaseModel;
 use App\Modules\User\GenPassword;
 
+/**
+ * Class AdminUser
+ * @package App\Modules\Admin
+ *
+ * @property string username
+ * @property string password
+ * @property string salt
+ * @property number group_id
+ * @property number status
+ * @property number super
+ */
+
 class AdminUser extends BaseModel
 {
 

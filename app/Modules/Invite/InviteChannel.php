@@ -4,6 +4,17 @@ namespace App\Modules\Invite;
 
 use App\BaseModel;
 
+/**
+ * Class InviteChannel
+ * @package App\Modules\Invite
+ *
+ * @property number oper_id
+ * @property number origin_id
+ * @property number origin_type
+ * @property number scene_id
+ * @property string name
+ * @property string remark
+ */
 class InviteChannel extends BaseModel
 {
     //推广人类型  1-用户
