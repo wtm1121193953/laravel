@@ -45,6 +45,9 @@ Route::prefix('user')
         Route::get('invite/getInviterBySceneId', 'InviteChannelController@getInviterBySceneId');
         Route::post('invite/bindInviter', 'InviteChannelController@bindInviter')->middleware(UserLoginFilter::class);
 
+        Route::get('invite/getInviterInfo', 'UnbindInviterController@getBindInfo')->middleware(UserLoginFilter::class);
+        Route::post('invite/unbind', 'UnbindInviterController@unbind')->middleware(UserLoginFilter::class);
+
         Route::get('scene/info', 'SceneController@getSceneInfo');
 
         Route::get('credit/payAmountToCreditRatio', 'CreditController@payAmountToCreditRatio')->middleware(UserLoginFilter::class);

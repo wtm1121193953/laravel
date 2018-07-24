@@ -1039,6 +1039,76 @@ order_no 订单号
 
   
 
+- [ ] 用户邀请人信息
+
+  地址: GET ```invite/getInviterInfo```
+
+  参数：无
+
+  返回
+
+```
+        "data": {
+        "origin_type": 1,  邀请人类型 1-用户 2-商户 3-运营中心
+        "user": {        邀请的用户信息, origin_type 为1 时存在
+            "id": 2,
+            "name": "",
+            "mobile": "13923756372",
+            "email": "",
+            "account": "",
+            "status": 1,
+            "created_at": "2018-05-11 15:41:50",
+            "updated_at": "2018-05-11 15:41:50",
+            "level": 1
+        },
+        "merchant":邀请的商户信息 origin_type为2时存在 {
+          name:...
+        },   
+        "oper":  邀请的运营中心信息 origin_type为3时存在 {
+          name:...       
+        },     
+        "mappingUser":  邀请的运营中心或商户绑定的用户信息, origin_type 为2或3, 以及商户或运营中心已绑定用户时存在 {
+          mobile:...
+        }    
+    },
+    
+
+```
+
+  ​
+
+- [ ] 用户解绑
+
+  地址: POST     ```invite/unbind```
+
+  参数：无
+
+  首次解绑 成功返回
+
+```
+  {
+    "code": 0,
+    "message": "请求成功",
+    "data": [],
+    "timestamp": 1528947476
+  }
+     
+
+```
+
+  若第二次解绑
+
+```
+  {
+    "code": 500,
+    "message": "该用户已解绑一次，不能再次解绑",
+    "timestamp": 1528947551
+  }
+
+```
+
+  
+
 
 
 

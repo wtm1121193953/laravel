@@ -10,11 +10,11 @@ use App\Modules\FilterKeyword\FilterKeywordService;
 use App\Modules\Goods\Goods;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class GoodsController extends Controller
 {
-
     /**
      * 获取列表 (分页)
      */
@@ -78,6 +78,7 @@ class GoodsController extends Controller
             throw new BaseResponseException('市场价必须大于销售价！');
         }
         FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::CATEGORY_GOODS_NAME);
+        self::validateDate(request('start_date'), request('end_date'));
 
         $goods->oper_id = request()->get('current_user')->oper_id;
         $goods->merchant_id = request()->get('current_user')->merchant_id;
@@ -228,4 +229,10 @@ class GoodsController extends Controller
         }
     }
 
+    private static function validateDate($startDate, $endDate)
+    {
+        if ($startDate < Carbon::today()) {
+
+        }
+    }
 }
