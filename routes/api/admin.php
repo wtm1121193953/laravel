@@ -14,28 +14,28 @@ Route::prefix('admin')
     Route::get('self/rules', 'SelfController@getRules');
     Route::post('self/modifyPassword', 'SelfController@modifyPassword');
 
-    Route::get('users', 'UserController@getList');
-    Route::post('user/add', 'UserController@add');
-    Route::post('user/edit', 'UserController@edit');
-    Route::post('user/del', 'UserController@del');
-    Route::post('user/changeStatus', 'UserController@changeStatus');
-    Route::post('user/resetPassword', 'UserController@resetPassword');
+    Route::get('users', 'Auth\UserController@getList');
+    Route::post('user/add', 'Auth\UserController@add');
+    Route::post('user/edit', 'Auth\UserController@edit');
+    Route::post('user/del', 'Auth\UserController@del');
+    Route::post('user/changeStatus', 'Auth\UserController@changeStatus');
+    Route::post('user/resetPassword', 'Auth\UserController@resetPassword');
+
+    Route::get('groups', 'Auth\GroupController@getList');
+    Route::post('group/add', 'Auth\GroupController@add');
+    Route::post('group/edit', 'Auth\GroupController@edit');
+    Route::post('group/del', 'Auth\GroupController@del');
+    Route::post('group/changeStatus', 'Auth\GroupController@changeStatus');
+
+    Route::get('rules', 'Auth\RuleController@getList');
+    Route::get('rules/tree', 'Auth\RuleController@getTree');
+    Route::post('rule/add', 'Auth\RuleController@add');
+    Route::post('rule/edit', 'Auth\RuleController@edit');
+    Route::post('rule/del', 'Auth\RuleController@del');
+    Route::post('rule/changeStatus', 'Auth\RuleController@changeStatus');
 
     Route::get('members','UsersController@getList');
     Route::post('users/unBind','UsersController@unBind');
-
-    Route::get('groups', 'GroupController@getList');
-    Route::post('group/add', 'GroupController@add');
-    Route::post('group/edit', 'GroupController@edit');
-    Route::post('group/del', 'GroupController@del');
-    Route::post('group/changeStatus', 'GroupController@changeStatus');
-
-    Route::get('rules', 'RuleController@getList');
-    Route::get('rules/tree', 'RuleController@getTree');
-    Route::post('rule/add', 'RuleController@add');
-    Route::post('rule/edit', 'RuleController@edit');
-    Route::post('rule/del', 'RuleController@del');
-    Route::post('rule/changeStatus', 'RuleController@changeStatus');
 
     Route::get('area/tree', 'AreaController@getTree');
 
