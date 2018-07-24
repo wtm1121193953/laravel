@@ -41,7 +41,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="发票税点" prop="invoice_tax_rate">
-                    <el-input-number v-model="form.invoice_tax_rate" placeholder=""/>
+                    <el-input-number v-model="form.invoice_tax_rate" :min="0" :max="100"/>
                 </el-form-item>
                 <!--<el-form-item label="结款周期" prop="settlement_cycle_type">
                     <el-select v-model="form.settlement_cycle_type" placeholder="">
