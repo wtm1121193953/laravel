@@ -26,22 +26,13 @@ class Goods extends BaseModel
         $goodsLowestAmount = Goods::where('merchant_id', $merchantId)
             ->where('status', self::STATUS_ON)
             ->orderBy('price')
-            ->value('price');
+            ->value('price') ?? 0;
         $dishesGoodsLowestAmount = DishesGoods::where('merchant_id', $merchantId)
             ->where('status', self::STATUS_ON)
             ->orderBy('sale_price')
-            ->value('sale_price');
+            ->value('sale_price') ?? 0;
 
-        if (is_null($goodsLowestAmount) && !is_null($dishesGoodsLowestAmount)){
-            return $dishesGoodsLowestAmount;
-        }elseif (is_null($dishesGoodsLowestAmount) && !is_null($goodsLowestAmount)){
-            return $goodsLowestAmount;
-        }elseif (!is_null($goodsLowestAmount) && !is_null($dishesGoodsLowestAmount)){
-            $lowestAmount = $goodsLowestAmount > $dishesGoodsLowestAmount ? $dishesGoodsLowestAmount : $goodsLowestAmount;
-            return $lowestAmount;
-        }else{
-            return 0;
-        }
+        return min($goodsLowestAmount, $dishesGoodsLowestAmount);
     }
 
     /**
