@@ -74,6 +74,7 @@
             },
             cancel(){
                 this.$emit('cancel');
+                this.$refs.form.resetFields();
             },
             save(){
                 this.$refs.form.validate(valid => {
