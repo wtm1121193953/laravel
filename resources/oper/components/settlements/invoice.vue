@@ -8,7 +8,7 @@
             <el-form label-width="150px" ref="form">
                 <template v-if="parseInt(form.invoice_type) === 1" >
                     <el-form-item label="上传电子发票：" required>
-                        <image-upload v-model="form.invoice_pic_url"/>
+                        <image-upload v-model="form.invoice_pic_url" :limit="2"/>
                     </el-form-item>
                 </template>
                 <template v-else>
