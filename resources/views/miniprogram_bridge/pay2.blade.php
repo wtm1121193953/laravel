@@ -35,7 +35,7 @@
     <button onclick="goback()">跳回去</button>
     <script>
         var goback = function(){
-            location.go(-1)
+            history.go(-1)
         }
     </script>
 </body>

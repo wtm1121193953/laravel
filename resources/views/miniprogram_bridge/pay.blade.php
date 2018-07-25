@@ -37,6 +37,7 @@
 @endif
 <img class="image" src="{{ $app_code_url }}" alt="">
 <a href="pay2">pay22222</a>
+<button onclick="tiao">js跳转</button>
 
 <!-- html -->
 <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
@@ -44,6 +45,9 @@
     @if(!empty($errorMsg))
         wx.miniProgram.navigateTo({url: '/pages/webview/abnormity'})
     @endif
+    var tiao = function(){
+        location.href = 'pay2'
+        }
 </script>
 </body>
 </html>
