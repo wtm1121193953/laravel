@@ -11,10 +11,11 @@ namespace App\Http\Controllers\User;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
-use App\Modules\Goods\Goods;
+use App\Modules\Goods\GoodsService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantCategoryService;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Setting\SettingService;
 use App\Result;
@@ -147,7 +148,7 @@ class MerchantController extends Controller
             $category = MerchantCategory::find($item->merchant_category_id);
             $item->merchantCategoryName = $category->name;
             // 最低消费
-            $item->lowestAmount = Goods::getLowestPriceForMerchant($item->id);
+            $item->lowestAmount = MerchantService::getLowestPriceForMerchant($item->id);
             // 判断商户是否是当前小程序关联运营中心下的商户
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
             // 兼容v1.0.0版客服电话字段
@@ -155,7 +156,7 @@ class MerchantController extends Controller
             // 商户评级字段，暂时全部默认为5星
             $item->grade = 5;
             // 首页商户列表，显示价格最低的n个团购商品
-            $item->lowestGoods = Goods::getLowestPriceGoodsForMerchant($item->id, 2);
+            $item->lowestGoods = GoodsService::getLowestPriceGoodsForMerchant($item->id, 2);
         });
 
         return Result::success(['list' => $list, 'total' => $total]);
@@ -189,7 +190,7 @@ class MerchantController extends Controller
         //商家是否开启单品模式
         $detail->isOpenDish = MerchantSettingService::getValueByKey($id,'dishes_enabled');
         // 最低消费
-        $detail->lowestAmount = Goods::getLowestPriceForMerchant($detail->id);
+        $detail->lowestAmount = MerchantService::getLowestPriceForMerchant($detail->id);
         $currentOperId = request()->get('current_oper')->id;
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;

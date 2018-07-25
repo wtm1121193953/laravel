@@ -10,10 +10,9 @@ namespace App\Http\Controllers\UserApp;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
-use App\Modules\Setting\SettingService;
+use App\Modules\Merchant\MerchantService;
 use App\Result;
 use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
@@ -101,7 +100,7 @@ class MerchantController extends Controller
             $category = MerchantCategory::find($item->merchant_category_id);
             $item->merchantCategoryName = $category->name;
             // 最低消费
-            $item->lowestAmount = Goods::getLowestPriceForMerchant($item->id);
+            $item->lowestAmount = MerchantService::getLowestPriceForMerchant($item->id);
             // 兼容v1.0.0版客服电话字段
             $item->contacter_phone = $item->service_phone;
         });
@@ -135,7 +134,7 @@ class MerchantController extends Controller
         $category = MerchantCategory::find($detail->merchant_category_id);
         $detail->merchantCategoryName = $category->name;
         // 最低消费
-        $detail->lowestAmount = Goods::getLowestPriceForMerchant($detail->id);
+        $detail->lowestAmount = MerchantService::getLowestPriceForMerchant($detail->id);
         // 兼容v1.0.0版客服电话字段
         $detail->contacter_phone = $detail->service_phone;
 

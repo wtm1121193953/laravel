@@ -10,6 +10,8 @@ namespace App\Modules\Merchant;
 
 
 use App\BaseService;
+use App\Modules\Dishes\DishesGoods;
+use App\Modules\Goods\Goods;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizMember;
 use App\Support\Lbs;
@@ -43,7 +45,6 @@ class MerchantService extends BaseService
     {
         $id = $data['id'];
         $operId = $data['operId'];
-//        $creatorOperId = $data['creatorOperId'];
         $name = $data['name'];
         $signboardName = $data['signboardName'];
         $auditStatus = $data['auditStatus'];
@@ -57,13 +58,6 @@ class MerchantService extends BaseService
         if($id){
             $query->where('id', $id);
         }
-//        if($creatorOperId){
-//            if(is_array($creatorOperId) || $creatorOperId instanceof Collection){
-//                $query->whereIn('creator_oper_id', $creatorOperId);
-//            }else {
-//                $query->where('creator_oper_id', $creatorOperId);
-//            }
-//        }
         if($operId){
             if(is_array($operId) || $operId instanceof Collection){
                 $query->where(function (Builder $query) use ($operId) {
@@ -113,8 +107,6 @@ class MerchantService extends BaseService
                 $item->business_time = json_decode($item->business_time, 1);
                 $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
                 $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
-//                $item->creatorOperId = $item->creator_oper_id;
-//                $item->creatorOperName = Oper::where('id', $item->creator_oper_id)->value('name');
                 $item->operBizMemberName = OperBizMember::where('oper_id', $item->operId)->where('code', $item->oper_biz_member_code)->value('name') ?: '';
             });
 
@@ -197,4 +189,36 @@ class MerchantService extends BaseService
             self::geoAddToRedis($list);
         });
     }
+
+
+    /**
+     * 更新商户的最低价格
+     * @param $merchant_id
+     */
+    public static function updateMerchantLowestAmount($merchant_id)
+    {
+        $merchant = Merchant::findOrFail($merchant_id);
+        $merchant->lowest_amount = self::getLowestPriceForMerchant($merchant_id);
+        $merchant->save();
+    }
+
+    /**
+     * 根据商家获取最低价商品的价格, 没有商品是返回null
+     * @param $merchantId
+     * @return number|null
+     */
+    public static function getLowestPriceForMerchant($merchantId)
+    {
+        $goodsLowestAmount = Goods::where('merchant_id', $merchantId)
+                ->where('status', Goods::STATUS_ON)
+                ->orderBy('price')
+                ->value('price') ?? 0;
+        $dishesGoodsLowestAmount = DishesGoods::where('merchant_id', $merchantId)
+                ->where('status', DishesGoods::STATUS_ON)
+                ->orderBy('sale_price')
+                ->value('sale_price') ?? 0;
+
+        return min($goodsLowestAmount, $dishesGoodsLowestAmount);
+    }
+
 }
