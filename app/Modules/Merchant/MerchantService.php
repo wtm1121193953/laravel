@@ -217,8 +217,11 @@ class MerchantService extends BaseService
                 ->where('status', DishesGoods::STATUS_ON)
                 ->orderBy('sale_price')
                 ->value('sale_price') ?? 0;
-
-        return min($goodsLowestAmount, $dishesGoodsLowestAmount);
+        if (!$goodsLowestAmount || !$dishesGoodsLowestAmount) {
+            return max($goodsLowestAmount, $dishesGoodsLowestAmount);
+        } else {
+            return min($goodsLowestAmount, $dishesGoodsLowestAmount);
+        }
     }
 
 }
