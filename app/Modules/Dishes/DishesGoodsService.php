@@ -185,6 +185,9 @@ class DishesGoodsService extends BaseService
         $dishesGoods->status = $status;
         $dishesGoods->save();
 
+        // 更新商户最低价格
+        MerchantService::updateMerchantLowestAmount($merchantId);
+
         return $dishesGoods;
     }
 
