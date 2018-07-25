@@ -20,6 +20,8 @@ class OrderItem extends BaseModel
     //
     /**
      * 生成核销码
+     * @param $merchantId
+     * @return int
      */
     public static function createVerifyCode($merchantId)
     {
