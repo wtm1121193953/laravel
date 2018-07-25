@@ -184,12 +184,8 @@ class OperBizMemberController extends Controller
 
         $data->each(function($item) {
             $auditStatusArray = ['待审核','已审核','审核不通过','重新提交审核'];
-            if($item->audit_status==1){
-                $item->audit_done_time = $item->active_time;
-            }else{
-       //      0-待审核 1-已审核 2-审核不通过 3-重新提交审核'
-                $item->audit_done_time= $auditStatusArray[$item->audit_status];
-            }
+            //      0-待审核 1-已审核 2-审核不通过 3-重新提交审核'
+            $item->audit_done_time = $item->audit_status==1 ? $item->active_time : $auditStatusArray[$item->audit_status];
         });
 
         return Result::success([
