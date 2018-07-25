@@ -5,6 +5,20 @@ namespace App\Modules\User;
 use App\BaseModel;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * Class User
+ * @package App\Modules\User
+ *
+ * @property int    status
+ * @property int    level
+ * @property string name
+ * @property string mobile
+ * @property string email
+ * @property string account
+ * @property string password
+ * @property string salt
+ *
+ */
 class User extends BaseModel
 {
     use Notifiable, GenPassword;

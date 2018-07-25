@@ -4,6 +4,23 @@ namespace App\Modules\UserCredit;
 
 use App\BaseModel;
 
+/**
+ * Class UserCreditRecord
+ * @package App\Modules\UserCredit
+ *
+ * @property int    user_id
+ * @property int    credit
+ * @property int    inout_type
+ * @property int   type
+ * @property int user_level
+ * @property int merchant_level
+ * @property string order_no
+ * @property string consume_user_mobile
+ * @property number order_profit_amount
+ * @property number ratio
+ * @property number credit_multiplier_of_amount
+ *
+ */
 class UserCreditRecord extends BaseModel
 {
     const TYPE_FROM_SELF = 1; // 自反
