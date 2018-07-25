@@ -51,11 +51,11 @@ Route::get('/miniprogram_bridge/pay', function(){
     
     try{
         $targetOperId = request('targetOperId');
-        if(empty($targetOperId)) throw new \Exception('targetOperId不能为空');
+        if(empty($targetOperId)) throw new BaseResponseException('targetOperId不能为空');
         $orderNo = request('orderNo');
-        if(empty($orderNo)) throw new \Exception('订单号不能为空');
+        if(empty($orderNo)) throw new ParamInvalidException('订单号不能为空');
         $userId = request('userId');
-        if(empty($userId)) throw new \Exception('用户ID不能为空');
+        if(empty($userId)) throw new ParamInvalidException('用户ID不能为空');
 
         $page = request('page', 'pages/severs/index/index');
 
@@ -73,10 +73,12 @@ Route::get('/miniprogram_bridge/pay', function(){
     }catch (\App\Exceptions\MiniprogramPageNotExistException $e){
         $appCodeUrl = '';
         $errorMsg = '小程序页面不存在或尚未发布';
-    }catch (\Exception $e){
+    }catch (BaseResponseException $e){
+        $appCodeUrl = '';
+        $errorMsg = $e->getResponse()->original['message'];
+    }catch (Exception $e){
         $appCodeUrl = '';
         $errorMsg = $e->getMessage();
-        dump($errorMsg);
     }
 
 //    $appCodeUrl = 'https://o2o.niucha.ren/storage/miniprogram/app_code/_3-id=52.jpg';
