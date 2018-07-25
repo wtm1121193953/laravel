@@ -32,7 +32,7 @@
 </head>
 <body>
 <div class="title">请您长按识别下图的小程序码进行支付</div>
-@if(isset($errorMsg))
+@if(!empty($errorMsg))
 <div class="error">{{$errorMsg}}</div>
 @endif
 <img class="image" src="{{ $app_code_url }}" alt="">
@@ -41,7 +41,7 @@
 <!-- html -->
 <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
 <script>
-    @if(isset($errorMsg))
+    @if(!empty($errorMsg))
         wx.miniProgram.navigateTo({url: '/pages/webview/abnormity'})
     @endif
 </script>
