@@ -76,6 +76,7 @@ Route::get('/miniprogram_bridge/pay', function(){
     }catch (\Exception $e){
         $appCodeUrl = '';
         $errorMsg = $e->getMessage();
+        dump($errorMsg);
     }
 
 //    $appCodeUrl = 'https://o2o.niucha.ren/storage/miniprogram/app_code/_3-id=52.jpg';
