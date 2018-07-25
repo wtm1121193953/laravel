@@ -14,6 +14,7 @@ use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\FilterKeyword\FilterKeyword;
 use App\Modules\FilterKeyword\FilterKeywordService;
+use App\Modules\Merchant\MerchantService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -34,6 +35,22 @@ class GoodsService
             })->orderBy('sort', 'desc')->paginate();
 
         return $data;
+    }
+
+    /**
+     * 首页商户列表，显示价格最低的n个团购商品
+     * @param $merchantId
+     * @param $number
+     * @return Goods[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getLowestPriceGoodsForMerchant($merchantId, $number)
+    {
+        $list = Goods::where('merchant_id', $merchantId)
+            ->where('status', Goods::STATUS_ON)
+            ->orderBy('sort', 'desc')
+            ->limit($number)
+            ->get();
+        return $list;
     }
 
     /**
@@ -108,7 +125,7 @@ class GoodsService
         $goods->save();
 
         // 更新商户最低价格
-        Goods::updateMerchantLowestAmount($merchantId);
+        MerchantService::updateMerchantLowestAmount($merchantId);
 
         return $goods;
     }
@@ -157,7 +174,7 @@ class GoodsService
         $goods->save();
 
         // 更新商户最低价格
-        Goods::updateMerchantLowestAmount(request()->get('current_user')->merchant_id);
+        MerchantService::updateMerchantLowestAmount(request()->get('current_user')->merchant_id);
 
         return $goods;
     }
@@ -201,7 +218,7 @@ class GoodsService
         }
         $goods->delete();
 
-        Goods::updateMerchantLowestAmount($merchantId);
+        MerchantService::updateMerchantLowestAmount($merchantId);
         return $goods;
     }
 

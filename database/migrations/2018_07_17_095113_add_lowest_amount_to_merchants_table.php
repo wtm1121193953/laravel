@@ -1,10 +1,10 @@
 <?php
 
+use App\Modules\Merchant\MerchantService;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use App\Modules\Merchant\Merchant;
-use App\Modules\Goods\Goods;
 
 class AddLowestAmountToMerchantsTable extends Migration
 {
@@ -21,7 +21,7 @@ class AddLowestAmountToMerchantsTable extends Migration
         });
         $merchants = Merchant::all();
         foreach ($merchants as $merchant){
-            $merchant->lowest_amount = Goods::getLowestPriceForMerchant($merchant->id);
+            $merchant->lowest_amount = MerchantService::getLowestPriceForMerchant($merchant->id);
             $merchant->save();
         }
     }

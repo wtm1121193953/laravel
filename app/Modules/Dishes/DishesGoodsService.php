@@ -14,7 +14,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Modules\FilterKeyword\FilterKeyword;
 use App\Modules\FilterKeyword\FilterKeywordService;
-use App\Modules\Goods\Goods;
+use App\Modules\Merchant\MerchantService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -118,7 +118,7 @@ class DishesGoodsService extends BaseService
         $dishesGoods->save();
 
         // 更新商家最低消费价
-        Goods::updateMerchantLowestAmount($merchantId);
+        MerchantService::updateMerchantLowestAmount($merchantId);
 
         return $dishesGoods;
     }
@@ -164,7 +164,7 @@ class DishesGoodsService extends BaseService
         $dishesGoods->save();
 
         // 更新商家最低消费价
-        Goods::updateMerchantLowestAmount(request()->get('current_user')->merchant_id);
+        MerchantService::updateMerchantLowestAmount(request()->get('current_user')->merchant_id);
 
         return $dishesGoods;
     }
@@ -202,7 +202,7 @@ class DishesGoodsService extends BaseService
             throw new DataNotFoundException('商品信息不存在或已被删除');
         }
         $dishesGoods->delete();
-        Goods::updateMerchantLowestAmount($merchantId);
+        MerchantService::updateMerchantLowestAmount($merchantId);
         return $dishesGoods;
     }
 
