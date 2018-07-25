@@ -43,7 +43,7 @@
 <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
 <script>
     @if(!empty($errorMsg))
-        wx.miniProgram.navigateTo({url: '/pages/webview/abnormity'})
+        wx.miniProgram.redirectTo({url: '/pages/webview/abnormity'})
     @endif
 </script>
 <script>
