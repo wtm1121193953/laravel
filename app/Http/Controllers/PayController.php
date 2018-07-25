@@ -115,12 +115,13 @@ class PayController extends Controller
                     // 添加商品已售数量
                     Goods::where('id', $order->goods_id)->increment('sell_number', max($order->buy_number, 1));
                     // 生成核销码, 线上需要放到支付成功通知中
+                    $verify_code = OrderItem::createVerifyCode($order->merchant_id);
                     for ($i = 0; $i < $order->buy_number; $i ++){
                         $orderItem = new OrderItem();
                         $orderItem->oper_id = $order->oper_id;
                         $orderItem->merchant_id = $order->merchant_id;
                         $orderItem->order_id = $order->id;
-                        $orderItem->verify_code = OrderItem::createVerifyCode($order->merchant_id);
+                        $orderItem->verify_code = $verify_code;
                         $orderItem->status = 1;
                         $orderItem->save();
                     }
