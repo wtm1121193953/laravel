@@ -96,7 +96,7 @@ class DishesGoodsService extends BaseService
         $marketPrice = request('market_price', 0);
         $salePrice = request('sale_price', 0);
         if ($marketPrice < $salePrice) {
-            throw new BaseResponseException('市场价必须大于销售价！');
+            throw new BaseResponseException('市场价不能小于销售价！');
         }
         // 检测商品名中是否存在过滤关键字
         FilterKeywordService::filterKeywordByCategory($name, FilterKeyword::CATEGORY_DISHES_GOODS_NAME);
@@ -147,7 +147,7 @@ class DishesGoodsService extends BaseService
         $marketPrice = request('market_price', 0);
         $salePrice = request('sale_price', 0);
         if($marketPrice < $salePrice){
-            throw new BaseResponseException('市场价必须大于销售价！');
+            throw new BaseResponseException('市场价不能小于销售价！');
         }
         // 检测商品名中是否存在过滤关键字
         FilterKeywordService::filterKeywordByCategory($name, FilterKeyword::CATEGORY_DISHES_GOODS_NAME);
