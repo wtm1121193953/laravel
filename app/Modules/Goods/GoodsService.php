@@ -200,6 +200,9 @@ class GoodsService
         $goods->status = $status;
         $goods->save();
 
+        // 更新商户最低价格
+        MerchantService::updateMerchantLowestAmount($merchantId);
+
         return $goods;
     }
 
