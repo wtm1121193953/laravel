@@ -9,9 +9,10 @@
 namespace App\Http\Controllers\Merchant;
 
 
+use App\Exceptions\DataNotFoundException;
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
-use App\Modules\Order\Order;
-use App\Modules\Settlement\Settlement;
+use App\Modules\Settlement\SettlementService;
 use App\Result;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,9 +20,9 @@ class SettlementController extends Controller
 {
     public function getList()
     {
-        $data = Settlement::where('merchant_id', request()->get('current_user')->merchant_id)
-            ->orderBy('id', 'desc')
-            ->paginate();
+        $data = SettlementService::getList([
+            'merchantId' => request()->get('current_user')->merchant_id,
+        ]);
 
         return Result::success([
             'list' => $data->items(),
@@ -31,13 +32,14 @@ class SettlementController extends Controller
 
     public function getSettlementOrders()
     {
-        $settlement_id = request('settlement_id');
-        $merchant_id = request('merchant_id');
+        $settlementId = request('settlement_id');
+        $merchantId = request()->get('current_user')->merchant_id;
+        $settlement = SettlementService::getByIdAndMerchantId($settlementId, $merchantId);
+        if(empty($settlement)){
+            throw new DataNotFoundException('结算单不存在');
+        }
 
-        $data = Order::where('oper_id', request()->get('current_user')->oper_id)
-            ->where('settlement_id', $settlement_id)
-            ->where('merchant_id', $merchant_id)
-            ->orderBy('id', 'desc')->paginate();
+        $data = SettlementService::getSettlementOrders($settlementId);
 
         return Result::success([
             'list' => $data->items(),
@@ -49,14 +51,21 @@ class SettlementController extends Controller
     {
         $id = request('id');
         $field = request('field');
-        $settlement = Settlement::findOrFail($id);
+        $merchantId = request()->get('current_user')->merchant_id;
+        $settlement = SettlementService::getByIdAndMerchantId($id, $merchantId);
+        if(empty($settlement)){
+            throw new DataNotFoundException('结算单信息不存在');
+        }
+
         $arr = explode("/", $settlement[$field]);
         $img = $arr[count($arr) - 1];
         if($field == 'pay_pic_url'){
+            // todo 修改为通过url下载, 去掉path拼装
             return Storage::download('public/image/item/' . $img, 'cash.png');
         }elseif ($field == 'invoice_pic_url'){
             return Storage::download('public/image/item/' . $img, 'invoice.png');
         }
+        throw new ParamInvalidException('参数异常');
     }
 
 }
