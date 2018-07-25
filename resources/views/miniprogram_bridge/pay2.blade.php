@@ -31,11 +31,12 @@
     </style>
 </head>
 <body>
-<div class="title">请您长按识别下图的小程序码进行支付</div>
-@if(isset($errorMsg))
-<div class="error">{{$errorMsg}}</div>
-@endif
-<img class="image" src="{{ $app_code_url }}" alt="">
-<a href="pay2">pay22222</a>
+    pay2  hahahahahha h
+    <button onclick="goback()">跳回去</button>
+    <script>
+        var goback = function(){
+            location.go(-1)
+        }
+    </script>
 </body>
 </html>

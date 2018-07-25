@@ -82,4 +82,11 @@ Route::get('/miniprogram_bridge/pay', function(){
 });
 
 
+Route::get('/miniprogram_bridge/pay2', function(){
+    return view('miniprogram_bridge.pay2');
+});
+
+
+
+
 Route::post('/upload/image', 'UploadController@image');
