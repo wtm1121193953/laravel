@@ -37,5 +37,13 @@
 @endif
 <img class="image" src="{{ $app_code_url }}" alt="">
 <a href="pay2">pay22222</a>
+
+<!-- html -->
+<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+<script>
+    @if(isset($errorMsg))
+        wx.miniProgram.navigateTo({url: '/pages/webview/abnormity'})
+    @endif
+</script>
 </body>
 </html>
