@@ -14,7 +14,7 @@
                 {{scope.bank_open_address}}
             </el-form-item>
             <el-form-item label="回款单图片：" required>
-                <image-upload v-model="form.pay_pic_url"/>
+                <image-upload v-model="form.pay_pic_url" :limit="2"/>
             </el-form-item>
             <el-form-item>
                 <el-button @click="cancel">取消</el-button>
