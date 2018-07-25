@@ -37,12 +37,7 @@ class MerchantSettingController extends Controller
      */
     public function getSetting()
     {
-        $data = MerchantSetting::where('merchant_id', request()->get('current_user')->merchant_id)
-            ->get();
-        $setting = MerchantSettingService::defaultSettings;
-        foreach ($data as $item){
-            $setting[$item['key']] = $item['value'];
-        }
+        $setting = MerchantSettingService::getAll(request()->get('current_user')->merchant_id);
 
         return Result::success([
             'setting' => $setting,

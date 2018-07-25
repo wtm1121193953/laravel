@@ -21,7 +21,7 @@ class InviteChannelController extends Controller
 {
 
     /**
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * 获取邀请二维码的链接
      */
     public function getInviteQrcode()
     {
@@ -41,7 +41,6 @@ class InviteChannelController extends Controller
 
     /**
      * 下载邀请注册的小程序码
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function downloadInviteQrcode()
     {
