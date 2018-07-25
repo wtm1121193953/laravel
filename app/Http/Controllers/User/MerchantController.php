@@ -208,7 +208,7 @@ class MerchantController extends Controller
      */
     private function _getFormativeDistance($distance)
     {
-        return $distance >= 1000 ? (number_format($distance / 1000, 1) . '千米') : ($distance . '米');
+        return $distance >= 1000 ? (number_format($distance / 1000, 1) . 'km') : ($distance . 'm');
     }
 
 }
