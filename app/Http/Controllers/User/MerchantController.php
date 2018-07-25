@@ -107,8 +107,7 @@ class MerchantController extends Controller
             })
             ->when($lowestPrice || $highestPrice, function (Builder $query) use ($lowestPrice, $highestPrice){
                 // 有价格限制时 按照价格区间筛选 并按照价格排序
-                $query->where('lowest_amount', '>', 0)
-                    ->when($lowestPrice && !$highestPrice, function (Builder $query) use ($lowestPrice) {
+                $query->when($lowestPrice && !$highestPrice, function (Builder $query) use ($lowestPrice) {
                         $query->where('lowest_amount', '>=', $lowestPrice);
                     })
                     ->when($highestPrice, function (Builder $query) use ($lowestPrice, $highestPrice) {
