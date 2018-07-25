@@ -27,7 +27,7 @@
             <el-form-item label="订单状态">
                 <el-select v-model="query.status" class="w-100" clearable>
                     <el-option label="全部" value=""/>
-                    <el-option label="已取消" :value="2"/>
+                    <el-option label="未支付" :value="1"/>
                     <el-option label="已关闭[超时自动关闭]" :value="3"/>
                     <el-option label="已支付" :value="4"/>
                     <el-option label="已退款" :value="6"/>
