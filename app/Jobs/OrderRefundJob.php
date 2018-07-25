@@ -4,9 +4,7 @@ namespace App\Jobs;
 
 use App\Exceptions\BaseResponseException;
 use App\Modules\Invite\InviteService;
-use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Order\Order;
-use App\Modules\User\User;
 use App\Modules\User\UserMapping;
 use App\Modules\UserCredit\UserConsumeQuotaRecord;
 use App\Modules\UserCredit\UserCredit;
@@ -195,7 +193,7 @@ class OrderRefundJob implements ShouldQueue
     {
         //查找该订单用户自己的积分记录
         $userCreditRecordOne = UserCreditRecord::where('user_id', $order->user_id)
-            ->where('inout_type', UserCreditRecord::IN_TYPE)
+            ->where('inout_type', UserCreditRecord::INOUT_TYPE_IN)
             ->where('type', UserCreditRecord::TYPE_FROM_SELF)
             ->where('order_no', $order->order_no)
             ->first();
@@ -207,7 +205,7 @@ class OrderRefundJob implements ShouldQueue
         $userCreditRecord = new UserCreditRecord();
         $userCreditRecord->user_id = $order->user_id;
         $userCreditRecord->credit = $userCreditRecordOne->credit;
-        $userCreditRecord->inout_type = UserCreditRecord::OUT_TYPE;
+        $userCreditRecord->inout_type = UserCreditRecord::INOUT_TYPE_OUT;
         $userCreditRecord->type = UserCreditRecord::TYPE_REFUND;
         $userCreditRecord->user_level = $userCreditRecordOne->user_level;
         $userCreditRecord->order_no = $order->order_no;
@@ -238,33 +236,33 @@ class OrderRefundJob implements ShouldQueue
         $type = $merchantId ? UserCreditRecord::TYPE_FROM_MERCHANT_SHARE : UserCreditRecord::TYPE_FROM_SHARE_SUB;
 
         //查找该订单用户自己的积分记录
-        $userCredit = UserCreditRecord::where('user_id', $parentUser->id)
-            ->where('inout_type', UserCreditRecord::IN_TYPE)
+        $originUserCreditRecord = UserCreditRecord::where('user_id', $parentUser->id)
+            ->where('inout_type', UserCreditRecord::INOUT_TYPE_IN)
             ->where('type', $type)
             ->where('order_no', $order->order_no)
             ->first();
 
-        if (empty($userCredit)){
+        if (empty($originUserCreditRecord)){
             return;
         }
 
         $userCreditRecord = new UserCreditRecord();
         $userCreditRecord->user_id = $parentUser->id;
-        $userCreditRecord->credit = $userCredit->credit;
-        $userCreditRecord->inout_type = UserCreditRecord::OUT_TYPE;
+        $userCreditRecord->credit = $originUserCreditRecord->credit;
+        $userCreditRecord->inout_type = UserCreditRecord::INOUT_TYPE_OUT;
         $userCreditRecord->type = UserCreditRecord::TYPE_REFUND;
-        $userCreditRecord->user_level = $userCredit->user_level;
-        $userCreditRecord->merchant_level = $userCredit->merchant_level;
+        $userCreditRecord->user_level = $originUserCreditRecord->user_level;
+        $userCreditRecord->merchant_level = $originUserCreditRecord->merchant_level;
         $userCreditRecord->order_no = $order->order_no;
         $userCreditRecord->consume_user_mobile = $order->notify_mobile;
-        $userCreditRecord->order_profit_amount = $userCredit->order_profit_amount;
-        $userCreditRecord->ratio = $userCredit->ratio;
-        $userCreditRecord->credit_multiplier_of_amount = $userCredit->credit_multiplier_of_amount;
+        $userCreditRecord->order_profit_amount = $originUserCreditRecord->order_profit_amount;
+        $userCreditRecord->ratio = $originUserCreditRecord->ratio;
+        $userCreditRecord->credit_multiplier_of_amount = $originUserCreditRecord->credit_multiplier_of_amount;
         $userCreditRecord->save();
 
         //减去累计积分
         $userCredit = UserCredit::where('user_id', $parentUser->id)->first();
-        $userCredit->total_credit = DB::raw('total_credit - ' . $userCredit->credit);
+        $userCredit->total_credit = DB::raw('total_credit - ' . $originUserCreditRecord->credit);
         $userCredit->save();
 
         UserLevelCalculationJob::dispatch($parentUser->id);
