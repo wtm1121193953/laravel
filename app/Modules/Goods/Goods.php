@@ -68,7 +68,7 @@ class Goods extends BaseModel
     {
         $list = Goods::where('merchant_id', $merchantId)
             ->where('status', self::STATUS_ON)
-            ->orderBy('sort')
+            ->orderBy('sort', 'desc')
             ->limit($number)
             ->get();
         return $list;
