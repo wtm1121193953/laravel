@@ -43,7 +43,8 @@
 <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
 <script>
     @if(!empty($errorMsg))
-        wx.miniProgram.postMessage({ data: {errorMsg: "{{$errorMsg}}"} })
+        wx.miniProgram.postMessage({ errorMsg: "{{$errorMsg}}" })
+        wx.miniProgram.navigateBack()
     @endif
 </script>
 <script>
