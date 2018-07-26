@@ -22,6 +22,17 @@ class MiniprogramSceneService extends BaseService
      */
     public static function getByInviteChannel(InviteChannel $inviteChannel): MiniprogramScene
     {
+        return self::getByInviteChannelId($inviteChannel->id, $inviteChannel->oper_id);
+    }
+
+    /**
+     * 根据渠道ID与运营中心ID获取小程序场景信息
+     * @param $inviteChannelId
+     * @param $operId
+     * @return MiniprogramScene
+     */
+    public static function getByInviteChannelId($inviteChannelId, $operId): MiniprogramScene
+    {
         // todo
     }
 }
