@@ -27,6 +27,7 @@ use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 
@@ -403,6 +404,8 @@ class OrderController extends Controller
             $orderRefund->save();
 
             $order->status = Order::STATUS_REFUNDED;
+            $order->refund_price = $orderPay->amount;
+            $order->refund_time = Carbon::now();
             $order->save();
             $this->decSellNumber($order);
             return Result::success($orderRefund);
