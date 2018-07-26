@@ -9,12 +9,8 @@
 namespace App\Http\Controllers\Merchant;
 
 
-use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
-use App\Modules\Invite\InviteChannel;
-use App\Modules\Invite\InviteChannelService;
 use App\Modules\Wechat\MiniprogramSceneService;
-use App\Modules\Wechat\WechatService;
 use App\Result;
 
 class InviteChannelController extends Controller
@@ -26,13 +22,10 @@ class InviteChannelController extends Controller
     public function getInviteQrcode()
     {
         $currentUser = request()->get('current_user');
-        $inviteChannel = InviteChannelService::getInviteChannel($currentUser->merchant_id, InviteChannel::ORIGIN_TYPE_MERCHANT, $currentUser->oper_id);
-        $scene = MiniprogramSceneService::getByInviteChannel($inviteChannel);
-        try{
-            $url = WechatService::getMiniprogramAppCodeUrl($scene);
-        }catch (\Exception $e){
-            throw new BaseResponseException('小程序码生成失败');
-        }
+
+        $scene = MiniprogramSceneService::getMerchantInviteChannelScene($currentUser->merchant_id, $currentUser->oper_id);
+
+        $url = MiniprogramSceneService::getMiniprogramAppCode($scene);
 
         return Result::success([
             'qrcode_url' => $url,
@@ -47,12 +40,13 @@ class InviteChannelController extends Controller
         // type 小程序码类型, 1-小(8cm, 对应258px) 2-中(15cm, 对应430px)  3-大(50cm, 对应1280px)
         $type = request('type', 1);
         $currentUser = request()->get('current_user');
-        $inviteChannel = InviteChannelService::getInviteChannel($currentUser->merchant_id, InviteChannel::ORIGIN_TYPE_MERCHANT, $currentUser->oper_id);
-        $scene = MiniprogramSceneService::getByInviteChannel($inviteChannel);
+
+        $scene = MiniprogramSceneService::getMerchantInviteChannelScene($currentUser->merchant_id, $currentUser->oper_id);
+
         $width = $type == 3 ? 1280 : ($type == 2 ? 430 : 258);
-        $inviteQrcodeFilename = WechatService::genMiniprogramAppCode($currentUser->oper_id, $scene->id, $scene->page, $width, true);
-        $filename = storage_path('app/public/miniprogram/app_code') . '/' . $inviteQrcodeFilename;
-        return response()->download($filename, '分享会员二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
+        $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
+
+        return response()->download($filePath, '分享会员二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
 
     }
 }

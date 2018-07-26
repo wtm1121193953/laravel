@@ -189,4 +189,5 @@ class InviteChannelService extends BaseService
 
         return $inviteChannel;
     }
+
 }

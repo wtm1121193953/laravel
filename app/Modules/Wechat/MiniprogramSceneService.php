@@ -12,6 +12,7 @@ namespace App\Modules\Wechat;
 use App\BaseService;
 use App\Exceptions\DataNotFoundException;
 use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteChannelService;
 use App\Modules\Order\Order;
 
 class MiniprogramSceneService extends BaseService
@@ -56,27 +57,41 @@ class MiniprogramSceneService extends BaseService
     }
 
     /**
-     * 添加场景
-     * @param $operId
+     * 获取商户邀请渠道的小程序场景
      * @param $merchantId
-     * @param $inviteChannelId
-     * @param $page
-     * @param $payload
-     * @param int $type
+     * @param $operId
      * @return MiniprogramScene
      */
-    protected static function add($operId, $merchantId, $inviteChannelId, $page, $payload, $type = 1): MiniprogramScene
+    public static function getMerchantInviteChannelScene($merchantId, $operId) : MiniprogramScene
     {
-        $miniprogramScene = new MiniprogramScene();
-        $miniprogramScene->oper_id = $operId;
-        $miniprogramScene->merchant_id = $merchantId;
-        $miniprogramScene->invite_channel_id = $inviteChannelId;
-        $miniprogramScene->page = $page;
-        $miniprogramScene->type = $type;
-        $miniprogramScene->payload = $payload;
-        $miniprogramScene->save();
+        $inviteChannel = InviteChannelService::getInviteChannel($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $operId);
+        $scene = self::getByInviteChannel($inviteChannel);
+        return $scene;
+    }
 
-        return $miniprogramScene;
+    /**
+     * 获取小程序码的url 或文件路径
+     * @param MiniprogramScene $scene
+     * @param int $width
+     * @param bool $getAsFilePath
+     * @return string
+     */
+    public static function getMiniprogramAppCode(MiniprogramScene $scene, $width=375, $getAsFilePath=false) : string
+    {
+        if($getAsFilePath){
+            $filename = WechatService::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page, $width, true);
+            $path = storage_path('app/public/miniprogram/app_code') . '/' . $filename;
+            return $path;
+        }
+
+        if(!empty($scene->qrcode_url)){
+            return $scene->qrcode_url;
+        }else {
+            $url = WechatService::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page);
+            $scene->qrcode_url = $url;
+            $scene->save();
+            return $url;
+        }
     }
 
     public static function createPayBridgeScene(Order $order)
@@ -84,6 +99,11 @@ class MiniprogramSceneService extends BaseService
         // todo
     }
 
+    /**
+     * 从邀请渠道创建小程序场景
+     * @param InviteChannel $inviteChannel
+     * @return MiniprogramScene
+     */
     public static function createInviteScene(InviteChannel $inviteChannel)
     {
         $miniprogramScene = new MiniprogramScene();
