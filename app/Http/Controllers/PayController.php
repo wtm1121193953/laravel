@@ -14,6 +14,7 @@ use App\Modules\Goods\Goods;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
@@ -24,7 +25,6 @@ use App\Modules\Order\OrderPay;
 use App\Modules\Sms\SmsService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
-use App\Support\Alipay;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -148,7 +148,7 @@ class PayController extends Controller
                 if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
                     $merchantId = $order->merchant_id;
                     $merchant = Merchant::findOrFail($merchantId);
-                    $inviteChannel = InviteService::getInviteChannel($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
+                    $inviteChannel = InviteChannelService::getInviteChannel($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
                     InviteService::bindInviter($userId, $inviteChannel);
                 }
                 OrderPaidJob::dispatch($order);

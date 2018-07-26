@@ -12,6 +12,7 @@ namespace App\Http\Controllers\User;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\MiniprogramSceneService;
@@ -28,7 +29,7 @@ class InviteChannelController extends Controller
     {
         $operId = request()->get('current_oper')->id;
         $userId = request()->get('current_user')->id;
-        $inviteChannel = InviteService::getInviteChannel($userId, InviteChannel::ORIGIN_TYPE_USER, $operId);
+        $inviteChannel = InviteChannelService::getInviteChannel($userId, InviteChannel::ORIGIN_TYPE_USER, $operId);
         $inviteChannel->origin_name = InviteService::getInviteChannelOriginName($inviteChannel);
         $scene = MiniprogramSceneService::getByInviteChannel($inviteChannel);
         $url = WechatService::getMiniprogramAppCodeUrl($scene);

@@ -12,6 +12,7 @@ namespace App\Http\Controllers\UserApp;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
 use App\Result;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -22,7 +23,7 @@ class InviteChannelController extends Controller
     public function getInviteQrcode()
     {
         $userId = request()->get('current_user')->id;
-        $inviteChannel = InviteService::getInviteChannel($userId, InviteChannel::ORIGIN_TYPE_USER);
+        $inviteChannel = InviteChannelService::getInviteChannel($userId, InviteChannel::ORIGIN_TYPE_USER);
         $dir = storage_path('app/public/inviteChannel/qrcode');
         if(!is_dir($dir)){
             mkdir($dir, 0777, true);

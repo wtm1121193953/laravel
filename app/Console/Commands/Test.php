@@ -2,26 +2,21 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\OrderPaidJob;
-use App\Jobs\SettlementJob;
-use App\Modules\Area\Area;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
-use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Settlement\Settlement;
 use App\Modules\Sms\SmsService;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use  App\Modules\Merchant\MerchantSettingService;
 
 class Test extends Command
 {
@@ -65,6 +60,7 @@ class Test extends Command
             ->toArray();
         $verifyCode = implode(',', $orderItems);
         dd($verifyCode);
+        return;
     }
 
     /**
@@ -121,7 +117,7 @@ class Test extends Command
             if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
                 $merchantId = $order->merchant_id;
                 $merchant = Merchant::findOrFail($merchantId);
-                $inviteChannel = InviteService::getInviteChannel($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
+                $inviteChannel = InviteChannelService::getInviteChannel($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
                 InviteService::bindInviter($userId, $inviteChannel);
             }
 
