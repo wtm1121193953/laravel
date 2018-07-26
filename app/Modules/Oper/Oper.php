@@ -8,6 +8,7 @@ use App\BaseModel;
  * Class Oper
  * @package App\Modules\Oper
  *
+ * @property string name
  * @property string province
  * @property string city
  * @property string area

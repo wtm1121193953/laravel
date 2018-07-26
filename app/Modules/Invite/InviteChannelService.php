@@ -15,7 +15,6 @@ use App\Exceptions\ParamInvalidException;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
-use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
@@ -122,17 +121,8 @@ class InviteChannelService extends BaseService
         $inviteChannel->save();
 
         if($operId > 0){
-            // 如果运营中心ID存在, 则生成该运营中心的小程序码场景
-            $scene = new MiniprogramScene();
-            $scene->oper_id = $operId;
-            // 小程序端邀请注册页面地址
-            $scene->page = MiniprogramScene::PAGE_INVITE_REGISTER;
-            $scene->type = MiniprogramScene::TYPE_INVITE_CHANNEL;
-            $scene->payload = json_encode([
-                'origin_id' => $originId,
-                'origin_type' => $originType,
-            ]);
-            $scene->save();
+            // 邀请渠道创建成功后添加小程序场景
+            MiniprogramSceneService::createInviteScene($inviteChannel);
         }
 
         return $inviteChannel;

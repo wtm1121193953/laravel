@@ -51,7 +51,7 @@ class InviteChannelController extends Controller
         if(empty($inviteChannelId)){
             throw new ParamInvalidException('邀请渠道ID不能为空');
         }
-        $inviteChannel = InviteChannel::find($inviteChannelId);
+        $inviteChannel = InviteChannelService::getById($inviteChannelId);
         if(empty($inviteChannel)){
             throw new ParamInvalidException('渠道不存在');
         }
@@ -66,7 +66,7 @@ class InviteChannelController extends Controller
     public function bindInviter()
     {
         $inviteChannelId = request('inviteChannelId');
-        $inviteChannel = InviteChannel::find($inviteChannelId);
+        $inviteChannel = InviteChannelService::getById($inviteChannelId);
         if(empty($inviteChannel)){
             throw new ParamInvalidException('邀请渠道不存在');
         }

@@ -11,7 +11,7 @@ namespace App\Http\Controllers\UserApp;
 
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
-use App\Modules\Wechat\MiniprogramScene;
+use App\Modules\Wechat\MiniprogramSceneService;
 use App\Result;
 
 class SceneController extends Controller
@@ -23,7 +23,7 @@ class SceneController extends Controller
             'sceneId' => 'required|integer|min:1',
         ]);
         $sceneId = request('sceneId');
-        $scene = MiniprogramScene::find($sceneId);
+        $scene = MiniprogramSceneService::getById($sceneId);
         if(empty($scene)){
             throw new ParamInvalidException('场景信息不存在');
         }

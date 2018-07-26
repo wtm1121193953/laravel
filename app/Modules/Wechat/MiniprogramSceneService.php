@@ -18,6 +18,16 @@ class MiniprogramSceneService extends BaseService
 {
 
     /**
+     * 根据ID获取小程序场景信息
+     * @param int $sceneId
+     * @return MiniprogramScene
+     */
+    public static function getById(int $sceneId) : MiniprogramScene
+    {
+        return MiniprogramScene::find($sceneId);
+    }
+
+    /**
      * 根据邀请渠道获取小程序场景信息
      * @param InviteChannel $inviteChannel
      * @return MiniprogramScene
@@ -69,7 +79,7 @@ class MiniprogramSceneService extends BaseService
         return $miniprogramScene;
     }
 
-    public static function createPayBridgeScene(Order  $order)
+    public static function createPayBridgeScene(Order $order)
     {
         // todo
     }

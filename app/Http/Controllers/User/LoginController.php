@@ -12,7 +12,7 @@ namespace App\Http\Controllers\User;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
-use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
@@ -72,7 +72,7 @@ class LoginController extends Controller
         // 如果存在邀请渠道ID, 查询用户是否已被邀请过
         $inviteChannelId = request('inviteChannelId');
         if($inviteChannelId){
-            $inviteChannel = InviteChannel::find($inviteChannelId);
+            $inviteChannel = InviteChannelService::getById($inviteChannelId);
             if(empty($inviteChannel)){
                 throw new ParamInvalidException('邀请渠道不存在');
             }

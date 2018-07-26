@@ -174,7 +174,7 @@ class InviteChannelController extends Controller
                 ;
             })
             ->with('user:id,mobile,created_at');
-        $inviteChannel = InviteChannel::find($id);
+        $inviteChannel = InviteChannelService::getById($id);
 
         return (new OperInviteRecordsExport($query))->download("推广渠道[{$inviteChannel->name}]注册用户记录.xlsx");
     }

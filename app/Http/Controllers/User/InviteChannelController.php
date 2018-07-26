@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\User;
 
 
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
@@ -50,13 +51,16 @@ class InviteChannelController extends Controller
             throw new ParamInvalidException('场景ID不能为空');
         }
         // 判断场景类型必须是 推广注册小程序码 才可以
-        $scene = MiniprogramScene::findOrFail($sceneId);
+        $scene = MiniprogramSceneService::getById($sceneId);
+        if(empty($scene)){
+            throw new DataNotFoundException('场景信息不存在');
+        }
         if($scene->type != MiniprogramScene::TYPE_INVITE_CHANNEL){
             throw new ParamInvalidException('该场景不是邀请渠道场景');
         }
-        $inviteChannel = InviteChannel::find($scene->invite_channel_id);
+        $inviteChannel = InviteChannelService::getById($scene->invite_channel_id);
         if(empty($inviteChannel)){
-            throw new ParamInvalidException('场景不存在');
+            throw new ParamInvalidException('场景渠道不存在');
         }
 
         if($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER){
@@ -73,7 +77,7 @@ class InviteChannelController extends Controller
     public function bindInviter()
     {
         $inviteChannelId = request('inviteChannelId');
-        $inviteChannel = InviteChannel::find($inviteChannelId);
+        $inviteChannel = InviteChannelService::getById($inviteChannelId);
         if(empty($inviteChannel)){
             throw new ParamInvalidException('邀请渠道不存在');
         }
