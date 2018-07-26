@@ -97,16 +97,12 @@ class InviteChannelController extends Controller
 
         $width = $qrcodeSizeType == 3 ? 1280 : ($qrcodeSizeType == 2 ? 430 : 258);
 
-        try {
-            $inviteQrcodeFilename = WechatService::genMiniprogramAppCode($operId, $scene->id, $scene->page, $width, true);
-        } catch (\Exception $e) {
-            throw new BaseResponseException('小程序码生成失败');
-        }
-        $filename = storage_path('app/public/miniprogram/app_code') . '/' . $inviteQrcodeFilename;
+        $path = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
+
         if(request()->ajax()){
-            return Result::success(['name' => $filename]);
+            return Result::success(['name' => $path]);
         }else {
-            return response()->download($filename, '推广小程序码-' . $inviteChannel->name . '-' . ['', '小', '中', '大'][$qrcodeSizeType] . '.jpg');
+            return response()->download($path, '推广小程序码-' . $inviteChannel->name . '-' . ['', '小', '中', '大'][$qrcodeSizeType] . '.jpg');
         }
     }
 
