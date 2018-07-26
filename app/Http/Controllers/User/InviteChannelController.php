@@ -30,7 +30,7 @@ class InviteChannelController extends Controller
         $operId = request()->get('current_oper')->id;
         $userId = request()->get('current_user')->id;
         $inviteChannel = InviteChannelService::getInviteChannel($userId, InviteChannel::ORIGIN_TYPE_USER, $operId);
-        $inviteChannel->origin_name = InviteService::getInviteChannelOriginName($inviteChannel);
+        $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
         $scene = MiniprogramSceneService::getByInviteChannel($inviteChannel);
         $url = WechatService::getMiniprogramAppCodeUrl($scene);
 
@@ -63,7 +63,7 @@ class InviteChannelController extends Controller
             throw new ParamInvalidException('会员二维码已经失效');
         }
 
-        $inviteChannel->origin_name = InviteService::getInviteChannelOriginName($inviteChannel);
+        $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
         return Result::success($inviteChannel);
     }
 

@@ -56,7 +56,7 @@ class InviteChannelController extends Controller
             throw new ParamInvalidException('渠道不存在');
         }
 
-        $inviteChannel->origin_name = InviteService::getInviteChannelOriginName($inviteChannel);
+        $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
         return Result::success($inviteChannel);
     }
 
