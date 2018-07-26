@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Oper;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\DataNotFoundException;
 use App\Exports\OperInviteChannelExport;
 use App\Exports\OperInviteRecordsExport;
 use App\Http\Controllers\Controller;
@@ -52,8 +53,7 @@ class InviteChannelController extends Controller
         $remark = request('remark', '');
         $operId = request()->get('current_user')->oper_id;
 
-        $inviteChannel = InviteChannelService::add($operId, $operId, InviteChannel::ORIGIN_TYPE_OPER, $name, $remark);
-        MiniprogramSceneService::createInviteScene($inviteChannel);
+        $inviteChannel = InviteChannelService::createOperInviteChannel($operId, $name, $remark);
 
         return Result::success($inviteChannel);
     }
@@ -68,7 +68,7 @@ class InviteChannelController extends Controller
         $remark = request('remark', '');
         $operId = request()->get('current_user')->oper_id;
 
-        $inviteChannel = InviteChannelService::edit(request('id'), $operId, $name, $remark);
+        $inviteChannel = InviteChannelService::updateOperInviteChannel(request('id'), $operId, $name, $remark);
 
         return Result::success($inviteChannel);
     }
@@ -85,11 +85,16 @@ class InviteChannelController extends Controller
         // qrcodeSizeType 小程序码尺寸类型, 1-小(8cm, 对应258px) 2-中(15cm, 对应430px)  3-大(50cm, 对应1280px)
         $qrcodeSizeType = request('qrcodeSizeType', 1);
         $operId = request()->get('current_user')->oper_id;
-        $inviteChannel = InviteChannel::where('id', $id)
-            ->where('origin_id', $operId)
-            ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
-            ->firstOrFail();
+
+        $inviteChannel = InviteChannelService::getById($id);
+        if(!$inviteChannel
+            || $inviteChannel->origin_id != $operId
+            ||  $inviteChannel->origin_type != InviteChannel::ORIGIN_TYPE_OPER) {
+            throw new DataNotFoundException('邀请渠道信息不存在');
+        }
+
         $scene = MiniprogramSceneService::getByInviteChannel($inviteChannel);
+
         $width = $qrcodeSizeType == 3 ? 1280 : ($qrcodeSizeType == 2 ? 430 : 258);
 
         try {

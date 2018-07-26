@@ -16,10 +16,21 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
 use App\Modules\Wechat\MiniprogramScene;
+use App\Modules\Wechat\MiniprogramSceneService;
+use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
 
 class InviteChannelService extends BaseService
 {
+
+    /**
+     * @param $id
+     * @return InviteChannel
+     */
+    public static function getById($id)
+    {
+        return InviteChannel::find($id);
+    }
 
     /**
      * 获取运营中心的邀请渠道列表
@@ -65,6 +76,28 @@ class InviteChannelService extends BaseService
     }
 
     /**
+     * 根据邀请渠道获取邀请者名称
+     * @param InviteChannel $inviteChannel
+     * @return mixed|string
+     */
+    public static function getInviteChannelOriginName(InviteChannel $inviteChannel)
+    {
+        $originType = $inviteChannel->origin_type;
+        $originId = $inviteChannel->origin_id;
+
+        $originName = '';
+        if($originType == 1){
+            $user = User::findOrFail($originId);
+            $originName = $user->name ?: Utils::getHalfHideMobile($user->mobile);
+        }else if($originType == 2){
+            $originName = Merchant::where('id', $originId)->value('name');
+        }else if($originType == 3){
+            $originName = Oper::where('id', $originId)->value('name');
+        }
+        return $originName;
+    }
+
+    /**
      * 生成推广渠道
      * @param $originId int 邀请人ID
      * @param $originType int 邀请人类型 1-用户 2-商户 3-运营中心
@@ -106,41 +139,13 @@ class InviteChannelService extends BaseService
     }
 
     /**
-     * 根据邀请渠道获取邀请者名称
-     * @param InviteChannel $inviteChannel
-     * @return mixed|string
-     */
-    public static function getInviteChannelOriginName(InviteChannel $inviteChannel)
-    {
-        $originType = $inviteChannel->origin_type;
-        $originId = $inviteChannel->origin_id;
-
-        $originName = '';
-        if($originType == 1){
-            $user = User::findOrFail($originId);
-            $originName = $user->name ?: self::_getHalfHideMobile($user->mobile);
-        }else if($originType == 2){
-            $originName = Merchant::where('id', $originId)->value('name');
-        }else if($originType == 3){
-            $originName = Oper::where('id', $originId)->value('name');
-        }
-        return $originName;
-    }
-
-    private static function _getHalfHideMobile($mobile){
-        return substr($mobile, 0, 3) . '****' . substr($mobile, -4);
-    }
-
-    /**
      * 添加推广渠道
      * @param $operId
-     * @param $originId
-     * @param $originType
      * @param $name
      * @param $remark
      * @return InviteChannel
      */
-    public static function add($operId, $originId, $originType, $name, $remark): InviteChannel
+    public static function createOperInviteChannel($operId, $name, $remark): InviteChannel
     {
         $exist = InviteChannel::where('name', $name)->where('oper_id', $operId)->first();
         if ($exist){
@@ -149,10 +154,14 @@ class InviteChannelService extends BaseService
 
         $inviteChannel = new InviteChannel();
         $inviteChannel->oper_id = $operId;
-        $inviteChannel->origin_id = $originId;
-        $inviteChannel->origin_type = $originType;
+        $inviteChannel->origin_id = $operId;
+        $inviteChannel->origin_type = InviteChannel::ORIGIN_TYPE_OPER;
         $inviteChannel->name = $name;
         $inviteChannel->remark = $remark;
+        $inviteChannel->save();
+
+        // 邀请渠道创建成功后添加小程序场景
+        MiniprogramSceneService::createInviteScene($inviteChannel);
 
         return $inviteChannel;
     }
@@ -165,7 +174,7 @@ class InviteChannelService extends BaseService
      * @param $remark
      * @return InviteChannel
      */
-    public static function edit($inviteChannelId, $operId, $name, $remark): InviteChannel
+    public static function updateOperInviteChannel($inviteChannelId, $operId, $name, $remark): InviteChannel
     {
         $exist = InviteChannel::where('name', $name)
             ->where('id', '<>', $inviteChannelId)
