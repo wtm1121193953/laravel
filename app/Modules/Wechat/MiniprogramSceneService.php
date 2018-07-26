@@ -10,6 +10,7 @@ namespace App\Modules\Wechat;
 
 
 use App\BaseService;
+use App\Exceptions\DataNotFoundException;
 use App\Modules\Invite\InviteChannel;
 
 class MiniprogramSceneService extends BaseService
@@ -33,6 +34,13 @@ class MiniprogramSceneService extends BaseService
      */
     public static function getByInviteChannelId($inviteChannelId, $operId): MiniprogramScene
     {
-        // todo
+        $miniprogramScene = MiniprogramScene::where('invite_channel_id', $inviteChannelId)
+            ->where('oper_id', $operId)
+            ->orderBy('id', 'desc')
+            ->first();
+        if (empty($miniprogramScene)) {
+            throw new DataNotFoundException('该邀请渠道的小程序场景不存在');
+        }
+        return $miniprogramScene;
     }
 }
