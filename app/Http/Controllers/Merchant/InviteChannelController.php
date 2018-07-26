@@ -48,11 +48,8 @@ class InviteChannelController extends Controller
         // type 小程序码类型, 1-小(8cm, 对应258px) 2-中(15cm, 对应430px)  3-大(50cm, 对应1280px)
         $type = request('type', 1);
         $currentUser = request()->get('current_user');
-        $inviteChannel = InviteChannel::where('oper_id', $currentUser->oper_id)
-            ->where('origin_id', $currentUser->merchant_id)
-            ->where('origin_type', InviteChannel::ORIGIN_TYPE_MERCHANT)
-            ->firstOrFail();
-        $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
+        $inviteChannel = InviteService::getInviteChannel($currentUser->merchant_id, InviteChannel::ORIGIN_TYPE_MERCHANT, $currentUser->oper_id);
+        $scene = MiniprogramSceneService::getByInviteChannel($inviteChannel);
         $width = $type == 3 ? 1280 : ($type == 2 ? 430 : 258);
         $inviteQrcodeFilename = WechatService::genMiniprogramAppCode($currentUser->oper_id, $scene->id, $scene->page, $width, true);
         $filename = storage_path('app/public/miniprogram/app_code') . '/' . $inviteQrcodeFilename;
