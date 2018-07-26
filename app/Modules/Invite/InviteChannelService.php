@@ -22,6 +22,30 @@ class InviteChannelService extends BaseService
 {
 
     /**
+     * 获取运营中心的邀请渠道列表
+     * @param $operId
+     * @param string $keyword
+     * @param bool $getWithQuery
+     * @return InviteChannel|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getOperInviteChannels($operId, $keyword = '', $getWithQuery = false)
+    {
+        $query = InviteChannel::where('origin_id', $operId)
+            ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
+            ->when('keyword', function (Builder $query) use ($keyword){
+                $query->where('name', 'like', "%$keyword%");
+            })
+            ->withCount('inviteUserRecords')
+            ->orderByDesc('id');
+        if ($getWithQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate();
+            return $data;
+        }
+    }
+
+    /**
      * 根据运营中心ID, originId 以及originType获取邀请渠道 (不存在时创建)
      * @param $originId int 邀请人ID
      * @param $originType int 邀请人类型 1-用户 2-商户 3-运营中心
@@ -105,30 +129,6 @@ class InviteChannelService extends BaseService
 
     private static function _getHalfHideMobile($mobile){
         return substr($mobile, 0, 3) . '****' . substr($mobile, -4);
-    }
-
-    /**
-     * 获取邀请渠道列表
-     * @param $operId
-     * @param string $keyword
-     * @param bool $getWithQuery
-     * @return InviteChannel|\Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public static function getList($operId, $keyword = '', $getWithQuery = false)
-    {
-        $query = InviteChannel::where('origin_id', $operId)
-            ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
-            ->when('keyword', function (Builder $query) use ($keyword){
-                $query->where('name', 'like', "%$keyword%");
-            })
-            ->withCount('inviteUserRecords')
-            ->orderByDesc('id');
-        if ($getWithQuery) {
-            return $query;
-        } else {
-            $data = $query->paginate();
-            return $data;
-        }
     }
 
     /**
