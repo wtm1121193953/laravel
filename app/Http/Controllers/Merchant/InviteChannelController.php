@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteService;
 use App\Modules\Wechat\MiniprogramScene;
+use App\Modules\Wechat\MiniprogramSceneService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 
@@ -27,7 +28,7 @@ class InviteChannelController extends Controller
     {
         $currentUser = request()->get('current_user');
         $inviteChannel = InviteService::getInviteChannel($currentUser->merchant_id, InviteChannel::ORIGIN_TYPE_MERCHANT, $currentUser->oper_id);
-        $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
+        $scene = MiniprogramSceneService::getByInviteChannel($inviteChannel);
         try{
             $url = WechatService::getMiniprogramAppCodeUrl($scene);
         }catch (\Exception $e){
