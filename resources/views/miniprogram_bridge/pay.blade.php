@@ -44,6 +44,7 @@
 <script>
     @if(!empty($errorMsg))
         wx.miniProgram.redirectTo({url: '/pages/webview/abnormity'})
+        wx.miniProgram.postMessage({ data: {errorMsg: $errorMsg} })
     @endif
 </script>
 <script>
