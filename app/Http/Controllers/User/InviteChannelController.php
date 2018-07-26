@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteService;
 use App\Modules\Wechat\MiniprogramScene;
+use App\Modules\Wechat\MiniprogramSceneService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 
@@ -29,7 +30,7 @@ class InviteChannelController extends Controller
         $userId = request()->get('current_user')->id;
         $inviteChannel = InviteService::getInviteChannel($userId, InviteChannel::ORIGIN_TYPE_USER, $operId);
         $inviteChannel->origin_name = InviteService::getInviteChannelOriginName($inviteChannel);
-        $scene = MiniprogramScene::findOrFail($inviteChannel->scene_id);
+        $scene = MiniprogramSceneService::getByInviteChannel($inviteChannel);
         $url = WechatService::getMiniprogramAppCodeUrl($scene);
 
         return Result::success([
@@ -52,7 +53,7 @@ class InviteChannelController extends Controller
         if($scene->type != MiniprogramScene::TYPE_INVITE_CHANNEL){
             throw new ParamInvalidException('该场景不是邀请渠道场景');
         }
-        $inviteChannel = InviteChannel::where('scene_id', $sceneId)->first();
+        $inviteChannel = InviteChannel::find($scene->invite_channel_id);
         if(empty($inviteChannel)){
             throw new ParamInvalidException('场景不存在');
         }

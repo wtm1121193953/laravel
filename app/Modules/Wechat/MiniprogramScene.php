@@ -10,9 +10,11 @@ use App\BaseModel;
  *
  * @property int    oper_id
  * @property int    merchant_id
+ * @property int    invite_channel_id
  * @property int    type
  * @property string page
  * @property string payload
+ * @property string qrcode_url
  *
  */
 class MiniprogramScene extends BaseModel

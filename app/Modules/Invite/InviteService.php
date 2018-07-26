@@ -117,6 +117,13 @@ class InviteService
         if($inviteChannel) {
             return $inviteChannel;
         }
+
+        $inviteChannel = new InviteChannel();
+        $inviteChannel->oper_id = $operId;
+        $inviteChannel->origin_id = $originId;
+        $inviteChannel->origin_type = $originType;
+        $inviteChannel->save();
+
         if($operId > 0){
             // 如果运营中心ID存在, 则生成该运营中心的小程序码场景
             $scene = new MiniprogramScene();
@@ -129,17 +136,8 @@ class InviteService
                 'origin_type' => $originType,
             ]);
             $scene->save();
-            $sceneId = $scene->id;
-        }else {
-            $sceneId = 0;
         }
 
-        $inviteChannel = new InviteChannel();
-        $inviteChannel->oper_id = $operId;
-        $inviteChannel->origin_id = $originId;
-        $inviteChannel->origin_type = $originType;
-        $inviteChannel->scene_id = $sceneId;
-        $inviteChannel->save();
         return $inviteChannel;
     }
 
