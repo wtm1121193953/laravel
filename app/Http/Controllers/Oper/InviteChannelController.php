@@ -16,6 +16,7 @@ use App\Exports\OperInviteRecordsExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
+use App\Modules\Invite\InviteService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Modules\Wechat\WechatService;
@@ -119,25 +120,10 @@ class InviteChannelController extends Controller
         $mobile = request('mobile');
         $startTime = request('startTime');
         $endTime = request('endTime');
-        $data = InviteUserRecord::where('invite_channel_id', $id)
-            ->whereHas('user', function (Builder $query) use ($mobile, $startTime, $endTime) {
-                $query->when($mobile, function (Builder $query) use ($mobile){
-                    $query->where('mobile', 'like', "%$mobile%");
-                })
-                    ->when($startTime && $endTime, function (Builder $query) use ($startTime, $endTime){
-                        $query->whereBetween('created_at', [$startTime, $endTime]);
-                    })
-                    ->when($startTime && !$endTime, function (Builder $query) use ($startTime){
-                        $query->where('created_at', '>=', $startTime);
-                    })
-                    ->when($endTime && !$startTime, function (Builder $query) use ($endTime) {
-                        $query->where('created_at', '<=', $endTime);
-                    })
-                ;
-            })
-            ->with('user:id,mobile,created_at')
-            ->orderByDesc('user_id')
-            ->paginate();
+        $data = InviteService::getRecordsByInviteChannelId(
+            $id,
+            compact('mobile', 'startTime', 'endTime')
+        );
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -153,23 +139,13 @@ class InviteChannelController extends Controller
         $mobile = request('mobile');
         $startTime = request('startTime');
         $endTime = request('endTime');
-        $query = InviteUserRecord::where('invite_channel_id', $id)
-            ->whereHas('user', function (Builder $query) use ($mobile, $startTime, $endTime) {
-                $query->when($mobile, function (Builder $query) use ($mobile){
-                    $query->where('mobile', 'like', "%$mobile%");
-                })
-                    ->when($startTime && $endTime, function (Builder $query) use ($startTime, $endTime){
-                        $query->whereBetween('created_at', [$startTime, $endTime]);
-                    })
-                    ->when($startTime && !$endTime, function (Builder $query) use ($startTime){
-                        $query->where('created_at', '>=', $startTime);
-                    })
-                    ->when($endTime && !$startTime, function (Builder $query) use ($endTime) {
-                        $query->where('created_at', '<=', $endTime);
-                    })
-                ;
-            })
-            ->with('user:id,mobile,created_at');
+
+        $query = InviteService::getRecordsByInviteChannelId(
+            $id,
+            compact('mobile', 'startTime', 'endTime'),
+            true
+        );
+
         $inviteChannel = InviteChannelService::getById($id);
 
         return (new OperInviteRecordsExport($query))->download("推广渠道[{$inviteChannel->name}]注册用户记录.xlsx");

@@ -7,6 +7,7 @@
  */
 
 namespace App\Modules\Invite;
+
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Jobs\MerchantLevelCalculationJob;
@@ -15,6 +16,9 @@ use App\Modules\Oper\Oper;
 use App\Modules\User\User;
 use App\Modules\User\UserMapping;
 use App\ResultCode;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\AbstractPaginator;
 
 /**
  * 用户邀请相关服务
@@ -32,15 +36,15 @@ class InviteService
     public static function getParent($userId)
     {
         $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
-        if(empty($inviteRecord)){
+        if (empty($inviteRecord)) {
             // 如果没有用户没有上级, 不做任何处理
             return null;
         }
-        if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT){
+        if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
             $object = Merchant::where('id', $inviteRecord->origin_id)->first();
-        }else if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER){
+        } else if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER) {
             $object = Oper::where('id', $inviteRecord->origin_id)->first();
-        }else {
+        } else {
             $object = User::find($inviteRecord->origin_id);
         }
         return $object;
@@ -54,27 +58,27 @@ class InviteService
     public static function getParentUser($userId)
     {
         $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
-        if(empty($inviteRecord)){
+        if (empty($inviteRecord)) {
             // 如果没有用户没有上级, 不做任何处理
             return null;
         }
-        if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT){
+        if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
             $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
                 ->where('origin_type', UserMapping::ORIGIN_TYPE_MERCHANT)
                 ->first();
-            if(empty($userMapping)){
+            if (empty($userMapping)) {
                 return null;
             }
             $user = User::find($userMapping->user_id);
-        }else if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER){
+        } else if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER) {
             $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
                 ->where('origin_type', UserMapping::ORIGIN_TYPE_OPER)
                 ->first();
-            if(empty($userMapping)){
+            if (empty($userMapping)) {
                 return null;
             }
             $user = User::find($userMapping->user_id);
-        }else {
+        } else {
             $user = User::find($inviteRecord->origin_id);
         }
         return $user;
@@ -88,11 +92,11 @@ class InviteService
     public static function bindInviter($userId, InviteChannel $inviteChannel)
     {
         $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
-        if($inviteRecord){
+        if ($inviteRecord) {
             // 如果当前用户已被邀请过, 不能重复邀请
             throw new BaseResponseException('您已经被邀请过了, 不能重复接收邀请', ResultCode::USER_ALREADY_BEEN_INVITE);
         }
-        if($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER && $inviteChannel->origin_id == $userId){
+        if ($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER && $inviteChannel->origin_id == $userId) {
             throw new ParamInvalidException('不能扫描自己的邀请码');
         }
         $inviteRecord = new InviteUserRecord();
@@ -102,9 +106,46 @@ class InviteService
         $inviteRecord->origin_type = $inviteChannel->origin_type;
         $inviteRecord->save();
 
-        if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT){
+        if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
             MerchantLevelCalculationJob::dispatch($inviteRecord->origin_id);
         }
     }
 
+    /**
+     * 获取指定邀请渠道的邀请记录
+     * @param $inviteChannelId
+     * @param $params
+     * @param bool $getWithQuery
+     * @return LengthAwarePaginator|Builder
+     */
+    public static function getRecordsByInviteChannelId($inviteChannelId, $params, $getWithQuery = false)
+    {
+        $mobile = array_get($params, 'mobile');
+        $startTime = array_get($params, 'startTime');
+        $endTime = array_get($params, 'endTime');
+
+        $query = InviteUserRecord::where('invite_channel_id', $inviteChannelId)
+            ->whereHas('user', function (Builder $query) use ($mobile, $startTime, $endTime) {
+                $query
+                    ->when($mobile, function (Builder $query) use ($mobile) {
+                        $query->where('mobile', 'like', "%$mobile%");
+                    })
+                    ->when($startTime && $endTime, function (Builder $query) use ($startTime, $endTime) {
+                        $query->whereBetween('created_at', [$startTime, $endTime]);
+                    })
+                    ->when($startTime && !$endTime, function (Builder $query) use ($startTime) {
+                        $query->where('created_at', '>=', $startTime);
+                    })
+                    ->when($endTime && !$startTime, function (Builder $query) use ($endTime) {
+                        $query->where('created_at', '<=', $endTime);
+                    });
+            })
+            ->with('user:id,mobile,created_at')
+            ->orderByDesc('user_id');
+        if ($getWithQuery) {
+            return $query;
+        }
+        $data = $query->paginate();
+        return $data;
+    }
 }
