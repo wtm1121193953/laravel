@@ -64,7 +64,7 @@ class MiniprogramSceneService extends BaseService
      */
     public static function getMerchantInviteChannelScene($merchantId, $operId) : MiniprogramScene
     {
-        $inviteChannel = InviteChannelService::getInviteChannel($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $operId);
+        $inviteChannel = InviteChannelService::getByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $operId);
         $scene = self::getByInviteChannel($inviteChannel);
         return $scene;
     }

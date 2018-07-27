@@ -117,7 +117,7 @@ class Test extends Command
             if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
                 $merchantId = $order->merchant_id;
                 $merchant = Merchant::findOrFail($merchantId);
-                $inviteChannel = InviteChannelService::getInviteChannel($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
+                $inviteChannel = InviteChannelService::getByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
                 InviteService::bindInviter($userId, $inviteChannel);
             }
 

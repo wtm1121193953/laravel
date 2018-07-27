@@ -23,7 +23,7 @@ class InviteChannelController extends Controller
     public function getInviteQrcode()
     {
         $userId = request()->get('current_user')->id;
-        $inviteChannel = InviteChannelService::getInviteChannel($userId, InviteChannel::ORIGIN_TYPE_USER);
+        $inviteChannel = InviteChannelService::getByOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER);
         $dir = storage_path('app/public/inviteChannel/qrcode');
         if(!is_dir($dir)){
             mkdir($dir, 0777, true);

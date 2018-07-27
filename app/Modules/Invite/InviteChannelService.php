@@ -10,6 +10,7 @@ namespace App\Modules\Invite;
 
 
 use App\BaseService;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Merchant\Merchant;
@@ -62,7 +63,7 @@ class InviteChannelService extends BaseService
      * @param $operId int 运营中心ID, 存在时则生成对应运营中心的小程序码
      * @return InviteChannel
      */
-    public static function getInviteChannel($originId, $originType, $operId=0)
+    public static function getByOriginInfo($originId, $originType, $operId=0)
     {
         $inviteChannel = InviteChannel::where('origin_id', $originId)
             ->where('oper_id', $operId)
@@ -70,6 +71,27 @@ class InviteChannelService extends BaseService
             ->first();
         if(empty($inviteChannel)){
             $inviteChannel = self::createInviteChannel($originId, $originType, $operId);
+        }
+        return $inviteChannel;
+    }
+
+    /**
+     * 根据场景ID获取邀请渠道
+     * @param int $sceneId
+     * @return InviteChannel
+     */
+    public static function getBySceneId($sceneId)
+    {
+        $scene = MiniprogramSceneService::getById($sceneId);
+        if(empty($scene)){
+            throw new DataNotFoundException('场景信息不存在');
+        }
+        if($scene->invite_channel_id <= 0){
+            throw new ParamInvalidException('该场景不是邀请渠道的场景');
+        }
+        $inviteChannel = InviteChannelService::getById($scene->invite_channel_id);
+        if(empty($inviteChannel)){
+            throw new DataNotFoundException('场景渠道不存在');
         }
         return $inviteChannel;
     }

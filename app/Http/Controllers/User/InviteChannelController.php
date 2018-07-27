@@ -24,16 +24,16 @@ class InviteChannelController extends Controller
 {
 
     /**
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     *
      */
     public function getInviteQrcode()
     {
         $operId = request()->get('current_oper')->id;
         $userId = request()->get('current_user')->id;
-        $inviteChannel = InviteChannelService::getInviteChannel($userId, InviteChannel::ORIGIN_TYPE_USER, $operId);
+        $inviteChannel = InviteChannelService::getByOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER, $operId);
         $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
         $scene = MiniprogramSceneService::getByInviteChannel($inviteChannel);
-        $url = WechatService::getMiniprogramAppCodeUrl($scene);
+        $url = MiniprogramSceneService::getMiniprogramAppCode($scene);
 
         return Result::success([
             'qrcode_url' => $url,
@@ -51,17 +51,7 @@ class InviteChannelController extends Controller
             throw new ParamInvalidException('场景ID不能为空');
         }
         // 判断场景类型必须是 推广注册小程序码 才可以
-        $scene = MiniprogramSceneService::getById($sceneId);
-        if(empty($scene)){
-            throw new DataNotFoundException('场景信息不存在');
-        }
-        if($scene->type != MiniprogramScene::TYPE_INVITE_CHANNEL){
-            throw new ParamInvalidException('该场景不是邀请渠道场景');
-        }
-        $inviteChannel = InviteChannelService::getById($scene->invite_channel_id);
-        if(empty($inviteChannel)){
-            throw new ParamInvalidException('场景渠道不存在');
-        }
+        $inviteChannel = InviteChannelService::getBySceneId($sceneId);
 
         if($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER){
             throw new ParamInvalidException('会员二维码已经失效');
