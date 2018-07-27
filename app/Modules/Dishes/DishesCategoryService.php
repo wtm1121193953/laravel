@@ -111,13 +111,12 @@ class DishesCategoryService extends BaseService
 
         // 如果名字有变更,验证名称是否包含过滤关键字
         if($dishesCategory->name != $name){
-            FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::CATEGORY_DISHES_CATEGORY_NAME);
             $haveExisitCategory = DishesCategory::where('name',$name)->first();
             if($haveExisitCategory){
                 throw new DataNotFoundException('该分类信息已存在，请改成其他分类名字');
             }
         }
-
+        FilterKeywordService::filterKeywordByCategory(request('name'), FilterKeyword::CATEGORY_DISHES_CATEGORY_NAME);
         $dishesCategory->name = $name;
         $dishesCategory->status = $status;
         $dishesCategory->save();
