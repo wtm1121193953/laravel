@@ -18,7 +18,7 @@ class MicroServiceApi
 {
     const APP_KEY = 23401652;
     const SECRET_KEY = '5756af9812b528f72940af0f3ac74bb8';
-    const SIGN_NAME = '微服务';
+    const SIGN_NAME = '大千生活';
 
     /**
      * 团购商品购买成功通知模板ID
@@ -32,6 +32,11 @@ class MicroServiceApi
      * 订单号${orderNo}：${name}等${number}份商品已下单成功，请及时到商家进行消费，感谢您的使用。
      */
     const DISHES_TEMPLATE_ID = 'SMS_139975636';
+
+    /**
+     * 短信验证码接口 APP_KEY
+     */
+    const APP_KEY_VERIFY_CODE = '50e7a5f180839466cceae9604e422e13';
 
     public static function get($url, $data)
     {
