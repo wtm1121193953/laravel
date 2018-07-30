@@ -351,6 +351,9 @@ class OrderController extends Controller
         $orderNo = request('order_no');
         $order = Order::where('order_no', $orderNo)->firstOrFail();
 
+        if ($order->status == Order::STATUS_PAID || $order->status == Order::STATUS_FINISHED) {
+            throw new BaseResponseException('订单已支付，请重新发起订单');
+        }
         if($order->status != Order::STATUS_UN_PAY){
             throw new BaseResponseException('订单状态异常');
         }
