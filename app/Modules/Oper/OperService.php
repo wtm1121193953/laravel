@@ -10,6 +10,7 @@ namespace App\Modules\Oper;
 
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Modules\Area\Area;
 use Illuminate\Database\Eloquent\Builder;
@@ -116,8 +117,16 @@ class OperService extends BaseService
         $cityId = request('city_id', 0);
         $oper->province_id = $provinceId;
         $oper->city_id = $cityId;
-        $oper->province = Area::where('area_id', $provinceId)->value('name');
-        $oper->city = Area::where('area_id', $cityId)->value('name');
+        $province = Area::where('area_id', $provinceId)->value('name');
+        if (!$province) {
+            throw new BaseResponseException('请选择省份');
+        }
+        $oper->province = $province;
+        $city = Area::where('area_id', $cityId)->value('name');
+        if (!$city) {
+            throw new BaseResponseException('请选择城市');
+        }
+        $oper->city = $city;
         $oper->address = request('address', '');
         $oper->email = request('email', '');
         $oper->legal_name = request('legal_name', '');

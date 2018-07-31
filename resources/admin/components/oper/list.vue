@@ -9,6 +9,7 @@
                     <el-option label="全部" value=""/>
                     <el-option label="正常合作中" value="1"/>
                     <el-option label="已冻结" value="2"/>
+                    <el-option label="停止合作" value="3"/>
                 </el-select>
             </el-form-item>
 

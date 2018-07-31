@@ -9,7 +9,7 @@
         <el-dialog title="创建商户帐号" :visible.sync="showCreateAccountDialog">
             <el-row>
                 <el-col :span="16">
-                    <el-form size="mini" :model="accountForm" :rules="accountFormRules" label-width="150px">
+                    <el-form size="mini" ref="form" :model="accountForm" :rules="accountFormRules" label-width="150px">
                         <el-form-item label="帐户名" prop="account">
                             <el-input v-model="accountForm.account" placeholder="请输入帐户"/>
                         </el-form-item>
@@ -27,7 +27,7 @@
         <el-dialog title="修改帐户密码" v-if="scope.row.account" :visible.sync="showModifyAccountDialog">
             <el-row>
                 <el-col :span="16">
-                    <el-form size="mini" :model="accountModifyPasswordForm" :rules="accountModifyFormRules" label-width="150px">
+                    <el-form size="mini" ref="modifyPasswordForm" :model="accountModifyPasswordForm" :rules="accountModifyFormRules" label-width="150px">
                         <el-form-item label="帐户名" prop="account">
                             <div>{{scope.row.account.account}}</div>
                         </el-form-item>
@@ -66,7 +66,7 @@
                         {required: true, message: '帐号名不能为空'},
                     ],
                     password: [
-                        {required: true, min: 6, message: '密码不能为空且不能少于6位'}
+                        {required: true, min: 6, max: 18, message: '密码不能为空, 6-18位密码'}
                     ]
                 },
                 showModifyAccountDialog: false,
@@ -75,7 +75,7 @@
                 },
                 accountModifyFormRules: {
                     password: [
-                        {required: true, min: 6, message: '密码不能为空且不能少于6位'}
+                        {required: true, min: 6, max: 18, message: '密码不能为空, 6-18位密码'}
                     ]
                 },
             }
@@ -118,20 +118,28 @@
             createAccount(){
                 let data = this.accountForm;
                 data.merchant_id = this.scope.row.id;
-                api.post('/merchant/createAccount', data).then(data => {
-                    this.$alert('创建帐户成功');
-                    this.showCreateAccountDialog = false;
-                    this.$emit('accountChanged', this.scope, data)
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        api.post('/merchant/createAccount', data).then(data => {
+                            this.$alert('创建帐户成功');
+                            this.showCreateAccountDialog = false;
+                            this.$emit('accountChanged', this.scope, data)
+                        })
+                    }
                 })
             },
             modifyAccount(){
                 let data = this.accountModifyPasswordForm;
                 data.id = this.scope.row.account.id;
                 data.merchant_id = this.scope.row.id;
-                api.post('/merchant/editAccount', data).then(data => {
-                    this.$alert('修改密码成功')
-                    this.showModifyAccountDialog = false;
-                    this.$emit('accountChanged', this.scope, data)
+                this.$refs.modifyPasswordForm.validate(valid => {
+                    if (valid) {
+                        api.post('/merchant/editAccount', data).then(data => {
+                            this.$alert('修改密码成功')
+                            this.showModifyAccountDialog = false;
+                            this.$emit('accountChanged', this.scope, data)
+                        })
+                    }
                 })
             },
         },
