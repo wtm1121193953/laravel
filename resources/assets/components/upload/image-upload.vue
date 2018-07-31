@@ -15,7 +15,7 @@
                 :limit="limit"
                 :data="data"
                 :on-exceed="onExceed"
-                :class="{'upload-fulled' : fileList.length >= limit || initialFileList.length >= limit}"
+                :class="{'upload-fulled' : fileList.length >= limit}"
         >
             <i v-if="!$slots.default" class="el-icon-plus"></i>
             <slot/>
@@ -189,7 +189,8 @@
                     this.initialFileList.push({
                         url: item,
                     })
-                })
+                });
+                this.fileList = deepCopy(this.initialFileList);
             },
             resetValue(value){
                 this.value = value;
