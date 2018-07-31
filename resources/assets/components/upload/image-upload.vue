@@ -55,6 +55,7 @@
         name: "image-upload",
         props: {
             value: {type: Array|String},
+            initValue: {type: Array|String},
             action: {type: String, default: '/api/upload/image'},
             width: {type: Number},
             height: {type: Number},
@@ -189,6 +190,10 @@
                         url: item,
                     })
                 })
+            },
+            resetValue(value){
+                this.value = value;
+                this.initFileList();
             }
         },
         created(){
@@ -197,6 +202,9 @@
         watch: {
             value (val){
 
+            },
+            initValue(val){
+                this.resetValue(val)
             }
         },
         components: {
