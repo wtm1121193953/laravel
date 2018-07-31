@@ -4,6 +4,7 @@ namespace App\Modules\Merchant;
 
 use App\BaseModel;
 use App\Modules\Area\Area;
+use Illuminate\Support\Carbon;
 
 /**
  * Class Merchant

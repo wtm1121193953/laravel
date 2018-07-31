@@ -11,7 +11,6 @@ namespace App\Http\Controllers\Merchant;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantSettingService;
-use App\Modules\Merchant\MerchantSetting;
 use App\Result;
 
 class MerchantSettingController extends Controller

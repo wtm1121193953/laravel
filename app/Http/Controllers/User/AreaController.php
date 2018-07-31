@@ -14,7 +14,6 @@ use App\Modules\Area\Area;
 use App\Modules\Area\AreaService;
 use App\Result;
 use App\Support\Lbs;
-use Illuminate\Database\Query\Builder;
 
 class AreaController extends Controller
 {

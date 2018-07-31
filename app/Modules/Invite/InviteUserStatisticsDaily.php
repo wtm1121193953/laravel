@@ -3,6 +3,7 @@
 namespace App\Modules\Invite;
 
 use App\BaseModel;
+use Illuminate\Support\Carbon;
 
 /**
  * Class InviteUserStatisticsDaily

@@ -10,7 +10,6 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Exceptions\AccountNotFoundException;
-use App\Exceptions\DataNotFoundException;
 use App\Exceptions\PasswordErrorException;
 use App\Exceptions\UnloginException;
 use App\Http\Controllers\Controller;

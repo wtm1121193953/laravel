@@ -7,7 +7,6 @@ use App\Exceptions\BaseResponseException;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 
 /**

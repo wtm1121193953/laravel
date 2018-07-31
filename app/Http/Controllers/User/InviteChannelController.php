@@ -9,15 +9,12 @@
 namespace App\Http\Controllers\User;
 
 
-use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
-use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\MiniprogramSceneService;
-use App\Modules\Wechat\WechatService;
 use App\Result;
 
 class InviteChannelController extends Controller

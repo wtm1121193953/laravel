@@ -18,7 +18,6 @@ use App\Modules\User\UserMapping;
 use App\ResultCode;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\AbstractPaginator;
 
 /**
  * 用户邀请相关服务

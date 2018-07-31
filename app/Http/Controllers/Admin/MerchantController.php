@@ -16,13 +16,9 @@ use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantAuditService;
-use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
-use App\Modules\Oper\OperBizMember;
 use App\Result;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 
 class MerchantController extends Controller
 {

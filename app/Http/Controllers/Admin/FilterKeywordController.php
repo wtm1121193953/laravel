@@ -79,6 +79,10 @@ class FilterKeywordController extends Controller
         return Result::success($filterKeyword);
     }
 
+    /**
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function delete()
     {
         $this->validate(request(), [

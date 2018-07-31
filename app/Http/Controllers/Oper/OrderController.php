@@ -16,7 +16,6 @@ use App\Modules\Dishes\DishesItem;
 use App\Modules\Order\Order;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
-use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {

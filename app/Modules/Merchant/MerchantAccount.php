@@ -10,6 +10,7 @@ use App\Modules\User\GenPassword;
  * @package App\Modules\Merchant
  *
  * @property int    oper_id
+ * @property int    merchant_id
  * @property int    merchant_category_id
  * @property string name
  * @property string account

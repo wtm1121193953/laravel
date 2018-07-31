@@ -9,7 +9,6 @@
 namespace App\Http\Controllers\Oper;
 
 
-use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Exports\OperInviteChannelExport;
 use App\Exports\OperInviteRecordsExport;
@@ -17,11 +16,8 @@ use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
-use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Wechat\MiniprogramSceneService;
-use App\Modules\Wechat\WechatService;
 use App\Result;
-use Illuminate\Database\Eloquent\Builder;
 
 class InviteChannelController extends Controller
 {
