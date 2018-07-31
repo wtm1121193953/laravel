@@ -15,7 +15,7 @@
                 :limit="limit"
                 :data="data"
                 :on-exceed="onExceed"
-                :class="{'upload-fulled' : initialFileList.length >= limit}"
+                :class="{'upload-fulled' : fileList.length >= limit || initialFileList.length >= limit}"
         >
             <i v-if="!$slots.default" class="el-icon-plus"></i>
             <slot/>
