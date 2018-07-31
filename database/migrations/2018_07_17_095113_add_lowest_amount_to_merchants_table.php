@@ -19,11 +19,12 @@ class AddLowestAmountToMerchantsTable extends Migration
         Schema::table('merchants', function (Blueprint $table) {
             $table->decimal('lowest_amount')->default(0)->comment('最低消费');
         });
-        $merchants = Merchant::all();
-        foreach ($merchants as $merchant){
-            $merchant->lowest_amount = MerchantService::getLowestPriceForMerchant($merchant->id);
-            $merchant->save();
-        }
+        Merchant::chunk(1000, function($merchants){
+            foreach ($merchants as $merchant){
+                $merchant->lowest_amount = MerchantService::getLowestPriceForMerchant($merchant->id);
+                $merchant->save();
+            }
+        });
     }
 
     /**
