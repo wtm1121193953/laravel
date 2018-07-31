@@ -15,6 +15,7 @@
                     <el-form-item prop="id" label="商户ID">{{data.id}}</el-form-item>
                     <el-form-item v-if="data.operName" prop="operName" label="运营中心">{{data.operName}}</el-form-item>
                     <el-form-item prop="name" label="商户名称">{{data.name}}</el-form-item>
+                    <el-form-item prop="signboard_name" label="招牌名称">{{data.signboard_name}}</el-form-item>
                     <el-form-item prop="merchant_category" label="所属行业">
                         <span v-for="item in data.categoryPath" :key="item.id">
                             {{ item.name }}
@@ -32,7 +33,7 @@
                 <el-col :span="12" :offset="1">
                     <el-form-item prop="audit_status" label="审核状态">
                         <span v-if="data.audit_status === 0" class="c-warning">待审核</span>
-                        <span v-else-if="data.audit_status === 1" class="c-green">审核通过</span>
+                        <span v-else-if="data.audit_status === 1" class="c-green">审核通过({{data.active_time}})</span>
                         <span v-else-if="data.audit_status === 2" class="c-danger">审核不通过</span>
                         <span v-else-if="data.audit_status === 3" class="c-warning">重新提交审核</span>
                         <span v-else>未知 ({{data.audit_status}})</span>
@@ -71,7 +72,6 @@
                             </template>
                         </el-form-item>
                         <!--<el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>-->
-                        <el-form-item prop="signboard_name" label="招牌名称">{{data.signboard_name}}</el-form-item>
                         <!--<el-form-item prop="invoice_title" label="发票抬头">{{data.invoice_title}}</el-form-item>-->
                         <!--<el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>-->
 

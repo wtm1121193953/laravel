@@ -5,12 +5,10 @@
         <el-button type="text" @click="merchants">业务</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '冻结' : '解冻'}}</el-button>
 
-        <el-dialog title="编辑业务员信息" :visible.sync="isEdit">
-            <operBizMember-form
-                    :data="scope.row"
-                    @cancel="isEdit = false"
-                    @save="doEdit"/>
+        <el-dialog title="编辑业务员信息" :visible.sync="isEdit"   :close-on-click-modal="false"    :before-close="handleClose" >
+            <operBizMember-form  ref="operBizMemberForm" :data="scope.row" @cancel="isEdit = false"   @save="doEdit"/>
         </el-dialog>
+
     </div>
 </template>
 
@@ -43,6 +41,10 @@
                 }).finally(() => {
                     this.$emit('after-request')
                 })
+            },
+            handleClose(){
+                //点击关闭触发子组件表单重置
+                this.$refs.operBizMemberForm.cancel()
             },
             merchants(){
                 router.push({

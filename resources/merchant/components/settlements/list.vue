@@ -40,7 +40,7 @@
                 :total="total"
         />
 
-        <el-dialog :visible.sync="isShowSettlementDetail">
+        <el-dialog :visible.sync="isShowSettlementDetail"  width="60%">
             <settlement-detail :scope="settlement"/>
         </el-dialog>
 

@@ -48,30 +48,37 @@ Route::get('/merchant-h5', function () {
 Route::get('/article/{code}', 'ArticleController@index');
 
 Route::get('/miniprogram_bridge/pay', function(){
-    $targetOperId = request('targetOperId');
-    if(empty($targetOperId)) throw new BaseResponseException('targetOperId不能为空');
-    $orderNo = request('orderNo');
-    if(empty($orderNo)) throw new ParamInvalidException('订单号不能为空');
-    $userId = request('userId');
-    if(empty($userId)) throw new ParamInvalidException('用户ID不能为空');
-
-    $page = request('page', 'pages/severs/index/index');
-
-    $scene = new MiniprogramScene();
-    $scene->oper_id = $targetOperId;
-    $scene->page = $page;
-    $scene->type = MiniprogramScene::TYPE_PAY_BRIDGE;
-    $scene->payload = json_encode([
-        'order_no' => $orderNo,
-        'user_id' => $userId
-    ]);
-    $scene->save();
-
+    
     try{
+        $targetOperId = request('targetOperId');
+        if(empty($targetOperId)) throw new BaseResponseException('targetOperId不能为空');
+        $orderNo = request('orderNo');
+        if(empty($orderNo)) throw new ParamInvalidException('订单号不能为空');
+        $userId = request('userId');
+        if(empty($userId)) throw new ParamInvalidException('用户ID不能为空');
+
+        $page = request('page', 'pages/severs/index/index');
+
+        $scene = new MiniprogramScene();
+        $scene->oper_id = $targetOperId;
+        $scene->page = $page;
+        $scene->type = MiniprogramScene::TYPE_PAY_BRIDGE;
+        $scene->payload = json_encode([
+            'order_no' => $orderNo,
+            'user_id' => $userId
+        ]);
+        $scene->save();
+
         $appCodeUrl = WechatService::getMiniprogramAppCodeUrl($scene);
     }catch (\App\Exceptions\MiniprogramPageNotExistException $e){
         $appCodeUrl = '';
         $errorMsg = '小程序页面不存在或尚未发布';
+    }catch (BaseResponseException $e){
+        $appCodeUrl = '';
+        $errorMsg = $e->getResponse()->original['message'];
+    }catch (Exception $e){
+        $appCodeUrl = '';
+        $errorMsg = $e->getMessage();
     }
 
 //    $appCodeUrl = 'https://o2o.niucha.ren/storage/miniprogram/app_code/_3-id=52.jpg';

@@ -42,7 +42,7 @@ class Utils
                 $attributes[$key] = $attribute->toArray();
             }
         }
-//        App::se
+
         $data = [
             'ip' => $request->ip(),
             'fullUrl' => $request->fullUrl(),
@@ -54,5 +54,15 @@ class Utils
             $data['session'] = $request->session()->all();
         }
         return $data;
+    }
+
+    /**
+     * 获取半隐藏的手机号
+     * @param $mobile
+     * @return string
+     */
+    public static function getHalfHideMobile($mobile)
+    {
+        return substr($mobile, 0, 3) . '****' . substr($mobile, -4);
     }
 }

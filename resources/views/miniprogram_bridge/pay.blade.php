@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>支付跳转</title>
+    <title>支付订单</title>
     <style>
         body {
             margin: 0;
@@ -32,9 +32,18 @@
 </head>
 <body>
 <div class="title">请您长按识别下图的小程序码进行支付</div>
-@if(isset($errorMsg))
+@if(!empty($errorMsg))
 <div class="error">{{$errorMsg}}</div>
 @endif
 <img class="image" src="{{ $app_code_url }}" alt="">
+
+<!-- html -->
+<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+<script>
+    @if(!empty($errorMsg))
+        wx.miniProgram.postMessage({ data: {errorMsg: "{{$errorMsg}}"} })
+        wx.miniProgram.navigateBack()
+    @endif
+</script>
 </body>
 </html>

@@ -4,6 +4,19 @@ namespace App\Modules\UserCredit;
 
 use App\BaseModel;
 
+/**
+ * Class UserCreditRecord
+ * @package App\Modules\UserCredit
+ *
+ * @property int    user_id
+ * @property int    inout_type
+ * @property int    type
+ * @property string order_no
+ * @property string consume_user_mobile
+ * @property number consume_quota
+ *
+ */
+
 class UserConsumeQuotaRecord extends BaseModel
 {
     //来源类型

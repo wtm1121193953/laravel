@@ -17,7 +17,6 @@ use App\Modules\Goods\Goods;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Merchant\Merchant;
-use App\Modules\Merchant\MerchantDraft;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
@@ -28,8 +27,8 @@ use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
@@ -352,6 +351,9 @@ class OrderController extends Controller
         $orderNo = request('order_no');
         $order = Order::where('order_no', $orderNo)->firstOrFail();
 
+        if ($order->status == Order::STATUS_PAID || $order->status == Order::STATUS_FINISHED) {
+            throw new BaseResponseException('订单已支付，请重新发起订单');
+        }
         if($order->status != Order::STATUS_UN_PAY){
             throw new BaseResponseException('订单状态异常');
         }
@@ -405,6 +407,8 @@ class OrderController extends Controller
             $orderRefund->save();
 
             $order->status = Order::STATUS_REFUNDED;
+            $order->refund_price = $orderPay->amount;
+            $order->refund_time = Carbon::now();
             $order->save();
             $this->decSellNumber($order);
             return Result::success($orderRefund);

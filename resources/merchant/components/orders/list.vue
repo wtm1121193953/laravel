@@ -34,6 +34,9 @@
                     <span v-else-if="scope.row.type == 3 && scope.row.dishes_items.length > 1">
                         {{scope.row.dishes_items[0].dishes_goods_name}}等{{getNumber(scope.row.dishes_items)}}件商品
                     </span>
+                    <span v-else-if="scope.row.type == 2">
+                        无
+                    </span>
                     <span v-else>
                         {{scope.row.goods_name}}
                     </span>
@@ -82,7 +85,7 @@
                 <el-col :span="7" :offset="1">
                     <el-button type="primary" ref="verifyInput" @click="verification">核销</el-button>
                 </el-col>
-                <div v-if="verify_success">核销成功！<el-button type="text" @click="showDetail(order)">查看订单</el-button></div>
+                <div v-if="verify_success" class="fl">核销成功！<el-button type="text" @click="showDetail(order)">查看订单</el-button></div>
                 <div v-if="verify_fail">核销失败！请检查消费码</div>
             </el-row>
         </el-dialog>
@@ -144,7 +147,7 @@
                 this.verify_success = false;
                 this.verify_fail = false;
                 if (!this.verify_code){
-                    this.$message.error('请填写核销码');
+                    this.$message.error('请填写消费码');
                     return false;
                 }
                 api.post('/verification', {verify_code: this.verify_code}, false).then(result => {

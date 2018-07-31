@@ -230,7 +230,44 @@ token (wxLogin接口除外)
   }
   ```
 
-  ​
+
+
+- [ ] 通过关键字搜索城市列表
+
+  接口地址：GET  `area/search`
+
+  参数：
+
+  ```
+  name: 城市关键字
+  ```
+
+  返回：
+
+  ```
+  data: {
+      list: [ 城市列表
+          {
+              id: 主键
+              area_id: 地区id
+              name: 地区名称
+              type: 类型，保留字段
+              path: 路径，从1开始
+              area_code: 区号
+              spell: 拼音
+              letter: 简拼
+              first_letter: 首字母
+              status: 状态 1-正常 2-禁用
+              parent_id: 父ID，如果是省份，则父ID为0
+          }
+          ......
+      ]
+  }
+  ```
+
+  
+
+
 
 #### 商家模块
 
@@ -275,6 +312,8 @@ token (wxLogin接口除外)
   lng: 用户当前经度
   lat: 用户当前纬度
   radius: 范围, 范围参数只有在经纬度信息存在时才有效, 当传递范围参数时, 会获取用户位置所指定范围内的商家并根据距离排序
+  lowest_price: 价格筛选，最低的最低消费价格
+  highest_price：价格筛选，最高的最低消费价格，有价格筛选时，按照价格由低到高排序
   page: 获取的页数
   ```
 
@@ -310,9 +349,31 @@ token (wxLogin接口除外)
         audit_status: 商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在,
-        lowestAmount: 最低消费金额,
+        lowest_amount: 最低消费金额,
         isOperSelf: 是否归属于当前小程序的运营中心,
-        grade: 商户评级,目前默认为5
+        grade: 商户评级,目前默认为5,
+        lowestGoods: [	价格最低的两个团购商品
+            {
+                id: 商品ID,
+                oper_id: 运营中心ID
+                merchant_id: 商家ID,
+                name: 商品名,
+                desc: 商品描述,
+                market_price: 市场价(商品原价),
+                price; 商品价格,
+                start_date: 商品有效期开始日期,
+                end_date: 商品有效期结束日期,
+                business_time: 可用时间 数组格式:[开始时间, 结束时间], 如: ['10:30:00', '18:30:00'],
+                thumb_url: 商品缩略图,
+                pic: 商品默认图,
+                pic_list: 商品小图列表, 数组
+                buy_info: 购买须知,
+                status: 状态 1-上架 2-下架,
+                sell_number: 商品已售数量,
+                business_time: 营业时间，数组
+            }
+            ......
+        ]
       }
     ]
   } 
@@ -460,7 +521,7 @@ id: 商品id
   参数:
 
   ```
-   status: 状态	
+   status: 状态 1-未支付 2-已取消 3-已关闭 (超时自动关闭) 4-已支付 5-退款中[保留状态] 6-已退款 7-已完成 (不可退款)
   ```
 
   返回
@@ -480,6 +541,7 @@ id: 商品id
                 merchant_name: 商家名,
                 merchant_logo: 商家logo,
                 signboard_name：商家招牌名称,
+                tyep: 订单类型 1-团购订单 2-扫码支付订单 3-点菜订单,
                 goods_id: 商品ID,
                 goods_name: 商品名,
                 goods_pic: 商品图片,
@@ -548,6 +610,7 @@ order_no 订单号
          merchant_id: 商家ID,
          merchant_name: 商家名,
          signboard_name：商家招牌名称,
+         tyep: 订单类型 1-团购订单 2-扫码支付订单 3-点菜订单,
          goods_id: 商品ID,
          goods_name: 商品名,
          goods_pic: 商品图片,
@@ -884,9 +947,173 @@ order_no 订单号
   }
   ```
 
+订单详情，订单列表接口不变
+
+
+
+**分享相关**
+
+- [ ] 获取分享二维码
+
+  地址：GET     `invite/qrcode`
+
+  参数：无
+
+  返回：
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应消息,
+      "data": {
+          "qrcode_url": 分享二维码url,
+          "inviteChannel": {
+              "id": 推广渠道id,
+              "oper_id": 运营中心id,
+              "origin_id": 推广人ID(用户ID, 商户ID 或 运营中心ID),
+              "origin_type": 推广人类型  1-用户 2-商户 3-运营中心,
+              "scene_id": 场景ID (miniprogram_scenes表id) 基于app的邀请码, 没有场景ID与运营中心ID,
+              "created_at": 创建时间,
+              "updated_at": 更新时间,
+              "name": 渠道名称,
+              "remark": 备注,
+              "origin_name": 推广渠道邀请者名称
+          }
+      },
+      "timestamp": 当前时间戳
+  }
+  ```
+
+  
+
+- [ ] 根据场景id获取邀请人信息
+
+  地址：GET     `invite/getInviterBySceneId`
+
+  参数：
+
+  ```
+  sceneId: 场景ID
+  ```
+
+  返回：
+
+  ```
+  "data": {
+      "id": 推广渠道id,
+      "oper_id": 运营中心id,
+      "origin_id": 推广人ID(用户ID, 商户ID 或 运营中心ID),
+      "origin_type": 推广人类型  1-用户 2-商户 3-运营中心,
+      "scene_id": 场景ID (miniprogram_scenes表id) 基于app的邀请码, 没有场景ID与运营中心ID,
+      "created_at": 创建时间,
+      "updated_at": 更新时间,
+      "name": 渠道名称,
+      "remark": 备注,
+      "origin_name": 推广渠道邀请者名称
+  },
+  ```
+
+
+
+- [ ] 绑定推荐人
+
+  地址：POST     `invite/bindInviter`
+
+  参数：
+
+  ```
+  inviteChannelId: 邀请渠道ID
+  ```
+
+  返回：
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应消息,
+      "data": {}
+      },
+      "timestamp": 当前时间戳
+  }
+  ```
+
+  
+
+- [ ] 用户邀请人信息
+
+  地址: GET ```invite/getInviterInfo```
+
+  参数：无
+
+  返回
+
+```
+        "data": {
+        "origin_type": 1,  邀请人类型 1-用户 2-商户 3-运营中心
+        "user": {        邀请的用户信息, origin_type 为1 时存在
+            "id": 2,
+            "name": "",
+            "mobile": "13923756372",
+            "email": "",
+            "account": "",
+            "status": 1,
+            "created_at": "2018-05-11 15:41:50",
+            "updated_at": "2018-05-11 15:41:50",
+            "level": 1
+        },
+        "merchant":邀请的商户信息 origin_type为2时存在 {
+          name:...
+        },   
+        "oper":  邀请的运营中心信息 origin_type为3时存在 {
+          name:...       
+        },     
+        "mappingUser":  邀请的运营中心或商户绑定的用户信息, origin_type 为2或3, 以及商户或运营中心已绑定用户时存在 {
+          mobile:...
+        }    
+    },
+    
+
+```
+
+  ​
+
+- [ ] 用户解绑
+
+  地址: POST     ```invite/unbind```
+
+  参数：无
+
+  首次解绑 成功返回
+
+```
+  {
+    "code": 0,
+    "message": "请求成功",
+    "data": [],
+    "timestamp": 1528947476
+  }
+     
+
+```
+
+  若第二次解绑
+
+```
+  {
+    "code": 500,
+    "message": "该用户已解绑一次，不能再次解绑",
+    "timestamp": 1528947551
+  }
+
+```
+
   
 
 
 
-订单详情，订单列表接口不变
+
+
+
+
+
 

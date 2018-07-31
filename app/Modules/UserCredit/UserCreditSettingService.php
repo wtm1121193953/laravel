@@ -11,6 +11,7 @@ namespace App\Modules\UserCredit;
 
 use App\Modules\Setting\SettingService;
 
+
 class UserCreditSettingService extends SettingService
 {
 

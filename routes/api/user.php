@@ -23,6 +23,7 @@ Route::prefix('user')
         Route::get('area/cites/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
         Route::get('area/cites/withHot', 'AreaController@getCitiesWithHot');
         Route::get('area/getByGps', 'AreaController@getAreaByGps');
+        Route::get('area/search', 'AreaController@searchCityList');
 
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
         Route::get('merchants', 'MerchantController@getList');
@@ -43,6 +44,9 @@ Route::prefix('user')
         Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
         Route::get('invite/getInviterBySceneId', 'InviteChannelController@getInviterBySceneId');
         Route::post('invite/bindInviter', 'InviteChannelController@bindInviter')->middleware(UserLoginFilter::class);
+
+        Route::get('invite/getInviterInfo', 'UnbindInviterController@getBindInfo')->middleware(UserLoginFilter::class);
+        Route::post('invite/unbind', 'UnbindInviterController@unbind')->middleware(UserLoginFilter::class);
 
         Route::get('scene/info', 'SceneController@getSceneInfo');
 

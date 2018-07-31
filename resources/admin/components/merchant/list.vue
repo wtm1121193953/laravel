@@ -8,8 +8,8 @@
                 <el-form-item prop="name" label="商户名称" >
                     <el-input v-model="query.name" size="small"  placeholder="商户名称" clearable @keyup.enter.native="search"/>
                 </el-form-item>
-                <el-form-item prop="signBoardName" label="商户招牌名" >
-                    <el-input v-model="query.signBoardName" size="small"  placeholder="商户招牌名" clearable @keyup.enter.native="search"/>
+                <el-form-item prop="signboardName" label="商户招牌名" >
+                    <el-input v-model="query.signboardName" size="small"  placeholder="商户招牌名" clearable @keyup.enter.native="search"/>
                 </el-form-item>
                 <el-form-item prop="startDate" label="添加商户开始时间">
                     <el-date-picker
@@ -52,12 +52,12 @@
                 <el-form-item prop="operName" label="激活运营中心名称"  >
                     <el-input v-model="query.operName" size="small"  placeholder="激活运营中心名称"  clearable></el-input>
                 </el-form-item>
-                <el-form-item prop="creatorOperId" label="录入运营中心ID"   >
-                    <el-input v-model="query.creatorOperId" size="small"  placeholder="录入运营中心ID"  class="w-100" clearable />
-                </el-form-item>
-                <el-form-item prop="creatorOperName" label="录入运营中心名称"  >
-                    <el-input v-model="query.creatorOperName" size="small"  placeholder="录入运营中心名称" class="w-100"   clearable></el-input>
-                </el-form-item>
+                <!--<el-form-item prop="creatorOperId" label="录入运营中心ID"   >-->
+                    <!--<el-input v-model="query.creatorOperId" size="small"  placeholder="录入运营中心ID"  class="w-100" clearable />-->
+                <!--</el-form-item>-->
+                <!--<el-form-item prop="creatorOperName" label="录入运营中心名称"  >-->
+                    <!--<el-input v-model="query.creatorOperName" size="small"  placeholder="录入运营中心名称" class="w-100"   clearable></el-input>-->
+                <!--</el-form-item>-->
                 <el-form-item>
                     <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                 </el-form-item>
@@ -68,14 +68,15 @@
              </el-form>
             </el-col>
             <el-table :data="list" v-loading="tableLoading" stripe>
-                <el-table-column prop="created_at" label="添加时间"/>
+                <el-table-column prop="created_at" label="添加时间"  width="160px" />
                 <el-table-column prop="id" size="mini"	 label="商户ID"/>
                 <el-table-column prop="name" label="商户名称"/>
                 <el-table-column prop="signboard_name" label="商户招牌名"/>
                 <el-table-column prop="operId" size="mini" label="激活运营中心ID"/>
                 <el-table-column prop="operName" label="激活运营中心名称"/>
-                <el-table-column prop="creatorOperId"  size="mini" label="录入运营中心ID"/>
-                <el-table-column prop="creatorOperName" label="录入运营中心名称"/>
+                <!--<el-table-column prop="creatorOperId"  size="mini" label="录入运营中心ID"/>-->
+                <!--<el-table-column prop="creatorOperName" label="录入运营中心名称"/>-->
+                <el-table-column prop="operBizMemberName" label="业务员" />
                 <el-table-column prop="categoryPath" label="行业">
                     <template slot-scope="scope">
                 <span v-for="item in scope.row.categoryPath" :key="item.id">
@@ -167,7 +168,7 @@
                 detailMerchant:null,
                 query: {
                     name: '',
-                    signBoardName:'',
+                    signboardName:'',
                     auditStatus: [],
                     page: 1,
                     merchantId: '',
@@ -196,7 +197,7 @@
                 this.getList();
             },
             showMessage(scope){
-                 api.get('merchant/audit/newlist', {id: scope.row.id}).then(data => {
+                 api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
                         this.auditRecord = [data];
                     })
             },
@@ -220,6 +221,8 @@
                     this.query.page = params.page;
                     this.list = data.list;
                     this.total = data.total;
+                    this.tableLoading = false;
+                }).finally(() => {
                     this.tableLoading = false;
                 })
             },
@@ -260,7 +263,7 @@
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
                 this.$confirm(message).then(() => {
-                    window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&signBoardName='+ this.query.signBoardName+ '&auditStatus=' + this.query.auditStatus + '&operName=' + this.query.operName + '&operId=' + this.query.operId + '&creatorOperName=' + this.query.creatorOperName + '&creatorOperId=' + this.query.creatorOperId;
+                    window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&signboardName='+ this.query.signboardName+ '&auditStatus=' + this.query.auditStatus + '&operName=' + this.query.operName + '&operId=' + this.query.operId + '&creatorOperName=' + this.query.creatorOperName + '&creatorOperId=' + this.query.creatorOperId;
                 })
             }
         },

@@ -11,17 +11,15 @@ namespace App\Http\Controllers\Merchant;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
-use App\Modules\Merchant\Merchant;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PayQrcodeController extends Controller
 {
 
     /**
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * 获取支付小程序码
      */
     public function getMiniprogramAppCode()
     {
@@ -54,7 +52,6 @@ class PayQrcodeController extends Controller
     /**
      * 下载扫码支付的小程序码
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public function downloadMiniprogramAppCode()
     {

@@ -10,6 +10,7 @@ namespace App\Modules\Area;
 
 
 use App\Support\Utils;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 
 class AreaService
@@ -45,4 +46,20 @@ class AreaService
         return $tree;
     }
 
+    /**
+     * 搜索地区 2,3级地区
+     * @param $name
+     * @return Area[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getCityListByKeyword($name)
+    {
+        $list = Area::where('path', '<>', 1)
+            ->where(function (Builder $query) use ($name){
+                $query->where('name', 'like', "%$name%")
+                    ->orWhere('spell', 'like', "$name%")
+                    ->orWhere('letter', 'like', "$name%");
+            })->get();
+
+        return $list;
+    }
 }

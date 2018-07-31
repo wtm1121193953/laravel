@@ -4,6 +4,15 @@ namespace App\Modules\User;
 
 use App\BaseModel;
 
+/**
+ * Class UserMapping
+ * @package App\Modules\User
+ *
+ * @property int    origin_id
+ * @property int    origin_type
+ * @property int    user_id
+ *
+ */
 class UserMapping extends BaseModel
 {
     //

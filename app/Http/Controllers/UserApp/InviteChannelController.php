@@ -12,6 +12,7 @@ namespace App\Http\Controllers\UserApp;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
 use App\Result;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -22,7 +23,7 @@ class InviteChannelController extends Controller
     public function getInviteQrcode()
     {
         $userId = request()->get('current_user')->id;
-        $inviteChannel = InviteService::getInviteChannel($userId, InviteChannel::ORIGIN_TYPE_USER);
+        $inviteChannel = InviteChannelService::getByOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER);
         $dir = storage_path('app/public/inviteChannel/qrcode');
         if(!is_dir($dir)){
             mkdir($dir, 0777, true);
@@ -50,12 +51,12 @@ class InviteChannelController extends Controller
         if(empty($inviteChannelId)){
             throw new ParamInvalidException('邀请渠道ID不能为空');
         }
-        $inviteChannel = InviteChannel::find($inviteChannelId);
+        $inviteChannel = InviteChannelService::getById($inviteChannelId);
         if(empty($inviteChannel)){
             throw new ParamInvalidException('渠道不存在');
         }
 
-        $inviteChannel->origin_name = InviteService::getInviteChannelOriginName($inviteChannel);
+        $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
         return Result::success($inviteChannel);
     }
 
@@ -65,7 +66,7 @@ class InviteChannelController extends Controller
     public function bindInviter()
     {
         $inviteChannelId = request('inviteChannelId');
-        $inviteChannel = InviteChannel::find($inviteChannelId);
+        $inviteChannel = InviteChannelService::getById($inviteChannelId);
         if(empty($inviteChannel)){
             throw new ParamInvalidException('邀请渠道不存在');
         }

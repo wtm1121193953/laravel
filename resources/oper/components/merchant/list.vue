@@ -9,6 +9,21 @@
                 <el-input v-model="query.signBoardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
             </el-form-item>
 
+            <el-form-item prop="merchant_category" label="所属行业">
+                <el-cascader
+                        change-on-select
+                        clearable
+                        filterable
+                        :options="categoryOptions"
+                        :props="{
+                            value: 'id',
+                            label: 'name',
+                            children: 'sub',
+                        }"
+                        v-model="query.merchant_category">
+                </el-cascader>
+            </el-form-item>
+
             <el-form-item label="状态" prop="status">
                 <el-select v-model="query.status">
                     <el-option label="全部" value=""/>
@@ -126,6 +141,7 @@
         name: "merchant-list",
         data(){
             return {
+                categoryOptions: [],
                 auditRecord:[],
                 isLoading: false,
                 query: {
@@ -177,10 +193,9 @@
                 });
             },
             showMessage(scope){
-                api.get('/merchant/audit/newlist', {id: scope.row.id}).then(data => {
+                api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
                     this.auditRecord = [data];
                 })
-
             },
 
             accountChanged(scope, account){
@@ -195,6 +210,9 @@
 
 
         created(){
+            api.get('merchant/categories/tree').then(data => {
+                this.categoryOptions = data.list;
+            });
             if (this.$route.params){
                 Object.assign(this.query, this.$route.params);
             }

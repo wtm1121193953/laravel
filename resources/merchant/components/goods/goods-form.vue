@@ -23,10 +23,11 @@
                     <el-date-picker
                         v-model="form.end_date"
                         type="date"
-                        :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(form.start_date) - 8.64e7}}"
+                        :picker-options="{disabledDate: (time) => {return time.getTime() < Date.now() - 8.64e7}}"
                         placeholder="选择结束日期"
                         value-format="yyyy-MM-dd">
                     </el-date-picker>
+                    <div class="tips">超出有效期，商品自动下架</div>
                 </el-form-item>
                 <el-form-item prop="thumb_url" label="产品缩略图">
                     <image-upload :width="190" :height="190" v-model="form.thumb_url" :limit="1"/>
@@ -147,7 +148,7 @@
                             return;
                         }
                         if(data.start_date > data.end_date){
-                            this.$message.error('开始时间不能大于结束时间');
+                            this.$message.error('有效期开始时间不能大于结束时间');
                             return;
                         }
                         this.$emit('save', data);

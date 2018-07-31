@@ -6,7 +6,7 @@
  * Time: 18:31
  */
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\Auth;
 
 
 use App\Exceptions\BaseResponseException;

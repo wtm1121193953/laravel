@@ -10,7 +10,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Article\Article;
+use App\Modules\Article\ArticleService;
 use App\Modules\Setting\SettingService;
 use App\Result;
 
@@ -117,14 +117,8 @@ class SettingController extends Controller
             'code' => 'required'
         ]);
         $code = request('code');
-        $article = Article::where('code', $code)->first();
-        if (empty($article)){
-            $article = new Article();
-            $article->code = request('code');
-        }
-        $article->title = request('title');
-        $article->content = request('content', '');
-        $article->save();
+        $article = ArticleService::editByCode($code, request('title', ''), request('content', ''));
+
         return Result::success($article);
     }
 
@@ -138,7 +132,7 @@ class SettingController extends Controller
             'code' => 'required'
         ]);
         $code = request('code');
-        $article = Article::where('code', $code)->first();
+        $article = ArticleService::getByCode($code);
         return Result::success([
             'article' => $article,
         ]);

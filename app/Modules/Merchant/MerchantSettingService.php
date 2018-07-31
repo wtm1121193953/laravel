@@ -76,11 +76,11 @@ class MerchantSettingService
      * @param $merchantId
      * @return Collection
      */
-    protected static function getAll($merchantId){
+    public static function getAll($merchantId){
         $cacheKey = 'merchant_setting_cache:' . $merchantId;
         $settings = Cache::get($cacheKey);
         if(empty($settings)){
-            $settings = collect();
+            $settings = collect(self::defaultSettings);
             MerchantSetting::where('merchant_id', $merchantId)->get()->each(function($item) use ($settings){
                 $settings->put($item->key, $item->value);
             });

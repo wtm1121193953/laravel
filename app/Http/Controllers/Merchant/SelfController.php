@@ -66,7 +66,7 @@ class SelfController extends Controller
     {
         $this->validate(request(), [
             'password' => 'required',
-            'newPassword' => 'required',
+            'newPassword' => 'required|between:6,30',
             'reNewPassword' => 'required|same:newPassword'
         ]);
         $user = request()->get('current_user');

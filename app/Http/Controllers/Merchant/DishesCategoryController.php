@@ -3,13 +3,9 @@
 namespace App\Http\Controllers\Merchant;
 
 
-use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
-use App\Modules\Dishes\DishesCategory;
-use App\Modules\Dishes\DishesGoods;
+use App\Modules\Dishes\DishesCategoryService;
 use App\Result;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
 class DishesCategoryController extends Controller
 {
@@ -21,10 +17,8 @@ class DishesCategoryController extends Controller
     {
         $status = request('status');
         $pageSize = request('pageSize');
-        $data = DishesCategory::where('merchant_id', request()->get('current_user')->merchant_id)
-            ->when($status, function (Builder $query) use ($status){
-            $query->where('status', $status);
-        })->orderBy('sort', 'desc')->paginate($pageSize);
+
+        $data = DishesCategoryService::getListByMerchantId(request()->get('current_user')->merchant_id, $status, $pageSize);
 
         return Result::success([
             'list' => $data->items(),
@@ -38,10 +32,8 @@ class DishesCategoryController extends Controller
     public function getAllList()
     {
         $status = request('status');
-        $list = DishesCategory::where('merchant_id', request()->get('current_user')->merchant_id)
-            ->when($status, function (Builder $query) use ($status){
-            $query->where('status', $status);
-        })->orderBy('id', 'desc')->get();
+
+        $list = DishesCategoryService::getAllList(request()->get('current_user')->merchant_id, $status);
 
         return Result::success([
             'list' => $list,
@@ -56,14 +48,13 @@ class DishesCategoryController extends Controller
         $this->validate(request(), [
             'name' => 'required',
         ]);
-        $dishesCategory = new DishesCategory();
-        $dishesCategory->oper_id = request()->get('current_user')->oper_id;
-        $dishesCategory->merchant_id = request()->get('current_user')->merchant_id;
-        $dishesCategory->name = request('name');
-        $dishesCategory->status = request('status', 1);
-        $dishesCategory->sort = DishesCategory::max('sort') + 1;
 
-        $dishesCategory->save();
+        $dishesCategory = DishesCategoryService::add(
+            request()->get('current_user')->oper_id,
+            request()->get('current_user')->merchant_id,
+            request('name'),
+            request('status', 1)
+        );
 
         return Result::success($dishesCategory);
     }
@@ -77,11 +68,12 @@ class DishesCategoryController extends Controller
             'id' => 'required|integer|min:1',
             'name' => 'required',
         ]);
-        $dishesCategory = DishesCategory::findOrFail(request('id'));
-        $dishesCategory->name = request('name');
-        $dishesCategory->status = request('status', 1);
-
-        $dishesCategory->save();
+        $dishesCategory = DishesCategoryService::edit(
+            request('id'),
+            request()->get('current_user')->merchant_id,
+            request('name'),
+            request('status', 1)
+        );
 
         return Result::success($dishesCategory);
     }
@@ -95,10 +87,11 @@ class DishesCategoryController extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer',
         ]);
-        $dishesCategory = DishesCategory::findOrFail(request('id'));
-        $dishesCategory->status = request('status');
-
-        $dishesCategory->save();
+        $dishesCategory = DishesCategoryService::changeStatus(
+            request('id'),
+            request()->get('current_user')->merchant_id,
+            request('status')
+        );
         return Result::success($dishesCategory);
     }
 
@@ -113,13 +106,7 @@ class DishesCategoryController extends Controller
             'id' => 'required|integer|min:1',
         ]);
         $categoryId = request('id');
-        $goodsCount = DishesGoods::where('merchant_id', request()->get('current_user')->merchant_id)
-            ->where('dishes_category_id', $categoryId)->count();
-        if ($goodsCount > 0){
-            throw new BaseResponseException('该分类下有'.$goodsCount.'个单品，不能删除！');
-        }
-        $dishesCategory = DishesCategory::findOrFail($categoryId);
-        $dishesCategory->delete();
+        $dishesCategory = DishesCategoryService::del($categoryId, request()->get('current_user')->merchant_id);
         return Result::success($dishesCategory);
     }
 
@@ -130,41 +117,16 @@ class DishesCategoryController extends Controller
      */
     public function saveOrder()
     {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'type' => 'required',
+        ]);
         $type = request('type');
-        if ($type == 'up'){
-            $option = '>';
-            $order = 'asc';
-        }else{
-            $option = '<';
-            $order = 'desc';
-        }
+        $merchantId = request()->get('current_user')->merchant_id;
 
-        $dishesCategory = DishesCategory::findOrFail(request('id'));
-        if (empty($dishesCategory)){
-            throw new BaseResponseException('该单品分类不存在');
-        }
-        $dishesCategoryExchange = DishesCategory::where('merchant_id', request()->get('current_user')->merchant_id)
-            ->where('sort', $option, $dishesCategory['sort'])
-            ->orderBy('sort', $order)
-            ->first();
-        if (empty($dishesCategoryExchange)){
-            throw new BaseResponseException('交换位置的单品分类不存在');
-        }
+        DishesCategoryService::changeSort(request('id'), $merchantId, $type);
 
-        $item = $dishesCategory['sort'];
-        $dishesCategory['sort'] = $dishesCategoryExchange['sort'];
-        $dishesCategoryExchange['sort'] = $item;
-
-        DB::beginTransaction();
-        $res1 = $dishesCategory->save();
-        $res2 = $dishesCategoryExchange->save();
-        if ($res1 && $res2){
-            DB::commit();
-            return Result::success();
-        }else{
-            DB::rollBack();
-            throw new BaseResponseException('交换位置失败');
-        }
+        return Result::success();
     }
 
 }

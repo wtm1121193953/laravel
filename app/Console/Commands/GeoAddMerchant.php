@@ -2,8 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Modules\Merchant\Merchant;
-use App\Support\Lbs;
+use App\Modules\Merchant\MerchantService;
 use Illuminate\Console\Command;
 
 class GeoAddMerchant extends Command
@@ -40,7 +39,6 @@ class GeoAddMerchant extends Command
     public function handle()
     {
         //
-        $merchants = Merchant::all();
-        Lbs::merchantGpsAdd($merchants);
+        MerchantService::geoAddAllToRedis();
     }
 }

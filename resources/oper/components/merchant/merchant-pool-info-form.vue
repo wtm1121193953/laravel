@@ -7,7 +7,11 @@
         <!--商户录入信息表单-->
         <el-col v-if="!readonly" :span="16">
             <el-form-item prop="name" label="商户名称">
-                <el-input v-model="form.name"/>
+                <el-input v-model="form.name" placeholder="请填写商户名称"   />
+                <div class="tips">须同营业执照名称一致，如营业执照未填写，填法人姓名</div>
+            </el-form-item>
+            <el-form-item prop="signboard_name" label="招牌名称">
+                <el-input v-model="form.signboard_name"/>
             </el-form-item>
             <el-form-item prop="merchant_category" label="所属行业">
                 <el-cascader
@@ -80,6 +84,7 @@
     let defaultForm = {
         /////// 商户录入信息
         name: '',
+        signboard_name: '',
         merchant_category: [],
 
         // 位置信息
@@ -105,8 +110,12 @@
                 areaOptions: [],
                 formRules: {
                     name: [
-                        {required: true, message: '商家名称不能为空', trigger: 'change'},
+                        {required: true, message: '商户名称不能为空', trigger: 'change'},
                         {max: 20, message: '商户名称不能超过20个字'}
+                    ],
+                    signboard_name: [
+                        {required: true, message: '招牌名称不能为空'},
+                        {max: 20, message: '招牌名称不能超过20个字'}
                     ],
                     merchant_category: [
                         {type: 'array', required: true, message: '所属行业不能为空'}
@@ -139,9 +148,9 @@
                         this.form[key] = this.data[key];
                     }
                     let merchant_category_array = [];
-                    if(data.merchant_category_id){
-                        data.categoryPath.forEach(function (item) {
-                            merchant_category_array.unshift(parseInt(item.id));
+                    if(data.merchant_category_id && data.categoryPathOnlyEnable){
+                        data.categoryPathOnlyEnable.forEach(function (item) {
+                            merchant_category_array.push(parseInt(item.id));
                         })
                     }
                     this.form.merchant_category = merchant_category_array;

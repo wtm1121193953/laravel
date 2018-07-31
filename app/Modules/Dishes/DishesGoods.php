@@ -5,6 +5,23 @@ namespace App\Modules\Dishes;
 use App\BaseModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class DishesGoods
+ * @package App\Modules\Dishes
+ *
+ * @property number oper_id
+ * @property number merchant_id
+ * @property number market_price
+ * @property number sale_price
+ * @property number dishes_category_id
+ * @property number sell_number
+ * @property string name
+ * @property string intro
+ * @property number is_hot
+ * @property string detail_image
+ * @property number status
+ * @property number sort
+ */
 class DishesGoods extends BaseModel
 {
     //

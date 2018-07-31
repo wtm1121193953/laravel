@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Oper;
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
@@ -177,8 +178,15 @@ class OperBizMemberController extends Controller
             $query->where('oper_id', request()->get('current_user')->oper_id)
                 ->orWhere('audit_oper_id',  request()->get('current_user')->oper_id);
         })->where('oper_biz_member_code', $code)
-            ->select('id', 'active_time', 'name', 'status')
+            ->select('id', 'active_time', 'name', 'status','audit_status','created_at')
             ->paginate();
+
+
+        $data->each(function($item) {
+            $auditStatusArray = ['待审核','已审核','审核不通过','重新提交审核'];
+            //      0-待审核 1-已审核 2-审核不通过 3-重新提交审核'
+            $item->audit_done_time = $item->audit_status==1 ? $item->active_time : $auditStatusArray[$item->audit_status];
+        });
 
         return Result::success([
             'list' => $data->items(),

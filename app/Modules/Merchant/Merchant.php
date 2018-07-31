@@ -4,7 +4,70 @@ namespace App\Modules\Merchant;
 
 use App\BaseModel;
 use App\Modules\Area\Area;
+use Carbon\Carbon;
 
+/**
+ * Class Merchant
+ * @package App\Modules\Merchant
+ *
+ * @property int    oper_id
+ * @property int    merchant_category_id
+ * @property string name
+ * @property string brand
+ * @property string signboard_name
+ * @property int region
+ * @property string province
+ * @property int province_id
+ * @property string city
+ * @property int city_id
+ * @property string area
+ * @property int area_id
+ * @property int business_time
+ * @property string logo
+ * @property string desc_pic
+ * @property string desc_pic_list
+ * @property string desc
+ * @property string invoice_title
+ * @property string invoice_no
+ * @property int status
+ * @property number lng
+ * @property number lat
+ * @property string address
+ * @property string contacter
+ * @property string contacter_phone
+ * @property int settlement_cycle_type
+ * @property number settlement_rate
+ * @property string business_licence_pic_url
+ * @property string organization_code
+ * @property string tax_cert_pic_url
+ * @property string legal_id_card_pic_a
+ * @property string legal_id_card_pic_b
+ * @property string contract_pic_url
+ * @property string hygienic_licence_pic_url
+ * @property string agreement_pic_url
+ * @property int bank_card_type
+ * @property string bank_open_name
+ * @property string bank_card_no
+ * @property string sub_bank_name
+ * @property string bank_open_address
+ * @property int audit_status
+ * @property string audit_suggestion
+ * @property string licence_pic_url
+ * @property int audit_oper_id
+ * @property int creator_oper_id
+ * @property string service_phone
+ * @property string bank_card_pic_a
+ * @property string other_card_pic_urls
+ * @property string oper_salesman
+ * @property string site_acreage
+ * @property string employees_number
+ * @property string oper_biz_member_code
+ * @property Carbon active_time
+ * @property number lowest_amount
+ * @property int mapping_user_id
+ * @property int level
+ *
+ */
 class Merchant extends BaseModel
 {
     //
@@ -28,6 +91,10 @@ class Merchant extends BaseModel
      * 审核不通过并且打回到商户池, 审核记录中才有该状态, 商家信息中直接置位审核不通过
      */
     const AUDIT_STATUS_FAIL_TO_POOL = 4;
+    /**
+     * 取消审核
+     */
+    const AUDIT_STATUS_CANCEL = 5;
 
     /**
      * 结算类型
@@ -57,6 +124,7 @@ class Merchant extends BaseModel
         // 商户基本信息
         $this->merchant_category_id = request('merchant_category_id', 0);
         $this->name = request('name');
+        $this->signboard_name = request('signboard_name', '');
 
         // 位置信息
         $provinceId = request('province_id', 0);
@@ -80,7 +148,6 @@ class Merchant extends BaseModel
     {
         $this->oper_biz_member_code = request('oper_biz_member_code','');
         $this->brand = request('brand','');
-        $this->signboard_name = request('signboard_name', '');
         $this->invoice_title = request('invoice_title','');
         $this->invoice_no = request('invoice_no','');
         $this->status = request('status', 1);

@@ -4,6 +4,19 @@ namespace App\Modules\Wechat;
 
 use App\BaseModel;
 
+/**
+ * Class MiniprogramScene
+ * @package App\Modules\Wechat
+ *
+ * @property int    oper_id
+ * @property int    merchant_id
+ * @property int    invite_channel_id
+ * @property int    type
+ * @property string page
+ * @property string payload
+ * @property string qrcode_url
+ *
+ */
 class MiniprogramScene extends BaseModel
 {
     // 订单支付页面(订单支付页面的路径暂时由小程序传参过来)

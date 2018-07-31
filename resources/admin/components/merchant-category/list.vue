@@ -14,7 +14,8 @@
                     @node-collapse="treeNodeCollapse"
             >
                 <span class="custom-tree-node" slot-scope="{ node, data }">
-                    <span :class="{'c-gray': data.status != 1}">{{data.name}} <template v-if="data.status != 1">(已禁用)</template></span>
+                    <img v-if="data.pid == 0 && data.icon" :src="data.icon" width="30px" height="30px">
+                    <span :class="{'c-gray': data.status != 1}" class="name-list">{{data.name}} <template v-if="data.status != 1">(已禁用)</template></span>
                     <!--阻止事件冒泡, 方式点击按钮时树展开-->
                     <span @click.stop="() => {}">
                         <el-dropdown @command="(command) => categoryDropdownClicked(command, data)" trigger="click">
@@ -33,7 +34,7 @@
 
             </el-tree>
         </el-col>
-        <el-dialog :visible.sync="showForm" :title="formTitle">
+        <el-dialog :visible.sync="showForm" :title="formTitle" :close-on-click-modal="false" @close="cancel">
             <el-row>
                 <el-col :span="16">
                     <el-form ref="form" :model="form" :rules="formRules" label-width="120px" size="small">
@@ -45,6 +46,10 @@
                         </el-form-item>
                         <el-form-item prop="name" label="类目名称">
                             <el-input v-model="form.name"/>
+                        </el-form-item>
+                        <el-form-item prop="icon" label="类目图标" v-if="form.pid == 0">
+                            <image-upload v-model="form.icon" :limit="1" :width="imageWidth" :height="imageHeight"></image-upload>
+                            <div class="tips">{{imageWidth}}px * {{imageHeight}}px</div>
                         </el-form-item>
                         <el-form-item prop="status" label="状态">
                             <el-radio-group v-model="form.status">
@@ -68,6 +73,7 @@
 
     let defaultForm = {
         name: '',
+        icon: '',
         status: 1,
         pid: 0
     }
@@ -75,17 +81,24 @@
         name: "merchant-category-list",
         data(){
             return {
+                imageWidth: 88,
+                imageHeight: 88,
                 isLoading: false,
                 list: [],
                 form: {
                     name: '',
+                    icon: '',
                     status: 1,
                     pid: 0
                 },
                 formRules: {
                     name: [
-                        {required: true, message: '类目名称不能为空'}
-                    ]
+                        {required: true, message: '类目名称不能为空'},
+                        {max: 20, message: '类目名称不能超过20个字'},
+                    ],
+                    icon: [
+                        {required: true, message: '类目图标不能为空'},
+                    ],
                 },
                 showForm: false,
                 formTitle: '添加类目',
@@ -140,14 +153,19 @@
             },
             cancel(){
                 this.showForm = false;
+                this.form = deepCopy(defaultForm);
                 this.$refs.form.resetFields();
             },
             save(){
-                if(this.form.id){
-                    this.doEdit()
-                }else {
-                    this.doAdd()
-                }
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        if(this.form.id){
+                            this.doEdit()
+                        }else {
+                            this.doAdd()
+                        }
+                    }
+                })
             },
             doEdit(){
                 api.post('/merchant/category/edit', this.form).then(data => {
@@ -207,5 +225,9 @@
     }
     .dropmenu {
         margin-top: 0;
+    }
+    .name-list {
+        flex: auto;
+        margin-left: 5px;
     }
 </style>

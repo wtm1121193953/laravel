@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\AutoDownGoodsJob;
 use App\Jobs\InviteUserStatisticsDailyJob;
 use App\Jobs\OrderAutoFinished;
 use App\Jobs\OrderExpired;
@@ -56,6 +57,8 @@ class Kernel extends ConsoleKernel
         // 年结
         $schedule->job(new SettlementJob(Merchant::SETTLE_YEARLY))
             ->yearly();
+        /**团购商品过期自动下架*/
+        $schedule->job(AutoDownGoodsJob::class)->daily();
     }
 
     /**

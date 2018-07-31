@@ -12,7 +12,6 @@ namespace App\Modules\Wechat;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\MiniprogramPageNotExistException;
 use App\Modules\Oper\OperMiniprogram;
-use App\Result;
 use App\ResultCode;
 use EasyWeChat\Factory;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
@@ -110,14 +109,13 @@ class WechatService
     /**
      * @param $sceneId int|MiniprogramScene
      * @return mixed|string
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      */
     public static function getMiniprogramAppCodeUrl($sceneId)
     {
         if($sceneId instanceof MiniprogramScene){
             $scene = $sceneId;
         }else {
-            $scene = MiniprogramScene::find($sceneId);
+            $scene = MiniprogramSceneService::getById($sceneId);
         }
         if(!empty($scene->qrcode_url)){
             return $scene->qrcode_url;

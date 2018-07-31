@@ -3,9 +3,31 @@
 namespace App\Modules\Goods;
 
 use App\BaseModel;
-use App\Modules\Dishes\DishesGoods;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class Goods
+ * @package App\Modules\Goods
+ *
+ * @property number oper_id
+ * @property number merchant_id
+ * @property string name
+ * @property string desc
+ * @property number market_price
+ * @property number price
+ * @property Carbon start_date
+ * @property Carbon end_date
+ * @property string thumb_url
+ * @property string pic
+ * @property string pic_list
+ * @property string buy_info
+ * @property number status
+ * @property string ext_attr
+ * @property string tags
+ * @property number sort
+ * @property number sell_number
+ */
 class Goods extends BaseModel
 {
     use SoftDeletes;
@@ -15,22 +37,4 @@ class Goods extends BaseModel
     const STATUS_ON = 1;
     const STATUS_OFF = 2;
 
-    /**
-     * 根据商家获取最低价商品的价格, 没有商品是返回null
-     * @param $merchantId
-     * @return number|null
-     */
-    public static function getLowestPriceForMerchant($merchantId)
-    {
-        $goodsLowestAmount = Goods::where('merchant_id', $merchantId)
-            ->where('status', 1)
-            ->orderBy('price')
-            ->value('price');
-        $dishesGoodsLowestAmount = DishesGoods::where('merchant_id', $merchantId)
-            ->where('status', 1)
-            ->orderBy('sale_price')
-            ->value('sale_price');
-        $lowestAmount = $goodsLowestAmount > $dishesGoodsLowestAmount ? $dishesGoodsLowestAmount : $goodsLowestAmount;
-        return $lowestAmount;
-    }
 }

@@ -32,8 +32,8 @@
         <el-dialog title="添加用户" :visible.sync="isAdd">
             <user-form @cancel="isAdd = false" @save="doAdd"/>
         </el-dialog>
-        <el-dialog title="修改用户信息" :visible.sync="isEdit">
-            <user-form :user="currentEditUser" @cancel="isEdit = false" @save="doEdit"/>
+        <el-dialog title="修改用户信息" :visible.sync="isEdit" :before-close="handleClose">
+            <user-form :user="currentEditUser" @cancel="isEdit = false"  ref="userForm" @save="doEdit"   />
         </el-dialog>
     </page>
 </template>
@@ -97,6 +97,9 @@
                         this.getUsers();
                     })
                 })
+            },
+            handleClose(){
+                this.$refs.userForm.cancel()
             }
         },
         created(){
