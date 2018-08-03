@@ -76,9 +76,9 @@ class InviteStatisticsService
      */
     public static function getInviteUserCountById($userId)
     {
-        $totalCount = InviteUserStatisticsDaily::where('origin_id', $userId)
+        $totalCount = InviteUserRecord::where('origin_id', $userId)
             ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
-            ->sum('invite_count');
+            ->count();
         return $totalCount;
     }
 
