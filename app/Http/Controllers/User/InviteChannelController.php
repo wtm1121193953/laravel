@@ -14,8 +14,12 @@ use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserRecord;
+use App\Modules\Invite\InviteUserStatisticsDaily;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Result;
+use function GuzzleHttp\Psr7\str;
+use Illuminate\Database\Eloquent\Builder;
 
 class InviteChannelController extends Controller
 {
@@ -72,4 +76,22 @@ class InviteChannelController extends Controller
         return Result::success();
     }
 
+    public function getInviteUserStatisticsByUserId()
+    {
+        $userId = request('userId');
+        $date = request('date');
+        if (!$userId) {
+            throw new ParamInvalidException('用户ID不能为空');
+        }
+        if (!$date) {
+            throw new ParamInvalidException('日期不能为空');
+        }
+        $firstDay = date('Y-m-01 00:00:00', strtotime($date));
+        $lastDay = date('Y-m-d 23:59:59', strtotime("$firstDay + 1 month - 1 day"));
+        $data = InviteUserRecord::where('origin_id', $userId)
+            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+            ->where('created_at', '<', $lastDay)
+            ->limit(20)
+            ->get();
+    }
 }
