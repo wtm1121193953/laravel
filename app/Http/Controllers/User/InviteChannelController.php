@@ -14,12 +14,9 @@ use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
-use App\Modules\Invite\InviteUserRecord;
-use App\Modules\Invite\InviteUserStatisticsDaily;
+use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Result;
-use function GuzzleHttp\Psr7\str;
-use Illuminate\Database\Eloquent\Builder;
 
 class InviteChannelController extends Controller
 {
@@ -76,6 +73,10 @@ class InviteChannelController extends Controller
         return Result::success();
     }
 
+    /**
+     * 用户分享列表统计接口
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function getInviteUserStatisticsByUserId()
     {
         $userId = request('userId');
@@ -86,12 +87,15 @@ class InviteChannelController extends Controller
         if (!$date) {
             throw new ParamInvalidException('日期不能为空');
         }
-        $firstDay = date('Y-m-01 00:00:00', strtotime($date));
-        $lastDay = date('Y-m-d 23:59:59', strtotime("$firstDay + 1 month - 1 day"));
-        $data = InviteUserRecord::where('origin_id', $userId)
-            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
-            ->where('created_at', '<', $lastDay)
-            ->limit(20)
-            ->get();
+        $data = InviteStatisticsService::getInviteStatisticsByDate($userId, $date);
+
+        $totalCount = InviteStatisticsService::getInviteUserCountById($userId);
+        $todayInviteCount = InviteStatisticsService::getTodayInviteCountById($userId);
+
+        return Result::success([
+            'data' => $data,
+            'totalCount' => $totalCount,
+            'todayInviteCount' => $todayInviteCount,
+        ]);
     }
 }
