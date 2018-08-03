@@ -8,6 +8,7 @@
 
 namespace App\Modules\Invite;
 
+use App\Modules\User\User;
 use Carbon\Carbon;
 
 /**
@@ -53,6 +54,8 @@ class InviteStatisticsService
         foreach ($dateList as $value) {
             foreach ($inviteUserRecords as $inviteUserRecord) {
                 if (date('Y-m', strtotime($inviteUserRecord->created_at)) == $value) {
+                    $inviteUserRecord->user_mobile = User::where('id', $inviteUserRecord->user_id)->value('mobile');
+
                     $firstDay = date('Y-m-01 00:00:00', strtotime($value));
                     $lastDay = date('Y-m-d 23:59:59', strtotime("$firstDay + 1 month - 1 day"));
                     $data[$value]['sub'][] = $inviteUserRecord->toArray();
