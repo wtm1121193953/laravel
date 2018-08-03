@@ -1109,7 +1109,50 @@ order_no 订单号
 
   
 
+- [ ] 获取用户分享列表
 
+  地址：GET   `invite/getInviteUserStatistics`
+
+  参数：
+
+  ```
+  userId: 用户ID
+  date: 日期（格式：2018-05）
+  ```
+
+  返回：
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应信息
+      "data": {	响应数据
+          "data": {
+              "2018-05": { 月份
+                  "sub": [
+                      {
+                          "id": 14,
+                          "user_id": 13,
+                          "invite_channel_id": 9,
+                          "origin_id": 6,
+                          "origin_type": 1,
+                          "created_at": "2018-05-14 16:18:20",
+                          "updated_at": "2018-06-08 10:14:14"
+                      },
+                      ......
+                  ],
+                  "count": 该月邀请总人数
+              }
+              ......
+          },
+          "totalCount": 邀请总人数
+          "todayInviteCount": 今日邀请总人数
+      },
+      "timestamp": 时间戳
+  }
+  ```
+
+  
 
 
 
