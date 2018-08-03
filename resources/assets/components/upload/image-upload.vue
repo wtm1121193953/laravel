@@ -4,7 +4,7 @@
                 class="uploader"
                 :action="action"
                 :list-type="listType"
-                :file-list="initialFileList"
+                :file-list="fileList"
                 :on-preview="preview ? handlePreview : null"
                 :on-success="handleUploadSuccess"
                 :on-error="handleError"
@@ -55,7 +55,6 @@
         name: "image-upload",
         props: {
             value: {type: Array|String},
-            initValue: {type: Array|String},
             action: {type: String, default: '/api/upload/image'},
             width: {type: Number},
             height: {type: Number},
@@ -70,7 +69,6 @@
         data(){
             return {
                 valueType: 'array',
-                initialFileList: [], // 初始文件列表
                 fileList: [],
                 isShow: false,
                 previewImage: '',
@@ -112,13 +110,11 @@
                 this.isShow = true;
             },
             handleRemove(file, fileList) {
-                console.log('handle remove', file, fileList)
                 this.fileList = fileList;
                 this.$emit('remove');
                 this.emitInput()
             },
             handleUploadSuccess(res, file, fileList) {
-                console.log('handle success', file, fileList)
                 let width = this.width
                 let height = this.height
                 if(res && res.code === 0){
@@ -184,17 +180,12 @@
                     this.valueType = 'array';
                     value = this.value || [];
                 }
-                this.initialFileList = [];
+                this.fileList = [];
                 value.forEach(item => {
-                    this.initialFileList.push({
-                        url: item,
+                    this.fileList.push({
+                        url: item
                     })
-                });
-                this.fileList = deepCopy(this.initialFileList);
-            },
-            resetValue(value){
-                this.value = value;
-                this.initFileList();
+                })
             }
         },
         created(){
@@ -202,10 +193,7 @@
         },
         watch: {
             value (val){
-
-            },
-            initValue(val){
-                this.resetValue(val)
+                this.initFileList()
             }
         },
         components: {
