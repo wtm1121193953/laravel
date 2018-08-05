@@ -47,12 +47,10 @@ class SmsService extends BaseService
      */
     public static function sendVerifyCode($mobile, $verifyCode)
     {
-        $url = 'http://msg.niucha.ren/api/v2/sms/verifyCode';
+        $url = 'http://msg.niucha.ren/api/sms/verifyCode';
         $data = [
-            'appKey' => MicroServiceApi::APP_KEY_VERIFY_CODE,
             'to' => $mobile,
-            'content' => '您的手机验证码是：'.$verifyCode.'，若非本人操作，请忽略！',
-            'signName' => MicroServiceApi::SIGN_NAME,
+            'verifyCode' => $verifyCode,
         ];
         $result = MicroServiceApi::post($url, $data);
         if($result['code'] !== 0){
