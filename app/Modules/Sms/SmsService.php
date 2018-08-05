@@ -47,24 +47,10 @@ class SmsService extends BaseService
      */
     public static function sendVerifyCode($mobile, $verifyCode)
     {
-        $url = 'http://msg.niucha.ren/api/v2/sms/verifyCode';
-        $data = [
-            'appKey' => MicroServiceApi::APP_KEY_VERIFY_CODE,
-            'to' => $mobile,
-            'content' => sprintf(config('sms.verify_code_template'), $verifyCode),
-            'signName' => MicroServiceApi::SIGN_NAME,
-        ];
-        $result = MicroServiceApi::post($url, $data);
-        if($result['code'] !== 0){
-            Log::error('短信发送失败', compact('url', 'data', 'result'));
-            $message = '发送失败';
-            $code = ResultCode::SMS_SEND_ERROR;
-            if($result['code'] == 15){
-                $message = '发送频率超限';
-                $code = ResultCode::SMS_BUSINESS_LIMIT_CONTROL;
-            }
-            throw new BaseResponseException($message, $code);
-        }
+        $content = self::parseTemplate(config('sms.template.verify_code'), [
+            'verifyCode' => $verifyCode,
+        ]);
+        $result = MicroServiceApi::sendVerifyCodeV2($mobile, $content);
         return $result;
     }
 
@@ -77,13 +63,13 @@ class SmsService extends BaseService
     {
         $order = Order::where('order_no', $orderNo)->firstOrFail();
         if ($order->type == Order::TYPE_GROUP_BUY) {
-            $templateId = MicroServiceApi::GROUP_BUY_TEMPLATE_ID;
             $params = self::getGoodsBuySuccessNotifyParams($order);
-            MicroServiceApi::sendTemplateSms($order->notify_mobile, $templateId, $params);
+            $content = self::parseTemplate(config('sms.template.group_buy'), $params);
+            return MicroServiceApi::sendNotifyV2($order->notify_mobile, $content);
         }elseif ($order->type == Order::TYPE_DISHES) {
-            $templateId = MicroServiceApi::DISHES_TEMPLATE_ID;
             $params = self::getDishesBuySuccessNotifyParams($order);
-            MicroServiceApi::sendTemplateSms($order->notify_mobile, $templateId, $params);
+            $content = self::parseTemplate(config('sms.template.dishes_buy'), $params);
+            return MicroServiceApi::sendNotifyV2($order->notify_mobile, $content);
         }else {
             Log::error('该订单类型不发送通知短信', ['order' => $order]);
             return false;
@@ -135,5 +121,13 @@ class SmsService extends BaseService
             'number' => $number,
         ];
         return $params;
+    }
+
+    public static function parseTemplate(string $template, array $params) : string
+    {
+        foreach ($params as $key => $value) {
+            $template = str_replace("{" . $key . "}", $value, $template);
+        }
+        return $template;
     }
 }
