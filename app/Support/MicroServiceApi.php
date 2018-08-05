@@ -16,8 +16,8 @@ use Illuminate\Support\Facades\Log;
 
 class MicroServiceApi
 {
-    const ALIYUN_APP_KEY = 23401652;
-    const ALIYUN_SECRET_KEY = '5756af9812b528f72940af0f3ac74bb8';
+    const APP_KEY = 23401652;
+    const SECRET_KEY = '5756af9812b528f72940af0f3ac74bb8';
     const SIGN_NAME = '大千生活';
 
     /**
@@ -36,7 +36,7 @@ class MicroServiceApi
     /**
      * 短信验证码接口 APP_KEY
      */
-    const APP_KEY = '50e7a5f180839466cceae9604e422e13';
+    const APP_KEY_VERIFY_CODE = '50e7a5f180839466cceae9604e422e13';
 
     public static function get($url, $data)
     {
@@ -80,8 +80,8 @@ class MicroServiceApi
         $url = 'http://msg.niucha.ren/api/sms/send/alidayu';
 
         $data = [
-            'appKey' => self::ALIYUN_APP_KEY,
-            'secretKey' => self::ALIYUN_SECRET_KEY,
+            'appKey' => self::APP_KEY,
+            'secretKey' => self::SECRET_KEY,
             'to' => $mobile,
             'signName' => self::SIGN_NAME,
             'templateId' => $templateId,
@@ -98,43 +98,5 @@ class MicroServiceApi
             }
             Log::error($message, ['code' => $code]);
         }
-    }
-
-    public static function sendVerifyCodeV2($to, $content)
-    {
-        $url = 'http://msg.niucha.ren/api/v2/sms/verifyCode';
-        $data = [
-            'appKey' => self::APP_KEY,
-            'to' => $to,
-            'content' => $content,
-            'signName' => self::SIGN_NAME,
-        ];
-        $result = self::post($url, $data);
-        if($result['code'] !== 0){
-            Log::error('短信发送失败', compact('url', 'data', 'result'));
-            $message = $result['message'] ?? '发送失败';
-            $code = ResultCode::SMS_SEND_ERROR;
-            throw new BaseResponseException($message, $code);
-        }
-        return $result;
-    }
-
-    public static function sendNotifyV2($to, $content)
-    {
-        $url = 'http://msg.niucha.ren/api/v2/sms/notify';
-        $data = [
-            'appKey' => self::APP_KEY,
-            'to' => $to,
-            'content' => $content,
-            'signName' => self::SIGN_NAME,
-        ];
-        $result = self::post($url, $data);
-        if($result['code'] !== 0){
-            Log::error('短信发送失败', compact('url', 'data', 'result'));
-            $message = $result['message'] ?? '发送失败';
-            $code = ResultCode::SMS_SEND_ERROR;
-            throw new BaseResponseException($message, $code);
-        }
-        return $result;
     }
 }
