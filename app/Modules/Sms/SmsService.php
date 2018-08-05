@@ -51,7 +51,7 @@ class SmsService extends BaseService
         $data = [
             'appKey' => MicroServiceApi::APP_KEY_VERIFY_CODE,
             'to' => $mobile,
-            'content' => sprintf(config('sms.verify_code_template'), $verifyCode),
+            'content' => '您的手机验证码是：'.$verifyCode.'，若非本人操作，请忽略！',
             'signName' => MicroServiceApi::SIGN_NAME,
         ];
         $result = MicroServiceApi::post($url, $data);
