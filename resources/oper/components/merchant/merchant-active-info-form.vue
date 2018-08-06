@@ -272,7 +272,7 @@
                     ],
                     desc: [
                         {required: true, message: '商家介绍不能为空'},
-                        {max: 100, message: '商家介绍不能超过100个字'}
+                        {max: 50, message: '商家介绍不能超过50个字'}
                     ],
                     settlement_rate: [
                         {required: true, message: '分利比例不能为空'},
