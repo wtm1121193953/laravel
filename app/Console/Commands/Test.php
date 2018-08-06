@@ -18,6 +18,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
+use App\Support\TpsApi;
+
 class Test extends Command
 {
     /**
@@ -51,15 +53,10 @@ class Test extends Command
      */
     public function handle()
     {
-        SmsService::sendBuySuccessNotify('O20180619165606342090');
-        dd();
-        $orderItems = OrderItem::where('order_id', 102)
-            ->select('verify_code')
-            ->get()
-            ->pluck('verify_code')
-            ->toArray();
-        $verifyCode = implode(',', $orderItems);
-        dd($verifyCode);
+        $account = '';
+        $password = '';
+        $result = TpsApi::createTpsAccount($account, $password);
+        dd($result);
         return;
     }
 
