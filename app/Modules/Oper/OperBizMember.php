@@ -44,7 +44,9 @@ class OperBizMember extends BaseModel
     }
 
     /**
+     * 发展商户数
      * @param static $operBizMember
+     * @param $operId
      * @return int
      */
     public static function getActiveMerchantNumber($operBizMember, $operId)
@@ -55,7 +57,8 @@ class OperBizMember extends BaseModel
                 $query->where('oper_id', $operId)
                     ->orWhere('audit_oper_id',  $operId);
             })
-            ->where('oper_biz_member_code', $operBizMember->code)->count();
+            ->where('oper_biz_member_code', $operBizMember->code)
+            ->count();
             Cache::forever('oper_biz_member_active_merchant_number_' . $operBizMember->id, $number);
             return $number;
         }else{
@@ -67,5 +70,40 @@ class OperBizMember extends BaseModel
     {
         $operBizMember = self::where('code', $code)->first();
         Cache::forget('oper_biz_member_active_merchant_number_' . $operBizMember->id);
+    }
+
+    /**
+     * 审核通过数
+     * @param $operBizMember
+     * @param $operId
+     * @return int|mixed
+     */
+    public static function getAuditMerchantNumber($operBizMember, $operId)
+    {
+        $number = Cache::get('oper_biz_member_audit_merchant_number_' . $operBizMember->id);
+        if (is_null($number)){
+            $number = Merchant::where(function (Builder $query) use ($operId){
+                $query->where('oper_id', $operId)
+                    ->orWhere('audit_oper_id',  $operId);
+            })
+                ->where('audit_status', Merchant::AUDIT_STATUS_SUCCESS)
+                ->where('oper_biz_member_code', $operBizMember->code)
+                ->count();
+            Cache::forever('oper_biz_member_audit_merchant_number_' . $operBizMember->id, $number);
+            return $number;
+        }else{
+            return $number ?: 0;
+        }
+    }
+
+
+    /**
+     * 更新审核通过数
+     * @param $code
+     */
+    public static function updateAuditMerchantNumberByCode($code)
+    {
+        $operBizMember = self::where('code', $code)->first();
+        Cache::forget('oper_biz_member_audit_merchant_number_' . $operBizMember->id);
     }
 }

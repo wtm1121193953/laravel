@@ -35,6 +35,7 @@ class OperBizMemberController extends Controller
         $data->each(function($item) {
 
             $item->activeMerchantNumber = OperBizMember::getActiveMerchantNumber($item, request()->get('current_user')->oper_id);
+            $item->auditMerchantNumber = OperBizMember::getAuditMerchantNumber($item, request()->get('current_user')->oper_id);
 
         });
 
