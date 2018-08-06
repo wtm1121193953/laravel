@@ -83,14 +83,20 @@ class MerchantController extends Controller
      */
     public function add()
     {
-        $this->validate(request(), [
+        $validate = [
             'name' => 'required|max:20',
             'merchant_category_id' => 'required',
-            'business_licence_pic_url' => 'required',
-            'organization_code' => 'required',
-            'settlement_rate' => 'required|numeric|min:0',
             'signboard_name' => 'required|max:20',
-        ]);
+        ];
+        if (request('pilot_merchant') !== Merchant::PILOT_MERCHANT){
+            $validate = array_merge($validate, [
+                'business_licence_pic_url' => 'required',
+                'organization_code' => 'required',
+                'settlement_rate' => 'required|numeric|min:0',
+                ]);
+        }
+        $this->validate(request(), $validate);
+
         $merchant = MerchantService::add();
 
         return Result::success($merchant);
@@ -101,14 +107,19 @@ class MerchantController extends Controller
      */
     public function edit()
     {
-        $this->validate(request(), [
-            'id' => 'required|integer|min:1',
-            'name' => 'required',
+        $validate = [
+            'name' => 'required|max:20',
             'merchant_category_id' => 'required',
-            'business_licence_pic_url' => 'required',
-            'organization_code' => 'required',
-            'settlement_rate' => 'required|numeric|min:0',
-        ]);
+            'signboard_name' => 'required|max:20',
+        ];
+        if (request('pilot_merchant') !== Merchant::PILOT_MERCHANT){
+            $validate = array_merge($validate, [
+                'business_licence_pic_url' => 'required',
+                'organization_code' => 'required',
+                'settlement_rate' => 'required|numeric|min:0',
+            ]);
+        }
+        $this->validate(request(), $validate);
 
         $merchant = MerchantService::edit(request('id'));
 

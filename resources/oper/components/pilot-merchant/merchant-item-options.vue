@@ -2,8 +2,9 @@
     <!-- 商户列表项操作 -->
     <div>
         <el-button  type="text" @click="showMearchant(scope)">查看</el-button>
-        <el-button type="text" @click="edit">编辑</el-button>
+        <el-button v-if="parseInt(scope.row.audit_status) === 0 || parseInt(scope.row.audit_status) === 2" type="text" @click="edit">编辑</el-button>
         <el-button v-if="parseInt(scope.row.audit_status) !== 0 && parseInt(scope.row.audit_status) !== 2" type="text" @click="changeStatus">{{parseInt(scope.row.status) === 1 ? '冻结' : '解冻'}}</el-button>
+        <el-button type="text" @click="complementInfo(scope.row)">补全资料</el-button>
 
     </div>
 </template>
@@ -41,7 +42,7 @@
 
             showMearchant(scope){
                 router.push({
-                    path: '/merchant/detail',
+                    path: '/merchant/pilot/detail',
                     query: {id: scope.row.id},
                 })
                 return false;
@@ -57,6 +58,16 @@
                     this.$emit('after-request')
                 })
             },
+            complementInfo(row) {
+                router.push({
+                    path: '/merchant/edit',
+                    name: 'MerchantEdit',
+                    query: {
+                        id: row.id,
+                        type: 'merchant-list'
+                    },
+                })
+            }
         },
         components: {
             MerchantForm

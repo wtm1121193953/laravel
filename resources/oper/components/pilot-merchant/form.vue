@@ -5,11 +5,11 @@
         </el-col>
         <!--商户录入信息表单-->
         <el-col :span="16">
-            <el-form-item prop="name" label="商户名称">
+            <el-form-item prop="name" label="商户名称" class="w-500">
                 <el-input v-model="form.name" placeholder="请填写商户名称"   />
                 <div class="tips">须同营业执照名称一致，如营业执照未填写，填法人姓名</div>
             </el-form-item>
-            <el-form-item prop="signboard_name" label="招牌名称">
+            <el-form-item prop="signboard_name" label="招牌名称" class="w-500">
                 <el-input v-model="form.signboard_name"/>
             </el-form-item>
             <el-form-item prop="merchant_category" label="所属行业">
@@ -44,10 +44,10 @@
             <el-form-item prop="address" label="详细地址">
                 <el-input v-model="form.address"/>
             </el-form-item>
-            <el-form-item prop="contacter" label="负责人姓名">
+            <el-form-item prop="contacter" label="负责人姓名" class="w-500">
                 <el-input v-model="form.contacter"/>
             </el-form-item>
-            <el-form-item prop="contacter_phone" label="负责人联系方式">
+            <el-form-item prop="contacter_phone" label="负责人联系方式" class="w-500">
                 <el-input v-model="form.contacter_phone"/>
             </el-form-item>
             <el-form-item prop="oper_biz_member_code" label="业务员">
@@ -104,6 +104,8 @@
         oper_biz_member_code: '',
         logo: '',
         desc_pic_list: [],
+
+        pilot_merchant: 1,
     };
 
     export default {
@@ -171,10 +173,34 @@
                 this.form = deepCopy(defaultForm);
             },
             save(){
+                let data = deepCopy(this.form);
+
+                if(this.data && this.data.id){
+                    data.id = this.data.id;
+                }
+
+                data.merchant_category_id = (data.merchant_category.length != 0) ? data.merchant_category[data.merchant_category.length - 1] : 0;
+                data.province_id = data.area[0];
+                data.city_id = data.area[1];
+                data.area_id = data.area[2];
+                if(data.lng_and_lat){
+                    data.lng = data.lng_and_lat[0];
+                    data.lat = data.lng_and_lat[1];
+                }
+
                 this.$refs.form.validate(valid => {
                     if (valid) {
                         this.$emit('save', data)
                     }
+                })
+            },
+            selectMap(markers) {
+                markers.forEach(marker => {
+                    this.form.lng_and_lat = [
+                        marker.getPosition().getLng(),
+                        marker.getPosition().getLat(),
+                    ];
+                    this.$refs.lngAndLat.clearValidate();
                 })
             },
             getInitData() {

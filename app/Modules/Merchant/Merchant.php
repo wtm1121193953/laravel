@@ -66,6 +66,7 @@ use Carbon\Carbon;
  * @property number lowest_amount
  * @property int mapping_user_id
  * @property int level
+ * @property int pilot_merchant
  *
  */
 class Merchant extends BaseModel
@@ -156,16 +157,16 @@ class Merchant extends BaseModel
         $this->invoice_title = request('invoice_title','');
         $this->invoice_no = request('invoice_no','');
         $this->status = request('status', 1);
-        $this->business_time = request('business_time');
+        $this->business_time = request('business_time', '');
         $this->logo = request('logo','');
         $descPicList = request('desc_pic_list', '');
         if(is_array($descPicList)) $descPicList = implode(',', $descPicList);
         $this->desc_pic_list = $descPicList;
         $this->desc = request('desc','');
-        $this->settlement_cycle_type = request('settlement_cycle_type');
-        $this->settlement_rate = request('settlement_rate');
+        $this->settlement_cycle_type = request('settlement_cycle_type', 1);
+        $this->settlement_rate = request('settlement_rate', 0.00);
         // 银行卡信息
-        $this->bank_card_type = request('bank_card_type');
+        $this->bank_card_type = request('bank_card_type', 1);
         $this->bank_open_name = request('bank_open_name','');
         $this->bank_card_no = request('bank_card_no','');
         $this->sub_bank_name = request('sub_bank_name','');
@@ -188,6 +189,9 @@ class Merchant extends BaseModel
         $this->oper_salesman = request('oper_salesman','');
         $this->site_acreage = request('site_acreage','');
         $this->employees_number = request('employees_number','');
+
+        //试点商户
+        $this->pilot_merchant = request('pilot_merchant', 0);
 
 
         //////// 没有了的字段
