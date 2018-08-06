@@ -23,7 +23,6 @@ Route::any('test', function(){
 });
 
 Route::post('/upload/image', 'UploadController@image');
-Route::get('/download', 'DownloadController@download');
 
 // 微信支付回调
 Route::any('/pay/notify', 'PayController@notify');

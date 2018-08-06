@@ -90,3 +90,4 @@ Route::get('/miniprogram_bridge/pay', function(){
 
 
 Route::post('/upload/image', 'UploadController@image');
+Route::get('/download', 'DownloadController@download');
