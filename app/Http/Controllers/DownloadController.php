@@ -21,6 +21,10 @@ class DownloadController extends Controller
     public function download()
     {
         $path = request('path');
+//        $path = '/public/image/item/0OQUTHOOmDGzEhyNWaOO2w76HGNUg7KlBvRde9nm.png';
+//        $path = storage_path('app/public/image/item/0OQUTHOOmDGzEhyNWaOO2w76HGNUg7KlBvRde9nm.png');
+//        $path = 'http://o.local.evlee.top/storage/image/item/0OQUTHOOmDGzEhyNWaOO2w76HGNUg7KlBvRde9nm.png';
+//        $path = 'storage://public/image/item/0OQUTHOOmDGzEhyNWaOO2w76HGNUg7KlBvRde9nm.png';
         $as = request('as');
         if(empty($path)){
             throw new ParamInvalidException();
@@ -33,7 +37,7 @@ class DownloadController extends Controller
             if(!Storage::exists($path)){
                 throw new BaseResponseException('要下载的文件不存在');
             }
-            return Storage::download($path);
+            return Storage::download($path, $as);
         }else if(Str::startsWith($path, 'http://') || Str::startsWith($path, 'https://')){
             $c = new Client();
             $tempFilename = Str::random();
@@ -46,7 +50,11 @@ class DownloadController extends Controller
 
             return response()->download($dir . '/' . $tempFilename, $as);
         }
-        if(!file_exists($path) && !Storage::exists($path)){
+        if(!Storage::exists($path)){
+            // 不是storage存储返回的路径时, 尝试使用绝对路径获取
+            if(file_exists($path)){
+                return response()->download($path, $as);
+            }
             throw new BaseResponseException('要下载的文件不存在');
         }
         return Storage::download($path, $as);
