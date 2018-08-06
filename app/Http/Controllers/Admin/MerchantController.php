@@ -35,7 +35,11 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $signboardName = request('signboardName');
+        $status = request('status');
         $auditStatus = request('auditStatus');
+        $merchantCategory = request('merchantCategory');
+        $pilotMerchant = request('pilotMerchant');
+
         if(is_string($auditStatus)){
             $auditStatus = explode(',', $auditStatus);
         }
@@ -63,11 +67,14 @@ class MerchantController extends Controller
 
         $data = MerchantService::getList([
             'id' => $id,
+            'operId' => $operIds ?? $operId,
             'name' => $name,
             'signboardName' => $signboardName,
-            'operId' => $operIds ?? $operId,
             'creatorOperId' => $createOperIds ?? $creatorOperId,
+            'status' => $status,
             'auditStatus' => $auditStatus,
+            'merchantCategory' => $merchantCategory,
+            'pilotMerchant' => $pilotMerchant,
             'startCreatedAt' => $startDate,
             'endCreatedAt' => $endDate,
         ]);

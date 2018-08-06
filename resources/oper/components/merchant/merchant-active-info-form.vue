@@ -364,7 +364,6 @@
                     let business_time = JSON.parse(data.business_time);
                     this.form.business_start_time = data.business_time ? new Date('1970-01-01 '+business_time[0]) : new Date('1970-01-01 00:00:00');
                     this.form.business_end_time = data.business_time ? new Date('1970-01-01 '+business_time[1]) : new Date('1970-01-01 23:59:59');
-                    console.log(this.form.business_start_time, this.form.business_end_time)
                     this.form.region = parseInt(data.region);
                     this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                     this.form.status = parseInt(data.status);

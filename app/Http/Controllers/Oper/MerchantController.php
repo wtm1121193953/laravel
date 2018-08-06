@@ -11,6 +11,7 @@ use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Merchant\MerchantDraft;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
 use Illuminate\Support\Collection;
 use App\Modules\Oper\OperBizMember;
@@ -27,63 +28,21 @@ class MerchantController extends Controller
      */
     public function getList()
     {
-        $name = request('name');
-        $auditStatus = request('audit_status');
-        $status = request('status');
-        $signBoardName=request('signBoardName');
-        $merchant_category = request('merchant_category');
+        $data = [
+            'id' => request('id'),
+            'operId' => request('operId'),
+            'creatorOperId' => request('creatorOperId'),
+            'name' => request('name'),
+            'signboardName' => request('signboardName'),
+            'status' => request('status'),
+            'auditStatus' => request('audit_status'),
+            'merchantCategory' => request('merchant_category'),
+            'pilotMerchant' => request('pilotMerchant'),
+            'startCreatedAt' => request('startCreatedAt'),
+            'endCreatedAt' => request('endCreatedAt'),
+        ];
 
-        if(!empty($merchant_category)){
-            if(count($merchant_category)==1){
-                $merchant_category_id = intval($merchant_category[0]);
-                $merchant_category_final_id = MerchantCategory::where('pid',$merchant_category_id)
-                        ->select('id')->get()
-                        ->pluck('id');
-            }else{
-                $merchant_category_final_id = intval($merchant_category[1]);
-            }
-        }else{
-            $merchant_category_final_id= '';
-        }
-        $data = Merchant::where(function (Builder $query){
-                $currentOperId = request()->get('current_user')->oper_id;
-                $query->where('oper_id', $currentOperId)
-                    ->orWhere('audit_oper_id', $currentOperId);
-            })
-            ->when($status, function (Builder $query) use ($status){
-                $query->where('status', $status);
-            })
-            ->when($merchant_category_final_id, function (Builder $query) use ($merchant_category_final_id){
-                if(is_array($merchant_category_final_id) || $merchant_category_final_id instanceof Collection ){
-                    $query->whereIn('merchant_category_id',$merchant_category_final_id);
-                }else{
-                    $query->where('merchant_category_id', $merchant_category_final_id);
-                }
-            })
-            ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus){
-                if($auditStatus == -1){
-                    $auditStatus = 0;
-                }
-                $query->where('audit_status', $auditStatus);
-            })
-            ->when($name, function (Builder $query) use ($name){
-                $query->where('name', 'like', "%$name%");
-            })
-            ->when($signBoardName, function (Builder $query) use ($signBoardName){
-                $query->where('signboard_name', 'like', "%$signBoardName%");
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate();
-
-        $data->each(function ($item){
-            if ($item->merchant_category_id){
-                $item->categoryPath = MerchantCategoryService::getCategoryPath($item->merchant_category_id);
-            }
-            $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
-            $item->account = MerchantAccount::where('merchant_id', $item->id)->first();
-            $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
-            $item->operBizMemberName = OperBizMember::where('oper_id', $item->operId)->where('code', $item->oper_biz_member_code)->value('name') ?: '无';
-        });
+        $data = MerchantService::getList($data);
 
         return Result::success([
             'list' => $data->items(),
@@ -96,25 +55,11 @@ class MerchantController extends Controller
      */
     public function allNames()
     {
-        $auditStatus = request('audit_status');
-        $status = request('status');
-        $list = Merchant::where(function (Builder $query){
-            $currentOperId = request()->get('current_user')->oper_id;
-            $query->where('oper_id', $currentOperId)
-                ->orWhere('audit_oper_id', $currentOperId);
-        })
-            ->when($status, function (Builder $query) use ($status){
-                $query->where('status', $status);
-            })
-            ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus){
-                if($auditStatus == -1){
-                    $auditStatus = 0;
-                }
-                $query->where('audit_status', $auditStatus);
-            })
-            ->orderBy('updated_at', 'desc')
-            ->select('id', 'name')
-            ->get();
+        $data = [
+            'audit_status' => request('audit_status'),
+            'status' => request('status'),
+        ];
+        $list = MerchantService::getAllNames($data);
         return Result::success([
             'list' => $list
         ]);
@@ -129,22 +74,7 @@ class MerchantController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-        $id = request('id');
-        $merchant = Merchant::findOrFail($id);
-        $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
-        $merchant->categoryPathOnlyEnable = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id, true);
-        $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
-
-        // 如下是查看 中所需数据
-        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
-        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
-        if($merchant->oper_biz_member_code){
-            $merchant->operBizMemberName = OperBizMember::where('code', $merchant->oper_biz_member_code)->value('name');
-        }
-        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
-        if ($oper){
-            $merchant->operAddress = $oper->province.$oper->city.$oper->area.$oper->address;
-        }
+        $merchant = MerchantService::detail(request('id'));
         return Result::success($merchant);
     }
 
@@ -161,31 +91,7 @@ class MerchantController extends Controller
             'settlement_rate' => 'required|numeric|min:0',
             'signboard_name' => 'required|max:20',
         ]);
-        $merchant = new Merchant();
-        $merchant->fillMerchantPoolInfoFromRequest();
-        $merchant->fillMerchantActiveInfoFromRequest();
-
-        // 补充商家创建者及审核提交者
-        $currentOperId = request()->get('current_user')->oper_id;
-        $merchant->audit_oper_id = $currentOperId;
-        $merchant->creator_oper_id = $currentOperId;
-
-        // 商户名不能重复
-        $exists = Merchant::where('name', $merchant->name)->first();
-        $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
-        if($exists || $existsDraft){
-            throw new ParamInvalidException('商户名称不能重复');
-        }
-
-        $merchant->save();
-
-        // 添加审核记录
-        MerchantAuditService::addAudit($merchant->id, $currentOperId);
-
-        // 更新业务员已激活商户数量
-        if($merchant->oper_biz_member_code){
-            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
-        }
+        $merchant = MerchantService::add();
 
         return Result::success($merchant);
     }
@@ -203,48 +109,8 @@ class MerchantController extends Controller
             'organization_code' => 'required',
             'settlement_rate' => 'required|numeric|min:0',
         ]);
-        $currentOperId = request()->get('current_user')->oper_id;
-        $merchant = Merchant::where('id', request('id'))
-            ->where('audit_oper_id', $currentOperId)
-            ->firstOrFail();
 
-        if(!empty($merchant->oper_biz_member_code)){
-            // 记录原业务员ID
-            $originOperBizMemberCode = $merchant->oper_biz_member_code;
-        }
-
-        $merchant->fillMerchantPoolInfoFromRequest();
-        $merchant->fillMerchantActiveInfoFromRequest();
-
-        // 商户名不能重复
-        $exists = Merchant::where('name', $merchant->name)
-            ->where('id', '<>', $merchant->id)->first();
-        $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
-        if($exists || $existsDraft){
-            throw new ParamInvalidException('商户名称不能重复');
-        }
-
-        if($merchant->oper_id > 0){
-            // 如果当前商户已有所属运营中心, 则此次提交为重新提交审核
-            // 添加审核记录
-            MerchantAuditService::addAudit($merchant->id, $currentOperId,Merchant::AUDIT_STATUS_RESUBMIT);
-            $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
-        }else {
-            MerchantAuditService::addAudit($merchant->id, $currentOperId);
-            $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
-        }
-
-        $merchant->save();
-
-        // 更新业务员已激活商户数量
-        if($merchant->oper_biz_member_code){
-            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
-        }
-
-        // 如果存在原有的业务员, 并且不等于现有的业务员, 更新原有业务员邀请用户数量
-        if(isset($originOperBizMemberCode) && $originOperBizMemberCode != $merchant->oper_biz_member_code){
-            OperBizMember::updateActiveMerchantNumberByCode($originOperBizMemberCode);
-        }
+        $merchant = MerchantService::edit(request('id'));
 
         return Result::success($merchant);
     }

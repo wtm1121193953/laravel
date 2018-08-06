@@ -105,6 +105,11 @@ class Merchant extends BaseModel
     const SETTLE_HALF_YEARLY = 4; // 半年结
     const SETTLE_YEARLY = 5; // 年结
 
+    /**
+     * 试点商户
+     */
+    const PILOT_MERCHANT = 1;
+
 
     /**
      * 获取商户等级描述
