@@ -16,6 +16,7 @@ use App\ResultCode;
 use EasyWeChat\Factory;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 use Intervention\Image\Facades\Image;
+use Intervention\Image\Gd\Font;
 
 class WechatService
 {
@@ -97,11 +98,23 @@ class WechatService
         }
         try {
             $filename = $response->save(storage_path('app/public/miniprogram/app_code'), "_{$sceneId}_{$width}");
-            /*$img = Image::make(asset('storage/miniprogram/app_code/' . "_{$sceneId}_{$width}.jpg"))
-                ->heighten(300, function($constraint) {
-                    $constraint->upsize();
-                });
-            $img->save(storage_path('app/public/miniprogram/app_code/') . "_{$sceneId}_{$width}.jpg");*/
+
+            $path = storage_path('app/public/miniprogram/app_code/') . "_{$sceneId}_{$width}.jpg";
+
+            $img = Image::make($path);
+            $width = $img->width();
+
+            $canvasWidth = 1.4 * $width;
+            $canvasHeight = 1.6 * $width;
+            $canvas = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
+            $canvas->insert($path,  'top-left', 0.2 * $width, 0.2 * $width);
+            $canvas->text(str_pad($sceneId, 8, "0", STR_PAD_LEFT), 0.5 * $canvasWidth, 1.4 * $width, function(Font $font) {
+                $font->file(5);
+                $font->align('center');
+            });
+
+            $canvas->save($path);
+
         } catch (InvalidArgumentException $e) {
             throw new BaseResponseException('小程序码生成失败');
         }
