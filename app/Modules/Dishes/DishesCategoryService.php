@@ -77,7 +77,7 @@ class DishesCategoryService extends BaseService
         FilterKeywordService::filterKeywordByCategory($name, FilterKeyword::CATEGORY_DISHES_CATEGORY_NAME);
 
         $dishesCategory = new DishesCategory();
-        $haveExisitCategory = DishesCategory::where('name',$name)->first();
+        $haveExisitCategory = DishesCategory::where('name',$name)->where('merchant_id', $merchantId)->first();
         if($haveExisitCategory){
             throw new DataNotFoundException('该分类信息已存在，请勿重复添加');
         }
@@ -111,7 +111,7 @@ class DishesCategoryService extends BaseService
 
         // 如果名字有变更,验证名称是否包含过滤关键字
         if($dishesCategory->name != $name){
-            $haveExisitCategory = DishesCategory::where('name',$name)->first();
+            $haveExisitCategory = DishesCategory::where('name',$name)->where('merchant_id', $merchantId)->first();
             if($haveExisitCategory){
                 throw new DataNotFoundException('该分类信息已存在，请改成其他分类名字');
             }
