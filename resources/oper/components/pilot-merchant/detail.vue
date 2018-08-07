@@ -80,15 +80,13 @@
         data() {
             return {
                 id: null,
-                data: null,
+                data: {},
             }
         },
         methods: {
             getDetail(){
                 api.get('merchant/detail', {id: this.id,}).then(data => {
                     this.data = data;
-
-                    this.data.desc_pic_list = data.desc_pic_list ? data.desc_pic_list.split(',') : [];
                 });
             },
             previewImage(viewerEl){
