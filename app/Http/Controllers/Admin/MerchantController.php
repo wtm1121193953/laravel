@@ -177,6 +177,7 @@ class MerchantController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $name = request('name');
+        $status = request('status');
         $auditStatus = request('auditStatus');
         $signboardName = request('signboardName');
         if ($auditStatus || $auditStatus==="0"){
@@ -187,6 +188,9 @@ class MerchantController extends Controller
 //        $creatorOperId = request('creatorOperId');
 //        $creatorOperName = request('creatorOperName');
 
-        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name,$auditStatus, $operId, $operName))->download('商户列表.xlsx');
+        $merchantCategory = request('merchantCategory', '');
+        $pilotMerchant = request('pilotMerchant', 0);
+
+        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name, $status, $auditStatus, $operId, $operName, $merchantCategory, $pilotMerchant))->download('商户列表.xlsx');
     }
 }

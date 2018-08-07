@@ -26,25 +26,31 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
     protected $startDate;
     protected $endDate;
     protected $name;
+    protected $status;
     protected $auditStatus;
     protected $operId;
     protected $operName;
-//    protected $creatorOperId;
-//    protected $creatorOperName;
+    protected $creatorOperId;
+    protected $creatorOperName;
     protected $signboardName;
+    protected $merchantCategory;
+    protected $pilotMerchant;
 
-    public function __construct($id = '', $startDate = '',$endDate = '',$signboardName='', $name = '', $auditStatus = [], $operId = '', $operName = '')
+    public function __construct($id = '', $startDate = '',$endDate = '',$signboardName='', $name = '', $status = '', $auditStatus = [], $operId = '', $operName = '', $merchantCategory = [], $pilotMerchant = 0)
     {
         $this->id = $id;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->name = $name;
+        $this->status = $status;
         $this->auditStatus = $auditStatus;
         $this->operId = $operId;
         $this->operName = $operName;
         $this->signboardName = $signboardName;
-//        $this->creatorOperId = $creatorOperId;
-//        $this->creatorOperName = $creatorOperName;
+        $this->creatorOperId = '';
+        $this->creatorOperName = '';
+        $this->merchantCategory = $merchantCategory;
+        $this->pilotMerchant = $pilotMerchant;
     }
 
     /**
@@ -57,15 +63,18 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
         $startDate = $this->startDate;
         $endDate = $this->endDate;
         $name = $this->name;
+        $status = $this->status;
         $auditStatus = $this->auditStatus;
         if(empty($auditStatus)){
             $auditStatus=["0","1","2","3"];
         }
         $operId = $this->operId;
         $operName = $this->operName;
-//        $creatorOperId = $this->creatorOperId;
-//        $creatorOperName = $this->creatorOperName;
+        $creatorOperId = $this->creatorOperId;
+        $creatorOperName = $this->creatorOperName;
         $signboardName = $this->signboardName;
+        $merchantCategory = $this->merchantCategory;
+        $pilotMerchant = $this->pilotMerchant;
 
         $operIds = null;
         if($operName) {
@@ -75,21 +84,24 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
                 ->pluck('id');
         }
 
-//        $createOperIds=null;
-//        if($creatorOperName){
-//            $createOperIds = Oper::where('name', 'like', "%$creatorOperName%")
-//                ->select('id')
-//                ->get()
-//                ->pluck('id');
-//        }
+        $createOperIds=null;
+        if($creatorOperName){
+            $createOperIds = Oper::where('name', 'like', "%$creatorOperName%")
+                ->select('id')
+                ->get()
+                ->pluck('id');
+        }
 
         $query = MerchantService::getList([
             'id' => $id,
             'name' => $name,
             'signboardName' => $signboardName,
             'operId' => $operIds ?? $operId,
-//            'creatorOperId' => $createOperIds ?? $creatorOperId,
+            'creatorOperId' => $createOperIds ?? $creatorOperId,
+            'status' => $status,
             'auditStatus' => $auditStatus,
+            'merchantCategory' => $merchantCategory,
+            'pilotMerchant' => $pilotMerchant,
             'startCreatedAt' => $startDate,
             'endCreatedAt' => $endDate,
         ], true);

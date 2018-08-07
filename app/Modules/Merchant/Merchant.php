@@ -110,6 +110,7 @@ class Merchant extends BaseModel
      * 试点商户
      */
     const PILOT_MERCHANT = 1;
+    const NORMAL_MERCHANT = 0;
 
 
     /**

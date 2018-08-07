@@ -152,6 +152,8 @@ class MerchantService extends BaseService
         }
         if ($pilotMerchant) {
             $query->where('pilot_merchant', Merchant::PILOT_MERCHANT);
+        } else {
+            $query->where('pilot_merchant', Merchant::NORMAL_MERCHANT);
         }
 
         if($getWithQuery){
