@@ -51,9 +51,9 @@ class InviteChannelController extends Controller
         // 判断场景类型必须是 推广注册小程序码 才可以
         $inviteChannel = InviteChannelService::getBySceneId($sceneId);
 
-        if($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER){
+        /*if($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER){
             throw new ParamInvalidException('会员二维码已经失效');
-        }
+        }*/
 
         $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
         return Result::success($inviteChannel);
