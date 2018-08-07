@@ -20,6 +20,7 @@ Route::prefix('merchant')
         Route::get('pay/qrcode/miniprogramQrcode', 'PayQrcodeController@getMiniprogramAppCode');
         Route::get('pay/qrcode/downloadMiniprogramQrcode', 'PayQrcodeController@downloadMiniprogramAppCode');
 
+        Route::get('invite/statistics/list', 'InviteStatisticsController@getList');
         Route::get('invite/statistics/dailyList', 'InviteStatisticsController@dailyList');
 
         Route::get('sms/getVerifyCode', 'SmsController@sendVerifyCode');

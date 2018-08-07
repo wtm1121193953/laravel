@@ -80,14 +80,14 @@
                     <el-form-item prop="password">
                         <el-input type="password" v-model="form.password" auto-complete="off" placeholder="密码"/>
                     </el-form-item>
-                    <el-form-item prop="verifyCode" style="margin-bottom: 1px">
+                    <el-form-item prop="verifyCode">
                         <el-input type="text" v-model="form.verifyCode" auto-complete="off" class="w-150"
                                   placeholder="验证码"/>
                         <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/>
-                        <div>
-                            <el-checkbox v-model="rememberUsername">记住账号</el-checkbox>
-                        </div>
                     </el-form-item>
+                    <div>
+                        <el-checkbox v-model="rememberUsername">记住账号</el-checkbox>
+                    </div>
                     <el-form-item>
                         <el-button type="primary" style="width:100%;" v-loading="loading" :disabled="loading"
                                    @click.native.prevent="doLogin">登录

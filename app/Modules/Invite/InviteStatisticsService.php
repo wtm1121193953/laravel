@@ -8,8 +8,10 @@
 
 namespace App\Modules\Invite;
 
+use App\Modules\Order\Order;
 use App\Modules\User\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * 邀请记录统计相关服务
@@ -94,6 +96,36 @@ class InviteStatisticsService
             ->whereBetween('created_at', [date('Y-m-d 00:00:00', time()), date('Y-m-d 23:59:59', time())])
             ->count();
         return $todayInviteCount;
+    }
+
+    /**
+     * 获取商户邀请记录列表
+     * @param $merchantId
+     * @param int $pageSize
+     * @param string $mobile
+     * @param bool $withQuery
+     * @return User|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getInviteRecordListByMerchantId($merchantId, $pageSize = 15, $mobile = '', $withQuery = false)
+    {
+        $userIds = InviteUserRecord::where('origin_id', $merchantId)
+            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
+            ->select('user_id')
+            ->get()
+            ->pluck('user_id');
+        $query = User::whereIn('id', $userIds)
+            ->when($mobile, function (Builder $query) use ($mobile) {
+                $query->where('mobile', $mobile);
+            });
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate($pageSize);
+            $data->each(function ($item) {
+                $item->order_number = Order::where('user_id', $item->id)->count();
+            });
+            return $data;
+        }
     }
 
 

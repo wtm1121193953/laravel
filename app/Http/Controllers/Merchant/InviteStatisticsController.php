@@ -16,7 +16,10 @@ use App\Result;
 
 class InviteStatisticsController
 {
-
+    /**
+     * 每日统计
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function dailyList()
     {
         $merchantId = request()->get('current_user')->merchant_id;
@@ -37,6 +40,24 @@ class InviteStatisticsController
                 $data->prepend($today);
             }
         }
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
+    }
+
+    /**
+     * 获取商户邀请记录列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getList()
+    {
+        $merchantId = request()->get('current_user')->merchant_id;
+        $pageSize = request('pageSize', 15);
+        $mobile = request('mobile', '');
+
+        $data = InviteStatisticsService::getInviteRecordListByMerchantId($merchantId, $pageSize, $mobile);
+
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
