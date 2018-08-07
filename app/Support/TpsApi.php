@@ -12,11 +12,56 @@ use App\Support\Common;
 
 class TpsApi
 {
-
-    public static function sendEmail($to, $title, $content)
-    {
-        // todo 发送邮件
-    }
+	
+	public static function sendEmail($to, $title, $content)
+	{
+		// todo 发送邮件
+		$datas = array(
+				'recipients' => $to, //收件人
+				'notifications' => '', //抄送人
+				'title' => $title, //标题
+				'contentTxt' => $content //内容
+		);
+		$token = config('tpsapi.mail_token');
+		
+		$url = config('tpsapi.mail_url');
+		$post_data = json_encode($datas);
+		$header = array(
+				"Content-type: application/json;charset=utf-8", 
+				"Accept:application/json",
+				"token: ".$token
+		);
+		
+		$result = Common::curl_postmail($url, $post_data, $header);
+		return $result;
+	}
+	
+	/**
+	 * 验证账号是否正确
+	 * @param $account
+	 * @param $password
+	 */
+	public static function checkTpsAccount($account, $password)
+	{
+		// todo
+		$data = array(
+				'account' => $account,
+				'password' => $password,
+		);
+		$key = config('tpsapi.key');
+		$enc_data = TpsApi::api_encrypt(json_encode($data),$key);
+		$enc_token = TpsApi::api_encrypt($key,$key);
+		
+		$url = config('tpsapi.check_url');
+		$post_data = array(
+				'token' => $enc_token,
+				'data' => $enc_data,
+		);
+		
+		$result = Common::curl_post($url,$post_data);
+		return $result;
+		
+	}
 
     /**
      * 创建账号
@@ -35,30 +80,18 @@ class TpsApi
             'p_account' =>$parentAccount
         );
         $key = config('tpsapi.key');
-        
         $enc_data = TpsApi::api_encrypt(json_encode($data),$key);
         $enc_token = TpsApi::api_encrypt($key,$key);
         
+        $url = config('tpsapi.register_url');
         $post_data = array(
             'token' => $enc_token,
             'data' => $enc_data,
         );
         
-        $url = config('tpsapi.register_url');
-        
         $result = Common::curl_post($url,$post_data);
-        return var_dump($result);
+        return $result;
 
-    }
-
-    /**
-     * 验证账号是否正确
-     * @param $account
-     * @param $password
-     */
-    public static function checkTpsAccount($account, $password)
-    {
-        // todo
     }
     
     /**
@@ -67,7 +100,7 @@ class TpsApi
      * @param $key
      * return string
      */
-    public static function api_encrypt($string,$key='') {
+    public static function api_encrypt($string, $key='') {
         
         $encryptKey = md5($key);
         $keyLen = strlen($encryptKey);
