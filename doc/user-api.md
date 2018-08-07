@@ -686,7 +686,36 @@ order_no 订单号
     }
   ```
 
-  ​
+  
+
+- [ ] 扫码买单接口
+
+  地址：ANY   `/order/scanQrcodePay`
+
+  参数：
+
+  ```
+  merchant_id: 商户ID
+  price: 买单价格
+  remark: 备注
+  ```
+
+  返回：
+
+  ```
+  data: {
+      	order_no: 订单号,
+      	isOperSelf: 是否归属于当前小程序的运营中心
+      	sdk_config: 调起微信支付配置, isOperSelf 为1时存在 {
+            appId: appid,
+            nonceStr: 随机字符串,
+            package: package,
+            signType: signType,
+            paySign: 支付签名,
+            timestamp: 时间戳,
+      	}
+      }
+  ```
 
 
 
@@ -891,6 +920,7 @@ order_no 订单号
 
   ```
   dishes_id  ：菜单id
+  remark: 备注
   ```
 
   返回
