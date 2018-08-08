@@ -87,6 +87,8 @@ mix.js('./resources/admin/app.js', 'public/js/admin.js');
 mix.js('./resources/oper/app.js', 'public/js/oper.js');
 mix.js('./resources/merchant/app.js', 'public/js/merchant.js');
 mix.js('./resources/merchant-h5/app.js', 'public/js/merchant-h5.js');
+// 业务员前端模块
+mix.js('./resources/bizer/app.js', 'public/js/bizer.js');
 
 // 抽离不会变的js模块
 mix.extract([
