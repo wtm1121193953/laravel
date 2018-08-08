@@ -129,7 +129,8 @@ class InviteStatisticsService
         $query = User::whereIn('id', $userIds)
             ->when($mobile, function (Builder $query) use ($mobile) {
                 $query->where('mobile', 'like', "%$mobile%");
-            });
+            })
+            ->orderBy('created_at', 'desc');
         if ($withQuery) {
             return $query;
         } else {
