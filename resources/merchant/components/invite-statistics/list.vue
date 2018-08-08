@@ -54,10 +54,11 @@
                 })
             },
             search() {
-
+                this.query.page = 1;
+                this.getList();
             },
             downloadExcel() {
-
+                location.href = 'api/merchant/invite/statistics/downloadInviteRecordList?mobile=' . this.query.mobile;
             }
         },
         created() {

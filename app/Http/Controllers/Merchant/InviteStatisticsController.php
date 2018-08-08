@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Merchant;
 
 
+use App\Exports\InviteUserRecordExport;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Invite\InviteUserStatisticsDaily;
@@ -62,5 +63,17 @@ class InviteStatisticsController
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
+
+    /**
+     * 导出我的会员（商户邀请的用户信息）
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function downloadInviteRecordList()
+    {
+        $merchantId = request()->get('current_user')->merchant_id;
+        $mobile = request('mobile', '');
+
+        return (new InviteUserRecordExport($merchantId, $mobile))->download('我的会员.xlsx');
     }
 }
