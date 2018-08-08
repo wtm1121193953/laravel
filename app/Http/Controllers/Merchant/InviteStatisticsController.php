@@ -29,6 +29,7 @@ class InviteStatisticsController
             ->where('origin_type', InviteChannel::ORIGIN_TYPE_MERCHANT)
             ->orderByDesc('date')
             ->paginate($pageSize);
+        $total = $data->total();
         // 如果是第一页, 获取当日数据统计并添加到列表中
         if(request('page') <= 1){
             $today = new InviteUserStatisticsDaily();
@@ -39,11 +40,12 @@ class InviteStatisticsController
             );
             if($today->invite_count > 0){
                 $data->prepend($today);
+                $total = $total + 1;
             }
         }
         return Result::success([
             'list' => $data->items(),
-            'total' => $data->total(),
+            'total' => $total,
         ]);
     }
 
