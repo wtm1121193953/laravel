@@ -25,7 +25,7 @@
             </el-form-item>
 
             <el-form-item label="状态" prop="status">
-                <el-select v-model="query.status">
+                <el-select v-model="query.status" class="w-100">
                     <el-option label="全部" value=""/>
                     <el-option label="正常" value="1"/>
                     <el-option label="已冻结" value="2"/>

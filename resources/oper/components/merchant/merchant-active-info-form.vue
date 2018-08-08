@@ -10,12 +10,8 @@
                 <el-select
                         v-model="form.oper_biz_member_code"
                         filterable
-                        remote
-                        reserve-keyword
                         clearable
                         placeholder="请输入业务员姓名或手机号码"
-                        :remote-method="searchOperBizMember"
-                        :loading="searchOperBizMemberLoading"
                         @clear="resetCode"
                         class="w-300"
                 >
@@ -360,17 +356,10 @@
             }
         },
         methods: {
-            searchOperBizMember(query){
-                if (query !== '') {
-                    this.searchOperBizMemberLoading = true;
-                    api.get('/operBizMembers/search', {keyword: query, status: 1}).then(data => {
-                        this.operBizMembers = data.list;
-                    }).finally(() => {
-                        this.searchOperBizMemberLoading = false;
-                    })
-                } else {
-                    this.operBizMembers = [];
-                }
+            getOperBizMember(){
+                api.get('/operBizMembers/search', {status: 1}).then(data => {
+                    this.operBizMembers = data.list;
+                })
             },
             initForm(){
                 if(this.data){
@@ -386,7 +375,6 @@
                     this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                     this.form.status = parseInt(data.status);
                     this.form.bank_card_type = parseInt(data.bank_card_type);
-                    this.searchOperBizMember(this.form.oper_biz_member_code);
                 }else {
                     this.form = deepCopy(defaultForm);
                 }
@@ -423,6 +411,7 @@
         },
         created(){
             this.initForm();
+            this.getOperBizMember();
         },
         watch: {
             data(){
