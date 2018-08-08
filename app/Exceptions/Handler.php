@@ -80,7 +80,11 @@ class Handler extends ExceptionHandler
             if($exception instanceof NotFoundHttpException){
                 return redirect('/user-h5?_from=' . urlencode(substr($request->getRequestUri(), 8)));
             }
-        }*/
+        }*/else if($request->is('bizer/*')){
+            if($exception instanceof NotFoundHttpException){
+                return redirect('/bizer?_from=' . urlencode(substr($request->getRequestUri(), 6)));
+            }
+        }
         return parent::render($request, $exception);
     }
 

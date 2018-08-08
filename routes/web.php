@@ -45,6 +45,11 @@ Route::get('/merchant-h5', function () {
     return view('user-h5');
 });*/
 
+// 业务员端
+Route::get('/bizer', function () {
+    return view('bizer');
+});
+
 Route::get('/article/{code}', 'ArticleController@index');
 
 Route::get('/miniprogram_bridge/pay', function(){
