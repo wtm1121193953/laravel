@@ -16,7 +16,7 @@
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="注册日期"></el-table-column>
             <el-table-column prop="mobile" label="手机号码"></el-table-column>
-            <el-table-column prop="nick_name" label="微信昵称"></el-table-column>
+            <el-table-column prop="wx_nick_name" label="微信昵称"></el-table-column>
             <el-table-column prop="order_number" label="下单次数"></el-table-column>
         </el-table>
         <el-pagination
