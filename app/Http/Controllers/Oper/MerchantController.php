@@ -30,14 +30,14 @@ class MerchantController extends Controller
     {
         $data = [
             'id' => request('id'),
-            'operId' => request('operId'),
+            'operId' => request()->get('current_user')->oper_id,
             'creatorOperId' => request('creatorOperId'),
             'name' => request('name'),
             'signboardName' => request('signboardName'),
             'status' => request('status'),
             'auditStatus' => request('audit_status'),
             'merchantCategory' => request('merchant_category'),
-            'pilotMerchant' => request('pilotMerchant'),
+            'isPilot' => request('isPilot'),
             'startCreatedAt' => request('startCreatedAt'),
             'endCreatedAt' => request('endCreatedAt'),
         ];
@@ -88,7 +88,7 @@ class MerchantController extends Controller
             'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
-        if (request('pilot_merchant') !== Merchant::PILOT_MERCHANT){
+        if (request('is_pilot') !== Merchant::PILOT_MERCHANT){
             $validate = array_merge($validate, [
                 'business_licence_pic_url' => 'required',
                 'organization_code' => 'required',
@@ -112,7 +112,7 @@ class MerchantController extends Controller
             'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
-        if (request('pilot_merchant') !== Merchant::PILOT_MERCHANT){
+        if (request('is_pilot') !== Merchant::PILOT_MERCHANT){
             $validate = array_merge($validate, [
                 'business_licence_pic_url' => 'required',
                 'organization_code' => 'required',

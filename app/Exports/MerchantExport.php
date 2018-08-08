@@ -34,9 +34,9 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
     protected $creatorOperName;
     protected $signboardName;
     protected $merchantCategory;
-    protected $pilotMerchant;
+    protected $isPilot;
 
-    public function __construct($id = '', $startDate = '',$endDate = '',$signboardName='', $name = '', $status = '', $auditStatus = [], $operId = '', $operName = '', $merchantCategory = [], $pilotMerchant = 0)
+    public function __construct($id = '', $startDate = '',$endDate = '',$signboardName='', $name = '', $status = '', $auditStatus = [], $operId = '', $operName = '', $merchantCategory = [], $isPilot = 0)
     {
         $this->id = $id;
         $this->startDate = $startDate;
@@ -50,7 +50,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
         $this->creatorOperId = '';
         $this->creatorOperName = '';
         $this->merchantCategory = $merchantCategory;
-        $this->pilotMerchant = $pilotMerchant;
+        $this->isPilot = $isPilot;
     }
 
     /**
@@ -74,7 +74,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
         $creatorOperName = $this->creatorOperName;
         $signboardName = $this->signboardName;
         $merchantCategory = $this->merchantCategory;
-        $pilotMerchant = $this->pilotMerchant;
+        $isPilot = $this->isPilot;
 
         $operIds = null;
         if($operName) {
@@ -101,7 +101,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             'status' => $status,
             'auditStatus' => $auditStatus,
             'merchantCategory' => $merchantCategory,
-            'pilotMerchant' => $pilotMerchant,
+            'isPilot' => $isPilot,
             'startCreatedAt' => $startDate,
             'endCreatedAt' => $endDate,
         ], true);

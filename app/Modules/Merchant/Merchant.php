@@ -66,7 +66,7 @@ use Carbon\Carbon;
  * @property number lowest_amount
  * @property int mapping_user_id
  * @property int level
- * @property int pilot_merchant
+ * @property int is_pilot
  *
  */
 class Merchant extends BaseModel
@@ -192,7 +192,7 @@ class Merchant extends BaseModel
         $this->employees_number = request('employees_number','');
 
         //试点商户
-        $this->pilot_merchant = request('pilot_merchant', 0);
+        $this->is_pilot = request('is_pilot', 0);
 
 
         //////// 没有了的字段

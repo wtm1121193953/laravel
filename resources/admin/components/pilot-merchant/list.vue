@@ -161,7 +161,7 @@
                     endDate: '',
                     operName: '',
                     operId: '',
-                    pilotMerchant: 1,
+                    isPilot: 1,
                 },
                 list: [],
                 auditRecord:[],

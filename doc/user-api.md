@@ -350,7 +350,7 @@ token (wxLogin接口除外)
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在,
         lowest_amount: 最低消费金额,
-        pilot_merchant：是否是试点商户 0普通商户 1试点商户
+        is_pilot：是否是试点商户 0普通商户 1试点商户
         isOperSelf: 是否归属于当前小程序的运营中心,
         grade: 商户评级,目前默认为5,
         lowestGoods: [	价格最低的两个团购商品
@@ -425,7 +425,7 @@ token (wxLogin接口除外)
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在
         lowestAmount: 最低消费金额,
-        pilot_merchant：是否是试点商户 0普通商户 1试点商户,
+        is_pilot：是否是试点商户 0普通商户 1试点商户,
         isOperSelf: 是否归属于当前小程序的运营中心,
         isOpenDish: 商家是否开启单品模式,
       }

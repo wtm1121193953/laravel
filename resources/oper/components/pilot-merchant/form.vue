@@ -105,7 +105,7 @@
         logo: '',
         desc_pic_list: [],
 
-        pilot_merchant: 1,
+        is_pilot: 1,
     };
 
     export default {

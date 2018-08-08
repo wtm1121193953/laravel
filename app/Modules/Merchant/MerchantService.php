@@ -78,7 +78,7 @@ class MerchantService extends BaseService
         $status = $data['status'];
         $auditStatus = $data['auditStatus'];
         $merchantCategory = $data['merchantCategory'];
-        $pilotMerchant = $data['pilotMerchant'];
+        $isPilot = $data['isPilot'];
         $startCreatedAt = $data['startCreatedAt'];
         $endCreatedAt = $data['endCreatedAt'];
 
@@ -150,10 +150,10 @@ class MerchantService extends BaseService
                 $query->where('merchant_category_id', $merchantCategoryFinalId);
             }
         }
-        if ($pilotMerchant) {
-            $query->where('pilot_merchant', Merchant::PILOT_MERCHANT);
+        if ($isPilot) {
+            $query->where('is_pilot', Merchant::PILOT_MERCHANT);
         } else {
-            $query->where('pilot_merchant', Merchant::NORMAL_MERCHANT);
+            $query->where('is_pilot', Merchant::NORMAL_MERCHANT);
         }
 
         if($getWithQuery){

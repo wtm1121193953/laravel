@@ -138,7 +138,7 @@
                     page: 1,
                     audit_status: '',
                     signBoardName: '',
-                    pilotMerchant: 1,
+                    isPilot: 1,
                 },
                 list: [],
                 total: 0,

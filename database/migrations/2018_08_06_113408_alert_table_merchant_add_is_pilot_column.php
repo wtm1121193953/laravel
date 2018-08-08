@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlertTableMerchantAddPilotMerchantColumn extends Migration
+class AlertTableMerchantAddIsPilotColumn extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class AlertTableMerchantAddPilotMerchantColumn extends Migration
     {
         //
         Schema::table('merchants', function (Blueprint $table) {
-            $table->tinyInteger('pilot_merchant')->index()->default(0)->comment('是否是试点商户 0普通商户 1试点商户');
+            $table->tinyInteger('is_pilot')->index()->default(0)->comment('是否是试点商户 0普通商户 1试点商户');
         });
     }
 
@@ -29,7 +29,7 @@ class AlertTableMerchantAddPilotMerchantColumn extends Migration
         //
         Schema::table('merchants', function (Blueprint $table) {
             $table->dropColumn([
-                'pilot_merchant'
+                'is_pilot'
             ]);
         });
     }

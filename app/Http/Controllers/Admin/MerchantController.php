@@ -38,7 +38,7 @@ class MerchantController extends Controller
         $status = request('status');
         $auditStatus = request('auditStatus');
         $merchantCategory = request('merchantCategory');
-        $pilotMerchant = request('pilotMerchant');
+        $isPilot = request('isPilot');
 
         if(is_string($auditStatus)){
             $auditStatus = explode(',', $auditStatus);
@@ -74,7 +74,7 @@ class MerchantController extends Controller
             'status' => $status,
             'auditStatus' => $auditStatus,
             'merchantCategory' => $merchantCategory,
-            'pilotMerchant' => $pilotMerchant,
+            'isPilot' => $isPilot,
             'startCreatedAt' => $startDate,
             'endCreatedAt' => $endDate,
         ]);
@@ -189,8 +189,8 @@ class MerchantController extends Controller
 //        $creatorOperName = request('creatorOperName');
 
         $merchantCategory = request('merchantCategory', '');
-        $pilotMerchant = request('pilotMerchant', 0);
+        $isPilot = request('isPilot', 0);
 
-        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name, $status, $auditStatus, $operId, $operName, $merchantCategory, $pilotMerchant))->download('商户列表.xlsx');
+        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name, $status, $auditStatus, $operId, $operName, $merchantCategory, $isPilot))->download('商户列表.xlsx');
     }
 }
