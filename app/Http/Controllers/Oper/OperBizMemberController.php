@@ -177,7 +177,9 @@ class OperBizMemberController extends Controller
         $data = Merchant::where(function (Builder $query){
             $query->where('oper_id', request()->get('current_user')->oper_id)
                 ->orWhere('audit_oper_id',  request()->get('current_user')->oper_id);
-        })->where('oper_biz_member_code', $code)
+            })
+            ->where('oper_biz_member_code', $code)
+            ->where('audit_status', Merchant::AUDIT_STATUS_SUCCESS)
             ->select('id', 'active_time', 'name', 'status','audit_status','created_at')
             ->paginate();
 

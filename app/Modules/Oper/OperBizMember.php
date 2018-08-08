@@ -58,6 +58,7 @@ class OperBizMember extends BaseModel
                     ->orWhere('audit_oper_id',  $operId);
             })
             ->where('oper_biz_member_code', $operBizMember->code)
+            ->where('is_pilot', Merchant::NORMAL_MERCHANT)
             ->count();
             Cache::forever('oper_biz_member_active_merchant_number_' . $operBizMember->id, $number);
             return $number;
@@ -88,6 +89,7 @@ class OperBizMember extends BaseModel
             })
                 ->where('audit_status', Merchant::AUDIT_STATUS_SUCCESS)
                 ->where('oper_biz_member_code', $operBizMember->code)
+                ->where('is_pilot', Merchant::NORMAL_MERCHANT)
                 ->count();
             Cache::forever('oper_biz_member_audit_merchant_number_' . $operBizMember->id, $number);
             return $number;

@@ -5,8 +5,8 @@
                 <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="商户名称"/>
             </el-form-item>
 
-            <el-form-item prop="signBoardName" label="商户招牌名" >
-                <el-input v-model="query.signBoardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
+            <el-form-item prop="signboardName" label="商户招牌名" >
+                <el-input v-model="query.signboardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
             </el-form-item>
 
             <el-form-item prop="merchant_category" label="所属行业">
@@ -149,7 +149,7 @@
                     status: '',
                     page: 1,
                     audit_status: '',
-                    signBoardName:''
+                    signboardName:''
                 },
                 list: [],
                 total: 0,

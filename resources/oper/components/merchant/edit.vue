@@ -40,6 +40,7 @@
                             name: 'MerchantList',
                             params: this.$route.params,
                         });
+                        store.commit('setCurrentMenu', '/merchants');
                     }).finally(() => {
                         this.isLoading = false;
                     })

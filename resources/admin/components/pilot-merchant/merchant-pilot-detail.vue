@@ -41,9 +41,6 @@
                     </template>
                 </el-form-item>
 
-                <el-form-item prop="business_time" label="营业时间">
-                    <span v-if="data.business_time">{{data.business_time[0]}} 至 {{data.business_time[1]}}</span>
-                </el-form-item>
                 <el-form-item prop="logo" label="商家logo">
                     <div v-viewer>
                         <img :src="data.logo" alt="商家logo" width="200px" height="100px" />
