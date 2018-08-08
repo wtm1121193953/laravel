@@ -13,6 +13,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategoryService;
+use App\Modules\Merchant\MerchantService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -57,11 +58,7 @@ class MerchantPoolController extends Controller
             'id' => 'required|integer|min:1'
         ]);
         $id = request('id');
-        $merchant = Merchant::findOrFail($id);
-        if ($merchant->merchant_category_id){
-            $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
-        }
-        $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : [];
+        $merchant = MerchantService::detail($id);
         return Result::success($merchant);
     }
 
