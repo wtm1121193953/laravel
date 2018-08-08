@@ -60,7 +60,7 @@ class LoginController extends Controller
             $verifyCodeRecord->save();
         }
 
-        $wxUserInfo = request('userInfo');
+        $wxUserInfo = json_decode(request('userInfo'));
         // 验证通过, 查询当前用户是否存在, 不存在则创建用户
         $user = User::where('mobile', $mobile)->first();
         if(!$user){
