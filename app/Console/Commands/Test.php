@@ -13,6 +13,7 @@ use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Settlement\Settlement;
 use App\Modules\Sms\SmsService;
+use App\Modules\User\User;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
@@ -51,6 +52,9 @@ class Test extends Command
      */
     public function handle()
     {
+        $user = User::where('mobile', '13333333333')->first();
+        dd($user);
+
         SmsService::sendBuySuccessNotify('O20180619165606342090');
         dd();
         $orderItems = OrderItem::where('order_id', 102)
