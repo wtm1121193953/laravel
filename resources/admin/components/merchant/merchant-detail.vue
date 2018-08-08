@@ -149,6 +149,11 @@
                             <!-- <preview-img :url="data.legal_id_card_pic_a" width="200px" height="100px"/>
                             <preview-img :url="data.legal_id_card_pic_b" width="200px" height="100px"/> -->
                         </el-form-item>
+
+                        <el-form-item label="法人身份证号码">
+                            {{data.legal_id_card_num}}
+                        </el-form-item>
+
                         <el-form-item label="合同">
                             <div class="contract" v-viewer style="display: none;">
                                 <img v-for="(item, index) in data.contract_pic_url" :src="item" :key="index" alt="合同" />
