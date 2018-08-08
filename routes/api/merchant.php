@@ -23,6 +23,7 @@ Route::prefix('merchant')
         Route::get('invite/statistics/list', 'InviteStatisticsController@getList');
         Route::get('invite/statistics/dailyList', 'InviteStatisticsController@dailyList');
         Route::get('invite/statistics/downloadInviteRecordList', 'InviteStatisticsController@downloadInviteRecordList');
+        Route::get('invite/statistics/getTodayAndTotalInviteNumber', 'InviteStatisticsController@getTodayAndTotalInviteNumber');
 
         Route::get('sms/getVerifyCode', 'SmsController@sendVerifyCode');
 

@@ -85,6 +85,19 @@ class InviteStatisticsService
     }
 
     /**
+     * 获取商户的邀请总数
+     * @param $merchantId
+     * @return int
+     */
+    public static function getInviteUserCountByMerchantId($merchantId)
+    {
+        $totalCount = InviteUserRecord::where('origin_id', $merchantId)
+            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
+            ->count();
+        return $totalCount;
+    }
+
+    /**
      * 获取用户的当天邀请总数
      * @param $userId
      * @return int

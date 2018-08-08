@@ -48,6 +48,25 @@ class InviteStatisticsController
     }
 
     /**
+     * 获取商户的当日邀请数量和邀请总数量
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getTodayAndTotalInviteNumber()
+    {
+        $merchantId = request()->get('current_user')->merchant_id;
+        $date = date('Y-m-d');
+        $todayInviteCount = InviteStatisticsService::getInviteCountByDate(
+            $date, $merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT
+        );
+        $totalInviteCount = InviteStatisticsService::getInviteUserCountByMerchantId($merchantId);
+
+        return Result::success([
+            'todayInviteCount' => $todayInviteCount,
+            'totalInviteCount' => $totalInviteCount,
+        ]);
+    }
+
+    /**
      * 获取商户邀请记录列表
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
