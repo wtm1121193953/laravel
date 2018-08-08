@@ -22,7 +22,7 @@
                 </div>
             </div>
         </div>
-        <el-col :span="12">
+        <el-col>
             <el-table stripe :data="list">
                 <el-table-column prop="date" label="日期"/>
                 <el-table-column prop="invite_count" label="新增人数"/>
