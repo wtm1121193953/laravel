@@ -66,6 +66,10 @@ class LoginController extends Controller
         if(!$user){
             $user = new User();
             $user->mobile = $mobile;
+            //判断是否是新用户注册，1：是，null：不是
+            $isFirstSign = 1;
+        }else{
+            $isFirstSign = null;
         }
         if ($wxUserInfo) {
             $user->wx_nick_name = $wxUserInfo->nickName;
@@ -115,6 +119,7 @@ class LoginController extends Controller
         }
 
         $user->level_text = User::getLevelText($user->level);
+        $user->sign_status = $isFirstSign;
         return Result::success([
             'userInfo' => $user
         ]);
