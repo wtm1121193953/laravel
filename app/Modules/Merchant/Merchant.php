@@ -42,6 +42,7 @@ use Carbon\Carbon;
  * @property string tax_cert_pic_url
  * @property string legal_id_card_pic_a
  * @property string legal_id_card_pic_b
+ * @property string legal_id_card_num
  * @property string contract_pic_url
  * @property string hygienic_licence_pic_url
  * @property string agreement_pic_url
@@ -177,6 +178,7 @@ class Merchant extends BaseModel
 
         $this->legal_id_card_pic_a = request('legal_id_card_pic_a','');
         $this->legal_id_card_pic_b = request('legal_id_card_pic_b','');
+        $this->legal_id_card_num = request('legal_id_card_num','');
         $this->business_licence_pic_url = request('business_licence_pic_url','');
         $this->organization_code = request('organization_code','');
         $this->contract_pic_url = request('contract_pic_url','');

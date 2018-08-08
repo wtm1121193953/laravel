@@ -123,6 +123,10 @@
                 <image-upload v-model="form.legal_id_card_pic_b" :limit="1"/>
             </el-form-item>
 
+            <el-form-item prop="legal_id_card_num" label="法人身份证号码">
+                <el-input v-model="form.legal_id_card_num"/>
+            </el-form-item>
+
             <el-form-item prop="business_licence_pic_url" label="营业执照">
                 <image-upload v-model="form.business_licence_pic_url" :limit="1"/>
             </el-form-item>
@@ -189,6 +193,7 @@
         // 法人信息
         legal_id_card_pic_a: '',
         legal_id_card_pic_b: '',
+        legal_id_card_num: '',
         business_licence_pic_url: '',
         organization_code: '',
         contract_pic_url: '',
@@ -239,6 +244,13 @@
                 } else if (value <= 0){
                     callback(new Error('输入值得大于零'))
                 } else {
+                    callback();
+                }
+            };
+            let validateIdCard = (rule, value, callback) => {
+                if (!(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value))) {
+                    callback(new Error('请输入正确的身份证号码'));
+                }else {
                     callback();
                 }
             };
@@ -303,6 +315,11 @@
                     ],
                     legal_id_card_pic_b: [
                         {required: true, message: '法人身份证照片 不能为空'},
+                    ],
+                    legal_id_card_num: [
+                        {required: true, message: '法人身份证号码 不能为空'},
+                        {max: 18, message: '法人身份证号码不能超过18个字'},
+                        {validator: validateIdCard},
                     ],
                     business_licence_pic_url: [
                         {required: true, message: '营业执照不能为空'},
