@@ -24,8 +24,8 @@
         </div>
         <el-col :span="12">
             <el-table stripe :data="list">
-                <el-table-column prop="date" label="注册日期"/>
-                <el-table-column prop="invite_count" label="注册人数"/>
+                <el-table-column prop="date" label="日期"/>
+                <el-table-column prop="invite_count" label="新增人数"/>
             </el-table>
             <el-pagination
                     class="fr m-t-20"
