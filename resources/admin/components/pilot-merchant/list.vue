@@ -1,5 +1,5 @@
 <template>
-    <page title="审核试点商户" v-loading="isLoading" >
+    <page title="试点商户列表" v-loading="isLoading" >
         <el-col>
             <el-form v-model="query" inline>
                 <el-form-item prop="merchantId" label="商户ID" >
