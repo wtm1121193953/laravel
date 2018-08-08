@@ -116,6 +116,7 @@ class MerchantService extends BaseService
             if(is_array($auditStatus) || $auditStatus instanceof Collection){
                 $query->whereIn('audit_status', $auditStatus);
             }else {
+                if ($auditStatus == -1) $auditStatus = 0;
                 $query->where('audit_status', $auditStatus);
             }
         }
