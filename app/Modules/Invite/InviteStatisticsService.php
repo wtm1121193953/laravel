@@ -136,7 +136,9 @@ class InviteStatisticsService
         } else {
             $data = $query->paginate($pageSize);
             $data->each(function ($item) {
-                $item->order_number = Order::where('user_id', $item->id)->count();
+                $item->order_number = Order::where('user_id', $item->id)
+                    ->whereNotIn('status', [Order::STATUS_UN_PAY, Order::STATUS_CLOSED])
+                    ->count();
             });
             return $data;
         }
