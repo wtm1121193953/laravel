@@ -25,7 +25,6 @@ use App\Result;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -62,7 +61,6 @@ class LoginController extends Controller
         }
 
         $wxUserInfo = json_decode(request('userInfo'));
-        Log::info('微信用户信息：', ['wxUserInfo' => $wxUserInfo,'userInfo' => request('userInfo')]);
         // 验证通过, 查询当前用户是否存在, 不存在则创建用户
         $user = User::where('mobile', $mobile)->first();
         if(!$user){

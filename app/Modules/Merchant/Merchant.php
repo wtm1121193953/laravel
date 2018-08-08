@@ -181,9 +181,11 @@ class Merchant extends BaseModel
         $this->legal_id_card_num = request('legal_id_card_num','');
         $this->business_licence_pic_url = request('business_licence_pic_url','');
         $this->organization_code = request('organization_code','');
-        $this->contract_pic_url = request('contract_pic_url','');
+        $contractPicUrl = request('contract_pic_url','');
+        if (is_array($contractPicUrl)) $contractPicUrl = implode(',', $contractPicUrl);
+        $this->contract_pic_url = $contractPicUrl;
         $otherCardPicUrls = request('other_card_pic_urls', '');
-        if(is_array($otherCardPicUrls)) $otherCardPicUrls = implode(',', $descPicList);
+        if(is_array($otherCardPicUrls)) $otherCardPicUrls = implode(',', $otherCardPicUrls);
         $this->other_card_pic_urls = $otherCardPicUrls;
         // 商户负责人
         $this->contacter = request('contacter','');
