@@ -58,7 +58,7 @@
                 this.getList();
             },
             downloadExcel() {
-                location.href = 'api/merchant/invite/statistics/downloadInviteRecordList?mobile=' . this.query.mobile;
+                location.href = '/api/merchant/invite/statistics/downloadInviteRecordList?mobile=' + this.query.mobile;
             }
         },
         created() {
