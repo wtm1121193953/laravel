@@ -173,7 +173,9 @@ class Merchant extends BaseModel
         $this->bank_card_no = request('bank_card_no','');
         $this->sub_bank_name = request('sub_bank_name','');
         $this->bank_open_address = request('bank_open_address','');
-        $this->bank_card_pic_a = request('bank_card_pic_a','');
+        $bankCardPicA = request('bank_card_pic_a','');
+        if (is_array($bankCardPicA)) $bankCardPicA = implode(',', $bankCardPicA);
+        $this->bank_card_pic_a = $bankCardPicA;
         $this->licence_pic_url = request('licence_pic_url','');
 
         $this->legal_id_card_pic_a = request('legal_id_card_pic_a','');
