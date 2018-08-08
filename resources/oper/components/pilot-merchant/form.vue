@@ -152,9 +152,6 @@
                         {required: true, message: '商户负责人联系方式 不能为空'},
                         {max: 15, message: '商户负责人联系方式不能超过15个字'}
                     ],
-                    oper_biz_member_code: [
-                        {required: true, message: '业务员不能为空'}
-                    ],
                     logo: [
                         {required: true, message: '商家logo不能为空', trigger: 'change'}
                     ],
