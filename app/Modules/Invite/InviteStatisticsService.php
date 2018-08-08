@@ -128,7 +128,7 @@ class InviteStatisticsService
             ->pluck('user_id');
         $query = User::whereIn('id', $userIds)
             ->when($mobile, function (Builder $query) use ($mobile) {
-                $query->where('mobile', $mobile);
+                $query->where('mobile', 'like', "%$mobile%");
             });
         if ($withQuery) {
             return $query;
