@@ -357,11 +357,12 @@
             },
             initForm(){
                 if(this.data){
+                    console.log(this.data);
                     let data = this.data;
                     for (let key in defaultForm){
                         this.form[key] = this.data[key];
                     }
-                    let business_time = JSON.parse(data.business_time);
+                    let business_time = data.business_time;
                     this.form.business_start_time = data.business_time ? new Date('1970-01-01 '+business_time[0]) : new Date('1970-01-01 00:00:00');
                     this.form.business_end_time = data.business_time ? new Date('1970-01-01 '+business_time[1]) : new Date('1970-01-01 23:59:59');
                     this.form.region = parseInt(data.region);
