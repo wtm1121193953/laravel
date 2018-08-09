@@ -13,11 +13,11 @@
                 </el-form-item>
             </el-form>
         </el-col>
-        <el-table :data="list" stripe>
+        <el-table :data="list" stripe @sort-change="sortChange">
             <el-table-column prop="created_at" label="注册日期"></el-table-column>
             <el-table-column prop="mobile" label="手机号码"></el-table-column>
             <el-table-column prop="wx_nick_name" label="微信昵称"></el-table-column>
-            <el-table-column prop="order_number" label="下单次数"></el-table-column>
+            <el-table-column prop="order_number" label="下单次数" sortable="custom"></el-table-column>
         </el-table>
         <el-pagination
                 class="fr m-t-20"
@@ -59,6 +59,13 @@
             },
             downloadExcel() {
                 location.href = '/api/merchant/invite/statistics/downloadInviteRecordList?mobile=' + this.query.mobile;
+            },
+            sortChange(column, prop, order) {
+                let param = {
+                    mobile: this.query.mobile,
+                    page: 1,
+                    pageSize: this.query.pageSize,
+                }
             }
         },
         created() {

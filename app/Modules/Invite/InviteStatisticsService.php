@@ -44,6 +44,7 @@ class InviteStatisticsService
         $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
             ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
             ->where('created_at', '<', $lastDay)
+            ->orderBy('created_at', 'desc')
             ->limit(20)
             ->get();
         $dateList = [];
