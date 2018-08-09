@@ -8,6 +8,7 @@ CREATE TABLE `tps_binds` (
   UNIQUE KEY `tps_bind_account_UNIQUE` (`tps_bind_account`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TPS账号绑定表';
 
+
 CREATE TABLE `tps_binds_verifyings` (
   `ver_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键。',
   `ver_code` varchar(20) DEFAULT NULL COMMENT '验证码，手机验证码或者邮箱验证码。',
