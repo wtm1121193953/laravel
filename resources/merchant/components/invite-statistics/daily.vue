@@ -96,24 +96,16 @@
         margin-top: 20px;
         float: left;
     }
-    .today-invite {
-        display: inline-block;
-        margin-left: 300px;
+    .today-invite, .total-invite {
         margin-top: 50px;
     }
-    .total-invite {
-        display: inline-block;
-        margin-left: 300px;
-        margin-top: 50px;
+
+    .today-invite > *,.total-invite > * {
+        display: block;
+        text-align: center;
     }
-    .today-number {
-        display: inline-block;
+
+    .today-number, .total-number {
         font-size: 50px;
-        margin-left: 30px;
-    }
-    .total-number {
-        display: inline-block;
-        font-size: 50px;
-        margin-left: 20px;
     }
 </style>
