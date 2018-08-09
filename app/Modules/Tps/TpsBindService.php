@@ -18,7 +18,7 @@ class TpsBindService extends BaseService
     /**
      * 根据账号查询TPS绑定信息
      * @param $tps_bind_account
-     * @return tps_binds
+     * @return TpsBind
      */
 	public static function getBindByaccount($tps_bind_account)
     {
