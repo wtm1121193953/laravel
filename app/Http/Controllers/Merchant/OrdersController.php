@@ -21,11 +21,19 @@ class OrdersController extends Controller
         $orderNo = request('orderNo');
         $notifyMobile = request('notifyMobile');
         $merchantId = request()->get('current_user')->merchant_id;
+        $createdAt = request('createdAt');
+        $type = request('type');
+        $status = request('status');
+        $goodsName = request('goodsName');
         $data = OrderService::getList([
             'merchantId' => $merchantId,
             'orderNo' => $orderNo,
             'notifyMobile' => $notifyMobile,
             'keyword' => $keyword,
+            'createdAt' => $createdAt,
+            'type' => $type,
+            'status' => $status,
+            'goodsName' => $goodsName,
         ]);
 
         return Result::success([

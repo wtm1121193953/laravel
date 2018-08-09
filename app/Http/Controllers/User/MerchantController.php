@@ -11,6 +11,7 @@ namespace App\Http\Controllers\User;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Area\Area;
 use App\Modules\Goods\GoodsService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
@@ -59,7 +60,18 @@ class MerchantController extends Controller
             ->where('status', 1)
             ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT])
             ->when($city_id, function(Builder $query) use ($city_id){
-                $query->where('city_id', $city_id);
+                // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户
+                $areaInfo = Area::where('area_id', $city_id)->where('path', 1)->first();
+                if (empty($areaInfo)) {
+                    $query->where('city_id', $city_id);
+                } else {
+                    $cityIdArray = Area::where('parent_id', $city_id)
+                        ->where('path', 2)
+                        ->select('area_id')
+                        ->get()
+                        ->pluck('area_id');
+                    $query->whereIn('city_id', $cityIdArray);
+                }
             })
             ->when(!$merchant_category_id && $keyword, function(Builder $query) use ($keyword){
                 // 不传商家类别id且关键字存在时, 若关键字等同于类别, 则搜索该类别以及携带该关键字的商家
