@@ -1,12 +1,12 @@
 <template>
-    <page title="我的商户" v-loading="isLoading">
+    <page title="试点商户管理" v-loading="isLoading">
         <el-form class="fl" inline size="small">
             <el-form-item label="" prop="name">
-                <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="商户名称"/>
+                <el-input v-model="query.name" @keyup.enter.native="search" size="small" clearable class="w-200" placeholder="商户名称"/>
             </el-form-item>
 
             <el-form-item prop="signboardName" label="商户招牌名" >
-                <el-input v-model="query.signboardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
+                <el-input v-model="query.signboardName" size="small" placeholder="商家招牌名" class="w-200" clearable @keyup.enter.native="search"/>
             </el-form-item>
 
             <el-form-item prop="merchant_category" label="所属行业">
@@ -25,14 +25,14 @@
             </el-form-item>
 
             <el-form-item label="状态" prop="status">
-                <el-select v-model="query.status" class="w-100">
+                <el-select v-model="query.status" clearable>
                     <el-option label="全部" value=""/>
                     <el-option label="正常" value="1"/>
                     <el-option label="已冻结" value="2"/>
                 </el-select>
             </el-form-item>
             <el-form-item label="审核状态" prop="audit_status">
-                <el-select v-model="query.audit_status" placeholder="请选择">
+                <el-select v-model="query.audit_status" placeholder="请选择" clearable>
                     <el-option label="全部" value=""/>
                     <el-option label="待审核" value="-1"/>
                     <el-option label="审核通过" value="1"/>
@@ -44,16 +44,7 @@
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
         </el-form>
-        <!--<el-dropdown class="fr" @command="addBtnClick" trigger="click">
-            <el-button type="primary">
-                添加商户<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="from-pool">从商户池添加</el-dropdown-item>
-                <el-dropdown-item command="add">添加新商户</el-dropdown-item>
-            </el-dropdown-menu>
-        </el-dropdown>-->
-        <el-button class="fr" type="primary" @click="add">录入并激活商户</el-button>
+        <el-button class="fr" type="primary" @click="add">录入试点商户</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="id" label="ID"/>
@@ -68,7 +59,6 @@
             </el-table-column>
             <el-table-column prop="city" label="城市">
                 <template slot-scope="scope">
-                    <!--<span> {{ scope.row.province }} </span>-->
                     <span> {{ scope.row.city }} </span>
                     <span> {{ scope.row.area }} </span>
                 </template>
@@ -115,7 +105,6 @@
                             :scope="scope"
                             :query="query"
                             @change="itemChanged"
-                            @accountChanged="accountChanged"
                             @refresh="getList"/>
                 </template>
             </el-table-column>
@@ -134,11 +123,10 @@
     import api from '../../../assets/js/api'
 
     import MerchantItemOptions from './merchant-item-options'
-    import MerchantForm from './merchant-form'
     import UnauditRecordReason from './unaudit-record-reason'
 
     export default {
-        name: "merchant-list",
+        name: "pilot-merchant-list",
         data(){
             return {
                 categoryOptions: [],
@@ -149,7 +137,8 @@
                     status: '',
                     page: 1,
                     audit_status: '',
-                    signboardName:''
+                    signboardName: '',
+                    isPilot: 1,
                 },
                 list: [],
                 total: 0,
@@ -177,38 +166,15 @@
             itemChanged(index, data){
                 this.getList();
             },
-            addBtnClick(command){
-                if(command === 'add'){
-                    this.add()
-                }else {
-                    this.$menu.change('/merchant/pool')
-                }
-            },
             add(){
-                router.push({
-                    path: '/merchant/add',
-                    query: {
-                        type: 'merchant-list'
-                    }
-                });
+                router.push('/merchant/pilot/add');
             },
             showMessage(scope){
                 api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
                     this.auditRecord = [data];
                 })
             },
-
-            accountChanged(scope, account){
-                let row = this.list[scope.$index];
-                row.account = account;
-                this.list.splice(scope.$index, 1, row);
-                this.getList();
-            },
         },
-
-
-
-
         created(){
             api.get('merchant/categories/tree').then(data => {
                 this.categoryOptions = data.list;
@@ -220,7 +186,6 @@
         },
         components: {
             MerchantItemOptions,
-            MerchantForm,
             UnauditRecordReason
         }
     }

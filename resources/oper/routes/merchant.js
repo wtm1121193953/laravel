@@ -14,6 +14,11 @@ import MerchantAuditList from '../components/merchant/audit-list'
 import MerchantDraftList from '../components/merchant/draft-list'
 import MerchantDetail from '../components/merchant/detail'
 
+import PilotMerchantList from '../components/pilot-merchant/list'
+import PilotMerchantAdd from '../components/pilot-merchant/add'
+import PilotMerchantEdit from '../components/pilot-merchant/edit'
+import PilotMerchantDetail from '../components/pilot-merchant/detail'
+
 /**
  * category 模块
  */
@@ -34,6 +39,11 @@ export default [
             {path: '/merchant/audits', component: MerchantAuditList, name: 'MerchantAuditList'},
             {path: '/merchant/drafts', component: MerchantDraftList, name: 'MerchantDraftList'},
             {path: '/merchant/detail', component: MerchantDetail, name: 'MerchantDetail'},
+
+            {path: '/merchant/pilots', component: PilotMerchantList, name: 'PilotMerchantList'},
+            {path: '/merchant/pilot/add', component: PilotMerchantAdd, name: 'PilotMerchantAdd'},
+            {path: '/merchant/pilot/edit', component: PilotMerchantEdit, name: 'PilotMerchantEdit'},
+            {path: '/merchant/pilot/detail', component: PilotMerchantDetail, name: 'PilotMerchantDetail'},
         ]
     },
 ];

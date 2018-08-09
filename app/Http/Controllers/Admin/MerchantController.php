@@ -35,7 +35,11 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $signboardName = request('signboardName');
+        $status = request('status');
         $auditStatus = request('auditStatus');
+        $merchantCategory = request('merchantCategory');
+        $isPilot = request('isPilot');
+
         if(is_string($auditStatus)){
             $auditStatus = explode(',', $auditStatus);
         }
@@ -63,11 +67,14 @@ class MerchantController extends Controller
 
         $data = MerchantService::getList([
             'id' => $id,
+            'operId' => $operIds ?? $operId,
             'name' => $name,
             'signboardName' => $signboardName,
-            'operId' => $operIds ?? $operId,
             'creatorOperId' => $createOperIds ?? $creatorOperId,
+            'status' => $status,
             'auditStatus' => $auditStatus,
+            'merchantCategory' => $merchantCategory,
+            'isPilot' => $isPilot,
             'startCreatedAt' => $startDate,
             'endCreatedAt' => $endDate,
         ]);
@@ -170,6 +177,7 @@ class MerchantController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $name = request('name');
+        $status = request('status');
         $auditStatus = request('auditStatus');
         $signboardName = request('signboardName');
         if ($auditStatus || $auditStatus==="0"){
@@ -180,6 +188,9 @@ class MerchantController extends Controller
 //        $creatorOperId = request('creatorOperId');
 //        $creatorOperName = request('creatorOperName');
 
-        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name,$auditStatus, $operId, $operName))->download('商户列表.xlsx');
+        $merchantCategory = request('merchantCategory', '');
+        $isPilot = request('isPilot', 0);
+
+        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name, $status, $auditStatus, $operId, $operName, $merchantCategory, $isPilot))->download('商户列表.xlsx');
     }
 }

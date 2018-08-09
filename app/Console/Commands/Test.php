@@ -13,6 +13,7 @@ use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Settlement\Settlement;
 use App\Modules\Sms\SmsService;
+use App\Modules\User\User;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;

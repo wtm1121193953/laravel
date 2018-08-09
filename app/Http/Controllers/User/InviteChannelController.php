@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Result;
 
@@ -50,9 +51,9 @@ class InviteChannelController extends Controller
         // 判断场景类型必须是 推广注册小程序码 才可以
         $inviteChannel = InviteChannelService::getBySceneId($sceneId);
 
-        if($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER){
+        /*if($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER){
             throw new ParamInvalidException('会员二维码已经失效');
-        }
+        }*/
 
         $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
         return Result::success($inviteChannel);
@@ -72,4 +73,29 @@ class InviteChannelController extends Controller
         return Result::success();
     }
 
+    /**
+     * 用户分享列表统计接口
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getInviteUserStatisticsByUserId()
+    {
+        $userId = request('userId');
+        $date = request('date');
+        if (!$userId) {
+            throw new ParamInvalidException('用户ID不能为空');
+        }
+        if (!$date) {
+            throw new ParamInvalidException('日期不能为空');
+        }
+        $data = InviteStatisticsService::getInviteStatisticsByDate($userId, $date);
+
+        $totalCount = InviteStatisticsService::getInviteUserCountById($userId);
+        $todayInviteCount = InviteStatisticsService::getTodayInviteCountById($userId);
+
+        return Result::success([
+            'data' => $data,
+            'totalCount' => $totalCount,
+            'todayInviteCount' => $todayInviteCount,
+        ]);
+    }
 }

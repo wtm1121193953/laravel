@@ -12,6 +12,7 @@ import dishesGoods from './dishesGoods'
 import InviteChannel from '../components/invite-channel'
 import PayQrcode from '../components/pay-qrcode'
 
+import InviteStatisticsList from '../components/invite-statistics/list'
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
 import OrdersList from '../components/orders/list.vue'
@@ -38,6 +39,7 @@ const routes = [
         path: '/',
         component: Home,
         children: [
+            {path: 'invite/statistics/list', component: InviteStatisticsList, name: 'InviteStatisticsList'},
             {path: 'invite/statistics/daily', component: InviteStatisticsDaily, name: 'InviteStatisticsDaily'},
         ]
     },

@@ -15,6 +15,8 @@ use App\Modules\Oper\OperMiniprogram;
 use App\ResultCode;
 use EasyWeChat\Factory;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
+use Intervention\Image\Facades\Image;
+use Intervention\Image\Gd\Font;
 
 class WechatService
 {
@@ -96,6 +98,23 @@ class WechatService
         }
         try {
             $filename = $response->save(storage_path('app/public/miniprogram/app_code'), "_{$sceneId}_{$width}");
+
+            $path = storage_path('app/public/miniprogram/app_code/') . "_{$sceneId}_{$width}.jpg";
+
+            $img = Image::make($path);
+            $width = $img->width();
+
+            $canvasWidth = 1.25 * $width;
+            $canvasHeight = 1.25 * $width;
+            $canvas = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
+            $canvas->insert($path,  'top-left', intval(0.125 * $width), intval(0.125 * $width));
+            $canvas->text(str_pad($sceneId, 8, "0", STR_PAD_LEFT), intval(0.5 * $canvasWidth), intval(1.175 * $width), function(Font $font) {
+                $font->file(5);
+                $font->align('center');
+            });
+
+            $canvas->save($path);
+
         } catch (InvalidArgumentException $e) {
             throw new BaseResponseException('小程序码生成失败');
         }
