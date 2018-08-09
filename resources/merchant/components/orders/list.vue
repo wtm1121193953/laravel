@@ -19,7 +19,7 @@
                     ></el-date-picker>
                 </el-form-item>
                 <el-form-item label="订单类型" prop="type">
-                    <el-select v-model="query.type" size="small" placeholder="请选择">
+                    <el-select v-model="query.type" size="small" clearable placeholder="请选择">
                         <el-option label="全部" value=""/>
                         <el-option label="团购" value="1"/>
                         <el-option label="买单" value="2"/>
