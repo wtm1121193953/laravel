@@ -40,7 +40,7 @@ class MerchantCategoryService extends BaseService
         if(!$tree){
             $list = MerchantCategory::when(!$withDisabled, function(Builder $query){
                 $query->where('status', 1);
-            })->get();
+            })->orderBy('sort')->get();
             $tree = Utils::convertListToTree($list);
             Cache::forever($cacheKey, $tree);
         }
