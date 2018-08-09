@@ -44,7 +44,7 @@ class InviteUserRecordExport implements FromQuery, WithMapping, WithHeadings
         return [
             $data->created_at,
             $data->mobile,
-            $data->nick_name,
+            $data->wx_nick_name,
             Order::where('user_id', $data->id)
                 ->whereNotIn('status', [Order::STATUS_UN_PAY, Order::STATUS_CLOSED])
                 ->count() ?: '0',
