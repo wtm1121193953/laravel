@@ -14,6 +14,7 @@ use App\Modules\Order\OrderPay;
 use App\Modules\Settlement\Settlement;
 use App\Modules\Sms\SmsService;
 use App\Modules\User\User;
+use App\Modules\Wechat\WechatService;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
@@ -52,6 +53,10 @@ class Test extends Command
      */
     public function handle()
     {
+        $url = 'http://yunjipin-o2o.com/storage/miniprogram/app_code/_123_375.jpg';
+        WechatService::handleMiniprogramAppCodeByNewCanvas($url, '', '招牌名称哈哈哈哈哈哈哈哈哈哈', false);
+        dd(pathinfo($url, PATHINFO_BASENAME));
+
         $user = User::where('mobile', '13333333333')->first();
         dd($user);
 
