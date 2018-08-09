@@ -1,5 +1,5 @@
 <template>
-    <page title="我的会员">
+    <page title="会员分析">
         <div class="statistics-div">
             <div class="today-div">
                 <div class="today-invite">
