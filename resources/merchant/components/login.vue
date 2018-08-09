@@ -86,7 +86,7 @@
                         <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/>
                     </el-form-item>
                     <div>
-                        <el-checkbox v-model="rememberUsername">记住账号</el-checkbox>
+                        <el-checkbox v-model="rememberUsername">记住帐号</el-checkbox>
                     </div>
                     <el-form-item>
                         <el-button type="primary" style="width:100%;" v-loading="loading" :disabled="loading"

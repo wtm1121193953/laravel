@@ -10,6 +10,7 @@ namespace App\Exports;
 
 
 use App\Modules\Invite\InviteStatisticsService;
+use App\Modules\Order\Order;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -43,8 +44,10 @@ class InviteUserRecordExport implements FromQuery, WithMapping, WithHeadings
         return [
             $data->created_at,
             $data->mobile,
-            $data->nick_name,
-            $data->order_number,
+            $data->wx_nick_name,
+            Order::where('user_id', $data->id)
+                ->whereNotIn('status', [Order::STATUS_UN_PAY, Order::STATUS_CLOSED])
+                ->count() ?: '0',
         ];
     }
 

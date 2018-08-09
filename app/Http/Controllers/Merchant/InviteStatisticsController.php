@@ -60,7 +60,7 @@ class InviteStatisticsController
         $todayInviteCount = InviteStatisticsService::getInviteCountByDate(
             $date, $merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT
         );
-        $totalInviteCount = InviteStatisticsService::getInviteUserCountByMerchantId($merchantId);
+        $totalInviteCount = InviteStatisticsService::getInviteUserCountByMerchantId($merchantId, $todayInviteCount);
 
         return Result::success([
             'todayInviteCount' => $todayInviteCount,

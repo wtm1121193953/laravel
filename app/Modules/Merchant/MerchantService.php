@@ -260,11 +260,13 @@ class MerchantService extends BaseService
         // 更新业务员已激活商户数量
         if($merchant->oper_biz_member_code){
             OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+            OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
         }
 
         // 如果存在原有的业务员, 并且不等于现有的业务员, 更新原有业务员邀请用户数量
         if(isset($originOperBizMemberCode) && $originOperBizMemberCode != $merchant->oper_biz_member_code){
             OperBizMember::updateActiveMerchantNumberByCode($originOperBizMemberCode);
+            OperBizMember::updateAuditMerchantNumberByCode($originOperBizMemberCode);
         }
 
         return $merchant;
