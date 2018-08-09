@@ -55,7 +55,7 @@ class OrderService extends BaseService
             $query->where('notify_mobile', 'like', "%$notifyMobile%");
         }
         if($createdAt){
-            $query->where('created_at', 'like', "%$createdAt%");
+            $query->whereBetween('created_at', [$createdAt[0], $createdAt[1]]);
         }
         if($type){
             if(is_array($type)){
