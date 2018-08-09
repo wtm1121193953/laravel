@@ -10,10 +10,12 @@ namespace App\Http\Controllers\Merchant;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Sms\SmsVerifyCode;
 use App\Modules\User\User;
 use App\Modules\User\UserMapping;
@@ -94,7 +96,11 @@ class MappingUserController extends Controller
         }
 
         //商户merchants表 关联user_id
-        $merchant = Merchant::findOrFail(request()->get('current_user')->merchant_id);
+        $merchantId = request()->get('current_user')->merchant_id;
+        $merchant = MerchantService::getById($merchantId);
+        if(empty($merchant)){
+            throw new DataNotFoundException('商户信息不存在');
+        }
         $merchant->mapping_user_id = $user->id;
         $merchant->save();
 

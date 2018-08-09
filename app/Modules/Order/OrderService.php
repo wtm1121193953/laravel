@@ -31,6 +31,10 @@ class OrderService extends BaseService
         $orderNo = array_get($params, 'orderNo');
         $notifyMobile = array_get($params, 'notifyMobile');
         $keyword = array_get($params, 'keyword');
+        $createdAt = array_get($params, 'createdAt');
+        $type = array_get($params, 'type');
+        $status = array_get($params, 'status');
+        $goodsName = array_get($params, 'goodsName');
 
         $query = Order::where(function(Builder $query){
             $query->where('type', Order::TYPE_GROUP_BUY)
@@ -49,6 +53,22 @@ class OrderService extends BaseService
         }
         if($notifyMobile){
             $query->where('notify_mobile', 'like', "%$notifyMobile%");
+        }
+        if($createdAt){
+            $query->whereBetween('created_at', [$createdAt[0], $createdAt[1]]);
+        }
+        if($type){
+            if(is_array($type)){
+                $query->whereIn('type',$type);
+            }else {
+                $query->where('type',$type);
+            }
+        }
+        if($status){
+            $query->whereIn('status',$status);
+        }
+        if($type== 1 && $goodsName){
+            $query->where('goods_name', 'like', "%$goodsName%");
         }
         if($keyword){
             $query->where(function (Builder $query) use ($keyword) {

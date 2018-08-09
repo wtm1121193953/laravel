@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\MerchantService;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
@@ -38,7 +39,7 @@ class UsersController extends Controller
                     $user = User::where('id',$inviteRecord->origin_id)->first(['name','mobile']);
                     $item->parent = !empty($user) ? ($user->name ? $user->name:$user->mobile) : '未知-推荐人';
                 }elseif ($inviteRecord->origin_type == 2){
-                    $merchant = Merchant::where('id',$inviteRecord->origin_id)->first(['name']);
+                    $merchant = MerchantService::getById($inviteRecord->origin_id, ['name']);
                     $item->parent = !empty($merchant) ? $merchant->name : '未知-推荐商户';
                 }elseif ($inviteRecord->origin_type == 3){
                     $oper = Oper::where('id',$inviteRecord->origin_id)->first(['name']);
