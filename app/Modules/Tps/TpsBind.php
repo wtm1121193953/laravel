@@ -4,6 +4,14 @@ namespace App\Modules\Tps;
 
 use App\BaseModel;
 
+/**
+ * Class TpsBind
+ * @package App\Modules\Tps
+ *
+ * @property int origin_type
+ * @property int origin_id
+ * @property string tps_account
+ */
 class TpsBind extends BaseModel
 {
     //
