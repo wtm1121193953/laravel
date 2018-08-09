@@ -12,7 +12,6 @@
                         filterable
                         clearable
                         placeholder="请输入业务员姓名或手机号码"
-                        @clear="resetCode"
                         class="w-300"
                 >
                     <el-option
@@ -403,10 +402,6 @@
                         }
                     })
                 }
-            },
-            resetCode() {
-                this.form.oper_biz_member_code = '';
-                this.operBizMembers = [];
             },
         },
         created(){
