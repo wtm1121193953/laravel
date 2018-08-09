@@ -104,12 +104,14 @@ class WechatService
             $img = Image::make($path);
             $width = $img->width();
 
-            $canvasWidth = 1.25 * $width;
-            $canvasHeight = 1.25 * $width;
+            $canvasWidth = intval(1.25 * $width);
+            $canvasHeight = intval(1.35 * $width);
             $canvas = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
             $canvas->insert($path,  'top-left', intval(0.125 * $width), intval(0.125 * $width));
-            $canvas->text(str_pad($sceneId, 8, "0", STR_PAD_LEFT), intval(0.5 * $canvasWidth), intval(1.175 * $width), function(Font $font) {
-                $font->file(5);
+            $canvas->text(str_pad($sceneId, 8, "0", STR_PAD_LEFT), intval(0.5 * $canvasWidth), intval(1.275 * $width), function(Font $font) use ($width) {
+                $size = intval(0.1 * $width);
+                $font->file(public_path('../resources/fonts/MSYH.TTC'));
+                $font->size($size);
                 $font->align('center');
             });
 
