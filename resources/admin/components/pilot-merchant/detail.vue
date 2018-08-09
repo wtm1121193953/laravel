@@ -1,5 +1,5 @@
 <template>
-    <page title="试点商户详情" :breadcrumbs="{试点商户审核管理: '/merchant/pilots'}">
+    <page title="试点商户详情" :breadcrumbs="{试点商户列表: '/merchant/pilots'}">
         <merchant-detail v-if="merchant" :data="merchant" :auditType="auditType" @change="merchantChange"/>
     </page>
 </template>

@@ -101,21 +101,7 @@ class WechatService
 
             $path = storage_path('app/public/miniprogram/app_code/') . "_{$sceneId}_{$width}.jpg";
 
-            $img = Image::make($path);
-            $width = $img->width();
-
-            $canvasWidth = intval(1.25 * $width);
-            $canvasHeight = intval(1.35 * $width);
-            $canvas = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
-            $canvas->insert($path,  'top-left', intval(0.125 * $width), intval(0.125 * $width));
-            $canvas->text(str_pad($sceneId, 8, "0", STR_PAD_LEFT), intval(0.5 * $canvasWidth), intval(1.275 * $width), function(Font $font) use ($width) {
-                $size = intval(0.1 * $width);
-                $font->file(public_path('../resources/fonts/MSYH.TTC'));
-                $font->size($size);
-                $font->align('center');
-            });
-
-            $canvas->save($path);
+            self::handleMiniprogramAppCodeByNewCanvas($path, $sceneId, $name = '', $increasedWidth = true);
 
         } catch (InvalidArgumentException $e) {
             throw new BaseResponseException('小程序码生成失败');
@@ -146,6 +132,50 @@ class WechatService
             $scene->save();
             return $url;
         }
+    }
+
+    /**
+     * 新建一个画布来处理小程序二维码（添加场景ID和其他文字等）
+     * @param $path
+     * @param $sceneId
+     * @param string $name
+     * @param bool $increasedWidth
+     */
+    public static function handleMiniprogramAppCodeByNewCanvas($path, $sceneId = '', $name = '', $increasedWidth = false)
+    {
+        $img = Image::make($path);
+        $width = $img->width();
+        $fileName = pathinfo($path, PATHINFO_BASENAME);
+
+        if ($increasedWidth) {
+            $canvasWidth = intval(1.25 * $width);
+            $canvasHeight = intval(1.35 * $width);
+        } else {
+            $canvasWidth = $width;
+            $canvasHeight = intval(1.25 * $width);
+        }
+        $canvas = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
+
+        if ($increasedWidth) {
+            $canvas->insert($path,  'top-left', intval(0.125 * $width), intval(0.125 * $width));
+        } else {
+            $canvas->insert($path,  'top-left', 0, 0);
+        }
+
+        $text = $sceneId ? str_pad($sceneId, 8, "0", STR_PAD_LEFT) : $name;
+        $textX = intval(0.5 * $canvasWidth);
+        $textY = $increasedWidth ? intval(1.275 * $width) : intval(1.175 * $width);
+
+        $canvas->text($text, $textX, $textY, function(Font $font) use ($width, $increasedWidth) {
+            $size = $increasedWidth ? intval(0.1 * $width) : intval(0.05 * $width);
+            $font->file(public_path('../resources/fonts/MSYH.TTC'));
+            $font->size($size);
+            $font->align('center');
+        });
+
+        $path = storage_path('app/public/miniprogram/app_code/') . $fileName;
+
+        $canvas->save($path);
     }
 
 }

@@ -429,4 +429,16 @@ class MerchantService extends BaseService
         }
     }
 
+    /**
+     * 获取商户的某个值
+     * @param $merchantId
+     * @param $key
+     * @return mixed
+     */
+    public static function getMerchantValueByIdAndKey($merchantId, $key)
+    {
+        $value = Merchant::where('id', $merchantId)->value($key);
+        return $value;
+    }
+
 }
