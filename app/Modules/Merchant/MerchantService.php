@@ -24,6 +24,16 @@ class MerchantService extends BaseService
 {
 
     /**
+     * 根据ID获取商户信息
+     * @param $merchantId
+     * @return Merchant
+     */
+    public static function getById($merchantId)
+    {
+        return Merchant::find($merchantId);
+    }
+
+    /**
      * @param array $data
      * @return Merchant[]|\Illuminate\Database\Eloquent\Collection
      */
