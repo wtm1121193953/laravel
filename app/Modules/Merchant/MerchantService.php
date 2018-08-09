@@ -272,10 +272,14 @@ class MerchantService extends BaseService
         }
 
         if ($merchant->oper_id > 0) {
-            // 如果当前商户已有所属运营中心, 则此次提交为重新提交审核
+            // 如果当前商户已有所属运营中心,且不是试点商户, 则此次提交为重新提交审核
             // 添加审核记录
-            MerchantAuditService::addAudit($merchant->id, $currentOperId, Merchant::AUDIT_STATUS_RESUBMIT);
-            $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
+            if ($merchant->is_pilot) {
+                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+            } else {
+                MerchantAuditService::addAudit($merchant->id, $currentOperId, Merchant::AUDIT_STATUS_RESUBMIT);
+                $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
+            }
         } else {
             MerchantAuditService::addAudit($merchant->id, $currentOperId);
             $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
