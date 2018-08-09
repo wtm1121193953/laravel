@@ -32,10 +32,10 @@
                 <el-form-item label="订单状态" prop="status">
                     <el-select v-model="query.status" size="small"  multiple placeholder="全部">
                         <el-option label="未支付" value="1"/>
-                        <el-option label="已取消" value="2"/>
+                        <!--<el-option label="已取消" value="2"/>-->
                         <el-option label="已关闭[超时自动关闭]" value="3"/>
                         <el-option label="已支付" value="4"/>
-                        <el-option label="退款中[保留状态]" value="5"/>
+                        <!--<el-option label="退款中[保留状态]" value="5"/>-->
                         <el-option label="已退款" value="6"/>
                         <el-option label="已完成" value="7"/>
                     </el-select>
@@ -81,10 +81,10 @@
             <el-table-column prop="status" label="订单状态">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.status) === 1" class="c-warning">未支付</span>
-                    <span v-else-if="parseInt(scope.row.status) === 2" class="c-gray">已取消</span>
+                    <!--<span v-else-if="parseInt(scope.row.status) === 2" class="c-gray">已取消</span>-->
                     <span v-else-if="parseInt(scope.row.status) === 3" class="c-gray">已关闭[超时自动关闭]</span>
                     <span v-else-if="parseInt(scope.row.status) === 4" class="c-green">已支付</span>
-                    <span v-else-if="parseInt(scope.row.status) === 5" class="c-danger">退款中[保留状态]</span>
+                    <!--<span v-else-if="parseInt(scope.row.status) === 5" class="c-danger">退款中[保留状态]</span>-->
                     <span v-else-if="parseInt(scope.row.status) === 6" class="c-gray">已退款</span>
                     <span v-else-if="parseInt(scope.row.status) === 7" class="c-green">已完成</span>
                     <span v-else class="c-danger">未知 ({{scope.row.status}})</span>
