@@ -49,7 +49,7 @@
         </el-col>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID" width="100px"/>
-            <el-table-column prop="created_at" label="创建时间"/>
+            <el-table-column prop="created_at" label="下单时间"/>
             <el-table-column prop="order_no" label="订单号" width="300px"/>
             <el-table-column prop="type" label="订单类型">
                 <template slot-scope="scope">
