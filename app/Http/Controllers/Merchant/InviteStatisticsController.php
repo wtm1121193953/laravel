@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Merchant;
 
 
+use App\Exports\InviteUserRecordExport;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Invite\InviteUserStatisticsDaily;
@@ -16,7 +17,10 @@ use App\Result;
 
 class InviteStatisticsController
 {
-
+    /**
+     * 每日统计
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function dailyList()
     {
         $merchantId = request()->get('current_user')->merchant_id;
@@ -25,6 +29,7 @@ class InviteStatisticsController
             ->where('origin_type', InviteChannel::ORIGIN_TYPE_MERCHANT)
             ->orderByDesc('date')
             ->paginate($pageSize);
+        $total = $data->total();
         // 如果是第一页, 获取当日数据统计并添加到列表中
         if(request('page') <= 1){
             $today = new InviteUserStatisticsDaily();
@@ -35,11 +40,61 @@ class InviteStatisticsController
             );
             if($today->invite_count > 0){
                 $data->prepend($today);
+                $total = $total + 1;
             }
         }
         return Result::success([
             'list' => $data->items(),
+            'total' => $total,
+        ]);
+    }
+
+    /**
+     * 获取商户的当日邀请数量和邀请总数量
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getTodayAndTotalInviteNumber()
+    {
+        $merchantId = request()->get('current_user')->merchant_id;
+        $date = date('Y-m-d');
+        $todayInviteCount = InviteStatisticsService::getInviteCountByDate(
+            $date, $merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT
+        );
+        $totalInviteCount = InviteStatisticsService::getInviteUserCountByMerchantId($merchantId, $todayInviteCount);
+
+        return Result::success([
+            'todayInviteCount' => $todayInviteCount,
+            'totalInviteCount' => $totalInviteCount,
+        ]);
+    }
+
+    /**
+     * 获取商户邀请记录列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getList()
+    {
+        $merchantId = request()->get('current_user')->merchant_id;
+        $pageSize = request('pageSize', 15);
+        $mobile = request('mobile', '');
+
+        $data = InviteStatisticsService::getInviteRecordListByMerchantId($merchantId, $pageSize, $mobile);
+
+        return Result::success([
+            'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
+
+    /**
+     * 导出我的会员（商户邀请的用户信息）
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function downloadInviteRecordList()
+    {
+        $merchantId = request()->get('current_user')->merchant_id;
+        $mobile = request('mobile', '');
+
+        return (new InviteUserRecordExport($merchantId, $mobile))->download('我的会员.xlsx');
     }
 }

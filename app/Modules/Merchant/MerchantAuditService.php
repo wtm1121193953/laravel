@@ -11,6 +11,7 @@ namespace App\Modules\Merchant;
 
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperBizMember;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Pimple\Tests\Fixtures\Service;
@@ -132,6 +133,8 @@ class MerchantAuditService extends Service
         $merchant->oper_id = $merchant->audit_oper_id;
         $merchant->active_time = Carbon::now();
         $merchant->save();
+
+        OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
 
         return $merchant;
     }

@@ -24,7 +24,7 @@
         left: 50%;
         margin: -230px 0 0 -180px;
         width: 310px;
-        height: 274px;
+        height: 300px;
         padding: 25px;
         box-shadow: 0 0 100px rgba(0,0,0,.08);
         background-color: #fff;
@@ -85,6 +85,9 @@
                                   placeholder="验证码"/>
                         <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/>
                     </el-form-item>
+                    <div>
+                        <el-checkbox v-model="rememberUsername">记住帐号</el-checkbox>
+                    </div>
                     <el-form-item>
                         <el-button type="primary" style="width:100%;" v-loading="loading" :disabled="loading"
                                    @click.native.prevent="doLogin">登录
@@ -126,6 +129,7 @@
                 loading: false,
                 autoLoginLoading: false,
                 showLogin: false,
+                rememberUsername: true,
             }
         },
         computed:{
@@ -133,7 +137,8 @@
                 'projectName',
                 'systemName',
                 'user',
-                'currentMenu'
+                'currentMenu',
+                'loginUsername'
             ])
         },
         methods: {
@@ -159,6 +164,7 @@
                         _self.loading = true;
                         api.post('/login', this.form).then(data => {
                             store.dispatch('storeUserInfo', data);
+                            store.dispatch('setLoginUserName', this.rememberUsername ? this.form.username : '');
                             _self.relocation();
                         }).catch(() => {
                             _self.refreshVerify();
@@ -242,6 +248,7 @@
             }
         },
         created: function () {
+            this.form.username = this.loginUsername;
         },
         mounted () {
             const that = this;

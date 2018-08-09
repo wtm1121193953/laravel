@@ -64,6 +64,7 @@ class MerchantDraftController extends Controller
         $id = request('id');
         $merchantDraft = MerchantDraft::findOrFail($id);
         $merchantDraft->categoryPath = $merchantDraft->merchant_category_id ? MerchantCategoryService::getCategoryPath($merchantDraft->merchant_category_id) : [];
+        $merchantDraft->categoryPathOnlyEnable = $merchantDraft->merchant_category_id ? MerchantCategoryService::getCategoryPath($merchantDraft->merchant_category_id, true) : [];
         $merchantDraft->account = MerchantAccount::where('merchant_id', $merchantDraft->id)->first();
         return Result::success($merchantDraft);
     }

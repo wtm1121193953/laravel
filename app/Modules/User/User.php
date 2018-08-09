@@ -17,6 +17,8 @@ use Illuminate\Notifications\Notifiable;
  * @property string account
  * @property string password
  * @property string salt
+ * @property string wx_nick_name
+ * @property string wx_avatar_url
  *
  */
 class User extends BaseModel

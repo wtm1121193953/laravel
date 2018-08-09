@@ -216,6 +216,13 @@
         created(){
             api.get('merchant/categories/tree').then(data => {
                 this.categoryOptions = data.list;
+
+                let self = this;
+                for (let i = self.categoryOptions.length - 1; i >= 0; i--) {
+                    if (!self.categoryOptions[i].sub) {
+                        self.categoryOptions.splice(i, 1);
+                    }
+                }
             });
             api.get('area/tree').then(data => {
                 this.areaOptions = data.list;
