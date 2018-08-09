@@ -55,7 +55,7 @@
                 <el-form-item prop="contacter" label="负责人姓名">
                     {{data.contacter}}
                 </el-form-item>
-                <el-form-item prop="contacter_phone" label="负责人联系方式">
+                <el-form-item prop="contacter_phone" label="负责人手机号码">
                     {{data.contacter_phone}}
                 </el-form-item>
                 <el-col v-if="type != 'poolOnly' ">

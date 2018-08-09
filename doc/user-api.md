@@ -345,7 +345,7 @@ token (wxLogin接口除外)
         desc_pic: 商家描述图片
         desc: 商家介绍
         contacter: 联系人姓名
-        contacter_phone: 负责人联系方式
+        contacter_phone: 负责人电话号码
         audit_status: 商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在,
@@ -420,7 +420,7 @@ token (wxLogin接口除外)
         desc_pic: 商家描述图片
         desc: 商家介绍
         contacter: 联系人姓名
-        contacter_phone: 负责人联系方式
+        contacter_phone: 负责人电话号码
         audit_status: 商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在

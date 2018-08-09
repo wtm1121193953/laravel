@@ -47,7 +47,7 @@
             <el-form-item prop="contacter" label="负责人姓名" class="w-500">
                 <el-input v-model="form.contacter"/>
             </el-form-item>
-            <el-form-item prop="contacter_phone" label="负责人联系方式" class="w-500">
+            <el-form-item prop="contacter_phone" label="负责人手机号码" class="w-500">
                 <el-input v-model="form.contacter_phone"/>
             </el-form-item>
             <el-form-item prop="oper_biz_member_code" label="业务员">
@@ -107,6 +107,13 @@
 
         is_pilot: 1,
     };
+    let validateContacterPhone = (rule, value, callback) => {
+        if (!(/^1[3,4,5,6,7,8,9]\d{9}$/.test(value))) {
+            callback(new Error('请输入正确的手机号码'));
+        }else {
+            callback();
+        }
+    };
 
     export default {
         name: 'pilot-merchant-form',
@@ -149,8 +156,8 @@
                         {required: true, message: '商户负责人姓名 不能为空'},
                     ],
                     contacter_phone: [
-                        {required: true, message: '商户负责人联系方式 不能为空'},
-                        {max: 15, message: '商户负责人联系方式不能超过15个字'}
+                        {required: true, message: '负责人手机号码 不能为空'},
+                        {validator: validateContacterPhone},
                     ],
                     logo: [
                         {required: true, message: '商家logo不能为空', trigger: 'change'}
