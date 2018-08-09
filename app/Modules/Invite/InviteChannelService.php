@@ -111,7 +111,7 @@ class InviteChannelService extends BaseService
             $user = User::findOrFail($originId);
             $originName = $user->name ?: Utils::getHalfHideMobile($user->mobile);
         }else if($originType == 2){
-            $originName = Merchant::where('id', $originId)->value('name');
+            $originName = Merchant::where('id', $originId)->value('signboard_name');
         }else if($originType == 3){
             $originName = Oper::where('id', $originId)->value('name');
         }

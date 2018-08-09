@@ -61,7 +61,6 @@
     }
     .image {
         width: 250px;
-        height: 250px;
         margin-top: 20px;
     }
     .tips {

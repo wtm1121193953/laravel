@@ -17,6 +17,7 @@ use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
 use App\Modules\Wechat\MiniprogramSceneService;
+use App\Modules\Wechat\WechatService;
 use App\Result;
 
 class InviteChannelController extends Controller
@@ -95,6 +96,8 @@ class InviteChannelController extends Controller
         $width = $qrcodeSizeType == 3 ? 1280 : ($qrcodeSizeType == 2 ? 430 : 258);
 
         $path = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
+
+        WechatService::handleMiniprogramAppCodeByNewCanvas($path, '', $inviteChannel->name, false);
 
         if(request()->ajax()){
             return Result::success(['name' => $path]);

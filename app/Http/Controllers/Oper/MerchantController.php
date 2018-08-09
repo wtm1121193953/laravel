@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Oper;
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
@@ -144,36 +145,19 @@ class MerchantController extends Controller
         ]);
 
         $merchantId = request('id');
-        $merchant = Merchant::findOrFail($merchantId);
+        $merchant = MerchantService::getById($merchantId);
+        if(empty($merchant)){
+            throw new DataNotFoundException('商户池信息不存在');
+        }
         if($merchant->oper_id > 0){
             throw new ParamInvalidException('该商户已不在商户池中');
         }
-        $currentOperId = request()->get('current_user')->oper_id;
         if($merchant->audit_oper_id > 0){
             throw new ParamInvalidException('该商户已被其他运营中心认领');
         }
 
-        // 补充激活商户需要的信息
-        $merchant->fillMerchantActiveInfoFromRequest();
-        // 设置当前商户提交审核的运营中心
-        $merchant->audit_oper_id = $currentOperId;
-        $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
-
-        // 商户名不能重复
-        $exists = Merchant::where('name', $merchant->name)
-            ->where('id', '<>', $merchant->id)->first();
-        if($exists){
-            throw new ParamInvalidException('商户名称不能重复');
-        }
-
-        $merchant->save();
-        // 添加审核记录
-        MerchantAuditService::addAudit($merchant->id, $currentOperId);
-
-        // 更新业务员已激活商户数量
-        if($merchant->oper_biz_member_code){
-            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
-        }
+        $currentOperId = request()->get('current_user')->oper_id;
+        $merchant = MerchantService::addFromMerchantPool($currentOperId, $merchant);
 
         return Result::success('操作成功', $merchant);
     }
@@ -187,7 +171,10 @@ class MerchantController extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer',
         ]);
-        $merchant = Merchant::findOrFail(request('id'));
+        $merchant = MerchantService::getById(request('id'));
+        if(empty($merchant)){
+            throw new DataNotFoundException('商户信息不存在');
+        }
         $merchant->status = request('status');
         $merchant->save();
 
@@ -207,7 +194,10 @@ class MerchantController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $merchant = Merchant::findOrFail(request('id'));
+        $merchant = MerchantService::getById(request('id'));
+        if(empty($merchant)){
+            throw new DataNotFoundException('商户信息不存在');
+        }
         $merchant->delete();
         return Result::success($merchant);
     }

@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Exceptions\DataNotFoundException;
 use App\Jobs\OrderPaidJob;
 use App\Modules\Goods\Goods;
 use App\Modules\Dishes\DishesItem;
@@ -18,6 +19,7 @@ use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperMiniprogram;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
@@ -147,7 +149,10 @@ class PayController extends Controller
                 $userId = $order->user_id;
                 if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
                     $merchantId = $order->merchant_id;
-                    $merchant = Merchant::findOrFail($merchantId);
+                    $merchant = MerchantService::getById($merchantId);
+                    if(empty($merchant)){
+                        throw new DataNotFoundException('商户信息不存在');
+                    }
                     $inviteChannel = InviteChannelService::getByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
                     InviteService::bindInviter($userId, $inviteChannel);
                 }
