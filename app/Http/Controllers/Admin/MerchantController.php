@@ -135,7 +135,7 @@ class MerchantController extends Controller
         $merchantId = request('id');
         $auditSuggestion = request('audit_suggestion', '');
 
-        $merchant = Merchant::findOrFail($merchantId);
+        $merchant = MerchantService::getById($merchantId);
         if(empty($merchant)){
             throw new ParamInvalidException('商户信息不存在');
         }
