@@ -10,6 +10,7 @@
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>
                     <span v-else-if="scope.row.status === 2" class="c-danger">已冻结</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
+                    <span v-if="parseInt(scope.row.is_pilot) === 1">(试点商户)</span>
                 </template>
             </el-table-column>
         </el-table>
