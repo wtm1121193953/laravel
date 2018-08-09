@@ -338,9 +338,37 @@ class MerchantService extends BaseService
         // todo 从草稿箱添加
     }
 
-    public static function addFromMerchantPool()
+    /**
+     * 从商户池添加商户信息
+     * @param $operId
+     * @param Merchant $merchant
+     * @return Merchant
+     */
+    public static function addFromMerchantPool($operId, Merchant $merchant)
     {
-        // todo 从商户池添加
+        // 补充激活商户需要的信息
+        $merchant->fillMerchantActiveInfoFromRequest();
+        // 设置当前商户提交审核的运营中心
+        $merchant->audit_oper_id = $operId;
+        $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+
+        // 商户名不能重复
+        $exists = Merchant::where('name', $merchant->name)
+            ->where('id', '<>', $merchant->id)->first();
+        if($exists){
+            throw new ParamInvalidException('商户名称不能重复');
+        }
+
+        $merchant->save();
+        // 添加审核记录
+        MerchantAuditService::addAudit($merchant->id, $operId);
+
+        // 更新业务员已激活商户数量
+        if($merchant->oper_biz_member_code){
+            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
+
+        return $merchant;
     }
 
 
