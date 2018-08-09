@@ -180,7 +180,7 @@ class OperBizMemberController extends Controller
             })
             ->where('oper_biz_member_code', $code)
             ->where('audit_status', Merchant::AUDIT_STATUS_SUCCESS)
-            ->select('id', 'active_time', 'name', 'status','audit_status','created_at')
+            ->select('id', 'active_time', 'name', 'status','audit_status','created_at','is_pilot')
             ->paginate();
 
 
