@@ -36,9 +36,10 @@ class InviteStatisticsService
      * 获取邀请的统计，通过日期分组
      * @param $userId
      * @param $date
+     * @param int $page
      * @return array
      */
-    public static function getInviteStatisticsByDate($userId, $date)
+    public static function getInviteStatisticsByDate($userId, $date, $page = 1)
     {
         $time = $date ?: date('Y-m-d', time());
         $firstDay = date('Y-m-01 00:00:00', strtotime($time));
@@ -48,6 +49,7 @@ class InviteStatisticsService
                 ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
                 ->where('created_at', '<', $lastDay)
                 ->orderBy('created_at', 'desc')
+                ->offset(20 * ($page - 1))
                 ->limit(20)
                 ->get();
         } else {
