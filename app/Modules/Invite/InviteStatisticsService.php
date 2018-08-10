@@ -12,6 +12,7 @@ use App\Modules\Order\Order;
 use App\Modules\User\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use function PHPSTORM_META\type;
 
 /**
  * 邀请记录统计相关服务
@@ -113,15 +114,7 @@ class InviteStatisticsService
         return $todayInviteCount;
     }
 
-    /**
-     * 获取商户邀请记录列表
-     * @param $merchantId
-     * @param int $pageSize
-     * @param string $mobile
-     * @param bool $withQuery
-     * @return User|\Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public static function getInviteRecordListByMerchantId($merchantId, $pageSize = 15, $mobile = '', $withQuery = false)
+    public static function getInviteRecordListByMerchantId($merchantId, $mobile = '', $withQuery = false, $param = [])
     {
         $userIds = InviteUserRecord::where('origin_id', $merchantId)
             ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
@@ -136,13 +129,31 @@ class InviteStatisticsService
         if ($withQuery) {
             return $query;
         } else {
-            $data = $query->paginate($pageSize);
+            $page = $param['page'] ?: 1;
+            $pageSize = $param['pageSize'] ?: 15;
+            $orderColumn = $param['orderColumn'];
+            $orderType = $param['orderType'];
+
+            $total = $query->count();
+            $data = $query->get();
             $data->each(function ($item) {
                 $item->order_number = Order::where('user_id', $item->id)
                     ->whereNotIn('status', [Order::STATUS_UN_PAY, Order::STATUS_CLOSED])
                     ->count();
             });
-            return $data;
+
+            if ($orderType == 'descending') {
+                $data = $data->sortBy($orderColumn);
+            } elseif ($orderType == 'ascending') {
+                $data = $data->sortByDesc($orderColumn);
+            }
+
+            $data = $data->forPage($page,$pageSize)->values()->all();
+
+            return [
+                'data' => $data,
+                'total' => $total,
+            ];
         }
     }
 

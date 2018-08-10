@@ -273,8 +273,9 @@ class MerchantService extends BaseService
 
         if ($merchant->oper_id > 0) {
             // 如果当前商户已有所属运营中心,且不是试点商户, 则此次提交为重新提交审核
+            // 如果当前商户已有所属运营中心，且是试点商户，且有商户描述，则是补全资料提交，修改审核状态为待审核
             // 添加审核记录
-            if ($merchant->is_pilot) {
+            if ($merchant->is_pilot && $merchant->desc) {
                 $merchant->oper_id = 0;
                 $merchant->is_pilot = Merchant::NORMAL_MERCHANT;
                 $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
@@ -283,8 +284,13 @@ class MerchantService extends BaseService
                 $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
             }
         } else {
-            MerchantAuditService::addAudit($merchant->id, $currentOperId);
-            $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+            // 如果当前商户没有所属运营中心，且是试点商户，且有商户描述，则是待审核状态下的补全资料，修改商户为正常商户
+            if ($merchant->is_pilot && $merchant->desc) {
+                $merchant->is_pilot = Merchant::NORMAL_MERCHANT;
+            } else {
+                MerchantAuditService::addAudit($merchant->id, $currentOperId);
+                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+            }
         }
 
         $merchant->save();
