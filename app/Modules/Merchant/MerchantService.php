@@ -275,6 +275,7 @@ class MerchantService extends BaseService
             // 如果当前商户已有所属运营中心,且不是试点商户, 则此次提交为重新提交审核
             // 添加审核记录
             if ($merchant->is_pilot) {
+                $merchant->oper_id = 0;
                 $merchant->is_pilot = Merchant::NORMAL_MERCHANT;
                 $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
             } else {
