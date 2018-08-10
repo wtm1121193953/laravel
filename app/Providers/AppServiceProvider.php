@@ -7,6 +7,7 @@ use App\Modules\User\UserOpenIdMapping;
 use App\Observers\MerchantObserver;
 use App\Observers\UserOpenIdMappingObserver;
 use Debugbar;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
@@ -25,16 +26,18 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
         Debugbar::disable();
 
-        // 开启数据库操作日志记录
+        // 开启数据库操作记录
         DB::enableQueryLog();
-        // 记录数据库操作日志
-        /*DB::listen(function ($query) {
-            Log::debug('sql listen', [
-                'sql' => $query->sql,
-                'bindings' => $query->bindings,
-                'time' => $query->time,
-            ]);
-        });*/
+        // 非生产环境 记录数据库操作日志
+        if(!App::environment('production')){
+            DB::listen(function ($query) {
+                Log::debug('sql listen', [
+                    'sql' => $query->sql,
+                    'bindings' => $query->bindings,
+                    'time' => $query->time,
+                ]);
+            });
+        }
 
         // 商户模型观察者
         Merchant::observe(MerchantObserver::class);
