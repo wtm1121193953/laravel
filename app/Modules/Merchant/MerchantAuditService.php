@@ -134,7 +134,9 @@ class MerchantAuditService extends Service
         $merchant->active_time = Carbon::now();
         $merchant->save();
 
-        OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
+        if ($merchant->oper_biz_member_code) {
+            OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
 
         return $merchant;
     }
