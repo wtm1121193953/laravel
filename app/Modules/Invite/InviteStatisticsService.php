@@ -42,12 +42,22 @@ class InviteStatisticsService
     {
         $firstDay = date('Y-m-01 00:00:00', strtotime($date));
         $lastDay = date('Y-m-d 23:59:59', strtotime("$firstDay + 1 month - 1 day"));
-        $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
-            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
-            ->where('created_at', '<', $lastDay)
-            ->orderBy('created_at', 'desc')
-            ->limit(20)
-            ->get();
+        if (date('Y-m', strtotime($date)) == date('Y-m', time())){
+            $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
+                ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+                ->where('created_at', '<', $lastDay)
+                ->orderBy('created_at', 'desc')
+                ->limit(20)
+                ->get();
+        } else {
+            $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
+                ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+                ->where('created_at', '>', $firstDay)
+                ->where('created_at', '<', $lastDay)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+
         $dateList = [];
         foreach ($inviteUserRecords as $item) {
             $dateList[] = date('Y-m', strtotime($item->created_at));
