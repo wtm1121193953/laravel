@@ -75,14 +75,24 @@ class InviteStatisticsController
     public function getList()
     {
         $merchantId = request()->get('current_user')->merchant_id;
+        $page = request('page', 1);
         $pageSize = request('pageSize', 15);
         $mobile = request('mobile', '');
+        $orderColumn = request('orderColumn', null);
+        $orderType = request('orderType', null);
 
-        $data = InviteStatisticsService::getInviteRecordListByMerchantId($merchantId, $pageSize, $mobile);
+        $param = [
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'orderColumn' => $orderColumn,
+            'orderType' => $orderType,
+        ];
+
+        $data = InviteStatisticsService::getInviteRecordListByMerchantId($merchantId, $mobile, false, $param);
 
         return Result::success([
-            'list' => $data->items(),
-            'total' => $data->total(),
+            'list' => $data['data'],
+            'total' => $data['total'],
         ]);
     }
 

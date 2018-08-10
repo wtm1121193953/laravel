@@ -41,6 +41,8 @@
                     mobile: '',
                     page: 1,
                     pageSize: 15,
+                    orderColumn: null,
+                    orderType: null,
                 },
                 list: [],
                 total: 0,
@@ -60,12 +62,13 @@
             downloadExcel() {
                 location.href = '/api/merchant/invite/statistics/downloadInviteRecordList?mobile=' + this.query.mobile;
             },
-            sortChange(column, prop, order) {
-                let param = {
-                    mobile: this.query.mobile,
-                    page: 1,
-                    pageSize: this.query.pageSize,
-                }
+            sortChange(column) {
+                this.query.orderColumn = column.prop;
+                this.query.orderType = column.order;
+                api.get('/invite/statistics/list', this.query).then(data => {
+                    this.list = data.list;
+                    this.total = data.total;
+                })
             }
         },
         created() {
