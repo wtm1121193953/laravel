@@ -40,9 +40,10 @@ class InviteStatisticsService
      */
     public static function getInviteStatisticsByDate($userId, $date)
     {
-        $firstDay = date('Y-m-01 00:00:00', strtotime($date));
+        $time = $date ?: date('Y-m-d', time());
+        $firstDay = date('Y-m-01 00:00:00', strtotime($time));
         $lastDay = date('Y-m-d 23:59:59', strtotime("$firstDay + 1 month - 1 day"));
-        if (date('Y-m', strtotime($date)) == date('Y-m', time())){
+        if (!$date){
             $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
                 ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
                 ->where('created_at', '<', $lastDay)
@@ -124,6 +125,14 @@ class InviteStatisticsService
         return $todayInviteCount;
     }
 
+    /**
+     * 查询商户邀请用户的列表
+     * @param $merchantId
+     * @param string $mobile
+     * @param bool $withQuery
+     * @param array $param
+     * @return User|array
+     */
     public static function getInviteRecordListByMerchantId($merchantId, $mobile = '', $withQuery = false, $param = [])
     {
         $userIds = InviteUserRecord::where('origin_id', $merchantId)
