@@ -46,11 +46,11 @@ class RequestLog
         // 如果是错误请求, 记录错误日志
         if(
             !(
-                $request->is('api/oper/inviteChannel/downloadInviteQrcode') ||
-                $request->is('api/merchant/inviteChannel/downloadInviteQrcode') ||
-                $request->is('api/pay/notify')
-            ) &&
-            !(
+                $request->is('api/oper/inviteChannel/downloadInviteQrcode')
+                || $request->is('api/merchant/inviteChannel/downloadInviteQrcode')
+                || $request->is('api/pay/notify')
+            )
+            && !(
                 isset($responseData['code']) &&
                 in_array($responseData['code'], [
                     ResultCode::SUCCESS,
