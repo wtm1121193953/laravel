@@ -25,14 +25,16 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
         Debugbar::disable();
 
+        // 开启数据库操作日志记录
+        DB::enableQueryLog();
         // 记录数据库操作日志
-        DB::listen(function ($query) {
+        /*DB::listen(function ($query) {
             Log::debug('sql listen', [
                 'sql' => $query->sql,
                 'bindings' => $query->bindings,
                 'time' => $query->time,
             ]);
-        });
+        });*/
 
         // 商户模型观察者
         Merchant::observe(MerchantObserver::class);

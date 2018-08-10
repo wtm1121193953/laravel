@@ -117,12 +117,13 @@ class Handler extends ExceptionHandler
             }
             $response = parent::render($request, $exception);
         }
-        // 如果
+        // 如果存在有事务没有完成, 则回滚事务
         if(DB::transactionLevel() > 0){
             DB::rollBack(0);
         }
-        $result = json_decode($response->getContent(), 1);
-        if(
+//        $result = json_decode($response->getContent(), 1);
+        /*if(
+            // 错误日志记录, 放入RequestLog中
             !isset($result['code']) ||
             !in_array($result['code'], [
                 ResultCode::PARAMS_INVALID,
@@ -137,9 +138,10 @@ class Handler extends ExceptionHandler
                     'statusCode' => $response->getStatusCode(),
                     'headers' => $response->headers->all(),
                     'content' => json_decode($response->getContent(), 1),
-                ]
+                ],
+                'sql_log' => DB::getQueryLog(),
             ]);
-        }
+        }*/
 
         return $response;
     }
