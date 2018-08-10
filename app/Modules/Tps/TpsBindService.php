@@ -9,8 +9,6 @@
 namespace App\Modules\Tps;
 
 use App\BaseService;
-use App\Exceptions\BaseResponseException;
-use App\ResultCode;
 
 class TpsBindService extends BaseService
 {
@@ -35,6 +33,8 @@ class TpsBindService extends BaseService
     public static function getTpsBindInfoByTpsAccount($tpsAccount)
     {
         // todo 根据tps账号获取该tps账号绑定的信息
+    	return TpsBind::where('tps_account', $tpsAccount)
+    	->first(); 
     }
 
     /**
@@ -45,6 +45,11 @@ class TpsBindService extends BaseService
     public static function bindTpsAccountForOper($operId, $tpsAccount)
     {
         // todo 运营中心绑定账号逻辑
+    	$record = new TpsBind();
+    	$record->origin_type = 3;
+    	$record->origin_id = $operId;
+    	$record->tps_account = $tpsAccount;
+    	$record->save();
     }
 
     /**
