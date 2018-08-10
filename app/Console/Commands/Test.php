@@ -54,7 +54,7 @@ class Test extends Command
     public function handle()
     {
         $url = 'http://yunjipin-o2o.com/storage/miniprogram/app_code/_123_375.jpg';
-        WechatService::handleMiniprogramAppCodeByNewCanvas($url, '', '招牌名称哈哈哈哈哈哈哈哈哈哈', false);
+        WechatService::addNameToAppCode($url, '招牌名称哈哈哈哈哈哈哈哈哈哈');
         dd(pathinfo($url, PATHINFO_BASENAME));
 
         $user = User::where('mobile', '13333333333')->first();
