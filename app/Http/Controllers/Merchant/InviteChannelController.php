@@ -30,7 +30,7 @@ class InviteChannelController extends Controller
         $url = MiniprogramSceneService::getMiniprogramAppCode($scene);
 
         $signboardName = MerchantService::getMerchantValueByIdAndKey($currentUser->merchant_id, 'signboard_name');
-        WechatService::handleMiniprogramAppCodeByNewCanvas($url, '', $signboardName, false);
+        WechatService::addNameToAppCode($url, $signboardName);
 
         return Result::success([
             'qrcode_url' => $url,
@@ -52,7 +52,7 @@ class InviteChannelController extends Controller
         $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
 
         $signboardName = MerchantService::getMerchantValueByIdAndKey($currentUser->merchant_id, 'signboard_name');
-        WechatService::handleMiniprogramAppCodeByNewCanvas($filePath, '', $signboardName, false);
+        WechatService::addNameToAppCode($filePath, $signboardName);
 
         return response()->download($filePath, '分享会员二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
 

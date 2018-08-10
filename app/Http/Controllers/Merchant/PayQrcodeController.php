@@ -44,7 +44,7 @@ class PayQrcodeController extends Controller
             $qrcode_url = WechatService::getMiniprogramAppCodeUrl($scene);
 
             $signboardName = MerchantService::getMerchantValueByIdAndKey($merchantId, 'signboard_name');
-            WechatService::handleMiniprogramAppCodeByNewCanvas($qrcode_url, '', $signboardName, false);
+            WechatService::addNameToAppCode($qrcode_url, $signboardName);
         }catch (\Exception $e){
             throw new BaseResponseException('小程序码生成失败');
         }
@@ -71,7 +71,7 @@ class PayQrcodeController extends Controller
         $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
 
         $signboardName = MerchantService::getMerchantValueByIdAndKey($currentUser->merchant_id, 'signboard_name');
-        WechatService::handleMiniprogramAppCodeByNewCanvas($filePath, '', $signboardName, false);
+        WechatService::addNameToAppCode($filePath, $signboardName);
 
         return response()->download($filePath, '支付小程序码_' . ['', '小', '中', '大'][$type] . '.jpg');
     }
