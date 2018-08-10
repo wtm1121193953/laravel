@@ -27,10 +27,23 @@ class InviteChannelController extends Controller
     {
         $keyword = request('keyword', '');
         $operId = request()->get('current_user')->oper_id;
-        $data = InviteChannelService::getOperInviteChannels($operId, $keyword);
+        $page = request('page', 1);
+        $pageSize = request('pageSize', 15);
+        $orderColumn = request('orderColumn', null);
+        $orderType = request('orderType', null);
+
+        $param = [
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'orderColumn' => $orderColumn,
+            'orderType' => $orderType,
+        ];
+
+        $data = InviteChannelService::getOperInviteChannels($operId, $keyword, false, $param);
+
         return Result::success([
-            'list' => $data->items(),
-            'total' => $data->total()
+            'list' => $data['data'],
+            'total' => $data['total']
         ]);
     }
 
@@ -96,8 +109,7 @@ class InviteChannelController extends Controller
         $width = $qrcodeSizeType == 3 ? 1280 : ($qrcodeSizeType == 2 ? 430 : 258);
 
         $path = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
-
-        WechatService::handleMiniprogramAppCodeByNewCanvas($path, '', $inviteChannel->name, false);
+        WechatService::addNameToAppCode($path, $inviteChannel->name);
 
         if(request()->ajax()){
             return Result::success(['name' => $path]);

@@ -13,6 +13,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\MiniprogramPageNotExistException;
 use App\Modules\Oper\OperMiniprogram;
 use App\ResultCode;
+use App\Support\ImageTool;
 use EasyWeChat\Factory;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 use Intervention\Image\Facades\Image;
@@ -101,7 +102,7 @@ class WechatService
 
             $path = storage_path('app/public/miniprogram/app_code/') . "_{$sceneId}_{$width}.jpg";
 
-            self::handleMiniprogramAppCodeByNewCanvas($path, $sceneId, $name = '', $increasedWidth = true);
+            self::addSceneIdToAppCode($path, $sceneId);
 
         } catch (InvalidArgumentException $e) {
             throw new BaseResponseException('小程序码生成失败');
@@ -135,47 +136,74 @@ class WechatService
     }
 
     /**
-     * 新建一个画布来处理小程序二维码（添加场景ID和其他文字等）
-     * @param $path
-     * @param $sceneId
-     * @param string $name
-     * @param bool $increasedWidth
+     * 给小程序码增加场景ID
+     * @param string $path
+     * @param int|string $sceneId
      */
-    public static function handleMiniprogramAppCodeByNewCanvas($path, $sceneId = '', $name = '', $increasedWidth = false)
+    public static function addSceneIdToAppCode($path, $sceneId)
     {
-        $img = Image::make($path);
-        $width = $img->width();
-        $fileName = pathinfo($path, PATHINFO_BASENAME);
+        // 设置基础比率 (字体大小与放大比例)
+        $fontSizeRatio = 0.05; // 字体大小比例
+        $biggerRatio = 0.25; // 图片整体放大比例
 
-        if ($increasedWidth) {
-            $canvasWidth = intval(1.25 * $width);
-            $canvasHeight = intval(1.35 * $width);
-        } else {
-            $canvasWidth = $width;
-            $canvasHeight = intval(1.25 * $width);
-        }
-        $canvas = Image::canvas($canvasWidth, $canvasHeight, '#ffffff');
+        $appCode = Image::make($path);
+        $width = $appCode->width();
 
-        if ($increasedWidth) {
-            $canvas->insert($path,  'top-left', intval(0.125 * $width), intval(0.125 * $width));
-        } else {
-            $canvas->insert($path,  'top-left', 0, 0);
-        }
+        // 计算画布所需大小
+        $canvasWidth = $width * (1 + $biggerRatio);
+        $canvasHeight = $width * (1 + $biggerRatio + $fontSizeRatio);
+        $image = ImageTool::canvas($canvasWidth, $canvasHeight, '#ffffff');
 
-        $text = $sceneId ? str_pad($sceneId, 8, "0", STR_PAD_LEFT) : $name;
-        $textX = intval(0.5 * $canvasWidth);
-        $textY = $increasedWidth ? intval(1.275 * $width) : intval(1.175 * $width);
+        // 将小程序码添加到画布上
+        $paddingX = intval($biggerRatio / 2 * $width);
+        $paddingY = intval($biggerRatio / 2 * $width);
+        $image = ImageTool::water($image, $appCode, 'top-left', $paddingX, $paddingY);
 
-        $canvas->text($text, $textX, $textY, function(Font $font) use ($width, $increasedWidth) {
-            $size = $increasedWidth ? intval(0.1 * $width) : intval(0.05 * $width);
-            $font->file(public_path('../resources/fonts/MSYH.TTC'));
-            $font->size($size);
-            $font->align('center');
-        });
+        // 计算文字大小
+        $sceneIdSize = intval($fontSizeRatio * $width);
+        $sceneIdX = intval($canvasWidth * 0.9);
+        $sceneIdY = intval((1 + ($biggerRatio + $fontSizeRatio * 3 ) / 2) * $width);
 
-        $path = storage_path('app/public/miniprogram/app_code/') . $fileName;
+        // 将文字添加到画布上
+        $sceneId = 'ID：' . str_pad($sceneId, 8, "0", STR_PAD_LEFT);
+        $image = ImageTool::text($image, $sceneId, $sceneIdSize, $sceneIdX, $sceneIdY, 'right', '#999999');
 
-        $canvas->save($path);
+        $image->save($path);
+    }
+
+    /**
+     * 在小程序码添加标题
+     * @param string $path
+     * @param string $name
+     */
+    public static function addNameToAppCode($path, $name)
+    {
+        // 设置基础比率 (字体大小与放大比例)
+        $fontSizeRatio = 0.045; // 字体大小比例
+
+        $appCode = Image::make($path);
+        $width = $appCode->width();
+        $height = $appCode->height();
+
+        // 计算画布所需大小
+        $canvasWidth = $width;
+        $canvasHeight = $height * (1 + $fontSizeRatio * 2);
+        $image = ImageTool::canvas($canvasWidth, $canvasHeight, '#ffffff');
+
+        // 将小程序码添加到画布上
+        $paddingX = 0;
+        $paddingY = ($fontSizeRatio * 2) * $height;
+        $image = ImageTool::water($image, $appCode, 'top-left', $paddingX, $paddingY);
+
+        // 计算文字大小
+        $nameSize = intval($fontSizeRatio * $width);
+        $nameX = intval($canvasWidth / 2);
+        $nameY = intval($fontSizeRatio * 3 * $height);
+
+        // 将文字添加到画布上
+        $image = ImageTool::text($image, $name, $nameSize, $nameX, $nameY);
+
+        $image->save($path);
     }
 
 }

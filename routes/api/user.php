@@ -18,6 +18,7 @@ Route::prefix('user')
         Route::any('loginWithSceneId', 'LoginController@loginWithSceneId');
 
         Route::any('user/info', 'UserController@getInfo')->middleware(UserLoginFilter::class);
+        Route::any('user/updateWxInfo', 'UserController@updateUserWxInfo')->middleware(UserLoginFilter::class);
 
         Route::get('area/tree', 'AreaController@getTree');
         Route::get('area/cites/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');

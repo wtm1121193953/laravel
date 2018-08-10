@@ -1187,6 +1187,65 @@ order_no 订单号
 
   
 
+**用户相关**
+
+- [ ] 获取用户信息
+
+  地址：ANY  ` user/info`
+
+  参数：无
+
+  返回：
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应信息,
+      "data": {	响应数据
+          "userInfo": {
+              "id": 用户ID,
+              "name": 用户姓名,
+              "mobile": 用户手机号码,
+              "email": 用户邮箱,
+              "account": 用户账号,
+              "status": 用户状态	状态 1-正常 2-禁用,
+              "wx_nick_name": 用户微信昵称,
+              "wx_avatar_url": 用户微信头像,
+              "created_at": 创建时间,
+              "updated_at": 更新时间,
+              "level": 用户等级值,
+              "level_text": 用户等级
+          }
+      },
+      "timestamp": 时间戳
+  }
+  ```
+
+  
+
+- [ ] 更新用户微信昵称和头像
+
+  地址：ANY  `user/updateWxInfo`
+
+  参数：
+
+  ```
+  userInfo: 用户微信信息的json字符串
+  ```
+
+  返回： 
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应信息,
+      "data": { },
+      "timestamp": 时间戳
+  }
+  ```
+
+  
+
 
 
 

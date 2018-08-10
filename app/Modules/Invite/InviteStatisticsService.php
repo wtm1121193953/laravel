@@ -12,6 +12,7 @@ use App\Modules\Order\Order;
 use App\Modules\User\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use function PHPSTORM_META\type;
 
 /**
  * 邀请记录统计相关服务
@@ -35,18 +36,31 @@ class InviteStatisticsService
      * 获取邀请的统计，通过日期分组
      * @param $userId
      * @param $date
+     * @param int $page
      * @return array
      */
-    public static function getInviteStatisticsByDate($userId, $date)
+    public static function getInviteStatisticsByDate($userId, $date, $page = 1)
     {
-        $firstDay = date('Y-m-01 00:00:00', strtotime($date));
+        $time = $date ?: date('Y-m-d', time());
+        $firstDay = date('Y-m-01 00:00:00', strtotime($time));
         $lastDay = date('Y-m-d 23:59:59', strtotime("$firstDay + 1 month - 1 day"));
-        $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
-            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
-            ->where('created_at', '<', $lastDay)
-            ->orderBy('created_at', 'desc')
-            ->limit(20)
-            ->get();
+        if (!$date){
+            $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
+                ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+                ->where('created_at', '<', $lastDay)
+                ->orderBy('created_at', 'desc')
+                ->offset(20 * ($page - 1))
+                ->limit(20)
+                ->get();
+        } else {
+            $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
+                ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+                ->where('created_at', '>', $firstDay)
+                ->where('created_at', '<', $lastDay)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
+
         $dateList = [];
         foreach ($inviteUserRecords as $item) {
             $dateList[] = date('Y-m', strtotime($item->created_at));
@@ -114,14 +128,14 @@ class InviteStatisticsService
     }
 
     /**
-     * 获取商户邀请记录列表
+     * 查询商户邀请用户的列表
      * @param $merchantId
-     * @param int $pageSize
      * @param string $mobile
      * @param bool $withQuery
-     * @return User|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @param array $param
+     * @return User|array
      */
-    public static function getInviteRecordListByMerchantId($merchantId, $pageSize = 15, $mobile = '', $withQuery = false)
+    public static function getInviteRecordListByMerchantId($merchantId, $mobile = '', $withQuery = false, $param = [])
     {
         $userIds = InviteUserRecord::where('origin_id', $merchantId)
             ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
@@ -136,13 +150,31 @@ class InviteStatisticsService
         if ($withQuery) {
             return $query;
         } else {
-            $data = $query->paginate($pageSize);
+            $page = $param['page'] ?: 1;
+            $pageSize = $param['pageSize'] ?: 15;
+            $orderColumn = $param['orderColumn'];
+            $orderType = $param['orderType'];
+
+            $total = $query->count();
+            $data = $query->get();
             $data->each(function ($item) {
                 $item->order_number = Order::where('user_id', $item->id)
                     ->whereNotIn('status', [Order::STATUS_UN_PAY, Order::STATUS_CLOSED])
                     ->count();
             });
-            return $data;
+
+            if ($orderType == 'descending') {
+                $data = $data->sortBy($orderColumn);
+            } elseif ($orderType == 'ascending') {
+                $data = $data->sortByDesc($orderColumn);
+            }
+
+            $data = $data->forPage($page,$pageSize)->values()->all();
+
+            return [
+                'data' => $data,
+                'total' => $total,
+            ];
         }
     }
 
