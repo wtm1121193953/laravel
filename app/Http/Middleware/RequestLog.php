@@ -27,14 +27,16 @@ class RequestLog
 
         // 如果是错误请求, 记录错误日志
         if(
-            !isset($responseData['code']) ||
-            !in_array($responseData['code'], [
-                ResultCode::SUCCESS,
-                ResultCode::PARAMS_INVALID,
-                ResultCode::UNLOGIN,
-                ResultCode::TOKEN_INVALID,
-                ResultCode::USER_ALREADY_BEEN_INVITE,
-            ])
+            ( !isset($responseData['code']) ||
+                !in_array($responseData['code'], [
+                    ResultCode::SUCCESS,
+                    ResultCode::PARAMS_INVALID,
+                    ResultCode::UNLOGIN,
+                    ResultCode::TOKEN_INVALID,
+                    ResultCode::USER_ALREADY_BEEN_INVITE,
+                ]) ) &&
+            !$request->is('/api/oper/inviteChannel/downloadInviteQrcode') &&
+            !$request->is('/api/merchant/inviteChannel/downloadInviteQrcode')
         ){
             $attributes = $request->attributes->all();
             foreach ($attributes as $key => $attribute) {
