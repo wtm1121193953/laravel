@@ -58,6 +58,8 @@ class RequestLog
                     ResultCode::UNLOGIN,
                     ResultCode::TOKEN_INVALID,
                     ResultCode::USER_ALREADY_BEEN_INVITE,
+                    ResultCode::ACCOUNT_NOT_FOUND,
+                    ResultCode::ACCOUNT_PASSWORD_ERROR,
                 ])
             )
         ){
