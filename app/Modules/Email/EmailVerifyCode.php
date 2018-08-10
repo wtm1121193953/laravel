@@ -11,7 +11,7 @@ use Illuminate\Support\Carbon;
  *
  * @property int    type
  * @property int status
- * @property string mobile
+ * @property string email
  * @property string verify_code
  * @property Carbon expire_time
  */

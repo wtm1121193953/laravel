@@ -2,7 +2,7 @@
     <page title="TPS会员账号管理">
         <div>
             <div v-if="!bindAccount" class="title"><el-button @click="showBox = true">生成TPS账号</el-button></div>
-            <div v-else class="title">{{bindAccount}}</div>
+            <div v-else class="title">已生成TPS账号：{{bindAccount.tps_account}}</div>
             <div class="tips">
                 <div class="tip">温馨提示：</div>
                 <div class="tip">1、生成TPS账号后，您在大千生活的下级用户对您贡献的消费额可以按系数转化成TPS消费额。</div>
@@ -10,19 +10,44 @@
                 <div class="tip">3、大千消费额与TPS消费额置换比为6：1</div>
             </div>
         </div>
-        <el-dialog :visible.sync="showBox" width="50%">
+        <el-dialog :visible.sync="showBox" width="60%" :closeOnClickModal="false">
 
 			<el-row>
 			    <el-col :span="22">
-			        <el-form :model="form" label-width="80px" @submit.native.prevent ref="form">
+			        <el-form :model="form" label-width="80px" @submit.native.prevent ref="form" :rules="formRules">
 			        
-			            <el-form-item prop="mail" label="电子邮箱">
-			                <el-input v-model="form.mail"/>
-			            </el-form-item>
-			            
+			            <el-row>
+			                <el-col :span="10">
+			                <div class="grid-content bg-purple">
+			                	<el-form-item prop="email" label="电子邮箱">
+			                        <el-input v-model="form.email" ref="emails"/>
+			                    </el-form-item>
+			                </div>
+			                </el-col>
+			                <el-col :span="14">
+			                <div class="grid-content bg-purple">
+                                <div calss="tip" style="margin: 10px;">仅限后缀@shoptps.com官方邮箱注册，若没有邮箱，请联系客服</div>
+			                </div>
+			                </el-col>			                
+
+			            </el-row>
+                       <el-row>
+                           <el-col :span="12">
+                               <div class="grid-content bg-purple">
+                           	       <el-form-item prop="vcode" label="验证码">
+			                           <el-input v-model="form.vcode" ref="vcodes"/>
+			                       </el-form-item>
+                               </div>
+                           </el-col>
+                           <el-col :span="12">
+                               <div class="grid-content bg-purple">
+			                       <el-button @click="getVcode()">获取验证码</el-button>
+                               </div>
+                           </el-col>
+                       </el-row>			            
+
 			            <el-form-item>
-			                <el-button @click="cancel">取消</el-button>
-			                <el-button type="primary" @click="showMsg()">保存</el-button>
+			                <el-button type="primary" @click="showMsg()">生成</el-button>
 			            </el-form-item>
 			            
 			        </el-form>
@@ -42,7 +67,15 @@
         		bindAccount: '',
                 showBox: false,
                 test: '',
-                form: {}
+                form: {},
+                formRules: {
+                    vcode: [
+                        {required: true, message: '验证码不能为空' }
+                    ],
+                    email: [
+                        {required: true, type: 'email', message: '请输入正确的邮箱'},
+                    ],
+                },
                 
             }
         },
@@ -54,10 +87,11 @@
                 })
             },
             showMsg(){
-                //todo
+                //todo 待验证邮箱格式
         	    this.$confirm('每个运营中心仅只能添加一次TPS会员账号，之后不可修改。确定生成吗？', '提示', {type: 'warning',}).then(() => {
-        			api.post('/api/oper/tps/bindAccount').then((data) => {
-        			    this.$message.success('保存成功:');
+        			api.post('/api/oper/tps/bindAccount',{email : this.$refs.emails.value,code : this.$refs.vcodes.value,}).then((data) => {
+        			    
+        			    this.$message.success(data.msg);
                         this.showBox = false;
                         this.init();
                         this.bindAccount = data.bindAccount;
@@ -69,9 +103,22 @@
         	        });                
             },
             
-            cancel(){
-        		// todo 
-                this.showBox = false;
+            getVcode(){
+        		// todo 待验证邮箱格式
+        		/*
+        		if (this.$refs.emails.value == ''){
+        		    
+        		    this.$message.success('邮箱格式有误！');
+        		    return;
+        		}
+        		*/
+
+				api.post('/api/oper/tps/getVcode', {email : this.$refs.emails.value}).then((data) => {
+				    
+				    this.$message.success(data.msg);
+
+		        });
+
             }
 
         },
@@ -96,4 +143,5 @@
         font-size: 14px;
         line-height: 24px;
     }
+    
 </style>
