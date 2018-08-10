@@ -201,6 +201,9 @@
         site_acreage: '',
         employees_number: '',
 
+        //是否是试点商户的字段
+        is_pilot: 0,
+
         //////// 没有了的字段
         invoice_title: '',
         invoice_no: '',
