@@ -1,4 +1,5 @@
 import Login from '../components/login.vue'
+import Register from '../components/register.vue'
 import refresh from '../components/refresh.vue'
 import Home from '../components/home.vue'
 import ErrorPage from '../components/404.vue'
@@ -12,6 +13,7 @@ import merchant from './merchant'
 const routes = [
 
     {path: '/login', component: Login, name: 'Login'},
+    {path: '/register', component: Register, name: 'Register'},
 
     // 商户模块, 留作实例使用
     ...merchant,
