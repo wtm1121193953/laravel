@@ -1,7 +1,7 @@
 <template>
     <page title="TPS会员账号管理">
         <div>
-            <div v-if="!bindAccount" class="title"><el-button @click="showBox = true">生成TPS账号</el-button></div>
+            <div v-if="!bindAccount" class="title"><el-button type="primary" @click="showBox = true">生成TPS账号</el-button></div>
             <div v-else class="title">已生成TPS账号：{{bindAccount.tps_account}}</div>
             <div class="tips m-t-20">
                 <div class="tip">温馨提示：</div>
@@ -10,8 +10,8 @@
                 <div class="tip">3、大千消费额与TPS消费额置换比为6：1</div>
             </div>
         </div>
-        <el-dialog :visible.sync="showBox" width="60%" :closeOnClickModal="false">
 
+        <el-dialog :visible.sync="showBox" width="60%" title="生成TPS账号" :closeOnClickModal="false">
 			<el-row>
 			    <el-col :span="15">
 			        <el-form :model="form" label-width="80px" @submit.native.prevent ref="form" :rules="formRules">
