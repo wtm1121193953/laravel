@@ -68,6 +68,9 @@
                     </el-option>
                 </el-select>
             </el-form-item>
+            <el-form-item prop="service_phone" label="客服电话" class="w-500">
+                <el-input v-model="form.service_phone"/>
+            </el-form-item>
             <el-form-item prop="logo" label="商家logo">
                 <image-upload :width="190" :height="190" v-model="form.logo" :limit="1"/>
                 <div>图片尺寸: 190 px * 190 px</div>
@@ -102,6 +105,7 @@
         contacter: '',
         contacter_phone: '',
         oper_biz_member_code: '',
+        service_phone: '',
         logo: '',
         desc_pic_list: [],
 
@@ -158,6 +162,10 @@
                     contacter_phone: [
                         {required: true, message: '负责人手机号码 不能为空'},
                         {validator: validateContacterPhone},
+                    ],
+                    service_phone: [
+                        {required: true, message: '客服电话 不能为空'},
+                        {max: 15, message: '客服电话不能超过15个字'}
                     ],
                     logo: [
                         {required: true, message: '商家logo不能为空', trigger: 'change'}
