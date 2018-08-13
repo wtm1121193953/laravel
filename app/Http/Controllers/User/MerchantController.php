@@ -36,7 +36,7 @@ class MerchantController extends Controller
         $lat = request('lat');
 
         $checkVersion = false;
-        $miniprogramHeader = getallheaders();
+        $miniprogramHeader = $_SERVER;
         Log::info('小程序header头', $miniprogramHeader);
         if (isset($miniprogramHeader['Version'])) {
             $miniprogramVersion = $miniprogramHeader['Version'];
