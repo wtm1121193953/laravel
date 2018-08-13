@@ -61,4 +61,27 @@ class SettlementService extends BaseService
             ->orderBy('id', 'desc')->paginate();
         return $data;
     }
+
+    /**
+     * 获取运营中心的财务列表
+     * @param $operId
+     * @param string $keyword
+     * @param bool $getWithQuery
+     * @return Settlement|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getOperInviteChannels($operId, $keyword = '', $getWithQuery = false)
+    {
+        $query = Settlement::where('origin_id', $operId)
+            ->when('keyword', function (Builder $query) use ($keyword){
+                $query->where('name', 'like', "%$keyword%");
+            })
+            ->where('amount', '>', 0)
+            ->orderBy('id', 'desc');
+        if ($getWithQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate();
+            return $data;
+        }
+    }
 }
