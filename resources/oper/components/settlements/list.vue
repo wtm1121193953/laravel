@@ -52,7 +52,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="settlement_date" label="结算时间" align="center"/>
-            <el-table-column prop="settlement_cycle" label="结算周期" align="center">
+            <el-table-column prop="settlement_cycle" label="结算周期" align="center" width="200px">
                 <template slot-scope="scope">
                     {{scope.row.start_date}} 至 {{scope.row.end_date}}
                 </template>

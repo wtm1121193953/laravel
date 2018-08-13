@@ -27,17 +27,20 @@ class SettlementController extends Controller
         $status = request('status');
         $showAmount = request('showAmount');
         $settlementDate = request('settlement_date');
-        //var_dump(substr($settlementDate[0],0,10));die();
         $operBizMemberName = request('oper_biz_member_name');
         $operBizMemberMobile = request('oper_biz_member_mobile');
+        $merchantId = request('merchantId');
         if($operBizMemberName){
             $code = OperBizMember::where('name',$operBizMemberName)->pluck('code')->first();
-            $merchantId = Merchant::where('oper_biz_member_code',$code)->pluck('id')->first();
+            if($code){
+                $merchantId = Merchant::where('oper_biz_member_code',$code)->pluck('id')->first();
+            }
+
         }elseif($operBizMemberMobile){
             $code = OperBizMember::where('mobile',$operBizMemberMobile)->pluck('code')->first();
-            $merchantId = Merchant::where('oper_biz_member_code',$code)->pluck('id')->first();
-        }else{
-            $merchantId = request('merchantId');
+            if($code){
+                $merchantId = Merchant::where('oper_biz_member_code',$code)->pluck('id')->first();
+            }
         }
         //DB::enableQueryLog();
         $data = Settlement::where('oper_id', request()->get('current_user')->oper_id)
@@ -59,13 +62,12 @@ class SettlementController extends Controller
 
         $merchant = Merchant::where('oper_id', request()->get('current_user')->oper_id)->get()->keyBy('id');
 
-        $operBizMember = OperBizMember::where('oper_id', request()->get('current_user')->oper_id)->get()->keyBy('id');
-            /*->when($operBizMemberName, function(Builder $query) use ($operBizMemberName){
+        $operBizMember = OperBizMember::where('oper_id', request()->get('current_user')->oper_id)->when($operBizMemberName, function(Builder $query) use ($operBizMemberName){
             $query->where('name', $operBizMemberName);
         })
             ->when($operBizMemberMobile, function(Builder $query) use ($operBizMemberMobile){
                 $query->where('mobile', $operBizMemberMobile);
-            })*/
+            })->get()->keyBy('id');
 
         foreach ($data as &$item){
             if(isset($merchant[$item['merchant_id']])){
