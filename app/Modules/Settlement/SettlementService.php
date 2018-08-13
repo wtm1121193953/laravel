@@ -102,7 +102,7 @@ class SettlementService extends BaseService
                 $query->where('amount', '>', 0);
             })
             ->when($settlementDate, function (Builder $query) use ($starTime){
-                $query->whereBetween('created_at', [date('Y-m-d',strtotime(substr($starTime[0],0,15))) . ' 00:00:00', date('Y-m-d',strtotime(substr($starTime[1],0,15))) . ' 23:59:59']);
+                $query->whereBetween('created_at', [$starTime[0] . ' 00:00:00', $starTime[1] . ' 23:59:59']);
             })->orderBy('id', 'desc');
 
         if ($getWithQuery) {

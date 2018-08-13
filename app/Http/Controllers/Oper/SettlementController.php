@@ -18,6 +18,7 @@ use App\Modules\Settlement\Settlement;
 use App\Modules\Settlement\SettlementService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class SettlementController extends Controller
 {
@@ -26,7 +27,7 @@ class SettlementController extends Controller
         $status = request('status');
         $showAmount = request('showAmount');
         $settlementDate = request('settlement_date');
-        //var_dump($settlementDate);die();
+        //var_dump(substr($settlementDate[0],0,10));die();
         $operBizMemberName = request('oper_biz_member_name');
         $operBizMemberMobile = request('oper_biz_member_mobile');
         if($operBizMemberName){
@@ -38,6 +39,7 @@ class SettlementController extends Controller
         }else{
             $merchantId = request('merchantId');
         }
+        //DB::enableQueryLog();
         $data = Settlement::where('oper_id', request()->get('current_user')->oper_id)
             ->where('amount', '>', 0)
             ->when($merchantId, function(Builder $query) use ($merchantId){
@@ -50,8 +52,10 @@ class SettlementController extends Controller
                 $query->where('amount', '>', 0);
             })
             ->when($settlementDate, function (Builder $query) use ($settlementDate){
+                //$query->whereBetween('created_at', [substr($settlementDate[0],0,10) . ' 00:00:00', substr($settlementDate[1],0,10) . ' 23:59:59']);
                 $query->whereBetween('created_at', [$settlementDate[0] . ' 00:00:00', $settlementDate[1] . ' 23:59:59']);
             })->orderBy('id', 'desc')->paginate();
+        //var_dump(DB::getQueryLog());
 
         $merchant = Merchant::where('oper_id', request()->get('current_user')->oper_id)->get()->keyBy('id');
 
