@@ -71,7 +71,7 @@
         <transition name="form-fade" mode="in-out">
             <div class="login-form" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
                 <div class="login-link">
-                    <el-button type="text">已有账号，立即登录</el-button>
+                    <el-button type="text" @click="goLogin">已有账号，立即登录</el-button>
                 </div>
                 <div class="login-logo">
                     <span>{{projectName}} - {{systemName}}</span>
@@ -87,7 +87,6 @@
                         <el-input type="text" v-model="form.verify_code" auto-complete="off" class="w-160"
                                   placeholder="验证码" maxlength="4"/>
                         <el-button type="primary" class="fr" style="width:132px;" :disabled="buttonCode.isDisabled" @click.native.prevent="sendCode">{{buttonCode.buttonName}}</el-button>
-                        <!-- <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/> -->
                     </el-form-item>
                     <el-form-item prop="password">
                         <el-input type="password" v-model="form.password" auto-complete="off" placeholder="设置密码"/>
@@ -156,8 +155,6 @@
                         {validator: validatePass, trigger: 'blur'}
                     ]
                 },
-                // captchaUrl: captcha_url,
-                // captchaSrc: captcha_url + '?v=' + Math.random(),
                 loading: false,
                 autoLoginLoading: false,
                 showLogin: false,
@@ -178,12 +175,11 @@
             ])
         },
         methods: {
-            // refreshVerify(){
-            //     this.captchaSrc = ''
-            //     setTimeout(() => {
-            //         this.captchaSrc = this.captchaUrl + '?v=' + moment().unix()
-            //     }, 300)
-            // },
+            goLogin() {
+                router.push({
+                    path: '/login'
+                });
+            },
             relocation() {
                 if (this.$route.query && this.$route.query._from) {
                     router.push(this.$route.query._from);

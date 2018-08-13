@@ -77,7 +77,7 @@
         <transition name="form-fade" mode="in-out">
             <div class="login-form" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
                 <div class="login-link">
-                    <el-button type="text">未有账号，立即注册</el-button>
+                    <el-button type="text" @click="goReg">未有账号，立即注册</el-button>
                     <!-- <el-button type="text">注册</el-button>
                     |
                     <el-button type="text">忘记密码</el-button> -->
@@ -152,6 +152,11 @@
             ])
         },
         methods: {
+            goReg() {
+                router.push({
+                    path: '/register'
+                });
+            },
             refreshVerify(){
                 this.captchaSrc = ''
                 setTimeout(() => {
