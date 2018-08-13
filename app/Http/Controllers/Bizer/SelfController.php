@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: Administrator
@@ -8,7 +9,6 @@
 
 namespace App\Http\Controllers\Bizer;
 
-
 use App\Exceptions\AccountNotFoundException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\PasswordErrorException;
@@ -16,55 +16,94 @@ use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Bizer\Bizer;
 use App\Result;
 use Illuminate\Support\Facades\Session;
 
-class SelfController extends Controller
-{
+class SelfController extends Controller {
 
-    public function login()
-    {
+    /**
+     * 登录
+     * @author tong.chen
+     */
+    public function login() {
         $this->validate(request(), [
-            'username' => 'required',
+            'account' => 'required',
             'password' => 'required|between:6,30',
             'verifyCode' => 'required|captcha'
         ]);
-        // todo 业务员login操作
-        /*$user = MerchantAccount::where('account', request('username'))->first();
-        if(empty($user)){
+
+        $user = Bizer::where('mobile', request('account'))->first();
+        if (empty($user)) {
             throw new AccountNotFoundException();
         }
-        if(MerchantAccount::genPassword(request('password'), $user['salt']) != $user['password']){
+        if (Bizer::genPassword(request('password'), $user['salt']) != $user['password']) {
             throw new PasswordErrorException();
         }
-        if($user->status != 1){
-            throw new NoPermissionException('帐号已被禁用');
-        }
-        $merchant = Merchant::findOrFail($user->merchant_id);
-        if($merchant->status != 1){
-            throw new NoPermissionException('商户已被冻结');
-        }*/
 
-//        session([
-//            config('bizer.user_session') => $user,
-//        ]);
-
-//        $user->merchantName = $merchant->name;
+        session([
+            config('bizer.user_session') => $user,
+        ]);
 
         return Result::success([
-//            'user' => $user,
-            'menus' => $this->getMenus(),
+                    'user' => $user,
+                    'menus' => $this->getMenus(),
         ]);
     }
 
-    public function logout()
-    {
+    /**
+     * 注册
+     * @author tong.chen
+     */
+    public function register() {
+        $this->validate(request(), [
+            'mobile' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}/',
+            'verify_code' => 'required|size:4',
+            'password' => 'required|between:6,12',
+            'confirmPassword' => 'required|same:password',
+        ]);
+
+        $mobile = request('mobile');
+        $password = request('password');
+        $verifyCode = request('verify_code');
+
+        $isExist = Bizer::where('mobile', $mobile)->first();
+        if (!empty($isExist)) {
+            throw new BaseResponseException('手机已存在', ResultCode::ACCOUNT_EXISTS);
+        }
+
+        if (App::environment('production') || $verifyCode != '6666') {
+            $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
+                    ->where('verify_code', $verifyCode)
+                    ->where('status', 1)
+                    ->where('expire_time', '>', Carbon::now())
+                    ->first();
+            if (empty($verifyCodeRecord)) {
+                throw new ParamInvalidException('验证码错误');
+            }
+            $verifyCodeRecord->status = 2;
+            $verifyCodeRecord->save();
+        }
+
+        $bizer = new Bizer();
+        $bizer->mobile = $mobile;
+        $salt = str_random();
+        $bizer->salt = $salt;
+        $bizer->password = MerchantAccount::genPassword($password, $salt);
+        $bizer->save();
+
+        return Result::success([
+                    'user' => $bizer,
+                    'menus' => $this->getMenus(),
+        ]);
+    }
+
+    public function logout() {
         Session::forget(config('bizer.user_session'));
         return Result::success();
     }
 
-    public function modifyPassword()
-    {
+    public function modifyPassword() {
         $this->validate(request(), [
             'password' => 'required',
             'newPassword' => 'required|between:6,30',
@@ -73,7 +112,7 @@ class SelfController extends Controller
         // todo 业务员修改密码
         $user = request()->get('current_user');
         // 检查原密码是否正确
-        if(MerchantAccount::genPassword(request('password'), $user->salt) !== $user->password){
+        if (MerchantAccount::genPassword(request('password'), $user->salt) !== $user->password) {
             throw new PasswordErrorException();
         }
         $user = MerchantAccount::findOrFail($user->id);
@@ -92,35 +131,33 @@ class SelfController extends Controller
         return Result::success($user);
     }
 
-    private function getMenus()
-    {
+    private function getMenus() {
         // todo 返回业务员菜单
         return [
-            [ 'id' => 1, 'name' => '商品管理', 'level' => 1, 'url' => 'goods', 'sub' =>
+            ['id' => 1, 'name' => '订单管理', 'level' => 1, 'url' => '', 'sub' =>
                 [
-                    ['id' => 9, 'name' => '团购商品', 'level' => 2, 'url' => '/merchant/goods', 'pid' => 1],
-                    ['id' => 10, 'name' => '单品分类', 'level' => 2, 'url' => '/merchant/dishesCategories', 'pid' => 1],
-                    ['id' => 11, 'name' => '单品管理', 'level' => 2, 'url' => '/merchant/dishesGoods', 'pid' => 1],
+                    ['id' => 10, 'name' => '订单列表', 'level' => 2, 'url' => '/bizer/orders', 'pid' => 1],
                 ]
             ],
-            [ 'id' => 2, 'name' => '订单管理', 'level' => 1, 'url' => '/merchant/orders',],
-
-            [ 'id' => 3, 'name' => '人员管理', 'level' => 1, 'url' => 'user', 'sub' =>
+            ['id' => 2, 'name' => '商户管理', 'level' => 1, 'url' => '/bizer/merchant', 'sub' =>
                 [
-                    [ 'id' => 4, 'name' => '我的会员', 'level' => 2, 'url' => '/merchant/invite/statistics/daily', 'pid' => 3,],
+                    ['id' => 20, 'name' => '商户列表', 'level' => 2, 'url' => '/bizer/merchant', 'pid' => 2],
                 ]
             ],
-            [ 'id' => 5, 'name' => '财务管理', 'level' => 1, 'url' => '/merchant/settlements',],
-            [ 'id' => 6, 'name' => '素材中心', 'level' => 1, 'url' => 'material', 'sub' =>
+            ['id' => 3, 'name' => '运营中心管理', 'level' => 1, 'url' => '/bizer/oper', 'sub' =>
                 [
-                    [ 'id' => 7, 'name' => '分享会员二维码', 'level' => 2, 'url' => '/merchant/invite/channel', 'pid' => 6,],
-                    [ 'id' => 8, 'name' => '支付二维码', 'level' => 2, 'url' => '/merchant/pay/qrcode', 'pid' => 6,],
+                    ['id' => 30, 'name' => '运营中心列表', 'level' => 2, 'url' => '/bizer/oper', 'pid' => 3],
+                    ['id' => 31, 'name' => '申请记录', 'level' => 2, 'url' => '/bizer/oper', 'pid' => 3],
                 ]
             ],
-            [ 'id' => 9, 'name' => '系统设置', 'level' => 1, 'url' => 'setting', 'sub' =>
+            ['id' => 4, 'name' => '财务管理', 'level' => 1, 'url' => '/bizer/settlements', 'sub' =>
                 [
-//                    [ 'id' => 10, 'name' => '关联用户', 'level' => 2, 'url' => '/merchant/setting/mapping_user', 'pid' => 9],
-                    [ 'id' => 12, 'name' => '系统配置', 'level' => 2, 'url' => '/merchant/setting', 'pid' => 9 ],
+                    ['id' => 40, 'name' => '财务总览', 'level' => 2, 'url' => '/bizer/settlements', 'pid' => 4],
+                ]
+            ],
+            ['id' => 5, 'name' => '设置', 'level' => 1, 'url' => '', 'sub' =>
+                [
+                    ['id' => 50, 'name' => '提现设置', 'level' => 2, 'url' => '', 'pid' => 5],
                 ]
             ],
         ];
@@ -129,20 +166,20 @@ class SelfController extends Controller
     /**
      * 获取商户信息
      */
-    public function getMerchantInfo(){
-        $merchant = Merchant::select(['id','name','signboard_name','merchant_category_id','province','city','area','address','desc'])
-                              ->where('id', request()->get('current_user')->merchant_id)->first();
+    public function getMerchantInfo() {
+        $merchant = Merchant::select(['id', 'name', 'signboard_name', 'merchant_category_id', 'province', 'city', 'area', 'address', 'desc'])
+                        ->where('id', request()->get('current_user')->merchant_id)->first();
 
-        $mc = MerchantCategory::where('id',$merchant->merchant_category_id)->first(['name','pid']);
+        $mc = MerchantCategory::where('id', $merchant->merchant_category_id)->first(['name', 'pid']);
 
-        if($mc){
+        if ($mc) {
             //父类别
             $merchant->merchantCategoryName = $mc->name;
-            while ($mc->pid != 0){
-                $mc = MerchantCategory::where('id',$mc->pid)->first(['name','pid']);
-                $merchant->merchantCategoryName =  $mc->name . ' ' .$merchant->merchantCategoryName;
+            while ($mc->pid != 0) {
+                $mc = MerchantCategory::where('id', $mc->pid)->first(['name', 'pid']);
+                $merchant->merchantCategoryName = $mc->name . ' ' . $merchant->merchantCategoryName;
             }
-        }else{
+        } else {
             $merchant->merchantCategoryName = '';
         }
 
@@ -152,4 +189,5 @@ class SelfController extends Controller
 
         return Result::success($merchant);
     }
+
 }
