@@ -8,60 +8,50 @@
 
 namespace App\Support;
 
-use App\Support\Common;
+use App\Exceptions\BaseResponseException;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 class TpsApi
 {
-	
-	public static function sendEmail($to, $title, $content)
-	{
-		// todo 发送邮件
-		$datas = array(
-				'recipients' => $to, //收件人
-				'notifications' => '', //抄送人
-				'title' => $title, //标题
-				'contentTxt' => $content //内容
-		);
-		$token = config('tpsapi.mail_token');
-		
-		$url = config('tpsapi.mail_url');
-		$post_data = json_encode($datas);
-		$header = array(
-				"Content-type: application/json;charset=utf-8", 
-				"Accept:application/json",
-				"token: ".$token
-		);
-		
-		$result = Common::curl_postmail($url, $post_data, $header);
-		return $result;
-	}
-	
-	/**
-	 * 验证账号是否正确
-	 * @param $account
-	 * @param $password
-	 */
-	public static function checkTpsAccount($account, $password)
-	{
-		// todo
-		$data = array(
-				'account' => $account,
-				'password' => $password,
-		);
-		$key = config('tpsapi.key');
-		$enc_data = TpsApi::api_encrypt(json_encode($data),$key);
-		$enc_token = TpsApi::api_encrypt($key,$key);
-		
-		$url = config('tpsapi.check_url');
-		$post_data = array(
-				'token' => $enc_token,
-				'data' => $enc_data,
-		);
-		
-		$result = Common::curl_post($url,$post_data);
-		return $result;
-		
-	}
+
+    /**
+     * 发送邮件
+     * @param $to
+     * @param $title
+     * @param $content
+     * @return array|mixed
+     */
+    public static function sendEmail($to, $title, $content)
+    {
+        $data = array(
+            'recipients' => $to, //收件人
+            'notifications' => '', //抄送人
+            'title' => $title, //标题
+            'contentTxt' => $content //内容
+        );
+        $url = config('tpsapi.mail_url');
+        $result = self::postMiddleground($url, $data);
+        return $result;
+    }
+
+    /**
+     * 验证账号是否正确
+     * @param $account
+     * @param $password
+     * @return mixed|array
+     */
+    public static function checkTpsAccount($account, $password)
+    {
+        $data = array(
+            'account' => $account,
+            'password' => $password,
+        );
+        $url = config('tpsapi.check_url');
+        $result = self::postTps($url, $data);
+        return $result;
+
+    }
 
     /**
      * 创建账号
@@ -69,42 +59,97 @@ class TpsApi
      * @param $password string 密码
      * @param string $parentAccount 父级账号, 运营中心创建账号时为空
      * @param int $type 账号类型 1-运营中心账号  2- 商户创建
+     * @return mixed|array
      */
-    public static function createTpsAccount($account, $password, $parentAccount='', $type=1)
+    public static function createTpsAccount($account, $password, $parentAccount = '', $type = 1)
     {
-        // todo
         $data = array(
             'account' => $account,
             'password' => $password,
             'from' => $type,
-            'p_account' =>$parentAccount
+            'p_account' => $parentAccount
         );
-        $key = config('tpsapi.key');
-        $enc_data = TpsApi::api_encrypt(json_encode($data),$key);
-        $enc_token = TpsApi::api_encrypt($key,$key);
-        
         $url = config('tpsapi.register_url');
-        $post_data = array(
-            'token' => $enc_token,
-            'data' => $enc_data,
-        );
-        
-        $result = Common::curl_post($url,$post_data);
+        $result = self::postTps($url, $data);
         return $result;
 
     }
-    
+
     /**
-     * 加密函数
+     * 中台接口post请求
+     * @param $url
+     * @param $data
+     * @return mixed|array
+     */
+    public static function postMiddleground($url, $data)
+    {
+        $token = config('tpsapi.mail_token');
+        $postData = json_encode($data);
+        $headers = [
+            'Content-type' => 'application/json;charset=utf-8',
+            'Accept' => 'application/json',
+            'token' => $token
+        ];
+
+        $client = new Client();
+        $response = $client->post($url, [
+            'body' => $postData,
+            'headers' => $headers
+        ]);
+        if ($response->getStatusCode() !== 200) {
+            $responseCode = $response->getStatusCode();
+            $responseContent = $response->getBody()->getContents();
+            Log::error('请求中台接口失败', compact('url', 'data', 'responseCode', 'responseContent'));
+            throw new BaseResponseException("网络请求失败");
+        }
+        $result = $response->getBody()->getContents();
+        $array = is_string($result) ? json_decode($result, 1) : $result;
+        return $array;
+    }
+
+    /**
+     * TPS接口post请求
+     * @param $url
+     * @param $data
+     * @return mixed|string
+     */
+    public static function postTps($url, $data)
+    {
+        $key = config('tpsapi.key');
+        $encryData = TpsApi::apiEncrypt(json_encode($data), $key);
+        $encryToken = TpsApi::apiEncrypt($key, $key);
+        $postData = [
+            'token' => $encryToken,
+            'data' => $encryData,
+        ];
+
+        $client = new Client();
+        $response = $client->post($url, [
+            'form_params' => $postData
+        ]);
+        if ($response->getStatusCode() !== 200) {
+            $responseCode = $response->getStatusCode();
+            $responseContent = $response->getBody()->getContents();
+            Log::error('请求TPS接口失败', compact('url', 'data', 'responseCode', 'responseContent'));
+            throw new BaseResponseException("网络请求失败");
+        }
+        $result = $response->getBody()->getContents();
+        $array = is_string($result) ? json_decode($result, 1) : $result;
+        return $array;
+    }
+
+    /**
+     * 加密函数(Tps接口需要用)
      * @param $string
      * @param $key
-     * return string
+     * @return mixed
      */
-    public static function api_encrypt($string, $key='') {
-        
+    public static function apiEncrypt($string, $key = '')
+    {
+
         $encryptKey = md5($key);
         $keyLen = strlen($encryptKey);
-        $data = substr(md5($string.$encryptKey), 0, 8).$string;
+        $data = substr(md5($string . $encryptKey), 0, 8) . $string;
         $dataLen = strlen($data);
         $rndkey = array();
         $box = array();

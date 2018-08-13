@@ -18,8 +18,8 @@ import InviteStatisticsDaily from '../components/invite-statistics/daily'
 //系统设置
 import SettingMappingUser from '../components/setting/mapping-user'
 
-//系统设置sysconfig
-import TpsBind from '../components/sysconfig/index'
+//系统设置
+import TpsBind from '../components/setting/tps-bind'
 
 /**
  *

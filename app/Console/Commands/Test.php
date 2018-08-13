@@ -54,8 +54,15 @@ class Test extends Command
      */
     public function handle()
     {
-        $account = '';
+        $account = 'aa@qq.com';
         $password = '';
+        $result = TpsApi::checkTpsAccount($account, $password);
+        dd($result);
+        $result = TpsApi::sendEmail('evan.li@shoptps.com',
+            'test', 'testsateta');
+        dd($result);
+        $account = 'a@qq.com';
+        $password = 'a12345678';
         $result = TpsApi::createTpsAccount($account, $password);
         dd($result);
         return;
