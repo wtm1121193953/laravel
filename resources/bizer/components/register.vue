@@ -80,24 +80,23 @@
                          @keyup.native.enter="doLogin"
                          label-position="left"
                          label-width="0px">
-                    <el-form-item prop="username">
-                        <el-input type="text" v-model="form.username" auto-complete="off" placeholder="帐号"/>
+                    <el-form-item prop="mobile" ref="mobile">
+                        <el-input type="text" v-model="form.mobile" auto-complete="off" placeholder="帐号"/>
                     </el-form-item>
-                    <el-form-item prop="verifyCode">
-                        <el-input type="text" v-model="form.verifyCode" auto-complete="off" class="w-160"
-                                  placeholder="验证码"/>
-                        <el-button type="primary" class="fr" style="width:132px;">获取验证码</el-button>
+                    <el-form-item prop="verify_code">
+                        <el-input type="text" v-model="form.verify_code" auto-complete="off" class="w-160"
+                                  placeholder="验证码" maxlength="4"/>
+                        <el-button type="primary" class="fr" style="width:132px;" :disabled="buttonCode.isDisabled" @click.native.prevent="sendCode">{{buttonCode.buttonName}}</el-button>
                         <!-- <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/> -->
                     </el-form-item>
                     <el-form-item prop="password">
                         <el-input type="password" v-model="form.password" auto-complete="off" placeholder="设置密码"/>
                     </el-form-item>
-                    <el-form-item prop="password">
-                        <el-input type="password" v-model="form.password" auto-complete="off" placeholder="再次输入密码"/>
+                    <el-form-item prop="confirmPassword">
+                        <el-input type="password" v-model="form.confirmPassword" auto-complete="off" placeholder="再次输入密码"/>
                     </el-form-item>
                     <el-form-item>
-                        <el-button class="fl" style="width:47%;">取消</el-button>
-                        <el-button type="primary" class="fr" style="width:47%;" v-loading="loading" :disabled="loading"
+                        <el-button type="primary" style="width:100%;" v-loading="loading" :disabled="loading"
                                    @click.native.prevent="doLogin">立即注册
                         </el-button>
                     </el-form-item>
@@ -114,22 +113,47 @@
     import {mapState} from 'vuex'
     export default {
         data(){
+            var validatePass = (rule, value, callback) => {        
+                if (value === '') {
+                    callback(new Error('请再次输入密码'));
+                  } else if (value !== this.form.password) {
+                    callback(new Error('两次输入密码不一致!'));
+                  } else {
+                    callback();
+                  }
+            };
+            var validateMobile = (rule, value, callback) => {            
+                if (value === '') {
+                    callback(new Error('请输入帐号'));
+                    this.mobileValidate = false;
+                  } else if (!/^1[3|4|5|7|8][0-9]\d{8}$/.test(value)) {
+                    callback(new Error('帐号格式错误'));
+                    this.mobileValidate = false;
+                  } else {
+                    callback();
+                    this.mobileValidate = true;
+                  }
+            };
             return {
                 form: {
-                    username: '',
+                    mobile: '',
                     password: '',
-                    verifyCode: ''
+                    confirmPassword:'',
+                    verify_code: ''
                 },
                 formRules: {
-                    username: [
-                        {required: true, message: '请输入帐号', trigger: 'blur'}
+                    mobile: [
+                        {validator: validateMobile, trigger: 'blur'}
+                    ],
+                    verify_code: [
+                        {required: true, message: '请输入验证码', trigger: 'blur'},
+                        { min: 4, max: 6, message: '请输入4位验证码', trigger: 'blur' }
                     ],
                     password: [
                         {required: true, message: '请输入密码', trigger: 'blur'}
                     ],
-                    verifyCode: [
-                        {required: true, message: '请输入验证码', trigger: 'blur'},
-                        { min: 4, max: 6, message: '请输入4-6位验证码', trigger: 'blur' }
+                    confirmPassword: [
+                        {validator: validatePass, trigger: 'blur'}
                     ]
                 },
                 // captchaUrl: captcha_url,
@@ -137,6 +161,12 @@
                 loading: false,
                 autoLoginLoading: false,
                 showLogin: false,
+                buttonCode:{
+                    buttonName: "获取验证码",
+                    isDisabled: false,
+                    time: 60,
+                },
+                mobileValidate: false,//处理手机验证是否通过
             }
         },
         computed:{
@@ -168,7 +198,7 @@
                 this.$refs.form.validate(valid => {
                     if(valid){
                         _self.loading = true;
-                        api.post('/login', this.form).then(data => {
+                        api.post('/register', this.form).then(data => {
                             store.dispatch('storeUserInfo', data);
                             _self.relocation();
                         }).catch(() => {
@@ -178,7 +208,6 @@
                         })
                     }
                 })
-
             },
 
             init3D () { // 初始化3D动画
@@ -250,6 +279,33 @@
                     renderer.render(scene, camera);
                     count += 0.1;
                 }
+            },
+            sendCode() {
+                let _self = this;
+                if (!_self.mobileValidate) {
+                    //不希望重复代码需要优化
+                    this.$refs.form.validateField('mobile')
+                    return;
+                }
+                _self.buttonCode.isDisabled = true;
+                let interval = window.setInterval(function() {
+                    _self.buttonCode.buttonName = '重新发送(' +  _self.buttonCode.time + 's)';
+                    --_self.buttonCode.time;
+                    if(_self.buttonCode.time < 0) {
+                        _self.buttonCode.buttonName = "获取验证码";
+                        _self.buttonCode.time = 60;
+                        _self.buttonCode.isDisabled = false;
+                        window.clearInterval(interval);
+                    }
+                }, 1000);
+                api.post('/sms/getVerifyCode', this.form).then(data => {
+                    store.dispatch('storeUserInfo', data);
+                    _self.relocation();
+                }).catch(() => {
+                    // _self.refreshVerify();
+                }).finally(() => {
+                    _self.loading = false;
+                })
             }
         },
         created: function () {
