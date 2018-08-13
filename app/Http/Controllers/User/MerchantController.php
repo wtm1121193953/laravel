@@ -22,7 +22,6 @@ use App\Modules\Setting\SettingService;
 use App\Result;
 use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Log;
 
 class MerchantController extends Controller
 {
