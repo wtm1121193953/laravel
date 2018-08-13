@@ -27,9 +27,23 @@ class TpsBindController extends Controller
         return Result::success($bindInfo);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function bindAccount()
     {
-        
+        $this->validate(request(), [
+            'mobile' => 'required',
+            'verifyCode' => 'required',
+        ]);
+        $mobile = request('mobile');
+        $verifyCode = request('verifyCode');
+        if ( !SmsService::checkVerifyCode($mobile, $verifyCode) ){
+            throw new ParamInvalidException('验证码错误');
+        }
+        $merchantId = request()->get('current_user')->merchant_id;
+        $bindInfo = TpsBindService::bindTpsAccountForMerchant($merchantId, $mobile);
+        return Result::success($bindInfo);
     }
 
     public function sendVerifyCode()

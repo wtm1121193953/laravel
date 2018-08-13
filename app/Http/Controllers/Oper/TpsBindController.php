@@ -31,6 +31,10 @@ class TpsBindController extends Controller
     public function bindAccount()
     {
 
+        $this->validate(request(), [
+            'email' => 'required',
+            'verifyCode' => 'required',
+        ]);
         //获取传参
         $email = request('email');
         $verifyCode = request('verifyCode');
@@ -54,6 +58,10 @@ class TpsBindController extends Controller
 
     public function sendVerifyCode()
     {
+
+        $this->validate(request(), [
+            'email' => 'required',
+        ]);
 
         $email = request('email');
         EmailService::sendVerifyCode($email);

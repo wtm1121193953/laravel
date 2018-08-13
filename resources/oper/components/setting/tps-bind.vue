@@ -1,8 +1,8 @@
 <template>
     <page title="TPS会员账号管理">
         <div>
-            <div v-if="!bindInfo" class="title"><el-button type="primary" @click="showBox = true">生成TPS账号</el-button></div>
-            <div v-else class="title">已生成TPS账号：{{bindInfo.tps_account}}</div>
+            <div v-if="bindInfo == null" class="title"><el-button type="primary" @click="showBox = true">生成TPS账号</el-button></div>
+            <div v-if="bindInfo" class="title">已生成TPS账号：{{bindInfo.tps_account}}</div>
             <div class="tips m-t-20">
                 <div class="tip">温馨提示：</div>
                 <div class="tip">1、生成TPS账号后，您在大千生活的下级用户对您贡献的消费额可以按系数转化成TPS消费额。</div>
@@ -67,7 +67,7 @@
         methods: {
             
             init(){
-                api.get('/api/oper/tps/getBindInfo').then(data => {
+                api.get('/tps/getBindInfo').then(data => {
                     this.bindInfo = data;
                 })
             },
@@ -88,7 +88,7 @@
                             '提示',
                             {type: 'warning',}
                         ).then(() => {
-                            api.post('/api/oper/tps/bindAccount', this.form).then((data) => {
+                            api.post('/tps/bindAccount', this.form).then((data) => {
                                 this.$alert('创建tps账号成功, tps账号默认登陆密码为 a12345678, 请及时修改');
                                 this.showBox = false;
                                 this.init();
@@ -109,7 +109,7 @@
         		    this.$message.error('邮箱格式错误, 后缀必须是 @shoptps.com !')
                     return;
                 }
-				api.post('/api/oper/tps/sendVerifyCode', {email : this.form.email}).then(() => {
+				api.post('/tps/sendVerifyCode', {email : this.form.email}).then(() => {
                     this.verifyCodeSecond = 60;
 				    this.$message.success('邮件发送成功');
 				    let interval = setInterval(() => {

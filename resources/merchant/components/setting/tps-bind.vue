@@ -1,8 +1,8 @@
 <template>
     <page title="TPS会员账号管理">
         <div>
-            <div v-if="!bindInfo" class="title"><el-button type="primary" @click="showBox = true">生成TPS账号</el-button></div>
-            <div v-else class="title">已生成TPS账号：{{bindInfo.tps_account}}</div>
+            <div v-if="bindInfo == null" class="title"><el-button type="primary" @click="showBox = true">生成TPS账号</el-button></div>
+            <div v-if="bindInfo" class="title">已生成TPS账号：{{bindInfo.tps_account}}</div>
             <div class="tips m-t-20">
                 <div class="tip">温馨提示：</div>
                 <div class="tip">1、生成TPS账号后，您在大千生活的下级用户对您贡献的消费额可以按系数转化成TPS消费额。</div>
@@ -22,7 +22,7 @@
 
                         <el-form-item prop="verifyCode" label="验证码">
                             <el-input v-model="form.verifyCode" :max="11" style="width: 300px"/>
-                            <el-button @click="sendVerifyCode" :disabled="verifyCodeSecond > 0" class="m-l-15">
+                            <el-button :loading="verifyCodeBtnLoading" @click="sendVerifyCode" :disabled="verifyCodeSecond > 0" class="m-l-15">
                                 <span v-if="verifyCodeSecond <= 0">获取验证码</span>
                                 <span v-else>{{verifyCodeSecond}}秒</span>
                             </el-button>
@@ -53,6 +53,7 @@
                     verifyCode: '',
                 },
                 verifyCodeSecond: 0,
+                verifyCodeBtnLoading: false,
                 formRules: {
                     verifyCode: [
                         {required: true, message: '验证码不能为空' }
@@ -79,7 +80,7 @@
                             '提示',
                             {type: 'warning',}
                         ).then(() => {
-                            api.post('/api/oper/tps/bindAccount', this.form).then((data) => {
+                            api.post('/tps/bindAccount', this.form).then((data) => {
                                 this.$alert('创建tps账号成功, tps账号默认登陆密码为 a12345678, 请及时修改');
                                 this.showBox = false;
                                 this.init();
@@ -100,9 +101,11 @@
         		    this.$message.error('手机号格式错误')
                     return;
                 }
-				api.post('/tps/sendVerifyCode', {email : this.form.email}).then(() => {
+                this.verifyCodeBtnLoading = true;
+				api.post('/tps/sendVerifyCode', {mobile : this.form.mobile}).then(() => {
+                    this.verifyCodeBtnLoading = false;
                     this.verifyCodeSecond = 60;
-				    this.$message.success('邮件发送成功');
+				    this.$message.success('短信发送成功');
 				    let interval = setInterval(() => {
 				        this.verifyCodeSecond --;
 				        if(this.verifyCodeSecond == 0){

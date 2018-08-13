@@ -32,6 +32,7 @@ Route::prefix('merchant')
 
         Route::get('tps/getBindInfo', 'TpsBindController@getBindInfo');
         Route::post('tps/sendVerifyCode', 'TpsBindController@sendVerifyCode');
+        Route::post('tps/bindAccount', 'TpsBindController@bindAccount');
 
         Route::group([], base_path('routes/api/merchant/goods.php'));
         Route::group([], base_path('routes/api/merchant/orders.php'));

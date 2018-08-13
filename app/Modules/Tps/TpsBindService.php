@@ -93,11 +93,11 @@ class TpsBindService extends BaseService
      * 商户绑定TPS账号
      * @param $merchantId
      * @param $mobile
+     * @return TpsBind
      * @throws \Exception
      */
     public static function bindTpsAccountForMerchant($merchantId, $mobile)
     {
-        // TODO 商户绑定TPS账号
         // 查询商户是否已绑定
         $bindInfo = self::getTpsBindInfoByOriginInfo($merchantId, TpsBind::ORIGIN_TYPE_MERCHANT);
         if(!empty($bindInfo)){
@@ -123,8 +123,8 @@ class TpsBindService extends BaseService
         // 若符合条件, 则进行创建账号
         DB::beginTransaction();
     	$record = new TpsBind();
-    	$record->origin_type = TpsBind::ORIGIN_TYPE_OPER;
-    	$record->origin_id = $operId;
+    	$record->origin_type = TpsBind::ORIGIN_TYPE_MERCHANT;
+    	$record->origin_id = $merchantId;
     	$record->tps_account = $mobile;
     	$record->save();
 
