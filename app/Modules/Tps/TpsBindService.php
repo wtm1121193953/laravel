@@ -149,8 +149,9 @@ class TpsBindService extends BaseService
      * 用户绑定TPS账号逻辑
      * @param $userId
      * @param $tpsAccount
+     * @param $tpsPassword
      */
-    public static function bindTpsAccountForUser($userId, $tpsAccount)
+    public static function bindTpsAccountForUser($userId, $tpsAccount, $tpsPassword)
     {
         // todo 用户绑定TPS账号逻辑
     }
