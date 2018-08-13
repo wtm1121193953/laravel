@@ -61,7 +61,7 @@
             </el-form-item>
 
             <el-form-item>
-                <el-button @click="cancel">返 回</el-button>
+                <el-button @click="cancel" type="primary">返 回</el-button>
             </el-form-item>
         </el-form>
     </page>
