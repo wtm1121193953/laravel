@@ -30,7 +30,10 @@ class InviteChannelController extends Controller
         $url = MiniprogramSceneService::getMiniprogramAppCode($scene);
 
         $signboardName = MerchantService::getMerchantValueByIdAndKey($currentUser->merchant_id, 'signboard_name');
-        WechatService::addNameToAppCode($url, $signboardName);
+
+        $fileName = pathinfo($url, PATHINFO_BASENAME);
+        $path = storage_path('app/public/miniprogram/app_code/') . $fileName;
+        WechatService::addNameToAppCode($path, $signboardName);
 
         return Result::success([
             'qrcode_url' => $url,
