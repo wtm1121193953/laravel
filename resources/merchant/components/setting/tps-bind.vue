@@ -15,13 +15,13 @@
 			<el-row>
 			    <el-col :span="15">
 			        <el-form :model="form" label-width="80px" @submit.native.prevent ref="form" :rules="formRules">
-                        <el-form-item prop="email" label="电子邮箱">
-                            <el-input v-model="form.email"/>
-                            <div class="tips">仅限后缀@shoptps.com官方邮箱注册，若没有邮箱，请联系客服</div>
+                        <el-form-item prop="mobile" label="手机号">
+                            <el-input v-model="form.mobile" placeholder="请输入手机号"/>
+                            <div class="tips">请使用未在TPS商城注册过的手机号生成账号</div>
                         </el-form-item>
 
                         <el-form-item prop="verifyCode" label="验证码">
-                            <el-input v-model="form.verifyCode" style="width: 300px"/>
+                            <el-input v-model="form.verifyCode" :max="11" style="width: 300px"/>
                             <el-button @click="sendVerifyCode" :disabled="verifyCodeSecond > 0" class="m-l-15">
                                 <span v-if="verifyCodeSecond <= 0">获取验证码</span>
                                 <span v-else>{{verifyCodeSecond}}秒</span>
@@ -49,7 +49,7 @@
                 bindInfo: '',
                 showBox: false,
                 form: {
-                    email: '',
+                    mobile: '',
                     verifyCode: '',
                 },
                 verifyCodeSecond: 0,
@@ -57,8 +57,8 @@
                     verifyCode: [
                         {required: true, message: '验证码不能为空' }
                     ],
-                    email: [
-                        {required: true, type: 'email', message: '请输入正确的邮箱'},
+                    mobile: [
+                        {required: true, message: '请输入正确的手机号'},
                     ],
                 },
                 
@@ -67,22 +67,13 @@
         methods: {
             
             init(){
-                api.get('/api/oper/tps/getBindInfo').then(data => {
+                api.get('/tps/getBindInfo').then(data => {
                     this.bindInfo = data;
                 })
             },
             genAccount(){
                 this.$refs.form.validate((valid) => {
                     if(valid){
-
-                        if (!this.form.email){
-                            this.$message.error('邮箱不能为空!');
-                            return;
-                        }
-                        if(!this.form.email.match(/.*@shoptps\.com$/)){
-                            this.$message.error('邮箱格式错误, 后缀必须是 @shoptps.com !')
-                            return;
-                        }
                         this.$confirm(
                             '每个运营中心仅只能添加一次TPS会员账号，之后不可修改。确定生成吗？',
                             '提示',
@@ -98,18 +89,18 @@
                     }
                 })
             },
-
+            
             sendVerifyCode(){
         		// 验证邮箱格式
-        		if (!this.form.email){
-        		    this.$message.error('邮箱不能为空!');
+        		if (!this.form.mobile){
+        		    this.$message.error('手机号不能为空!');
         		    return;
         		}
-        		if(!this.form.email.match(/.*@shoptps\.com$/)){
-        		    this.$message.error('邮箱格式错误, 后缀必须是 @shoptps.com !')
+        		if(!this.form.mobile.match(/^1[3456789]\d{9}$/)){
+        		    this.$message.error('手机号格式错误')
                     return;
                 }
-				api.post('/api/oper/tps/sendVerifyCode', {email : this.form.email}).then(() => {
+				api.post('/tps/sendVerifyCode', {email : this.form.email}).then(() => {
                     this.verifyCodeSecond = 60;
 				    this.$message.success('邮件发送成功');
 				    let interval = setInterval(() => {

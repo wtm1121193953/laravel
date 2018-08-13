@@ -24,6 +24,20 @@ class MerchantService extends BaseService
 {
 
     /**
+     * 根据ID获取商户信息
+     * @param $merchantId
+     * @param array|string $fields
+     * @return Merchant
+     */
+    public static function getById($merchantId, $fields = ['*'])
+    {
+        if(is_string($fields)){
+            $fields = explode(',', $fields);
+        }
+        return Merchant::find($merchantId, $fields);
+    }
+
+    /**
      * @param array $data
      * @return Merchant[]|\Illuminate\Database\Eloquent\Collection
      */
