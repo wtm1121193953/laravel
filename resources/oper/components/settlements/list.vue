@@ -143,7 +143,7 @@
                     message = '确定导出当前筛选的财务列表么?'
                 }
                 this.$confirm(message).then(() => {
-                    window.open('/api/oper/settlements/export?keyword=' + this.query.keyword)
+                    window.open('/api/oper/settlements/export?merchantId=' + this.query.merchantId + '&status=' + this.query.status + '&showAmount=' + this.query.showAmount + '&operName=' + this.query.oper_biz_member_name + '&operMobile=' + this.query.oper_biz_member_mobile + '&settlementDate=' + this.query.settlement_date)
                 })
             },
             getMerchants(){

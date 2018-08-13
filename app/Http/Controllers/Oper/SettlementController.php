@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Oper;
 
 
+use App\Exports\OperSettlementExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperBizMember;
@@ -25,6 +26,7 @@ class SettlementController extends Controller
         $status = request('status');
         $showAmount = request('showAmount');
         $settlementDate = request('settlement_date');
+        //var_dump($settlementDate);die();
         $operBizMemberName = request('oper_biz_member_name');
         $operBizMemberMobile = request('oper_biz_member_mobile');
         if($operBizMemberName){
@@ -80,10 +82,17 @@ class SettlementController extends Controller
 
     public function export()
     {
-        $keyword = request('keyword', '');
+
+        $merchantId = request('merchantId', '');
+        $status = request('status', '');
+        $showAmount = request('showAmount', '');
+        $settlementDate = request('settlementDate', '');
+        $operBizMemberName = request('operName', '');
+        $operBizMemberMobile = request('operMobile', '');
+        //var_dump($settlementDate);die();
         $operId = request()->get('current_user')->oper_id;
-        $query = SettlementService::getOperInviteChannels($operId, $keyword, true);
-        return (new OperInviteChannelExport($query))->download('推广渠道列表.xlsx');
+        $query = SettlementService::getOperSettlements($operId, $merchantId, $status, $showAmount, $settlementDate, $operBizMemberName, $operBizMemberMobile, true);
+        return (new OperSettlementExport($query))->download('财务管理列表.xlsx');
     }
 
     public function getSettlementOrders()
