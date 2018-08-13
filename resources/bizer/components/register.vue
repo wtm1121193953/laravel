@@ -135,8 +135,8 @@
                         { min: 4, max: 6, message: '请输入4-6位验证码', trigger: 'blur' }
                     ]
                 },
-                captchaUrl: captcha_url,
-                captchaSrc: captcha_url + '?v=' + Math.random(),
+                // captchaUrl: captcha_url,
+                // captchaSrc: captcha_url + '?v=' + Math.random(),
                 loading: false,
                 autoLoginLoading: false,
                 showLogin: false,
