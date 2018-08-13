@@ -22,6 +22,7 @@ use App\Modules\Setting\SettingService;
 use App\Result;
 use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 class MerchantController extends Controller
 {
@@ -33,6 +34,14 @@ class MerchantController extends Controller
         $keyword = request('keyword');
         $lng = request('lng');
         $lat = request('lat');
+
+        $checkVersion = false;
+        $miniprogramHeader = getallheaders();
+        Log::info('小程序header头', $miniprogramHeader);
+        if (isset($miniprogramHeader['Version'])) {
+            $miniprogramVersion = $miniprogramHeader['Version'];
+            $checkVersion = $miniprogramVersion < 'v1.4.0';
+        }
 
         // 暂时去掉商户列表中的距离限制
         $radius = request('radius');
@@ -127,6 +136,9 @@ class MerchantController extends Controller
                             ->where('lowest_amount', '<', $highestPrice);
                     })
                     ->orderBy('lowest_amount');
+            })
+            ->when($checkVersion, function (Builder $query) {
+                $query->where('is_pilot', Merchant::NORMAL_MERCHANT);
             });
 
         if($lng && $lat){
