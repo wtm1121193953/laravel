@@ -54,12 +54,6 @@
         .el-form-item:last-child {
             margin-bottom: 0;
         }
-        .verify-img {
-            right: 0;
-            height: 38px;
-            margin: 1px;
-            position: absolute;
-        }
     }
     .form-fade-enter-active, .form-fade-leave-active {
         transition: all 1s;
@@ -67,6 +61,9 @@
     .form-fade-enter, .form-fade-leave-active {
         transform: translate3d(0, -50px, 0);
         opacity: 0;
+    }
+    .w-160 {
+        width: 160px;
     }
 </style>
 <template>
@@ -87,9 +84,9 @@
                         <el-input type="text" v-model="form.username" auto-complete="off" placeholder="帐号"/>
                     </el-form-item>
                     <el-form-item prop="verifyCode">
-                        <el-input type="text" v-model="form.verifyCode" auto-complete="off" class="w-180"
+                        <el-input type="text" v-model="form.verifyCode" auto-complete="off" class="w-160"
                                   placeholder="验证码"/>
-                        <el-button type="primary" class="fr">获取验证码</el-button>
+                        <el-button type="primary" class="fr" style="width:132px;">获取验证码</el-button>
                         <!-- <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/> -->
                     </el-form-item>
                     <el-form-item prop="password">
