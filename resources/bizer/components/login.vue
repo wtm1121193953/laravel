@@ -24,7 +24,6 @@
         left: 50%;
         margin: -230px 0 0 -180px;
         width: 310px;
-        height: 274px;
         padding: 25px;
         box-shadow: 0 0 100px rgba(0,0,0,.08);
         background-color: #fff;
@@ -47,10 +46,12 @@
                 display: inline-block;
             }
         }
-
+        .el-form-item:last-child {
+            margin-bottom: 0;
+        }
         .verify-img {
             right: 0;
-            height: 34px;
+            height: 38px;
             margin: 1px;
             position: absolute;
         }
