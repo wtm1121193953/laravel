@@ -287,6 +287,7 @@ class MerchantService extends BaseService
             // 如果当前商户没有所属运营中心，且是试点商户，且有商户描述，则是待审核状态下的补全资料，修改商户为正常商户
             if ($merchant->is_pilot && $merchant->desc) {
                 $merchant->is_pilot = Merchant::NORMAL_MERCHANT;
+                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
             } else {
                 MerchantAuditService::addAudit($merchant->id, $currentOperId);
                 $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
