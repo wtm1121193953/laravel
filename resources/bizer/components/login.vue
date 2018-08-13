@@ -29,6 +29,14 @@
         background-color: #fff;
         border-radius: 4px;
         z-index: 3;
+        .login-link {
+            text-align: right;
+            color: #eee;
+            margin: -10px 0 10px;
+            .el-button {
+                /*margin: 0 5px;*/
+            }
+        }
         .login-logo {
             text-align: center;
             height: 40px;
@@ -68,6 +76,11 @@
     <div class="login-container">
         <transition name="form-fade" mode="in-out">
             <div class="login-form" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
+                <div class="login-link">
+                    <el-button type="text">注册</el-button>
+                    <!-- |
+                    <el-button type="text">忘记密码</el-button> -->
+                </div>
                 <div class="login-logo">
                     <span>{{projectName}} - {{systemName}}</span>
                 </div>
