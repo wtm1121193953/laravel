@@ -2,6 +2,7 @@
     <!-- 运营中心列表项操作 -->
     <div>
         <el-button type="text" @click="edit">编辑</el-button>
+        <el-button type="text" @click="detail">查看</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '冻结' : '解冻'}}</el-button>
         <el-button v-if="!scope.row.account" type="text" @click="showCreateAccountDialog = true">生成帐户</el-button>
         <el-button v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改帐户密码</el-button>
@@ -128,9 +129,13 @@
                 router.push({
                     path: '/oper/edit',
                     query: {id: this.scope.row.id}
-                })
-                return;
-                this.isEdit = true;
+                });
+            },
+            detail() {
+                router.push({
+                    path: '/oper/detail',
+                    query: {id: this.scope.row.id}
+                });
             },
             doEdit(data){
                 this.$emit('before-request')

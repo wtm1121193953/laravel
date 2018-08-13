@@ -9,9 +9,9 @@
                 <el-button type="text" @click="download(3)">下载（大）</el-button>
             </div>
             <div class="tips">
-                <div class="tip">小：8cm（正方形，边长）</div>
-                <div class="tip">中：15cm</div>
-                <div class="tip">大：50cm</div>
+                <div class="tip">小：350 x 396px</div>
+                <div class="tip">中：537 x 609px</div>
+                <div class="tip">大：1600 x 1813px</div>
             </div>
         </div>
         <el-dialog :visible.sync="showExample" width="290px">

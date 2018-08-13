@@ -34,6 +34,12 @@ class MerchantController extends Controller
         $lng = request('lng');
         $lat = request('lat');
 
+        $checkVersion = false;
+        if (isset($_SERVER['HTTP_X_VERSION'])) {
+            $miniprogramVersion = $_SERVER['HTTP_X_VERSION'];
+            $checkVersion = $miniprogramVersion < 'v1.4.0';
+        }
+
         // 暂时去掉商户列表中的距离限制
         $radius = request('radius');
         $radius = $radius == 200000 ? 0 : $radius;
@@ -127,6 +133,9 @@ class MerchantController extends Controller
                             ->where('lowest_amount', '<', $highestPrice);
                     })
                     ->orderBy('lowest_amount');
+            })
+            ->when($checkVersion, function (Builder $query) {
+                $query->where('is_pilot', Merchant::NORMAL_MERCHANT);
             });
 
         if($lng && $lat){

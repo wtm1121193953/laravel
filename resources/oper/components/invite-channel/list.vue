@@ -37,9 +37,9 @@
                                 <el-radio-button label="2">中</el-radio-button>
                                 <el-radio-button label="3">大</el-radio-button>
                             </el-radio-group>
-                            <p v-if="qrcodeSizeType == 1">尺寸: 258 * 258px, 适合打印尺寸: 8cm</p>
-                            <p v-if="qrcodeSizeType == 2">尺寸: 430 * 430px, 适合打印尺寸: 15cm</p>
-                            <p v-if="qrcodeSizeType == 3">尺寸: 1280 * 1280px, 适合打印尺寸: 50cm</p>
+                            <p v-if="qrcodeSizeType == 1">尺寸: 350 * 396px, 适合打印尺寸: 8cm</p>
+                            <p v-if="qrcodeSizeType == 2">尺寸: 537 * 609px, 适合打印尺寸: 15cm</p>
+                            <p v-if="qrcodeSizeType == 3">尺寸: 1600 * 1813px, 适合打印尺寸: 50cm</p>
                         </div>
                         <div style="text-align: right; margin: 0">
                             <el-button type="primary" size="mini" @click="download(scope.row)">确定</el-button>
