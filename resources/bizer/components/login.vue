@@ -29,6 +29,14 @@
         background-color: #fff;
         border-radius: 4px;
         z-index: 3;
+        .login-link {
+            text-align: right;
+            color: #eee;
+            margin: -10px 0 10px;
+            .el-button {
+                /*margin: 0 5px;*/
+            }
+        }
         .login-logo {
             text-align: center;
             height: 40px;
@@ -68,6 +76,12 @@
     <div class="login-container">
         <transition name="form-fade" mode="in-out">
             <div class="login-form" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
+                <div class="login-link">
+                    <el-button type="text" @click="goReg">未有账号，立即注册</el-button>
+                    <!-- <el-button type="text">注册</el-button>
+                    |
+                    <el-button type="text">忘记密码</el-button> -->
+                </div>
                 <div class="login-logo">
                     <span>{{projectName}} - {{systemName}}</span>
                 </div>
@@ -75,8 +89,8 @@
                          @keyup.native.enter="doLogin"
                          label-position="left"
                          label-width="0px">
-                    <el-form-item prop="username">
-                        <el-input type="text" v-model="form.username" auto-complete="off" placeholder="帐号"/>
+                    <el-form-item prop="account">
+                        <el-input type="text" v-model="form.account" auto-complete="off" placeholder="帐号"/>
                     </el-form-item>
                     <el-form-item prop="password">
                         <el-input type="password" v-model="form.password" auto-complete="off" placeholder="密码"/>
@@ -106,12 +120,12 @@
         data(){
             return {
                 form: {
-                    username: '',
+                    account: '',
                     password: '',
                     verifyCode: ''
                 },
                 formRules: {
-                    username: [
+                    account: [
                         {required: true, message: '请输入帐号', trigger: 'blur'}
                     ],
                     password: [
@@ -138,6 +152,11 @@
             ])
         },
         methods: {
+            goReg() {
+                router.push({
+                    path: '/register'
+                });
+            },
             refreshVerify(){
                 this.captchaSrc = ''
                 setTimeout(() => {
