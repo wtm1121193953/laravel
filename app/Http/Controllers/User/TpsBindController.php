@@ -24,12 +24,16 @@ class TpsBindController extends Controller
         return Result::success($bindInfo);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function bindAccount()
     {
         $account = request('account');
         $password = request('password');
 
         $userId = request()->get('current_user')->id;
-        TpsBindService::bindTpsAccountForUser($userId, $account, $password);
+        $bindInfo = TpsBindService::bindTpsAccountForUser($userId, $account, $password);
+        return Result::success($bindInfo);
     }
 }
