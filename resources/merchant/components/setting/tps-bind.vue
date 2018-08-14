@@ -76,7 +76,7 @@
                 this.$refs.form.validate((valid) => {
                     if(valid){
                         this.$confirm(
-                            '每个运营中心仅只能添加一次TPS会员帐号，之后不可修改。确定生成吗？',
+                            '每个商户仅只能添加一次TPS会员帐号，之后不可修改。确定生成吗？',
                             '提示',
                             {type: 'warning',}
                         ).then(() => {
