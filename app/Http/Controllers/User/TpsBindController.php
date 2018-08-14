@@ -29,6 +29,10 @@ class TpsBindController extends Controller
      */
     public function bindAccount()
     {
+        $this->validate(request(), [
+            'account' => 'required',
+            'password' => 'required|min:6|max:18'
+        ]);
         $account = request('account');
         $password = request('password');
 
