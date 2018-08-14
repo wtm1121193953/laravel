@@ -2,8 +2,12 @@
 import Home from '../components/home'
 import MemberList from '../components/members/list.vue'
 
+// 换绑
+import ChangeBindTab from '../components/members/change-bind/tab'
+import InviteUsersList from '../components/members/change-bind/invite-users-list'
+
 /**
- * item 模块
+ * 会员管理 模块
  */
 export default [
     {
@@ -11,6 +15,9 @@ export default [
         component: Home,
         children: [
             {path: 'members', component: MemberList, name: 'MemberList'},
+
+            {path: 'member/changBind', component: ChangeBindTab, name: 'ChangeBindTab'},
+            {path: 'member/InviteUsersList', component: InviteUsersList, name: 'InviteUsersList'},
         ]
     },
 ];
