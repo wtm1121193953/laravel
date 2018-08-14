@@ -1,23 +1,23 @@
 <template>
-    <page title="TPS会员账号管理">
+    <page title="TPS会员帐号管理">
         <div>
-            <div v-if="bindInfo == null" class="title"><el-button type="primary" @click="showBox = true">生成TPS账号</el-button></div>
-            <div v-if="bindInfo" class="title">已生成TPS账号：{{bindInfo.tps_account}}</div>
+            <div v-if="bindInfo == null" class="title"><el-button type="primary" @click="showBox = true">生成TPS帐号</el-button></div>
+            <div v-if="bindInfo" class="title">已生成TPS帐号：{{bindInfo.tps_account}}</div>
             <div class="tips m-t-20">
                 <div class="tip">温馨提示：</div>
-                <div class="tip">1、生成TPS账号后，您在大千生活的下级用户对您贡献的消费额可以按系数转化成TPS消费额。</div>
+                <div class="tip">1、生成TPS帐号后，您在大千生活的下级用户对您贡献的消费额可以按系数转化成TPS消费额。</div>
                 <div class="tip">2、大千生活消费额置换TPS积分公式为：大千消费额/6/6.5/4，例如600大千消费额可以置换TPS积分=600/6/6.5/4=3.84个</div>
                 <div class="tip">3、大千消费额与TPS消费额置换比为6：1</div>
             </div>
         </div>
 
-        <el-dialog :visible.sync="showBox" width="60%" title="生成TPS账号" :closeOnClickModal="false">
+        <el-dialog :visible.sync="showBox" width="60%" title="生成TPS帐号" :closeOnClickModal="false">
 			<el-row>
 			    <el-col :span="15">
 			        <el-form :model="form" label-width="80px" @submit.native.prevent ref="form" :rules="formRules">
                         <el-form-item prop="mobile" label="手机号">
                             <el-input v-model="form.mobile" placeholder="请输入手机号"/>
-                            <div class="tips">请使用未在TPS商城注册过的手机号生成账号</div>
+                            <div class="tips">请使用未在TPS商城注册过的手机号生成帐号</div>
                         </el-form-item>
 
                         <el-form-item prop="verifyCode" label="验证码">
@@ -76,12 +76,12 @@
                 this.$refs.form.validate((valid) => {
                     if(valid){
                         this.$confirm(
-                            '每个运营中心仅只能添加一次TPS会员账号，之后不可修改。确定生成吗？',
+                            '每个运营中心仅只能添加一次TPS会员帐号，之后不可修改。确定生成吗？',
                             '提示',
                             {type: 'warning',}
                         ).then(() => {
                             api.post('/tps/bindAccount', this.form).then((data) => {
-                                this.$alert('创建tps账号成功, tps账号默认登陆密码为 a12345678, 请及时修改');
+                                this.$alert('创建tps帐号成功, tps帐号默认登陆密码为 a12345678, 请及时修改');
                                 this.showBox = false;
                                 this.init();
                                 this.bindInfo = data;
