@@ -5,8 +5,8 @@
                 <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="商户名称"/>
             </el-form-item>
 
-            <el-form-item prop="signBoardName" label="商户招牌名" >
-                <el-input v-model="query.signBoardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
+            <el-form-item prop="signboardName" label="商户招牌名" >
+                <el-input v-model="query.signboardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
             </el-form-item>
 
             <el-form-item prop="merchant_category" label="所属行业">
@@ -25,7 +25,7 @@
             </el-form-item>
 
             <el-form-item label="状态" prop="status">
-                <el-select v-model="query.status">
+                <el-select v-model="query.status" class="w-100">
                     <el-option label="全部" value=""/>
                     <el-option label="正常" value="1"/>
                     <el-option label="已冻结" value="2"/>
@@ -91,7 +91,7 @@
                             @show="showMessage(scope)"
                             :disabled="scope.row.audit_suggestion == ''">
                         <div   slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
-                        <unaudit-record-reason    :data="auditRecord"  />
+                        <!-- <unaudit-record-reason    :data="auditRecord"  /> -->
                     </el-popover>
 
                     <el-popover
@@ -101,7 +101,7 @@
                             @show="showMessage(scope)"
                             :disabled="scope.row.audit_suggestion == ''" >
                         <div   slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
-                        <unaudit-record-reason    :data="auditRecord"  />
+                        <!-- <unaudit-record-reason    :data="auditRecord"  /> -->
                     </el-popover>
 
 
@@ -111,12 +111,12 @@
             </el-table-column>
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
-                    <merchant-item-options
+                    <!-- <merchant-item-options
                             :scope="scope"
                             :query="query"
                             @change="itemChanged"
                             @accountChanged="accountChanged"
-                            @refresh="getList"/>
+                            @refresh="getList"/> -->
                 </template>
             </el-table-column>
         </el-table>
@@ -129,3 +129,111 @@
                 :total="total"/>
     </page>
 </template>
+
+<script>
+    import api from '../../../assets/js/api'
+
+    // import MerchantItemOptions from './merchant-item-options'
+    // import MerchantForm from './merchant-form'
+    // import UnauditRecordReason from './unaudit-record-reason'
+
+    export default {
+        name: "merchant-list",
+        data(){
+            return {
+                categoryOptions: [],
+                auditRecord:[],
+                isLoading: false,
+                query: {
+                    name: '',
+                    status: '',
+                    page: 1,
+                    audit_status: '',
+                    signboardName:''
+                },
+                list: [],
+                total: 0,
+            }
+        },
+        computed: {
+
+        },
+        methods: {
+            search(){
+                this.query.page = 1;
+                this.getList();
+            },
+            getList(){
+                this.isLoading = true;
+                let params = {};
+                Object.assign(params, this.query);
+                api.get('/merchants', params).then(data => {
+                    this.query.page = params.page;
+                    this.isLoading = false;
+                    this.list = data.list;
+                    this.total = data.total;
+                })
+            },
+            itemChanged(index, data){
+                this.getList();
+            },
+            addBtnClick(command){
+                if(command === 'add'){
+                    this.add()
+                }else {
+                    this.$menu.change('/merchant/pool')
+                }
+            },
+            add(){
+                router.push({
+                    path: '/merchant/add',
+                    query: {
+                        type: 'merchant-list'
+                    }
+                });
+            },
+            showMessage(scope){
+                api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
+                    this.auditRecord = [data];
+                })
+            },
+
+            accountChanged(scope, account){
+                let row = this.list[scope.$index];
+                row.account = account;
+                this.list.splice(scope.$index, 1, row);
+                this.getList();
+            },
+        },
+
+
+
+
+        created(){
+            // api.get('merchant/categories/tree').then(data => {
+            //     this.categoryOptions = data.list;
+            // });
+            this.categoryOptions = [];
+            if (this.$route.params){
+                Object.assign(this.query, this.$route.params);
+            }
+            this.getList();
+        },
+        components: {
+            // MerchantItemOptions,
+            // MerchantForm,
+            // UnauditRecordReason
+        }
+    }
+</script>
+
+<style scoped>
+    .message{
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+        width:120px;
+        font-size:12px;
+        color:gray;
+    }
+</style>

@@ -5,6 +5,8 @@ import Home from '../components/home.vue'
 import ErrorPage from '../components/404.vue'
 import welcome from '../components/welcome.vue'
 
+import orders from '../components/order/list.vue'
+
 import merchant from './merchant'
 import oper from './oper'
 
@@ -24,6 +26,7 @@ const routes = [
         path: '/',
         component: Home,
         children: [
+            {path: 'orders', component: orders, name: 'orders'},
             // demo组件示例
             {path: 'welcome', component: welcome, name: 'welcome'},
             // 刷新组件
