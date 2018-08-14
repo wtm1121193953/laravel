@@ -168,7 +168,7 @@
                 this.isLoading = true;
                 let params = {};
                 Object.assign(params, this.query);
-                api.get('/merchants', params).then(data => {
+                api.get('/merchant', params).then(data => {
                     this.query.page = params.page;
                     this.isLoading = false;
                     this.list = data.list;
