@@ -126,10 +126,24 @@ class UsersController extends Controller
             'id' => 'required|integer|min:1',
         ]);
         $id = request('id');
-        $data = InviteService::getRecordsByInviteChannelId($id);
-        return Result::success([
-            'list' => $data->items(),
-            'total' => $data->total(),
-        ]);
+        $mobile = request('mobile', '');
+        $noPaginate = request('noPaginate', false);
+        if ($noPaginate) {
+            $query = InviteService::getRecordsByInviteChannelId($id, compact('mobile'), true);
+            $total = $query->count();
+            $data = $query->get();
+
+            return Result::success([
+                'list' => $data,
+                'total' => $total,
+            ]);
+        }else {
+            $data = InviteService::getRecordsByInviteChannelId($id, compact('mobile'));
+
+            return Result::success([
+                'list' => $data->items(),
+                'total' => $data->total(),
+            ]);
+        }
     }
 }

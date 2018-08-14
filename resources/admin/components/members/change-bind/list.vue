@@ -70,11 +70,11 @@
                 this.query.page = 1;
                 this.getList();
             },
-            changeBind(row) {
-
+            changeBind(data) {
+                router.push(`/member/changeBindList?id=${data.id}`);
             },
             inviteRecords(data) {
-                router.push(`/member/InviteUsersList?id=${data.id}&name=${data.name}`);
+                router.push(`/member/inviteUsersList?id=${data.id}&name=${data.name}`);
             }
         },
         created() {

@@ -76,7 +76,6 @@
                 this.getList()
             },
             getList(){
-                console.log(this.query)
                 this.query.id = this.inviteChannelId
                 api.get('inviteChannel/inviteRecords', this.query).then(data => {
                     this.list = data.list;

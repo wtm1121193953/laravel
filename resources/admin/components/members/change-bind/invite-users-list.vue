@@ -27,9 +27,6 @@
                 list: [],
                 total: 0,
                 query: {
-                    startTime: '',
-                    endTime: '',
-                    mobile: '',
                     page: 1,
                 },
             }
@@ -41,7 +38,6 @@
         },
         methods: {
             getList(){
-                console.log(this.query)
                 this.query.id = this.inviteChannelId
                 api.get('users/getInviteUsersList', this.query).then(data => {
                     this.list = data.list;
