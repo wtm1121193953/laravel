@@ -11,6 +11,8 @@ namespace App\Modules\Tps;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
+use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Sms\SmsService;
 use App\Support\MicroServiceApi;
@@ -150,17 +152,61 @@ class TpsBindService extends BaseService
      * @param $userId
      * @param $tpsAccount
      * @param $tpsPassword
+     * @return TpsBind
+     * @throws \Exception
      */
     public static function bindTpsAccountForUser($userId, $tpsAccount, $tpsPassword)
     {
-        // todo 用户绑定TPS账号逻辑
         // 判断用户账号是否已绑定
+        $bindInfo = self::getTpsBindInfoByOriginInfo($userId, TpsBind::ORIGIN_TYPE_USER);
+        if(!empty($bindInfo)){
+            throw new BaseResponseException('该用户已绑定TPS账号, 不能重复绑定');
+        }
         // 判断tps账号是否已绑定
-        // 判断用户上级及下级是否已绑定
+        $bindInfo = self::getTpsBindInfoByTpsAccount($tpsAccount);
+        if(!empty($bindInfo)){
+            throw new BaseResponseException('绑定失败，该TPS账号已被绑定');
+        }
+        // 判断用户上级是否已绑定
+        $inviteRecord = InviteService::getRecordByUserId($userId);
+        if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_USER){
+            $parentUserId = $inviteRecord->origin_id;
+            $bindInfo = self::getTpsBindInfoByOriginInfo($parentUserId, TpsBind::ORIGIN_TYPE_USER);
+            if(!empty($bindInfo)){
+                throw new BaseResponseException('绑定失败，该账号直属上级已绑定TPS会员，上下级不能同时绑定TPS');
+            }
+        }
+        // 判断用户下级是否存在绑定过的账号
+        $inviteRecords = InviteService::getRecordsByOriginInfo($userId, InviteUserRecord::ORIGIN_TYPE_USER);
+        $subUserIds = $inviteRecords->pluck('user_id');
+        $bindInfo = TpsBind::where('origin_type', TpsBind::ORIGIN_TYPE_USER)
+            ->whereIn('origin_id', $subUserIds)
+            ->first();
+        if(!empty($bindInfo)){
+            throw new BaseResponseException('绑定失败，该账号直属下级已绑定TPS会员，上下级不能同时绑定TPS');
+        }
 
-        // 验证账号密码是否正确
         // 添加关联关系
+        DB::beginTransaction();
+        $record = new TpsBind();
+        $record->origin_type = TpsBind::ORIGIN_TYPE_USER;
+        $record->origin_id = $userId;
+        $record->tps_account = $tpsAccount;
+        $record->save();
 
+        try{
+            // 调用TPS接口, 验证账号密码是否正确
+            $result = TpsApi::checkTpsAccount($tpsAccount, $tpsPassword);
+            if($result['code'] !== 0){
+                throw new BaseResponseException($result['msg']);
+            }
+        } catch (\Exception $e){
+            DB::rollBack();
+            throw $e;
+        }
+
+        DB::commit();
+        return $record;
     }
 
 }
