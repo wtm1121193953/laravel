@@ -19,6 +19,7 @@ use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Bizer\Bizer;
 use App\Modules\Sms\SmsVerifyCode;
+use App\Modules\Sms\SmsService;
 use App\Result;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Carbon;
@@ -80,17 +81,9 @@ class SelfController extends Controller {
             throw new BaseResponseException('手机已存在', ResultCode::ACCOUNT_EXISTS);
         }
 
-        if (App::environment('production') || $verifyCode != '6666') {
-            $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
-                    ->where('verify_code', $verifyCode)
-                    ->where('status', 1)
-                    ->where('expire_time', '>', Carbon::now())
-                    ->first();
-            if (empty($verifyCodeRecord)) {
-                throw new ParamInvalidException('验证码错误');
-            }
-            $verifyCodeRecord->status = 2;
-            $verifyCodeRecord->save();
+        $verifyCodeRes = SmsService::checkVerifyCode($mobile, $verifyCode);
+        if($verifyCodeRes === FALSE){
+            throw new ParamInvalidException('验证码错误');
         }
 
         $bizer = new Bizer();
