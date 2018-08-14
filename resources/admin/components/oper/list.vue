@@ -5,7 +5,7 @@
                 <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="运营中心名称"/>
             </el-form-item>
             <el-form-item label="状态" prop="status">
-                <el-select v-model="query.status" placeholder="请选择">
+                <el-select v-model="query.status" clearable placeholder="请选择">
                     <el-option label="全部" value=""/>
                     <el-option label="正常合作中" value="1"/>
                     <el-option label="已冻结" value="2"/>
