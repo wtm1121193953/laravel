@@ -277,7 +277,6 @@
             sendCode() {
                 let _self = this;
                 if (!_self.mobileValidate) {
-                    //不希望重复代码需要优化
                     this.$refs.form.validateField('mobile')
                     return;
                 }
@@ -292,7 +291,7 @@
                         window.clearInterval(interval);
                     }
                 }, 1000);
-                api.post('/sms/getVerifyCode', this.form).then(data => {
+                api.get('/sms/getVerifyCode', this.form).then(data => {
                     store.dispatch('storeUserInfo', data);
                     _self.relocation();
                 }).catch(() => {
