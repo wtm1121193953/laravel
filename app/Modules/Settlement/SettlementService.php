@@ -71,13 +71,13 @@ class SettlementService extends BaseService
      * @param string $merchantId
      * @param string $status
      * @param string $showAmount
-     * @param string $settlementDate
+     * @param array $settlementDate
      * @param string $operBizMemberName
      * @param string $operBizMemberMobile
      * @param bool $getWithQuery
-     * @return Settlement|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Database\Query\Builder
      */
-    public static function getOperSettlements($operId, $merchantId = '', $status = '', $showAmount = '', $settlementDate = '', $operBizMemberName = '', $operBizMemberMobile = '', $getWithQuery = false)
+    public static function getOperSettlements($operId, $merchantId = '', $status = '', $showAmount = '', $settlementDate = [], $operBizMemberName = '', $operBizMemberMobile = '', $getWithQuery = false)
     {
         $query = DB::table('settlements')
             ->leftJoin('merchants','settlements.merchant_id','=','merchants.id')

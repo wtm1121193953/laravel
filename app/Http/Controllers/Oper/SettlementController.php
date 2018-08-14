@@ -82,7 +82,7 @@ class SettlementController extends Controller
         $merchantId = request('merchantId', '');
         $status = request('status', '');
         $showAmount = request('showAmount', '');
-        $settlementDate = request('settlementDate', '');
+        $settlementDate = explode(',',request('settlementDate', ''));
         $operBizMemberName = request('operName', '');
         $operBizMemberMobile = request('operMobile', '');
         //var_dump($settlementDate);die();
