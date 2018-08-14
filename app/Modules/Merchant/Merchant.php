@@ -113,6 +113,12 @@ class Merchant extends BaseModel
     const PILOT_MERCHANT = 1;
     const NORMAL_MERCHANT = 0;
 
+    /**
+     * 商户状态
+     */
+    const STATUS_ON = 1;
+    const STATUS_OFF = 2;
+
 
     /**
      * 获取商户等级描述
