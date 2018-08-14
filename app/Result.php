@@ -9,13 +9,11 @@ namespace App;
 
 
 
-use Illuminate\Contracts\Support\Arrayable;
-
 class Result
 {
 
     public static function success($message = '请求成功', $data = []){
-        if(is_array($message) or $message instanceof Arrayable){
+        if(!is_string($message)){
             $data    = $message;
             $message = '请求成功';
         }

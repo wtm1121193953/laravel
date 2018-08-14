@@ -147,4 +147,29 @@ class InviteService
         $data = $query->paginate();
         return $data;
     }
+
+    /**
+     * 根据用户ID查询用户的邀请记录
+     * @param $userId
+     * @return InviteUserRecord
+     */
+    public static function getRecordByUserId($userId)
+    {
+        $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
+        return $inviteRecord;
+    }
+
+    /**
+     * 根据邀请人信息查询邀请记录
+     * @param $originId
+     * @param $originType
+     * @return InviteUserRecord[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getRecordsByOriginInfo($originId, $originType)
+    {
+        $list = InviteUserRecord::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->get();
+        return $list;
+    }
 }
