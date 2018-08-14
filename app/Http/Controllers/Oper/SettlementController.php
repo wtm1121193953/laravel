@@ -30,20 +30,11 @@ class SettlementController extends Controller
         $operBizMemberName = request('oper_biz_member_name');
         $operBizMemberMobile = request('oper_biz_member_mobile');
         $merchantId = request('merchantId');
-        if($operBizMemberName){
-            $code = OperBizMember::where('name',$operBizMemberName)->pluck('code')->first();
-            if($code){
-                $merchantId = Merchant::where('oper_biz_member_code',$code)->pluck('id')->first();
-            }
+        $operId = request()->get('current_user')->oper_id;
 
-        }elseif($operBizMemberMobile){
-            $code = OperBizMember::where('mobile',$operBizMemberMobile)->pluck('code')->first();
-            if($code){
-                $merchantId = Merchant::where('oper_biz_member_code',$code)->pluck('id')->first();
-            }
-        }
+        $data = SettlementService::getOperSettlements($operId, $merchantId, $status, $showAmount, $settlementDate, $operBizMemberName, $operBizMemberMobile);
         //DB::enableQueryLog();
-        $data = Settlement::where('oper_id', request()->get('current_user')->oper_id)
+        /*$data = Settlement::where('oper_id', request()->get('current_user')->oper_id)
             ->where('amount', '>', 0)
             ->when($merchantId, function(Builder $query) use ($merchantId){
                 $query->where('merchant_id', $merchantId);
@@ -55,7 +46,6 @@ class SettlementController extends Controller
                 $query->where('amount', '>', 0);
             })
             ->when($settlementDate, function (Builder $query) use ($settlementDate){
-                //$query->whereBetween('created_at', [substr($settlementDate[0],0,10) . ' 00:00:00', substr($settlementDate[1],0,10) . ' 23:59:59']);
                 $query->whereBetween('created_at', [$settlementDate[0] . ' 00:00:00', $settlementDate[1] . ' 23:59:59']);
             })->orderBy('id', 'desc')->paginate();
         //var_dump(DB::getQueryLog());
@@ -79,7 +69,7 @@ class SettlementController extends Controller
                     }
                 }
             }
-        }
+        }*/
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
