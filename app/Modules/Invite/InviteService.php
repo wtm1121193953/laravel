@@ -172,4 +172,20 @@ class InviteService
             ->get();
         return $list;
     }
+
+    /**
+     * 通过id获取邀请用户记录
+     * @param $ids
+     * @return InviteUserRecord|InviteUserRecord[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getRecordsByIds($ids)
+    {
+        if (is_array($ids)) {
+            $data = InviteUserRecord::whereIn('id', $ids)->get();
+        } else {
+            $data = InviteUserRecord::find($ids);
+        }
+
+        return $data;
+    }
 }

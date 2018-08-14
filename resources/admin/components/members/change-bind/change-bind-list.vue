@@ -8,10 +8,10 @@
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜 索</i></el-button>
             </el-form-item>
             <el-form-item>
-                <el-button type="success" @click="changeBind">换 绑</el-button>
+                <el-button type="success" @click="changeBind(false)">换 绑</el-button>
             </el-form-item>
             <el-form-item>
-                <el-button type="success" @click="allChangeBind">全部换绑</el-button>
+                <el-button type="success" @click="changeBind(true)">全部换绑</el-button>
             </el-form-item>
         </el-form>
 
@@ -62,28 +62,42 @@
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
-            changeBind() {
-                console.log(this.multipleSelection);
-                let length = this.multipleSelection.length;
+            changeBind(isAll = false) {
+                let length = isAll ? this.total : this.multipleSelection.length;
+                if (length <= 0) {
+                    this.$message.warning('请选择换绑用户');
+                    return false;
+                }
+                let inviteUserRecordIds = [];
+                this.multipleSelection.forEach(function (item) {
+                    inviteUserRecordIds.push(item.id);
+                });
                 this.$confirm(`确定将这位${length}用户换绑吗，换绑后不可修改！`, '警告', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
                     center: true
                 }).then(() => {
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    });
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消删除'
-                    });
+                    this.commitChangeBind(isAll, inviteUserRecordIds);
                 });
             },
-            allChangeBind() {
-
+            commitChangeBind(isAll, inviteUserRecordIds = []) {
+                this.$prompt('绑定新账号', '警告', {
+                    confirmButtonText: '确定绑定',
+                    cancelButtonText: '取消',
+                    inputPattern: /^1[3,4,5,6,7,8,9]\d{9}$/,
+                    inputErrorMessage: '手机号码格式不正确'
+                }).then(({ value }) => {
+                    let param = {
+                        isAll: isAll,
+                        mobile: value,
+                        inviteUserRecordIds: inviteUserRecordIds,
+                        inviteChannelId: this.inviteChannelId,
+                    };
+                    api.post('users/changeBind', param).then(data => {
+                        console.log(data);
+                    })
+                });
             }
         },
         created(){

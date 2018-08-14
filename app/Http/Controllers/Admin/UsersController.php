@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserChangeBindRecordService;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperService;
+use App\Modules\User\UserService;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
@@ -144,6 +147,49 @@ class UsersController extends Controller
                 'list' => $data->items(),
                 'total' => $data->total(),
             ]);
+        }
+    }
+
+    public function changeBind()
+    {
+        $this->validate(request(), [
+            'isAll' => 'required',
+            'mobile' => 'required',
+        ]);
+        $isAll = request('isAll', false);
+        $mobile = request('mobile');
+        $inviteUserRecordIds = request('inviteUserRecordIds', []);
+        $inviteChannelId = request('inviteChannelId', 0);
+        $currentUser = request()->get('current_user');
+
+        $user = UserService::getUserByMobile($mobile);
+        if (empty($user)) {
+            throw new BaseResponseException('换绑的用户不存在');
+        }
+
+        $oldInviteChannel = InviteChannelService::getById($inviteChannelId);
+        if (empty($oldInviteChannel)) {
+            throw new BaseResponseException('原邀请渠道不存在');
+        }
+
+        if ($isAll) {
+            $query = InviteService::getRecordsByInviteChannelId($inviteChannelId, [], true);
+            $changeBindNumber = $query->count(); //换绑数量
+            $inviteUserRecords = $query->get();  //需换绑的记录
+        } else {
+            $changeBindNumber = count($inviteUserRecordIds); //换绑数量
+            $inviteUserRecords = InviteService::getRecordsByIds($inviteUserRecordIds); //需换绑的记录
+        }
+
+        // 查找换绑后的邀请渠道，没有则创建新的邀请渠道
+        $newInviteChannel = InviteChannelService::getByOriginInfo($user->id, InviteChannel::ORIGIN_TYPE_USER, InviteChannel::FIXED_OPER_ID);
+
+        //首先操作invite_user_change_bind_records表，写入换绑记录
+        $inviteUserChangeBindRecord = InviteUserChangeBindRecordService::createChangeBindRecord($oldInviteChannel, $mobile, $changeBindNumber, $currentUser);
+
+        // 循环遍历需换绑的记录，在解绑表invite_user_unbind_records中加入解绑记录，删除记录表invite_user_records中的记录，并添加新的邀请记录
+        foreach ($inviteUserRecords as $inviteUserRecord) {
+
         }
     }
 }
