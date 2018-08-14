@@ -32,7 +32,8 @@
                         type="daterange"
                         range-separator="至"
                         start-placeholder="开始日期"
-                        end-placeholder="结束日期">
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd">
                 </el-date-picker>
             </el-form-item>
             <el-form-item>
@@ -51,7 +52,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="settlement_date" label="结算时间" align="center"/>
-            <el-table-column prop="settlement_cycle" label="结算周期" align="center">
+            <el-table-column prop="settlement_cycle" label="结算周期" align="center" width="200px">
                 <template slot-scope="scope">
                     {{scope.row.start_date}} 至 {{scope.row.end_date}}
                 </template>
@@ -143,7 +144,7 @@
                     message = '确定导出当前筛选的财务列表么?'
                 }
                 this.$confirm(message).then(() => {
-                    window.open('/api/oper/settlements/export?keyword=' + this.query.keyword)
+                    window.open('/api/oper/settlements/export?merchantId=' + this.query.merchantId + '&status=' + this.query.status + '&showAmount=' + this.query.showAmount + '&operName=' + this.query.oper_biz_member_name + '&operMobile=' + this.query.oper_biz_member_mobile + '&settlementDate=' + this.query.settlement_date)
                 })
             },
             getMerchants(){

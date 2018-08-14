@@ -10,7 +10,10 @@ namespace App\Modules\Settlement;
 
 
 use App\BaseService;
+use App\Modules\Merchant\Merchant;
+use App\Modules\Oper\OperBizMember;
 use App\Modules\Order\Order;
+use Illuminate\Database\Eloquent\Builder;
 
 class SettlementService extends BaseService
 {
@@ -63,24 +66,49 @@ class SettlementService extends BaseService
     }
 
     /**
-     * 获取运营中心的财务列表
      * @param $operId
-     * @param string $keyword
+     * @param string $merchantId
+     * @param string $status
+     * @param string $showAmount
+     * @param string $settlementDate
+     * @param string $operBizMemberName
+     * @param string $operBizMemberMobile
      * @param bool $getWithQuery
      * @return Settlement|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getOperInviteChannels($operId, $keyword = '', $getWithQuery = false)
+    public static function getOperSettlements($operId, $merchantId = '', $status = '', $showAmount = '', $settlementDate = '', $operBizMemberName = '', $operBizMemberMobile = '', $getWithQuery = false)
     {
-        $query = Settlement::where('origin_id', $operId)
-            ->when('keyword', function (Builder $query) use ($keyword){
-                $query->where('name', 'like', "%$keyword%");
-            })
+        if($operBizMemberName){
+            $code = OperBizMember::where('name',$operBizMemberName)->pluck('code')->first();
+            $merchantId = Merchant::where('oper_biz_member_code',$code)->pluck('id')->first();
+        }elseif($operBizMemberMobile){
+            $code = OperBizMember::where('mobile',$operBizMemberMobile)->pluck('code')->first();
+            $merchantId = Merchant::where('oper_biz_member_code',$code)->pluck('id')->first();
+        }
+        if($settlementDate){
+            $starTime = explode(',',$settlementDate);
+        }else{
+            $starTime = [];
+        }
+        $data = Settlement::where('oper_id', $operId)
             ->where('amount', '>', 0)
-            ->orderBy('id', 'desc');
+            ->when($merchantId, function(Builder $query) use ($merchantId){
+                $query->where('merchant_id', $merchantId);
+            })
+            ->when($status, function (Builder $query) use ($status){
+                $query->where('status', $status);
+            })
+            ->when($showAmount, function(Builder $query) {
+                $query->where('amount', '>', 0);
+            })
+            ->when($settlementDate, function (Builder $query) use ($starTime){
+                $query->whereBetween('created_at', [$starTime[0] . ' 00:00:00', $starTime[1] . ' 23:59:59']);
+            })->orderBy('id', 'desc');
+
         if ($getWithQuery) {
-            return $query;
+            return $data;
         } else {
-            $data = $query->paginate();
+            $data = $data->paginate();
             return $data;
         }
     }
