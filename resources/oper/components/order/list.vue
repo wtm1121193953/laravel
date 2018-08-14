@@ -118,6 +118,9 @@
                     <span v-else-if="scope.row.type == 3 && scope.row.dishes_items.length > 1">
                         {{scope.row.dishes_items[0].dishes_goods_name}}等{{getNumber(scope.row.dishes_items)}}件商品
                     </span>
+                    <span v-else-if="scope.row.type == 2">
+                        无
+                    </span>
                     <span v-else>
                         {{scope.row.goods_name}}
                     </span>

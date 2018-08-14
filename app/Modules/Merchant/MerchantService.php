@@ -10,6 +10,8 @@ namespace App\Modules\Merchant;
 
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
 use App\Modules\Oper\Oper;
@@ -21,9 +23,63 @@ use Illuminate\Support\Collection;
 class MerchantService extends BaseService
 {
 
+    /**
+     * 根据ID获取商户信息
+     * @param $merchantId
+     * @param array|string $fields
+     * @return Merchant
+     */
+    public static function getById($merchantId, $fields = ['*'])
+    {
+        if(is_string($fields)){
+            $fields = explode(',', $fields);
+        }
+        return Merchant::find($merchantId, $fields);
+    }
+
+    /**
+     * 根据ID获取商户名称
+     * @param $merchantId
+     * @param null $default
+     * @return null|string
+     */
+    public static function getNameById($merchantId, $default = null)
+    {
+        $merchant = self::getById($merchantId, ['name']);
+        if (empty($merchant)) {
+            return $default;
+        }
+        return $merchant->name;
+    }
+
+    /**
+     * @param array $data
+     * @return Merchant[]|\Illuminate\Database\Eloquent\Collection
+     */
     public static function getAllNames(array $data)
     {
-        // todo 获取所有的商户名, 可以传入查询条件, 后期可以对查询结果做缓存
+        // todo 后期可以对查询结果做缓存
+        $auditStatus = $data['audit_status'];
+        $status = $data['status'];
+        $list = Merchant::where(function (Builder $query) {
+            $currentOperId = request()->get('current_user')->oper_id;
+            $query->where('oper_id', $currentOperId)
+                ->orWhere('audit_oper_id', $currentOperId);
+        })
+            ->when($status, function (Builder $query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus) {
+                if ($auditStatus == -1) {
+                    $auditStatus = 0;
+                }
+                $query->where('audit_status', $auditStatus);
+            })
+            ->orderBy('updated_at', 'desc')
+            ->select('id', 'name')
+            ->get();
+
+        return $list;
     }
 
     /**
@@ -41,13 +97,17 @@ class MerchantService extends BaseService
      * @param bool $getWithQuery
      * @return Merchant|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getList(array $data, bool $getWithQuery=false)
+    public static function getList(array $data, bool $getWithQuery = false)
     {
         $id = $data['id'];
         $operId = $data['operId'];
+        $creatorOperId = $data['creatorOperId'];
         $name = $data['name'];
         $signboardName = $data['signboardName'];
+        $status = $data['status'];
         $auditStatus = $data['auditStatus'];
+        $merchantCategory = $data['merchantCategory'];
+        $isPilot = $data['isPilot'];
         $startCreatedAt = $data['startCreatedAt'];
         $endCreatedAt = $data['endCreatedAt'];
 
@@ -55,59 +115,93 @@ class MerchantService extends BaseService
         $query = Merchant::where('audit_oper_id', '>', 0)->orderByDesc('id');
 
         // 筛选条件
-        if($id){
+        if ($id) {
             $query->where('id', $id);
         }
-        if($operId){
-            if(is_array($operId) || $operId instanceof Collection){
+        if ($operId) {
+            if (is_array($operId) || $operId instanceof Collection) {
                 $query->where(function (Builder $query) use ($operId) {
-                    $query->whereIn('oper_id',  $operId)
+                    $query->whereIn('oper_id', $operId)
                         ->orWhereIn('audit_oper_id', $operId);
                 });
-            }else {
+            } else {
                 $query->where(function (Builder $query) use ($operId) {
-                    $query->where('oper_id',  $operId)
+                    $query->where('oper_id', $operId)
                         ->orWhere('audit_oper_id', $operId);
                 });
             }
         }
-        if(!empty($auditStatus)){
-            if(is_array($auditStatus) || $auditStatus instanceof Collection){
+        if (!empty($creatorOperId)) {
+            if (is_array($creatorOperId) || $creatorOperId instanceof Collection) {
+                $query->whereIn('creator_oper_id', $creatorOperId);
+            } else {
+                $query->where('creator_oper_id', $creatorOperId);
+            }
+        }
+        if ($status) {
+            $query->where('status', $status);
+        }
+        if (!empty($auditStatus)) {
+            if (is_array($auditStatus) || $auditStatus instanceof Collection) {
                 $query->whereIn('audit_status', $auditStatus);
-            }else {
+            } else {
+                if ($auditStatus == -1) $auditStatus = 0;
                 $query->where('audit_status', $auditStatus);
             }
         }
-        if($startCreatedAt && $endCreatedAt){
-            if($startCreatedAt==$endCreatedAt){
+        if ($startCreatedAt && $endCreatedAt) {
+            if ($startCreatedAt == $endCreatedAt) {
                 $query->whereDate('created_at', $startCreatedAt);
-            }else{
+            } else {
                 $query->whereBetween('created_at', [$startCreatedAt . ' 00:00:00', $endCreatedAt . ' 23:59:59']);
             }
-        }else if($startCreatedAt){
+        } else if ($startCreatedAt) {
             $query->where('created_at', '>=', $startCreatedAt . ' 00:00:00');
-        }else if($endCreatedAt){
+        } else if ($endCreatedAt) {
             $query->where('created_at', '<=', $endCreatedAt . ' 23:59:59');
         }
-        if($name){
+        if ($name) {
             $query->where('name', 'like', "%$name%");
         }
-        if($signboardName){
+        if ($signboardName) {
             $query->where('signboard_name', 'like', "%$signboardName%");
         }
+        if (!empty($merchantCategory)) {
+            if (count($merchantCategory) == 1) {
+                $merchantCategoryFinalId = MerchantCategory::where('pid', $merchantCategory[0])
+                    ->select('id')->get()
+                    ->pluck('id');
+            } else {
+                $merchantCategoryFinalId = intval($merchantCategory[1]);
+            }
+            if (is_array($merchantCategoryFinalId) || $merchantCategoryFinalId instanceof Collection) {
+                $query->whereIn('merchant_category_id', $merchantCategoryFinalId);
+            } else {
+                $query->where('merchant_category_id', $merchantCategoryFinalId);
+            }
+        }
+        if ($isPilot) {
+            $query->where('is_pilot', Merchant::PILOT_MERCHANT);
+        } else {
+            $query->where('is_pilot', Merchant::NORMAL_MERCHANT);
+        }
 
-        if($getWithQuery){
+        if ($getWithQuery) {
             return $query;
-        }else {
+        } else {
 
             $data = $query->paginate();
 
             $data->each(function ($item) {
-                $item->categoryPath = MerchantCategoryService::getCategoryPath($item->merchant_category_id);
+                if ($item->merchant_category_id) {
+                    $item->categoryPath = MerchantCategoryService::getCategoryPath($item->merchant_category_id);
+                }
+                $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
+                $item->account = MerchantAccount::where('merchant_id', $item->id)->first();
                 $item->business_time = json_decode($item->business_time, 1);
                 $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
                 $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
-                $item->operBizMemberName = OperBizMember::where('oper_id', $item->operId)->where('code', $item->oper_biz_member_code)->value('name') ?: '';
+                $item->operBizMemberName = OperBizMember::where('oper_id', $item->operId)->where('code', $item->oper_biz_member_code)->value('name') ?: '无';
             });
 
             return $data;
@@ -124,19 +218,22 @@ class MerchantService extends BaseService
 
         $merchant = Merchant::findOrFail($id);
         $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
+        $merchant->categoryPathOnlyEnable = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id, true);
+        $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
         $merchant->business_time = json_decode($merchant->business_time, 1);
-        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
-        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
         $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
         $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
         $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
         $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
-        if($merchant->oper_biz_member_code){
+
+        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
+        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
+        if ($merchant->oper_biz_member_code) {
             $merchant->operBizMemberName = OperBizMember::where('code', $merchant->oper_biz_member_code)->value('name');
         }
         $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
-        if ($oper){
-            $merchant->operAddress = $oper->province.$oper->city.$oper->area.$oper->address;
+        if ($oper) {
+            $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
         }
         return $merchant;
     }
@@ -146,14 +243,110 @@ class MerchantService extends BaseService
         // todo 审核商户
     }
 
-    public static function edit()
+    /**
+     * 编辑商户
+     * @param $id
+     * @return Merchant
+     */
+    public static function edit($id)
     {
-        // todo 编辑商户信息
+        $currentOperId = request()->get('current_user')->oper_id;
+        $merchant = Merchant::where('id', $id)
+            ->where('audit_oper_id', $currentOperId)
+            ->first();
+        if (empty($merchant)) {
+            throw new BaseResponseException('该商户不存在');
+        }
+
+        if (!empty($merchant->oper_biz_member_code)) {
+            // 记录原业务员ID
+            $originOperBizMemberCode = $merchant->oper_biz_member_code;
+        }
+
+        $merchant->fillMerchantPoolInfoFromRequest();
+        $merchant->fillMerchantActiveInfoFromRequest();
+
+        // 商户名不能重复
+        $exists = Merchant::where('name', $merchant->name)
+            ->where('id', '<>', $merchant->id)->first();
+        $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
+        if ($exists || $existsDraft) {
+            throw new ParamInvalidException('商户名称不能重复');
+        }
+
+        if ($merchant->oper_id > 0) {
+            // 如果当前商户已有所属运营中心,且不是试点商户, 则此次提交为重新提交审核
+            // 如果当前商户已有所属运营中心，且是试点商户，且有商户描述，则是补全资料提交，修改审核状态为待审核
+            // 添加审核记录
+            if ($merchant->is_pilot && $merchant->desc) {
+                $merchant->oper_id = 0;
+                $merchant->is_pilot = Merchant::NORMAL_MERCHANT;
+                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+            } else {
+                MerchantAuditService::addAudit($merchant->id, $currentOperId, Merchant::AUDIT_STATUS_RESUBMIT);
+                $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
+            }
+        } else {
+            // 如果当前商户没有所属运营中心，且是试点商户，且有商户描述，则是待审核状态下的补全资料，修改商户为正常商户
+            if ($merchant->is_pilot && $merchant->desc) {
+                $merchant->is_pilot = Merchant::NORMAL_MERCHANT;
+                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+            } else {
+                MerchantAuditService::addAudit($merchant->id, $currentOperId);
+                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+            }
+        }
+
+        $merchant->save();
+
+        // 更新业务员已激活商户数量
+        if ($merchant->oper_biz_member_code) {
+            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+            OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
+
+        // 如果存在原有的业务员, 并且不等于现有的业务员, 更新原有业务员邀请用户数量
+        if (isset($originOperBizMemberCode) && $originOperBizMemberCode != $merchant->oper_biz_member_code) {
+            OperBizMember::updateActiveMerchantNumberByCode($originOperBizMemberCode);
+            OperBizMember::updateAuditMerchantNumberByCode($originOperBizMemberCode);
+        }
+
+        return $merchant;
     }
 
+    /**
+     * 添加商户
+     * @return Merchant
+     */
     public static function add()
     {
-        // todo 添加商户信息
+        $merchant = new Merchant();
+        $merchant->fillMerchantPoolInfoFromRequest();
+        $merchant->fillMerchantActiveInfoFromRequest();
+
+        // 补充商家创建者及审核提交者
+        $currentOperId = request()->get('current_user')->oper_id;
+        $merchant->audit_oper_id = $currentOperId;
+        $merchant->creator_oper_id = $currentOperId;
+
+        // 商户名不能重复
+        $exists = Merchant::where('name', $merchant->name)->first();
+        $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
+        if ($exists || $existsDraft) {
+            throw new ParamInvalidException('商户名称不能重复');
+        }
+
+        $merchant->save();
+
+        // 添加审核记录
+        MerchantAuditService::addAudit($merchant->id, $currentOperId);
+
+        // 更新业务员已激活商户数量
+        if ($merchant->oper_biz_member_code) {
+            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
+
+        return $merchant;
     }
 
     public static function addFromDraft()
@@ -161,9 +354,37 @@ class MerchantService extends BaseService
         // todo 从草稿箱添加
     }
 
-    public static function addFromMerchantPool()
+    /**
+     * 从商户池添加商户信息
+     * @param $operId
+     * @param Merchant $merchant
+     * @return Merchant
+     */
+    public static function addFromMerchantPool($operId, Merchant $merchant)
     {
-        // todo 从商户池添加
+        // 补充激活商户需要的信息
+        $merchant->fillMerchantActiveInfoFromRequest();
+        // 设置当前商户提交审核的运营中心
+        $merchant->audit_oper_id = $operId;
+        $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+
+        // 商户名不能重复
+        $exists = Merchant::where('name', $merchant->name)
+            ->where('id', '<>', $merchant->id)->first();
+        if($exists){
+            throw new ParamInvalidException('商户名称不能重复');
+        }
+
+        $merchant->save();
+        // 添加审核记录
+        MerchantAuditService::addAudit($merchant->id, $operId);
+
+        // 更新业务员已激活商户数量
+        if($merchant->oper_biz_member_code){
+            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
+
+        return $merchant;
     }
 
 
@@ -173,9 +394,9 @@ class MerchantService extends BaseService
      */
     public static function geoAddToRedis($merchant)
     {
-        if($merchant instanceof Collection){
+        if ($merchant instanceof Collection) {
             Lbs::merchantGpsAdd($merchant);
-        }else {
+        } else {
             Lbs::merchantGpsAdd($merchant->id, $merchant->lng, $merchant->lat);
         }
     }
@@ -185,7 +406,7 @@ class MerchantService extends BaseService
      */
     public static function geoAddAllToRedis()
     {
-        Merchant::chunk(100, function (Collection $list){
+        Merchant::chunk(100, function (Collection $list) {
             self::geoAddToRedis($list);
         });
     }
@@ -222,6 +443,18 @@ class MerchantService extends BaseService
         } else {
             return min($goodsLowestAmount, $dishesGoodsLowestAmount);
         }
+    }
+
+    /**
+     * 获取商户的某个值
+     * @param $merchantId
+     * @param $key
+     * @return mixed
+     */
+    public static function getMerchantValueByIdAndKey($merchantId, $key)
+    {
+        $value = Merchant::where('id', $merchantId)->value($key);
+        return $value;
     }
 
 }

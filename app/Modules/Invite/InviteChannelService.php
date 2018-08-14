@@ -37,9 +37,10 @@ class InviteChannelService extends BaseService
      * @param $operId
      * @param string $keyword
      * @param bool $getWithQuery
-     * @return InviteChannel|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @param array $param
+     * @return InviteChannel|array
      */
-    public static function getOperInviteChannels($operId, $keyword = '', $getWithQuery = false)
+    public static function getOperInviteChannels($operId, $keyword = '', $getWithQuery = false, $param = [])
     {
         $query = InviteChannel::where('origin_id', $operId)
             ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
@@ -51,8 +52,26 @@ class InviteChannelService extends BaseService
         if ($getWithQuery) {
             return $query;
         } else {
-            $data = $query->paginate();
-            return $data;
+            $page = $param['page'] ?: 1;
+            $pageSize = $param['pageSize'] ?: 15;
+            $orderColumn = $param['orderColumn'];
+            $orderType = $param['orderType'];
+
+            $total = $query->count();
+            $data = $query->get();
+
+            if ($orderType == 'descending') {
+                $data = $data->sortBy($orderColumn);
+            } elseif ($orderType == 'ascending') {
+                $data = $data->sortByDesc($orderColumn);
+            }
+
+            $data = $data->forPage($page,$pageSize)->values()->all();
+
+            return [
+                'data' => $data,
+                'total' => $total,
+            ];
         }
     }
 
@@ -111,7 +130,7 @@ class InviteChannelService extends BaseService
             $user = User::findOrFail($originId);
             $originName = $user->name ?: Utils::getHalfHideMobile($user->mobile);
         }else if($originType == 2){
-            $originName = Merchant::where('id', $originId)->value('name');
+            $originName = Merchant::where('id', $originId)->value('signboard_name');
         }else if($originType == 3){
             $originName = Oper::where('id', $originId)->value('name');
         }

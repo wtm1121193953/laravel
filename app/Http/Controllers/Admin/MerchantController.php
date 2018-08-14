@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Exports\MerchantExport;
 use App\Http\Controllers\Controller;
@@ -35,7 +36,11 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $signboardName = request('signboardName');
+        $status = request('status');
         $auditStatus = request('auditStatus');
+        $merchantCategory = request('merchantCategory');
+        $isPilot = request('isPilot');
+
         if(is_string($auditStatus)){
             $auditStatus = explode(',', $auditStatus);
         }
@@ -63,11 +68,14 @@ class MerchantController extends Controller
 
         $data = MerchantService::getList([
             'id' => $id,
+            'operId' => $operIds ?? $operId,
             'name' => $name,
             'signboardName' => $signboardName,
-            'operId' => $operIds ?? $operId,
             'creatorOperId' => $createOperIds ?? $creatorOperId,
+            'status' => $status,
             'auditStatus' => $auditStatus,
+            'merchantCategory' => $merchantCategory,
+            'isPilot' => $isPilot,
             'startCreatedAt' => $startDate,
             'endCreatedAt' => $endDate,
         ]);
@@ -128,7 +136,7 @@ class MerchantController extends Controller
         $merchantId = request('id');
         $auditSuggestion = request('audit_suggestion', '');
 
-        $merchant = Merchant::findOrFail($merchantId);
+        $merchant = MerchantService::getById($merchantId);
         if(empty($merchant)){
             throw new ParamInvalidException('商户信息不存在');
         }
@@ -170,6 +178,7 @@ class MerchantController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $name = request('name');
+        $status = request('status');
         $auditStatus = request('auditStatus');
         $signboardName = request('signboardName');
         if ($auditStatus || $auditStatus==="0"){
@@ -180,6 +189,28 @@ class MerchantController extends Controller
 //        $creatorOperId = request('creatorOperId');
 //        $creatorOperName = request('creatorOperName');
 
-        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name,$auditStatus, $operId, $operName))->download('商户列表.xlsx');
+        $merchantCategory = request('merchantCategory', '');
+        $isPilot = request('isPilot', 0);
+
+        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name, $status, $auditStatus, $operId, $operName, $merchantCategory, $isPilot))->download('商户列表.xlsx');
+    }
+
+    /**
+     * 修改商户状态
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function changeStatus()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $merchant = MerchantService::getById(request('id'));
+        if(empty($merchant)){
+            throw new DataNotFoundException('商户信息不存在');
+        }
+        $merchant->status = $merchant->status == Merchant::STATUS_ON ? Merchant::STATUS_OFF : Merchant::STATUS_ON;
+        $merchant->save();
+
+        return Result::success($merchant);
     }
 }

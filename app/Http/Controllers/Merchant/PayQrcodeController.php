@@ -11,7 +11,9 @@ namespace App\Http\Controllers\Merchant;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Wechat\MiniprogramScene;
+use App\Modules\Wechat\MiniprogramSceneService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 
@@ -39,7 +41,17 @@ class PayQrcodeController extends Controller
             $scene->save();
         }
         try{
-            $qrcode_url = WechatService::getMiniprogramAppCodeUrl($scene);
+            if (empty($scene->qrcode_url)) {
+                $qrcode_url = WechatService::getMiniprogramAppCodeUrl($scene);
+
+                $signboardName = MerchantService::getMerchantValueByIdAndKey($merchantId, 'signboard_name');
+                $fileName = pathinfo($qrcode_url, PATHINFO_BASENAME);
+                $path = storage_path('app/public/miniprogram/app_code/') . $fileName;
+                WechatService::addNameToAppCode($path, $signboardName);
+            } else {
+                $qrcode_url = $scene->qrcode_url;
+            }
+
         }catch (\Exception $e){
             throw new BaseResponseException('小程序码生成失败');
         }
@@ -63,8 +75,11 @@ class PayQrcodeController extends Controller
             ->first();
 
         $width = $type == 3 ? 1280 : ($type == 2 ? 430 : 258);
-        $inviteQrcodeFilename = WechatService::genMiniprogramAppCode($currentUser->oper_id, $scene->id, $scene->page, $width, true);
-        $filename = storage_path('app/public/miniprogram/app_code') . '/' . $inviteQrcodeFilename;
-        return response()->download($filename, '支付小程序码_' . ['', '小', '中', '大'][$type] . '.jpg');
+        $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
+
+        $signboardName = MerchantService::getMerchantValueByIdAndKey($currentUser->merchant_id, 'signboard_name');
+        WechatService::addNameToAppCode($filePath, $signboardName);
+
+        return response()->download($filePath, '支付小程序码_' . ['', '小', '中', '大'][$type] . '.jpg');
     }
 }

@@ -10,6 +10,8 @@ import MerchantPool from '../components/merchant-pool/list'
 import MerchantPoolDetail from '../components/merchant-pool/detail'
 import MerchantAuditList from '../components/merchant/audit-record-list'
 
+import MerchantPilotList from '../components/pilot-merchant/list'
+import MerchantPilotDetail from '../components/pilot-merchant/detail'
 
 /**
  * category 模块
@@ -28,6 +30,9 @@ export default [
             {path: '/merchant/pool', component: MerchantPool, name: 'MerchantPool'},
             {path: '/merchant/pool/detail', component: MerchantPoolDetail, name: 'MerchantPoolDetail'},
             {path: '/merchant/recordaudits', component: MerchantAuditList, name: 'MerchantAuditList'},
+
+            {path: '/merchant/pilots', component: MerchantPilotList, name: 'MerchantPilotList'},
+            {path: '/merchant/pilot/detail', component: MerchantPilotDetail, name: 'MerchantPilotDetail'},
 
         ]
     },

@@ -60,14 +60,24 @@ class LoginController extends Controller
             $verifyCodeRecord->save();
         }
 
+        $wxUserInfo = json_decode(request('userInfo'));
         // 验证通过, 查询当前用户是否存在, 不存在则创建用户
-        if(! $user = User::where('mobile', $mobile)->first()){
+        $user = User::where('mobile', $mobile)->first();
+        if(!$user){
             $user = new User();
             $user->mobile = $mobile;
-            $user->save();
-            // 重新查一次用户信息, 补充用户信息中的全部字段
-            $user = User::find($user->id);
+            //判断是否是新用户注册，1：是，null：不是
+            $isFirstSign = 1;
+        }else{
+            $isFirstSign = null;
         }
+        if ($wxUserInfo) {
+            $user->wx_nick_name = $wxUserInfo->nickName;
+            $user->wx_avatar_url = $wxUserInfo->avatarUrl;
+        }
+        $user->save();
+        // 重新查一次用户信息, 补充用户信息中的全部字段
+        $user = User::find($user->id);
 
         // 如果存在邀请渠道ID, 查询用户是否已被邀请过
         $inviteChannelId = request('inviteChannelId');
@@ -109,6 +119,7 @@ class LoginController extends Controller
         }
 
         $user->level_text = User::getLevelText($user->level);
+        $user->sign_status = $isFirstSign;
         return Result::success([
             'userInfo' => $user
         ]);

@@ -91,6 +91,13 @@
                         <span> {{ scope.row.area }} </span>
                     </template>
                 </el-table-column>
+                <el-table-column prop="status" label="商户状态">
+                    <template slot-scope="scope" v-if="scope.row.audit_status == 1 || scope.row.audit_status == 3">
+                        <span v-if="scope.row.status === 1" class="c-green">正常</span>
+                        <span v-else-if="scope.row.status === 2" class="c-danger">已冻结</span>
+                        <span v-else>未知 ({{scope.row.status}})</span>
+                    </template>
+                </el-table-column>
             <el-table-column prop="audit_status" label="审核状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
@@ -119,6 +126,7 @@
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
+                    <el-button v-if="parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="changeStatus(scope.row)">{{parseInt(scope.row.status) === 1 ? '冻结' : '解冻'}}</el-button>
                     <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
                         <el-button type="text" @click="detail(scope,3)">审核</el-button>
                         <el-dropdown trigger="click" @command="(command) => {audit(scope, command)}">
@@ -264,6 +272,11 @@
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
                 this.$confirm(message).then(() => {
                     window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&signboardName='+ this.query.signboardName+ '&auditStatus=' + this.query.auditStatus + '&operName=' + this.query.operName + '&operId=' + this.query.operId + '&creatorOperName=' + this.query.creatorOperName + '&creatorOperId=' + this.query.creatorOperId;
+                })
+            },
+            changeStatus(row) {
+                api.post('/merchant/changeStatus', {id: row.id}).then((data) => {
+                    row.status = data.status;
                 })
             }
         },

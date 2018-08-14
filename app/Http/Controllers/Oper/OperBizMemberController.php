@@ -35,6 +35,7 @@ class OperBizMemberController extends Controller
         $data->each(function($item) {
 
             $item->activeMerchantNumber = OperBizMember::getActiveMerchantNumber($item, request()->get('current_user')->oper_id);
+            $item->auditMerchantNumber = OperBizMember::getAuditMerchantNumber($item, request()->get('current_user')->oper_id);
 
         });
 
@@ -176,8 +177,9 @@ class OperBizMemberController extends Controller
         $data = Merchant::where(function (Builder $query){
             $query->where('oper_id', request()->get('current_user')->oper_id)
                 ->orWhere('audit_oper_id',  request()->get('current_user')->oper_id);
-        })->where('oper_biz_member_code', $code)
-            ->select('id', 'active_time', 'name', 'status','audit_status','created_at')
+            })
+            ->where('oper_biz_member_code', $code)
+            ->select('id', 'active_time', 'name', 'status','audit_status','created_at','is_pilot')
             ->paginate();
 
 

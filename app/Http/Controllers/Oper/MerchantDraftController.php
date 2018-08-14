@@ -64,6 +64,7 @@ class MerchantDraftController extends Controller
         $id = request('id');
         $merchantDraft = MerchantDraft::findOrFail($id);
         $merchantDraft->categoryPath = $merchantDraft->merchant_category_id ? MerchantCategoryService::getCategoryPath($merchantDraft->merchant_category_id) : [];
+        $merchantDraft->categoryPathOnlyEnable = $merchantDraft->merchant_category_id ? MerchantCategoryService::getCategoryPath($merchantDraft->merchant_category_id, true) : [];
         $merchantDraft->account = MerchantAccount::where('merchant_id', $merchantDraft->id)->first();
         return Result::success($merchantDraft);
     }
@@ -76,6 +77,12 @@ class MerchantDraftController extends Controller
         $this->validate(request(), [
             'name' => 'required',
         ]);
+
+        $mobile = request('contacter_phone');
+        if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
+            throw new ParamInvalidException('负责人手机号码不合法');
+        }
+
         $merchantDraft = new MerchantDraft();
         $merchantDraft->fillMerchantPoolInfoFromRequest();
         $merchantDraft->fillMerchantActiveInfoFromRequest();
@@ -109,6 +116,12 @@ class MerchantDraftController extends Controller
             'id' => 'required|integer|min:1',
             'name' => 'required',
         ]);
+
+        $mobile = request('contacter_phone');
+        if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
+            throw new ParamInvalidException('负责人手机号码不合法');
+        }
+
         $currentOperId = request()->get('current_user')->oper_id;
         $merchantDraft = MerchantDraft::where('id', request('id'))
             ->where('audit_oper_id', $currentOperId)

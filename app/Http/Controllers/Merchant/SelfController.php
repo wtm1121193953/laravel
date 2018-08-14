@@ -10,12 +10,14 @@ namespace App\Http\Controllers\Merchant;
 
 
 use App\Exceptions\AccountNotFoundException;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\PasswordErrorException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantService;
 use App\Result;
 use Illuminate\Support\Facades\Session;
 
@@ -39,7 +41,10 @@ class SelfController extends Controller
         if($user->status != 1){
             throw new NoPermissionException('帐号已被禁用');
         }
-        $merchant = Merchant::findOrFail($user->merchant_id);
+        $merchant = MerchantService::getById($user->merchant_id);
+        if(empty($merchant)){
+            throw new DataNotFoundException('商户信息不存在');
+        }
         if($merchant->status != 1){
             throw new NoPermissionException('商户已被冻结');
         }
@@ -85,7 +90,7 @@ class SelfController extends Controller
             config('merchant.user_session') => $user,
         ]);
 
-        $user->merchantName = Merchant::where('id', $user->merchant_id)->value('name');
+        $user->merchantName = MerchantService::getNameById($user->merchant_id, ['name']);
 
         return Result::success($user);
     }
@@ -102,9 +107,10 @@ class SelfController extends Controller
             ],
             [ 'id' => 2, 'name' => '订单管理', 'level' => 1, 'url' => '/merchant/orders',],
 
-            [ 'id' => 3, 'name' => '人员管理', 'level' => 1, 'url' => 'user', 'sub' =>
+            [ 'id' => 3, 'name' => '会员管理', 'level' => 1, 'url' => 'user', 'sub' =>
                 [
-                    [ 'id' => 4, 'name' => '我的会员', 'level' => 2, 'url' => '/merchant/invite/statistics/daily', 'pid' => 3,],
+                    [ 'id' => 4, 'name' => '我的会员', 'level' => 2, 'url' => '/merchant/invite/statistics/list', 'pid' => 3,],
+                    [ 'id' => 13, 'name' => '会员分析', 'level' => 2, 'url' => '/merchant/invite/statistics/daily', 'pid' => 3,],
                 ]
             ],
             [ 'id' => 5, 'name' => '财务管理', 'level' => 1, 'url' => '/merchant/settlements',],
@@ -118,6 +124,7 @@ class SelfController extends Controller
                 [
 //                    [ 'id' => 10, 'name' => '关联用户', 'level' => 2, 'url' => '/merchant/setting/mapping_user', 'pid' => 9],
                     [ 'id' => 12, 'name' => '系统配置', 'level' => 2, 'url' => '/merchant/setting', 'pid' => 9 ],
+                    [ 'id' => 13, 'name' => 'TPS会员账号管理', 'level' => 2, 'url' => '/merchant/tps-bind', 'pid' => 9 ],
                 ]
             ],
         ];
@@ -127,8 +134,10 @@ class SelfController extends Controller
      * 获取商户信息
      */
     public function getMerchantInfo(){
-        $merchant = Merchant::select(['id','name','signboard_name','merchant_category_id','province','city','area','address','desc'])
-                              ->where('id', request()->get('current_user')->merchant_id)->first();
+        $merchant = MerchantService::getById(
+            request()->get('current_user')->merchant_id,
+            ['id','name','signboard_name','merchant_category_id','province','city','area','address','desc']
+        );
 
         $mc = MerchantCategory::where('id',$merchant->merchant_category_id)->first(['name','pid']);
 

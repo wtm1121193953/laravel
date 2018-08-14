@@ -101,6 +101,7 @@ class SelfController extends Controller
             [ 'id' => 1, 'name' => '商户管理', 'level' => 1, 'url' => 'merchant', 'sub' =>
                 [
                     [ 'id' => 2, 'name' => '我的商户', 'level' => 2, 'url' => '/oper/merchants', 'pid' => 1,],
+                    [ 'id' => 15, 'name' => '试点商户', 'level' => 2, 'url' => '/oper/merchant/pilots', 'pid' => 1,],
                     [ 'id' => 3, 'name' => '商户池', 'level' => 2, 'url' => '/oper/merchant/pool', 'pid' => 1,],
                     [ 'id' => 13, 'name' => '商户审核记录', 'level' => 2, 'url' => '/oper/merchant/audits', 'pid' => 1],
                     [ 'id' => 14, 'name' => '草稿箱('.$merchantDraftCount.')', 'level' => 2, 'url' => '/oper/merchant/drafts', 'pid' => 1],
@@ -121,11 +122,18 @@ class SelfController extends Controller
                     [ 'id' => 9, 'name' => '渠道列表', 'level' => 2, 'url' => '/oper/invite-channel', 'pid' => 8,],
                 ]
             ],
+        		
+        	[ 'id' => 20, 'name' => '系统配置', 'level' => 1, 'url' => 'sysconfig', 'sub' =>
+        				[
+        						[ 'id' => 21, 'name' => '绑定TPS', 'level' => 2, 'url' => '/oper/tps-bind', 'pid' => 20,],
+        				]
+        	],
             /*[ 'id' => 11, 'name' => '系统设置', 'level' => 1, 'url' => 'setting', 'sub' =>
                 [
                     [ 'id' => 12, 'name' => '关联用户', 'level' => 2, 'url' => '/oper/setting/mapping_user', 'pid' => 11],
                 ]
             ],*/
+        		
         ];
     }
 

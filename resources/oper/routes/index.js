@@ -18,6 +18,9 @@ import InviteStatisticsDaily from '../components/invite-statistics/daily'
 //系统设置
 import SettingMappingUser from '../components/setting/mapping-user'
 
+//系统设置
+import TpsBind from '../components/setting/tps-bind'
+
 /**
  *
  */
@@ -64,6 +67,15 @@ const routes = [
         component: Home,
         children: [
             {path: 'setting/mapping_user', component: SettingMappingUser, name: 'SettingMappingUser'},
+        ]
+    },
+    
+    //系统设置sysconfig
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'tps-bind', component: TpsBind, name: 'TpsBind'},
         ]
     },
 

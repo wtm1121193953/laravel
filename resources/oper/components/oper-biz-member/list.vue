@@ -29,7 +29,8 @@
             <el-table-column prop="name" label="姓名"/>
             <el-table-column prop="mobile" label="手机号"/>
             <!--<el-table-column prop="code" label="推荐码"/>-->
-            <el-table-column prop="activeMerchantNumber" label="激活商户（家）"/>
+            <el-table-column prop="activeMerchantNumber" label="发展商户数"/>
+            <el-table-column prop="auditMerchantNumber" label="审核通过数"/>
             <el-table-column prop="remark" label="备注"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
