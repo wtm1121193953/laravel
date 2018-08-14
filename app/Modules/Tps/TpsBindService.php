@@ -158,6 +158,9 @@ class TpsBindService extends BaseService
         // 判断tps账号是否已绑定
         // 判断用户上级及下级是否已绑定
 
+        // 验证账号密码是否正确
+        // 添加关联关系
+
     }
 
 }
