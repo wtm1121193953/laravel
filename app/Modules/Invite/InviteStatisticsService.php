@@ -41,7 +41,8 @@ class InviteStatisticsService
      */
     public static function getInviteStatisticsByDate($userId, $date, $page = 1)
     {
-        $time = $date ?: date('Y-m-d', time());
+        $now = date('Y-m', time());
+        $time = $date ?: $now;
         $firstDay = date('Y-m-01 00:00:00', strtotime($time));
         $lastDay = date('Y-m-d 23:59:59', strtotime("$firstDay + 1 month - 1 day"));
         if (!$date){
@@ -52,13 +53,17 @@ class InviteStatisticsService
                 ->offset(20 * ($page - 1))
                 ->limit(20)
                 ->get();
-        } else {
-            $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
-                ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
-                ->where('created_at', '>', $firstDay)
-                ->where('created_at', '<', $lastDay)
-                ->orderBy('created_at', 'desc')
-                ->get();
+
+        }else {
+            if ($date > $now) {
+                $inviteUserRecords = [];
+            } else {
+                $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
+                    ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+                    ->whereBetween('created_at', [$firstDay, $lastDay])
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+            }
         }
 
         $dateList = [];
