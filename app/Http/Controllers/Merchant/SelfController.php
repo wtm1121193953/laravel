@@ -14,10 +14,11 @@ use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\PasswordErrorException;
 use App\Http\Controllers\Controller;
-use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Tps\TpsBind;
+use App\Modules\Tps\TpsBindService;
 use App\Result;
 use Illuminate\Support\Facades\Session;
 
@@ -55,9 +56,25 @@ class SelfController extends Controller
 
         $user->merchantName = $merchant->name;
 
+        $menus = $this->getMenus();
+
+        $operBindInfo = TpsBindService::getTpsBindInfoByOriginInfo($user->oper_id, TpsBind::ORIGIN_TYPE_OPER);
+        if(empty($operBindInfo)){
+            // 如果商户所属运营中心没有绑定tps帐号, 则去掉商户的绑定tps帐号菜单
+            foreach ($menus as $key => &$second) {
+                if(isset($second['sub'])){
+                    foreach ($second['sub'] as $key2 => $sub) {
+                        if($sub['name'] == 'TPS会员账号管理'){
+                            unset($menus[$key]['sub'][$key2]);
+                        }
+                    }
+                }
+            }
+        }
+
         return Result::success([
             'user' => $user,
-            'menus' => $this->getMenus(),
+            'menus' => $menus,
         ]);
     }
 
@@ -97,7 +114,7 @@ class SelfController extends Controller
 
     private function getMenus()
     {
-        return [
+        $menus = [
             [ 'id' => 1, 'name' => '商品管理', 'level' => 1, 'url' => 'goods', 'sub' =>
                 [
                     ['id' => 9, 'name' => '团购商品', 'level' => 2, 'url' => '/merchant/goods', 'pid' => 1],
@@ -128,6 +145,7 @@ class SelfController extends Controller
                 ]
             ],
         ];
+        return $menus;
     }
 
     /**
