@@ -149,7 +149,7 @@ class SelfController extends Controller {
             ],
             ['id' => 2, 'name' => '商户管理', 'level' => 1, 'url' => '/bizer/merchant', 'sub' =>
                 [
-                    ['id' => 20, 'name' => '商户列表', 'level' => 2, 'url' => '/bizer/merchants', 'pid' => 2],
+                    ['id' => 20, 'name' => '商户列表', 'level' => 2, 'url' => '/bizer/merchant', 'pid' => 2],
                 ]
             ],
             ['id' => 3, 'name' => '运营中心管理', 'level' => 1, 'url' => '/bizer/opers', 'sub' =>
