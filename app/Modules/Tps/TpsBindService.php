@@ -154,6 +154,10 @@ class TpsBindService extends BaseService
     public static function bindTpsAccountForUser($userId, $tpsAccount, $tpsPassword)
     {
         // todo 用户绑定TPS账号逻辑
+        // 判断用户账号是否已绑定
+        // 判断tps账号是否已绑定
+        // 判断用户上级及下级是否已绑定
+
     }
 
 }
