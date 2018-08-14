@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Invite\InviteChannelService;
+use App\Modules\Invite\InviteService;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\OperService;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
@@ -88,8 +91,45 @@ class UsersController extends Controller
         }else{
             throw new BaseResponseException("已解绑", ResultCode::UNKNOWN);
         }
+    }
 
+    /**
+     * 获取渠道换绑列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getChangeBindList()
+    {
+        $operName = request('operName', '');
+        $inviteChannelName = request('inviteChannelName', '');
+        $pageSize = request('pageSize', 15);
 
+        $query = InviteChannelService::getAllOperInviteChannels(true, $operName, $inviteChannelName);
+        $data = $query->paginate($pageSize);
+        $data->each(function ($item) {
+            $oper = OperService::detail($item->oper_id);
+            $item->operName = $oper->name;
+        });
 
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
+    }
+
+    /**
+     * 获取换绑渠道邀请注册人数的列表详情
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getInviteUsersList()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $id = request('id');
+        $data = InviteService::getRecordsByInviteChannelId($id);
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
     }
 }

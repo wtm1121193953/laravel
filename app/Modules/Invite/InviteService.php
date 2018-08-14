@@ -117,7 +117,7 @@ class InviteService
      * @param bool $getWithQuery
      * @return LengthAwarePaginator|Builder
      */
-    public static function getRecordsByInviteChannelId($inviteChannelId, $params, $getWithQuery = false)
+    public static function getRecordsByInviteChannelId($inviteChannelId, $params = [], $getWithQuery = false)
     {
         $mobile = array_get($params, 'mobile');
         $startTime = array_get($params, 'startTime');
