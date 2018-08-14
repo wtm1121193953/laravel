@@ -8,6 +8,7 @@ use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
 use App\Modules\Invite\InviteUserChangeBindRecordService;
+use App\Modules\Invite\InviteUserUnbindRecordService;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperService;
 use App\Modules\User\UserService;
@@ -181,15 +182,27 @@ class UsersController extends Controller
             $inviteUserRecords = InviteService::getRecordsByIds($inviteUserRecordIds); //需换绑的记录
         }
 
-        // 查找换绑后的邀请渠道，没有则创建新的邀请渠道
-        $newInviteChannel = InviteChannelService::getByOriginInfo($user->id, InviteChannel::ORIGIN_TYPE_USER, InviteChannel::FIXED_OPER_ID);
+        try {
+            DB::beginTransaction();
+            // 查找换绑后的邀请渠道，没有则创建新的邀请渠道
+            $newInviteChannel = InviteChannelService::getByOriginInfo($user->id, InviteChannel::ORIGIN_TYPE_USER, InviteChannel::FIXED_OPER_ID);
 
-        //首先操作invite_user_change_bind_records表，写入换绑记录
-        $inviteUserChangeBindRecord = InviteUserChangeBindRecordService::createChangeBindRecord($oldInviteChannel, $mobile, $changeBindNumber, $currentUser);
+            //首先操作invite_user_change_bind_records表，写入换绑记录
+            $inviteUserChangeBindRecord = InviteUserChangeBindRecordService::createChangeBindRecord($oldInviteChannel, $mobile, $changeBindNumber, $currentUser);
 
-        // 循环遍历需换绑的记录，在解绑表invite_user_unbind_records中加入解绑记录，删除记录表invite_user_records中的记录，并添加新的邀请记录
-        foreach ($inviteUserRecords as $inviteUserRecord) {
+            // 循环遍历需换绑的记录，在解绑表invite_user_unbind_records中加入解绑记录;
+            // 添加新的邀请记录在invite_user_records中,并删除记录表中的旧记录
+            foreach ($inviteUserRecords as $inviteUserRecord) {
+                InviteUserUnbindRecordService::createUnbindRecord($inviteUserRecord->user_id, InviteUserUnbindRecord::STATUS_UNBIND, $inviteUserChangeBindRecord->id, $inviteUserRecord);
+                InviteService::bindInviter($user->id, $newInviteChannel);
+                $inviteUserRecord->delete();
+            }
+            DB::commit();
 
+            return Result::success();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new BaseResponseException($e->getMessage());
         }
     }
 }

@@ -24,4 +24,16 @@ class UserService extends BaseService
         $user = User::where('mobile', $mobile)->first();
         return $user;
     }
+
+    /**
+     * 通过id获取用户信息
+     * @param $userId
+     * @return User
+     */
+    public static function getUserById($userId)
+    {
+        $user = User::find($userId);
+
+        return $user;
+    }
 }
