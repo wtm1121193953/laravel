@@ -6,6 +6,7 @@ import ErrorPage from '../components/404.vue'
 import welcome from '../components/welcome.vue'
 
 import merchant from './merchant'
+import oper from './oper'
 
 /**
  *
@@ -17,6 +18,7 @@ const routes = [
 
     // 商户模块, 留作实例使用
     ...merchant,
+    ...oper,
 
     {
         path: '/',

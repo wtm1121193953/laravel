@@ -149,7 +149,7 @@ class SelfController extends Controller {
     private function getMenus() {
         // todo 返回业务员菜单
         return [
-            ['id' => 1, 'name' => '订单管理', 'level' => 1, 'url' => '', 'sub' =>
+            ['id' => 1, 'name' => '订单管理', 'level' => 1, 'url' => '/bizer/orders', 'sub' =>
                 [
                     ['id' => 10, 'name' => '订单列表', 'level' => 2, 'url' => '/bizer/orders', 'pid' => 1],
                 ]
@@ -159,10 +159,10 @@ class SelfController extends Controller {
                     ['id' => 20, 'name' => '商户列表', 'level' => 2, 'url' => '/bizer/merchant', 'pid' => 2],
                 ]
             ],
-            ['id' => 3, 'name' => '运营中心管理', 'level' => 1, 'url' => '/bizer/oper', 'sub' =>
+            ['id' => 3, 'name' => '运营中心管理', 'level' => 1, 'url' => '/bizer/opers', 'sub' =>
                 [
-                    ['id' => 30, 'name' => '运营中心列表', 'level' => 2, 'url' => '/bizer/oper', 'pid' => 3],
-                    ['id' => 31, 'name' => '申请记录', 'level' => 2, 'url' => '/bizer/oper', 'pid' => 3],
+                    ['id' => 30, 'name' => '运营中心列表', 'level' => 2, 'url' => '/bizer/opers', 'pid' => 3],
+                    ['id' => 31, 'name' => '申请记录', 'level' => 2, 'url' => '', 'pid' => 3],
                 ]
             ],
 //            ['id' => 4, 'name' => '财务管理', 'level' => 1, 'url' => '/bizer/settlements', 'sub' =>
