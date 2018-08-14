@@ -153,9 +153,7 @@
         },
         methods: {
             goReg() {
-                router.push({
-                    path: '/register'
-                });
+                router.push('/register');
             },
             refreshVerify(){
                 this.captchaSrc = ''

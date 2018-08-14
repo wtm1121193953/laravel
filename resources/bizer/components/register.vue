@@ -176,9 +176,7 @@
         },
         methods: {
             goLogin() {
-                router.push({
-                    path: '/login'
-                });
+                router.push('/login');
             },
             relocation() {
                 if (this.$route.query && this.$route.query._from) {
