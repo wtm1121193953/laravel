@@ -37,7 +37,7 @@ class MicroServiceApi
     {
 
         $client = new Client();
-        $response = $client->post($url, [
+        $response = $client->get($url, [
             'query' => $data
         ]);
         if($response->getStatusCode() !== 200){

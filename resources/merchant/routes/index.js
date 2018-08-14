@@ -21,6 +21,7 @@ import OrdersList from '../components/orders/list.vue'
 import SettingMappingUser from '../components/setting/mapping-user.vue'
 //setting 商户系统配置
 import Setting from '../components/setting/list.vue'
+import TpsBind from '../components/setting/tps-bind.vue'
 
 /**
  *
@@ -70,6 +71,7 @@ const routes = [
         children: [
             {path: 'setting/mapping_user', component: SettingMappingUser, name: 'SettingMappingUser'},
             {path: 'setting', component: Setting, name: 'Setting'},
+            {path: 'tps-bind', component: TpsBind, name: 'TpsBind'},
         ]
     },
 

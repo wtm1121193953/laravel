@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Exports\MerchantExport;
 use App\Http\Controllers\Controller;
@@ -192,5 +193,24 @@ class MerchantController extends Controller
         $isPilot = request('isPilot', 0);
 
         return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name, $status, $auditStatus, $operId, $operName, $merchantCategory, $isPilot))->download('商户列表.xlsx');
+    }
+
+    /**
+     * 修改商户状态
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function changeStatus()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $merchant = MerchantService::getById(request('id'));
+        if(empty($merchant)){
+            throw new DataNotFoundException('商户信息不存在');
+        }
+        $merchant->status = $merchant->status == Merchant::STATUS_ON ? Merchant::STATUS_OFF : Merchant::STATUS_ON;
+        $merchant->save();
+
+        return Result::success($merchant);
     }
 }

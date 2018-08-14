@@ -31,9 +31,14 @@ Route::prefix('oper')
 
         Route::get('orders', 'OrderController@getList');
         Route::get('order/export', 'OrderController@export');
-
+        
         Route::group([], base_path('routes/api/oper/merchant.php'));
         Route::group([], base_path('routes/api/oper/settlements.php'));
         Route::group([], base_path('routes/api/oper/operBizMember.php'));
         Route::group([], base_path('routes/api/oper/mapping_user.php'));
+
+
+        Route::get('/tps/getBindInfo', 'TpsBindController@getBindInfo');
+        Route::post('/tps/bindAccount', 'TpsBindController@bindAccount');
+        Route::post('/tps/sendVerifyCode', 'TpsBindController@sendVerifyCode');
     });
