@@ -63,4 +63,7 @@ Route::prefix('user')
         Route::post('dishes/add','DishesController@add')->middleware(UserLoginFilter::class);
         Route::get('dishes/detail','DishesController@detail')->middleware(UserLoginFilter::class);
 
+
+        Route::get('tps/getBindInfo', 'TpsBindController@getBindInfo')->middleware(UserLoginFilter::class);
+        Route::post('tps/bindAccount', 'TpsBindController@bindAccount')->middleware(UserLoginFilter::class);
     });
