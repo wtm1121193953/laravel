@@ -10,15 +10,21 @@
 namespace App\Http\Controllers\Bizer;
 
 use App\Exceptions\AccountNotFoundException;
-use App\Exceptions\NoPermissionException;
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\PasswordErrorException;
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Bizer\Bizer;
+use App\Modules\Sms\SmsVerifyCode;
+use App\Modules\Sms\SmsService;
 use App\Result;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
+use App\ResultCode;
 
 class SelfController extends Controller {
 
@@ -40,6 +46,9 @@ class SelfController extends Controller {
         if (Bizer::genPassword(request('password'), $user['salt']) != $user['password']) {
             throw new PasswordErrorException();
         }
+
+        unset($user['password']);
+        unset($user['salt']);
 
         session([
             config('bizer.user_session') => $user,
@@ -72,17 +81,9 @@ class SelfController extends Controller {
             throw new BaseResponseException('手机已存在', ResultCode::ACCOUNT_EXISTS);
         }
 
-        if (App::environment('production') || $verifyCode != '6666') {
-            $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
-                    ->where('verify_code', $verifyCode)
-                    ->where('status', 1)
-                    ->where('expire_time', '>', Carbon::now())
-                    ->first();
-            if (empty($verifyCodeRecord)) {
-                throw new ParamInvalidException('验证码错误');
-            }
-            $verifyCodeRecord->status = 2;
-            $verifyCodeRecord->save();
+        $verifyCodeRes = SmsService::checkVerifyCode($mobile, $verifyCode);
+        if($verifyCodeRes === FALSE){
+            throw new ParamInvalidException('验证码错误');
         }
 
         $bizer = new Bizer();
@@ -91,6 +92,13 @@ class SelfController extends Controller {
         $bizer->salt = $salt;
         $bizer->password = MerchantAccount::genPassword($password, $salt);
         $bizer->save();
+
+        unset($bizer['password']);
+        unset($bizer['salt']);
+
+        session([
+            config('bizer.user_session') => $bizer,
+        ]);
 
         return Result::success([
                     'user' => $bizer,
@@ -134,7 +142,7 @@ class SelfController extends Controller {
     private function getMenus() {
         // todo 返回业务员菜单
         return [
-            ['id' => 1, 'name' => '订单管理', 'level' => 1, 'url' => '', 'sub' =>
+            ['id' => 1, 'name' => '订单管理', 'level' => 1, 'url' => '/bizer/orders', 'sub' =>
                 [
                     ['id' => 10, 'name' => '订单列表', 'level' => 2, 'url' => '/bizer/orders', 'pid' => 1],
                 ]
@@ -144,22 +152,22 @@ class SelfController extends Controller {
                     ['id' => 20, 'name' => '商户列表', 'level' => 2, 'url' => '/bizer/merchant', 'pid' => 2],
                 ]
             ],
-            ['id' => 3, 'name' => '运营中心管理', 'level' => 1, 'url' => '/bizer/oper', 'sub' =>
+            ['id' => 3, 'name' => '运营中心管理', 'level' => 1, 'url' => '/bizer/opers', 'sub' =>
                 [
-                    ['id' => 30, 'name' => '运营中心列表', 'level' => 2, 'url' => '/bizer/oper', 'pid' => 3],
-                    ['id' => 31, 'name' => '申请记录', 'level' => 2, 'url' => '/bizer/oper', 'pid' => 3],
+                    ['id' => 30, 'name' => '运营中心列表', 'level' => 2, 'url' => '/bizer/opers', 'pid' => 3],
+                    ['id' => 31, 'name' => '申请记录', 'level' => 2, 'url' => '', 'pid' => 3],
                 ]
             ],
-            ['id' => 4, 'name' => '财务管理', 'level' => 1, 'url' => '/bizer/settlements', 'sub' =>
-                [
-                    ['id' => 40, 'name' => '财务总览', 'level' => 2, 'url' => '/bizer/settlements', 'pid' => 4],
-                ]
-            ],
-            ['id' => 5, 'name' => '设置', 'level' => 1, 'url' => '', 'sub' =>
-                [
-                    ['id' => 50, 'name' => '提现设置', 'level' => 2, 'url' => '', 'pid' => 5],
-                ]
-            ],
+//            ['id' => 4, 'name' => '财务管理', 'level' => 1, 'url' => '/bizer/settlements', 'sub' =>
+//                [
+//                    ['id' => 40, 'name' => '财务总览', 'level' => 2, 'url' => '/bizer/settlements', 'pid' => 4],
+//                ]
+//            ],
+//            ['id' => 5, 'name' => '设置', 'level' => 1, 'url' => '', 'sub' =>
+//                [
+//                    ['id' => 50, 'name' => '提现设置', 'level' => 2, 'url' => '', 'pid' => 5],
+//                ]
+//            ],
         ];
     }
 

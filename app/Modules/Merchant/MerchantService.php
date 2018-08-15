@@ -99,17 +99,18 @@ class MerchantService extends BaseService
      */
     public static function getList(array $data, bool $getWithQuery = false)
     {
-        $id = $data['id'];
-        $operId = $data['operId'];
-        $creatorOperId = $data['creatorOperId'];
-        $name = $data['name'];
-        $signboardName = $data['signboardName'];
-        $status = $data['status'];
-        $auditStatus = $data['auditStatus'];
-        $merchantCategory = $data['merchantCategory'];
-        $isPilot = $data['isPilot'];
-        $startCreatedAt = $data['startCreatedAt'];
-        $endCreatedAt = $data['endCreatedAt'];
+        $id = array_get($data,"id");//$data['id'];
+        $operId = array_get($data,"operId");//$data['operId'];
+        $creatorOperId =array_get($data,"creatorOperId");// $data['creatorOperId'];
+        $name =array_get($data,"name");// $data['name'];
+        $signboardName =array_get($data,"signboardName");// $data['signboardName'];
+        $status =array_get($data,"status");// $data['status'];
+        $auditStatus =array_get($data,"auditStatus");// $data['auditStatus'];
+        $merchantCategory = array_get($data,"merchantCategory");//$data['merchantCategory'];
+        $isPilot =array_get($data,"isPilot");// $data['isPilot'];
+        $startCreatedAt =array_get($data,"startCreatedAt");// $data['startCreatedAt'];
+        $endCreatedAt = array_get($data,"endCreatedAt");//$data['endCreatedAt'];
+        $cityId =array_get($data,"cityId");// $data['cityId'];//所在城市ID
 
         // 全局限制条件
         $query = Merchant::where('audit_oper_id', '>', 0)->orderByDesc('id');
@@ -137,6 +138,9 @@ class MerchantService extends BaseService
             } else {
                 $query->where('creator_oper_id', $creatorOperId);
             }
+        }
+        if($cityId){
+            $query->where('city_id', $cityId);
         }
         if ($status) {
             $query->where('status', $status);

@@ -149,7 +149,8 @@
                     status: '',
                     page: 1,
                     audit_status: '',
-                    signBoardName:''
+                    signBoardName:'',
+                    merchant_category:'',
                 },
                 list: [],
                 total: 0,
@@ -167,7 +168,7 @@
                 this.isLoading = true;
                 let params = {};
                 Object.assign(params, this.query);
-                api.get('/merchants', params).then(data => {
+                api.get('/merchant', params).then(data => {
                     this.query.page = params.page;
                     this.isLoading = false;
                     this.list = data.list;
@@ -176,26 +177,6 @@
             },
             itemChanged(index, data){
                 this.getList();
-            },
-            addBtnClick(command){
-                if(command === 'add'){
-                    this.add()
-                }else {
-                    this.$menu.change('/merchant/pool')
-                }
-            },
-            add(){
-                router.push({
-                    path: '/merchant/add',
-                    query: {
-                        type: 'merchant-list'
-                    }
-                });
-            },
-            showMessage(scope){
-                api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
-                    this.auditRecord = [data];
-                })
             },
 
             accountChanged(scope, account){
