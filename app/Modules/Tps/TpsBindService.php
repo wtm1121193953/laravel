@@ -160,7 +160,12 @@ class TpsBindService extends BaseService
         // 调用TPS接口, 验证帐号密码是否正确
         $result = TpsApi::checkTpsAccount($tpsAccount, $tpsPassword);
         if($result['code'] !== 0){
-            throw new BaseResponseException($result['msg']);
+            if($result['code'] == 1301 || $result['code'] == 1302){
+                $message = '很遗憾！绑定失败，请输入正确的TPS账号密码！';
+            }else {
+                $message = $result['msg'];
+            }
+            throw new BaseResponseException($message);
         }
         // 判断用户帐号是否已绑定
         $bindInfo = self::getTpsBindInfoByOriginInfo($userId, TpsBind::ORIGIN_TYPE_USER);
