@@ -28,7 +28,6 @@
     import api from '../../../assets/js/api'
 
     export default {
-        // name: "merchant-list",
         data(){
             return {
                 isLoading: false,
