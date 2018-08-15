@@ -4,5 +4,5 @@ import OrderList from '../components/order/list.vue'
  * oper 模块
  */
 export default [
-    {path: '/order', component: OrderList, name: 'OrderList'}
+    {path: '/orders', component: OrderList, name: 'OrderList'}
 ];

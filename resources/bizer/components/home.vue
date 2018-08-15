@@ -163,7 +163,7 @@
                 'menus',
             ]),
             username(){
-                return this.user ? (this.user.operName || this.user.account) : '';
+                return this.user ? (this.user.operName || this.user.account || this.user.mobile) : '';
             }
         },
         methods: {
