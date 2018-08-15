@@ -12,6 +12,7 @@ namespace App\Modules\Invite;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Modules\User\UserService;
+use Illuminate\Database\Eloquent\Builder;
 
 class InviteUserUnbindRecordService extends BaseService
 {
@@ -39,5 +40,30 @@ class InviteUserUnbindRecordService extends BaseService
         $inviteUserUnbindRecord->save();
 
         return $inviteUserUnbindRecord;
+    }
+
+    /**
+     * 获取解绑记录
+     * @param array $param
+     * @param int $pageSize
+     * @param bool $withQuery
+     * @return InviteUserUnbindRecord|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getUnbindRecordList($param = [], $pageSize = 15, $withQuery = false)
+    {
+        $changeBindRecordId = array_get($param, 'changeBindRecordId');
+        $query = InviteUserUnbindRecord::when($changeBindRecordId, function (Builder $query) use ($changeBindRecordId) {
+                $query->where('change_bind_record_id', $changeBindRecordId);
+            })
+            ->orderBy('id', 'desc');
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate($pageSize);
+            $data->each(function ($item) {
+                $item->old_invite_user_record = json_decode($item->old_invite_user_record, true);
+            });
+            return $data;
+        }
     }
 }

@@ -1,16 +1,15 @@
 <template>
-    <page :title="title" :breadcrumbs="{渠道换绑: '/member/changBind'}">
+    <page title="换绑人列表" :breadcrumbs="{渠道换绑: '/member/changBind'}">
         <el-table stripe :data="list" v-loading="tableLoading">
-            <el-table-column prop="user.id" label="用户ID"/>
-            <el-table-column prop="user.created_at" label="注册时间"/>
-            <el-table-column prop="user.mobile" label="手机号"/>
+            <el-table-column prop="user_id" label="用户ID"/>
+            <el-table-column prop="mobile" label="用户手机号码"/>
         </el-table>
         <el-pagination
                 class="fr m-t-20"
                 layout="total, prev, pager, next"
                 :current-page.sync="query.page"
                 @current-change="getList"
-                :page-size="15"
+                :page-size="query.pageSize"
                 :total="total"/>
 
     </page>
@@ -19,29 +18,24 @@
 <script>
     import api from '../../../../assets/js/api'
     export default {
-        name: "invite-record-list",
+        name: "change-bind-record-list",
         data() {
             return {
-                inviteChannelId: '',
-                inviteChannelName: '',
+                changeBindRecordId: '',
                 list: [],
                 total: 0,
                 query: {
                     page: 1,
+                    pageSize: 15,
                 },
                 tableLoading: false,
-            }
-        },
-        computed: {
-            title() {
-                return `注册人数详情 ( ${this.inviteChannelName}  )`
             }
         },
         methods: {
             getList(){
                 this.tableLoading = true;
-                this.query.id = this.inviteChannelId
-                api.get('users/getInviteUsersList', this.query).then(data => {
+                this.query.id = this.changeBindRecordId;
+                api.get('users/getChangeBindPeopleRecordList', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                     this.tableLoading = false;
@@ -51,9 +45,8 @@
             },
         },
         created(){
-            this.inviteChannelId = this.$route.query.id;
-            this.inviteChannelName = this.$route.query.name;
-            if(!this.inviteChannelId){
+            this.changeBindRecordId = this.$route.query.id;
+            if(!this.changeBindRecordId){
                 router.go(-1)
                 return ;
             }
