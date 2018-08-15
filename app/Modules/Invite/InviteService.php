@@ -88,6 +88,7 @@ class InviteService
      * @param $userId
      * @param InviteChannel $inviteChannel
      * @param InviteUserRecord|null $inviteUserRecord
+     * @throws \Exception
      */
     public static function bindInviter($userId, InviteChannel $inviteChannel, InviteUserRecord $inviteUserRecord = null)
     {
@@ -97,7 +98,11 @@ class InviteService
             throw new BaseResponseException('您已经被邀请过了, 不能重复接收邀请', ResultCode::USER_ALREADY_BEEN_INVITE);
         }
         if ($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER && $inviteChannel->origin_id == $userId) {
-            throw new ParamInvalidException('不能扫描自己的邀请码');
+            if ($inviteUserRecord) {
+                throw new \Exception('不能自己绑定自己哦');
+            } else {
+                throw new ParamInvalidException('不能扫描自己的邀请码');
+            }
         }
         $inviteRecord = new InviteUserRecord();
         $inviteRecord->user_id = $userId;

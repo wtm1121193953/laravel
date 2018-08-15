@@ -23,7 +23,10 @@
         </el-table>
         <el-pagination
                 class="fr m-t-20"
-                layout="total"
+                layout="total, prev, pager, next"
+                :current-page.sync="query.page"
+                @current-change="getList"
+                :page-size="15"
                 :total="total"/>
 
     </page>
@@ -42,7 +45,6 @@
                 query: {
                     mobile: '',
                     page: 1,
-                    noPaginate: true,
                 },
                 tableLoading: false,
                 multipleSelection: [],
@@ -82,6 +84,8 @@
                     center: true
                 }).then(() => {
                     this.commitChangeBind(isAll, inviteUserRecordIds);
+                }).catch(() => {
+
                 });
             },
             commitChangeBind(isAll, inviteUserRecordIds = []) {
@@ -99,9 +103,11 @@
                         inviteChannelId: this.inviteChannelId,
                     };
                     api.post('users/changeBind', param).then(data => {
-                        console.log(data);
+                        this.$message.success('换绑成功');
                         this.getList();
                     })
+                }).catch(() => {
+
                 });
             }
         },
