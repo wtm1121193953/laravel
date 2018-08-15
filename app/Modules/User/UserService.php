@@ -9,7 +9,7 @@
 namespace App\Modules\User;
 
 use App\BaseService;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\MerchantService;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Oper\Oper;
@@ -36,7 +36,7 @@ class UserService extends BaseService
 
         $users->each(function ($item){
 
-            $parentName = InviteService::getParentName($item->id);
+            $parentName = InviteUserService::getParentName($item->id);
             if($parentName){
                 $item->isBind = 1;
                 $item->parent = $parentName;

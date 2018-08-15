@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
@@ -129,7 +129,7 @@ class Test extends Command
                 $merchantId = $order->merchant_id;
                 $merchant = Merchant::findOrFail($merchantId);
                 $inviteChannel = InviteChannelService::getByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
-                InviteService::bindInviter($userId, $inviteChannel);
+                InviteUserService::bindInviter($userId, $inviteChannel);
             }
 
             return true;

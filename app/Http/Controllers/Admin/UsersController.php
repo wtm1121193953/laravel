@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\InviteUserStatisticsDailyJob;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserChangeBindRecordService;
 use App\Modules\Invite\InviteUserUnbindRecordService;
 use App\Modules\User\User;
@@ -52,7 +52,7 @@ class UsersController extends Controller
             try{
                 DB::beginTransaction();
 
-                InviteService::unbindInviter($record);
+                InviteUserService::unbindInviter($record);
 
                 DB::commit();
 
@@ -104,7 +104,7 @@ class UsersController extends Controller
         $mobile = request('mobile', '');
         $noPaginate = request('noPaginate', false);
         if ($noPaginate) {
-            $query = InviteService::getRecordsByInviteChannelId($id, compact('mobile'), true);
+            $query = InviteUserService::getRecordsByInviteChannelId($id, compact('mobile'), true);
             $total = $query->count();
             $data = $query->get();
 
@@ -113,7 +113,7 @@ class UsersController extends Controller
                 'total' => $total,
             ]);
         }else {
-            $data = InviteService::getRecordsByInviteChannelId($id, compact('mobile'));
+            $data = InviteUserService::getRecordsByInviteChannelId($id, compact('mobile'));
 
             return Result::success([
                 'list' => $data->items(),
@@ -153,10 +153,10 @@ class UsersController extends Controller
 
         // 获取需要换绑的邀请记录
         if ($isAll) {
-            $query = InviteService::getRecordsByInviteChannelId($inviteChannelId, [], true);
+            $query = InviteUserService::getRecordsByInviteChannelId($inviteChannelId, [], true);
             $inviteUserRecords = $query->get();  //需换绑的记录
         } else {
-            $inviteUserRecords = InviteService::getRecordsByIds($inviteUserRecordIds); //需换绑的记录
+            $inviteUserRecords = InviteUserService::getRecordsByIds($inviteUserRecordIds); //需换绑的记录
         }
 
         // 记录换绑成功的数量
@@ -179,7 +179,7 @@ class UsersController extends Controller
                 $needStatisticsDate[$date] = $date;
 
                 try {
-                    InviteService::changeInviteChannelForInviteRecord($inviteUserRecord, $newInviteChannel, $inviteUserChangeBindRecord->id);
+                    InviteUserService::changeInviteChannelForInviteRecord($inviteUserRecord, $newInviteChannel, $inviteUserChangeBindRecord->id);
                     $changeBindNumber ++;
                 }catch (\Exception $e){
                     $changeBindErrorNumber ++;

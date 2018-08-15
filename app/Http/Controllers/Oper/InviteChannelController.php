@@ -15,7 +15,7 @@ use App\Exports\OperInviteRecordsExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
@@ -131,7 +131,7 @@ class InviteChannelController extends Controller
         $mobile = request('mobile');
         $startTime = request('startTime');
         $endTime = request('endTime');
-        $data = InviteService::getRecordsByInviteChannelId(
+        $data = InviteUserService::getRecordsByInviteChannelId(
             $id,
             compact('mobile', 'startTime', 'endTime')
         );
@@ -151,7 +151,7 @@ class InviteChannelController extends Controller
         $startTime = request('startTime');
         $endTime = request('endTime');
 
-        $query = InviteService::getRecordsByInviteChannelId(
+        $query = InviteUserService::getRecordsByInviteChannelId(
             $id,
             compact('mobile', 'startTime', 'endTime'),
             true

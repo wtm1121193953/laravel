@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Exceptions\BaseResponseException;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Order\Order;
 use App\Modules\User\UserMapping;
 use App\Modules\UserCredit\UserConsumeQuotaRecord;
@@ -78,7 +78,7 @@ class OrderRefundJob implements ShouldQueue
         // 处理消费的用户的消费额
         $this->handleUserSelfConsumeQuota($order);
         // 获取用户的上级
-        $parentUser = InviteService::getParentUser($order->user_id);
+        $parentUser = InviteUserService::getParentUser($order->user_id);
 
         if (!empty($parentUser)){
             $this->handleParentUserConsumeQuota($order, $parentUser);
@@ -179,7 +179,7 @@ class OrderRefundJob implements ShouldQueue
 
         // 处理上级用户的积分
         // 获取上级
-        $parentUser = InviteService::getParentUser($order->user_id);
+        $parentUser = InviteUserService::getParentUser($order->user_id);
         if(!empty($parentUser)){
             $this->handleParentUserCredit($order, $parentUser);
         }

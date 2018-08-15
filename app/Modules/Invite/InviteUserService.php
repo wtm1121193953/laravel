@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\DB;
  * Class InviteService
  * @package App\Modules\Invite
  */
-class InviteService
+class InviteUserService
 {
 
     /**

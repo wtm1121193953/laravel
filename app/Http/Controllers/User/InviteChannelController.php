@@ -13,7 +13,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Result;
@@ -69,7 +69,7 @@ class InviteChannelController extends Controller
         if(empty($inviteChannel)){
             throw new ParamInvalidException('邀请渠道不存在');
         }
-        InviteService::bindInviter(request()->get('current_user')->id, $inviteChannel);
+        InviteUserService::bindInviter(request()->get('current_user')->id, $inviteChannel);
         return Result::success();
     }
 
