@@ -10,7 +10,7 @@ namespace App\Modules\Admin;
 
 
 use App\BaseService;
-use App\Exceptions\BaseResponseException;
+use App\Exceptions\DataNotFoundException;
 
 class AdminGroupService extends BaseService
 {
@@ -61,7 +61,7 @@ class AdminGroupService extends BaseService
     {
         $group = self::getById($id);
         if(empty($group)){
-            throw new BaseResponseException('角色信息不存在');
+            throw new DataNotFoundException('角色信息不存在');
         }
         if(is_array($ruleIds)){
             $ruleIds = implode(',', $ruleIds);
@@ -83,7 +83,7 @@ class AdminGroupService extends BaseService
     {
         $group = self::getById($id);
         if(empty($group)){
-            throw new BaseResponseException('角色信息不存在');
+            throw new DataNotFoundException('角色信息不存在');
         }
         $group->status = $status;
         $group->save();
@@ -100,7 +100,7 @@ class AdminGroupService extends BaseService
     {
         $group = self::getById($id);
         if(empty($group)){
-            throw new BaseResponseException('角色信息不存在');
+            throw new DataNotFoundException('角色信息不存在');
         }
         $group->delete();
         return $group;
