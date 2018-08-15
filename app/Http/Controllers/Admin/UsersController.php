@@ -182,8 +182,8 @@ class UsersController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            dd($e);
-            throw new BaseResponseException('换绑失败');
+            $message = $e->getMessage() ?: '换绑失败';
+            throw new BaseResponseException($message);
         }
 
         // 记录换绑完成之后，对每日统计表invite_user_statistics_dailies进行更改
