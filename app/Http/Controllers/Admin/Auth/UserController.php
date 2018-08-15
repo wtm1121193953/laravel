@@ -12,6 +12,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\NoPermissionException;
 use App\Http\Controllers\Controller;
 use App\Modules\Admin\AdminUser;
+use App\Modules\Admin\AdminUserService;
 use App\Result;
 use App\ResultCode;
 
@@ -20,7 +21,7 @@ class UserController extends Controller
 
     public function getList()
     {
-        $list = AdminUser::all();
+        $list = AdminUserService::getAllUsers();
         return Result::success([
             'list' => $list
         ]);
@@ -32,19 +33,14 @@ class UserController extends Controller
             'username' => 'required',
             'password' => 'required|between:6,30'
         ]);
-        $user = AdminUser::where('username', request('username'))->first();
-        if($user){
-            throw new BaseResponseException('帐号已存在', ResultCode::ACCOUNT_EXISTS);
-        }
-        $user = new AdminUser();
-        $user->username = request('username');
-        $salt = str_random();
-        $user->salt = $salt;
-        $user->password = AdminUser::genPassword(request('password'), $salt);
-        $user->group_id = request('group_id', 0);
-        $user->super = 2;
-        $user->status = request('status', 1);
-        $user->save();
+
+        $user = AdminUserService::add(
+            request('username'),
+            request('password'),
+            request('group_id', 0),
+            request('status', 1)
+        );
+
         return Result::success($user);
     }
 
@@ -54,11 +50,12 @@ class UserController extends Controller
             'id' => 'required|integer|min:1',
             'username' => 'required',
         ]);
-        $user = AdminUser::findOrFail(request('id'));
-        $user->username = request('username');
-        $user->group_id = request('group_id', 0);
-        $user->status = request('status', 1);
-        $user->save();
+        $user = AdminUserService::edit(
+            request('id'),
+            request('username'),
+            request('group_id', 0),
+            request('status', 1)
+        );
         return Result::success($user);
     }
 
