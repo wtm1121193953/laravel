@@ -25,7 +25,7 @@
                         change-on-select
                         clearable
                         filterable
-                        :options="categoryOptions"
+                        :options="cityOptions"
                         :props="{
                             value: 'id',
                             label: 'name',
@@ -67,7 +67,7 @@
                     <span v-else-if="scope.row.status === 2" class="c-danger">申请中</span>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="250px">
+            <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
                     <el-button type="text">查看商户</el-button>
                 </template>
@@ -105,17 +105,11 @@
 <script>
     import api from '../../../assets/js/api'
 
-    // import MerchantItemOptions from './merchant-item-options'
-    // import MerchantForm from './merchant-form'
-    // import UnauditRecordReason from './unaudit-record-reason'
-
     export default {
-        name: "merchant-list",
         data(){
             return {
                 isLoading: false,
-                categoryOptions: [],
-                auditRecord:[],
+                cityOptions: [],
                 query: {
                     createdAt: '',
                     name: '',
@@ -140,8 +134,8 @@
         },
         methods: {
             search(){
-                this.query.page = 1;
-                this.getList();
+                // this.query.page = 1;
+                // this.getList();
             },
             getList(){
                 // this.isLoading = true;
@@ -154,46 +148,22 @@
                 //     this.total = data.total;
                 // })
             },
-            // itemChanged(index, data){
-            //     this.getList();
-            // },
-            addBtnClick(command){
-                if(command === 'add'){
-                    this.add()
-                }else {
-                    this.$menu.change('/merchant/pool')
-                }
-            },
             add(){
                 this.dialogFormVisible = true;
             },
-
-            // showMessage(scope){
-            //     api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
-            //         this.auditRecord = [data];
-            //     })
-            // },
-            // accountChanged(scope, account){
-            //     let row = this.list[scope.$index];
-            //     row.account = account;
-            //     this.list.splice(scope.$index, 1, row);
-            //     this.getList();
-            // },
         },
         created(){
             // api.get('merchant/categories/tree').then(data => {
             //     this.categoryOptions = data.list;
             // });
-            this.categoryOptions = [];
-            if (this.$route.params){
-                Object.assign(this.query, this.$route.params);
-            }
-            this.getList();
+            // this.categoryOptions = [];
+            // if (this.$route.params){
+            //     Object.assign(this.query, this.$route.params);
+            // }
+            // this.getList();
         },
         components: {
-            // MerchantItemOptions,
-            // MerchantForm,
-            // UnauditRecordReason
+
         }
     }
 </script>
