@@ -10,14 +10,10 @@ use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
 use App\Modules\Invite\InviteUserChangeBindRecordService;
 use App\Modules\Invite\InviteUserUnbindRecordService;
-use App\Modules\Merchant\MerchantService;
-use App\Modules\Oper\OperService;
-use App\Modules\User\UserService;
-use Illuminate\Database\Eloquent\Builder;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
-use App\Modules\Merchant\Merchant;
-use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
+use App\Modules\User\UserService;
 use App\Result;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Invite\InviteUserUnbindRecord;
@@ -30,33 +26,10 @@ class UsersController extends Controller
      */
     public function getList()
     {
-        $mobile = request('keyword');
-        $users  = User::select('id','name','mobile','email','created_at')
-            ->when($mobile, function (Builder $query) use ($mobile){
-                $query->where('mobile','like','%'.$mobile.'%');
-            })->orderByDesc('created_at')->paginate();
-        $users->each(function ($item){
-            $inviteRecord = InviteUserRecord::select('origin_id','origin_type')->where('user_id',$item->id)->first();
-            if(empty($inviteRecord)){
-                $item->parent = '未知-推荐信息';
-                $item->isBind = 0;
-            }else{
-                $item->isBind = 1;
-                //1-用户 2-商户 3-运营中心
-                if($inviteRecord->origin_type == 1){
-                    $user = User::where('id',$inviteRecord->origin_id)->first(['name','mobile']);
-                    $item->parent = !empty($user) ? ($user->name ? $user->name:$user->mobile) : '未知-推荐人';
-                }elseif ($inviteRecord->origin_type == 2){
-                    $merchant = MerchantService::getById($inviteRecord->origin_id, ['name']);
-                    $item->parent = !empty($merchant) ? $merchant->name : '未知-推荐商户';
-                }elseif ($inviteRecord->origin_type == 3){
-                    $oper = Oper::where('id',$inviteRecord->origin_id)->first(['name']);
-                    $item->parent = !empty($oper) ? $oper->name : '未知-推荐运营中心';
-                }else{
-                    $item->parent = '未知-推荐信息';
-                }
-            }
-        });
+        $keyword = request('keyword');
+        $users = UserService::getList([
+            'mobile' => $keyword
+        ]);
         return Result::success([
             'list' => $users->items(),
             'total' => $users->total(),
