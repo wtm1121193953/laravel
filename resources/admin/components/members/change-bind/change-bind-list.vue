@@ -23,7 +23,10 @@
         </el-table>
         <el-pagination
                 class="fr m-t-20"
-                layout="total"
+                layout="total, prev, pager, next"
+                :current-page.sync="query.page"
+                @current-change="getList"
+                :page-size="15"
                 :total="total"/>
 
     </page>
@@ -42,7 +45,6 @@
                 query: {
                     mobile: '',
                     page: 1,
-                    noPaginate: true,
                 },
                 tableLoading: false,
                 multipleSelection: [],
