@@ -30,7 +30,7 @@ class InviteUserChangeBindRecordService extends BaseService
         $inviteUserChangeBindRecord->invite_channel_name = $inviteChannel->name;
         $inviteUserChangeBindRecord->remark = $inviteChannel->remark;
         $inviteUserChangeBindRecord->oper_id = $inviteChannel->oper_id;
-        $oper = OperService::detail($inviteChannel->oper_id);
+        $oper = OperService::getById($inviteChannel->oper_id, 'name');
         $inviteUserChangeBindRecord->oper_name = $oper->name;
         $inviteUserChangeBindRecord->change_bind_number = $changeBindNumber;
         $inviteUserChangeBindRecord->bind_mobile = $mobile;
@@ -39,6 +39,20 @@ class InviteUserChangeBindRecordService extends BaseService
         $inviteUserChangeBindRecord->save();
 
         return $inviteUserChangeBindRecord;
+    }
+
+    /**
+     * 更新换绑记录中的换绑用户数量
+     * @param $id
+     * @param $number
+     * @return InviteUserChangeBindRecord
+     */
+    public static function updateChangeBindNumber($id, $number)
+    {
+        $record = InviteUserChangeBindRecord::find($id);
+        $record->change_bind_number = $number;
+        $record->save();
+        return $record;
     }
 
     /**

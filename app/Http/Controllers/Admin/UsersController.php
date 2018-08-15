@@ -135,30 +135,36 @@ class UsersController extends Controller
             'isAll' => 'required',
             'mobile' => 'required',
         ]);
+        // 接受参数
         $isAll = request('isAll', false);
         $mobile = request('mobile');
         $inviteUserRecordIds = request('inviteUserRecordIds', []);
         $inviteChannelId = request('inviteChannelId', 0);
         $currentUser = request()->get('current_user');
 
+        // 获取要换绑的目标用户
         $user = UserService::getUserByMobile($mobile);
         if (empty($user)) {
             throw new BaseResponseException('换绑的用户不存在');
         }
 
+        // 获取原邀请渠道
         $oldInviteChannel = InviteChannelService::getById($inviteChannelId);
         if (empty($oldInviteChannel)) {
             throw new BaseResponseException('原邀请渠道不存在');
         }
 
+        // 获取需要换绑的邀请记录
         if ($isAll) {
             $query = InviteService::getRecordsByInviteChannelId($inviteChannelId, [], true);
-            $changeBindNumber = $query->count(); //换绑数量
             $inviteUserRecords = $query->get();  //需换绑的记录
         } else {
-            $changeBindNumber = count($inviteUserRecordIds); //换绑数量
             $inviteUserRecords = InviteService::getRecordsByIds($inviteUserRecordIds); //需换绑的记录
         }
+
+        // 记录换绑成功的数量
+        $changeBindNumber = 0;
+        $changeBindErrorNumber = 0;
 
         try {
             DB::beginTransaction();
@@ -172,14 +178,23 @@ class UsersController extends Controller
             // 循环遍历需换绑的记录，在解绑表invite_user_unbind_records中加入解绑记录;
             // 添加新的邀请记录在invite_user_records中,并删除记录表中的旧记录
             foreach ($inviteUserRecords as $inviteUserRecord) {
-                $needStatisticsDate[] = $inviteUserRecord->created_at;
+                $date = $inviteUserRecord->created_at->format('Y-m-d');
+                $needStatisticsDate[$date] = $date;
 
-                InviteUserUnbindRecordService::createUnbindRecord($inviteUserRecord->user_id, InviteUserUnbindRecord::STATUS_UNBIND, $inviteUserChangeBindRecord->id, $inviteUserRecord);
-                InviteService::bindInviter($inviteUserRecord->user_id, $newInviteChannel, $inviteUserRecord);
-                $inviteUserRecord->delete();
+                try {
+                    InviteService::changeInviteChannelForInviteRecord($inviteUserRecord, $newInviteChannel, $inviteUserChangeBindRecord->id);
+                    $changeBindNumber ++;
+                }catch (\Exception $e){
+                    $changeBindErrorNumber ++;
+                }
             }
 
+            InviteUserChangeBindRecordService::updateChangeBindNumber($inviteUserChangeBindRecord->id, $changeBindNumber);
+
             DB::commit();
+        } catch(BaseResponseException $e){
+            DB::rollBack();
+            throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
             $message = $e->getMessage() ?: '换绑失败';
@@ -193,7 +208,10 @@ class UsersController extends Controller
             }
         }
 
-        return Result::success();
+        return Result::success([
+            'successCount' => $changeBindNumber,
+            'errorCount' => $changeBindErrorNumber,
+        ]);
     }
 
     /**

@@ -13,11 +13,14 @@ use App\Exceptions\ParamInvalidException;
 use App\Jobs\MerchantLevelCalculationJob;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
+use App\Modules\Tps\TpsBind;
+use App\Modules\Tps\TpsBindService;
 use App\Modules\User\User;
 use App\Modules\User\UserMapping;
 use App\ResultCode;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 /**
  * 用户邀请相关服务
@@ -87,35 +90,94 @@ class InviteService
      * 绑定邀请人信息到用户
      * @param $userId
      * @param InviteChannel $inviteChannel
-     * @param InviteUserRecord|null $inviteUserRecord
      * @throws \Exception
      */
-    public static function bindInviter($userId, InviteChannel $inviteChannel, InviteUserRecord $inviteUserRecord = null)
+    public static function bindInviter($userId, InviteChannel $inviteChannel)
     {
         $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
-        if ($inviteRecord && $inviteUserRecord == null) {
+        if ($inviteRecord) {
             // 如果当前用户已被邀请过, 不能重复邀请
             throw new BaseResponseException('您已经被邀请过了, 不能重复接收邀请', ResultCode::USER_ALREADY_BEEN_INVITE);
         }
-        if ($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER && $inviteChannel->origin_id == $userId) {
-            if ($inviteUserRecord) {
-                throw new \Exception('不能自己绑定自己哦');
-            } else {
+        if ($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER) {
+            if ($inviteChannel->origin_id == $userId) {
                 throw new ParamInvalidException('不能扫描自己的邀请码');
             }
+            // 判断用户及上级用户是否都绑定了tps账号
+            if (
+                TpsBindService::getTpsBindInfoByOriginInfo($userId, TpsBind::ORIGIN_TYPE_USER)
+                && TpsBindService::getTpsBindInfoByOriginInfo($inviteChannel->origin_id, TpsBind::ORIGIN_TYPE_USER)
+            ) {
+                throw new BaseResponseException('您和您的邀请人都已绑定TPS账号, 请尝试其他邀请人');
+            }
         }
+
         $inviteRecord = new InviteUserRecord();
         $inviteRecord->user_id = $userId;
         $inviteRecord->invite_channel_id = $inviteChannel->id;
         $inviteRecord->origin_id = $inviteChannel->origin_id;
         $inviteRecord->origin_type = $inviteChannel->origin_type;
-        if ($inviteUserRecord) {
-            $inviteRecord->created_at = $inviteUserRecord->created_at;
-        }
+
         $inviteRecord->save();
 
         if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
             MerchantLevelCalculationJob::dispatch($inviteRecord->origin_id);
+        }
+    }
+
+    /**
+     * 换绑邀请人
+     * @param InviteUserRecord $inviteUserRecord
+     * @param InviteChannel $inviteChannel
+     * @param int $inviteUserChangeBindRecordId 换绑批次ID
+     * @throws \Exception
+     */
+    public static function changeInviteChannelForInviteRecord(InviteUserRecord $inviteUserRecord, InviteChannel $inviteChannel, $inviteUserChangeBindRecordId)
+    {
+
+        $userId = $inviteUserRecord->user_id;
+
+        // 判断是否可以邀请
+        if ($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER) {
+            if ($inviteChannel->origin_id == $userId) {
+                throw new ParamInvalidException('不能自己绑定自己哦');
+            }
+            // 判断用户及上级用户是否都绑定了tps账号
+            if (
+                TpsBindService::getTpsBindInfoByOriginInfo($userId, TpsBind::ORIGIN_TYPE_USER)
+                && TpsBindService::getTpsBindInfoByOriginInfo($inviteChannel->origin_id, TpsBind::ORIGIN_TYPE_USER)
+            ) {
+                throw new BaseResponseException('您和您的邀请人都已绑定TPS账号, 请尝试其他邀请人');
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+
+            // 保存新的邀请记录
+            $newInviteRecord = new InviteUserRecord();
+            $newInviteRecord->user_id = $userId;
+            $newInviteRecord->invite_channel_id = $inviteChannel->id;
+            $newInviteRecord->origin_id = $inviteChannel->origin_id;
+            $newInviteRecord->origin_type = $inviteChannel->origin_type;
+            $newInviteRecord->created_at = $inviteUserRecord->created_at;
+
+            $newInviteRecord->save();
+
+            $inviteUserRecord->delete();
+
+            InviteUserUnbindRecordService::createUnbindRecord($inviteUserRecord->user_id, InviteUserUnbindRecord::STATUS_UNBIND, $inviteUserChangeBindRecordId, $inviteUserRecord);
+
+            if ($newInviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
+                MerchantLevelCalculationJob::dispatch($newInviteRecord->origin_id);
+            }
+            if ($inviteUserRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
+                MerchantLevelCalculationJob::dispatch($inviteUserRecord->origin_id);
+            }
+            DB::commit();
+        }catch (\Exception $e){
+            DB::rollBack();
+            throw new $e;
         }
     }
 

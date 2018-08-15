@@ -157,6 +157,16 @@ class TpsBindService extends BaseService
      */
     public static function bindTpsAccountForUser($userId, $tpsAccount, $tpsPassword)
     {
+        // 调用TPS接口, 验证帐号密码是否正确
+        $result = TpsApi::checkTpsAccount($tpsAccount, $tpsPassword);
+        if($result['code'] !== 0){
+            if($result['code'] == 1301 || $result['code'] == 1302){
+                $message = '很遗憾！绑定失败，请输入正确的TPS账号密码！';
+            }else {
+                $message = $result['msg'];
+            }
+            throw new BaseResponseException($message);
+        }
         // 判断用户帐号是否已绑定
         $bindInfo = self::getTpsBindInfoByOriginInfo($userId, TpsBind::ORIGIN_TYPE_USER);
         if(!empty($bindInfo)){
@@ -190,25 +200,12 @@ class TpsBindService extends BaseService
         }
 
         // 添加关联关系
-        DB::beginTransaction();
         $record = new TpsBind();
         $record->origin_type = TpsBind::ORIGIN_TYPE_USER;
         $record->origin_id = $userId;
         $record->tps_account = $tpsAccount;
         $record->save();
 
-        try{
-            // 调用TPS接口, 验证帐号密码是否正确
-            $result = TpsApi::checkTpsAccount($tpsAccount, $tpsPassword);
-            if($result['code'] !== 0){
-                throw new BaseResponseException($result['msg']);
-            }
-        } catch (\Exception $e){
-            DB::rollBack();
-            throw $e;
-        }
-
-        DB::commit();
         return $record;
     }
 
