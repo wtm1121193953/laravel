@@ -9,3 +9,5 @@ Route::get('/orders', 'OrdersController@getList');
 
 Route::post('/verification', 'OrdersController@verification');
 
+Route::get('/orders/export', 'OrdersController@export');
+

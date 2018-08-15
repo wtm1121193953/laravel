@@ -35,6 +35,7 @@ class OrderService extends BaseService
         $type = array_get($params, 'type');
         $status = array_get($params, 'status');
         $goodsName = array_get($params, 'goodsName');
+        $getWithQuery = array_get($params, 'getWithQuery');
 
         $query = Order::where(function(Builder $query){
             $query->where('type', Order::TYPE_GROUP_BUY)
@@ -54,7 +55,7 @@ class OrderService extends BaseService
         if($notifyMobile){
             $query->where('notify_mobile', 'like', "%$notifyMobile%");
         }
-        if($createdAt){
+        if(count($createdAt) > 1){
             $query->whereBetween('created_at', [$createdAt[0] . ' 00:00:00', $createdAt[1] . ' 23:59:59']);
         }
         if($type){
@@ -77,7 +78,7 @@ class OrderService extends BaseService
             });
         }
 
-        $data = $query->orderBy('id', 'desc')->paginate();
+        $data = $query->orderBy('id', 'desc');
 
         foreach ($data as $key => $item){
             $userCreditRecord = UserCreditRecord::where('user_id', $item->user_id)
@@ -98,7 +99,13 @@ class OrderService extends BaseService
             }
         }
 
-        return $data;
+        if ($getWithQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate();
+            return $data;
+        }
+
     }
 
     public static function verifyOrder($merchantId, $verifyCode)

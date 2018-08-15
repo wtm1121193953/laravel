@@ -18,6 +18,7 @@ use App\Modules\Oper\Oper;
 use App\Modules\User\User;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Support\Utils;
+use function foo\func;
 use Illuminate\Database\Eloquent\Builder;
 
 class InviteChannelService extends BaseService
@@ -229,6 +230,37 @@ class InviteChannelService extends BaseService
         $inviteChannel->save();
 
         return $inviteChannel;
+    }
+
+    /**
+     * 获取全部运营中心的邀请渠道
+     * @param bool $withQuery
+     * @param string $operName
+     * @param string $inviteChannelName
+     * @return InviteChannel|InviteChannel[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getAllOperInviteChannels($withQuery = false, $operName = '', $inviteChannelName = '')
+    {
+        $query = InviteChannel::where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
+            ->when($operName, function (Builder $query) use ($operName) {
+                $operIds = Oper::where('name', 'like', "%$operName%")
+                    ->select('id')
+                    ->get()
+                    ->pluck('id');
+                $query->whereIn('oper_id', $operIds);
+            })
+            ->when($inviteChannelName, function (Builder $query) use ($inviteChannelName) {
+                $query->where('name', 'like', "%$inviteChannelName%");
+            })
+            ->withCount('inviteUserRecords')
+            ->orderByDesc('id');
+
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->get();
+            return $data;
+        }
     }
 
 }

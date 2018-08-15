@@ -87,11 +87,12 @@ class InviteService
      * 绑定邀请人信息到用户
      * @param $userId
      * @param InviteChannel $inviteChannel
+     * @param InviteUserRecord|null $inviteUserRecord
      */
-    public static function bindInviter($userId, InviteChannel $inviteChannel)
+    public static function bindInviter($userId, InviteChannel $inviteChannel, InviteUserRecord $inviteUserRecord = null)
     {
         $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
-        if ($inviteRecord) {
+        if ($inviteRecord && $inviteUserRecord == null) {
             // 如果当前用户已被邀请过, 不能重复邀请
             throw new BaseResponseException('您已经被邀请过了, 不能重复接收邀请', ResultCode::USER_ALREADY_BEEN_INVITE);
         }
@@ -103,6 +104,9 @@ class InviteService
         $inviteRecord->invite_channel_id = $inviteChannel->id;
         $inviteRecord->origin_id = $inviteChannel->origin_id;
         $inviteRecord->origin_type = $inviteChannel->origin_type;
+        if ($inviteUserRecord) {
+            $inviteRecord->created_at = $inviteUserRecord->created_at;
+        }
         $inviteRecord->save();
 
         if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
@@ -117,7 +121,7 @@ class InviteService
      * @param bool $getWithQuery
      * @return LengthAwarePaginator|Builder
      */
-    public static function getRecordsByInviteChannelId($inviteChannelId, $params, $getWithQuery = false)
+    public static function getRecordsByInviteChannelId($inviteChannelId, $params = [], $getWithQuery = false)
     {
         $mobile = array_get($params, 'mobile');
         $startTime = array_get($params, 'startTime');
@@ -171,5 +175,21 @@ class InviteService
             ->where('origin_type', $originType)
             ->get();
         return $list;
+    }
+
+    /**
+     * 通过id获取邀请用户记录
+     * @param $ids
+     * @return InviteUserRecord|InviteUserRecord[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getRecordsByIds($ids)
+    {
+        if (is_array($ids)) {
+            $data = InviteUserRecord::whereIn('id', $ids)->get();
+        } else {
+            $data = InviteUserRecord::find($ids);
+        }
+
+        return $data;
     }
 }

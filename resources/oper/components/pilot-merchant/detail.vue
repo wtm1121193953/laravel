@@ -24,7 +24,7 @@
                     <span v-else>未知 ({{data.audit_status}})</span>
                 </el-form-item>
                 <el-form-item prop="location" label="商户坐标">
-                    {{data.lng}} , {{data.lat}}
+                    <qmap-choose-point width="100%" height="300px" :shown-markers="[[data.lng, data.lat]]" disabled/>
                 </el-form-item>
                 <el-form-item prop="operAddress" label="运营中心地址">
                     {{data.operAddress}}
@@ -76,6 +76,7 @@
 </template>
 
 <script>
+    import QmapChoosePoint from '../../../assets/components/qmap/qmap-choose-point'
     import api from '../../../assets/js/api'
 
     export default {
@@ -108,6 +109,9 @@
             }
             this.getDetail();
         },
+        components: {
+            QmapChoosePoint,
+        }
     }
 </script>
 

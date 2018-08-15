@@ -46,7 +46,8 @@
             </el-form>
         </el-col>
         <el-col>
-            <el-button type="primary" class="fr" @click="showItems">核销</el-button>
+            <el-button type="primary" class="fr m-l-20" @click="showItems">核销</el-button>
+            <el-button class="fr m-l-20" type="success" @click="exportExcel">导出Excel</el-button>
         </el-col>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID" width="100px"/>
@@ -154,6 +155,16 @@
             }
         },
         methods: {
+            exportExcel(){
+                // 导出操作
+                let message = '确定导出全部财务列表么?'
+                if(this.query.orderNo || this.query.notifyMobile || this.query.createdAt || this.query.type || this.query.status || this.query.goodsName){
+                    message = '确定导出当前筛选的财务列表么?'
+                }
+                this.$confirm(message).then(() => {
+                    window.open('/api/merchant/orders/export?orderNo=' + this.query.orderNo + '&notifyMobile=' + this.query.notifyMobile + '&createdAt=' + this.query.createdAt + '&type=' + this.query.type + '&status=' + this.query.status + '&goodsName=' + this.query.goodsName)
+                })
+            },
             search(){
                 this.query.page = 1;
                 this.getList();

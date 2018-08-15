@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Merchant;
 
 
+use App\Exports\MerchantOrderExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Order\OrderService;
 use App\Result;
@@ -34,12 +35,39 @@ class OrdersController extends Controller
             'type' => $type,
             'status' => $status,
             'goodsName' => $goodsName,
+            'getWithQuery' => false
         ]);
 
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
+
+    public function export()
+    {
+
+        $keyword = request('keyword');
+        $orderNo = request('orderNo');
+        $notifyMobile = request('notifyMobile');
+        $merchantId = request()->get('current_user')->merchant_id;
+        $createdAt = explode(',',request('createdAt', ''));
+        $type = request('type');
+        $status = request('status');
+        $goodsName = request('goodsName');
+
+        $query = OrderService::getList([
+            'merchantId' => $merchantId,
+            'orderNo' => $orderNo,
+            'notifyMobile' => $notifyMobile,
+            'keyword' => $keyword,
+            'createdAt' => $createdAt,
+            'type' => $type,
+            'status' => $status,
+            'goodsName' => $goodsName,
+            'getWithQuery' => true
+        ]);
+        return (new MerchantOrderExport($query))->download('商户中心订单管理列表.xlsx');
     }
 
     public function verification()

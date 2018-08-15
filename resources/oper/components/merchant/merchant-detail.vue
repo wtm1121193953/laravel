@@ -42,9 +42,7 @@
 
                 <!-- 商户录入信息右侧块 -->
                 <el-col :span="11" :offset="1">
-                    <el-form-item prop="location" label="商户坐标">
-                        {{data.lng}} , {{data.lat}}
-                    </el-form-item>
+                    
                     <el-form-item prop="operAddress" label="运营中心地址">
                         {{data.operAddress}}
                     </el-form-item>
@@ -56,6 +54,13 @@
                     </el-form-item>
                     <el-form-item label="营业执照代码">
                         {{ data.organization_code}}
+                    </el-form-item>
+                </el-col>
+
+                <!-- 商户坐标：展示地图上的位置 -->
+                <el-col :span="16">
+                    <el-form-item prop="location" label="商户坐标">
+                        <qmap-choose-point width="100%" height="300px" :shown-markers="[[data.lng, data.lat]]" disabled/>
                     </el-form-item>
                 </el-col>
 
@@ -205,6 +210,7 @@
 
     import previewImg from '../../../assets/components/img/preview-img'
     import imgPreviewDialog from '../../../assets/components/img/preview-dialog'
+    import QmapChoosePoint from '../../../assets/components/qmap/qmap-choose-point'
     import 'viewerjs/dist/viewer.css'
 
     export default {
@@ -239,6 +245,7 @@
         components: {
             previewImg,
             imgPreviewDialog,
+            QmapChoosePoint,
         }
     }
 
