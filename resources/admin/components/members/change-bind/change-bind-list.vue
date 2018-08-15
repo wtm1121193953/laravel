@@ -8,10 +8,10 @@
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜 索</i></el-button>
             </el-form-item>
             <el-form-item>
-                <el-button type="success" @click="changeBind(false)">换 绑</el-button>
+                <el-button type="warning" size="small" :disabled="multipleSelection.length <= 0" @click="changeBind(false)">换绑选中用户</el-button>
             </el-form-item>
             <el-form-item>
-                <el-button type="success" @click="changeBind(true)">全部换绑</el-button>
+                <el-button type="warning" @click="changeBind(true)">换绑所有用户</el-button>
             </el-form-item>
         </el-form>
 
@@ -77,7 +77,11 @@
                 this.multipleSelection.forEach(function (item) {
                     inviteUserRecordIds.push(item.id);
                 });
-                this.$confirm(`确定将这${length}位用户换绑吗，换绑后不可修改！`, '警告', {
+                let message = `确定将该邀请渠道下的全部用户换绑吗，换绑后不可修改！`
+                if(!isAll){
+                    message = `确定将这${length}位用户换绑吗，换绑后不可修改！`
+                }
+                this.$confirm(message, '警告', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
@@ -92,7 +96,7 @@
                 this.$prompt('绑定新帐号', '警告', {
                     confirmButtonText: '确定绑定',
                     cancelButtonText: '取消',
-                    inputPattern: /^1[3,4,5,6,7,8,9]\d{9}$/,
+                    inputPattern: /^1[3456789]\d{9}$/,
                     inputErrorMessage: '手机号码格式不正确',
                     inputPlaceholder: '输入换绑新用户的手机号码',
                 }).then(({ value }) => {
@@ -103,7 +107,8 @@
                         inviteChannelId: this.inviteChannelId,
                     };
                     api.post('users/changeBind', param).then(data => {
-                        this.$message.success('换绑成功');
+                        let message = '换绑完成, 共换绑' + (data.successCount + data.errorCount) + '个用户, 其中换绑成功' + data.successCount + '个, 换绑失败' + data.errorCount + '个。';
+                        this.$alert(message);
                         this.getList();
                     })
                 }).catch(() => {

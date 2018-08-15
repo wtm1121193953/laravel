@@ -15,6 +15,7 @@ use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Oper\OperService;
 use App\Modules\User\UserService;
 use App\Result;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Invite\InviteUserUnbindRecord;
 use App\ResultCode;
@@ -204,7 +205,7 @@ class UsersController extends Controller
         // 记录换绑完成之后，对每日统计表invite_user_statistics_dailies进行更改
         if (!empty($needStatisticsDate)) {
             foreach ($needStatisticsDate as $date) {
-                InviteUserStatisticsDailyJob::dispatch($date);
+                InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', $date));
             }
         }
 
