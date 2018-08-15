@@ -11,7 +11,7 @@
                         value-format="yyyy-MM-dd">
                 </el-date-picker>
             </el-form-item>
-            <el-form-item label="" prop="name" label="运营中心名称">
+            <el-form-item prop="name" label="运营中心名称">
                 <el-input v-model="query.name" placeholder="请输入运营中心名称" clearable @keyup.enter.native="search"/>
             </el-form-item>
             <el-form-item prop="principal" label="负责人">
@@ -113,9 +113,9 @@
         name: "merchant-list",
         data(){
             return {
+                isLoading: false,
                 categoryOptions: [],
                 auditRecord:[],
-                isLoading: false,
                 query: {
                     createdAt: '',
                     name: '',
@@ -144,15 +144,15 @@
                 this.getList();
             },
             getList(){
-                this.isLoading = true;
-                let params = {};
-                Object.assign(params, this.query);
-                api.get('/merchants', params).then(data => {
-                    this.query.page = params.page;
-                    this.isLoading = false;
-                    this.list = data.list;
-                    this.total = data.total;
-                })
+                // this.isLoading = true;
+                // let params = {};
+                // Object.assign(params, this.query);
+                // api.get('/merchants', params).then(data => {
+                //     this.query.page = params.page;
+                //     this.isLoading = false;
+                //     this.list = data.list;
+                //     this.total = data.total;
+                // })
             },
             // itemChanged(index, data){
             //     this.getList();
@@ -167,12 +167,12 @@
             add(){
                 this.dialogFormVisible = true;
             },
-            showMessage(scope){
-                api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
-                    this.auditRecord = [data];
-                })
-            },
 
+            // showMessage(scope){
+            //     api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
+            //         this.auditRecord = [data];
+            //     })
+            // },
             // accountChanged(scope, account){
             //     let row = this.list[scope.$index];
             //     row.account = account;
@@ -180,10 +180,6 @@
             //     this.getList();
             // },
         },
-
-
-
-
         created(){
             // api.get('merchant/categories/tree').then(data => {
             //     this.categoryOptions = data.list;
@@ -203,12 +199,5 @@
 </script>
 
 <style scoped>
-    .message{
-        overflow: hidden;
-        text-overflow:ellipsis;
-        white-space: nowrap;
-        width:120px;
-        font-size:12px;
-        color:gray;
-    }
+
 </style>
