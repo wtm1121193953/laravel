@@ -40,6 +40,7 @@ class UsersController extends Controller
 
     /**
      * 后台解绑用户推荐关系
+     * @throws \Exception
      */
     public function unBind(){
 
@@ -65,7 +66,7 @@ class UsersController extends Controller
 
             }catch (\Exception $e){
                 DB::rollBack();
-                throw new BaseResponseException("未知错误", ResultCode::UNKNOWN);
+                throw $e;
             }
         }else{
             throw new BaseResponseException("已解绑", ResultCode::UNKNOWN);

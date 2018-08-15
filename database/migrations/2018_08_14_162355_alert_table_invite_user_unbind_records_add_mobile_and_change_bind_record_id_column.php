@@ -14,7 +14,7 @@ class AlertTableInviteUserUnbindRecordsAddMobileAndChangeBindRecordIdColumn exte
     public function up()
     {
         Schema::table('invite_user_unbind_records', function (Blueprint $table) {
-            $table->string('mobile')->defaule('')->comment('解绑用户的手机号码')->after('status');
+            $table->string('mobile')->default('')->comment('解绑用户的手机号码')->after('status');
             $table->integer('change_bind_record_id')->index()->defaule(0)->comment('关联换绑记录表的ID')->after('mobile');
             $table->string('old_invite_user_record', 2000)->default('')->comment('原来的邀请记录')->after('change_bind_record_id');
         });
