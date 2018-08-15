@@ -2,10 +2,10 @@
     <el-col>
         <el-form v-model="query" size="small" inline class="fl">
             <el-form-item label="运营中心名称">
-                <el-input v-model="query.operName" clearable/>
+                <el-input v-model="query.operName" placeholder="请输入运营中心名称" clearable/>
             </el-form-item>
             <el-form-item label="渠道名称">
-                <el-input v-model="query.inviteChannelName" clearable/>
+                <el-input v-model="query.inviteChannelName" placeholder="请输入渠道名称" clearable/>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search">搜 索</el-button>

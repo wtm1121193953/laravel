@@ -75,7 +75,7 @@
                 this.multipleSelection.forEach(function (item) {
                     inviteUserRecordIds.push(item.id);
                 });
-                this.$confirm(`确定将这位${length}用户换绑吗，换绑后不可修改！`, '警告', {
+                this.$confirm(`确定将这${length}位用户换绑吗，换绑后不可修改！`, '警告', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
