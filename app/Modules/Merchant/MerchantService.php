@@ -273,6 +273,13 @@ class MerchantService extends BaseService
         if ($exists || $existsDraft) {
             throw new ParamInvalidException('商户名称不能重复');
         }
+        // 招牌名不能重复
+        $exists = Merchant::where('name', $merchant->signboard_name)
+            ->where('id', '<>', $merchant->id)->first();
+        $existsDraft = MerchantDraft::where('name', $merchant->signboard_name)->first();
+        if ($exists || $existsDraft) {
+            throw new ParamInvalidException('招牌名称不能重复');
+        }
 
         if ($merchant->oper_id > 0) {
             // 如果当前商户已有所属运营中心,且不是试点商户, 则此次提交为重新提交审核
@@ -334,6 +341,12 @@ class MerchantService extends BaseService
         $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
         if ($exists || $existsDraft) {
             throw new ParamInvalidException('商户名称不能重复');
+        }
+        // 招牌名不能重复
+        $exists = Merchant::where('name', $merchant->signboard_name)->first();
+        $existsDraft = MerchantDraft::where('name', $merchant->signboard_name)->first();
+        if ($exists || $existsDraft) {
+            throw new ParamInvalidException('招牌名称不能重复');
         }
 
         $merchant->save();
