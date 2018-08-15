@@ -36,6 +36,11 @@ Route::prefix('admin')
 
     Route::get('members','UsersController@getList');
     Route::post('users/unBind','UsersController@unBind');
+    Route::get('users/getChangeBindList', 'UsersController@getChangeBindList');
+    Route::get('users/getInviteUsersList', 'UsersController@getInviteUsersList');
+    Route::post('users/changeBind', 'UsersController@changeBind');
+    Route::get('users/getChangeBindRecordList', 'UsersController@getChangeBindRecordList');
+    Route::get('users/getChangeBindPeopleRecordList', 'UsersController@getChangeBindPeopleRecordList');
 
     Route::get('area/tree', 'AreaController@getTree');
 

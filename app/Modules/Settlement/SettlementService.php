@@ -14,6 +14,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperBizMember;
 use App\Modules\Order\Order;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class SettlementService extends BaseService
 {
@@ -70,45 +71,45 @@ class SettlementService extends BaseService
      * @param string $merchantId
      * @param string $status
      * @param string $showAmount
-     * @param string $settlementDate
+     * @param array $settlementDate
      * @param string $operBizMemberName
      * @param string $operBizMemberMobile
      * @param bool $getWithQuery
-     * @return Settlement|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Database\Query\Builder
      */
-    public static function getOperSettlements($operId, $merchantId = '', $status = '', $showAmount = '', $settlementDate = '', $operBizMemberName = '', $operBizMemberMobile = '', $getWithQuery = false)
+    public static function getOperSettlements($operId, $merchantId = '', $status = '', $showAmount = '', $settlementDate = [], $operBizMemberName = '', $operBizMemberMobile = '', $getWithQuery = false)
     {
+        $query = DB::table('settlements')
+            ->leftJoin('merchants','settlements.merchant_id','=','merchants.id')
+            ->leftJoin('oper_biz_members as om','om.code','=','merchants.oper_biz_member_code')
+            ->select('settlements.*','merchants.name as merchant_name','om.name as oper_biz_member_name','om.mobile as oper_biz_member_mobile')
+            ->where('settlements.oper_id', $operId)
+            ->where('settlements.amount','>',0)
+            ->orderBy('settlements.id', 'desc');
+
+        if($merchantId){
+            $query->where('settlements.merchant_id', $merchantId);
+        }
+        if($status){
+            $query->where('settlements.status', $status);
+        }
+        if($showAmount){
+            $query->where('settlements.amount', '>', 0);
+        }
+        if(count($settlementDate) > 1){
+            $query->whereBetween('settlements.created_at', [$settlementDate[0] . ' 00:00:00', $settlementDate[1] . ' 23:59:59']);
+        }
         if($operBizMemberName){
-            $code = OperBizMember::where('name',$operBizMemberName)->pluck('code')->first();
-            $merchantId = Merchant::where('oper_biz_member_code',$code)->pluck('id')->first();
-        }elseif($operBizMemberMobile){
-            $code = OperBizMember::where('mobile',$operBizMemberMobile)->pluck('code')->first();
-            $merchantId = Merchant::where('oper_biz_member_code',$code)->pluck('id')->first();
+            $query->where('om.name','like', '%'.$operBizMemberName.'%');
         }
-        if($settlementDate){
-            $starTime = explode(',',$settlementDate);
-        }else{
-            $starTime = [];
+        if($operBizMemberMobile){
+            $query->where('om.mobile', 'like','%'.$operBizMemberMobile.'%');
         }
-        $data = Settlement::where('oper_id', $operId)
-            ->where('amount', '>', 0)
-            ->when($merchantId, function(Builder $query) use ($merchantId){
-                $query->where('merchant_id', $merchantId);
-            })
-            ->when($status, function (Builder $query) use ($status){
-                $query->where('status', $status);
-            })
-            ->when($showAmount, function(Builder $query) {
-                $query->where('amount', '>', 0);
-            })
-            ->when($settlementDate, function (Builder $query) use ($starTime){
-                $query->whereBetween('created_at', [$starTime[0] . ' 00:00:00', $starTime[1] . ' 23:59:59']);
-            })->orderBy('id', 'desc');
 
         if ($getWithQuery) {
-            return $data;
+            return $query;
         } else {
-            $data = $data->paginate();
+            $data = $query->paginate();
             return $data;
         }
     }

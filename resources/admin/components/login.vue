@@ -24,7 +24,7 @@
         left: 50%;
         margin: -230px 0 0 -180px;
         width: 310px;
-        height: 300px;
+        height: 330px;
         padding: 25px;
         box-shadow: 0 0 100px rgba(0,0,0,.08);
         background-color: #fff;
@@ -84,10 +84,10 @@
                         <el-input type="text" v-model="form.verifyCode" auto-complete="off" class="w-150"
                                   placeholder="验证码"/>
                         <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/>
+                        <div>
+                            <el-checkbox v-model="rememberUsername">记住帐号</el-checkbox>
+                        </div>
                     </el-form-item>
-                    <div>
-                        <el-checkbox v-model="rememberUsername">记住帐号</el-checkbox>
-                    </div>
                     <el-form-item>
                         <el-button type="primary" style="width:100%;" v-loading="loading" :disabled="loading"
                                    @click.native.prevent="doLogin">登录
