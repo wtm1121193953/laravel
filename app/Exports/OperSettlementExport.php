@@ -61,18 +61,16 @@ class OperSettlementExport implements FromQuery, WithHeadings, WithMapping
      */
     public function map($row): array
     {
-        $codeId = Merchant::where('id', $row->merchant_id)->value('oper_biz_member_code');
-        $operMember = OperBizMember::where('code',$codeId)->firstOr();
         return [
             $row->id,
-            Merchant::where('id', $row->merchant_id)->value('name'),
+            $row->merchant_name,
             $row->settlement_date,
             $row->start_date.'至'.$row->end_date,
-            $row->amount,
+            $row-> amount,
             $row->settlement_rate.'%',
             $row->real_amount,
             $row->status ==1 ? '审核中':'已打款',
-            $operMember->name.'/'.$operMember->mobile,
+            $row->oper_biz_member_name.'/'.$row->oper_biz_member_mobile,
 
 
         ];
