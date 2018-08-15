@@ -1,125 +1,83 @@
 <template>
-    <page title="我的商户" v-loading="isLoading">
+    <page title="商户列表" v-loading="isLoading">
         <el-form class="fl" inline size="small">
-            <el-form-item label="" prop="name">
-                <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="商户名称"/>
+            <el-form-item prop="createdAt" label="添加时间">
+                <el-date-picker
+                        v-model="query.createdAt"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd">
+                </el-date-picker>
             </el-form-item>
-
-            <el-form-item prop="signBoardName" label="商户招牌名" >
-                <el-input v-model="query.signBoardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
+            <el-form-item prop="id" label="商户ID">
+                <el-input v-model="query.principal" placeholder="请输入商户ID" clearable @keyup.enter.native="search"/>
             </el-form-item>
-
-            <el-form-item prop="merchant_category" label="所属行业">
+            <el-form-item prop="name" label="商户名称">
+                <el-input v-model="query.name" placeholder="请输入商户名称" clearable @keyup.enter.native="search"/>
+            </el-form-item>
+            <el-form-item prop="industry" label="行业">
                 <el-cascader
                         change-on-select
                         clearable
                         filterable
-                        :options="categoryOptions"
+                        :options="industryOptions"
                         :props="{
                             value: 'id',
                             label: 'name',
                             children: 'sub',
                         }"
-                        v-model="query.merchant_category">
+                        v-model="query.industry">
                 </el-cascader>
             </el-form-item>
-
-            <el-form-item label="状态" prop="status">
-                <el-select v-model="query.status">
-                    <el-option label="全部" value=""/>
-                    <el-option label="正常" value="1"/>
-                    <el-option label="已冻结" value="2"/>
-                </el-select>
+            <el-form-item prop="city" label="所在城市">
+                <el-cascader
+                        change-on-select
+                        clearable
+                        filterable
+                        :options="cityOptions"
+                        :props="{
+                            value: 'id',
+                            label: 'name',
+                            children: 'sub',
+                        }"
+                        v-model="query.city">
+                </el-cascader>
             </el-form-item>
-            <el-form-item label="审核状态" prop="audit_status">
-                <el-select v-model="query.audit_status" placeholder="请选择">
+            <el-form-item prop="own" label="所属运营中心">
+                <el-select v-model="query.own">
                     <el-option label="全部" value=""/>
-                    <el-option label="待审核" value="-1"/>
-                    <el-option label="审核通过" value="1"/>
-                    <el-option label="审核不通过" value="2"/>
-                    <el-option label="重新提交审核" value="3"/>
+                    <el-option label="大千生活深圳运营中心" value="1"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
+                <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
             </el-form-item>
         </el-form>
-        <!--<el-dropdown class="fr" @command="addBtnClick" trigger="click">
-            <el-button type="primary">
-                添加商户<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="from-pool">从商户池添加</el-dropdown-item>
-                <el-dropdown-item command="add">添加新商户</el-dropdown-item>
-            </el-dropdown-menu>
-        </el-dropdown>-->
-        <el-button class="fr" type="primary" @click="add">录入并激活商户</el-button>
+
         <el-table :data="list" stripe>
-            <el-table-column prop="created_at" label="添加时间"/>
-            <el-table-column prop="id" label="ID"/>
+            <el-table-column prop="date" label="添加时间"/>
+            <el-table-column prop="id" label="商户ID"/>
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="signboard_name" label="商户招牌名"/>
-            <el-table-column prop="categoryPath" label="行业">
+            <el-table-column prop="industry" label="行业"/>
+            <el-table-column prop="city" label="所在城市">
                 <template slot-scope="scope">
-                    <span v-for="item in scope.row.categoryPath" :key="item.id">
-                        {{ item.name }}
-                    </span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="city" label="城市">
-                <template slot-scope="scope">
-                    <!--<span> {{ scope.row.province }} </span>-->
+                    <!-- <span> {{ scope.row.province }} </span> -->
                     <span> {{ scope.row.city }} </span>
                     <span> {{ scope.row.area }} </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="operBizMemberName" label="业务员"/>
-            <el-table-column prop="status" label="商户状态">
-                <template slot-scope="scope" v-if="scope.row.audit_status == 1 || scope.row.audit_status == 3">
-                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.status === 2" class="c-danger">已冻结</span>
-                    <span v-else>未知 ({{scope.row.status}})</span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="audit_status" label="审核状态">
+            <el-table-column prop="own" label="所属运营中心"/>
+            <el-table-column prop="divided_into" label="分成"/>
+            <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
-                    <span v-if="parseInt(scope.row.audit_status) === 0" class="c-warning">待审核</span>
-                    <el-popover
-                            v-else-if="scope.row.audit_status === 1"
-                            placement="bottom-start"
-                            width="200px"  trigger="hover"
-                            @show="showMessage(scope)"
-                            :disabled="scope.row.audit_suggestion == ''">
-                        <div   slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
-                        <unaudit-record-reason    :data="auditRecord"  />
-                    </el-popover>
-
-                    <el-popover
-                            v-else-if="parseInt(scope.row.audit_status) === 2"
-                            placement="bottom-start"
-                            width="200px"  trigger="hover"
-                            @show="showMessage(scope)"
-                            :disabled="scope.row.audit_suggestion == ''" >
-                        <div   slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
-                        <unaudit-record-reason    :data="auditRecord"  />
-                    </el-popover>
-
-
-                    <span v-else-if="parseInt(scope.row.audit_status) === 3" class="c-warning">重新提交审核中</span>
-                    <span v-else>未知 ({{scope.row.audit_status}})</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="操作" width="250px">
-                <template slot-scope="scope">
-                    <merchant-item-options
-                            :scope="scope"
-                            :query="query"
-                            @change="itemChanged"
-                            @accountChanged="accountChanged"
-                            @refresh="getList"/>
+                    <el-button type="text">查看订单</el-button>
                 </template>
             </el-table-column>
         </el-table>
+
         <el-pagination
                 class="fr m-t-20"
                 layout="total, prev, pager, next"
@@ -133,27 +91,47 @@
 <script>
     import api from '../../../assets/js/api'
 
-    import MerchantItemOptions from './merchant-item-options'
-    import MerchantForm from './merchant-form'
-    import UnauditRecordReason from './unaudit-record-reason'
-
     export default {
-        name: "merchant-list",
         data(){
             return {
-                categoryOptions: [],
-                auditRecord:[],
                 isLoading: false,
+                industryOptions: [],
+                cityOptions: [],
                 query: {
+                    createdAt: '',
+                    id: '',
                     name: '',
-                    status: '',
-                    page: 1,
-                    audit_status: '',
-                    signBoardName:'',
-                    merchant_category:'',
+                    industry: '',
+                    own: '',
+                    page: 1
                 },
-                list: [],
-                total: 0,
+                // list: [],
+                list: [{
+                    date: '2018-07-05 12:30:20',
+                    id: '34354354564654',
+                    name: '小哥哥混沌',
+                    signboard_name: '小哥哥混沌',
+                    industry: '美食',
+                    own: '大千生活深圳运营中心',
+                    divided_into: '20%'
+                }, {
+                    date: '2018-07-05 12:30:20',
+                    id: '34354354564654',
+                    name: '小哥哥混沌',
+                    signboard_name: '小哥哥混沌',
+                    industry: '美食',
+                    own: '大千生活深圳运营中心',
+                    divided_into: '20%'
+                }, {
+                    date: '2018-07-05 12:30:20',
+                    id: '34354354564654',
+                    name: '小哥哥混沌',
+                    signboard_name: '小哥哥混沌',
+                    industry: '美食',
+                    own: '大千生活深圳运营中心',
+                    divided_into: '20%'
+                }],
+                total: 0
             }
         },
         computed: {
@@ -161,59 +139,37 @@
         },
         methods: {
             search(){
-                this.query.page = 1;
-                this.getList();
+                // this.query.page = 1;
+                // this.getList();
             },
             getList(){
-                this.isLoading = true;
-                let params = {};
-                Object.assign(params, this.query);
-                api.get('/merchant', params).then(data => {
-                    this.query.page = params.page;
-                    this.isLoading = false;
-                    this.list = data.list;
-                    this.total = data.total;
-                })
-            },
-            itemChanged(index, data){
-                this.getList();
-            },
-
-            accountChanged(scope, account){
-                let row = this.list[scope.$index];
-                row.account = account;
-                this.list.splice(scope.$index, 1, row);
-                this.getList();
+                // this.isLoading = true;
+                // let params = {};
+                // Object.assign(params, this.query);
+                // api.get('/merchants', params).then(data => {
+                //     this.query.page = params.page;
+                //     this.isLoading = false;
+                //     this.list = data.list;
+                //     this.total = data.total;
+                // })
             },
         },
-
-
-
-
         created(){
-            api.get('merchant/categories/tree').then(data => {
-                this.categoryOptions = data.list;
-            });
-            if (this.$route.params){
-                Object.assign(this.query, this.$route.params);
-            }
-            this.getList();
+            // api.get('merchant/categories/tree').then(data => {
+            //     this.categoryOptions = data.list;
+            // });
+            // this.categoryOptions = [];
+            // if (this.$route.params){
+            //     Object.assign(this.query, this.$route.params);
+            // }
+            // this.getList();
         },
         components: {
-            MerchantItemOptions,
-            MerchantForm,
-            UnauditRecordReason
+
         }
     }
 </script>
 
 <style scoped>
-    .message{
-        overflow: hidden;
-        text-overflow:ellipsis;
-        white-space: nowrap;
-        width:120px;
-        font-size:12px;
-        color:gray;
-    }
+
 </style>
