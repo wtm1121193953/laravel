@@ -96,7 +96,7 @@ class SettlementService extends BaseService
         if($showAmount){
             $query->where('settlements.amount', '>', 0);
         }
-        if($settlementDate){
+        if(count($settlementDate) > 1){
             $query->whereBetween('settlements.created_at', [$settlementDate[0] . ' 00:00:00', $settlementDate[1] . ' 23:59:59']);
         }
         if($operBizMemberName){
