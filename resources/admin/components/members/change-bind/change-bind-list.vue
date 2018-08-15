@@ -85,11 +85,12 @@
                 });
             },
             commitChangeBind(isAll, inviteUserRecordIds = []) {
-                this.$prompt('绑定新账号', '警告', {
+                this.$prompt('绑定新帐号', '警告', {
                     confirmButtonText: '确定绑定',
                     cancelButtonText: '取消',
                     inputPattern: /^1[3,4,5,6,7,8,9]\d{9}$/,
-                    inputErrorMessage: '手机号码格式不正确'
+                    inputErrorMessage: '手机号码格式不正确',
+                    inputPlaceholder: '输入换绑新用户的手机号码',
                 }).then(({ value }) => {
                     let param = {
                         isAll: isAll,
