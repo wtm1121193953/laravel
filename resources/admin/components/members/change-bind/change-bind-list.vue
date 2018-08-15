@@ -84,6 +84,8 @@
                     center: true
                 }).then(() => {
                     this.commitChangeBind(isAll, inviteUserRecordIds);
+                }).catch(() => {
+
                 });
             },
             commitChangeBind(isAll, inviteUserRecordIds = []) {
@@ -101,9 +103,11 @@
                         inviteChannelId: this.inviteChannelId,
                     };
                     api.post('users/changeBind', param).then(data => {
-                        console.log(data);
+                        this.$message.success('换绑成功');
                         this.getList();
                     })
+                }).catch(() => {
+
                 });
             }
         },
