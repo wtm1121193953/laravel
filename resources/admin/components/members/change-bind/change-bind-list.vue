@@ -15,7 +15,7 @@
             </el-form-item>
         </el-form>
 
-        <el-table stripe :data="list" ref="table" @selection-change="handleSelectionChange">
+        <el-table stripe :data="list" ref="table" v-loading="tableLoading" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55"/>
             <el-table-column prop="user.id" label="用户ID"/>
             <el-table-column prop="user.created_at" label="注册时间"/>
@@ -44,6 +44,7 @@
                     page: 1,
                     noPaginate: true,
                 },
+                tableLoading: false,
                 multipleSelection: [],
             }
         },
@@ -53,10 +54,12 @@
                 this.getList()
             },
             getList(){
+                this.tableLoading = true;
                 this.query.id = this.inviteChannelId;
                 api.get('users/getInviteUsersList', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                    this.tableLoading = false;
                 })
             },
             handleSelectionChange(val) {
@@ -72,7 +75,7 @@
                 this.multipleSelection.forEach(function (item) {
                     inviteUserRecordIds.push(item.id);
                 });
-                this.$confirm(`确定将这位${length}用户换绑吗，换绑后不可修改！`, '警告', {
+                this.$confirm(`确定将这${length}位用户换绑吗，换绑后不可修改！`, '警告', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
@@ -96,6 +99,7 @@
                     };
                     api.post('users/changeBind', param).then(data => {
                         console.log(data);
+                        this.getList();
                     })
                 });
             }

@@ -10,18 +10,26 @@ namespace App\Modules\Admin;
 
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Builder;
 
 class AdminService
 {
+
+    /**
+     * 获取用户拥有的权限列表
+     * @param AdminUser $user
+     * @param bool $enable
+     * @return AdminAuthRule[]|\Illuminate\Database\Eloquent\Collection
+     */
     public static function getRulesForUser(AdminUser $user, $enable=true)
     {
         if($user->isSuper()){
-            $rules = AdminAuthRule::when($enable, function($query){
+            $rules = AdminAuthRule::when($enable, function(Builder $query){
                 $query->where('status', AdminAuthRule::STATUS_ON);
             })->orderBy('sort')->get();
         }else {
             $ruleIds = AdminAuthGroup::where('id', $user->group_id)->value('rule_ids');
-            $rules = AdminAuthRule::when($enable, function($query){
+            $rules = AdminAuthRule::when($enable, function(Builder $query){
                 $query->where('status', AdminAuthRule::STATUS_ON);
             })->whereIn('id', explode(',', $ruleIds))->orderBy('sort')->get();
         }

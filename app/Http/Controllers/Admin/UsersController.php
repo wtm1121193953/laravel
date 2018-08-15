@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Jobs\InviteUserStatisticsDailyJob;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteService;
@@ -151,6 +152,10 @@ class UsersController extends Controller
         }
     }
 
+    /**
+     * 执行换绑操作
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function changeBind()
     {
         $this->validate(request(), [
@@ -190,19 +195,69 @@ class UsersController extends Controller
             //首先操作invite_user_change_bind_records表，写入换绑记录
             $inviteUserChangeBindRecord = InviteUserChangeBindRecordService::createChangeBindRecord($oldInviteChannel, $mobile, $changeBindNumber, $currentUser);
 
+            $needStatisticsDate = []; //需要统计的日期
             // 循环遍历需换绑的记录，在解绑表invite_user_unbind_records中加入解绑记录;
             // 添加新的邀请记录在invite_user_records中,并删除记录表中的旧记录
             foreach ($inviteUserRecords as $inviteUserRecord) {
+                $needStatisticsDate[] = $inviteUserRecord->created_at;
+
                 InviteUserUnbindRecordService::createUnbindRecord($inviteUserRecord->user_id, InviteUserUnbindRecord::STATUS_UNBIND, $inviteUserChangeBindRecord->id, $inviteUserRecord);
-                InviteService::bindInviter($user->id, $newInviteChannel);
+                InviteService::bindInviter($inviteUserRecord->user_id, $newInviteChannel, $inviteUserRecord);
                 $inviteUserRecord->delete();
             }
-            DB::commit();
 
-            return Result::success();
+            DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new BaseResponseException($e->getMessage());
+            dd($e);
+            throw new BaseResponseException('换绑失败');
         }
+
+        // 记录换绑完成之后，对每日统计表invite_user_statistics_dailies进行更改
+        if (!empty($needStatisticsDate)) {
+            foreach ($needStatisticsDate as $date) {
+                InviteUserStatisticsDailyJob::dispatch($date);
+            }
+        }
+
+        return Result::success();
+    }
+
+    /**
+     * 获取换绑记录列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getChangeBindRecordList()
+    {
+        $operName = request('operName', '');
+        $inviteChannelName = request('inviteChannelName', '');
+        $pageSize = request('pageSize');
+
+        $data = InviteUserChangeBindRecordService::getChangeBindRecordList(compact('operName', 'inviteChannelName'), $pageSize);
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
+    }
+
+    /**
+     * 获取换绑人列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getChangeBindPeopleRecordList()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $changeBindRecordId = request('id');
+        $pageSize = request('pageSize', 15);
+
+        $data = InviteUserUnbindRecordService::getUnbindRecordList(compact('changeBindRecordId'), $pageSize);
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
     }
 }
