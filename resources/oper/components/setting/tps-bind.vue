@@ -22,7 +22,7 @@
 
                         <el-form-item prop="verifyCode" label="验证码">
                             <el-input v-model="form.verifyCode" style="width: 300px"/>
-                            <el-button @click="sendVerifyCode" :disabled="verifyCodeSecond > 0" class="m-l-15">
+                            <el-button :loading="verifyCodeBtnLoading" @click="sendVerifyCode" :disabled="verifyCodeSecond > 0" class="m-l-15">
                                 <span v-if="verifyCodeSecond <= 0">获取验证码</span>
                                 <span v-else>{{verifyCodeSecond}}秒</span>
                             </el-button>
@@ -53,6 +53,7 @@
                     verifyCode: '',
                 },
                 verifyCodeSecond: 0,
+                verifyCodeBtnLoading: false,
                 formRules: {
                     verifyCode: [
                         {required: true, message: '验证码不能为空' }
@@ -109,6 +110,7 @@
         		    this.$message.error('邮箱格式错误, 后缀必须是 @shoptps.com !')
                     return;
                 }
+                this.verifyCodeBtnLoading = true;
 				api.post('/tps/sendVerifyCode', {email : this.form.email}).then(() => {
                     this.verifyCodeSecond = 60;
 				    this.$message.success('邮件发送成功');
@@ -118,7 +120,9 @@
 				            clearInterval(interval)
                         }
                     }, 1000)
-		        });
+		        }).finally(() => {
+                    this.verifyCodeBtnLoading = false;
+                });;
 
             }
 

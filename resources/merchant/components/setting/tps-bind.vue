@@ -103,7 +103,6 @@
                 }
                 this.verifyCodeBtnLoading = true;
 				api.post('/tps/sendVerifyCode', {mobile : this.form.mobile}).then(() => {
-                    this.verifyCodeBtnLoading = false;
                     this.verifyCodeSecond = 60;
 				    this.$message.success('短信发送成功');
 				    let interval = setInterval(() => {
@@ -112,7 +111,9 @@
 				            clearInterval(interval)
                         }
                     }, 1000)
-		        });
+		        }).finally(() => {
+                    this.verifyCodeBtnLoading = false;
+                });
 
             }
 
