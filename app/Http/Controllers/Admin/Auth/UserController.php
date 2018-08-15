@@ -8,13 +8,10 @@
 
 namespace App\Http\Controllers\Admin\Auth;
 
-use App\Exceptions\BaseResponseException;
 use App\Exceptions\NoPermissionException;
 use App\Http\Controllers\Controller;
-use App\Modules\Admin\AdminUser;
 use App\Modules\Admin\AdminUserService;
 use App\Result;
-use App\ResultCode;
 
 class UserController extends Controller
 {
@@ -69,11 +66,7 @@ class UserController extends Controller
             'id' => 'required|integer|min:1',
             'password' => 'required|between:6,30'
         ]);
-        $user = AdminUser::findOrFail(request('id'));
-        $salt = str_random();
-        $user->salt = $salt;
-        $user->password = AdminUser::genPassword(request('password'), $salt);
-        $user->save();
+        $user = AdminUserService::resetPassword(request('id'), request('password'));
         return Result::success($user);
     }
 
@@ -83,9 +76,7 @@ class UserController extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer'
         ]);
-        $user = AdminUser::findOrFail(request('id'));
-        $user->status = request('status');
-        $user->save();
+        $user = AdminUserService::changeStatus(request('id'), request('status'));
         return Result::success($user);
     }
 
@@ -98,11 +89,9 @@ class UserController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $user = AdminUser::findOrFail(request('id'));
-        if($user->isSuper()){
-            throw new BaseResponseException('无权限删除', ResultCode::NO_PERMISSION);
-        }
-        $user->delete();
+
+        $user = AdminUserService::del(request('id'));
+
         return Result::success($user);
     }
 }

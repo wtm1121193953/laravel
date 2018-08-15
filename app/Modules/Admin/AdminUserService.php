@@ -12,6 +12,7 @@ namespace App\Modules\Admin;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
+use App\Exceptions\NoPermissionException;
 use App\ResultCode;
 
 class AdminUserService extends BaseService
@@ -101,5 +102,58 @@ class AdminUserService extends BaseService
         return $user;
     }
 
+    /**
+     * 重置密码
+     * @param $id
+     * @param $password
+     * @return AdminUser
+     */
+    public static function resetPassword($id, $password)
+    {
+        $user = self::getById($id);
+        if(empty($user)){
+            throw new DataNotFoundException('用户信息不存在');
+        }
+        $salt = str_random();
+        $user->salt = $salt;
+        $user->password = AdminUser::genPassword($password, $salt);
+        $user->save();
+        return $user;
+    }
 
+    /**
+     * 改变用户状态
+     * @param $id
+     * @param $status
+     * @return AdminUser
+     */
+    public static function changeStatus($id, $status)
+    {
+        $user = self::getById($id);
+        if(empty($user)){
+            throw new DataNotFoundException('用户信息不存在');
+        }
+        $user->status = $status;
+        $user->save();
+        return $user;
+    }
+
+    /**
+     * 删除用户
+     * @param $id
+     * @return AdminUser
+     * @throws \Exception
+     */
+    public static function del($id)
+    {
+        $user = self::getById($id);
+        if(empty($user)){
+            throw new DataNotFoundException('用户信息不存在');
+        }
+        if($user->isSuper()){
+            throw new NoPermissionException('无权限删除');
+        }
+        $user->delete();
+        return $user;
+    }
 }
