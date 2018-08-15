@@ -43,13 +43,30 @@ class InviteService
             return null;
         }
         if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
-            $object = Merchant::where('id', $inviteRecord->origin_id)->first();
+            $object = Merchant::where('id', $inviteRecord->origin_id)->firstOrFail();
         } else if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER) {
-            $object = Oper::where('id', $inviteRecord->origin_id)->first();
+            $object = Oper::where('id', $inviteRecord->origin_id)->firstOrFail();
         } else {
-            $object = User::find($inviteRecord->origin_id);
+            $object = User::findOrFail($inviteRecord->origin_id);
         }
         return $object;
+    }
+
+    /**
+     * 获取上级用户名称
+     * @param $userId
+     * @return string|null
+     */
+    public static function getParentName($userId)
+    {
+        $obj = self::getParent($userId);
+        if($obj instanceof User){
+            return $obj->mobile;
+        }else if($obj instanceof Merchant || $obj instanceof Oper) {
+            return $obj->name;
+        }else {
+            return null;
+        }
     }
 
     /**
@@ -126,6 +143,19 @@ class InviteService
     }
 
     /**
+     * 解绑用户邀请关系
+     * @param InviteUserRecord $inviteRecord
+     * @param int $inviteUserChangeBindRecordId
+     * @throws \Exception
+     */
+    public static function unbindInviter(InviteUserRecord $inviteRecord, $inviteUserChangeBindRecordId = 0)
+    {
+        $inviteRecord->delete();
+
+        InviteUserUnbindRecordService::createUnbindRecord($inviteRecord->user_id, InviteUserUnbindRecord::STATUS_UNBIND, $inviteUserChangeBindRecordId, $inviteRecord);
+    }
+
+    /**
      * 换绑邀请人
      * @param InviteUserRecord $inviteUserRecord
      * @param InviteChannel $inviteChannel
@@ -154,6 +184,9 @@ class InviteService
         DB::beginTransaction();
         try {
 
+            // 解绑旧的邀请关系
+            self::unbindInviter($inviteUserRecord, $inviteUserChangeBindRecordId);
+
             // 保存新的邀请记录
             $newInviteRecord = new InviteUserRecord();
             $newInviteRecord->user_id = $userId;
@@ -161,12 +194,7 @@ class InviteService
             $newInviteRecord->origin_id = $inviteChannel->origin_id;
             $newInviteRecord->origin_type = $inviteChannel->origin_type;
             $newInviteRecord->created_at = $inviteUserRecord->created_at;
-
             $newInviteRecord->save();
-
-            $inviteUserRecord->delete();
-
-            InviteUserUnbindRecordService::createUnbindRecord($inviteUserRecord->user_id, InviteUserUnbindRecord::STATUS_UNBIND, $inviteUserChangeBindRecordId, $inviteUserRecord);
 
             if ($newInviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
                 MerchantLevelCalculationJob::dispatch($newInviteRecord->origin_id);

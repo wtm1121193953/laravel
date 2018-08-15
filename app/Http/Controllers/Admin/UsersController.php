@@ -45,29 +45,24 @@ class UsersController extends Controller
     public function unBind(){
 
         $uid    = request('id');
-        $record = InviteUserRecord::where('user_id',$uid)->first(['user_id','origin_id']);
+        $record = InviteUserRecord::where('user_id', $uid)->first();
 
         if(!empty($record)){
 
             try{
                 DB::beginTransaction();
 
-                $inviteUserUnbindRecord = new InviteUserUnbindRecord();
-                $inviteUserUnbindRecord->user_id = $record->user_id;
-                $inviteUserUnbindRecord->status  = 2;
-                $inviteUserUnbindRecord->save();
-
-                InviteUserRecord::where('user_id',$record->user_id)->limit(1)->delete();
+                InviteService::unbindInviter($record);
 
                 DB::commit();
-
-                $user = User::select('id','name','mobile','email','created_at')->first();
-                return Result::success($user);
 
             }catch (\Exception $e){
                 DB::rollBack();
                 throw $e;
             }
+
+            $user = User::select('id','name','mobile','email','created_at')->first();
+            return Result::success($user);
         }else{
             throw new BaseResponseException("已解绑", ResultCode::UNKNOWN);
         }

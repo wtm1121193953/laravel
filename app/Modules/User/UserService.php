@@ -9,6 +9,7 @@
 namespace App\Modules\User;
 
 use App\BaseService;
+use App\Modules\Invite\InviteService;
 use App\Modules\Merchant\MerchantService;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Oper\Oper;
@@ -34,25 +35,14 @@ class UserService extends BaseService
             ->paginate();
 
         $users->each(function ($item){
-            $inviteRecord = InviteUserRecord::select('origin_id','origin_type')->where('user_id',$item->id)->first();
-            if(empty($inviteRecord)){
-                $item->parent = '未知-推荐信息';
-                $item->isBind = 0;
-            }else{
+
+            $parentName = InviteService::getParentName($item->id);
+            if($parentName){
                 $item->isBind = 1;
-                //1-用户 2-商户 3-运营中心
-                if($inviteRecord->origin_type == 1){
-                    $user = User::where('id',$inviteRecord->origin_id)->first(['name','mobile']);
-                    $item->parent = !empty($user) ? ($user->name ? $user->name:$user->mobile) : '未知-推荐人';
-                }elseif ($inviteRecord->origin_type == 2){
-                    $merchant = MerchantService::getById($inviteRecord->origin_id, ['name']);
-                    $item->parent = !empty($merchant) ? $merchant->name : '未知-推荐商户';
-                }elseif ($inviteRecord->origin_type == 3){
-                    $oper = Oper::where('id',$inviteRecord->origin_id)->first(['name']);
-                    $item->parent = !empty($oper) ? $oper->name : '未知-推荐运营中心';
-                }else{
-                    $item->parent = '未知-推荐信息';
-                }
+                $item->parent = $parentName;
+            }else {
+                $item->parent = '未绑定';
+                $item->isBind = 0;
             }
         });
 
