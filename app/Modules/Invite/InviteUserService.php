@@ -10,9 +10,12 @@ namespace App\Modules\Invite;
 
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Jobs\InviteUserStatisticsDailyJob;
 use App\Jobs\MerchantLevelCalculationJob;
+use App\Modules\Admin\AdminUser;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Modules\Tps\TpsBind;
 use App\Modules\Tps\TpsBindService;
 use App\Modules\User\User;
@@ -21,6 +24,7 @@ use App\Modules\User\UserService;
 use App\ResultCode;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -140,14 +144,76 @@ class InviteUserService
 
     /**
      * 批量换绑
-     * @param InviteChannel|int[] $oldInviteChannelOrInviteRecordIds 要换绑的邀请渠道或要换绑的邀请记录列表
-     * @param InviteChannel $newInviteChannel 要更换的新邀请渠道
+     * @param InviteChannel $oldInviteChannel
+     * @param InviteChannel $newInviteChannel 要绑定的新渠道
+     * @param AdminUser $operator
+     * @param InviteUserRecord[]|\Illuminate\Database\Eloquent\Collection $inviteUserRecords
      * @return InviteUserBatchChangedRecord
+     * @throws \Exception
      */
-    public static function batchChangeInviter($oldInviteChannelOrInviteRecordIds, $newInviteChannel)
+    public static function batchChangeInviter(InviteChannel $oldInviteChannel, InviteChannel $newInviteChannel, AdminUser $operator, $inviteUserRecords=null)
     {
-        // todo
-        return new InviteUserBatchChangedRecord();
+        if(is_null($inviteUserRecords)){
+            $inviteUserRecords = self::getInviteRecordsByInviteChannelId($oldInviteChannel->id);
+        }
+
+        DB::beginTransaction();
+        try{
+            //首先操作invite_user_change_bind_records表，写入换绑记录
+            $inviteUserBatchChangedRecord = new InviteUserBatchChangedRecord();
+            $inviteUserBatchChangedRecord->invite_channel_id = $oldInviteChannel->id;
+            $inviteUserBatchChangedRecord->invite_channel_name = $oldInviteChannel->name;
+            $inviteUserBatchChangedRecord->invite_channel_remark = $oldInviteChannel->remark;
+            $inviteUserBatchChangedRecord->invite_channel_oper_id = $oldInviteChannel->oper_id;
+            $operName = OperService::getNameById($oldInviteChannel->oper_id);
+            $inviteUserBatchChangedRecord->invite_channel_oper_name = $operName;
+            $inviteUserBatchChangedRecord->new_invite_channel_id = $newInviteChannel->id;
+
+            if($newInviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER){
+                $user = UserService::getUserById($newInviteChannel->origin_id);
+                $inviteUserBatchChangedRecord->bind_mobile = $user->mobile;
+            }
+            $inviteUserBatchChangedRecord->change_bind_number = 0;
+
+            $inviteUserBatchChangedRecord->operator_id = $operator->id;
+            $inviteUserBatchChangedRecord->operator = $operator->username;
+            $inviteUserBatchChangedRecord->save();
+
+            $changeBindNumber = 0;
+            $changeBindErrorNumber = 0;
+            $needStatisticsDate = []; //需要统计的日期
+            // 循环遍历需换绑的记录，在解绑表invite_user_unbind_records中加入解绑记录;
+            // 添加新的邀请记录在invite_user_records中,并删除记录表中的旧记录
+            foreach ($inviteUserRecords as $inviteUserRecord) {
+                $date = $inviteUserRecord->created_at->format('Y-m-d');
+                $needStatisticsDate[$date] = $date;
+
+                try {
+                    InviteUserService::changeInviter($inviteUserRecord, $newInviteChannel, $inviteUserBatchChangedRecord->id);
+                    $changeBindNumber ++;
+                }catch (\Exception $e){
+                    $changeBindErrorNumber ++;
+                }
+            }
+
+            $inviteUserBatchChangedRecord->change_bind_number = $changeBindNumber;
+            $inviteUserBatchChangedRecord->change_error_number = $changeBindErrorNumber;
+            $inviteUserBatchChangedRecord->save();
+
+            DB::commit();
+        }catch (\Exception $e){
+            DB::rollBack();
+            throw $e;
+        }
+
+        // 记录换绑完成之后，对每日统计表invite_user_statistics_dailies进行更改
+        if (!empty($needStatisticsDate)) {
+            foreach ($needStatisticsDate as $date) {
+                InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', $date));
+            }
+        }
+
+        return $inviteUserBatchChangedRecord;
     }
 
     /**

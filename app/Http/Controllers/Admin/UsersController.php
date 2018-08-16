@@ -158,34 +158,13 @@ class UsersController extends Controller
             $inviteUserRecords = InviteUserService::getInviteRecordsByIds($inviteUserRecordIds); //需换绑的记录
         }
 
-        // 记录换绑成功的数量
-        $changeBindNumber = 0;
-        $changeBindErrorNumber = 0;
-
         try {
             DB::beginTransaction();
             // 查找换绑后的邀请渠道，没有则创建新的邀请渠道
             $newInviteChannel = InviteChannelService::getByOriginInfo($user->id, InviteChannel::ORIGIN_TYPE_USER, InviteChannel::FIXED_OPER_ID);
 
             //首先操作invite_user_change_bind_records表，写入换绑记录
-            $inviteUserBatchChangedRecord = InviteUserChangeBindRecordService::createChangeBindRecord($oldInviteChannel, $mobile, $changeBindNumber, $currentUser);
-
-            $needStatisticsDate = []; //需要统计的日期
-            // 循环遍历需换绑的记录，在解绑表invite_user_unbind_records中加入解绑记录;
-            // 添加新的邀请记录在invite_user_records中,并删除记录表中的旧记录
-            foreach ($inviteUserRecords as $inviteUserRecord) {
-                $date = $inviteUserRecord->created_at->format('Y-m-d');
-                $needStatisticsDate[$date] = $date;
-
-                try {
-                    InviteUserService::changeInviter($inviteUserRecord, $newInviteChannel, $inviteUserBatchChangedRecord->id);
-                    $changeBindNumber ++;
-                }catch (\Exception $e){
-                    $changeBindErrorNumber ++;
-                }
-            }
-
-            InviteUserChangeBindRecordService::updateChangeBindNumber($inviteUserBatchChangedRecord->id, $changeBindNumber);
+            $inviteUserBatchChangedRecord = InviteUserService::batchChangeInviter($oldInviteChannel, $newInviteChannel, $currentUser, $inviteUserRecords);
 
             DB::commit();
         } catch(BaseResponseException $e){
@@ -197,16 +176,9 @@ class UsersController extends Controller
             throw new BaseResponseException($message);
         }
 
-        // 记录换绑完成之后，对每日统计表invite_user_statistics_dailies进行更改
-        if (!empty($needStatisticsDate)) {
-            foreach ($needStatisticsDate as $date) {
-                InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', $date));
-            }
-        }
-
         return Result::success([
-            'successCount' => $changeBindNumber,
-            'errorCount' => $changeBindErrorNumber,
+            'successCount' => $inviteUserBatchChangedRecord->change_bind_number,
+            'errorCount' => $inviteUserBatchChangedRecord->change_error_number,
         ]);
     }
 
