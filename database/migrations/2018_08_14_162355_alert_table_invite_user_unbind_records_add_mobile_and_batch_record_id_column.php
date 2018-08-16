@@ -30,7 +30,7 @@ class AlertTableInviteUserUnbindRecordsAddMobileAndBatchRecordIdColumn extends M
         Schema::table('invite_user_unbind_records', function (Blueprint $table) {
             $table->dropColumn([
                 'mobile',
-                'change_bind_record_id',
+                'batch_record_id',
                 'old_invite_user_record'
             ]);
         });

@@ -36,6 +36,6 @@ class CreateInviteUserBatchChangedRecordsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('invite_user_change_bind_records');
+        Schema::dropIfExists('invite_user_batch_changed_records');
     }
 }
