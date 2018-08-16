@@ -14,8 +14,8 @@
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="created_at" label="换绑时间"/>
             <el-table-column prop="invite_channel_name" label="渠道名称"/>
-            <el-table-column prop="remark" label="备注"/>
-            <el-table-column prop="oper_name" label="运营中心名称"/>
+            <el-table-column prop="invite_channel_remark" label="备注"/>
+            <el-table-column prop="invite_channel_oper_name" label="运营中心名称"/>
             <el-table-column prop="change_bind_number" label="换绑人数">
                 <template slot-scope="scope">
                     <el-button type="text" @click="changeBindRecords(scope.row)">
