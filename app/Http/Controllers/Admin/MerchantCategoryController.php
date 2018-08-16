@@ -21,6 +21,12 @@ class MerchantCategoryController extends Controller
         return Result::success(['list' => $tree]);
     }
 
+    public function getTreeWithoutDisable()
+    {
+        $tree = MerchantCategoryService::getTree();
+        return Result::success(['list' => $tree]);
+    }
+
     public function getList()
     {
         $data = MerchantCategoryService::getList();

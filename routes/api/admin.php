@@ -46,6 +46,7 @@ Route::prefix('admin')
 
     Route::get('merchant/categories', 'MerchantCategoryController@getList');
     Route::get('merchant/category/tree', 'MerchantCategoryController@getTree');
+    Route::get('merchant/category/getTreeWithoutDisable', 'MerchantCategoryController@getTreeWithoutDisable');
     Route::post('merchant/category/add', 'MerchantCategoryController@add');
     Route::post('merchant/category/edit', 'MerchantCategoryController@edit');
     Route::post('merchant/category/changeStatus', 'MerchantCategoryController@changeStatus');
@@ -56,12 +57,15 @@ Route::prefix('admin')
     Route::post('merchant/audit', 'MerchantController@audit');
     Route::get('merchant/download', 'MerchantController@downloadExcel');
     Route::post('merchant/changeStatus', 'MerchantController@changeStatus');
+    Route::post('merchant/edit', 'MerchantController@edit');
 
     Route::get('merchant/audit/list', 'MerchantController@getAuditList');
     Route::get('merchant/audit/record/newest', 'MerchantController@getNewestAuditRecord');
 
     Route::get('merchant/pool', 'MerchantPoolController@getList');
     Route::get('merchant/pool/detail', 'MerchantPoolController@detail');
+
+    Route::get('/operBizMembers/search', 'OperBizMemberController@search');
 
     Route::group([], base_path('routes/api/admin/goods.php'));
     Route::group([], base_path('routes/api/admin/oper.php'));

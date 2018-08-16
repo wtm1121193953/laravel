@@ -213,4 +213,34 @@ class MerchantController extends Controller
 
         return Result::success($merchant);
     }
+
+    /**
+     * SaaS端 编辑试点商户
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function edit()
+    {
+        $validate = [
+            'name' => 'required|max:20',
+            'merchant_category_id' => 'required',
+            'signboard_name' => 'required|max:20',
+        ];
+        if (request('is_pilot') !== Merchant::PILOT_MERCHANT){
+            $validate = array_merge($validate, [
+                'business_licence_pic_url' => 'required',
+                'organization_code' => 'required',
+                'settlement_rate' => 'required|numeric|min:0',
+            ]);
+        }
+        $this->validate(request(), $validate);
+
+        $mobile = request('contacter_phone');
+        if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
+            throw new ParamInvalidException('负责人手机号码不合法');
+        }
+
+        $merchant = MerchantService::edit(request('id'), request('audit_oper_id'));
+
+        return Result::success($merchant);
+    }
 }
