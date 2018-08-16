@@ -9,7 +9,6 @@ use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserChangeBindRecordService;
-use App\Modules\Invite\InviteUserUnbindRecordService;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Oper\OperService;
@@ -179,7 +178,7 @@ class UsersController extends Controller
                 $needStatisticsDate[$date] = $date;
 
                 try {
-                    InviteUserService::changeInviterForBatch($inviteUserRecord, $newInviteChannel, $inviteUserBatchChangedRecord->id);
+                    InviteUserService::changeInviter($inviteUserRecord, $newInviteChannel, $inviteUserBatchChangedRecord->id);
                     $changeBindNumber ++;
                 }catch (\Exception $e){
                     $changeBindErrorNumber ++;
@@ -221,7 +220,7 @@ class UsersController extends Controller
         $inviteChannelName = request('inviteChannelName', '');
         $pageSize = request('pageSize');
 
-        $data = InviteUserChangeBindRecordService::getChangeBindRecordList(compact('operName', 'inviteChannelName'), $pageSize);
+        $data = InviteUserService::getBatchChangedRecords(compact('operName', 'inviteChannelName'), $pageSize);
 
         return Result::success([
             'list' => $data->items(),
