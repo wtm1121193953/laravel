@@ -206,6 +206,7 @@ class InviteStatisticsService
      * @param $originType
      * @param $params
      * @param bool $withQuery
+     * @return User|array
      */
     public static function getInviteUsersByOriginInfo($originId, $originType, $params = [], $withQuery = false)
     {
@@ -258,6 +259,7 @@ class InviteStatisticsService
      * @param bool $withQuery
      * @param array $param
      * @return User|array
+     * @deprecated
      */
     public static function getInviteRecordListByMerchantId($merchantId, $mobile = '', $withQuery = false, $param = [])
     {
