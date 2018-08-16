@@ -32,6 +32,14 @@ class EmailService extends BaseService
 
     	//返回发送失败信息到页面
     	if(isset($result['code']) && $result['code'] == '000'){
+            // 将旧的验证码置位无效
+            EmailVerifyCode::where('email', $email)
+                ->where('type', 1)
+                ->where('status', 1)
+                ->update([
+                    'status' => 2
+                ]);
+            // 添加新的验证码记录
             $record = new EmailVerifyCode();
             $record->email = $email;
             $record->verify_code = $verifyCode;
