@@ -99,8 +99,8 @@ class MerchantDraftController extends Controller
             throw new ParamInvalidException('商户名称不能重复');
         }
         // 招牌名不能重复
-        $exists = Merchant::where('name', $merchantDraft->signboard_name)->first();
-        $existsDraft = MerchantDraft::where('name', $merchantDraft->signboard_name)->first();
+        $exists = Merchant::where('signboard_name', $merchantDraft->signboard_name)->first();
+        $existsDraft = MerchantDraft::where('signboard_name', $merchantDraft->signboard_name)->first();
         if($exists || $existsDraft){
             throw new ParamInvalidException('招牌名称不能重复');
         }
@@ -144,8 +144,8 @@ class MerchantDraftController extends Controller
             throw new ParamInvalidException('商户名称不能重复');
         }
         // 招牌名不能重复
-        $exists = Merchant::where('name', $merchantDraft->signboard_name)->first();
-        $existsDraft = MerchantDraft::where('name', $merchantDraft->signboard_name)
+        $exists = Merchant::where('signboard_name', $merchantDraft->signboard_name)->first();
+        $existsDraft = MerchantDraft::where('signboard_name', $merchantDraft->signboard_name)
             ->where('id', '<>', $merchantDraft->id)->first();
         if($exists || $existsDraft){
             throw new ParamInvalidException('招牌名称不能重复');

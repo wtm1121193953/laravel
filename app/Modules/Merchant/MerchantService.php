@@ -274,9 +274,9 @@ class MerchantService extends BaseService
             throw new ParamInvalidException('商户名称不能重复');
         }
         // 招牌名不能重复
-        $exists = Merchant::where('name', $merchant->signboard_name)
+        $exists = Merchant::where('signboard_name', $merchant->signboard_name)
             ->where('id', '<>', $merchant->id)->first();
-        $existsDraft = MerchantDraft::where('name', $merchant->signboard_name)->first();
+        $existsDraft = MerchantDraft::where('signboard_name', $merchant->signboard_name)->first();
         if ($exists || $existsDraft) {
             throw new ParamInvalidException('招牌名称不能重复');
         }
@@ -343,8 +343,8 @@ class MerchantService extends BaseService
             throw new ParamInvalidException('商户名称不能重复');
         }
         // 招牌名不能重复
-        $exists = Merchant::where('name', $merchant->signboard_name)->first();
-        $existsDraft = MerchantDraft::where('name', $merchant->signboard_name)->first();
+        $exists = Merchant::where('signboard_name', $merchant->signboard_name)->first();
+        $existsDraft = MerchantDraft::where('signboard_name', $merchant->signboard_name)->first();
         if ($exists || $existsDraft) {
             throw new ParamInvalidException('招牌名称不能重复');
         }
