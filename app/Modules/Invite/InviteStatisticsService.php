@@ -169,6 +169,8 @@ class InviteStatisticsService
                     ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
                     ->whereBetween('created_at', [$firstDay, $lastDay])
                     ->orderBy('created_at', 'desc')
+                    ->offset(10 * ($page - 1))
+                    ->limit(10)
                     ->get();
             }
         }
