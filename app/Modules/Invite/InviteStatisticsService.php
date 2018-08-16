@@ -10,8 +10,8 @@ namespace App\Modules\Invite;
 
 use App\Modules\Order\Order;
 use App\Modules\User\User;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use function PHPSTORM_META\type;
 
 /**
@@ -21,9 +21,17 @@ use function PHPSTORM_META\type;
  */
 class InviteStatisticsService
 {
+
+    /**
+     * 根据日期获取邀请人当日的邀请数
+     * @param $date
+     * @param $originId
+     * @param $originType
+     * @return int
+     */
     public static function getInviteCountByDate($date, $originId, $originType)
     {
-        if($date instanceof Carbon){
+        if($date instanceof \Carbon\Carbon){
             $date = $date->format('Y-m-d');
         }
         return InviteUserRecord::whereDate('created_at', $date)
@@ -33,13 +41,112 @@ class InviteStatisticsService
     }
 
     /**
-     * 获取邀请的统计，通过日期分组
+     * 根据邀请人信息获取今天的邀请数量
+     * @param $originId int 邀请人ID
+     * @param $originType int 邀请人类型
+     * @return int
+     */
+    public static function getTodayInviteCountByOriginInfo($originId, $originType)
+    {
+        return self::getInviteCountByDate(Carbon::now(), $originId, $originType);
+    }
+
+    /**
+     * 获取用户类型邀请人当天的邀请数量
+     * @param $userId
+     * @return int
+     */
+    public static function getTodayInviteCountByUserId($userId)
+    {
+        return self::getTodayInviteCountByOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER);
+    }
+
+    /**
+     * 获取用户类型邀请人当天的邀请数量
+     * @param $merchantId
+     * @return int
+     */
+    public static function getTodayInviteCountByMerchantId($merchantId)
+    {
+        return self::getTodayInviteCountByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT);
+    }
+
+    /**
+     * 获取当日的邀请记录统计, 返回一个 InviteUserStatisticsDaily 对象, 不入库
+     * @param $originId
+     * @param $originType
+     * @return InviteUserStatisticsDaily
+     */
+    public static function getTodayStatisticsByOriginInfo($originId, $originType)
+    {
+        $today = new InviteUserStatisticsDaily();
+        $date = date('Y-m-d');
+        $today->date = $date;
+        $today->invite_count = self::getTodayInviteCountByOriginInfo($originId, $originType);
+
+        return $today;
+    }
+
+    /**
+     * 获取每日统计记录, 不包含当日数据
+     * @param $originId
+     * @param $originType
+     * @param array $params 查询条件
+     * @param int $pageSize
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getDailyStaticsByOriginInfo($originId, $originType, $params = [], $pageSize = 15)
+    {
+        $data = InviteUserStatisticsDaily::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->orderByDesc('date')
+            ->paginate($pageSize);
+        return $data;
+    }
+
+    /**
+     * 获取商户的邀请总数
+     * @param $originId
+     * @param $originType
+     * @return int
+     */
+    public static function getTotalInviteCountByOriginInfo($originId, $originType)
+    {
+        $totalCount = InviteUserStatisticsDaily::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->sum('invite_count');
+        $todayInviteCount = self::getTodayInviteCountByOriginInfo($originId, $originType);
+        return $totalCount + $todayInviteCount;
+    }
+
+    /**
+     * 获取用户类型邀请人的邀请总数
+     * @param $userId
+     * @return int
+     */
+    public static function getTotalInviteCountByUserId($userId)
+    {
+        return self::getTotalInviteCountByOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER);
+    }
+
+    /**
+     * 获取商户类型邀请人的邀请总数
+     * @param $merchantId
+     * @return int
+     */
+    public static function getTotalInviteCountByMerchantId($merchantId)
+    {
+        return self::getTotalInviteCountByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT);
+    }
+
+    /**
+     * 获取邀请的统计，通过日期分组 (用于用户端获取)
      * @param $userId
      * @param $date
      * @param int $page
      * @return array
      */
-    public static function getInviteStatisticsByDate($userId, $date, $page = 1)
+    public static function getInviteStatisticsByDateForUser($userId, $date, $page = 1)
     {
         $now = date('Y-m', time());
         $time = $date ?: $now;
@@ -92,44 +199,54 @@ class InviteStatisticsService
     }
 
     /**
-     * 获取用户的邀请总数
-     * @param $userId
-     * @return mixed
+     * 根据渠道信息获取渠道邀请的用户列表
+     * @param $originId
+     * @param $originType
+     * @param $params
+     * @param bool $withQuery
      */
-    public static function getInviteUserCountById($userId)
+    public static function getInviteUsersByOriginInfo($originId, $originType, $params = [], $withQuery = false)
     {
-        $totalCount = InviteUserRecord::where('origin_id', $userId)
-            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
-            ->count();
-        return $totalCount;
-    }
+        $mobile = array_get($params, 'mobile');
+        $userIds = InviteUserRecord::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->select('user_id')
+            ->get()
+            ->pluck('user_id');
+        $query = User::whereIn('id', $userIds)
+            ->when($mobile, function (Builder $query) use ($mobile) {
+                $query->where('mobile', 'like', "%$mobile%");
+            })
+            ->orderBy('created_at', 'desc');
 
-    /**
-     * 获取商户的邀请总数
-     * @param $merchantId
-     * @param $todayInviteCount
-     * @return int
-     */
-    public static function getInviteUserCountByMerchantId($merchantId, $todayInviteCount)
-    {
-        $totalCount = InviteUserStatisticsDaily::where('origin_id', $merchantId)
-            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
-            ->sum('invite_count');
-        return $totalCount + $todayInviteCount;
-    }
+        if($withQuery) return $query;
 
-    /**
-     * 获取用户的当天邀请总数
-     * @param $userId
-     * @return int
-     */
-    public static function getTodayInviteCountById($userId)
-    {
-        $todayInviteCount = InviteUserRecord::where('origin_id', $userId)
-            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
-            ->whereBetween('created_at', [date('Y-m-d 00:00:00', time()), date('Y-m-d 23:59:59', time())])
-            ->count();
-        return $todayInviteCount;
+        $page = array_get($params, 'page', 1);
+        $pageSize = array_get($params, 'pageSize', 15);
+        $orderColumn = array_get($params, 'orderColumn', 'id');
+        $orderType = array_get($params, 'orderType', 'descending');
+
+        $total = $query->count();
+        $data = $query->get();
+        // todo 用户表添加 order_count 字段, 记录用户的下单数
+        $data->each(function ($item) {
+            $item->order_number = Order::where('user_id', $item->id)
+                ->whereNotIn('status', [Order::STATUS_UN_PAY, Order::STATUS_CLOSED])
+                ->count();
+        });
+
+        if ($orderType == 'descending') {
+            $data = $data->sortBy($orderColumn);
+        } elseif ($orderType == 'ascending') {
+            $data = $data->sortByDesc($orderColumn);
+        }
+
+        $data = $data->forPage($page,$pageSize)->values()->all();
+
+        return [
+            'data' => $data,
+            'total' => $total,
+        ];
     }
 
     /**
