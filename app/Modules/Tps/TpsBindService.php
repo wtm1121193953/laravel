@@ -175,7 +175,7 @@ class TpsBindService extends BaseService
         // 判断tps帐号是否已绑定
         $bindInfo = self::getTpsBindInfoByTpsAccount($tpsAccount);
         if(!empty($bindInfo)){
-            throw new BaseResponseException('绑定失败，该TPS帐号已被绑定');
+            throw new BaseResponseException('很遗憾！绑定失败，该TPS帐号已被绑定！');
         }
         // 判断用户上级是否已绑定
         $inviteRecord = InviteUserService::getInviteRecordByUserId($userId);
