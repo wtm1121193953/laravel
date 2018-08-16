@@ -131,7 +131,7 @@ class InviteChannelController extends Controller
         $mobile = request('mobile');
         $startTime = request('startTime');
         $endTime = request('endTime');
-        $data = InviteUserService::getRecordsByInviteChannelId(
+        $data = InviteUserService::getInviteRecordsByInviteChannelId(
             $id,
             compact('mobile', 'startTime', 'endTime')
         );
@@ -151,7 +151,7 @@ class InviteChannelController extends Controller
         $startTime = request('startTime');
         $endTime = request('endTime');
 
-        $query = InviteUserService::getRecordsByInviteChannelId(
+        $query = InviteUserService::getInviteRecordsByInviteChannelId(
             $id,
             compact('mobile', 'startTime', 'endTime'),
             true
