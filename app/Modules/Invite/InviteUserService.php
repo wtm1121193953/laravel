@@ -386,7 +386,7 @@ class InviteUserService
         $inviteChannelName = array_get($param, 'inviteChannelName');
 
         $query = InviteUserBatchChangedRecord::when($operName, function (Builder $query) use ($operName) {
-            $query->where('oper_name', 'like', "%$operName%");
+            $query->where('invite_channel_oper_name', 'like', "%$operName%");
         })
             ->when($inviteChannelName, function (Builder $query) use ($inviteChannelName) {
                 $query->where('invite_channel_name', 'like', "%$inviteChannelName%");
