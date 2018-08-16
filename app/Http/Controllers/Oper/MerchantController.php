@@ -54,6 +54,7 @@ class MerchantController extends Controller
         $data = [
             'audit_status' => request('audit_status'),
             'status' => request('status'),
+            'operId' => request()->get('current_user')->oper_id,
         ];
         $list = MerchantService::getAllNames($data);
         return Result::success([
@@ -98,7 +99,9 @@ class MerchantController extends Controller
         }
         $this->validate(request(), $validate);
 
-        $merchant = MerchantService::add();
+        $currentOperId = request()->get('current_user')->oper_id;
+
+        $merchant = MerchantService::add($currentOperId);
 
         return Result::success($merchant);
     }
@@ -127,7 +130,7 @@ class MerchantController extends Controller
             throw new ParamInvalidException('负责人手机号码不合法');
         }
 
-        $merchant = MerchantService::edit(request('id'));
+        $merchant = MerchantService::edit(request('id'),request()->get('current_user')->oper_id);
 
         return Result::success($merchant);
     }
@@ -213,23 +216,12 @@ class MerchantController extends Controller
             'account' => 'required',
             'password' => 'required|min:6',
         ]);
-        $account = MerchantAccount::where('merchant_id', request('merchant_id'))->first();
-        if(!empty($account)){
-            throw new BaseResponseException('该商户账户已存在, 不能重复创建');
-        }
-        // 查询账号是否重复
-        if(!empty(MerchantAccount::where('account', request('account'))->first())){
-            throw new BaseResponseException('帐号重复, 请更换帐号');
-        }
-        $account = new MerchantAccount();
+        $merchantId = request('merchant_id');
+        $getAccount = request('account');
+        $operId = request()->get('current_user')->oper_id;
+        $password = request('password');
 
-        $account->oper_id = request()->get('current_user')->oper_id;
-        $account->account = request('account');
-        $account->merchant_id = request('merchant_id');
-        $salt = str_random();
-        $account->salt = $salt;
-        $account->password = MerchantAccount::genPassword(request('password'), $salt);
-        $account->save();
+        $account = MerchantService::createAccount($merchantId,$getAccount,$operId,$password);
 
         return Result::success($account);
     }
@@ -245,12 +237,10 @@ class MerchantController extends Controller
             'id' => 'required|integer|min:1',
             'password' => 'required|min:6',
         ]);
-        $account = MerchantAccount::findOrFail(request('id'));
-        $salt = str_random();
-        $account->salt = $salt;
-        $account->password = MerchantAccount::genPassword(request('password'), $salt);
+        $id = request('id');
+        $password = request('password');
 
-        $account->save();
+        $account = MerchantService::editAccount($id,$password);
 
         return Result::success($account);
     }

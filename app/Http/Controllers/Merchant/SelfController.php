@@ -61,10 +61,11 @@ class SelfController extends Controller
             'newPassword' => 'required|between:6,30',
             'reNewPassword' => 'required|same:newPassword'
         ]);
+        $user = request()->get('current_user');
         $password = request('password');
         $newPassword = request('newPassword');
 
-        $user = MerchantAccountService::modifyPassword($password,$newPassword);
+        $user = MerchantAccountService::modifyPassword($user,$password,$newPassword);
 
         return Result::success($user);
     }

@@ -26,7 +26,7 @@
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="name" label="运营中心名称" width="300px"/>
             <el-table-column prop="contacter" label="负责人" />
-            <el-table-column prop="tel" label="联系电话" />
+            <el-table-column prop="tel" label="手机号码" />
             <el-table-column prop="status" label="合作状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常合作中</span>

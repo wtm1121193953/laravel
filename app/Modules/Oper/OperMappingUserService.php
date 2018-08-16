@@ -1,41 +1,47 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: 57458
+ * Date: 2018/7/23
+ * Time: 17:38
+ */
 
-namespace App\Modules\User;
+namespace App\Modules\Oper;
 
-use App\BaseModel;
-use App\Exceptions\ParamInvalidException;
+
+use App\BaseService;
 use App\Exceptions\BaseResponseException;
-use App\Exceptions\DataNotFoundException;
 use App\Modules\Invite\InviteUserRecord;
-use App\Modules\Merchant\MerchantService;
 use App\Modules\Sms\SmsVerifyCode;
+use App\Modules\User\User;
+use App\Modules\User\UserMapping;
+use App\Result;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Class UserMapping
- * @package App\Modules\User
- *
- * @property int    origin_id
- * @property int    origin_type
- * @property int    user_id
- *
- */
-class UserMappingService extends BaseModel
+class OperMappingUserService extends BaseService
 {
-    public static function getMappingUser($origin_id){
 
+    public static function getMappingUser($origin_id,$origin_type)
+    {
         $userMapping = UserMapping::where('origin_id', $origin_id)
-            ->where('origin_type', UserMapping::ORIGIN_TYPE_MERCHANT)
+            ->where('origin_type', $origin_type)
             ->first();
-
+        if(empty($userMapping)){
+            return Result::success();
+        }
         $user = User::findOrFail($userMapping->user_id);
 
         return $user;
     }
 
-    public static function bindUser($merchantId,$mobile,$verifyCode){
+    public static function getUser($id){
+        $user = User::findOrFail($id);
+        return $user;
+    }
+
+    public static function getOperBindUser($mobile,$operId,$verifyCode){
 
         if($user = User::where('mobile', $mobile)->first()){
             $mappingUser = UserMapping::where('user_id', $user->id)->first();
@@ -44,11 +50,11 @@ class UserMappingService extends BaseModel
             }
 
             $inviteUserRecord = InviteUserRecord::where('user_id', $user->id)
-                ->where('origin_id', $merchantId)
-                ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
+                ->where('origin_id', $operId)
+                ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_OPER)
                 ->first();
             if (!empty($inviteUserRecord)){
-                throw new BaseResponseException('不能绑定该商户所邀请的用户');
+                throw new BaseResponseException('不能绑定该运营中心所邀请的用户');
             }
         }
 
@@ -76,18 +82,14 @@ class UserMappingService extends BaseModel
         }
 
         //商户merchants表 关联user_id
-
-        $merchant = MerchantService::getById($merchantId);
-        if(empty($merchant)){
-            throw new DataNotFoundException('商户信息不存在');
-        }
+        $merchant = Oper::findOrFail($operId);
         $merchant->mapping_user_id = $user->id;
         $merchant->save();
 
         //用户创建后，添加 用户与商户及运营中心映射
         $userMapping = new UserMapping();
-        $userMapping->origin_id = $merchantId;
-        $userMapping->origin_type = 1;
+        $userMapping->origin_id = $operId;
+        $userMapping->origin_type = 2;
         $userMapping->user_id = $user->id;
         $userMapping->save();
 
@@ -95,4 +97,5 @@ class UserMappingService extends BaseModel
 
         return $user;
     }
+
 }

@@ -9,7 +9,6 @@ use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserChangeBindRecordService;
-use App\Modules\Invite\InviteUserUnbindRecordService;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Oper\OperService;
@@ -104,7 +103,7 @@ class UsersController extends Controller
         $mobile = request('mobile', '');
         $noPaginate = request('noPaginate', false);
         if ($noPaginate) {
-            $query = InviteUserService::getRecordsByInviteChannelId($id, compact('mobile'), true);
+            $query = InviteUserService::getInviteRecordsByInviteChannelId($id, compact('mobile'), true);
             $total = $query->count();
             $data = $query->get();
 
@@ -113,7 +112,7 @@ class UsersController extends Controller
                 'total' => $total,
             ]);
         }else {
-            $data = InviteUserService::getRecordsByInviteChannelId($id, compact('mobile'));
+            $data = InviteUserService::getInviteRecordsByInviteChannelId($id, compact('mobile'));
 
             return Result::success([
                 'list' => $data->items(),
@@ -153,10 +152,10 @@ class UsersController extends Controller
 
         // 获取需要换绑的邀请记录
         if ($isAll) {
-            $query = InviteUserService::getRecordsByInviteChannelId($inviteChannelId, [], true);
+            $query = InviteUserService::getInviteRecordsByInviteChannelId($inviteChannelId, [], true);
             $inviteUserRecords = $query->get();  //需换绑的记录
         } else {
-            $inviteUserRecords = InviteUserService::getRecordsByIds($inviteUserRecordIds); //需换绑的记录
+            $inviteUserRecords = InviteUserService::getInviteRecordsByIds($inviteUserRecordIds); //需换绑的记录
         }
 
         // 记录换绑成功的数量
@@ -179,7 +178,7 @@ class UsersController extends Controller
                 $needStatisticsDate[$date] = $date;
 
                 try {
-                    InviteUserService::changeInviteChannelForInviteRecord($inviteUserRecord, $newInviteChannel, $inviteUserBatchChangedRecord->id);
+                    InviteUserService::changeInviter($inviteUserRecord, $newInviteChannel, $inviteUserBatchChangedRecord->id);
                     $changeBindNumber ++;
                 }catch (\Exception $e){
                     $changeBindErrorNumber ++;
@@ -221,7 +220,7 @@ class UsersController extends Controller
         $inviteChannelName = request('inviteChannelName', '');
         $pageSize = request('pageSize');
 
-        $data = InviteUserChangeBindRecordService::getChangeBindRecordList(compact('operName', 'inviteChannelName'), $pageSize);
+        $data = InviteUserService::getBatchChangedRecords(compact('operName', 'inviteChannelName'), $pageSize);
 
         return Result::success([
             'list' => $data->items(),
@@ -241,7 +240,7 @@ class UsersController extends Controller
         $batchRecordId = request('id');
         $pageSize = request('pageSize', 15);
 
-        $data = InviteUserUnbindRecordService::getUnbindRecordList(compact('batchRecordId'), $pageSize);
+        $data = InviteUserService::getUnbindRecordsByBatchId($batchRecordId, $pageSize);
 
         return Result::success([
             'list' => $data->items(),
