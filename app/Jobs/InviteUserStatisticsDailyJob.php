@@ -25,7 +25,7 @@ class InviteUserStatisticsDailyJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param Carbon $date
      */
     public function __construct(Carbon $date)
     {
@@ -46,15 +46,16 @@ class InviteUserStatisticsDailyJob implements ShouldQueue
             ->select('origin_id', 'origin_type')
             ->selectRaw('count(1) as total')
             ->get();
-        $list->each(function($item){
+        $date = $this->date;
+        $list->each(function($item) use ($date){
             // 统计时先查询, 如果存在, 则在原基础上修改
-            $statDaily = InviteUserStatisticsDaily::where('date', $this->date)
+            $statDaily = InviteUserStatisticsDaily::where('date', $date->format('Y-m-d'))
                 ->where('origin_id', $item->origin_id)
                 ->where('origin_type', $item->origin_type)
                 ->first();
             if(empty($statDaily)){
                 $statDaily = new InviteUserStatisticsDaily();
-                $statDaily->date = $this->date;
+                $statDaily->date = $date;
                 $statDaily->origin_id = $item->origin_id;
                 $statDaily->origin_type = $item->origin_type;
             }
