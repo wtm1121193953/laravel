@@ -32,13 +32,14 @@ class MappingUserController extends Controller
             'mobile' => 'required|size:11',
             'verify_code' => 'required|size:4',
         ]);
+        $merchantId = request()->get('current_user')->merchant_id;
         $mobile = request('mobile');
         if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}/', $mobile)){
             throw new ParamInvalidException('手机号码不合法');
         }
         $verifyCode = request('verify_code');
 
-        $user = UserMappingService::bindUser($mobile,$verifyCode);
+        $user = UserMappingService::bindUser($merchantId,$mobile,$verifyCode);
 
         return Result::success([
                 'userInfo' => $user

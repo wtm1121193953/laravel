@@ -112,13 +112,12 @@ class MerchantAccountService extends BaseService
     }
 
     /**
+     * @param $user
      * @param $password
      * @param $newPassword
      * @return MerchantAccount|mixed
      */
-    public static function modifyPassword($password,$newPassword){
-
-        $user = request()->get('current_user');
+    public static function modifyPassword($user,$password,$newPassword){
 
         // 检查原密码是否正确
         if(MerchantAccount::genPassword($password, $user->salt) !== $user->password){
