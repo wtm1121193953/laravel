@@ -77,11 +77,13 @@ class UsersController extends Controller
         $inviteChannelName = request('inviteChannelName', '');
         $pageSize = request('pageSize', 15);
 
-        $query = InviteChannelService::getAllOperInviteChannels(true, $operName, $inviteChannelName);
+        $query = InviteChannelService::getOperInviteChannels([
+            'operName' => $operName,
+            'inviteChannelName' => $inviteChannelName
+        ], true);
         $data = $query->paginate($pageSize);
         $data->each(function ($item) {
-            $oper = OperService::detail($item->oper_id);
-            $item->operName = $oper->name;
+            $item->operName = OperService::getNameById($item->oper_id);
         });
 
         return Result::success([
