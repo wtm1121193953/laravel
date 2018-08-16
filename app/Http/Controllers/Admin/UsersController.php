@@ -238,10 +238,10 @@ class UsersController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $changeBindRecordId = request('id');
+        $batchRecordId = request('id');
         $pageSize = request('pageSize', 15);
 
-        $data = InviteUserUnbindRecordService::getUnbindRecordList(compact('changeBindRecordId'), $pageSize);
+        $data = InviteUserUnbindRecordService::getUnbindRecordList(compact('batchRecordId'), $pageSize);
 
         return Result::success([
             'list' => $data->items(),

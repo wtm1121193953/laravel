@@ -51,9 +51,9 @@ class InviteUserUnbindRecordService extends BaseService
      */
     public static function getUnbindRecordList($param = [], $pageSize = 15, $withQuery = false)
     {
-        $changeBindRecordId = array_get($param, 'changeBindRecordId');
-        $query = InviteUserUnbindRecord::when($changeBindRecordId, function (Builder $query) use ($changeBindRecordId) {
-                $query->where('change_bind_record_id', $changeBindRecordId);
+        $batchRecordId = array_get($param, 'batchRecordId');
+        $query = InviteUserUnbindRecord::when($batchRecordId, function (Builder $query) use ($batchRecordId) {
+                $query->where('batch_record_id', $batchRecordId);
             })
             ->orderBy('id', 'desc');
         if ($withQuery) {
