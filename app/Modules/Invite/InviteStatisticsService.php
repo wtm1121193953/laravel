@@ -303,26 +303,5 @@ class InviteStatisticsService
         }
     }
 
-    public static function getDailyList($operId,$page)
-    {
-        $data = InviteUserStatisticsDaily::where('origin_id', $operId)
-            ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
-            ->orderByDesc('date')
-            ->paginate();
-        // 如果是第一页, 获取当日数据统计并添加到列表中
-        if($page <= 1){
-            $today = new InviteUserStatisticsDaily();
-            $date = date('Y-m-d');
-            $today->date = $date;
-            $today->invite_count = InviteStatisticsService::getInviteCountByDate(
-                $date, $operId, InviteChannel::ORIGIN_TYPE_OPER
-            );
-            if($today->invite_count > 0){
-                $data->prepend($today);
-            }
-        }
-        return $data;
-    }
-
 
 }
