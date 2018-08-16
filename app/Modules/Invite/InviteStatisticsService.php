@@ -12,7 +12,6 @@ use App\Modules\Order\Order;
 use App\Modules\User\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
-use function PHPSTORM_META\type;
 
 /**
  * 邀请记录统计相关服务

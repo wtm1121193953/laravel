@@ -45,6 +45,7 @@ class InviteUserRecordExport implements FromQuery, WithMapping, WithHeadings
             $data->created_at,
             $data->mobile,
             $data->wx_nick_name,
+            // todo 优化, 将商户下单数放入用户表中, 提高性能
             Order::where('user_id', $data->id)
                 ->whereNotIn('status', [Order::STATUS_UN_PAY, Order::STATUS_CLOSED])
                 ->count() ?: '0',
