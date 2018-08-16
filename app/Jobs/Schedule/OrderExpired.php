@@ -1,35 +1,28 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Schedule;
 
-use App\Modules\Invite\InviteStatisticsService;
+use App\Modules\Order\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
-/**
- * 邀请用户每日统计定时任务
- * Class InviteUserStatisticsDailyJob
- * @package App\Jobs
- */
-class InviteUserStatisticsDailyJob implements ShouldQueue
+class OrderExpired implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    protected $date;
 
     /**
      * Create a new job instance.
      *
-     * @param Carbon $date
+     * @return void
      */
-    public function __construct(Carbon $date)
+    public function __construct()
     {
         //
-        $this->date = $date;
     }
 
     /**
@@ -39,7 +32,11 @@ class InviteUserStatisticsDailyJob implements ShouldQueue
      */
     public function handle()
     {
-        // 执行每日数据统计
-        InviteStatisticsService::updateDailyStatisticsByDate($this->date);
+        //
+        Log::info('开始执行订单超时自动关闭定时任务');
+        Order::where('status', 1)
+            ->where('created_at', '<', Carbon::now()->subDay())
+            ->update(['status' => Order::STATUS_CLOSED]);
+        Log::info('订单超时自动关闭定时任务执行完成');
     }
 }

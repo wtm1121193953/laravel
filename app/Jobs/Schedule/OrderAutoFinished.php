@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Schedule;
 
 use App\Modules\Order\Order;
 use Illuminate\Bus\Queueable;
