@@ -8,19 +8,17 @@
 
 namespace App\Http\Controllers\Admin\Auth;
 
-use App\Exceptions\BaseResponseException;
 use App\Exceptions\NoPermissionException;
 use App\Http\Controllers\Controller;
-use App\Modules\Admin\AdminUser;
+use App\Modules\Admin\AdminUserService;
 use App\Result;
-use App\ResultCode;
 
 class UserController extends Controller
 {
 
     public function getList()
     {
-        $list = AdminUser::all();
+        $list = AdminUserService::getAllUsers();
         return Result::success([
             'list' => $list
         ]);
@@ -32,19 +30,14 @@ class UserController extends Controller
             'username' => 'required',
             'password' => 'required|between:6,30'
         ]);
-        $user = AdminUser::where('username', request('username'))->first();
-        if($user){
-            throw new BaseResponseException('帐号已存在', ResultCode::ACCOUNT_EXISTS);
-        }
-        $user = new AdminUser();
-        $user->username = request('username');
-        $salt = str_random();
-        $user->salt = $salt;
-        $user->password = AdminUser::genPassword(request('password'), $salt);
-        $user->group_id = request('group_id', 0);
-        $user->super = 2;
-        $user->status = request('status', 1);
-        $user->save();
+
+        $user = AdminUserService::add(
+            request('username'),
+            request('password'),
+            request('group_id', 0),
+            request('status', 1)
+        );
+
         return Result::success($user);
     }
 
@@ -54,11 +47,12 @@ class UserController extends Controller
             'id' => 'required|integer|min:1',
             'username' => 'required',
         ]);
-        $user = AdminUser::findOrFail(request('id'));
-        $user->username = request('username');
-        $user->group_id = request('group_id', 0);
-        $user->status = request('status', 1);
-        $user->save();
+        $user = AdminUserService::edit(
+            request('id'),
+            request('username'),
+            request('group_id', 0),
+            request('status', 1)
+        );
         return Result::success($user);
     }
 
@@ -72,11 +66,7 @@ class UserController extends Controller
             'id' => 'required|integer|min:1',
             'password' => 'required|between:6,30'
         ]);
-        $user = AdminUser::findOrFail(request('id'));
-        $salt = str_random();
-        $user->salt = $salt;
-        $user->password = AdminUser::genPassword(request('password'), $salt);
-        $user->save();
+        $user = AdminUserService::resetPassword(request('id'), request('password'));
         return Result::success($user);
     }
 
@@ -86,9 +76,7 @@ class UserController extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer'
         ]);
-        $user = AdminUser::findOrFail(request('id'));
-        $user->status = request('status');
-        $user->save();
+        $user = AdminUserService::changeStatus(request('id'), request('status'));
         return Result::success($user);
     }
 
@@ -101,11 +89,9 @@ class UserController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $user = AdminUser::findOrFail(request('id'));
-        if($user->isSuper()){
-            throw new BaseResponseException('无权限删除', ResultCode::NO_PERMISSION);
-        }
-        $user->delete();
+
+        $user = AdminUserService::del(request('id'));
+
         return Result::success($user);
     }
 }

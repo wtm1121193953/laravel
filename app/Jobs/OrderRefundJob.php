@@ -3,8 +3,11 @@
 namespace App\Jobs;
 
 use App\Exceptions\BaseResponseException;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
+use App\Modules\Merchant\Merchant;
+use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
+use App\Modules\User\User;
 use App\Modules\User\UserMapping;
 use App\Modules\UserCredit\UserConsumeQuotaRecord;
 use App\Modules\UserCredit\UserCredit;
@@ -40,6 +43,16 @@ class OrderRefundJob implements ShouldQueue
      */
     public function handle()
     {
+        //处理消费额 消费额逻辑需要修改
+        $this->handleConsumeQuota($this->order);
+    }
+
+    /**
+     * 处理消费额
+     * @param $order
+     */
+    private function handleConsumeQuota($order)
+    {
         if ($this->order->status != Order::STATUS_REFUNDED){
             Log::info('订单号：'. $this->order->order_no. ', 状态：'. $this->order->status . ', 不统计退款积分和消费额！');
             return;
@@ -54,10 +67,15 @@ class OrderRefundJob implements ShouldQueue
 
             try{
                 DB::beginTransaction();
-                //处理消费额
-                $this->handleUserConsumeQuota($this->order);
-                //处理积分
-                $this->handleCredit($this->order);
+                // 处理消费的用户的消费额
+                $this->handleUserSelfConsumeQuota($order);
+                // 获取用户的上级
+                $parent = InviteUserService::getParent($order->user_id);
+
+                if (!empty($parent)){
+                    $this->handleParentUserConsumeQuota($order, $parent);
+                }
+
                 DB::commit();
             }catch (\Exception $e){
                 Log::error('订单退款积分任务执行错误,错误信息:'. $e->getMessage(), [
@@ -66,22 +84,6 @@ class OrderRefundJob implements ShouldQueue
                 ]);
                 DB::rollBack();
             }
-        }
-    }
-
-    /**
-     * 处理消费额
-     * @param $order
-     */
-    private function handleUserConsumeQuota($order)
-    {
-        // 处理消费的用户的消费额
-        $this->handleUserSelfConsumeQuota($order);
-        // 获取用户的上级
-        $parentUser = InviteService::getParentUser($order->user_id);
-
-        if (!empty($parentUser)){
-            $this->handleParentUserConsumeQuota($order, $parentUser);
         }
     }
 
@@ -127,144 +129,52 @@ class OrderRefundJob implements ShouldQueue
 
     /**
      * 处理用户上级的消费额记录
-     * @param $order
-     * @param $parentUser
+     * @param Order $order
+     * @param User|Merchant|Oper $parent
      */
-    private function handleParentUserConsumeQuota($order, $parentUser)
+    private function handleParentUserConsumeQuota($order, $parent)
     {
-        //查找上级的消费额记录
-        $userConsumeQuotaRecord = UserConsumeQuotaRecord::where('user_id', $parentUser->id)
-            ->where('order_no', $order->order_no)
-            ->where('type', UserConsumeQuotaRecord::TYPE_TO_PARENT)
-            ->where('inout_type', UserConsumeQuotaRecord::IN_TYPE)
-            ->first();
-        if (empty($userConsumeQuotaRecord)){
-            Log::error('用户自己退款添加上级消费额记录时，未找到用户上级的消费额记录', ['order' => $order]);
-            throw new BaseResponseException('用户自己退款添加上级消费额记录时，未找到用户上级的消费额记录');
-        }
+        if($parent instanceof User){
+            // 如果上级是用户, 处理用户的消费额
 
-        // 加退款的用户上级消费额记录
-        $userConsumeQuotaRecords = new UserConsumeQuotaRecord();
-        $userConsumeQuotaRecords->user_id = $parentUser->id;
-        $userConsumeQuotaRecords->consume_quota = $userConsumeQuotaRecord->consume_quota;
-        $userConsumeQuotaRecords->inout_type = UserConsumeQuotaRecord::OUT_TYPE;
-        $userConsumeQuotaRecords->type = UserConsumeQuotaRecord::TYPE_TO_REFUND;
-        $userConsumeQuotaRecords->order_no = $order->order_no;
-        $userConsumeQuotaRecords->consume_user_mobile = $order->notify_mobile;
-        $userConsumeQuotaRecords->save();
+            //查找上级的消费额记录
+            $userConsumeQuotaRecord = UserConsumeQuotaRecord::where('user_id', $parent->id)
+                ->where('order_no', $order->order_no)
+                ->where('type', UserConsumeQuotaRecord::TYPE_TO_PARENT)
+                ->where('inout_type', UserConsumeQuotaRecord::IN_TYPE)
+                ->first();
+            if (empty($userConsumeQuotaRecord)){
+                Log::error('用户自己退款添加上级消费额记录时，未找到用户上级的消费额记录', ['order' => $order]);
+                throw new BaseResponseException('用户自己退款添加上级消费额记录时，未找到用户上级的消费额记录');
+            }
 
-        // 加退款的总消费额
-        $userCredit = UserCredit::where('user_id', $parentUser->id)->first();
-        if (empty($userCredit)){
-            Log::error('用户积分表中没有用户id为'.$parentUser->id.'的积分消费额的记录，用户上级退款减消费额失败',[
-                'order' => $order,
-                'parentUser' => $parentUser
-            ]);
-            throw new BaseResponseException('用户上级退款减消费额失败');
-        }else {
-            $userCredit->consume_quota = DB::raw('consume_quota - ' . $userConsumeQuotaRecord->consume_quota);
-            $userCredit->save();
+            // 加退款的用户上级消费额记录
+            $userConsumeQuotaRecords = new UserConsumeQuotaRecord();
+            $userConsumeQuotaRecords->user_id = $parent->id;
+            $userConsumeQuotaRecords->consume_quota = $userConsumeQuotaRecord->consume_quota;
+            $userConsumeQuotaRecords->inout_type = UserConsumeQuotaRecord::OUT_TYPE;
+            $userConsumeQuotaRecords->type = UserConsumeQuotaRecord::TYPE_TO_REFUND;
+            $userConsumeQuotaRecords->order_no = $order->order_no;
+            $userConsumeQuotaRecords->consume_user_mobile = $order->notify_mobile;
+            $userConsumeQuotaRecords->save();
+
+            // 加退款的总消费额
+            $userCredit = UserCredit::where('user_id', $parent->id)->first();
+            if (empty($userCredit)){
+                Log::error('用户积分表中没有用户id为'.$parent->id.'的积分消费额的记录，用户上级退款减消费额失败',[
+                    'order' => $order,
+                    'parentUser' => $parent
+                ]);
+                throw new BaseResponseException('用户上级退款减消费额失败');
+            }else {
+                $userCredit->consume_quota = DB::raw('consume_quota - ' . $userConsumeQuotaRecord->consume_quota);
+                $userCredit->save();
+            }
+        }else if($parent instanceof Merchant) {
+            // 如果上级是商户, 处理商户的消费额
+        }else if ($parent instanceof Oper){
+            // 如果上级是运营中心, 处理运营中心的消费额
         }
     }
 
-
-    /**
-     * 处理积分
-     * @param $order
-     */
-    private function handleCredit($order)
-    {
-        // 处理消费用户自己的积分
-        $this->handleUserSelfCredit($order);
-
-        // 处理上级用户的积分
-        // 获取上级
-        $parentUser = InviteService::getParentUser($order->user_id);
-        if(!empty($parentUser)){
-            $this->handleParentUserCredit($order, $parentUser);
-        }
-    }
-
-    /**
-     * 处理用户自己的积分
-     * @param $order
-     */
-    private function handleUserSelfCredit($order)
-    {
-        //查找该订单用户自己的积分记录
-        $userCreditRecordOne = UserCreditRecord::where('user_id', $order->user_id)
-            ->where('inout_type', UserCreditRecord::INOUT_TYPE_IN)
-            ->where('type', UserCreditRecord::TYPE_FROM_SELF)
-            ->where('order_no', $order->order_no)
-            ->first();
-        if (empty($userCreditRecordOne)){
-            Log::error('用户退款退积分时，未找到该订单的积分记录', ['order' => $order]);
-            throw new BaseResponseException('用户退款退积分时，未找到该订单的积分记录');
-        }
-
-        $userCreditRecord = new UserCreditRecord();
-        $userCreditRecord->user_id = $order->user_id;
-        $userCreditRecord->credit = $userCreditRecordOne->credit;
-        $userCreditRecord->inout_type = UserCreditRecord::INOUT_TYPE_OUT;
-        $userCreditRecord->type = UserCreditRecord::TYPE_REFUND;
-        $userCreditRecord->user_level = $userCreditRecordOne->user_level;
-        $userCreditRecord->order_no = $order->order_no;
-        $userCreditRecord->consume_user_mobile = $order->notify_mobile;
-        $userCreditRecord->order_profit_amount = $userCreditRecordOne->order_profit_amount;
-        $userCreditRecord->ratio = $userCreditRecordOne->ratio;
-        $userCreditRecord->credit_multiplier_of_amount = $userCreditRecordOne->credit_multiplier_of_amount;
-        $userCreditRecord->save();
-
-        //减去累计积分
-        $userCredit = UserCredit::where('user_id', $order->user_id)->first();
-        $userCredit->total_credit = $userCredit->total_credit - $userCreditRecordOne->credit;
-        $userCredit->save();
-
-        UserLevelCalculationJob::dispatch($order->user_id);
-    }
-
-    /**
-     * 处理用户父级的积分
-     * @param $order
-     * @param $parentUser
-     */
-    private function handleParentUserCredit($order, $parentUser)
-    {
-        $merchantId = UserMapping::where('user_id', $parentUser->id)
-            ->where('origin_type', 1)
-            ->value('origin_id');
-        $type = $merchantId ? UserCreditRecord::TYPE_FROM_MERCHANT_SHARE : UserCreditRecord::TYPE_FROM_SHARE_SUB;
-
-        //查找该订单用户自己的积分记录
-        $originUserCreditRecord = UserCreditRecord::where('user_id', $parentUser->id)
-            ->where('inout_type', UserCreditRecord::INOUT_TYPE_IN)
-            ->where('type', $type)
-            ->where('order_no', $order->order_no)
-            ->first();
-
-        if (empty($originUserCreditRecord)){
-            return;
-        }
-
-        $userCreditRecord = new UserCreditRecord();
-        $userCreditRecord->user_id = $parentUser->id;
-        $userCreditRecord->credit = $originUserCreditRecord->credit;
-        $userCreditRecord->inout_type = UserCreditRecord::INOUT_TYPE_OUT;
-        $userCreditRecord->type = UserCreditRecord::TYPE_REFUND;
-        $userCreditRecord->user_level = $originUserCreditRecord->user_level;
-        $userCreditRecord->merchant_level = $originUserCreditRecord->merchant_level;
-        $userCreditRecord->order_no = $order->order_no;
-        $userCreditRecord->consume_user_mobile = $order->notify_mobile;
-        $userCreditRecord->order_profit_amount = $originUserCreditRecord->order_profit_amount;
-        $userCreditRecord->ratio = $originUserCreditRecord->ratio;
-        $userCreditRecord->credit_multiplier_of_amount = $originUserCreditRecord->credit_multiplier_of_amount;
-        $userCreditRecord->save();
-
-        //减去累计积分
-        $userCredit = UserCredit::where('user_id', $parentUser->id)->first();
-        $userCredit->total_credit = DB::raw('total_credit - ' . $originUserCreditRecord->credit);
-        $userCredit->save();
-
-        UserLevelCalculationJob::dispatch($parentUser->id);
-    }
 }

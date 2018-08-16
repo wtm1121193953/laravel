@@ -16,7 +16,7 @@
 			    <el-col :span="15">
 			        <el-form :model="form" label-width="80px" @submit.native.prevent ref="form" :rules="formRules">
                         <el-form-item prop="mobile" label="手机号">
-                            <el-input v-model="form.mobile" placeholder="请输入手机号"/>
+                            <el-input v-model="form.mobile" :maxlength="11" placeholder="请输入手机号"/>
                             <div class="tips">请使用未在TPS商城注册过的手机号生成帐号</div>
                         </el-form-item>
 
@@ -103,7 +103,6 @@
                 }
                 this.verifyCodeBtnLoading = true;
 				api.post('/tps/sendVerifyCode', {mobile : this.form.mobile}).then(() => {
-                    this.verifyCodeBtnLoading = false;
                     this.verifyCodeSecond = 60;
 				    this.$message.success('短信发送成功');
 				    let interval = setInterval(() => {
@@ -112,7 +111,9 @@
 				            clearInterval(interval)
                         }
                     }, 1000)
-		        });
+		        }).finally(() => {
+                    this.verifyCodeBtnLoading = false;
+                });
 
             }
 

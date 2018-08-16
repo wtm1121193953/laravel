@@ -15,7 +15,7 @@ use App\Exports\OperInviteRecordsExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
@@ -39,7 +39,7 @@ class InviteChannelController extends Controller
             'orderType' => $orderType,
         ];
 
-        $data = InviteChannelService::getOperInviteChannels($operId, $keyword, false, $param);
+        $data = InviteChannelService::getOperInviteChannelsByOperId($operId, $keyword, false, $param);
 
         return Result::success([
             'list' => $data['data'],
@@ -51,7 +51,7 @@ class InviteChannelController extends Controller
     {
         $keyword = request('keyword', '');
         $operId = request()->get('current_user')->oper_id;
-        $query = InviteChannelService::getOperInviteChannels($operId, $keyword, true);
+        $query = InviteChannelService::getOperInviteChannelsByOperId($operId, $keyword, true);
         return (new OperInviteChannelExport($query))->download('推广渠道列表.xlsx');
     }
 
@@ -131,7 +131,7 @@ class InviteChannelController extends Controller
         $mobile = request('mobile');
         $startTime = request('startTime');
         $endTime = request('endTime');
-        $data = InviteService::getRecordsByInviteChannelId(
+        $data = InviteUserService::getInviteRecordsByInviteChannelId(
             $id,
             compact('mobile', 'startTime', 'endTime')
         );
@@ -151,7 +151,7 @@ class InviteChannelController extends Controller
         $startTime = request('startTime');
         $endTime = request('endTime');
 
-        $query = InviteService::getRecordsByInviteChannelId(
+        $query = InviteUserService::getInviteRecordsByInviteChannelId(
             $id,
             compact('mobile', 'startTime', 'endTime'),
             true

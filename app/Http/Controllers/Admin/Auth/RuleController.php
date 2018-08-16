@@ -9,34 +9,16 @@
 namespace App\Http\Controllers\Admin\Auth;
 
 
-use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
-use App\Modules\Admin\AdminAuthRule;
-use App\Modules\Admin\AdminService;
+use App\Modules\Admin\AdminRuleService;
 use App\Result;
-use App\ResultCode;
 
 class RuleController extends Controller
 {
 
-    private function getRuleListFromTree($tree, &$list)
-    {
-        foreach ($tree as &$item) {
-            $list[] = &$item;
-            if(isset($item['sub']) && is_array($item['sub']) && sizeof($item['sub']) > 0){
-                $this->getRuleListFromTree($item['sub'], $list);
-            }
-        }
-        return $list;
-    }
-
     public function getList()
     {
-        $rules = AdminAuthRule::orderBy('sort')->get();
-        // 封装权限列表, 子权限要在父权限的后面
-        $tree = AdminService::convertRulesToTree($rules);
-        $list = [];
-        $list = $this->getRuleListFromTree($tree, $list);
+        $list = AdminRuleService::getTreeList();
 
         return Result::success([
             'list' => $list,
@@ -45,9 +27,9 @@ class RuleController extends Controller
 
     public function getTree()
     {
-        $rules = AdminAuthRule::orderBy('sort')->get();
+        $rules = AdminRuleService::getAll();
         // 封装权限列表, 子权限要在父权限的后面
-        $tree = AdminService::convertRulesToTree($rules);
+        $tree = AdminRuleService::convertRulesToTree($rules);
 
         return Result::success([
             'tree' => $tree,
@@ -61,16 +43,7 @@ class RuleController extends Controller
             'name' => 'required',
         ]);
 
-        $rule = new AdminAuthRule();
-
-        $rule->name = request('name', '');
-        $rule->pid = request('pid', 0);
-        $rule->level = $rule->pid == 0 ? 1 : 2;
-        $rule->url = request('url', '');
-        $rule->url_all = request('url_all', '');
-        $rule->status = request('status', 1);
-        $rule->sort = request('sort', 1);
-        $rule->save();
+        $rule = AdminRuleService::addFromRequest();
 
         return Result::success($rule);
     }
@@ -81,16 +54,7 @@ class RuleController extends Controller
             'id' => 'required|integer|min:1',
             'name' => 'required'
         ]);
-        $rule = AdminAuthRule::findOrFail(request('id'));
-
-        $rule->name = request('name', '');
-        $rule->pid = request('pid', 0);
-        $rule->level = $rule->pid == 0 ? 1 : 2;
-        $rule->url = request('url', '');
-        $rule->url_all = request('url_all', '');
-        $rule->status = request('status', 1);
-        $rule->sort = request('sort', 1);
-        $rule->save();
+        $rule = AdminRuleService::editFromRequest(request('id'));
 
         return Result::success($rule);
     }
@@ -101,10 +65,7 @@ class RuleController extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer'
         ]);
-        $rule = AdminAuthRule::findOrFail(request('id'));
-
-        $rule->status = request('status');
-        $rule->save();
+        $rule = AdminRuleService::changeStatus(request('id'), request('status'));
 
         return Result::success($rule);
     }
@@ -119,13 +80,7 @@ class RuleController extends Controller
             'id' => 'required|integer|min:1'
         ]);
 
-        $rule = AdminAuthRule::findOrFail(request('id'));
-
-        if(empty($rule->created_at)){
-            throw new BaseResponseException('该权限不能删除', ResultCode::NO_PERMISSION);
-        }
-
-        $rule->delete();
+        $rule = AdminRuleService::del(request('id'));
 
         return Result::success($rule);
     }

@@ -10,7 +10,7 @@ namespace App\Http\Controllers\Admin\Auth;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Admin\AdminAuthGroup;
+use App\Modules\Admin\AdminGroupService;
 use App\Result;
 
 class GroupController extends Controller
@@ -19,7 +19,7 @@ class GroupController extends Controller
     public function getList()
     {
         return Result::success([
-            'list' => AdminAuthGroup::all(),
+            'list' => AdminGroupService::getAllGroups(),
         ]);
     }
 
@@ -28,11 +28,11 @@ class GroupController extends Controller
         $this->validate(request(), [
             'name' => 'required',
         ]);
-        $group = new AdminAuthGroup();
-        $group->name = request('name');
-        $group->status = request('status', 1);
-        $group->rule_ids = request('rule_ids', '');
-        $group->save();
+        $group = AdminGroupService::add(
+            request('name'),
+            request('rule_ids', ''),
+            request('status', 1)
+        );
 
         return Result::success($group);
     }
@@ -43,11 +43,12 @@ class GroupController extends Controller
             'id' => 'required|integer|min:1',
             'name' => 'required',
         ]);
-        $group = AdminAuthGroup::findOrFail(request('id'));
-        $group->name = request('name');
-        $group->status = request('status', 1);
-        $group->rule_ids = request('rule_ids', '');
-        $group->save();
+        $group = AdminGroupService::edit(
+            request('id'),
+            request('name'),
+            request('rule_ids', ''),
+            request('status', 1)
+        );
 
         return Result::success($group);
     }
@@ -57,9 +58,7 @@ class GroupController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $group = AdminAuthGroup::findOrFail(request('id'));
-        $group->status = request('status', 1);
-        $group->save();
+        $group = AdminGroupService::changeStatus(request('id'), request('status', 1));
 
         return Result::success($group);
     }
@@ -72,8 +71,7 @@ class GroupController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $group = AdminAuthGroup::findOrFail(request('id'));
-        $group->delete();
+        $group = AdminGroupService::del(request('id'));
         return Result::success($group);
     }
 }

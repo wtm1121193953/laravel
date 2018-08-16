@@ -61,10 +61,10 @@ class MerchantService extends BaseService
         // todo 后期可以对查询结果做缓存
         $auditStatus = $data['audit_status'];
         $status = $data['status'];
-        $list = Merchant::where(function (Builder $query) {
-            $currentOperId = request()->get('current_user')->oper_id;
-            $query->where('oper_id', $currentOperId)
-                ->orWhere('audit_oper_id', $currentOperId);
+        $operId = $data['operId'];
+        $list = Merchant::where(function (Builder $query) use ($operId) {
+            $query->where('oper_id', $operId)
+                ->orWhere('audit_oper_id', $operId);
         })
             ->when($status, function (Builder $query) use ($status) {
                 $query->where('status', $status);
@@ -250,11 +250,12 @@ class MerchantService extends BaseService
     /**
      * 编辑商户
      * @param $id
+     * @param $currentOperId
      * @return Merchant
      */
-    public static function edit($id)
+    public static function edit($id,$currentOperId)
     {
-        $currentOperId = request()->get('current_user')->oper_id;
+
         $merchant = Merchant::where('id', $id)
             ->where('audit_oper_id', $currentOperId)
             ->first();
@@ -276,6 +277,13 @@ class MerchantService extends BaseService
         $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
         if ($exists || $existsDraft) {
             throw new ParamInvalidException('商户名称不能重复');
+        }
+        // 招牌名不能重复
+        $exists = Merchant::where('signboard_name', $merchant->signboard_name)
+            ->where('id', '<>', $merchant->id)->first();
+        $existsDraft = MerchantDraft::where('signboard_name', $merchant->signboard_name)->first();
+        if ($exists || $existsDraft) {
+            throw new ParamInvalidException('招牌名称不能重复');
         }
 
         if ($merchant->oper_id > 0) {
@@ -319,17 +327,17 @@ class MerchantService extends BaseService
     }
 
     /**
+     * @param $currentOperId
      * 添加商户
      * @return Merchant
      */
-    public static function add()
+    public static function add($currentOperId)
     {
         $merchant = new Merchant();
         $merchant->fillMerchantPoolInfoFromRequest();
         $merchant->fillMerchantActiveInfoFromRequest();
 
         // 补充商家创建者及审核提交者
-        $currentOperId = request()->get('current_user')->oper_id;
         $merchant->audit_oper_id = $currentOperId;
         $merchant->creator_oper_id = $currentOperId;
 
@@ -338,6 +346,12 @@ class MerchantService extends BaseService
         $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
         if ($exists || $existsDraft) {
             throw new ParamInvalidException('商户名称不能重复');
+        }
+        // 招牌名不能重复
+        $exists = Merchant::where('signboard_name', $merchant->signboard_name)->first();
+        $existsDraft = MerchantDraft::where('signboard_name', $merchant->signboard_name)->first();
+        if ($exists || $existsDraft) {
+            throw new ParamInvalidException('招牌名称不能重复');
         }
 
         $merchant->save();
@@ -459,6 +473,54 @@ class MerchantService extends BaseService
     {
         $value = Merchant::where('id', $merchantId)->value($key);
         return $value;
+    }
+
+    /**
+     * 创建商户账号
+     * @param $merchantId
+     * @param $getAccount
+     * @param $operId
+     * @param $password
+     * @return MerchantAccount
+     */
+    public static function createAccount($merchantId,$getAccount,$operId,$password){
+
+        $isAccount = MerchantAccount::where('merchant_id', $merchantId)->first();
+        if(!empty($isAccount)){
+            throw new BaseResponseException('该商户账户已存在, 不能重复创建');
+        }
+        // 查询账号是否重复
+        if(!empty(MerchantAccount::where('account', $getAccount)->first())){
+            throw new BaseResponseException('帐号重复, 请更换帐号');
+        }
+
+        $account = new MerchantAccount();
+        $account->oper_id = $operId;
+        $account->account = $getAccount;
+        $account->merchant_id = $merchantId;
+        $salt = str_random();
+        $account->salt = $salt;
+        $account->password = MerchantAccount::genPassword($password, $salt);
+        $account->save();
+
+        return $account;
+    }
+
+    /**
+     * 辑商户账号信息, 即修改密码
+     * @param $id
+     * @param $password
+     * @return MerchantAccount
+     */
+    public static function editAccount($id,$password){
+        $account = MerchantAccount::findOrFail($id);
+        $salt = str_random();
+        $account->salt = $salt;
+        $account->password = MerchantAccount::genPassword($password, $salt);
+
+        $account->save();
+
+        return $account;
     }
 
 }

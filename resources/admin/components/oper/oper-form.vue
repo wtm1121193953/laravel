@@ -8,7 +8,7 @@
                 <el-form-item prop="contacter" label="负责人">
                     <el-input v-model="form.contacter" placeholder=""/>
                 </el-form-item>
-                <el-form-item prop="tel" label="联系电话">
+                <el-form-item prop="tel" label="手机号码">
                     <el-input v-model="form.tel" placeholder=""/>
                 </el-form-item>
                 <el-form-item prop="selectAreas" label="城市">
@@ -122,6 +122,13 @@
 
         },
         data(){
+            let validateContacterPhone = (rule, value, callback) => {
+                if (!(/^1[3,4,5,6,7,8,9]\d{9}$/.test(value))) {
+                    callback(new Error('请输入正确的手机号码'));
+                }else {
+                    callback();
+                }
+            };
             let validateIdCard = (rule, value, callback) => {
                 if (!(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value))) {
                     callback(new Error('请输入正确的身份证号码'));
@@ -147,7 +154,8 @@
                         {required: true, type: 'array', message: '地区不能为空' }
                     ],
                     tel: [
-                        {max: 15, message: '联系电话不能超过15个字'}
+                        {required: true, message: '手机号码不能为空'},
+                        {validator: validateContacterPhone}
                     ],
                     email: [
                         {type: 'email', message: '请输入正确的邮箱'},

@@ -12,7 +12,7 @@ namespace App\Http\Controllers\UserApp;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannelService;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Sms\SmsVerifyCode;
@@ -73,7 +73,7 @@ class LoginController extends Controller
             if(empty($inviteChannel)){
                 throw new ParamInvalidException('邀请渠道不存在');
             }
-            InviteService::bindInviter($user->id, $inviteChannel);
+            InviteUserService::bindInviter($user->id, $inviteChannel);
         }
         // 生成token并返回
         $token = str_random(64);

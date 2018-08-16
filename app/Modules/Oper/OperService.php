@@ -18,6 +18,21 @@ use Illuminate\Database\Eloquent\Builder;
 class OperService extends BaseService
 {
 
+    public static function getById($id, $fields = ['*'])
+    {
+        if(is_string($fields)){
+            $fields = explode(',', $fields);
+        }
+        $oper = Oper::find($id, $fields);
+        return $oper;
+    }
+
+    public static function getNameById($id)
+    {
+        $name = Oper::where('id', $id)->value('name');
+        return $name;
+    }
+
     /**
      * 获取运营中心列表
      * @param $params

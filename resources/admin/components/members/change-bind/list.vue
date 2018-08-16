@@ -2,18 +2,18 @@
     <el-col>
         <el-form v-model="query" size="small" inline class="fl">
             <el-form-item label="运营中心名称">
-                <el-input v-model="query.operName" clearable/>
+                <el-input v-model="query.operName" placeholder="请输入运营中心名称" clearable/>
             </el-form-item>
             <el-form-item label="渠道名称">
-                <el-input v-model="query.inviteChannelName" clearable/>
+                <el-input v-model="query.inviteChannelName" placeholder="请输入渠道名称" clearable/>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search">搜 索</el-button>
             </el-form-item>
         </el-form>
         <el-table :data="list" v-loading="tableLoading" stripe>
-            <el-table-column prop="operName" label="运营中心名称"/>
-            <el-table-column prop="name" label="渠道名称"/>
+            <el-table-column prop="operName" label="运营中心名称" width="350px"/>
+            <el-table-column prop="name" label="渠道名称" width="350px"/>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="invite_user_records_count" label="注册人数">
                 <template slot-scope="scope">

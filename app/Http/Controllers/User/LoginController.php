@@ -13,7 +13,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannelService;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Sms\SmsVerifyCode;
@@ -86,7 +86,7 @@ class LoginController extends Controller
             if(empty($inviteChannel)){
                 throw new ParamInvalidException('邀请渠道不存在');
             }
-            InviteService::bindInviter($user->id, $inviteChannel);
+            InviteUserService::bindInviter($user->id, $inviteChannel);
         }
 
         // 保存用户与openId的映射关系, 并覆盖旧的关联关系

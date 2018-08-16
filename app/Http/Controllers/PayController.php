@@ -16,7 +16,7 @@ use App\Modules\Dishes\DishesItem;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
@@ -154,7 +154,7 @@ class PayController extends Controller
                         throw new DataNotFoundException('商户信息不存在');
                     }
                     $inviteChannel = InviteChannelService::getByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
-                    InviteService::bindInviter($userId, $inviteChannel);
+                    InviteUserService::bindInviter($userId, $inviteChannel);
                 }
                 OrderPaidJob::dispatch($order);
                 DB::commit();
