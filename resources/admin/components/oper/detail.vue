@@ -7,7 +7,7 @@
             <el-form-item prop="contacter" label="负责人">
                 {{oper.contacter}}
             </el-form-item>
-            <el-form-item prop="tel" label="联系电话">
+            <el-form-item prop="tel" label="手机号码">
                 {{oper.tel}}
             </el-form-item>
             <el-form-item prop="selectAreas" label="城市">
