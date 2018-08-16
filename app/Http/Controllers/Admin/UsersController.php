@@ -220,7 +220,7 @@ class UsersController extends Controller
         $inviteChannelName = request('inviteChannelName', '');
         $pageSize = request('pageSize');
 
-        $data = InviteUserChangeBindRecordService::getChangeBindRecordList(compact('operName', 'inviteChannelName'), $pageSize);
+        $data = InviteUserService::getBatchChangedRecords(compact('operName', 'inviteChannelName'), $pageSize);
 
         return Result::success([
             'list' => $data->items(),
