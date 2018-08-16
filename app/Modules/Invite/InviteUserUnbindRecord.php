@@ -12,7 +12,7 @@ use App\Modules\User\User;
  * @property number user_id`
  * @property number status
  * @property string mobile
- * @property integer change_bind_record_id
+ * @property integer batch_record_id
  * @property string old_invite_user_record
  */
 class InviteUserUnbindRecord extends BaseModel

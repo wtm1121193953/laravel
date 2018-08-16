@@ -169,7 +169,7 @@ class UsersController extends Controller
             $newInviteChannel = InviteChannelService::getByOriginInfo($user->id, InviteChannel::ORIGIN_TYPE_USER, InviteChannel::FIXED_OPER_ID);
 
             //首先操作invite_user_change_bind_records表，写入换绑记录
-            $inviteUserChangeBindRecord = InviteUserChangeBindRecordService::createChangeBindRecord($oldInviteChannel, $mobile, $changeBindNumber, $currentUser);
+            $inviteUserBatchChangedRecord = InviteUserChangeBindRecordService::createChangeBindRecord($oldInviteChannel, $mobile, $changeBindNumber, $currentUser);
 
             $needStatisticsDate = []; //需要统计的日期
             // 循环遍历需换绑的记录，在解绑表invite_user_unbind_records中加入解绑记录;
@@ -179,14 +179,14 @@ class UsersController extends Controller
                 $needStatisticsDate[$date] = $date;
 
                 try {
-                    InviteUserService::changeInviteChannelForInviteRecord($inviteUserRecord, $newInviteChannel, $inviteUserChangeBindRecord->id);
+                    InviteUserService::changeInviteChannelForInviteRecord($inviteUserRecord, $newInviteChannel, $inviteUserBatchChangedRecord->id);
                     $changeBindNumber ++;
                 }catch (\Exception $e){
                     $changeBindErrorNumber ++;
                 }
             }
 
-            InviteUserChangeBindRecordService::updateChangeBindNumber($inviteUserChangeBindRecord->id, $changeBindNumber);
+            InviteUserChangeBindRecordService::updateChangeBindNumber($inviteUserBatchChangedRecord->id, $changeBindNumber);
 
             DB::commit();
         } catch(BaseResponseException $e){

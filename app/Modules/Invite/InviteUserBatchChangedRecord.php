@@ -17,7 +17,7 @@ use App\BaseModel;
  * @property integer operator_id
  * @property string operator
  */
-class InviteUserChangeBindRecord extends BaseModel
+class InviteUserBatchChangedRecord extends BaseModel
 {
     //
 }
