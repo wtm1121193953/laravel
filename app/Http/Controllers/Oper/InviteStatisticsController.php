@@ -24,7 +24,8 @@ class InviteStatisticsController
     public function dailyList()
     {
         $operId = request()->get('current_user')->oper_id;
-        $data = InviteStatisticsService::getDailyList($operId);
+        $page = request('page');
+        $data = InviteStatisticsService::getDailyList($operId,$page);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total() + 1,

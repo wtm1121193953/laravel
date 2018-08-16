@@ -82,13 +82,13 @@ class OperMappingUserService extends BaseService
         }
 
         //商户merchants表 关联user_id
-        $merchant = Oper::findOrFail(request()->get('current_user')->oper_id);
+        $merchant = Oper::findOrFail($operId);
         $merchant->mapping_user_id = $user->id;
         $merchant->save();
 
         //用户创建后，添加 用户与商户及运营中心映射
         $userMapping = new UserMapping();
-        $userMapping->origin_id = request()->get('current_user')->oper_id;
+        $userMapping->origin_id = $operId;
         $userMapping->origin_type = 2;
         $userMapping->user_id = $user->id;
         $userMapping->save();

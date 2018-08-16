@@ -183,14 +183,14 @@ class InviteStatisticsService
         }
     }
 
-    public static function getDailyList($operId)
+    public static function getDailyList($operId,$page)
     {
         $data = InviteUserStatisticsDaily::where('origin_id', $operId)
             ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
             ->orderByDesc('date')
             ->paginate();
         // 如果是第一页, 获取当日数据统计并添加到列表中
-        if(request('page') <= 1){
+        if($page <= 1){
             $today = new InviteUserStatisticsDaily();
             $date = date('Y-m-d');
             $today->date = $date;

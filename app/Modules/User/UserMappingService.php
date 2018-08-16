@@ -35,7 +35,7 @@ class UserMappingService extends BaseModel
         return $user;
     }
 
-    public static function bindUser($mobile,$verifyCode){
+    public static function bindUser($merchantId,$mobile,$verifyCode){
 
         if($user = User::where('mobile', $mobile)->first()){
             $mappingUser = UserMapping::where('user_id', $user->id)->first();
@@ -44,7 +44,7 @@ class UserMappingService extends BaseModel
             }
 
             $inviteUserRecord = InviteUserRecord::where('user_id', $user->id)
-                ->where('origin_id', request()->get('current_user')->merchant_id)
+                ->where('origin_id', $merchantId)
                 ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
                 ->first();
             if (!empty($inviteUserRecord)){
@@ -76,7 +76,7 @@ class UserMappingService extends BaseModel
         }
 
         //商户merchants表 关联user_id
-        $merchantId = request()->get('current_user')->merchant_id;
+
         $merchant = MerchantService::getById($merchantId);
         if(empty($merchant)){
             throw new DataNotFoundException('商户信息不存在');
@@ -86,7 +86,7 @@ class UserMappingService extends BaseModel
 
         //用户创建后，添加 用户与商户及运营中心映射
         $userMapping = new UserMapping();
-        $userMapping->origin_id = request()->get('current_user')->merchant_id;
+        $userMapping->origin_id = $merchantId;
         $userMapping->origin_type = 1;
         $userMapping->user_id = $user->id;
         $userMapping->save();
