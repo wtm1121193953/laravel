@@ -23,7 +23,7 @@
                     </el-button>
                 </template>
             </el-table-column>
-            <el-table-column prop="bind_mobile" label="新绑定账号"/>
+            <el-table-column prop="bind_mobile" label="新绑定帐号"/>
             <el-table-column prop="operator" label="操作人"/>
         </el-table>
         <el-pagination
