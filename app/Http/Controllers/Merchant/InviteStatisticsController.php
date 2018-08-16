@@ -12,7 +12,6 @@ namespace App\Http\Controllers\Merchant;
 use App\Exports\InviteUserRecordExport;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteStatisticsService;
-use App\Modules\Invite\InviteUserStatisticsDaily;
 use App\Result;
 
 class InviteStatisticsController

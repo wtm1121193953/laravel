@@ -2,8 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Modules\Invite\InviteUserRecord;
-use App\Modules\Invite\InviteUserStatisticsDaily;
+use App\Modules\Invite\InviteStatisticsService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -40,27 +39,7 @@ class InviteUserStatisticsDailyJob implements ShouldQueue
      */
     public function handle()
     {
-        // 查询出每个origin对应当天的邀请数量并存储到每日统计表中
-        $list = InviteUserRecord::whereDate('created_at', $this->date->format('Y-m-d'))
-            ->groupBy('origin_id', 'origin_type')
-            ->select('origin_id', 'origin_type')
-            ->selectRaw('count(1) as total')
-            ->get();
-        $date = $this->date;
-        $list->each(function($item) use ($date){
-            // 统计时先查询, 如果存在, 则在原基础上修改
-            $statDaily = InviteUserStatisticsDaily::where('date', $date->format('Y-m-d'))
-                ->where('origin_id', $item->origin_id)
-                ->where('origin_type', $item->origin_type)
-                ->first();
-            if(empty($statDaily)){
-                $statDaily = new InviteUserStatisticsDaily();
-                $statDaily->date = $date;
-                $statDaily->origin_id = $item->origin_id;
-                $statDaily->origin_type = $item->origin_type;
-            }
-            $statDaily->invite_count = $item->total;
-            $statDaily->save();
-        });
+        // 执行每日数据统计
+        InviteStatisticsService::updateDailyStatisticsByDate($this->date);
     }
 }

@@ -22,13 +22,61 @@ class InviteStatisticsService
 {
 
     /**
+     * 根据日期更新每日统计数据
+     * @param $date
+     */
+    public static function updateDailyStatisticsByDate($date)
+    {
+        if($date instanceof Carbon){
+            $date = $date->format('Y-m-d');
+        }
+        // 查询出每个origin对应当天的邀请数量并存储到每日统计表中
+        $list = InviteUserRecord::whereDate('created_at', $date)
+            ->groupBy('origin_id', 'origin_type')
+            ->select('origin_id', 'origin_type')
+            ->selectRaw('count(1) as total')
+            ->get();
+        $list->each(function($item) use ($date){
+            // 统计时先查询, 如果存在, 则在原基础上修改
+            $statDaily = InviteStatisticsService::getDailyStatisticsByOriginInfoAndDate($item->origin_id, $item->origin_type, $date);
+            if(empty($statDaily)){
+                $statDaily = new InviteUserStatisticsDaily();
+                $statDaily->date = $date;
+                $statDaily->origin_id = $item->origin_id;
+                $statDaily->origin_type = $item->origin_type;
+            }
+            $statDaily->invite_count = $item->total;
+            $statDaily->save();
+        });
+    }
+
+    /**
+     * 根据邀请人及日期信息获取已统计出的数据
+     * @param $originId
+     * @param $originType
+     * @param $date
+     * @return InviteUserStatisticsDaily
+     */
+    public static function getDailyStatisticsByOriginInfoAndDate($originId, $originType, $date)
+    {
+        if($date instanceof \Carbon\Carbon){
+            $date = $date->format('Y-m-d');
+        }
+        $stat = InviteUserStatisticsDaily::where('date', $date)
+            ->where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->first();
+        return $stat;
+    }
+
+    /**
      * 根据日期获取邀请人当日的邀请数
      * @param $date
      * @param $originId
      * @param $originType
      * @return int
      */
-    public static function getInviteCountByDate($date, $originId, $originType)
+    public static function getInviteCountByDate($originId, $originType, $date)
     {
         if($date instanceof \Carbon\Carbon){
             $date = $date->format('Y-m-d');
@@ -47,7 +95,7 @@ class InviteStatisticsService
      */
     public static function getTodayInviteCountByOriginInfo($originId, $originType)
     {
-        return self::getInviteCountByDate(Carbon::now(), $originId, $originType);
+        return self::getInviteCountByDate($originId, $originType, Carbon::now());
     }
 
     /**
