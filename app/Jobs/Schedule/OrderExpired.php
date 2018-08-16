@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Schedule;
 
-use App\Modules\Goods\Goods;
+use App\Modules\Order\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -11,7 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
-class AutoDownGoodsJob implements ShouldQueue
+class OrderExpired implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -26,17 +26,17 @@ class AutoDownGoodsJob implements ShouldQueue
     }
 
     /**
-     * 团购商品 过期 自动下架
      * Execute the job.
      *
      * @return void
      */
     public function handle()
     {
-        Log::info('开始执行过期商品自动下架任务');
-        Goods::where('status', Goods::STATUS_ON)
-            ->where('end_date', '<', Carbon::today())
-            ->update(['status' => Goods::STATUS_OFF]);
-        Log::info('过期商品自动下架任务完成');
+        //
+        Log::info('开始执行订单超时自动关闭定时任务');
+        Order::where('status', 1)
+            ->where('created_at', '<', Carbon::now()->subDay())
+            ->update(['status' => Order::STATUS_CLOSED]);
+        Log::info('订单超时自动关闭定时任务执行完成');
     }
 }

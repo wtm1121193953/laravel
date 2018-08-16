@@ -10,8 +10,8 @@ namespace App\Modules\Invite;
 
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
-use App\Jobs\InviteUserStatisticsDailyJob;
-use App\Jobs\MerchantLevelCalculationJob;
+use App\Jobs\MerchantLevelComputeJob;
+use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Modules\Admin\AdminUser;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
@@ -19,7 +19,6 @@ use App\Modules\Oper\OperService;
 use App\Modules\Tps\TpsBind;
 use App\Modules\Tps\TpsBindService;
 use App\Modules\User\User;
-use App\Modules\User\UserMapping;
 use App\Modules\User\UserService;
 use App\ResultCode;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -109,7 +108,7 @@ class InviteUserService
         $inviteRecord->save();
 
         if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
-            MerchantLevelCalculationJob::dispatch($inviteRecord->origin_id);
+            MerchantLevelComputeJob::dispatch($inviteRecord->origin_id);
         }
     }
 
@@ -258,10 +257,10 @@ class InviteUserService
             $newInviteRecord->save();
 
             if ($newInviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
-                MerchantLevelCalculationJob::dispatch($newInviteRecord->origin_id);
+                MerchantLevelComputeJob::dispatch($newInviteRecord->origin_id);
             }
             if ($inviteUserRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
-                MerchantLevelCalculationJob::dispatch($inviteUserRecord->origin_id);
+                MerchantLevelComputeJob::dispatch($inviteUserRecord->origin_id);
             }
             DB::commit();
         }catch (\Exception $e){
