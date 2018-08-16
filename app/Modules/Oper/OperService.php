@@ -27,6 +27,12 @@ class OperService extends BaseService
         return $oper;
     }
 
+    public static function getNameById($id)
+    {
+        $name = Oper::where('id', $id)->value('name');
+        return $name;
+    }
+
     /**
      * 获取运营中心列表
      * @param $params

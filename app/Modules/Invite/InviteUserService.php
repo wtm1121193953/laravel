@@ -139,13 +139,25 @@ class InviteUserService
     }
 
     /**
+     * 批量换绑
+     * @param InviteChannel|int[] $oldInviteChannelOrInviteRecordIds 要换绑的邀请渠道或要换绑的邀请记录列表
+     * @param InviteChannel $newInviteChannel 要更换的新邀请渠道
+     * @return InviteUserBatchChangedRecord
+     */
+    public static function batchChangeInviter($oldInviteChannelOrInviteRecordIds, $newInviteChannel)
+    {
+        // todo
+        return new InviteUserBatchChangedRecord();
+    }
+
+    /**
      * 换绑邀请人
      * @param InviteUserRecord $inviteUserRecord
      * @param InviteChannel $inviteChannel
      * @param int $inviteUserBatchChangedRecordId 换绑批次ID
      * @throws \Exception
      */
-    public static function changeInviterForBatch(InviteUserRecord $inviteUserRecord, InviteChannel $inviteChannel, $inviteUserBatchChangedRecordId)
+    public static function changeInviter(InviteUserRecord $inviteUserRecord, InviteChannel $inviteChannel, $inviteUserBatchChangedRecordId)
     {
 
         $userId = $inviteUserRecord->user_id;
