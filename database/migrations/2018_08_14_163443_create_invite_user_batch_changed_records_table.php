@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateInviteUserChangeBindRecordsTable extends Migration
+class CreateInviteUserBatchChangedRecordsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateInviteUserChangeBindRecordsTable extends Migration
      */
     public function up()
     {
-        Schema::create('invite_user_change_bind_records', function (Blueprint $table) {
+        Schema::create('invite_user_batch_changed_records', function (Blueprint $table) {
             $table->increments('id');
             $table->string('invite_channel_name')->index()->default('')->comment('渠道名称');
             $table->string('remark')->default('')->comment('备注');
@@ -24,6 +24,8 @@ class CreateInviteUserChangeBindRecordsTable extends Migration
             $table->integer('operator_id')->default(0)->comment('操作人ID');
             $table->string('operator')->default('')->comment('操作人');
             $table->timestamps();
+
+            $table->comment = '批量换绑记录表';
         });
     }
 
@@ -34,6 +36,6 @@ class CreateInviteUserChangeBindRecordsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('invite_user_change_bind_records');
+        Schema::dropIfExists('invite_user_batch_changed_records');
     }
 }

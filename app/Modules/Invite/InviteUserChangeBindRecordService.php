@@ -22,11 +22,11 @@ class InviteUserChangeBindRecordService extends BaseService
      * @param $mobile
      * @param $changeBindNumber
      * @param $currentUser
-     * @return InviteUserChangeBindRecord
+     * @return InviteUserBatchChangedRecord
      */
     public static function createChangeBindRecord($inviteChannel, $mobile, $changeBindNumber, $currentUser)
     {
-        $inviteUserChangeBindRecord = new InviteUserChangeBindRecord();
+        $inviteUserChangeBindRecord = new InviteUserBatchChangedRecord();
         $inviteUserChangeBindRecord->invite_channel_name = $inviteChannel->name;
         $inviteUserChangeBindRecord->remark = $inviteChannel->remark;
         $inviteUserChangeBindRecord->oper_id = $inviteChannel->oper_id;
@@ -45,11 +45,11 @@ class InviteUserChangeBindRecordService extends BaseService
      * 更新换绑记录中的换绑用户数量
      * @param $id
      * @param $number
-     * @return InviteUserChangeBindRecord
+     * @return InviteUserBatchChangedRecord
      */
     public static function updateChangeBindNumber($id, $number)
     {
-        $record = InviteUserChangeBindRecord::find($id);
+        $record = InviteUserBatchChangedRecord::find($id);
         $record->change_bind_number = $number;
         $record->save();
         return $record;
@@ -60,14 +60,14 @@ class InviteUserChangeBindRecordService extends BaseService
      * @param array $param
      * @param int $pageSize
      * @param bool $withQuery
-     * @return InviteUserChangeBindRecord|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return InviteUserBatchChangedRecord|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public static function getChangeBindRecordList($param = [], $pageSize = 15, $withQuery = false)
     {
         $operName = array_get($param, 'operName');
         $inviteChannelName = array_get($param, 'inviteChannelName');
 
-        $query = InviteUserChangeBindRecord::when($operName, function (Builder $query) use ($operName) {
+        $query = InviteUserBatchChangedRecord::when($operName, function (Builder $query) use ($operName) {
                 $query->where('oper_name', 'like', "%$operName%");
             })
             ->when($inviteChannelName, function (Builder $query) use ($inviteChannelName) {

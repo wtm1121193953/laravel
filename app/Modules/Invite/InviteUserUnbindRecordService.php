@@ -21,11 +21,11 @@ class InviteUserUnbindRecordService extends BaseService
      * 创建用户解绑记录
      * @param $userId
      * @param $status
-     * @param int $changeBindRecordId
+     * @param int $batchRecordId
      * @param InviteUserRecord|null $inviteUserRecord
      * @return InviteUserUnbindRecord
      */
-    public static function createUnbindRecord($userId, $status, $changeBindRecordId = 0, InviteUserRecord $inviteUserRecord = null)
+    public static function createUnbindRecord($userId, $status, $batchRecordId = 0, InviteUserRecord $inviteUserRecord = null)
     {
         $inviteUserUnbindRecord = new InviteUserUnbindRecord();
         $inviteUserUnbindRecord->user_id = $userId;
@@ -35,7 +35,7 @@ class InviteUserUnbindRecordService extends BaseService
             throw new BaseResponseException('解绑的用户不存在');
         }
         $inviteUserUnbindRecord->mobile = $user->mobile;
-        $inviteUserUnbindRecord->change_bind_record_id = $changeBindRecordId ?: 0;
+        $inviteUserUnbindRecord->batch_record_id = $batchRecordId ?: 0;
         $inviteUserUnbindRecord->old_invite_user_record = $inviteUserRecord ? json_encode($inviteUserRecord->toArray()) : '';
         $inviteUserUnbindRecord->save();
 
@@ -51,9 +51,9 @@ class InviteUserUnbindRecordService extends BaseService
      */
     public static function getUnbindRecordList($param = [], $pageSize = 15, $withQuery = false)
     {
-        $changeBindRecordId = array_get($param, 'changeBindRecordId');
-        $query = InviteUserUnbindRecord::when($changeBindRecordId, function (Builder $query) use ($changeBindRecordId) {
-                $query->where('change_bind_record_id', $changeBindRecordId);
+        $batchRecordId = array_get($param, 'batchRecordId');
+        $query = InviteUserUnbindRecord::when($batchRecordId, function (Builder $query) use ($batchRecordId) {
+                $query->where('batch_record_id', $batchRecordId);
             })
             ->orderBy('id', 'desc');
         if ($withQuery) {

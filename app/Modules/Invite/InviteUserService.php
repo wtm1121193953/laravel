@@ -145,24 +145,29 @@ class InviteUserService
     /**
      * 解绑用户邀请关系
      * @param InviteUserRecord $inviteRecord
-     * @param int $inviteUserChangeBindRecordId
+     * @param int $inviteUserBatchChangedRecordId
      * @throws \Exception
      */
-    public static function unbindInviter(InviteUserRecord $inviteRecord, $inviteUserChangeBindRecordId = 0)
+    public static function unbindInviter(InviteUserRecord $inviteRecord, $inviteUserBatchChangedRecordId = 0)
     {
+        // 删除邀请记录
         $inviteRecord->delete();
 
-        InviteUserUnbindRecordService::createUnbindRecord($inviteRecord->user_id, InviteUserUnbindRecord::STATUS_UNBIND, $inviteUserChangeBindRecordId, $inviteRecord);
+        // 添加解绑记录
+        InviteUserUnbindRecordService::createUnbindRecord($inviteRecord->user_id, InviteUserUnbindRecord::STATUS_UNBIND, $inviteUserBatchChangedRecordId, $inviteRecord);
+
+        // 更新用户邀请数量统计
+
     }
 
     /**
      * 换绑邀请人
      * @param InviteUserRecord $inviteUserRecord
      * @param InviteChannel $inviteChannel
-     * @param int $inviteUserChangeBindRecordId 换绑批次ID
+     * @param int $inviteUserBatchChangedRecordId 换绑批次ID
      * @throws \Exception
      */
-    public static function changeInviteChannelForInviteRecord(InviteUserRecord $inviteUserRecord, InviteChannel $inviteChannel, $inviteUserChangeBindRecordId)
+    public static function changeInviteChannelForInviteRecord(InviteUserRecord $inviteUserRecord, InviteChannel $inviteChannel, $inviteUserBatchChangedRecordId)
     {
 
         $userId = $inviteUserRecord->user_id;
@@ -185,7 +190,7 @@ class InviteUserService
         try {
 
             // 解绑旧的邀请关系
-            self::unbindInviter($inviteUserRecord, $inviteUserChangeBindRecordId);
+            self::unbindInviter($inviteUserRecord, $inviteUserBatchChangedRecordId);
 
             // 保存新的邀请记录
             $newInviteRecord = new InviteUserRecord();
