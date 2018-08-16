@@ -26,7 +26,7 @@ class InviteStatisticsController
     {
         $operId = request()->get('current_user')->oper_id;
         $page = request('page');
-        $data = InviteStatisticsService::getDailyStaticsByOriginInfo($operId, InviteChannel::ORIGIN_TYPE_OPER);
+        $data = InviteStatisticsService::getDailyStatisticsListByOriginInfo($operId, InviteChannel::ORIGIN_TYPE_OPER);
         $total = $data->total();
         if($page <= 1){
             $today = InviteStatisticsService::getTodayStatisticsByOriginInfo($operId, InviteChannel::ORIGIN_TYPE_OPER);

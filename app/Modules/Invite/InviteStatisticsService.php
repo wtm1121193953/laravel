@@ -94,7 +94,7 @@ class InviteStatisticsService
      * @param int $pageSize
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getDailyStaticsByOriginInfo($originId, $originType, $params = [], $pageSize = 15)
+    public static function getDailyStatisticsListByOriginInfo($originId, $originType, $params = [], $pageSize = 15)
     {
         $data = InviteUserStatisticsDaily::where('origin_id', $originId)
             ->where('origin_type', $originType)
@@ -145,7 +145,7 @@ class InviteStatisticsService
      * @param int $page
      * @return array
      */
-    public static function getInviteStatisticsByDateForUser($userId, $date, $page = 1)
+    public static function getInviteStatisticsListByDateForUser($userId, $date, $page = 1)
     {
         $now = date('Y-m', time());
         $time = $date ?: $now;
@@ -260,7 +260,7 @@ class InviteStatisticsService
      * @return User|array
      * @deprecated
      */
-    public static function getInviteRecordListByMerchantId($merchantId, $mobile = '', $withQuery = false, $param = [])
+    public static function getInviteUsersByMerchantId($merchantId, $mobile = '', $withQuery = false, $param = [])
     {
         $userIds = InviteUserRecord::where('origin_id', $merchantId)
             ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)

@@ -85,7 +85,7 @@ class InviteChannelController extends Controller
         if (!$userId) {
             throw new ParamInvalidException('用户ID不能为空');
         }
-        $data = InviteStatisticsService::getInviteStatisticsByDateForUser($userId, $date, $page);
+        $data = InviteStatisticsService::getInviteStatisticsListByDateForUser($userId, $date, $page);
 
         $totalCount = InviteStatisticsService::getTotalInviteCountByUserId($userId);
         $todayInviteCount = InviteStatisticsService::getTodayInviteCountByUserId($userId);

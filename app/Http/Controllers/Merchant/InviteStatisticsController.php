@@ -25,7 +25,7 @@ class InviteStatisticsController
     {
         $merchantId = request()->get('current_user')->merchant_id;
         $pageSize = request('pageSize');
-        $data = InviteStatisticsService::getDailyStaticsByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, [], $pageSize);
+        $data = InviteStatisticsService::getDailyStatisticsListByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, [], $pageSize);
         $total = $data->total();
         // 如果是第一页, 获取当日数据统计并添加到列表中
         if(request('page') <= 1){
@@ -77,7 +77,7 @@ class InviteStatisticsController
             'orderType' => $orderType,
         ];
 
-        $data = InviteStatisticsService::getInviteRecordListByMerchantId($merchantId, $mobile, false, $param);
+        $data = InviteStatisticsService::getInviteUsersByMerchantId($merchantId, $mobile, false, $param);
 
         return Result::success([
             'list' => $data['data'],
