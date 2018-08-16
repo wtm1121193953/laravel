@@ -12,8 +12,8 @@
             </el-form-item>
         </el-form>
         <el-table :data="list" v-loading="tableLoading" stripe>
-            <el-table-column prop="operName" label="运营中心名称"/>
-            <el-table-column prop="name" label="渠道名称"/>
+            <el-table-column prop="operName" label="运营中心名称" width="350px"/>
+            <el-table-column prop="name" label="渠道名称" width="350px"/>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="invite_user_records_count" label="注册人数">
                 <template slot-scope="scope">

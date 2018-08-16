@@ -49,6 +49,7 @@ class OperController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required',
+            'tel' => 'required',
             'province_id' => 'required',
             'city_id' => 'required',
         ]);
