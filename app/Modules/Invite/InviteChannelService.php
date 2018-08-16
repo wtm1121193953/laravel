@@ -15,6 +15,7 @@ use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Modules\User\User;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Support\Utils;
@@ -41,7 +42,7 @@ class InviteChannelService extends BaseService
      * @param array $param
      * @return InviteChannel|array
      */
-    public static function getOperInviteChannels($operId, $keyword = '', $getWithQuery = false, $param = [])
+    public static function getOperInviteChannelsByOperId($operId, $keyword = '', $getWithQuery = false, $param = [])
     {
         $query = InviteChannel::where('origin_id', $operId)
             ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
@@ -234,13 +235,14 @@ class InviteChannelService extends BaseService
 
     /**
      * 获取全部运营中心的邀请渠道
+     * @param array $params
      * @param bool $withQuery
-     * @param string $operName
-     * @param string $inviteChannelName
      * @return InviteChannel|InviteChannel[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getAllOperInviteChannels($withQuery = false, $operName = '', $inviteChannelName = '')
+    public static function getOperInviteChannels(array $params=[], $withQuery = false)
     {
+        $operName = array_get($params, 'operName');
+        $inviteChannelName = array_get($params, 'inviteChannelName');
         $query = InviteChannel::where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
             ->when($operName, function (Builder $query) use ($operName) {
                 $operIds = Oper::where('name', 'like', "%$operName%")

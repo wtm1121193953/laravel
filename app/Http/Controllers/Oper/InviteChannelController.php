@@ -39,7 +39,7 @@ class InviteChannelController extends Controller
             'orderType' => $orderType,
         ];
 
-        $data = InviteChannelService::getOperInviteChannels($operId, $keyword, false, $param);
+        $data = InviteChannelService::getOperInviteChannelsByOperId($operId, $keyword, false, $param);
 
         return Result::success([
             'list' => $data['data'],
@@ -51,7 +51,7 @@ class InviteChannelController extends Controller
     {
         $keyword = request('keyword', '');
         $operId = request()->get('current_user')->oper_id;
-        $query = InviteChannelService::getOperInviteChannels($operId, $keyword, true);
+        $query = InviteChannelService::getOperInviteChannelsByOperId($operId, $keyword, true);
         return (new OperInviteChannelExport($query))->download('推广渠道列表.xlsx');
     }
 
