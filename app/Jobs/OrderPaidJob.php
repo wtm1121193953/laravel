@@ -2,8 +2,13 @@
 
 namespace App\Jobs;
 
+use App\Exceptions\DataNotFoundException;
+use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteChannelService;
+use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
 use App\Modules\Setting\SettingService;
@@ -50,7 +55,30 @@ class OrderPaidJob implements ShouldQueue
         // 处理消费额 消费额逻辑暂时去掉, 需要修改
         // $this->handleUserConsumeQuota($this->order);
 
+        // 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
+        $this->handleMerchantInvite();
     }
+
+    /**
+     * 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
+     * @throws \Exception
+     */
+    private function handleMerchantInvite()
+    {
+        $order = $this->order;
+        // 支付成功, 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
+        $userId = $order->user_id;
+        if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
+            $merchantId = $order->merchant_id;
+            $merchant = MerchantService::getById($merchantId);
+            if(empty($merchant)){
+                throw new DataNotFoundException('商户信息不存在');
+            }
+            $inviteChannel = InviteChannelService::getByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
+            InviteUserService::bindInviter($userId, $inviteChannel);
+        }
+    }
+
 
     private function handleUserConsumeQuota($order)
     {

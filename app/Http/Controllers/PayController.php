@@ -145,17 +145,6 @@ class PayController extends Controller
                 $orderPay->amount = $totalFee * 1.0 / 100;
                 $orderPay->save();
 
-                // 支付成功, 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
-                $userId = $order->user_id;
-                if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
-                    $merchantId = $order->merchant_id;
-                    $merchant = MerchantService::getById($merchantId);
-                    if(empty($merchant)){
-                        throw new DataNotFoundException('商户信息不存在');
-                    }
-                    $inviteChannel = InviteChannelService::getByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
-                    InviteUserService::bindInviter($userId, $inviteChannel);
-                }
                 OrderPaidJob::dispatch($order);
                 DB::commit();
             }catch (\Exception $e){
