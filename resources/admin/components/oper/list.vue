@@ -1,5 +1,5 @@
 <template>
-    <page title="运营中心管理" v-loading="isLoading">
+    <page title="运营中心管理">
         <el-form class="fl" inline size="small">
             <el-form-item prop="name" label="">
                 <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="运营中心名称"/>
@@ -22,7 +22,7 @@
             </el-form-item>
         </el-form>
         <el-button class="fr" type="primary" @click="add">添加运营中心</el-button>
-        <el-table :data="list" stripe>
+        <el-table :data="list" stripe v-loading="isLoading">
             <el-table-column prop="id" label="ID" width="100px"/>
             <el-table-column prop="name" label="运营中心名称" width="300px"/>
             <el-table-column prop="contacter" label="负责人" />
@@ -39,10 +39,7 @@
                 <template slot-scope="scope">
                     <span v-if="scope.row.bindInfo" class="title">{{scope.row.bindInfo.tps_account}}</span>
                     <span v-else>
-                        <oper-tps-bind
-                            :scope="scope"
-                            @change="showBox"
-                        />
+                        <oper-tps-bind :scope="scope" @bound="(data) => {scope.row.bindInfo = data}"/>
                     </span>
                 </template>
             </el-table-column>
@@ -99,9 +96,12 @@
                 this.getList();
             },
             getList(){
+                this.isLoading = true;
                 api.get('/opers', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                }).finally(() => {
+                    this.isLoading = false;
                 })
             },
             add(){

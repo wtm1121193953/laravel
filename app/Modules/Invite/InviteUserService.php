@@ -395,6 +395,11 @@ class InviteUserService
             return $query;
         } else {
             $data = $query->paginate($pageSize);
+            $data->each(function ($item) {
+                $inviteChannel = InviteChannelService::getById($item->invite_channel_id);
+                $item->invite_channel_name = $inviteChannel->name;
+                $item->invite_channel_remark = $inviteChannel->remark;
+            });
             return $data;
         }
     }

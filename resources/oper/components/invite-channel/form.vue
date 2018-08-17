@@ -34,6 +34,9 @@
                     name: [
                         {required: true, message: '渠道名称不能为空'},
                         {max: 20, message: '渠道名称不能超过20个字'}
+                    ],
+                    remark: [
+                        {max: 50, message: '备注不能超过50个字'}
                     ]
                 }
             }

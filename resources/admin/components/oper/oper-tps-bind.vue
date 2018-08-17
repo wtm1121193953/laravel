@@ -83,8 +83,8 @@
                             api.post('/tps/bindAccount', this.form).then((data) => {
                                 this.$alert('创建tps帐号成功, tps帐号默认登陆密码为 a12345678, 请及时修改');
                                 this.showBox = false;
-                                this.init();
                                 this.bindInfo = data;
+                                this.$emit('bound', data)
                             });
                         })
                     }
