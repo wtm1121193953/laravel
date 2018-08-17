@@ -25,7 +25,7 @@ class InviteStatisticsService
      * 根据日期更新每日统计数据
      * @param $date
      */
-    public static function updateDailyStatisticsByDate($date)
+    public static function batchUpdateDailyStatisticsByDate($date)
     {
         if($date instanceof Carbon){
             $date = $date->format('Y-m-d');
@@ -48,6 +48,31 @@ class InviteStatisticsService
             $statDaily->invite_count = $item->total;
             $statDaily->save();
         });
+    }
+
+    /**
+     * 根据邀请人信息及日期, 该更新邀请人当日的邀请统计数据
+     * @param $originId
+     * @param $originType
+     * @param $date
+     * @return InviteUserStatisticsDaily
+     */
+    public static function updateDailyStatByOriginInfoAndDate($originId, $originType, $date)
+    {
+        $total = InviteUserRecord::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->whereDate('created_at', $date)
+            ->count('id');
+        $statDaily = InviteStatisticsService::getDailyStatisticsByOriginInfoAndDate($originId, $originType, $date);
+        if(empty($statDaily)){
+            $statDaily = new InviteUserStatisticsDaily();
+            $statDaily->date = $date;
+            $statDaily->origin_id = $originId;
+            $statDaily->origin_type = $originType;
+        }
+        $statDaily->invite_count = $total ?? 0;
+        $statDaily->save();
+        return $statDaily;
     }
 
     /**
