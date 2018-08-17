@@ -372,7 +372,6 @@
             },
             initForm(){
                 if(this.data){
-                    console.log(this.data);
                     let data = this.data;
                     for (let key in defaultForm){
                         this.form[key] = this.data[key];

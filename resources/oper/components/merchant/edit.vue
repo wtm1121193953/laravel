@@ -99,7 +99,11 @@
             if (this.isDraft){
                 this.breadcrumbs = {'草稿箱': '/merchant/drafts'};
             } else {
-                this.breadcrumbs = {'我的商户': '/merchants'}
+                if (this.$route.query.hasOwnProperty('isPilot') && this.$route.query.isPilot) {
+                    this.breadcrumbs = {'我的试点商户': '/merchant/pilots'}
+                } else {
+                    this.breadcrumbs = {'我的商户': '/merchants'}
+                }
             }
             if(!this.id){
                 this.$message.error('id不能为空');
