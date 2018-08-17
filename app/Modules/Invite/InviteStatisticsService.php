@@ -8,6 +8,7 @@
 
 namespace App\Modules\Invite;
 
+use App\Exports\InviteUserRecordExport;
 use App\Modules\Order\Order;
 use App\Modules\User\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -212,63 +213,75 @@ class InviteStatisticsService
     }
 
     /**
-     * 获取邀请的统计，通过日期分组 (用于用户端获取)
+     * 根据月份获取当月的邀请记录
      * @param $userId
-     * @param $date
-     * @param int $page
+     * @param $month
+     * @param int $pageSize
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getInviteUsersByMonthAndUserId($userId, $month, $pageSize = 20)
+    {
+        return self::getInviteUsersByMonthAndOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER, $month, $pageSize);
+    }
+
+    /**
+     * 根据月份以及邀请人信息获取邀请的用户列表
+     * @param $originId
+     * @param $originType
+     * @param $month
+     * @param int $pageSize
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getInviteUsersByMonthAndOriginInfo($originId, $originType, $month, $pageSize = 15)
+    {
+        $firstDay = date('Y-m-01 00:00:00', strtotime($month));
+        $lastDay = date('Y-m-d 23:59:59', strtotime("$firstDay + 1 month - 1 day"));
+        $inviteUserRecords = InviteUserRecord::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->whereBetween('created_at', [$firstDay, $lastDay])
+            ->orderBy('created_at', 'desc')
+            ->with('user:id,mobile')
+            ->paginate($pageSize);
+        $inviteUserRecords->each(function(InviteUserRecord $item){
+            $item->user_mobile = $item->user->mobile;
+        });
+
+        return $inviteUserRecords;
+    }
+
+    /**
+     * 获取用户邀请记录, 并根据月份分组
+     * @param $userId
+     * @param int $pageSize
      * @return array
      */
-    public static function getInviteStatisticsListByDateForUser($userId, $date, $page = 1)
+    public static function getInviteUsersGroupByMonthForUser($userId, $pageSize = 20)
     {
-        $now = date('Y-m', time());
-        $time = $date ?: $now;
-        $firstDay = date('Y-m-01 00:00:00', strtotime($time));
-        $lastDay = date('Y-m-d 23:59:59', strtotime("$firstDay + 1 month - 1 day"));
-        if (!$date){
-            $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
-                ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
-                ->where('created_at', '<', $lastDay)
-                ->orderBy('created_at', 'desc')
-                ->offset(20 * ($page - 1))
-                ->limit(20)
-                ->get();
-
-        }else {
-            if ($date > $now) {
-                $inviteUserRecords = [];
-            } else {
-                $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
+        $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
+            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+            ->orderBy('created_at', 'desc')
+            ->with('user:id,mobile')
+            ->simplePaginate($pageSize);
+        $list = collect($inviteUserRecords->items());
+        $data = $list->each(function (InviteUserRecord $item){
+            $item->user_mobile = $item->user->mobile;
+            $item->created_month = $item->created_at->format('Y-m');
+        })
+            ->groupBy('created_month')
+            ->map(function($item, $key) use ($userId){
+                $firstDay = date('Y-m-01 00:00:00', strtotime($key));
+                $lastDay = date('Y-m-d 23:59:59', strtotime("$key + 1 month - 1 day"));
+                $count = InviteUserRecord::where('origin_id', $userId)
                     ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
                     ->whereBetween('created_at', [$firstDay, $lastDay])
-                    ->orderBy('created_at', 'desc')
-                    ->offset(10 * ($page - 1))
-                    ->limit(10)
-                    ->get();
-            }
-        }
+                    ->count();
 
-        $dateList = [];
-        foreach ($inviteUserRecords as $item) {
-            $dateList[] = date('Y-m', strtotime($item->created_at));
-            $dateList = array_unique($dateList);
-        }
+                return [
+                    'sub' => $item,
+                    'count' => $count,
+                ];
+            });
 
-        $data = [];
-        foreach ($dateList as $value) {
-            foreach ($inviteUserRecords as $inviteUserRecord) {
-                if (date('Y-m', strtotime($inviteUserRecord->created_at)) == $value) {
-                    $inviteUserRecord->user_mobile = User::where('id', $inviteUserRecord->user_id)->value('mobile');
-
-                    $firstDay = date('Y-m-01 00:00:00', strtotime($value));
-                    $lastDay = date('Y-m-d 23:59:59', strtotime("$firstDay + 1 month - 1 day"));
-                    $data[$value]['sub'][] = $inviteUserRecord->toArray();
-                    $data[$value]['count'] = InviteUserRecord::where('origin_id', $userId)
-                        ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
-                        ->whereBetween('created_at', [$firstDay, $lastDay])
-                        ->count();
-                }
-            }
-        }
         return $data;
     }
 
@@ -327,53 +340,14 @@ class InviteStatisticsService
     /**
      * 查询商户邀请用户的列表
      * @param $merchantId
-     * @param string $mobile
+     * @param array $params
      * @param bool $withQuery
-     * @param array $param
-     * @return User|array
+     * @return void
      * @deprecated
      */
-    public static function getInviteUsersByMerchantId($merchantId, $mobile = '', $withQuery = false, $param = [])
+    public static function getInviteUsersWithOrderCountByMerchantId($merchantId, $params = [], $withQuery = false)
     {
-        $userIds = InviteUserRecord::where('origin_id', $merchantId)
-            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
-            ->select('user_id')
-            ->get()
-            ->pluck('user_id');
-        $query = User::whereIn('id', $userIds)
-            ->when($mobile, function (Builder $query) use ($mobile) {
-                $query->where('mobile', 'like', "%$mobile%");
-            })
-            ->orderBy('created_at', 'desc');
-        if ($withQuery) {
-            return $query;
-        } else {
-            $page = $param['page'] ?: 1;
-            $pageSize = $param['pageSize'] ?: 15;
-            $orderColumn = $param['orderColumn'];
-            $orderType = $param['orderType'];
-
-            $total = $query->count();
-            $data = $query->get();
-            $data->each(function ($item) {
-                $item->order_number = Order::where('user_id', $item->id)
-                    ->whereNotIn('status', [Order::STATUS_UN_PAY, Order::STATUS_CLOSED])
-                    ->count();
-            });
-
-            if ($orderType == 'descending') {
-                $data = $data->sortBy($orderColumn);
-            } elseif ($orderType == 'ascending') {
-                $data = $data->sortByDesc($orderColumn);
-            }
-
-            $data = $data->forPage($page,$pageSize)->values()->all();
-
-            return [
-                'data' => $data,
-                'total' => $total,
-            ];
-        }
+        self::getInviteUsersByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $params, $withQuery);
     }
 
 

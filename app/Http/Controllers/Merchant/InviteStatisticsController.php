@@ -74,9 +74,10 @@ class InviteStatisticsController
             'pageSize' => $pageSize,
             'orderColumn' => $orderColumn,
             'orderType' => $orderType,
+            'mobile' => $mobile,
         ];
 
-        $data = InviteStatisticsService::getInviteUsersByMerchantId($merchantId, $mobile, false, $param);
+        $data = InviteStatisticsService::getInviteUsersByMerchantId($merchantId, $param, false);
 
         return Result::success([
             'list' => $data['data'],

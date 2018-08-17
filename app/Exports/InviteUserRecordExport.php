@@ -34,7 +34,9 @@ class InviteUserRecordExport implements FromQuery, WithMapping, WithHeadings
         $merchantId = $this->merchantId;
         $mobile = $this->mobile;
 
-        $query = InviteStatisticsService::getInviteUsersByMerchantId($merchantId, $mobile, true);
+        $query = InviteStatisticsService::getInviteUsersByMerchantId($merchantId, [
+            'mobile' => $mobile
+        ], true);
 
         return $query;
     }
