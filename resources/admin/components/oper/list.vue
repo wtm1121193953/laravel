@@ -23,7 +23,7 @@
         </el-form>
         <el-button class="fr" type="primary" @click="add">添加运营中心</el-button>
         <el-table :data="list" stripe>
-            <el-table-column prop="id" label="ID"/>
+            <el-table-column prop="id" label="ID" width="100px"/>
             <el-table-column prop="name" label="运营中心名称" width="300px"/>
             <el-table-column prop="contacter" label="负责人" />
             <el-table-column prop="tel" label="手机号码" />
@@ -33,6 +33,17 @@
                     <span v-else-if="scope.row.status === 2" class="c-warning">已冻结</span>
                     <span v-else-if="scope.row.status === 3" class="c-danger">停止合作</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="bindInfo" label="绑定TPS帐号">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.bindInfo" class="title">{{scope.row.bindInfo.tps_account}}</span>
+                    <span v-else>
+                        <oper-tps-bind
+                            :scope="scope"
+                            @change="showBox"
+                        />
+                    </span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="550px">
@@ -54,13 +65,13 @@
                 @current-change="getList"
                 :page-size="15"
                 :total="total"/>
-
     </page>
 </template>
 
 <script>
     import api from '../../../assets/js/api'
 
+    import OperTpsBind from './oper-tps-bind'
     import OperItemOptions from './oper-item-options'
     import OperForm from './oper-form'
 
@@ -93,9 +104,6 @@
                     this.total = data.total;
                 })
             },
-            itemChanged(index, data){
-                this.list.splice(index, 1, data)
-            },
             add(){
                 router.push('/oper/add')
             },
@@ -120,6 +128,7 @@
             this.getList();
         },
         components: {
+            OperTpsBind,
             OperItemOptions,
             OperForm,
         }

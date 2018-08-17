@@ -13,6 +13,8 @@ use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Modules\Area\Area;
+use App\Modules\Tps\TpsBind;
+use App\Modules\Tps\TpsBindService;
 use Illuminate\Database\Eloquent\Builder;
 
 class OperService extends BaseService
@@ -59,6 +61,7 @@ class OperService extends BaseService
         $data->each(function ($item){
             $item->account = OperAccountService::getByOperId($item->id) ?: null;
             $item->miniprogram = OperMiniprogramService::getByOperId($item->id) ?: null;
+            $item->bindInfo = TpsBindService::getTpsBindInfoByOriginInfo($item->id, TpsBind::ORIGIN_TYPE_OPER) ?: null;
         });
 
         return $data;

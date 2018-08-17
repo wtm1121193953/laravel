@@ -1,15 +1,7 @@
 <template>
-    <page title="TPS会员帐号管理">
-        <div>
-            <div v-if="bindInfo == null" class="title"><el-button type="primary" @click="showBox = true">绑定TPS帐号</el-button></div>
-            <div v-if="bindInfo" class="title">已绑定TPS帐号：{{bindInfo.tps_account}}</div>
-            <div class="tips m-t-20">
-                <div class="tip">温馨提示：</div>
-                <div class="tip">1、绑定TPS帐号后，您在大千生活的下级用户对您贡献的消费额可以按系数转化成TPS消费额。</div>
-                <div class="tip">2、大千生活消费额置换TPS积分公式为：大千消费额/6/6.5/4，例如600大千消费额可以置换TPS积分=600/6/6.5/4=3.84个</div>
-                <div class="tip">3、大千消费额与TPS消费额置换比为6：1</div>
-            </div>
-        </div>
+
+    <div>
+        <el-button type="text" size="small" @click="showBox = true">绑定TPS帐号</el-button>
 
         <el-dialog :visible.sync="showBox" width="60%" title="绑定TPS帐号" :closeOnClickModal="false">
 			<el-row>
@@ -37,13 +29,16 @@
 			</el-row>
 
         </el-dialog>
-    </page>
+    </div>
 </template>
 
 <script>
     import api from '../../../assets/js/api'
     export default {
-        name: "tps-bind",
+        name: "oper-tps-bind",
+        props: {
+            scope: Object,
+        },
         data(){
             return {
                 bindInfo: '',
@@ -67,11 +62,6 @@
         },
         methods: {
 
-            init(){
-                api.get('/tps/getBindInfo').then(data => {
-                    this.bindInfo = data;
-                })
-            },
             genAccount(){
                 this.$refs.form.validate((valid) => {
                     if(valid){
@@ -89,6 +79,7 @@
                             '提示',
                             {type: 'warning',}
                         ).then(() => {
+                            this.form.operId = this.scope.row.id;
                             api.post('/tps/bindAccount', this.form).then((data) => {
                                 this.$alert('创建tps帐号成功, tps帐号默认登陆密码为 a12345678, 请及时修改');
                                 this.showBox = false;
@@ -122,13 +113,13 @@
                     }, 1000)
 		        }).finally(() => {
                     this.verifyCodeBtnLoading = false;
-                });;
+                });
 
             }
 
         },
         created(){
-            this.init();
+            //console.log(this.form)
         }
     }
 </script>

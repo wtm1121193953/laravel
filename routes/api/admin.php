@@ -63,6 +63,10 @@ Route::prefix('admin')
     Route::get('merchant/pool', 'MerchantPoolController@getList');
     Route::get('merchant/pool/detail', 'MerchantPoolController@detail');
 
+    Route::get('/tps/getBindInfo', 'TpsBindController@getBindInfo');
+    Route::post('/tps/bindAccount', 'TpsBindController@bindAccount');
+    Route::post('/tps/sendVerifyCode', 'TpsBindController@sendVerifyCode');
+
     Route::group([], base_path('routes/api/admin/goods.php'));
     Route::group([], base_path('routes/api/admin/oper.php'));
     Route::group([], base_path('routes/api/admin/oper_account.php'));
