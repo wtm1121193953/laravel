@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\SettlementJob;
+use App\Jobs\Schedule\SettlementJob;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;

@@ -4,19 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
-use App\Jobs\InviteUserStatisticsDailyJob;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteUserService;
-use App\Modules\Invite\InviteUserChangeBindRecordService;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Oper\OperService;
 use App\Modules\User\UserService;
 use App\Result;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Modules\Invite\InviteUserUnbindRecord;
 use App\ResultCode;
 
 class UsersController extends Controller
@@ -77,11 +73,13 @@ class UsersController extends Controller
         $inviteChannelName = request('inviteChannelName', '');
         $pageSize = request('pageSize', 15);
 
-        $query = InviteChannelService::getAllOperInviteChannels(true, $operName, $inviteChannelName);
+        $query = InviteChannelService::getOperInviteChannels([
+            'operName' => $operName,
+            'inviteChannelName' => $inviteChannelName
+        ], true);
         $data = $query->paginate($pageSize);
         $data->each(function ($item) {
-            $oper = OperService::detail($item->oper_id);
-            $item->operName = $oper->name;
+            $item->operName = OperService::getNameById($item->oper_id);
         });
 
         return Result::success([
