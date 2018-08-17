@@ -48,11 +48,6 @@ class MerchantDraftController extends Controller
             'name' => 'required',
         ]);
 
-        $mobile = request('contacter_phone');
-        if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
-            throw new ParamInvalidException('负责人手机号码不合法');
-        }
-
         $currentOperId = request()->get('current_user')->oper_id;
 
         $merchantDraft = MerchantDraftService::add($currentOperId);
@@ -75,10 +70,6 @@ class MerchantDraftController extends Controller
         ]);
 
         $id = request('id');
-        $mobile = request('contacter_phone');
-        if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
-            throw new ParamInvalidException('负责人手机号码不合法');
-        }
 
         $currentOperId = request()->get('current_user')->oper_id;
 

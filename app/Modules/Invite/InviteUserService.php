@@ -137,7 +137,9 @@ class InviteUserService
         $inviteUserUnbindRecord->old_invite_user_record = $inviteRecord->toJson();
         $inviteUserUnbindRecord->save();
 
-        // todo 更新用户邀请数量统计
+        // 更新用户邀请数量统计
+        $date = $inviteRecord->created_at->format('Y-m-d');
+        InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', $date));
 
     }
 
