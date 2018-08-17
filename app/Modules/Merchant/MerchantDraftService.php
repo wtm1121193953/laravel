@@ -24,14 +24,14 @@ class MerchantDraftService extends BaseService
      * 根据ID获取商户信息
      * @param $merchantId
      * @param array|string $fields
-     * @return Merchant
+     * @return MerchantDraft
      */
     public static function getById($merchantId, $fields = ['*'])
     {
         if(is_string($fields)){
             $fields = explode(',', $fields);
         }
-        return Merchant::find($merchantId, $fields);
+        return MerchantDraft::find($merchantId, $fields);
     }
 
     public static function getList($currentOperId,$status,$auditStatus,$name)
