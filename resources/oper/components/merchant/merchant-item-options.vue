@@ -55,6 +55,20 @@
             query: {type: Object}
         },
         data(){
+            let accountValidate = (rule, value, callback) => {
+                if ((/\s+/.test(value))) {
+                    callback(new Error('帐户名不允许有空格'));
+                }else {
+                    callback();
+                }
+            };
+            let passwordValidate = (rule, value, callback) => {
+                if ((/\s+/.test(value))) {
+                    callback(new Error('密码不允许有空格'));
+                }else {
+                    callback();
+                }
+            };
             return {
                 showCreateAccountDialog: false,
                 accountForm: {
@@ -64,9 +78,11 @@
                 accountFormRules: {
                     account: [
                         {required: true, message: '帐号名不能为空'},
+                        {validator: accountValidate}
                     ],
                     password: [
-                        {required: true, min: 6, max: 18, message: '密码不能为空, 6-18位密码'}
+                        {required: true, min: 6, max: 18, message: '密码不能为空, 6-18位密码'},
+                        {validator: passwordValidate}
                     ]
                 },
                 showModifyAccountDialog: false,
@@ -75,7 +91,8 @@
                 },
                 accountModifyFormRules: {
                     password: [
-                        {required: true, min: 6, max: 18, message: '密码不能为空, 6-18位密码'}
+                        {required: true, min: 6, max: 18, message: '密码不能为空, 6-18位密码'},
+                        {validator: passwordValidate}
                     ]
                 },
             }
