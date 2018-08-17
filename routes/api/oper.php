@@ -39,6 +39,4 @@ Route::prefix('oper')
 
 
         Route::get('/tps/getBindInfo', 'TpsBindController@getBindInfo');
-        Route::post('/tps/bindAccount', 'TpsBindController@bindAccount');
-        Route::post('/tps/sendVerifyCode', 'TpsBindController@sendVerifyCode');
     });
