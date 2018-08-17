@@ -109,7 +109,7 @@ class SmsService extends BaseService
             $params = self::getDishesBuySuccessNotifyParams($order);
             MicroServiceApi::sendTemplateSms($order->notify_mobile, $templateId, $params);
         }else {
-            Log::error('该订单类型不发送通知短信', ['order' => $order]);
+            Log::info('该订单类型不发送通知短信', ['order' => $order]);
             return false;
         }
     }
