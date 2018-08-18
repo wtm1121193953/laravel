@@ -222,7 +222,7 @@ class MerchantController extends Controller
         $operId = request()->get('current_user')->oper_id;
         $password = request('password');
 
-        $account = MerchantService::createAccount($merchantId,$getAccount,$operId,$password);
+        $account = MerchantAccountService::createAccount($merchantId,$getAccount,$operId,$password);
 
         return Result::success($account);
     }
@@ -241,7 +241,7 @@ class MerchantController extends Controller
         $id = request('id');
         $password = request('password');
 
-        $account = MerchantService::editAccount($id,$password);
+        $account = MerchantAccountService::editAccount($id,$password);
 
         return Result::success($account);
     }
