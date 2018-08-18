@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Oper;
 
-use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
@@ -12,7 +11,6 @@ use App\Modules\Merchant\MerchantAccountService;
 use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Merchant\MerchantService;
-use App\Modules\Oper\OperBizMember;
 use App\Result;
 
 

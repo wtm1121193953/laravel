@@ -27,6 +27,7 @@ use App\BaseModel;
  * @property string licence_pic_url
  * @property number mapping_user_id
  * @property number pay_to_platform
+ * @property number status
  */
 class Oper extends BaseModel
 {
