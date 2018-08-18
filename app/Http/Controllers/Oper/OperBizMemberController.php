@@ -9,6 +9,12 @@ use App\Modules\Oper\OperBizMember;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * 原有的业务员操作不再提取到service中, 后面会去掉
+ * Class OperBizMemberController
+ * @package App\Http\Controllers\Oper
+ * @deprecated
+ */
 class OperBizMemberController extends Controller
 {
 

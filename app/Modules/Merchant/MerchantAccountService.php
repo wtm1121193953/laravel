@@ -53,7 +53,7 @@ class MerchantAccountService extends BaseService
      */
     public static function getMenus($operId){
 
-        $menus =  (new self())->Menus();
+        $menus =  (new self())->menus();
 
         $operBindInfo = TpsBindService::getTpsBindInfoByOriginInfo($operId, TpsBind::ORIGIN_TYPE_OPER);
         if(empty($operBindInfo)){
@@ -75,7 +75,7 @@ class MerchantAccountService extends BaseService
     /**
      * @return array
      */
-    public function Menus()
+    public function menus()
     {
         $menus = [
             [ 'id' => 1, 'name' => '商品管理', 'level' => 1, 'url' => 'goods', 'sub' =>

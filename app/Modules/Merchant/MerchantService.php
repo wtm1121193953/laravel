@@ -238,11 +238,6 @@ class MerchantService extends BaseService
         return $merchant;
     }
 
-    public static function audit()
-    {
-        // todo 审核商户
-    }
-
     /**
      * 编辑商户
      * @param $id

@@ -9,6 +9,7 @@
 namespace App\Modules\Goods;
 
 
+use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
@@ -18,7 +19,7 @@ use App\Modules\Merchant\MerchantService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-class GoodsService
+class GoodsService extends BaseService
 {
 
     /**
@@ -39,8 +40,8 @@ class GoodsService
 
     /**
      * 首页商户列表，显示价格最低的n个团购商品
-     * @param $merchantId
-     * @param $number
+     * @param int $merchantId 商户ID
+     * @param int $number 要获取的商品个数
      * @return Goods[]|\Illuminate\Database\Eloquent\Collection
      */
     public static function getLowestPriceGoodsForMerchant($merchantId, $number)
@@ -276,7 +277,12 @@ class GoodsService
         });
     }
 
-    public static function getMaxSort($merchantId)
+    /**
+     * 获取当前最大排序值
+     * @param $merchantId
+     * @return int|number
+     */
+    private static function getMaxSort($merchantId)
     {
         $sort = Goods::where('merchant_id', $merchantId)->max('sort');
         return $sort ?? 0;
