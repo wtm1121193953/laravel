@@ -4,7 +4,6 @@ namespace App\Console\Commands\Updates;
 
 use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Invite\InviteUserRecord;
-use App\Modules\Invite\InviteUserService;
 use App\Modules\Order\OrderService;
 use App\Modules\User\User;
 use App\Modules\Wechat\MiniprogramScene;

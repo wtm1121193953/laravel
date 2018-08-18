@@ -9,7 +9,7 @@
 			        <el-form :model="form" label-width="80px" @submit.native.prevent ref="form" :rules="formRules">
                         <el-form-item prop="email" label="电子邮箱">
                             <el-input v-model="form.email"/>
-                            <div class="tips">仅限后缀@shoptps.com官方邮箱注册，若没有邮箱，请联系客服</div>
+                            <div class="tips">仅限后缀@yunke138.com官方邮箱注册，若没有邮箱，请联系客服</div>
                         </el-form-item>
 
                         <el-form-item prop="verifyCode" label="验证码">
@@ -70,8 +70,8 @@
                             this.$message.error('邮箱不能为空!');
                             return;
                         }
-                        if(!this.form.email.match(/.*@shoptps\.com$/)){
-                            this.$message.error('邮箱格式错误, 后缀必须是 @shoptps.com !')
+                        if(!this.form.email.match(/.*@yunke138\.com$/)){
+                            this.$message.error('邮箱格式错误, 后缀必须是 @yunke138.com !')
                             return;
                         }
                         this.$confirm(
@@ -97,8 +97,8 @@
         		    this.$message.error('邮箱不能为空!');
         		    return;
         		}
-        		if(!this.form.email.match(/.*@shoptps\.com$/)){
-        		    this.$message.error('邮箱格式错误, 后缀必须是 @shoptps.com !')
+        		if(!this.form.email.match(/.*@yunke138\.com$/)){
+        		    this.$message.error('邮箱格式错误, 后缀必须是 @yunke138.com !')
                     return;
                 }
                 this.verifyCodeBtnLoading = true;

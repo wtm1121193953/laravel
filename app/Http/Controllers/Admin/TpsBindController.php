@@ -39,9 +39,9 @@ class TpsBindController extends Controller
         $email = request('email');
         $verifyCode = request('verifyCode');
 
-        //先判断验证码是否有效，仅限后缀@shoptps.com官方邮箱注册
-        if (substr($email, -12) != '@shoptps.com') {
-            throw new ParamInvalidException('仅限后缀@shoptps.com官方邮箱注册');
+        //先判断验证码是否有效，仅限后缀@yunke138.com官方邮箱注册
+        if (substr($email, -13) != '@yunke138.com') {
+            throw new ParamInvalidException('仅限后缀@yunke138.com官方邮箱注册');
         }
 
         $emailVerifyCode = EmailService::checkVerifyCode($email, $verifyCode);
