@@ -3,6 +3,7 @@
 namespace App\Modules\User;
 
 use App\BaseModel;
+use App\Modules\Order\OrderService;
 use Illuminate\Notifications\Notifiable;
 
 /**
@@ -19,6 +20,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string salt
  * @property string wx_nick_name
  * @property string wx_avatar_url
+ * @property int order_count
  *
  */
 class User extends BaseModel
@@ -46,5 +48,17 @@ class User extends BaseModel
     public static function getLevelText($level)
     {
         return ['','萌新', '粉丝', '铁杆', '骨灰'][$level];
+    }
+
+    // 获取用户订单数获取器
+    public function getOrderCountAttribute($value)
+    {
+        // 如果用户的订单数为null, 则统计用户总的下单数量
+        if(is_null($value)){
+            $orderCount = OrderService::getOrderCountByUserId($this->id);
+            $this->order_count = $orderCount;
+            $this->save();
+        }
+        return $this->order_count;
     }
 }

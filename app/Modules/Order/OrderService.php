@@ -23,7 +23,7 @@ class OrderService extends BaseService
     /**
      * 查询订单列表
      * @param array $params
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return Order|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public static function getList(array $params)
     {
@@ -108,6 +108,12 @@ class OrderService extends BaseService
 
     }
 
+    /**
+     * 核销订单
+     * @param $merchantId
+     * @param $verifyCode
+     * @return Order
+     */
     public static function verifyOrder($merchantId, $verifyCode)
     {
 
@@ -136,6 +142,18 @@ class OrderService extends BaseService
         }else{
             throw new BaseResponseException('该订单已退款，不能核销');
         }
+    }
 
+    /**
+     * 根据用户ID获取用户下单总数量
+     * @param $userId
+     * @return int
+     */
+    public static function getOrderCountByUserId($userId)
+    {
+        $count = Order::where('user_id', $userId)
+            ->whereNotIn('status', [Order::STATUS_UN_PAY, Order::STATUS_CLOSED])
+            ->count();
+        return $count;
     }
 }
