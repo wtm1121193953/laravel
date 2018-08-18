@@ -46,7 +46,7 @@ class SelfController extends Controller
      */
     public function logout()
     {
-        Session::forget(config('merchant.user_session'));
+        MerchantAccountService::logout();
         return Result::success();
     }
 
