@@ -30,10 +30,6 @@ class UserInfoInjector
                 $request->attributes->add(['current_user' => $user]);
             }
         }
-        if(App::environment() === 'local'){
-           // $user = User::firstOrFail();
-           // $request->attributes->add(['current_user' => $user]);
-        }
         return $next($request);
     }
 }
