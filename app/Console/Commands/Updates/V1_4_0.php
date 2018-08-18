@@ -4,6 +4,7 @@ namespace App\Console\Commands\Updates;
 
 use App\Modules\Order\OrderService;
 use App\Modules\User\User;
+use App\Modules\Wechat\MiniprogramScene;
 use Illuminate\Console\Command;
 
 class V1_4_0 extends Command
@@ -39,7 +40,7 @@ class V1_4_0 extends Command
      */
     public function handle()
     {
-        //
+        // 更新用户下单总次数
         $this->info('准备更新用户下单总次数');
         $bar = $this->output->createProgressBar(User::count('id'));
         User::chunk(1000, function($list) use ($bar){
@@ -50,5 +51,10 @@ class V1_4_0 extends Command
             });
         });
         $bar->finish();
+
+        // 清除小程序场景表中的小程序码链接, 以便重新生成小程序码
+        MiniprogramScene::where('id', '>', 0)
+            ->update(['qrcode_url' => '']);
+
     }
 }
