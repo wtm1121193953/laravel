@@ -26,16 +26,23 @@ class OrdersController extends Controller
         $type = request('type');
         $status = request('status');
         $goodsName = request('goodsName');
+        if(count($createdAt) > 1){
+            $startCreatedAt = $createdAt[0] . ' 00:00:00';
+            $endCreatedAt = $createdAt[1] . ' 23:59:59';
+        }else {
+            $startCreatedAt = $endCreatedAt = null;
+        }
         $data = OrderService::getList([
             'merchantId' => $merchantId,
             'orderNo' => $orderNo,
             'notifyMobile' => $notifyMobile,
             'keyword' => $keyword,
-            'createdAt' => $createdAt,
             'type' => $type,
             'status' => $status,
             'goodsName' => $goodsName,
-            'getWithQuery' => false
+            'getWithQuery' => false,
+            'startCreatedAt' => $startCreatedAt,
+            'endCreatedAt' => $endCreatedAt,
         ]);
 
         return Result::success([
@@ -55,6 +62,12 @@ class OrdersController extends Controller
         $type = request('type');
         $status = request('status');
         $goodsName = request('goodsName');
+        if(count($createdAt) > 1){
+            $startCreatedAt = $createdAt[0] . ' 00:00:00';
+            $endCreatedAt = $createdAt[1] . ' 23:59:59';
+        }else {
+            $startCreatedAt = $endCreatedAt = null;
+        }
 
         $query = OrderService::getList([
             'merchantId' => $merchantId,
@@ -65,8 +78,10 @@ class OrdersController extends Controller
             'type' => $type,
             'status' => $status,
             'goodsName' => $goodsName,
-            'getWithQuery' => true
-        ]);
+            'startCreatedAt' => $startCreatedAt,
+            'endCreatedAt' => $endCreatedAt,
+        ], true);
+
         return (new MerchantOrderExport($query))->download('商户中心订单管理列表.xlsx');
     }
 

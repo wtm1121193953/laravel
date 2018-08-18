@@ -1,54 +1,58 @@
 <template>
     <page title="订单管理" v-loading="isLoading">
-        <el-col>
-            <el-form :model="query" class="fl" inline size="small">
-                <el-form-item label="订单号">
-                    <el-input v-model="query.orderNo" clearable placeholder="请输入订单号"/>
-                </el-form-item>
-                <el-form-item label="手机号">
-                    <el-input v-model="query.notifyMobile" clearable placeholder="请输入手机号"/>
-                </el-form-item>
-                <el-form-item prop="createdAt" label="下单时间">
-                    <el-date-picker
-                            v-model="query.createdAt"
-                            type="daterange"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            value-format="yyyy-MM-dd">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="订单类型" prop="type">
-                    <el-select v-model="query.type" size="small" clearable placeholder="请选择">
-                        <el-option label="全部" value=""/>
-                        <el-option label="团购" value="1"/>
-                        <el-option label="买单" value="2"/>
-                        <el-option label="单品" value="3"/>
-                    </el-select>
-                </el-form-item>
-                <el-form-item v-if="query.type == 1" label="商品名称">
-                    <el-input v-model="query.goodsName" clearable placeholder="请输入商品名称"/>
-                </el-form-item>
-                <el-form-item label="订单状态" prop="status">
-                    <el-select v-model="query.status" size="small"  multiple placeholder="全部">
-                        <el-option label="未支付" value="1"/>
-                        <!--<el-option label="已取消" value="2"/>-->
-                        <el-option label="已关闭[超时自动关闭]" value="3"/>
-                        <el-option label="已支付" value="4"/>
-                        <!--<el-option label="退款中[保留状态]" value="5"/>-->
-                        <el-option label="已退款" value="6"/>
-                        <el-option label="已完成" value="7"/>
-                    </el-select>
-                </el-form-item>
-                <el-form-item>
-                    <el-button @click="search" type="primary"><i class="el-icon-search"></i> 搜索</el-button>
-                </el-form-item>
-            </el-form>
-        </el-col>
-        <el-col>
-            <el-button type="primary" class="fr m-l-20" @click="showItems">核销</el-button>
-            <el-button class="fr m-l-20" type="success" @click="exportExcel">导出Excel</el-button>
-        </el-col>
+        <el-row align="bottom" type="flex">
+            <el-col :span="22">
+                <el-form :model="query" class="fl" inline size="small">
+                    <el-form-item label="订单号">
+                        <el-input v-model="query.orderNo" clearable placeholder="请输入订单号"/>
+                    </el-form-item>
+                    <el-form-item label="手机号">
+                        <el-input v-model="query.notifyMobile" clearable placeholder="请输入手机号"/>
+                    </el-form-item>
+                    <el-form-item prop="createdAt" label="下单时间">
+                        <el-date-picker
+                                v-model="query.createdAt"
+                                type="daterange"
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                value-format="yyyy-MM-dd">
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="订单类型" prop="type">
+                        <el-select v-model="query.type" size="small" clearable placeholder="请选择">
+                            <el-option label="全部" value=""/>
+                            <el-option label="团购" value="1"/>
+                            <el-option label="买单" value="2"/>
+                            <el-option label="单品" value="3"/>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item v-if="query.type == 1" label="商品名称">
+                        <el-input v-model="query.goodsName" clearable placeholder="请输入商品名称"/>
+                    </el-form-item>
+                    <el-form-item label="订单状态" prop="status">
+                        <el-select v-model="query.status" size="small"  multiple placeholder="全部">
+                            <el-option label="未支付" value="1"/>
+                            <!--<el-option label="已取消" value="2"/>-->
+                            <el-option label="已关闭[超时自动关闭]" value="3"/>
+                            <el-option label="已支付" value="4"/>
+                            <!--<el-option label="退款中[保留状态]" value="5"/>-->
+                            <el-option label="已退款" value="6"/>
+                            <el-option label="已完成" value="7"/>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button @click="search" type="primary"><i class="el-icon-search"></i> 搜索</el-button>
+                        <el-button type="success" @click="exportExcel">导出Excel</el-button>
+                    </el-form-item>
+                    <el-form-item>
+                    </el-form-item>
+                </el-form>
+            </el-col>
+            <el-col :span="2" class="m-b-20">
+                <el-button type="primary" class="fr" @click="showItems">核销</el-button>
+            </el-col>
+        </el-row>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID" width="100px"/>
             <el-table-column prop="created_at" label="下单时间"/>
