@@ -12,6 +12,7 @@ namespace App\Http\Controllers\Merchant;
 use App\Exports\InviteUserRecordExport;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteStatisticsService;
+use App\Modules\Invite\InviteUserService;
 use App\Result;
 
 class InviteStatisticsController
@@ -77,7 +78,7 @@ class InviteStatisticsController
             'mobile' => $mobile,
         ];
 
-        $data = InviteStatisticsService::getInviteUsersByMerchantId($merchantId, $param, false);
+        $data = InviteUserService::getInviteUsersWithOrderCountByMerchantId($merchantId, $param, false);
 
         return Result::success([
             'list' => $data['data'],

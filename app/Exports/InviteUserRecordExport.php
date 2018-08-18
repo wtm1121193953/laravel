@@ -9,7 +9,7 @@
 namespace App\Exports;
 
 
-use App\Modules\Invite\InviteStatisticsService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Order\Order;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -34,7 +34,7 @@ class InviteUserRecordExport implements FromQuery, WithMapping, WithHeadings
         $merchantId = $this->merchantId;
         $mobile = $this->mobile;
 
-        $query = InviteStatisticsService::getInviteUsersByMerchantId($merchantId, [
+        $query = InviteUserService::getInviteUsersWithOrderCountByMerchantId($merchantId, [
             'mobile' => $mobile
         ], true);
 
