@@ -151,37 +151,6 @@ class MerchantAccountService extends BaseService
     }
 
     /**
-     * @param $merchantId
-     * @return Merchant
-     */
-    public static function getMerchantInfo($merchantId){
-
-        $merchant = MerchantService::getById($merchantId,
-            ['id','name','signboard_name','merchant_category_id','province','city','area','address','desc']
-        );
-
-        $mc = MerchantCategory::where('id',$merchant->merchant_category_id)->first(['name','pid']);
-
-        if($mc){
-            //父类别
-            $merchant->merchantCategoryName = $mc->name;
-            while ($mc->pid != 0){
-                $mc = MerchantCategory::where('id',$mc->pid)->first(['name','pid']);
-                $merchant->merchantCategoryName =  $mc->name . ' ' .$merchant->merchantCategoryName;
-            }
-        }else{
-            $merchant->merchantCategoryName = '';
-        }
-
-        $merchant->signboardName = $merchant->signboard_name;
-        unset($merchant->merchant_category_id);
-        unset($merchant->signboard_name);
-
-        return $merchant;
-    }
-
-
-    /**
      * 创建商户账号
      * @param $merchantId
      * @param $getAccount

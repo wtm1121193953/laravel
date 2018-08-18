@@ -218,6 +218,10 @@ class MerchantService extends BaseService
 
         $merchant = Merchant::findOrFail($id);
         $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
+        $merchant->categoryPathText = '';
+        foreach ($merchant->categoryPath as $item) {
+            $merchant->categoryPathText .= $item->name . ' ';
+        }
         $merchant->categoryPathOnlyEnable = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id, true);
         $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
         $merchant->business_time = json_decode($merchant->business_time, 1);
