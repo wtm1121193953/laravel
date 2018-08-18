@@ -3,7 +3,6 @@
 namespace App\Modules\User;
 
 use App\BaseModel;
-use App\Modules\Order\OrderService;
 use Illuminate\Notifications\Notifiable;
 
 /**
@@ -50,15 +49,4 @@ class User extends BaseModel
         return ['','萌新', '粉丝', '铁杆', '骨灰'][$level];
     }
 
-    // 获取用户订单数获取器
-    public function getOrderCountAttribute($value)
-    {
-        // 如果用户的订单数为null, 则统计用户总的下单数量
-        if(is_null($value)){
-            $orderCount = OrderService::getOrderCountByUserId($this->id);
-            $this->order_count = $orderCount;
-            $this->save();
-        }
-        return $this->order_count;
-    }
 }

@@ -11,13 +11,13 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
+use App\Modules\Order\OrderService;
 use App\Modules\Setting\SettingService;
 use App\Modules\User\User;
-use App\Modules\User\UserMapping;
+use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserConsumeQuotaRecord;
 use App\Modules\UserCredit\UserCredit;
 use App\Modules\UserCredit\UserCreditRecord;
-use App\Modules\UserCredit\UserCreditSettingService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -51,12 +51,24 @@ class OrderPaidJob implements ShouldQueue
      */
     public function handle()
     {
-        //
+        // 更新用户的下单数
+        $this->updateUserOrderCount();
         // 处理消费额 消费额逻辑暂时去掉, 需要修改
         // $this->handleUserConsumeQuota($this->order);
 
         // 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
         $this->handleMerchantInvite();
+    }
+
+    /**
+     * 更新用户累计订单数量
+     */
+    public function updateUserOrderCount()
+    {
+        $order = $this->order;
+        $user = UserService::getUserById($order->user_id);
+        $user->order_count = OrderService::getOrderCountByUserId($user->id);
+        $user->save();
     }
 
     /**
