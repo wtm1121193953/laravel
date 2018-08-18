@@ -487,7 +487,7 @@ class InviteUserService
      * @param $originType
      * @param $params
      * @param bool $withQuery
-     * @return User|array
+     * @return User|LengthAwarePaginator
      */
     public static function getInviteUsersByOriginInfo($originId, $originType, $params = [], $withQuery = false)
     {
@@ -505,32 +505,14 @@ class InviteUserService
 
         if($withQuery) return $query;
 
-        $page = array_get($params, 'page', 1);
         $pageSize = array_get($params, 'pageSize', 15);
         $orderColumn = array_get($params, 'orderColumn', 'id');
         $orderType = array_get($params, 'orderType', 'descending');
+        $orderType = $orderType == 'descending' ? 'desc' : 'asc';
 
-        $total = $query->count();
-        $data = $query->get();
-        // todo 用户表添加 order_count 字段, 记录用户的下单数
-        $data->each(function ($item) {
-            $item->order_number = Order::where('user_id', $item->id)
-                ->whereNotIn('status', [Order::STATUS_UN_PAY, Order::STATUS_CLOSED])
-                ->count();
-        });
-
-        if ($orderType == 'descending') {
-            $data = $data->sortBy($orderColumn);
-        } elseif ($orderType == 'ascending') {
-            $data = $data->sortByDesc($orderColumn);
-        }
-
-        $data = $data->forPage($page,$pageSize)->values()->all();
-
-        return [
-            'data' => $data,
-            'total' => $total,
-        ];
+        $data = $query->orderBy($orderColumn, $orderType)
+            ->paginate($pageSize);
+        return $data;
     }
 
     /**
@@ -538,7 +520,7 @@ class InviteUserService
      * @param $merchantId
      * @param array $params
      * @param bool $withQuery
-     * @return User|array
+     * @return User|LengthAwarePaginator
      */
     public static function getInviteUsersWithOrderCountByMerchantId($merchantId, $params = [], $withQuery = false)
     {
