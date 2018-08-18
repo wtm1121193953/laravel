@@ -218,11 +218,11 @@ class MerchantController extends Controller
             'password' => 'required|min:6',
         ]);
         $merchantId = request('merchant_id');
-        $getAccount = request('account');
+        $account = request('account');
         $operId = request()->get('current_user')->oper_id;
         $password = request('password');
 
-        $account = MerchantAccountService::createAccount($merchantId,$getAccount,$operId,$password);
+        $account = MerchantAccountService::createAccount($merchantId,$account,$operId,$password);
 
         return Result::success($account);
     }

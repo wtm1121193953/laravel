@@ -134,11 +134,7 @@ class MerchantAccountService extends BaseService
         if(MerchantAccount::genPassword($password, $user->salt) !== $user->password){
             throw new PasswordErrorException();
         }
-        $user = MerchantAccount::findOrFail($user->id);
-        $salt = str_random();
-        $user->salt = $salt;
-        $user->password = MerchantAccount::genPassword($newPassword, $salt);
-        $user->save();
+        $user = self::editAccount($user->id, $newPassword);
 
         // 修改密码成功后更新session中的user
         session([
@@ -158,7 +154,7 @@ class MerchantAccountService extends BaseService
      * @param $password
      * @return MerchantAccount
      */
-    public static function createAccount($merchantId,$getAccount,$operId,$password){
+    public static function createAccount($merchantId, $getAccount,$operId,$password){
 
         $isAccount = MerchantAccount::where('merchant_id', $merchantId)->first();
         if(!empty($isAccount)){
