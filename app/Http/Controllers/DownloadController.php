@@ -20,7 +20,7 @@ class DownloadController extends Controller
 
     public function download()
     {
-        $path = request('path');
+        $path = request('path') ?? request('url');
         $as = request('as');
         if(empty($path)){
             throw new ParamInvalidException();
