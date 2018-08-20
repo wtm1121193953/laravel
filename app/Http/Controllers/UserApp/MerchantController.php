@@ -19,7 +19,7 @@ class MerchantController extends Controller
     public function getList()
     {
 
-        $data = MerchantService::userAppMerchantList([
+        $data = MerchantService::getListForUserApp([
             'city_id' => request('city_id'),
             'merchant_category_id' => request('merchant_category_id'),
             'keyword' => request('keyword'),

@@ -469,7 +469,7 @@ class MerchantService extends BaseService
         }
     }
 
-    public static function userAppMerchantList(array $data)
+    public static function getListForUserApp(array $data)
     {
         $city_id = array_get($data,'city_id');
         $merchant_category_id = array_get($data,'merchant_category_id');

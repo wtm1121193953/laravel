@@ -12,6 +12,7 @@ namespace App\Modules\Order;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Modules\Dishes\DishesItem;
+use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
@@ -30,6 +31,7 @@ class OrderService extends BaseService
     public static function getList(array $params, $getWithQuery = false)
     {
         $operId = array_get($params, 'operId');
+        $userId = array_get($params, 'userId');
         $merchantId = array_get($params, 'merchantId');
         $orderNo = array_get($params, 'orderNo');
         $notifyMobile = array_get($params, 'notifyMobile');
@@ -53,6 +55,10 @@ class OrderService extends BaseService
                     $query->where('type', Order::TYPE_DISHES);
                 });
         });
+
+        if($userId > 0){
+            $query->where('user_id', $userId);
+        }
         if($merchantId > 0){
             $query->where('merchant_id', $merchantId);
         }
@@ -126,6 +132,8 @@ class OrderService extends BaseService
                 $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
                 $data[$key]['dishes_items'] = $dishesItems;
             }
+            $item->items = OrderItem::where('order_id', $item->id)->get();
+            $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
         }
 
         return $data;
