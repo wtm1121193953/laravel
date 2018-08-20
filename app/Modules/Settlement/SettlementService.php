@@ -10,10 +10,7 @@ namespace App\Modules\Settlement;
 
 
 use App\BaseService;
-use App\Modules\Merchant\Merchant;
-use App\Modules\Oper\OperBizMember;
 use App\Modules\Order\Order;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class SettlementService extends BaseService
@@ -112,5 +109,37 @@ class SettlementService extends BaseService
             $data = $query->paginate();
             return $data;
         }
+    }
+
+    public static function getBySettlementOrders($operId,$settlement_id,$merchant_id)
+    {
+        $data = Order::where('oper_id', $operId)
+            ->where('settlement_id', $settlement_id)
+            ->where('merchant_id', $merchant_id)
+            ->orderBy('id', 'desc')->paginate();
+
+        return $data;
+    }
+
+    public static function updateInvoice($id,$invoice_type,$invoice_pic_url,$logistics_name,$logistics_no)
+    {
+        $settlement = Settlement::findOrFail($id);
+        $settlement->invoice_type = $invoice_type;
+        $settlement->invoice_pic_url = $invoice_pic_url;
+        $settlement->logistics_name = $logistics_name;
+        $settlement->logistics_no = $logistics_no;
+        $settlement->save();
+
+        return $settlement;
+    }
+
+    public static function updatePayPicUrl($id,$pay_pic_url)
+    {
+        $settlement = Settlement::findOrFail($id);
+        $settlement->pay_pic_url = $pay_pic_url;
+        $settlement->status = 2;
+        $settlement->save();
+
+        return $settlement;
     }
 }

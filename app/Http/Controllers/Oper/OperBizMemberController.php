@@ -26,7 +26,9 @@ class OperBizMemberController extends Controller
         $status = request('status');
         $name = request('name');
         $mobile = request('mobile');
-        $data = OperBizMember::where('oper_id', request()->get('current_user')->oper_id)
+        $operId = request()->get('current_user')->oper_id;
+
+        $data = OperBizMember::where('oper_id', $operId)
             ->when($status, function (Builder $query) use ($status){
                 $query->where('status', $status);
             })
@@ -38,10 +40,10 @@ class OperBizMemberController extends Controller
             })
             ->orderBy('id', 'desc')->paginate();
 
-        $data->each(function($item) {
+        $data->each(function($item) use ($operId){
 
-            $item->activeMerchantNumber = OperBizMember::getActiveMerchantNumber($item, request()->get('current_user')->oper_id);
-            $item->auditMerchantNumber = OperBizMember::getAuditMerchantNumber($item, request()->get('current_user')->oper_id);
+            $item->activeMerchantNumber = OperBizMember::getActiveMerchantNumber($item,request()->get('current_user')->oper_id);
+            $item->auditMerchantNumber = OperBizMember::getAuditMerchantNumber($item,request()->get('current_user')->oper_id);
 
         });
 
@@ -61,7 +63,8 @@ class OperBizMemberController extends Controller
         $mobile = request('mobile', '');
         $keyword = request('keyword', '');
         $status = request('status');
-        $list = OperBizMember::where('oper_id', request()->get('current_user')->oper_id)
+        $operId = request()->get('current_user')->oper_id;
+        $list = OperBizMember::where('oper_id', $operId)
             ->when($status, function(Builder $query) use ($status){
                 $query->where('status', $status);
             })
@@ -106,19 +109,25 @@ class OperBizMemberController extends Controller
             'mobile' => 'required',
         ]);
 
-        $haveMemberMobile = OperBizMember::where( 'mobile' , request('mobile'))
-            ->where('oper_id', request()->get('current_user')->oper_id)
+        $name = request('name');
+        $mobile = request('mobile');
+        $remark = request('remark','');
+        $status = request('status', 1);
+        $operId = request()->get('current_user')->oper_id;
+
+        $haveMemberMobile = OperBizMember::where( 'mobile' , $mobile)
+            ->where('oper_id', $operId)
             ->get();
         if (count($haveMemberMobile) > 0){
             throw new BaseResponseException('手机号码重复');
         }
 
         $operBizMember = new OperBizMember();
-        $operBizMember->oper_id = request()->get('current_user')->oper_id;
-        $operBizMember->name = request('name');
-        $operBizMember->mobile = request('mobile');
-        $operBizMember->remark = request('remark', '');
-        $operBizMember->status = request('status', 1);
+        $operBizMember->oper_id = $operId;
+        $operBizMember->name = $name;
+        $operBizMember->mobile = $mobile;
+        $operBizMember->remark = $remark;
+        $operBizMember->status = $status;
 
         $operBizMember->code = OperBizMember::genCode();
 
@@ -137,18 +146,24 @@ class OperBizMemberController extends Controller
             'name' => 'required',
         ]);
 
-        $haveMemberMobile = OperBizMember::where( 'mobile' , request('mobile'))
-            ->where('oper_id', request()->get('current_user')->oper_id)
-            ->where('id', '<>', request('id'))
+        $id = request('id');
+        $name = request('name');
+        $mobile = request('mobile');
+        $remark = request('remark', '');
+        $operId = request()->get('current_user')->oper_id;
+
+        $haveMemberMobile = OperBizMember::where( 'mobile' , $mobile)
+            ->where('oper_id', $operId)
+            ->where('id', '<>', $id)
             ->get();
         if (count($haveMemberMobile) > 0){
             throw new BaseResponseException('手机号码重复');
         }
 
-        $operBizMember = OperBizMember::findOrFail(request('id'));
-        $operBizMember->name = request('name');
-        $operBizMember->mobile = request('mobile');
-        $operBizMember->remark = request('remark', '');
+        $operBizMember = OperBizMember::findOrFail($id);
+        $operBizMember->name = $name;
+        $operBizMember->mobile = $mobile;
+        $operBizMember->remark = $remark;
 
         $operBizMember->save();
 
@@ -164,8 +179,11 @@ class OperBizMemberController extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer',
         ]);
-        $operBizMember = OperBizMember::findOrFail(request('id'));
-        $operBizMember->status = request('status');
+
+        $id = request('id');
+        $status = request('status');
+        $operBizMember = OperBizMember::findOrFail($id);
+        $operBizMember->status = $status;
 
         $operBizMember->save();
         return Result::success($operBizMember);
@@ -179,10 +197,11 @@ class OperBizMemberController extends Controller
         $this->validate(request(), [
             'code' => 'required',
         ]);
+        $operId = request()->get('current_user')->oper_id;
         $code = request('code');
-        $data = Merchant::where(function (Builder $query){
-            $query->where('oper_id', request()->get('current_user')->oper_id)
-                ->orWhere('audit_oper_id',  request()->get('current_user')->oper_id);
+        $data = Merchant::where(function (Builder $query) use ($operId){
+            $query->where('oper_id', $operId)
+                ->orWhere('audit_oper_id',  $operId);
             })
             ->where('oper_biz_member_code', $code)
             ->select('id', 'active_time', 'name', 'status','audit_status','created_at','is_pilot')

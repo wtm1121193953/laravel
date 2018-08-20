@@ -24,6 +24,11 @@ class SettlementController extends Controller
             'merchantId' => request()->get('current_user')->merchant_id,
         ]);
 
+        $data->each(function ($item) {
+            $item->invoice_pic_url_arr = $item->invoice_pic_url ? explode(',', $item->invoice_pic_url) : '';
+            $item->pay_pic_url_arr = $item->pay_pic_url ? explode(',', $item->pay_pic_url) : '';
+        });
+
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -45,31 +50,6 @@ class SettlementController extends Controller
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
-    }
-
-    /**
-     * @return \Symfony\Component\HttpFoundation\StreamedResponse
-     * @deprecated todo 去掉下载二维码操作, 由统一下载控制器下载
-     */
-    public function download()
-    {
-        $id = request('id');
-        $field = request('field');
-        $merchantId = request()->get('current_user')->merchant_id;
-        $settlement = SettlementService::getByIdAndMerchantId($id, $merchantId);
-        if(empty($settlement)){
-            throw new DataNotFoundException('结算单信息不存在');
-        }
-
-        $arr = explode("/", $settlement[$field]);
-        $img = $arr[count($arr) - 1];
-        if($field == 'pay_pic_url'){
-            // todo 修改为通过url下载, 去掉path拼装
-            return Storage::download('public/image/item/' . $img, 'cash.png');
-        }elseif ($field == 'invoice_pic_url'){
-            return Storage::download('public/image/item/' . $img, 'invoice.png');
-        }
-        throw new ParamInvalidException('参数异常');
     }
 
 }

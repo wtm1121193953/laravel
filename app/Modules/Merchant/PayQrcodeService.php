@@ -28,7 +28,7 @@ class PayQrcodeService extends BaseService
             if (empty($scene->qrcode_url)) {
                 $qrcode_url = WechatService::getMiniprogramAppCodeUrl($scene);
 
-                $signboardName = MerchantService::getMerchantValueByIdAndKey($merchantId, 'signboard_name');
+                $signboardName = MerchantService::getSignboardNameById($merchantId);
                 $fileName = pathinfo($qrcode_url, PATHINFO_BASENAME);
                 $path = storage_path('app/public/miniprogram/app_code/') . $fileName;
                 WechatService::addNameToAppCode($path, $signboardName);

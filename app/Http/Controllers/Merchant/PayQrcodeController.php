@@ -48,7 +48,7 @@ class PayQrcodeController extends Controller
 
         $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
 
-        $signboardName = MerchantService::getMerchantValueByIdAndKey($merchantId, 'signboard_name');
+        $signboardName = MerchantService::getSignboardNameById($merchantId);
 
         WechatService::addNameToAppCode($filePath, $signboardName);
 

@@ -20,11 +20,7 @@ class DownloadController extends Controller
 
     public function download()
     {
-        $path = request('path');
-//        $path = '/public/image/item/0OQUTHOOmDGzEhyNWaOO2w76HGNUg7KlBvRde9nm.png';
-//        $path = storage_path('app/public/image/item/0OQUTHOOmDGzEhyNWaOO2w76HGNUg7KlBvRde9nm.png');
-//        $path = 'http://o.local.evlee.top/storage/image/item/0OQUTHOOmDGzEhyNWaOO2w76HGNUg7KlBvRde9nm.png';
-//        $path = 'storage://public/image/item/0OQUTHOOmDGzEhyNWaOO2w76HGNUg7KlBvRde9nm.png';
+        $path = request('path') ?? request('url');
         $as = request('as');
         if(empty($path)){
             throw new ParamInvalidException();
