@@ -143,7 +143,7 @@ class InviteUserService
         $inviteUserUnbindRecord->save();
 
         // 更新用户邀请数量统计
-        InviteStatisticsService::updateDailyStatByOriginInfoAndDate($inviteRecord->origin_id, $inviteRecord->origin_type, $inviteRecord->created_at);
+        InviteStatisticsService::updateDailyStatByOriginInfoAndDate($inviteRecord->origin_id, $inviteRecord->origin_type, date('Y-m-d', strtotime($inviteRecord->created_at)));
 
     }
 
