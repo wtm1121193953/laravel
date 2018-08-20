@@ -42,6 +42,7 @@ use Carbon\Carbon;
  * @property string tax_cert_pic_url
  * @property string legal_id_card_pic_a
  * @property string legal_id_card_pic_b
+ * @property string legal_id_card_num
  * @property string contract_pic_url
  * @property string hygienic_licence_pic_url
  * @property string agreement_pic_url
@@ -66,6 +67,7 @@ use Carbon\Carbon;
  * @property number lowest_amount
  * @property int mapping_user_id
  * @property int level
+ * @property int is_pilot
  *
  */
 class Merchant extends BaseModel
@@ -104,6 +106,18 @@ class Merchant extends BaseModel
     const SETTLE_MONTHLY = 3; // 月结
     const SETTLE_HALF_YEARLY = 4; // 半年结
     const SETTLE_YEARLY = 5; // 年结
+
+    /**
+     * 试点商户
+     */
+    const PILOT_MERCHANT = 1;
+    const NORMAL_MERCHANT = 0;
+
+    /**
+     * 商户状态
+     */
+    const STATUS_ON = 1;
+    const STATUS_OFF = 2;
 
 
     /**
@@ -151,30 +165,35 @@ class Merchant extends BaseModel
         $this->invoice_title = request('invoice_title','');
         $this->invoice_no = request('invoice_no','');
         $this->status = request('status', 1);
-        $this->business_time = request('business_time');
+        $this->business_time = request('business_time', '');
         $this->logo = request('logo','');
         $descPicList = request('desc_pic_list', '');
         if(is_array($descPicList)) $descPicList = implode(',', $descPicList);
         $this->desc_pic_list = $descPicList;
         $this->desc = request('desc','');
-        $this->settlement_cycle_type = request('settlement_cycle_type');
-        $this->settlement_rate = request('settlement_rate');
+        $this->settlement_cycle_type = request('settlement_cycle_type', 1);
+        $this->settlement_rate = request('settlement_rate', 0.00);
         // 银行卡信息
-        $this->bank_card_type = request('bank_card_type');
+        $this->bank_card_type = request('bank_card_type', 1);
         $this->bank_open_name = request('bank_open_name','');
         $this->bank_card_no = request('bank_card_no','');
         $this->sub_bank_name = request('sub_bank_name','');
         $this->bank_open_address = request('bank_open_address','');
-        $this->bank_card_pic_a = request('bank_card_pic_a','');
+        $bankCardPicA = request('bank_card_pic_a','');
+        if (is_array($bankCardPicA)) $bankCardPicA = implode(',', $bankCardPicA);
+        $this->bank_card_pic_a = $bankCardPicA;
         $this->licence_pic_url = request('licence_pic_url','');
 
         $this->legal_id_card_pic_a = request('legal_id_card_pic_a','');
         $this->legal_id_card_pic_b = request('legal_id_card_pic_b','');
+        $this->legal_id_card_num = request('legal_id_card_num','');
         $this->business_licence_pic_url = request('business_licence_pic_url','');
         $this->organization_code = request('organization_code','');
-        $this->contract_pic_url = request('contract_pic_url','');
+        $contractPicUrl = request('contract_pic_url','');
+        if (is_array($contractPicUrl)) $contractPicUrl = implode(',', $contractPicUrl);
+        $this->contract_pic_url = $contractPicUrl;
         $otherCardPicUrls = request('other_card_pic_urls', '');
-        if(is_array($otherCardPicUrls)) $otherCardPicUrls = implode(',', $descPicList);
+        if(is_array($otherCardPicUrls)) $otherCardPicUrls = implode(',', $otherCardPicUrls);
         $this->other_card_pic_urls = $otherCardPicUrls;
         // 商户负责人
         $this->contacter = request('contacter','');
@@ -183,6 +202,9 @@ class Merchant extends BaseModel
         $this->oper_salesman = request('oper_salesman','');
         $this->site_acreage = request('site_acreage','');
         $this->employees_number = request('employees_number','');
+
+        //试点商户
+        $this->is_pilot = request('is_pilot', 0);
 
 
         //////// 没有了的字段

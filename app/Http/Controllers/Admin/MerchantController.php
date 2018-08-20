@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Exports\MerchantExport;
 use App\Http\Controllers\Controller;
@@ -17,8 +18,9 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantService;
-use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Result;
+use Illuminate\Support\Facades\Log;
 
 class MerchantController extends Controller
 {
@@ -35,42 +37,45 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $signboardName = request('signboardName');
+        $status = request('status');
         $auditStatus = request('auditStatus');
+        $merchantCategory = request('merchantCategory');
+        $isPilot = request('isPilot');
+
         if(is_string($auditStatus)){
             $auditStatus = explode(',', $auditStatus);
         }
 
         $operId = request('operId');
-        if(!is_null($operId) && is_string($operId)){
-            $operId = -1;
-        }
 
         // 根据输入的运营中心名称获取所属运营中心ID列表
         $operName = request('operName');
         if($operName) {
-            $operIds = Oper::where('name', 'like', "%$operName%")
-                ->select('id')->get()
-                ->pluck('id');
+            $operIds = OperService::getAll(['name' => $operName], 'id')->pluck('id');
         }
         $creatorOperId = request('creatorOperId');
         // 根据输入的运营中心名称获取录入信息的运营中心ID列表
         $creatorOperName = request('creatorOperName');
         if($creatorOperName){
-            $createOperIds = Oper::where('name', 'like', "%$creatorOperName%")
-                ->select('id')->get()
-                ->pluck('id');
+            $createOperIds = OperService::getAll(['name' => $creatorOperName], 'id')->pluck('id');
         }
-
+        $startTime = microtime(true);
         $data = MerchantService::getList([
             'id' => $id,
+            'operId' => $operIds ?? $operId,
             'name' => $name,
             'signboardName' => $signboardName,
-            'operId' => $operIds ?? $operId,
             'creatorOperId' => $createOperIds ?? $creatorOperId,
+            'status' => $status,
             'auditStatus' => $auditStatus,
+            'merchantCategory' => $merchantCategory,
+            'isPilot' => $isPilot,
             'startCreatedAt' => $startDate,
             'endCreatedAt' => $endDate,
         ]);
+        $endTime = microtime(true);
+
+        Log::info('耗时: ', ['start time' => $startTime, 'end time' => $endTime, '耗时: ' => $endTime - $startTime]);
 
         return Result::success([
             'list' => $data->items(),
@@ -128,7 +133,7 @@ class MerchantController extends Controller
         $merchantId = request('id');
         $auditSuggestion = request('audit_suggestion', '');
 
-        $merchant = Merchant::findOrFail($merchantId);
+        $merchant = MerchantService::getById($merchantId);
         if(empty($merchant)){
             throw new ParamInvalidException('商户信息不存在');
         }
@@ -170,6 +175,7 @@ class MerchantController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $name = request('name');
+        $status = request('status');
         $auditStatus = request('auditStatus');
         $signboardName = request('signboardName');
         if ($auditStatus || $auditStatus==="0"){
@@ -180,6 +186,58 @@ class MerchantController extends Controller
 //        $creatorOperId = request('creatorOperId');
 //        $creatorOperName = request('creatorOperName');
 
-        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name,$auditStatus, $operId, $operName))->download('商户列表.xlsx');
+        $merchantCategory = request('merchantCategory', '');
+        $isPilot = request('isPilot', 0);
+
+        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name, $status, $auditStatus, $operId, $operName, $merchantCategory, $isPilot))->download('商户列表.xlsx');
+    }
+
+    /**
+     * 修改商户状态
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function changeStatus()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $merchant = MerchantService::getById(request('id'));
+        if(empty($merchant)){
+            throw new DataNotFoundException('商户信息不存在');
+        }
+        $merchant->status = $merchant->status == Merchant::STATUS_ON ? Merchant::STATUS_OFF : Merchant::STATUS_ON;
+        $merchant->save();
+
+        return Result::success($merchant);
+    }
+
+    /**
+     * SaaS端 编辑试点商户
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function edit()
+    {
+        $validate = [
+            'name' => 'required|max:20',
+            'merchant_category_id' => 'required',
+            'signboard_name' => 'required|max:20',
+        ];
+        if (request('is_pilot') !== Merchant::PILOT_MERCHANT){
+            $validate = array_merge($validate, [
+                'business_licence_pic_url' => 'required',
+                'organization_code' => 'required',
+                'settlement_rate' => 'required|numeric|min:0',
+            ]);
+        }
+        $this->validate(request(), $validate);
+
+        $mobile = request('contacter_phone');
+        if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
+            throw new ParamInvalidException('负责人手机号码不合法');
+        }
+
+        $merchant = MerchantService::edit(request('id'), request('audit_oper_id'));
+
+        return Result::success($merchant);
     }
 }

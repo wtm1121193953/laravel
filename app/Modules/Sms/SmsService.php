@@ -11,6 +11,7 @@ namespace App\Modules\Sms;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Goods\Goods;
 use App\Modules\Order\Order;
@@ -18,6 +19,7 @@ use App\Modules\Order\OrderItem;
 use App\ResultCode;
 use App\Support\MicroServiceApi;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
 class SmsService extends BaseService
@@ -67,6 +69,30 @@ class SmsService extends BaseService
     }
 
     /**
+     * 验证短信验证码
+     * @param $mobile
+     * @param $verifyCode
+     * @return SmsVerifyCode|bool
+     */
+    public static function checkVerifyCode($mobile, $verifyCode)
+    {
+        if(App::environment('production') || $verifyCode != '6666'){
+            $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
+                ->where('verify_code', $verifyCode)
+                ->where('status', 1)
+                ->where('expire_time', '>', Carbon::now())
+                ->first();
+            if(empty($verifyCodeRecord)){
+                return false;
+            }
+            $verifyCodeRecord->status = 2;
+            $verifyCodeRecord->save();
+            return $verifyCodeRecord;
+        }
+        return true;
+    }
+
+    /**
      * 购买成功发送通知
      * @param $orderNo
      * @return bool
@@ -83,7 +109,7 @@ class SmsService extends BaseService
             $params = self::getDishesBuySuccessNotifyParams($order);
             MicroServiceApi::sendTemplateSms($order->notify_mobile, $templateId, $params);
         }else {
-            Log::error('该订单类型不发送通知短信', ['order' => $order]);
+            Log::info('该订单类型不发送通知短信', ['order' => $order]);
             return false;
         }
     }

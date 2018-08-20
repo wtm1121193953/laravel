@@ -2,9 +2,7 @@
 
 namespace App\Http\Middleware\UserApp;
 
-use App\Modules\User\User;
 use Closure;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -29,10 +27,6 @@ class UserInfoInjector
             if(!empty($user)){
                 $request->attributes->add(['current_user' => $user]);
             }
-        }
-        if(App::environment() === 'local'){
-           // $user = User::firstOrFail();
-           // $request->attributes->add(['current_user' => $user]);
         }
         return $next($request);
     }

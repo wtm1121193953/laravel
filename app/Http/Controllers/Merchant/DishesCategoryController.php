@@ -18,7 +18,8 @@ class DishesCategoryController extends Controller
         $status = request('status');
         $pageSize = request('pageSize');
 
-        $data = DishesCategoryService::getListByMerchantId(request()->get('current_user')->merchant_id, $status, $pageSize);
+        $data = DishesCategoryService::getListByMerchantId(
+            request()->get('current_user')->merchant_id, $status, $pageSize);
 
         return Result::success([
             'list' => $data->items(),
@@ -33,7 +34,8 @@ class DishesCategoryController extends Controller
     {
         $status = request('status');
 
-        $list = DishesCategoryService::getAllList(request()->get('current_user')->merchant_id, $status);
+        $list = DishesCategoryService::getAllList(
+            request()->get('current_user')->merchant_id, $status);
 
         return Result::success([
             'list' => $list,

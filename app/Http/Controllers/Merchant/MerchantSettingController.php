@@ -25,7 +25,10 @@ class MerchantSettingController extends Controller
             'dishes_enabled'
         ]);
         foreach ($data as $key => $value){
-            MerchantSettingService::set(request()->get('current_user')->oper_id, request()->get('current_user')->merchant_id, $key, $value);
+            MerchantSettingService::set(
+                request()->get('current_user')->oper_id,
+                request()->get('current_user')->merchant_id,
+                $key, $value);
         }
         return Result::success();
     }

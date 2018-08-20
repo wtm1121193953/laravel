@@ -54,7 +54,7 @@ class InitProject extends Command
         echo `php $basePath/artisan key:gen`;
         $this->info("秘钥生成完成");
 
-        // todo 测试数据库连接是否正确, 以及数据库是否存在
+        // 测试数据库连接是否正确, 以及数据库是否存在
         // 初始化数据库及数据迁移文件
         $this->info("初始化数据库");
         echo `php $basePath/artisan migrate`;

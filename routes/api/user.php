@@ -18,6 +18,7 @@ Route::prefix('user')
         Route::any('loginWithSceneId', 'LoginController@loginWithSceneId');
 
         Route::any('user/info', 'UserController@getInfo')->middleware(UserLoginFilter::class);
+        Route::any('user/updateWxInfo', 'UserController@updateUserWxInfo')->middleware(UserLoginFilter::class);
 
         Route::get('area/tree', 'AreaController@getTree');
         Route::get('area/cites/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
@@ -44,6 +45,7 @@ Route::prefix('user')
         Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
         Route::get('invite/getInviterBySceneId', 'InviteChannelController@getInviterBySceneId');
         Route::post('invite/bindInviter', 'InviteChannelController@bindInviter')->middleware(UserLoginFilter::class);
+        Route::get('invite/getInviteUserStatistics', 'InviteChannelController@getInviteUserStatistics')->middleware(UserLoginFilter::class);
 
         Route::get('invite/getInviterInfo', 'UnbindInviterController@getBindInfo')->middleware(UserLoginFilter::class);
         Route::post('invite/unbind', 'UnbindInviterController@unbind')->middleware(UserLoginFilter::class);
@@ -61,4 +63,7 @@ Route::prefix('user')
         Route::post('dishes/add','DishesController@add')->middleware(UserLoginFilter::class);
         Route::get('dishes/detail','DishesController@detail')->middleware(UserLoginFilter::class);
 
+
+        Route::get('tps/getBindInfo', 'TpsBindController@getBindInfo')->middleware(UserLoginFilter::class);
+        Route::post('tps/bindAccount', 'TpsBindController@bindAccount')->middleware(UserLoginFilter::class);
     });

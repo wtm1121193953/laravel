@@ -12,6 +12,7 @@ import dishesGoods from './dishesGoods'
 import InviteChannel from '../components/invite-channel'
 import PayQrcode from '../components/pay-qrcode'
 
+import InviteStatisticsList from '../components/invite-statistics/list'
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
 import OrdersList from '../components/orders/list.vue'
@@ -20,6 +21,7 @@ import OrdersList from '../components/orders/list.vue'
 import SettingMappingUser from '../components/setting/mapping-user.vue'
 //setting 商户系统配置
 import Setting from '../components/setting/list.vue'
+import TpsBind from '../components/setting/tps-bind.vue'
 
 /**
  *
@@ -38,6 +40,7 @@ const routes = [
         path: '/',
         component: Home,
         children: [
+            {path: 'invite/statistics/list', component: InviteStatisticsList, name: 'InviteStatisticsList'},
             {path: 'invite/statistics/daily', component: InviteStatisticsDaily, name: 'InviteStatisticsDaily'},
         ]
     },
@@ -68,6 +71,7 @@ const routes = [
         children: [
             {path: 'setting/mapping_user', component: SettingMappingUser, name: 'SettingMappingUser'},
             {path: 'setting', component: Setting, name: 'Setting'},
+            {path: 'tps-bind', component: TpsBind, name: 'TpsBind'},
         ]
     },
 

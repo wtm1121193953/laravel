@@ -20,12 +20,19 @@ Route::prefix('merchant')
         Route::get('pay/qrcode/miniprogramQrcode', 'PayQrcodeController@getMiniprogramAppCode');
         Route::get('pay/qrcode/downloadMiniprogramQrcode', 'PayQrcodeController@downloadMiniprogramAppCode');
 
+        Route::get('invite/statistics/list', 'InviteStatisticsController@getList');
         Route::get('invite/statistics/dailyList', 'InviteStatisticsController@dailyList');
+        Route::get('invite/statistics/downloadInviteRecordList', 'InviteStatisticsController@downloadInviteRecordList');
+        Route::get('invite/statistics/getTodayAndTotalInviteNumber', 'InviteStatisticsController@getTodayAndTotalInviteNumber');
 
         Route::get('sms/getVerifyCode', 'SmsController@sendVerifyCode');
 
         Route::post('setting/edit', 'MerchantSettingController@edit');
         Route::get('setting/getSetting', 'MerchantSettingController@getSetting');
+
+        Route::get('tps/getBindInfo', 'TpsBindController@getBindInfo');
+        Route::post('tps/sendVerifyCode', 'TpsBindController@sendVerifyCode');
+        Route::post('tps/bindAccount', 'TpsBindController@bindAccount');
 
         Route::group([], base_path('routes/api/merchant/goods.php'));
         Route::group([], base_path('routes/api/merchant/orders.php'));

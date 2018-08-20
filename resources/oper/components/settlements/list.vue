@@ -20,10 +20,27 @@
                     <el-option label="不显示" :value="1"/>
                 </el-select>
             </el-form-item>
+            <el-form-item label="业务员">
+                <el-input v-model="query.oper_biz_member_name" clearable placeholder="请输入业务员"/>
+            </el-form-item>
+            <el-form-item label="业务员手机号码">
+                <el-input v-model="query.oper_biz_member_mobile" clearable placeholder="请输入业务员手机号码"/>
+            </el-form-item>
+            <el-form-item prop="settlement_date" label="结算时间">
+                <el-date-picker
+                        v-model="query.settlement_date"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd">
+                </el-date-picker>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search"> 搜索</i></el-button>
             </el-form-item>
         </el-form>
+        <el-button class="fr m-l-20" type="success" @click="exportExcel">导出Excel</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="merchant_name" label="结算商户" align="center">
                 <template slot-scope="scope">
@@ -35,7 +52,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="settlement_date" label="结算时间" align="center"/>
-            <el-table-column prop="settlement_cycle" label="结算周期" align="center">
+            <el-table-column prop="settlement_cycle" label="结算周期" align="center" width="200px">
                 <template slot-scope="scope">
                     {{scope.row.start_date}} 至 {{scope.row.end_date}}
                 </template>
@@ -52,6 +69,11 @@
                     <span v-if="parseInt(scope.row.status) === 1">审核中</span>
                     <span v-else-if="parseInt(scope.row.status) === 2">已打款</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="业务员信息" align="center">
+                <template slot-scope="scope">
+                    {{scope.row.oper_biz_member_name}}/{{scope.row.oper_biz_member_mobile}}
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="300px" align="center">
@@ -105,6 +127,9 @@
                     merchantId: '',
                     status: '',
                     showAmount: '',
+                    oper_biz_member_name: '',
+                    oper_biz_member_mobile: '',
+                    settlement_date: '',
                 },
                 total: 0,
                 settlement: {},
@@ -112,6 +137,16 @@
             }
         },
         methods: {
+            exportExcel(){
+                // 导出操作
+                let message = '确定导出全部财务列表么?'
+                if(this.query.merchantId || this.query.status || this.query.showAmount || this.query.oper_biz_member_name || this.query.oper_biz_member_mobile || this.query.settlement_date){
+                    message = '确定导出当前筛选的财务列表么?'
+                }
+                this.$confirm(message).then(() => {
+                    window.open('/api/oper/settlements/export?merchantId=' + this.query.merchantId + '&status=' + this.query.status + '&showAmount=' + this.query.showAmount + '&operName=' + this.query.oper_biz_member_name + '&operMobile=' + this.query.oper_biz_member_mobile + '&settlementDate=' + this.query.settlement_date)
+                })
+            },
             getMerchants(){
                 api.get('/merchant/allNames').then(data => {
                     this.merchants = data.list;

@@ -43,7 +43,7 @@ class AdminUser extends BaseModel
         if($currentUser->id == $this->id){
             $rules = session(config('admin.user_rule_session'));
         }else {
-            $rules = AdminService::getRulesForUser($this);
+            $rules = AdminUserService::getUserRules($this);
         }
         return $rules->contains(function($rule, $index) use ($url){
             $ruleUrls = explode(',', $rule['url_all']);

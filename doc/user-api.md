@@ -345,11 +345,12 @@ token (wxLogin接口除外)
         desc_pic: 商家描述图片
         desc: 商家介绍
         contacter: 联系人姓名
-        contacter_phone: 负责人联系方式
+        contacter_phone: 负责人电话号码
         audit_status: 商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在,
         lowest_amount: 最低消费金额,
+        is_pilot：是否是试点商户 0普通商户 1试点商户
         isOperSelf: 是否归属于当前小程序的运营中心,
         grade: 商户评级,目前默认为5,
         lowestGoods: [	价格最低的两个团购商品
@@ -419,11 +420,12 @@ token (wxLogin接口除外)
         desc_pic: 商家描述图片
         desc: 商家介绍
         contacter: 联系人姓名
-        contacter_phone: 负责人联系方式
+        contacter_phone: 负责人电话号码
         audit_status: 商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核
         status: 状态 1-正常 2-禁用 (只返回状态正常的商家),
         distance: 距离, 当传递经纬度信息时才存在
-        lowestAmount: 最低消费金额
+        lowestAmount: 最低消费金额,
+        is_pilot：是否是试点商户 0普通商户 1试点商户,
         isOperSelf: 是否归属于当前小程序的运营中心,
         isOpenDish: 商家是否开启单品模式,
       }
@@ -686,7 +688,36 @@ order_no 订单号
     }
   ```
 
-  ​
+  
+
+- [ ] 扫码买单接口
+
+  地址：ANY   `/order/scanQrcodePay`
+
+  参数：
+
+  ```
+  merchant_id: 商户ID
+  price: 买单价格
+  remark: 备注
+  ```
+
+  返回：
+
+  ```
+  data: {
+      	order_no: 订单号,
+      	isOperSelf: 是否归属于当前小程序的运营中心
+      	sdk_config: 调起微信支付配置, isOperSelf 为1时存在 {
+            appId: appid,
+            nonceStr: 随机字符串,
+            package: package,
+            signType: signType,
+            paySign: 支付签名,
+            timestamp: 时间戳,
+      	}
+      }
+  ```
 
 
 
@@ -891,6 +922,7 @@ order_no 订单号
 
   ```
   dishes_id  ：菜单id
+  remark: 备注
   ```
 
   返回
@@ -1109,7 +1141,110 @@ order_no 订单号
 
   
 
+- [ ] 获取用户分享列表
 
+  地址：GET   `invite/getInviteUserStatistics`
+
+  参数：
+
+  ```
+  userId: 用户ID
+  date: 日期（格式：2018-05）
+  ```
+
+  返回：
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应信息
+      "data": {	响应数据
+          "data": {
+              "2018-05": { 月份
+                  "sub": [
+                      {
+                          "id": 14,
+                          "user_id": 13,
+                          "invite_channel_id": 9,
+                          "origin_id": 6,
+                          "origin_type": 1,
+                          "created_at": "2018-05-14 16:18:20",
+                          "updated_at": "2018-06-08 10:14:14",
+                          "user_mobile": "18986122861"
+                      },
+                      ......
+                  ],
+                  "count": 该月邀请总人数
+              }
+              ......
+          },
+          "totalCount": 邀请总人数
+          "todayInviteCount": 今日邀请总人数
+      },
+      "timestamp": 时间戳
+  }
+  ```
+
+  
+
+**用户相关**
+
+- [ ] 获取用户信息
+
+  地址：ANY  ` user/info`
+
+  参数：无
+
+  返回：
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应信息,
+      "data": {	响应数据
+          "userInfo": {
+              "id": 用户ID,
+              "name": 用户姓名,
+              "mobile": 用户手机号码,
+              "email": 用户邮箱,
+              "account": 用户账号,
+              "status": 用户状态	状态 1-正常 2-禁用,
+              "wx_nick_name": 用户微信昵称,
+              "wx_avatar_url": 用户微信头像,
+              "created_at": 创建时间,
+              "updated_at": 更新时间,
+              "level": 用户等级值,
+              "level_text": 用户等级
+          }
+      },
+      "timestamp": 时间戳
+  }
+  ```
+
+  
+
+- [ ] 更新用户微信昵称和头像
+
+  地址：ANY  `user/updateWxInfo`
+
+  参数：
+
+  ```
+  userInfo: 用户微信信息的json字符串
+  ```
+
+  返回： 
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应信息,
+      "data": { },
+      "timestamp": 时间戳
+  }
+  ```
+
+  
 
 
 

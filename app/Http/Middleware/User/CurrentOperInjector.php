@@ -35,7 +35,8 @@ class CurrentOperInjector
         ){
             $appid = $matches[1];
         }else {
-            $appid = 'wx1abb4cf60ffea6c9';
+            throw new BaseResponseException('微信小程序appid错误', ResultCode::WECHAT_APPID_INVALID);
+//            $appid = 'wx1abb4cf60ffea6c9';
         }
 
         $operId = OperMiniprogram::where('appid', $appid)->value('oper_id');

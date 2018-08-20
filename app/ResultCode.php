@@ -45,6 +45,8 @@ class ResultCode
     const SMS_SEND_ERROR = 30001;   // 短信发送失败
     const SMS_BUSINESS_LIMIT_CONTROL = 30015;  // 短信发送频率超过限制
 
+    const EMAIL_SEND_ERROR = 31000; // 邮件发送失败
+
 
     /************ 微信接口相关  **************/
     const WECHAT_REQUEST_FAIL          = 70001;   // 请求微信服务器失败

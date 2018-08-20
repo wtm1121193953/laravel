@@ -23,7 +23,7 @@
                 ></el-date-picker>
             </el-form-item>
             <el-form-item prop="mobile" label="手机号">
-                <el-input v-model="query.mobile" placeholder="请输入手机号" @keyup.enter.native="search"></el-input>
+                <el-input v-model="query.mobile" placeholder="请输入手机号" @keyup.enter.native="search" clearable></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
@@ -76,7 +76,6 @@
                 this.getList()
             },
             getList(){
-                console.log(this.query)
                 this.query.id = this.inviteChannelId
                 api.get('inviteChannel/inviteRecords', this.query).then(data => {
                     this.list = data.list;

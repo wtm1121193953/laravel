@@ -12,6 +12,7 @@ namespace App\Modules\Order;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Modules\Dishes\DishesItem;
+use App\Modules\Merchant\Merchant;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,14 +24,25 @@ class OrderService extends BaseService
     /**
      * 查询订单列表
      * @param array $params
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @param bool $getWithQuery
+     * @return Order|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getList(array $params)
+    public static function getList(array $params, $getWithQuery = false)
     {
+        $operId = array_get($params, 'operId');
         $merchantId = array_get($params, 'merchantId');
         $orderNo = array_get($params, 'orderNo');
         $notifyMobile = array_get($params, 'notifyMobile');
         $keyword = array_get($params, 'keyword');
+        $type = array_get($params, 'type');
+        $status = array_get($params, 'status');
+        $goodsName = array_get($params, 'goodsName');
+        $startCreatedAt = array_get($params, 'startCreatedAt');
+        $endCreatedAt = array_get($params, 'endCreatedAt');
+        $startPayTime = array_get($params, 'startPayTime');
+        $endPayTime = array_get($params, 'endPayTime');
+        $startFinishTime = array_get($params, 'startFinishTime');
+        $endFinishTime = array_get($params, 'endFinishTime');
 
         $query = Order::where(function(Builder $query){
             $query->where('type', Order::TYPE_GROUP_BUY)
@@ -44,11 +56,52 @@ class OrderService extends BaseService
         if($merchantId > 0){
             $query->where('merchant_id', $merchantId);
         }
+        if($operId > 0){
+            $query->where('oper_id', $operId);
+        }
         if($orderNo){
             $query->where('order_no','like', "%$orderNo%");
         }
         if($notifyMobile){
             $query->where('notify_mobile', 'like', "%$notifyMobile%");
+        }
+        if($startCreatedAt && $endCreatedAt){
+            $query->whereBetween('created_at', [$startCreatedAt, $endCreatedAt]);
+        }else if($startCreatedAt){
+            $query->where('created_at', '>', $startCreatedAt);
+        }else if($endCreatedAt){
+            $query->where('created_at', '<', $endCreatedAt);
+        }
+        if($startPayTime && $endPayTime){
+            $query->whereBetween('pay_time', [$startPayTime, $endPayTime]);
+        }else if($startPayTime){
+            $query->where('pay_time', '>', $startPayTime);
+        }else if($endPayTime){
+            $query->where('pay_time', '<', $endPayTime);
+        }
+        if($startFinishTime && $endFinishTime){
+            $query->whereBetween('finish_time', [$startFinishTime, $endFinishTime]);
+        }else if($startFinishTime){
+            $query->where('finish_time', '>', $startFinishTime);
+        }else if($endFinishTime){
+            $query->where('finish_time', '<', $endFinishTime);
+        }
+        if($type){
+            if(is_array($type)){
+                $query->whereIn('type',$type);
+            }else {
+                $query->where('type',$type);
+            }
+        }
+        if($status){
+            if(is_array($status)){
+                $query->whereIn('status', $status);
+            }else {
+                $query->where('status', $status);
+            }
+        }
+        if($type== 1 && $goodsName){
+            $query->where('goods_name', 'like', "%$goodsName%");
         }
         if($keyword){
             $query->where(function (Builder $query) use ($keyword) {
@@ -57,21 +110,18 @@ class OrderService extends BaseService
             });
         }
 
-        $data = $query->orderBy('id', 'desc')->paginate();
+        $query->orderBy('id', 'desc');
 
+        if ($getWithQuery) {
+            return $query;
+        }
+
+        $data = $query->paginate();
+
+        $merchantIds = $data->pluck('merchant_id');
+        $merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
         foreach ($data as $key => $item){
-            $userCreditRecord = UserCreditRecord::where('user_id', $item->user_id)
-                ->where('order_no', $item->order_no)
-                ->where('inout_type', UserCreditRecord::INOUT_TYPE_IN)
-                ->where('type', UserCreditRecord::TYPE_FROM_SELF)
-                ->first();
-            if (!empty($userCreditRecord)){
-                $data[$key]['credit'] = $userCreditRecord->credit;
-                $data[$key]['user_level_text'] = User::getLevelText($userCreditRecord->user_level);
-            }else{
-                $data[$key]['credit'] = 0;
-                $data[$key]['user_level_text'] = '';
-            }
+            $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
             if ($item->type == 3){
                 $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
                 $data[$key]['dishes_items'] = $dishesItems;
@@ -81,6 +131,12 @@ class OrderService extends BaseService
         return $data;
     }
 
+    /**
+     * 核销订单
+     * @param $merchantId
+     * @param $verifyCode
+     * @return Order
+     */
     public static function verifyOrder($merchantId, $verifyCode)
     {
 
@@ -109,6 +165,18 @@ class OrderService extends BaseService
         }else{
             throw new BaseResponseException('该订单已退款，不能核销');
         }
+    }
 
+    /**
+     * 根据用户ID获取用户下单总数量
+     * @param $userId
+     * @return int
+     */
+    public static function getOrderCountByUserId($userId)
+    {
+        $count = Order::where('user_id', $userId)
+            ->whereNotIn('status', [Order::STATUS_UN_PAY, Order::STATUS_CLOSED])
+            ->count();
+        return $count;
     }
 }

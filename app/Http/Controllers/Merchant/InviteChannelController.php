@@ -10,7 +10,9 @@ namespace App\Http\Controllers\Merchant;
 
 
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Wechat\MiniprogramSceneService;
+use App\Modules\Wechat\WechatService;
 use App\Result;
 
 class InviteChannelController extends Controller
@@ -25,7 +27,18 @@ class InviteChannelController extends Controller
 
         $scene = MiniprogramSceneService::getMerchantInviteChannelScene($currentUser->merchant_id, $currentUser->oper_id);
 
-        $url = MiniprogramSceneService::getMiniprogramAppCode($scene);
+        if (empty($scene->qrcode_url)) {
+            $url = MiniprogramSceneService::getMiniprogramAppCode($scene);
+
+            $signboardName = MerchantService::getSignboardNameById($currentUser->merchant_id);
+
+            $fileName = pathinfo($url, PATHINFO_BASENAME);
+            $path = storage_path('app/public/miniprogram/app_code/') . $fileName;
+            WechatService::addNameToAppCode($path, $signboardName);
+        } else {
+            $url = $scene->qrcode_url;
+        }
+
 
         return Result::success([
             'qrcode_url' => $url,
@@ -34,6 +47,8 @@ class InviteChannelController extends Controller
 
     /**
      * 下载邀请注册的小程序码
+     * @deprecated
+     * todo 去掉下载二维码操作, 使用统一的下载控制器下载图片
      */
     public function downloadInviteQrcode()
     {
@@ -45,6 +60,9 @@ class InviteChannelController extends Controller
 
         $width = $type == 3 ? 1280 : ($type == 2 ? 430 : 258);
         $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
+
+        $signboardName = MerchantService::getSignboardNameById($currentUser->merchant_id);
+        WechatService::addNameToAppCode($filePath, $signboardName);
 
         return response()->download($filePath, '分享会员二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
 

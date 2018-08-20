@@ -9,12 +9,10 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Exceptions\AccountNotFoundException;
-use App\Exceptions\PasswordErrorException;
 use App\Exceptions\UnloginException;
 use App\Http\Controllers\Controller;
-use App\Modules\Admin\AdminService;
-use App\Modules\Admin\AdminUser;
+use App\Modules\Admin\AdminRuleService;
+use App\Modules\Admin\AdminUserService;
 use App\Result;
 use Illuminate\Support\Facades\Session;
 
@@ -35,16 +33,11 @@ class SelfController extends Controller
             'password' => 'required|between:6,30',
             'verifyCode' => 'required|captcha'
         ]);
-        $user = AdminUser::where('username', request('username'))->first();
-        if(empty($user)){
-            throw new AccountNotFoundException();
-        }
-        if(AdminUser::genPassword(request('password'), $user['salt']) != $user['password']){
-            throw new PasswordErrorException();
-        }
 
-        $rules = AdminService::getRulesForUser($user);
-        $menuTree = AdminService::convertRulesToTree($rules);
+        $user = AdminUserService::checkPasswordByUsername(request('username'), request('password'));
+
+        $rules = AdminUserService::getUserRules($user);
+        $menuTree = AdminRuleService::convertRulesToTree($rules);
 
         session([
             config('admin.user_session') => $user,
@@ -69,8 +62,9 @@ class SelfController extends Controller
         if(empty($user)){
             throw new UnloginException();
         }
-        $rules = AdminService::getRulesForUser($user);
-        $menuTree = AdminService::convertRulesToTree($rules);
+
+        $rules = AdminUserService::getUserRules($user);
+        $menuTree = AdminRuleService::convertRulesToTree($rules);
 
         session([
             config('admin.user_rule_session') => $rules
@@ -90,15 +84,8 @@ class SelfController extends Controller
             'reNewPassword' => 'required|same:newPassword'
         ]);
         $user = request()->get('current_user');
-        // 检查原密码是否正确
-        if(AdminUser::genPassword(request('password'), $user->salt) !== $user->password){
-            throw new PasswordErrorException();
-        }
-        $user = AdminUser::findOrFail($user->id);
-        $salt = str_random();
-        $user->salt = $salt;
-        $user->password = AdminUser::genPassword(request('newPassword'), $salt);
-        $user->save();
+
+        $user = AdminUserService::modifyPassword($user, request('password'), request('newPassword'));
 
         // 修改密码成功后更新session中的user
         session([

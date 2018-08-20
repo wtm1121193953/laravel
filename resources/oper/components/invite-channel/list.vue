@@ -11,11 +11,11 @@
         <el-button class="fr m-l-20" type="primary" @click="add">添加推广渠道</el-button>
         <el-button class="fr m-l-20" type="success" @click="exportExcel">导出Excel</el-button>
 
-        <el-table stripe :data="list">
+        <el-table stripe :data="list" v-loading="tableLoading" @sort-change="sortChange">
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="name" label="推广渠道名称"/>
-            <el-table-column prop="invite_user_records_count" label="注册人数">
+            <el-table-column prop="invite_user_records_count" label="注册人数" sortable="custom">
                 <template slot-scope="scope">
                     <el-button type="text" @click="inviteRecords(scope.row)">
                         {{scope.row.invite_user_records_count}}
@@ -37,9 +37,9 @@
                                 <el-radio-button label="2">中</el-radio-button>
                                 <el-radio-button label="3">大</el-radio-button>
                             </el-radio-group>
-                            <p v-if="qrcodeSizeType == 1">尺寸: 258 * 258px, 适合打印尺寸: 8cm</p>
-                            <p v-if="qrcodeSizeType == 2">尺寸: 430 * 430px, 适合打印尺寸: 15cm</p>
-                            <p v-if="qrcodeSizeType == 3">尺寸: 1280 * 1280px, 适合打印尺寸: 50cm</p>
+                            <p v-if="qrcodeSizeType == 1">尺寸: 350 * 396px</p>
+                            <p v-if="qrcodeSizeType == 2">尺寸: 537 * 609px</p>
+                            <p v-if="qrcodeSizeType == 3">尺寸: 1600 * 1813px</p>
                         </div>
                         <div style="text-align: right; margin: 0">
                             <el-button type="primary" size="mini" @click="download(scope.row)">确定</el-button>
@@ -54,7 +54,7 @@
                 layout="total, prev, pager, next"
                 :current-page.sync="query.page"
                 @current-change="getList"
-                :page-size="15"
+                :page-size="query.pageSize"
                 :total="total"/>
 
 
@@ -80,12 +80,16 @@
                 query: {
                     keyword: '',
                     page: 1,
+                    pageSize: 15,
+                    orderColumn: null,
+                    orderType: null,
                 },
                 isAdd: false,
                 isEdit: false,
                 currentEditData: null,
                 qrcodeSizeType: 1,
                 downloadUrl: '',
+                tableLoading: false,
             }
         },
         components: {
@@ -97,6 +101,16 @@
                 this.getList()
             },
             getList(){
+                this.tableLoading = true;
+                api.get('/inviteChannels', this.query).then(data => {
+                    this.list = data.list;
+                    this.total = data.total;
+                    this.tableLoading = false;
+                })
+            },
+            sortChange (column) {
+                this.query.orderColumn = column.prop;
+                this.query.orderType = column.order;
                 api.get('/inviteChannels', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;

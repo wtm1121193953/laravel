@@ -23,8 +23,8 @@
             </el-table-column>
             <el-table-column label="操作" width="300px" align="center">
                 <template slot-scope="scope">
-                    <el-button type="text" v-if="parseInt(scope.row.status) === 2" @click="download(scope, 'cash')">下载回款单</el-button>
-                    <el-button type="text" v-if="parseInt(scope.row.status) === 2 && parseInt(scope.row.invoice_type) === 1" @click="download(scope, 'invoice')">下载电子发票</el-button>
+                    <el-button type="text" v-if="parseInt(scope.row.status) === 2" @click="showDownload(scope, 'cash')">下载回款单</el-button>
+                    <el-button type="text" v-if="parseInt(scope.row.status) === 2 && parseInt(scope.row.invoice_type) === 1" @click="showDownload(scope, 'invoice')">下载电子发票</el-button>
                     <el-button type="text" v-if="parseInt(scope.row.status) === 2 && parseInt(scope.row.invoice_type) === 2" @click="showLogistics(scope)">查看纸质发票物流</el-button>
                     <el-button type="text" @click="showOrders(scope)">查看结算详情</el-button>
                 </template>
@@ -58,6 +58,13 @@
             </span>
         </el-dialog>
 
+        <el-dialog :title="downloadTitle" :visible.sync="isShowDownloadDialog" width="20%">
+            <div v-viewer v-if="downloadImage" v-for="item in downloadImage" class="download-img">
+                <img :src="item" width="200px"/>
+                <span><el-button type="text" @click="download(item)">下载</el-button></span>
+            </div>
+        </el-dialog>
+
     </page>
 </template>
 
@@ -80,7 +87,10 @@
                 logistics: {
                     logistics_name: '',
                     logistics_no: '',
-                }
+                },
+                downloadTitle: '',
+                isShowDownloadDialog: false,
+                downloadImage: [],
             }
         },
         methods: {
@@ -101,12 +111,19 @@
                 this.logistics.logistics_no = scope.row.logistics_no;
                 this.isShowLogistics = true;
             },
-            download(scope, type) {
+            showDownload(scope, type) {
+                console.log(scope.row);
+                this.isShowDownloadDialog = true;
                 if(type == 'cash'){
-                    location.href = `/api/merchant/settlement/download?id=${scope.row.id}&field=pay_pic_url`
+                    this.downloadTitle = '下载回款单';
+                    this.downloadImage = scope.row.pay_pic_url_arr;
                 }else if (type == 'invoice'){
-                    location.href = `/api/merchant/settlement/download?id=${scope.row.id}&field=invoice_pic_url`
+                    this.downloadTitle = '下载电子发票';
+                    this.downloadImage = scope.row.invoice_pic_url_arr;
                 }
+            },
+            download(item) {
+                location.href = `/download?url=${item}`;
             }
         },
         created() {
@@ -117,3 +134,11 @@
         }
     }
 </script>
+
+<style scoped>
+    .download-img {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+</style>

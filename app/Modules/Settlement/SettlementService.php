@@ -11,6 +11,7 @@ namespace App\Modules\Settlement;
 
 use App\BaseService;
 use App\Modules\Order\Order;
+use Illuminate\Support\Facades\DB;
 
 class SettlementService extends BaseService
 {
@@ -60,5 +61,85 @@ class SettlementService extends BaseService
         $data = Order::where('settlement_id', $settlementId)
             ->orderBy('id', 'desc')->paginate();
         return $data;
+    }
+
+    /**
+     * @param $operId
+     * @param string $merchantId
+     * @param string $status
+     * @param string $showAmount
+     * @param array $settlementDate
+     * @param string $operBizMemberName
+     * @param string $operBizMemberMobile
+     * @param bool $getWithQuery
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Database\Query\Builder
+     */
+    public static function getOperSettlements($operId, $merchantId = '', $status = '', $showAmount = '', $settlementDate = [], $operBizMemberName = '', $operBizMemberMobile = '', $getWithQuery = false)
+    {
+        $query = DB::table('settlements')
+            ->leftJoin('merchants','settlements.merchant_id','=','merchants.id')
+            ->leftJoin('oper_biz_members as om','om.code','=','merchants.oper_biz_member_code')
+            ->select('settlements.*','merchants.name as merchant_name','om.name as oper_biz_member_name','om.mobile as oper_biz_member_mobile')
+            ->where('settlements.oper_id', $operId)
+            ->where('settlements.amount','>',0)
+            ->orderBy('settlements.id', 'desc');
+
+        if($merchantId){
+            $query->where('settlements.merchant_id', $merchantId);
+        }
+        if($status){
+            $query->where('settlements.status', $status);
+        }
+        if($showAmount){
+            $query->where('settlements.amount', '>', 0);
+        }
+        if(count($settlementDate) > 1){
+            $query->whereBetween('settlements.created_at', [$settlementDate[0] . ' 00:00:00', $settlementDate[1] . ' 23:59:59']);
+        }
+        if($operBizMemberName){
+            $query->where('om.name','like', '%'.$operBizMemberName.'%');
+        }
+        if($operBizMemberMobile){
+            $query->where('om.mobile', 'like','%'.$operBizMemberMobile.'%');
+        }
+
+        if ($getWithQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate();
+            return $data;
+        }
+    }
+
+    public static function getBySettlementOrders($operId,$settlement_id,$merchant_id)
+    {
+        $data = Order::where('oper_id', $operId)
+            ->where('settlement_id', $settlement_id)
+            ->where('merchant_id', $merchant_id)
+            ->orderBy('id', 'desc')->paginate();
+
+        return $data;
+    }
+
+    public static function updateInvoice($id,$invoice_type,$invoice_pic_url,$logistics_name,$logistics_no)
+    {
+        $settlement = Settlement::findOrFail($id);
+        $settlement->invoice_type = $invoice_type;
+        $settlement->invoice_pic_url = $invoice_pic_url;
+        $settlement->logistics_name = $logistics_name;
+        $settlement->logistics_no = $logistics_no;
+        $settlement->save();
+
+        return $settlement;
+    }
+
+    public static function updatePayPicUrl($id,$pay_pic_url)
+    {
+        $settlement = Settlement::findOrFail($id);
+        $settlement->pay_pic_url = $pay_pic_url;
+        $settlement->status = 2;
+        $settlement->save();
+
+        return $settlement;
     }
 }

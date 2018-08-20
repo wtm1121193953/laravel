@@ -1,11 +1,11 @@
 <template>
-    <page title="运营中心管理" v-loading="isLoading">
+    <page title="运营中心管理">
         <el-form class="fl" inline size="small">
             <el-form-item prop="name" label="">
                 <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="运营中心名称"/>
             </el-form-item>
             <el-form-item label="状态" prop="status">
-                <el-select v-model="query.status" placeholder="请选择">
+                <el-select v-model="query.status" clearable placeholder="请选择">
                     <el-option label="全部" value=""/>
                     <el-option label="正常合作中" value="1"/>
                     <el-option label="已冻结" value="2"/>
@@ -22,17 +22,25 @@
             </el-form-item>
         </el-form>
         <el-button class="fr" type="primary" @click="add">添加运营中心</el-button>
-        <el-table :data="list" stripe>
-            <el-table-column prop="id" label="ID"/>
+        <el-table :data="list" stripe v-loading="isLoading">
+            <el-table-column prop="id" label="ID" width="100px"/>
             <el-table-column prop="name" label="运营中心名称" width="300px"/>
             <el-table-column prop="contacter" label="负责人" />
-            <el-table-column prop="tel" label="联系电话" />
+            <el-table-column prop="tel" label="手机号码" />
             <el-table-column prop="status" label="合作状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常合作中</span>
                     <span v-else-if="scope.row.status === 2" class="c-warning">已冻结</span>
                     <span v-else-if="scope.row.status === 3" class="c-danger">停止合作</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="bindInfo" label="绑定TPS帐号">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.bindInfo" class="title">{{scope.row.bindInfo.tps_account}}</span>
+                    <span v-else>
+                        <oper-tps-bind :scope="scope" @bound="(data) => {scope.row.bindInfo = data}"/>
+                    </span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="550px">
@@ -54,13 +62,13 @@
                 @current-change="getList"
                 :page-size="15"
                 :total="total"/>
-
     </page>
 </template>
 
 <script>
     import api from '../../../assets/js/api'
 
+    import OperTpsBind from './oper-tps-bind'
     import OperItemOptions from './oper-item-options'
     import OperForm from './oper-form'
 
@@ -88,13 +96,13 @@
                 this.getList();
             },
             getList(){
+                this.isLoading = true;
                 api.get('/opers', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                }).finally(() => {
+                    this.isLoading = false;
                 })
-            },
-            itemChanged(index, data){
-                this.list.splice(index, 1, data)
             },
             add(){
                 router.push('/oper/add')
@@ -120,6 +128,7 @@
             this.getList();
         },
         components: {
+            OperTpsBind,
             OperItemOptions,
             OperForm,
         }

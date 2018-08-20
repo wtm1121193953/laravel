@@ -41,8 +41,8 @@
                 <el-form :model="showMerchantInfoForm" label-width="100px" ref="showMerchantInfoForm" :rules="showMerchantInfoFormRules">
                     <el-form-item label="商户ID:">{{showMerchantInfoForm.id}}</el-form-item>
                     <el-form-item label="商户名称:">{{showMerchantInfoForm.name}}</el-form-item>
-                    <el-form-item label="商户招牌名称:">{{showMerchantInfoForm.signboardName}}</el-form-item>
-                    <el-form-item label="商户行业:">{{showMerchantInfoForm.merchantCategoryName}}</el-form-item>
+                    <el-form-item label="商户招牌名称:">{{showMerchantInfoForm.signboard_name}}</el-form-item>
+                    <el-form-item label="商户行业:">{{showMerchantInfoForm.categoryPathText}}</el-form-item>
                     <el-form-item label="商户省市区:">{{showMerchantInfoForm.province}}-{{showMerchantInfoForm.city}}-{{showMerchantInfoForm.area}}</el-form-item>
                     <el-form-item label="详细地址:">{{showMerchantInfoForm.address}}</el-form-item>
                     <el-form-item label="商户简介:">{{showMerchantInfoForm.desc}}</el-form-item>

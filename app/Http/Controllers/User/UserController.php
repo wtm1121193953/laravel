@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\User;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
@@ -44,5 +45,25 @@ class UserController extends Controller
         return Result::success([
             'userInfo' => $user
         ]);
+    }
+
+    /**
+     * 用户授权更新用户的微信信息
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function updateUserWxInfo()
+    {
+        $user = request()->get('current_user');
+
+        $wxUserInfo = json_decode(request('userInfo'));
+        $userInfo = User::find($user->id);
+        if (empty($userInfo)) {
+            throw new BaseResponseException('该用户不存在');
+        }
+        $userInfo->wx_nick_name = $wxUserInfo->nickName;
+        $userInfo->wx_avatar_url = $wxUserInfo->avatarUrl;
+        $userInfo->save();
+
+        return Result::success();
     }
 }

@@ -10,13 +10,8 @@
                 <el-select
                         v-model="form.oper_biz_member_code"
                         filterable
-                        remote
-                        reserve-keyword
                         clearable
                         placeholder="请输入业务员姓名或手机号码"
-                        :remote-method="searchOperBizMember"
-                        :loading="searchOperBizMemberLoading"
-                        @clear="resetCode"
                         class="w-300"
                 >
                     <el-option
@@ -69,8 +64,8 @@
                 <div>图片尺寸: 190 px * 190 px</div>
             </el-form-item>
             <el-form-item prop="desc_pic_list" label="商家介绍图片">
-                <image-upload :width="750" :height="526" v-model="form.desc_pic_list" :limit="6"/>
-                <div>图片尺寸: 750 px * 526 px</div>
+                <image-upload :width="752" :height="398" v-model="form.desc_pic_list" :limit="6"/>
+                <div>图片尺寸: 752 px * 398 px</div>
             </el-form-item>
             <el-form-item prop="desc" label="商家介绍">
                 <el-input type="textarea" :rows="5" v-model="form.desc"/>
@@ -123,6 +118,10 @@
                 <image-upload v-model="form.legal_id_card_pic_b" :limit="1"/>
             </el-form-item>
 
+            <el-form-item prop="legal_id_card_num" label="法人身份证号码">
+                <el-input v-model="form.legal_id_card_num"/>
+            </el-form-item>
+
             <el-form-item prop="business_licence_pic_url" label="营业执照">
                 <image-upload v-model="form.business_licence_pic_url" :limit="1"/>
             </el-form-item>
@@ -144,7 +143,7 @@
             <el-form-item prop="contacter" label="负责人姓名">
                 <el-input v-model="form.contacter"/>
             </el-form-item>
-            <el-form-item prop="contacter_phone" label="负责人联系方式">
+            <el-form-item prop="contacter_phone" label="负责人手机号码">
                 <el-input v-model="form.contacter_phone"/>
             </el-form-item>
             <el-form-item prop="service_phone" label="客服电话">
@@ -189,6 +188,7 @@
         // 法人信息
         legal_id_card_pic_a: '',
         legal_id_card_pic_b: '',
+        legal_id_card_num: '',
         business_licence_pic_url: '',
         organization_code: '',
         contract_pic_url: '',
@@ -200,6 +200,9 @@
         oper_salesman: '',
         site_acreage: '',
         employees_number: '',
+
+        //是否是试点商户的字段
+        is_pilot: 0,
 
         //////// 没有了的字段
         invoice_title: '',
@@ -242,6 +245,20 @@
                     callback();
                 }
             };
+            let validateIdCard = (rule, value, callback) => {
+                if (!(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value))) {
+                    callback(new Error('请输入正确的身份证号码'));
+                }else {
+                    callback();
+                }
+            };
+            let validateContacterPhone = (rule, value, callback) => {
+                if (!(/^1[3,4,5,6,7,8,9]\d{9}$/.test(value))) {
+                    callback(new Error('请输入正确的手机号码'));
+                }else {
+                    callback();
+                }
+            };
             return {
                 form: deepCopy(defaultForm),
                 formRules: {
@@ -272,7 +289,7 @@
                     ],
                     desc: [
                         {required: true, message: '商家介绍不能为空'},
-                        {max: 100, message: '商家介绍不能超过100个字'}
+                        {max: 50, message: '商家介绍不能超过50个字'}
                     ],
                     settlement_rate: [
                         {required: true, message: '分利比例不能为空'},
@@ -304,6 +321,11 @@
                     legal_id_card_pic_b: [
                         {required: true, message: '法人身份证照片 不能为空'},
                     ],
+                    legal_id_card_num: [
+                        {required: true, message: '法人身份证号码 不能为空'},
+                        {max: 18, message: '法人身份证号码不能超过18个字'},
+                        {validator: validateIdCard},
+                    ],
                     business_licence_pic_url: [
                         {required: true, message: '营业执照不能为空'},
                     ],
@@ -319,8 +341,8 @@
                         {required: true, message: '商户负责人姓名 不能为空'},
                     ],
                     contacter_phone: [
-                        {required: true, message: '商户负责人联系方式 不能为空'},
-                        {max: 15, message: '商户负责人联系方式不能超过15个字'}
+                        {required: true, message: '商户负责人手机号码 不能为空'},
+                        {validator: validateContacterPhone},
                     ],
                     service_phone: [
                         {required: true, message: '客服电话 不能为空'},
@@ -343,17 +365,10 @@
             }
         },
         methods: {
-            searchOperBizMember(query){
-                if (query !== '') {
-                    this.searchOperBizMemberLoading = true;
-                    api.get('/operBizMembers/search', {keyword: query, status: 1}).then(data => {
-                        this.operBizMembers = data.list;
-                    }).finally(() => {
-                        this.searchOperBizMemberLoading = false;
-                    })
-                } else {
-                    this.operBizMembers = [];
-                }
+            getOperBizMember(){
+                api.get('/operBizMembers/search', {status: 1}).then(data => {
+                    this.operBizMembers = data.list;
+                })
             },
             initForm(){
                 if(this.data){
@@ -361,15 +376,13 @@
                     for (let key in defaultForm){
                         this.form[key] = this.data[key];
                     }
-                    let business_time = JSON.parse(data.business_time);
+                    let business_time = data.business_time;
                     this.form.business_start_time = data.business_time ? new Date('1970-01-01 '+business_time[0]) : new Date('1970-01-01 00:00:00');
                     this.form.business_end_time = data.business_time ? new Date('1970-01-01 '+business_time[1]) : new Date('1970-01-01 23:59:59');
-                    console.log(this.form.business_start_time, this.form.business_end_time)
                     this.form.region = parseInt(data.region);
                     this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                     this.form.status = parseInt(data.status);
                     this.form.bank_card_type = parseInt(data.bank_card_type);
-                    this.searchOperBizMember(this.form.oper_biz_member_code);
                 }else {
                     this.form = deepCopy(defaultForm);
                 }
@@ -399,13 +412,10 @@
                     })
                 }
             },
-            resetCode() {
-                this.form.oper_biz_member_code = '';
-                this.operBizMembers = [];
-            },
         },
         created(){
             this.initForm();
+            this.getOperBizMember();
         },
         watch: {
             data(){

@@ -2,6 +2,7 @@
     <!-- 运营中心列表项操作 -->
     <div>
         <el-button type="text" @click="edit">编辑</el-button>
+        <el-button type="text" @click="detail">查看</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '冻结' : '解冻'}}</el-button>
         <el-button v-if="!scope.row.account" type="text" @click="showCreateAccountDialog = true">生成帐户</el-button>
         <el-button v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改帐户密码</el-button>
@@ -26,7 +27,7 @@
         <el-dialog title="创建运营中心帐户" :visible.sync="showCreateAccountDialog">
             <el-row>
                 <el-col :span="16">
-                    <el-form size="mini" :model="accountForm" :rules="accountFormRules" label-width="150px">
+                    <el-form size="mini" :model="accountForm" :rules="accountFormRules" ref="form" label-width="150px">
                         <el-form-item label="帐户名" prop="account">
                             <el-input v-model="accountForm.account" placeholder="请输入帐户"/>
                         </el-form-item>
@@ -44,7 +45,7 @@
         <el-dialog title="修改帐户密码" v-if="scope.row.account" :visible.sync="showModifyAccountDialog">
             <el-row>
                 <el-col :span="16">
-                    <el-form size="mini" :model="accountModifyPasswordForm" :rules="accountModifyFormRules" label-width="150px">
+                    <el-form size="mini" :model="accountModifyPasswordForm" :rules="accountModifyFormRules" ref="modifyPasswordForm" label-width="150px">
                         <el-form-item label="帐户名" prop="account">
                             <div>{{scope.row.account.account}}</div>
                         </el-form-item>
@@ -91,6 +92,20 @@
             scope: {type: Object, required: true}
         },
         data(){
+            let accountValidate = (rule, value, callback) => {
+                if ((/\s+/.test(value))) {
+                    callback(new Error('帐户名不允许有空格'));
+                }else {
+                    callback();
+                }
+            };
+            let passwordValidate = (rule, value, callback) => {
+                if ((/\s+/.test(value))) {
+                    callback(new Error('密码不允许有空格'));
+                }else {
+                    callback();
+                }
+            };
             return {
                 isEdit: false,
                 showCreateAccountDialog: false,
@@ -101,9 +116,11 @@
                 accountFormRules: {
                     account: [
                         {required: true, message: '账号名不能为空'},
+                        {validator: accountValidate}
                     ],
                     password: [
-                        {required: true, min: 6, message: '密码不能为空且不能少于6位'}
+                        {required: true, min: 6, message: '密码不能为空且不能少于6位'},
+                        {validator: passwordValidate}
                     ]
                 },
                 showModifyAccountDialog: false,
@@ -112,7 +129,8 @@
                 },
                 accountModifyFormRules: {
                     password: [
-                        {required: true, min: 6, message: '密码不能为空且不能少于6位'}
+                        {required: true, min: 6, message: '密码不能为空且不能少于6位'},
+                        {validator: passwordValidate}
                     ]
                 },
                 editMiniprogramDialog: false,
@@ -128,9 +146,13 @@
                 router.push({
                     path: '/oper/edit',
                     query: {id: this.scope.row.id}
-                })
-                return;
-                this.isEdit = true;
+                });
+            },
+            detail() {
+                router.push({
+                    path: '/oper/detail',
+                    query: {id: this.scope.row.id}
+                });
             },
             doEdit(data){
                 this.$emit('before-request')
@@ -157,21 +179,29 @@
             createAccount(){
                 let data = this.accountForm;
                 data.oper_id = this.scope.row.id;
-                api.post('/oper_account/add', data).then(data => {
-                    this.$alert('创建帐户成功');
-                    this.showCreateAccountDialog = false;
-                    this.$emit('accountChanged', this.scope, data)
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        api.post('/oper_account/add', data).then(data => {
+                            this.$alert('创建帐户成功');
+                            this.showCreateAccountDialog = false;
+                            this.$emit('accountChanged', this.scope, data)
+                        })
+                    }
                 })
             },
             modifyAccount(){
                 let data = this.accountModifyPasswordForm;
                 data.id = this.scope.row.account.id;
                 data.oper_id = this.scope.row.id;
-                api.post('/oper_account/edit', data).then(data => {
-                    this.$alert('修改密码成功')
-                    this.showModifyAccountDialog = false;
-                    this.$emit('accountChanged', this.scope, data)
-                })
+                this.$refs.modifyPasswordForm.validate(valid => {
+                    if (valid) {
+                        api.post('/oper_account/edit', data).then(data => {
+                            this.$alert('修改密码成功')
+                            this.showModifyAccountDialog = false;
+                            this.$emit('accountChanged', this.scope, data)
+                        })
+                    }
+                });
             },
             doEditMiniprogram(data){
                 this.isLoading = true;

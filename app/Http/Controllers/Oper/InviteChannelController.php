@@ -15,8 +15,9 @@ use App\Exports\OperInviteRecordsExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Wechat\MiniprogramSceneService;
+use App\Modules\Wechat\WechatService;
 use App\Result;
 
 class InviteChannelController extends Controller
@@ -26,10 +27,23 @@ class InviteChannelController extends Controller
     {
         $keyword = request('keyword', '');
         $operId = request()->get('current_user')->oper_id;
-        $data = InviteChannelService::getOperInviteChannels($operId, $keyword);
+        $page = request('page', 1);
+        $pageSize = request('pageSize', 15);
+        $orderColumn = request('orderColumn', null);
+        $orderType = request('orderType', null);
+
+        $param = [
+            'page' => $page,
+            'pageSize' => $pageSize,
+            'orderColumn' => $orderColumn,
+            'orderType' => $orderType,
+        ];
+
+        $data = InviteChannelService::getOperInviteChannelsByOperId($operId, $keyword, false, $param);
+
         return Result::success([
-            'list' => $data->items(),
-            'total' => $data->total()
+            'list' => $data['data'],
+            'total' => $data['total']
         ]);
     }
 
@@ -37,7 +51,7 @@ class InviteChannelController extends Controller
     {
         $keyword = request('keyword', '');
         $operId = request()->get('current_user')->oper_id;
-        $query = InviteChannelService::getOperInviteChannels($operId, $keyword, true);
+        $query = InviteChannelService::getOperInviteChannelsByOperId($operId, $keyword, true);
         return (new OperInviteChannelExport($query))->download('推广渠道列表.xlsx');
     }
 
@@ -72,6 +86,7 @@ class InviteChannelController extends Controller
 
     /**
      * 下载邀请注册的小程序码
+     * @deprecated todo 去掉下载二维码操作, 由统一下载控制器下载
      */
     public function downloadInviteQrcode()
     {
@@ -95,6 +110,7 @@ class InviteChannelController extends Controller
         $width = $qrcodeSizeType == 3 ? 1280 : ($qrcodeSizeType == 2 ? 430 : 258);
 
         $path = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
+        WechatService::addNameToAppCode($path, $inviteChannel->name);
 
         if(request()->ajax()){
             return Result::success(['name' => $path]);
@@ -116,7 +132,7 @@ class InviteChannelController extends Controller
         $mobile = request('mobile');
         $startTime = request('startTime');
         $endTime = request('endTime');
-        $data = InviteService::getRecordsByInviteChannelId(
+        $data = InviteUserService::getInviteRecordsByInviteChannelId(
             $id,
             compact('mobile', 'startTime', 'endTime')
         );
@@ -136,7 +152,7 @@ class InviteChannelController extends Controller
         $startTime = request('startTime');
         $endTime = request('endTime');
 
-        $query = InviteService::getRecordsByInviteChannelId(
+        $query = InviteUserService::getInviteRecordsByInviteChannelId(
             $id,
             compact('mobile', 'startTime', 'endTime'),
             true

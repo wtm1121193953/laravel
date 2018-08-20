@@ -25,7 +25,7 @@
                         <div class="licence" v-viewer style="display: none;">
                                 <img :src="data.business_licence_pic_url" />
                             </div>
-                        <el-button type="text" @click="previewImage('licence')">查看</el-button>
+                        <el-button v-if="data.business_licence_pic_url" type="text" @click="previewImage('licence')">查看</el-button>
                         <!-- <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button> -->
                     </el-form-item>
 
@@ -42,9 +42,7 @@
 
                 <!-- 商户录入信息右侧块 -->
                 <el-col :span="11" :offset="1">
-                    <el-form-item prop="location" label="商户坐标">
-                        {{data.lng}} , {{data.lat}}
-                    </el-form-item>
+                    
                     <el-form-item prop="operAddress" label="运营中心地址">
                         {{data.operAddress}}
                     </el-form-item>
@@ -56,6 +54,13 @@
                     </el-form-item>
                     <el-form-item label="营业执照代码">
                         {{ data.organization_code}}
+                    </el-form-item>
+                </el-col>
+
+                <!-- 商户坐标：展示地图上的位置 -->
+                <el-col :span="16">
+                    <el-form-item prop="location" label="商户坐标">
+                        <qmap-choose-point width="100%" height="300px" :shown-markers="[[data.lng, data.lat]]" disabled/>
                     </el-form-item>
                 </el-col>
 
@@ -76,7 +81,7 @@
                         <!--<el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>-->
 
                         <el-form-item prop="business_time" label="营业时间">
-                            {{data.business_time[0]}} 至 {{data.business_time[1]}}
+                            <span v-if="data.business_time">{{data.business_time[0]}} 至 {{data.business_time[1]}}</span>
                         </el-form-item>
                         <el-form-item prop="logo" label="商家logo">
                             <div v-viewer>
@@ -120,9 +125,8 @@
                         </el-form-item>
                         <el-form-item v-if="data.bank_card_type == 1" required prop="licence_pic_url" label="开户许可证">
                             <div v-viewer>
-                                <img :src="data.licence_pic_url" alt="开户许可证" width="200px" height="100px" />
+                                <img v-if="data.licence_pic_url" :src="data.licence_pic_url" alt="开户许可证" width="200px" height="100px" />
                             </div>
-                            <!-- <preview-img :url="data.licence_pic_url" width="100px" height="100px"/> -->
                         </el-form-item>
                         <el-form-item v-if="data.bank_card_type == 2" required label="法人银行卡正面照" prop="bank_card_pic_a">
                             <div v-viewer>
@@ -134,35 +138,32 @@
                                     <img v-if="data.bank_card_pic_a.length == 2" :src="data.bank_card_pic_a[1]" alt="法人银行卡正面照" width="200px" height="100px" />
                                 </div>
                             </div>
-                            <!-- <preview-img :url="data.bank_card_pic_a" width="100px" height="100px"/> -->
                         </el-form-item>
                         <!-- 银行卡信息 end -->
 
                         <el-form-item label="法人身份证正反面">
                             <div v-viewer>
-                                <img :src="data.legal_id_card_pic_a" width="200px" height="100px" alt="法人身份证正反面" />
+                                <img v-if="data.legal_id_card_pic_a" :src="data.legal_id_card_pic_a" width="200px" height="100px" alt="法人身份证正反面" />
                             </div>
                             <div v-viewer>
-                                <img :src="data.legal_id_card_pic_b" width="200px" height="100px" alt="法人身份证正反面" />
+                                <img v-if="data.legal_id_card_pic_b" :src="data.legal_id_card_pic_b" width="200px" height="100px" alt="法人身份证正反面" />
                             </div>
-                            <!-- <preview-img :url="data.legal_id_card_pic_a" width="200px" height="100px"/>
-                            <preview-img :url="data.legal_id_card_pic_b" width="200px" height="100px"/> -->
+                        </el-form-item>
+                        <el-form-item label="法人身份证号码">
+                            {{data.legal_id_card_num}}
                         </el-form-item>
                         <el-form-item label="合同">
                             <div class="contract" v-viewer style="display: none;">
                                 <img v-for="(item, index) in data.contract_pic_url" :src="item" :key="index" alt="合同" />
                             </div>
-                            <el-button type="text" @click="previewImage('contract')">查看</el-button>
+                            <el-button v-if="data.contract_pic_url" type="text" @click="previewImage('contract')">查看</el-button>
                         </el-form-item>
 
                         <el-form-item prop="other_card_pic_urls" label="其他证件">
 
-                            <viewer :images="data.other_card_pic_urls">
+                            <div v-viewer>
                                 <img v-for="(src,index) in data.other_card_pic_urls" :src="src" :key="index" width="200px" height="100px" alt="其他证件" />
-                            </viewer>
-                            <!-- <template v-for="pic in data.other_card_pic_urls">
-                                <preview-img :url="pic" width="200px" height="100px"/>
-                            </template> -->
+                            </div>
                         </el-form-item>
                     </el-col>
 
@@ -172,7 +173,7 @@
                         <el-form-item prop="contacter" label="负责人姓名">
                             {{data.contacter}}
                         </el-form-item>
-                        <el-form-item prop="contacter_phone" label="负责人联系方式">
+                        <el-form-item prop="contacter_phone" label="负责人手机号码">
                             {{data.contacter_phone}}
                         </el-form-item>
                         <el-form-item prop="service_phone" label="客服电话">
@@ -209,6 +210,7 @@
 
     import previewImg from '../../../assets/components/img/preview-img'
     import imgPreviewDialog from '../../../assets/components/img/preview-dialog'
+    import QmapChoosePoint from '../../../assets/components/qmap/qmap-choose-point'
     import 'viewerjs/dist/viewer.css'
 
     export default {
@@ -243,6 +245,7 @@
         components: {
             previewImg,
             imgPreviewDialog,
+            QmapChoosePoint,
         }
     }
 

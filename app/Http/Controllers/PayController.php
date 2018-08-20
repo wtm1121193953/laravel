@@ -9,15 +9,17 @@
 namespace App\Http\Controllers;
 
 
+use App\Exceptions\DataNotFoundException;
 use App\Jobs\OrderPaidJob;
 use App\Modules\Goods\Goods;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
-use App\Modules\Invite\InviteService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperMiniprogram;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
@@ -143,14 +145,6 @@ class PayController extends Controller
                 $orderPay->amount = $totalFee * 1.0 / 100;
                 $orderPay->save();
 
-                // 支付成功, 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
-                $userId = $order->user_id;
-                if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
-                    $merchantId = $order->merchant_id;
-                    $merchant = Merchant::findOrFail($merchantId);
-                    $inviteChannel = InviteChannelService::getByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
-                    InviteService::bindInviter($userId, $inviteChannel);
-                }
                 OrderPaidJob::dispatch($order);
                 DB::commit();
             }catch (\Exception $e){

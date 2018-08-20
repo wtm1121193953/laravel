@@ -15,9 +15,11 @@ use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Modules\User\User;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Support\Utils;
+use function foo\func;
 use Illuminate\Database\Eloquent\Builder;
 
 class InviteChannelService extends BaseService
@@ -37,9 +39,10 @@ class InviteChannelService extends BaseService
      * @param $operId
      * @param string $keyword
      * @param bool $getWithQuery
-     * @return InviteChannel|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @param array $param
+     * @return InviteChannel|array
      */
-    public static function getOperInviteChannels($operId, $keyword = '', $getWithQuery = false)
+    public static function getOperInviteChannelsByOperId($operId, $keyword = '', $getWithQuery = false, $param = [])
     {
         $query = InviteChannel::where('origin_id', $operId)
             ->where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
@@ -51,8 +54,26 @@ class InviteChannelService extends BaseService
         if ($getWithQuery) {
             return $query;
         } else {
-            $data = $query->paginate();
-            return $data;
+            $page = $param['page'] ?: 1;
+            $pageSize = $param['pageSize'] ?: 15;
+            $orderColumn = $param['orderColumn'];
+            $orderType = $param['orderType'];
+
+            $total = $query->count();
+            $data = $query->get();
+
+            if ($orderType == 'descending') {
+                $data = $data->sortBy($orderColumn);
+            } elseif ($orderType == 'ascending') {
+                $data = $data->sortByDesc($orderColumn);
+            }
+
+            $data = $data->forPage($page,$pageSize)->values()->all();
+
+            return [
+                'data' => $data,
+                'total' => $total,
+            ];
         }
     }
 
@@ -111,7 +132,7 @@ class InviteChannelService extends BaseService
             $user = User::findOrFail($originId);
             $originName = $user->name ?: Utils::getHalfHideMobile($user->mobile);
         }else if($originType == 2){
-            $originName = Merchant::where('id', $originId)->value('name');
+            $originName = Merchant::where('id', $originId)->value('signboard_name');
         }else if($originType == 3){
             $originName = Oper::where('id', $originId)->value('name');
         }
@@ -210,6 +231,38 @@ class InviteChannelService extends BaseService
         $inviteChannel->save();
 
         return $inviteChannel;
+    }
+
+    /**
+     * 获取全部运营中心的邀请渠道
+     * @param array $params
+     * @param bool $withQuery
+     * @return InviteChannel|InviteChannel[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getOperInviteChannels(array $params=[], $withQuery = false)
+    {
+        $operName = array_get($params, 'operName');
+        $inviteChannelName = array_get($params, 'inviteChannelName');
+        $query = InviteChannel::where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
+            ->when($operName, function (Builder $query) use ($operName) {
+                $operIds = Oper::where('name', 'like', "%$operName%")
+                    ->select('id')
+                    ->get()
+                    ->pluck('id');
+                $query->whereIn('oper_id', $operIds);
+            })
+            ->when($inviteChannelName, function (Builder $query) use ($inviteChannelName) {
+                $query->where('name', 'like', "%$inviteChannelName%");
+            })
+            ->withCount('inviteUserRecords')
+            ->orderByDesc('id');
+
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->get();
+            return $data;
+        }
     }
 
 }

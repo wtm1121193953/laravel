@@ -13,13 +13,30 @@ use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Modules\Area\Area;
+use App\Modules\Tps\TpsBind;
+use App\Modules\Tps\TpsBindService;
 use Illuminate\Database\Eloquent\Builder;
 
 class OperService extends BaseService
 {
 
+    public static function getById($id, $fields = ['*'])
+    {
+        if (is_string($fields)) {
+            $fields = explode(',', $fields);
+        }
+        $oper = Oper::find($id, $fields);
+        return $oper;
+    }
+
+    public static function getNameById($id)
+    {
+        $name = Oper::where('id', $id)->value('name');
+        return $name;
+    }
+
     /**
-     * 获取运营中心列表
+     * 获取运营中心列表, 包含运营中心的账号信息, 小程序信息, 以及绑定的tps账号信息
      * @param $params
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
@@ -29,22 +46,63 @@ class OperService extends BaseService
         $status = array_get($params, 'status');
         $tel = array_get($params, 'tel');
 
-        $data = Oper::when($status, function (Builder $query) use ($status){
+        $data = Oper::when($status, function (Builder $query) use ($status) {
             $query->where('status', $status);
         })
-            ->when($name, function(Builder $query) use ($name){
+            ->when($name, function (Builder $query) use ($name) {
                 $query->where('name', 'like', "%$name%");
             })
-            ->when($tel, function(Builder $query) use ($tel){
+            ->when($tel, function (Builder $query) use ($tel) {
                 $query->where('tel', 'like', "%$tel%");
             })
             ->orderBy('id', 'desc')
             ->paginate();
 
-        $data->each(function ($item){
+        $data->each(function ($item) {
             $item->account = OperAccountService::getByOperId($item->id) ?: null;
             $item->miniprogram = OperMiniprogramService::getByOperId($item->id) ?: null;
+            $item->bindInfo = TpsBindService::getTpsBindInfoByOriginInfo($item->id, TpsBind::ORIGIN_TYPE_OPER) ?: null;
         });
+
+        return $data;
+    }
+
+    /**
+     * 获取全部的运营中心列表, 可指定字段
+     * @param $params
+     * @param array $fields
+     * @param bool $base 是否只获取基础信息, 若为false, 返回的字段中包含运营中心的账号信息, 小程序信息, 以及绑定的tps账号信息
+     * @return Oper[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getAll($params, $fields = ['*'], $base = true)
+    {
+        if(is_string($fields)){
+            $fields = explode(',', $fields);
+        }
+        $name = array_get($params, 'name');
+        $status = array_get($params, 'status');
+        $tel = array_get($params, 'tel');
+
+        $data = Oper::when($status, function (Builder $query) use ($status) {
+            $query->where('status', $status);
+        })
+            ->when($name, function (Builder $query) use ($name) {
+                $query->where('name', 'like', "%$name%");
+            })
+            ->when($tel, function (Builder $query) use ($tel) {
+                $query->where('tel', 'like', "%$tel%");
+            })
+            ->orderBy('id', 'desc')
+            ->select($fields)
+            ->get();
+
+        if(!$base){
+            $data->each(function ($item) {
+                $item->account = OperAccountService::getByOperId($item->id) ?: null;
+                $item->miniprogram = OperMiniprogramService::getByOperId($item->id) ?: null;
+                $item->bindInfo = TpsBindService::getTpsBindInfoByOriginInfo($item->id, TpsBind::ORIGIN_TYPE_OPER) ?: null;
+            });
+        }
 
         return $data;
     }
@@ -106,7 +164,7 @@ class OperService extends BaseService
     {
 
         $oper = Oper::find($id);
-        if(empty($oper)){
+        if (empty($oper)) {
             throw new DataNotFoundException('运营中心信息不存在');
         }
         $oper->name = request('name');
@@ -157,7 +215,7 @@ class OperService extends BaseService
     {
 
         $oper = Oper::find($id);
-        if(empty($oper)){
+        if (empty($oper)) {
             throw new DataNotFoundException('运营中心信息不存在');
         }
         $oper->status = $status;
@@ -174,7 +232,7 @@ class OperService extends BaseService
     public static function switchPayToPlatform($id)
     {
         $oper = Oper::find($id);
-        if(empty($oper)){
+        if (empty($oper)) {
             throw new DataNotFoundException('运营中心信息不存在');
         }
         $oper->pay_to_platform = 1;

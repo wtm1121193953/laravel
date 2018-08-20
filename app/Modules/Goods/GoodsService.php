@@ -9,16 +9,18 @@
 namespace App\Modules\Goods;
 
 
+use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\FilterKeyword\FilterKeyword;
 use App\Modules\FilterKeyword\FilterKeywordService;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-class GoodsService
+class GoodsService extends BaseService
 {
 
     /**
@@ -39,8 +41,8 @@ class GoodsService
 
     /**
      * 首页商户列表，显示价格最低的n个团购商品
-     * @param $merchantId
-     * @param $number
+     * @param int $merchantId 商户ID
+     * @param int $number 要获取的商品个数
      * @return Goods[]|\Illuminate\Database\Eloquent\Collection
      */
     public static function getLowestPriceGoodsForMerchant($merchantId, $number)
@@ -276,7 +278,12 @@ class GoodsService
         });
     }
 
-    public static function getMaxSort($merchantId)
+    /**
+     * 获取当前最大排序值
+     * @param $merchantId
+     * @return int|number
+     */
+    private static function getMaxSort($merchantId)
     {
         $sort = Goods::where('merchant_id', $merchantId)->max('sort');
         return $sort ?? 0;
@@ -294,6 +301,27 @@ class GoodsService
         } else {
             return true;
         }
+    }
+
+    public static function userGoodsList($merchant_id)
+    {
+        $merchant = Merchant::findOrFail($merchant_id);
+        $list = Goods::where('merchant_id', $merchant_id)->get();
+        $list->each(function ($item) use ($merchant) {
+            $item->pic_list = $item->pic_list ? explode(',', $item->pic_list) : [];
+            $item->business_time = json_decode($merchant->business_time, 1);
+        });
+
+        return $list;
+    }
+
+    public static function userGoodsDetail($id){
+        $detail = Goods::findOrFail($id);
+        $detail->pic_list = $detail->pic_list ? explode(',', $detail->pic_list) : [];
+        $merchant = Merchant::findOrFail($detail->merchant_id);
+        $detail->business_time = json_decode($merchant->business_time, 1);
+
+        return $detail;
     }
 
 }
