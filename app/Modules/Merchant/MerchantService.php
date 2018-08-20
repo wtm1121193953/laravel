@@ -520,7 +520,7 @@ class MerchantService extends BaseService
             $list = $allList->map(function ($item) use ($distances) {
                 $distance = isset($distances[$item->id]) ? $distances[$item->id] : 10000;
                 // 格式化距离
-                $item->distance = $this->_getFormativeDistance($distance);
+                $item->distance = self::_getFormativeDistance($distance);
                 return $item;
             })
                 ->sortBy('distance')->values()
@@ -534,7 +534,7 @@ class MerchantService extends BaseService
                 $data->each(function ($item) use ($lng, $lat, $tempToken){
                     $distance = Lbs::getDistanceOfMerchant($item->id, $tempToken, $lng, $lat);
                     // 格式化距离
-                    $item->distance = $this->_getFormativeDistance($distance);
+                    $item->distance = self::_getFormativeDistance($distance);
                 });
             }
             return $data;
@@ -554,4 +554,8 @@ class MerchantService extends BaseService
         });
     }
 
+    private static function _getFormativeDistance($distance)
+    {
+        return $distance >= 1000 ? (number_format($distance / 1000, 1) . '千米') : ($distance . '米');
+    }
 }
