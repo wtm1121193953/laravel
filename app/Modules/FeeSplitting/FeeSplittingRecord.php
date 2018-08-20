@@ -2,9 +2,9 @@
 
 namespace App\Modules\FeeSplitting;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class FeeSplittingRecord extends Model
+class FeeSplittingRecord extends BaseModel
 {
     //
 }

@@ -4,7 +4,7 @@ namespace App\Modules\Wallet;
 
 use App\BaseModel;
 
-class BankCard extends BaseModel
+class WalletBill extends BaseModel
 {
     //
 }
