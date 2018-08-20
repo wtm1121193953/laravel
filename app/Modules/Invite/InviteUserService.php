@@ -99,6 +99,10 @@ class InviteUserService
                 throw new BaseResponseException('您和您的邀请人都已绑定TPS账号, 请尝试其他邀请人');
             }
         }
+        $inviteChannelParent = self::getParent($inviteChannel->origin_id);
+        if ($inviteChannelParent && $inviteChannelParent instanceof User && $inviteChannelParent->id == $userId) {
+            throw new BaseResponseException("您的推荐人是{$inviteChannelParent->mobile}，您不能再推荐{$inviteChannelParent->mobile}，请换一个人推荐");
+        }
 
         $inviteRecord = new InviteUserRecord();
         $inviteRecord->user_id = $userId;
@@ -505,8 +509,8 @@ class InviteUserService
         if($withQuery) return $query;
 
         $pageSize = array_get($params, 'pageSize', 15);
-        $orderColumn = array_get($params, 'orderColumn', 'id');
-        $orderType = array_get($params, 'orderType', 'descending');
+        $orderColumn = array_get($params, 'orderColumn', 'id') ?: 'id';
+        $orderType = array_get($params, 'orderType', 'descending') ?: 'descending';
         $orderType = $orderType == 'descending' ? 'desc' : 'asc';
 
         $data = $query->orderBy($orderColumn, $orderType)
