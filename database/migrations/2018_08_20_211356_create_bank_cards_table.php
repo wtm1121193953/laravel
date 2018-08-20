@@ -24,6 +24,8 @@ class CreateBankCardsTable extends Migration
             $table->string('sub_bank_name')->default('')->comment('开户支行名称');
 
             $table->timestamps();
+
+            $table->comment = '银行卡表';
         });
     }
 

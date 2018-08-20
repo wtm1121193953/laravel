@@ -23,6 +23,8 @@ class CreateWalletsTable extends Migration
             $table->decimal('total_consume_quota', 11, 2)->default(0)->comment('总消费额');
             $table->string('withdraw_password')->default('')->comment('提现密码');
             $table->timestamps();
+
+            $table->comment = '钱包表';
         });
     }
 
