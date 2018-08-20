@@ -110,17 +110,17 @@ class MerchantService extends BaseService
      */
     public static function getList(array $data, bool $getWithQuery = false)
     {
-        $id = $data['id'];
-        $operId = $data['operId'];
-        $creatorOperId = $data['creatorOperId'];
-        $name = $data['name'];
-        $signboardName = $data['signboardName'];
-        $status = $data['status'];
-        $auditStatus = $data['auditStatus'];
-        $merchantCategory = $data['merchantCategory'];
-        $isPilot = $data['isPilot'];
-        $startCreatedAt = $data['startCreatedAt'];
-        $endCreatedAt = $data['endCreatedAt'];
+        $id = array_get($data,'id');
+        $operId = array_get($data,'operId');
+        $creatorOperId = array_get($data,'creatorOperId');
+        $name = array_get($data,'name');
+        $signboardName = array_get($data,'signboardName');
+        $status = array_get($data,'status');
+        $auditStatus = array_get($data,'auditStatus');
+        $merchantCategory = array_get($data,'merchantCategory');
+        $isPilot = array_get($data,'isPilot');
+        $startCreatedAt = array_get($data,'startCreatedAt');
+        $endCreatedAt = array_get($data,'$endCreatedAt');
 
         // 全局限制条件
         $query = Merchant::where('audit_oper_id', '>', 0)->orderByDesc('id');
@@ -471,12 +471,12 @@ class MerchantService extends BaseService
 
     public static function userAppMerchantList(array $data)
     {
-        $city_id = $data['city_id'];
-        $merchant_category_id = $data['merchant_category_id'];
-        $keyword = $data['keyword'];
-        $lng = $data['lng'];
-        $lat = $data['lat'];
-        $radius = $data['radius'];
+        $city_id = array_get($data,'city_id');
+        $merchant_category_id = array_get($data,'merchant_category_id');
+        $keyword = array_get($data,'keyword');
+        $lng = array_get($data,'lng');
+        $lat = array_get($data,'lat');
+        $radius = array_get($data,'radius');
 
         $distances = null;
         if($lng && $lat && $radius){
