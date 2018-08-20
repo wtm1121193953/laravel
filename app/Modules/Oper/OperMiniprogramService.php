@@ -40,6 +40,16 @@ class OperMiniprogramService extends BaseService
     }
 
     /**
+     * 根据运营中心appid获取运营中心的小程序信息
+     * @param $appid
+     * @return OperMiniprogram
+     */
+    public static function getByAppid($appid)
+    {
+        return OperMiniprogram::where('appid', $appid)->first();
+    }
+
+    /**
      * 添加运营中心的小程序
      * @param $operId int 运营中心ID
      * @param $miniprogramName string 小程序名称

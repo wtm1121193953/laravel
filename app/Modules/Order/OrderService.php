@@ -187,4 +187,9 @@ class OrderService extends BaseService
             ->count();
         return $count;
     }
+
+    public static function getinfoByOrderNo($orderNo)
+    {
+        return Order::where('order_no', $orderNo)->firstOrFail();
+    }
 }
