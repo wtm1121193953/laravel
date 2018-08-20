@@ -509,8 +509,8 @@ class InviteUserService
         if($withQuery) return $query;
 
         $pageSize = array_get($params, 'pageSize', 15);
-        $orderColumn = array_get($params, 'orderColumn', 'id');
-        $orderType = array_get($params, 'orderType', 'descending');
+        $orderColumn = array_get($params, 'orderColumn', 'id') ?: 'id';
+        $orderType = array_get($params, 'orderType', 'descending') ?: 'descending';
         $orderType = $orderType == 'descending' ? 'desc' : 'asc';
 
         $data = $query->orderBy($orderColumn, $orderType)
