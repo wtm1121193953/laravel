@@ -47,6 +47,38 @@ class DishesGoodsService extends BaseService
     }
 
     /**
+     * 通过merchant_id分类获取单品商品列表
+     * @param $merchantId
+     * @return DishesGoods[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getHotDishesGoods($merchantId)
+    {
+        $hotDishesGoods =DishesGoods::where('merchant_id', $merchantId)
+            ->where('status', 1)
+            ->where('is_hot',1)
+            ->get();
+
+        return $hotDishesGoods;
+    }
+
+    /**
+     * 获取单品指定分类的商品
+     * @param $merchantId
+     * @param $categoryId
+     * @return DishesGoods[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getDishesGoods($merchantId,$categoryId)
+    {
+        $list = DishesGoods::where('merchant_id', $merchantId)
+            ->where('status', 1)
+            ->where('dishes_category_id',$categoryId)
+            ->orderBy('sort', 'desc')
+            ->get();
+
+        return $list;
+    }
+
+    /**
      * 获取单品商品列表
      * @param $params array 查询参数 {merchantId, status, name, categoryId}
      * @param $pageSize
