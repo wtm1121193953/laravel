@@ -18,7 +18,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantService;
-use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Result;
 
 class MerchantController extends Controller
@@ -53,17 +53,13 @@ class MerchantController extends Controller
         // 根据输入的运营中心名称获取所属运营中心ID列表
         $operName = request('operName');
         if($operName) {
-            $operIds = Oper::where('name', 'like', "%$operName%")
-                ->select('id')->get()
-                ->pluck('id');
+            $operIds = OperService::getAll(['name' => $operName], 'id')->pluck('id');
         }
         $creatorOperId = request('creatorOperId');
         // 根据输入的运营中心名称获取录入信息的运营中心ID列表
         $creatorOperName = request('creatorOperName');
         if($creatorOperName){
-            $createOperIds = Oper::where('name', 'like', "%$creatorOperName%")
-                ->select('id')->get()
-                ->pluck('id');
+            $createOperIds = OperService::getAll(['name' => $creatorOperName], 'id')->pluck('id');
         }
 
         $data = MerchantService::getList([
@@ -210,6 +206,36 @@ class MerchantController extends Controller
         }
         $merchant->status = $merchant->status == Merchant::STATUS_ON ? Merchant::STATUS_OFF : Merchant::STATUS_ON;
         $merchant->save();
+
+        return Result::success($merchant);
+    }
+
+    /**
+     * SaaS端 编辑试点商户
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function edit()
+    {
+        $validate = [
+            'name' => 'required|max:20',
+            'merchant_category_id' => 'required',
+            'signboard_name' => 'required|max:20',
+        ];
+        if (request('is_pilot') !== Merchant::PILOT_MERCHANT){
+            $validate = array_merge($validate, [
+                'business_licence_pic_url' => 'required',
+                'organization_code' => 'required',
+                'settlement_rate' => 'required|numeric|min:0',
+            ]);
+        }
+        $this->validate(request(), $validate);
+
+        $mobile = request('contacter_phone');
+        if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
+            throw new ParamInvalidException('负责人手机号码不合法');
+        }
+
+        $merchant = MerchantService::edit(request('id'), request('audit_oper_id'));
 
         return Result::success($merchant);
     }

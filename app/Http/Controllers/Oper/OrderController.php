@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Order\Order;
+use App\Modules\Order\OrderService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -31,55 +32,27 @@ class OrderController extends Controller
         $status = request('status');
         $type = request('type');
 
-        $query = Order::where('oper_id', request()->get('current_user')->oper_id)
-            ->when($orderNo, function(Builder $query) use ($orderNo){
-                $query->where('order_no', 'like', "%$orderNo%");
-            })
-            ->when($mobile, function (Builder $query) use ($mobile){
-                $query->where('notify_mobile', 'like', "%$mobile%");
-            })
-            ->when($merchantId, function (Builder $query) use ($merchantId){
-                $query->where('merchant_id', $merchantId);
-            })
-            ->where(function(Builder $query){
-                $query->where('type', Order::TYPE_GROUP_BUY)
-                    ->orWhere(function(Builder $query){
-                        $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
-                            ->whereIn('status', [4, 6, 7]);
-                    })->orWhere(function(Builder $query){
-                        $query->where('type', Order::TYPE_DISHES);
-                    });
-            })->when($status, function (Builder $query) use ($status){
-                $query->where('status', $status);
-            })->when($type, function (Builder $query) use ($type){
-                $query->where('type', $type);
-            });
-
         if($timeType == 'payTime'){
-            $timeColumn = 'pay_time';
+            $startPayTime = $startTime;
+            $endPayTime = $endTime;
         }else {
-            $timeColumn = 'finish_time';
-        }
-        if($startTime && $endTime){
-            $query->whereBetween($timeColumn, [$startTime, $endTime]);
-        }else if($startTime){
-            $query->where($timeColumn, '>', $startTime);
-        }else if($endTime){
-            $query->where($timeColumn, '<', $endTime);
+            $startFinishTime = $startTime;
+            $endFinishTime = $endTime;
         }
 
-        $data = $query->orderByDesc('id')
-            ->paginate();
-        $merchantIds = $data->pluck('merchant_id');
-        $merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
+        $data = OrderService::getList([
+            'operId' => request()->get('current_user')->oper_id,
+            'merchantId' => $merchantId,
+            'orderNo' => $orderNo,
+            'notifyMobile' => $mobile,
+            'startPayTime' => $startPayTime ?? null,
+            'endPayTime' => $endPayTime ?? null,
+            'startFinishTime' => $startFinishTime ?? null,
+            'endFinishTime' => $endFinishTime ?? null,
+            'status' => $status,
+            'type' => $type,
+        ]);
 
-        foreach ($data as $key => $item){
-            $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
-            if ($item->type == 3){
-                $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
-                $data[$key]['dishes_items'] = $dishesItems;
-            }
-        }
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -102,44 +75,27 @@ class OrderController extends Controller
         $type = request('type');
         $status = request('status');
 
-        $query = Order::where('oper_id', request()->get('current_user')->oper_id)
-            ->when($orderNo, function(Builder $query) use ($orderNo){
-                $query->where('order_no', 'like', "%$orderNo%");
-            })
-            ->when($mobile, function (Builder $query) use ($mobile){
-                $query->where('notify_mobile', 'like', "%$mobile%");
-            })
-            ->when($merchantId, function (Builder $query) use ($merchantId){
-                $query->where('merchant_id', $merchantId);
-            })
-            ->where(function(Builder $query){
-                $query->where('type', Order::TYPE_GROUP_BUY)
-                    ->orWhere(function(Builder $query){
-                        $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
-                            ->whereIn('status', [4, 6, 7]);
-                    })->orWhere(function(Builder $query){
-                        $query->where('type', Order::TYPE_DISHES);
-                    });
-            })->when($status, function (Builder $query) use ($status){
-                $query->where('status', $status);
-            })->when($type, function (Builder $query) use ($type){
-                $query->where('type', $type);
-            });
-
-
-
         if($timeType == 'payTime'){
-            $timeColumn = 'pay_time';
+            $startPayTime = $startTime;
+            $endPayTime = $endTime;
         }else {
-            $timeColumn = 'finish_time';
+            $startFinishTime = $startTime;
+            $endFinishTime = $endTime;
         }
-        if($startTime && $endTime){
-            $query->whereBetween($timeColumn, [$startTime, $endTime]);
-        }else if($startTime){
-            $query->where($timeColumn, '>', $startTime);
-        }else if($endTime){
-            $query->where($timeColumn, '<', $endTime);
-        }
+
+        $query = OrderService::getList([
+            'operId' => request()->get('current_user')->oper_id,
+            'merchantId' => $merchantId,
+            'orderNo' => $orderNo,
+            'notifyMobile' => $mobile,
+            'startPayTime' => $startPayTime ?? null,
+            'endPayTime' => $endPayTime ?? null,
+            'startFinishTime' => $startFinishTime ?? null,
+            'endFinishTime' => $endFinishTime ?? null,
+            'status' => $status,
+            'type' => $type,
+        ], true);
+
         $list = $query->orderByDesc('id')
             ->select('order_no', 'user_id', 'user_name', 'notify_mobile', 'merchant_id', 'type', 'goods_id', 'goods_name', 'price', 'buy_number', 'status', 'pay_type', 'pay_price', 'pay_time', 'pay_target_type', 'refund_price', 'refund_time', 'finish_time', 'created_at', 'origin_app_type')
             ->get();

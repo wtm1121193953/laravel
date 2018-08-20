@@ -104,6 +104,7 @@
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
+                    <el-button type="text" @click="edit(scope)">编辑</el-button>
                     <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
                         <el-button type="text" @click="detail(scope,3)">审核</el-button>
                         <el-dropdown trigger="click" @command="(command) => {audit(scope, command)}">
@@ -237,7 +238,18 @@
                 this.$confirm(message).then(() => {
                     window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&signboardName='+ this.query.signboardName+ '&auditStatus=' + this.query.auditStatus + '&operName=' + this.query.operName + '&operId=' + this.query.operId + '&isPilot=1';
                 })
-            }
+            },
+            edit(scope){
+                let self = this;
+                router.push({
+                    path: '/merchant/pilot/edit',
+                    name: 'MerchantPilotEdit',
+                    query: {
+                        id: scope.row.id,
+                    },
+                    params: self.query,
+                })
+            },
         },
         created(){
             Object.assign(this.query, this.$route.params);

@@ -24,14 +24,14 @@ class MerchantDraftService extends BaseService
      * 根据ID获取商户信息
      * @param $merchantId
      * @param array|string $fields
-     * @return Merchant
+     * @return MerchantDraft
      */
     public static function getById($merchantId, $fields = ['*'])
     {
         if(is_string($fields)){
             $fields = explode(',', $fields);
         }
-        return Merchant::find($merchantId, $fields);
+        return MerchantDraft::find($merchantId, $fields);
     }
 
     public static function getList($currentOperId,$status,$auditStatus,$name)
@@ -95,10 +95,12 @@ class MerchantDraftService extends BaseService
             throw new ParamInvalidException('商户名称不能重复');
         }
         // 招牌名不能重复
-        $exists = Merchant::where('signboard_name', $merchantDraft->signboard_name)->first();
-        $existsDraft = MerchantDraft::where('signboard_name', $merchantDraft->signboard_name)->first();
-        if($exists || $existsDraft){
-            throw new ParamInvalidException('招牌名称不能重复');
+        if ($merchantDraft->signboard_name) {
+            $exists = Merchant::where('signboard_name', $merchantDraft->signboard_name)->first();
+            $existsDraft = MerchantDraft::where('signboard_name', $merchantDraft->signboard_name)->first();
+            if ($exists || $existsDraft) {
+                throw new ParamInvalidException('招牌名称不能重复');
+            }
         }
 
         $merchantDraft->save();
@@ -123,11 +125,13 @@ class MerchantDraftService extends BaseService
             throw new ParamInvalidException('商户名称不能重复');
         }
         // 招牌名不能重复
-        $exists = Merchant::where('signboard_name', $merchantDraft->signboard_name)->first();
-        $existsDraft = MerchantDraft::where('signboard_name', $merchantDraft->signboard_name)
-            ->where('id', '<>', $merchantDraft->id)->first();
-        if($exists || $existsDraft){
-            throw new ParamInvalidException('招牌名称不能重复');
+        if ($merchantDraft->signboard_name) {
+            $exists = Merchant::where('signboard_name', $merchantDraft->signboard_name)->first();
+            $existsDraft = MerchantDraft::where('signboard_name', $merchantDraft->signboard_name)
+                ->where('id', '<>', $merchantDraft->id)->first();
+            if ($exists || $existsDraft) {
+                throw new ParamInvalidException('招牌名称不能重复');
+            }
         }
 
         $merchantDraft->save();

@@ -9,7 +9,7 @@
 namespace App\Exports;
 
 
-use App\Modules\Invite\InviteStatisticsService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Order\Order;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -34,7 +34,9 @@ class InviteUserRecordExport implements FromQuery, WithMapping, WithHeadings
         $merchantId = $this->merchantId;
         $mobile = $this->mobile;
 
-        $query = InviteStatisticsService::getInviteUsersByMerchantId($merchantId, $mobile, true);
+        $query = InviteUserService::getInviteUsersWithOrderCountByMerchantId($merchantId, [
+            'mobile' => $mobile
+        ], true);
 
         return $query;
     }
@@ -45,10 +47,7 @@ class InviteUserRecordExport implements FromQuery, WithMapping, WithHeadings
             $data->created_at,
             $data->mobile,
             $data->wx_nick_name,
-            // todo 优化, 将商户下单数放入用户表中, 提高性能
-            Order::where('user_id', $data->id)
-                ->whereNotIn('status', [Order::STATUS_UN_PAY, Order::STATUS_CLOSED])
-                ->count() ?: '0',
+            $data->order_count,
         ];
     }
 

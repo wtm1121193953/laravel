@@ -86,6 +86,7 @@ class InviteChannelController extends Controller
 
     /**
      * 下载邀请注册的小程序码
+     * @deprecated todo 去掉下载二维码操作, 由统一下载控制器下载
      */
     public function downloadInviteQrcode()
     {

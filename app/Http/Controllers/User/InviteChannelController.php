@@ -77,15 +77,30 @@ class InviteChannelController extends Controller
      * 用户分享列表统计接口
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
-    public function getInviteUserStatisticsByUserId()
+    public function getInviteUserStatistics()
     {
-        $userId = request('userId');
-        $date = request('date');
-        $page = request('page', 1);
+        $userId = request()->get('current_user')->id;
+        $month = request('date');
         if (!$userId) {
             throw new ParamInvalidException('用户ID不能为空');
         }
-        $data = InviteStatisticsService::getInviteStatisticsListByDateForUser($userId, $date, $page);
+        /*
+         * data: {
+         *      'Y-m': {count: xx, sub: []}
+         * }
+         */
+        if($month){
+            $result = InviteUserService::getInviteUsersByMonthAndUserId($userId, $month);
+            $data = [
+                $month => [
+                    'count' => $result->total(),
+                    'sub' => $result->items(),
+                ]
+            ];
+        }else {
+            $data = InviteUserService::getInviteUsersGroupByMonthForUser($userId);
+        }
+//        $data = InviteStatisticsService::getInviteStatListByDateForUser($userId, $month, $page);
 
         $totalCount = InviteStatisticsService::getTotalInviteCountByUserId($userId);
         $todayInviteCount = InviteStatisticsService::getTodayInviteCountByUserId($userId);

@@ -10,8 +10,8 @@ namespace App\Http\Controllers\Merchant;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantAccountService;
+use App\Modules\Merchant\MerchantService;
 use App\Result;
-use Illuminate\Support\Facades\Session;
 
 class SelfController extends Controller
 {
@@ -46,7 +46,7 @@ class SelfController extends Controller
      */
     public function logout()
     {
-        Session::forget(config('merchant.user_session'));
+        MerchantAccountService::logout();
         return Result::success();
     }
 
@@ -76,7 +76,7 @@ class SelfController extends Controller
      */
     public function getMerchantInfo(){
         $merchantId = request()->get('current_user')->merchant_id;
-        $merchant = MerchantAccountService::getMerchantInfo($merchantId);
+        $merchant = MerchantService::detail($merchantId);
 
         return Result::success($merchant);
     }

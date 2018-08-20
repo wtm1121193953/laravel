@@ -3,7 +3,7 @@
 namespace App\Http\Middleware\User;
 
 use App\Modules\User\User;
-use App\Modules\User\UserOpenIdMapping;
+use App\Modules\User\UserService;
 use Closure;
 use Illuminate\Support\Facades\App;
 
@@ -24,14 +24,14 @@ class UserInfoInjector
     public function handle($request, Closure $next)
     {
         $openId = $request->get('current_open_id');
-        $userId = UserOpenIdMapping::where('open_id', $openId)->value('user_id');
-        if($userId){
-            $user = User::findOrFail($userId);
+        $user = UserService::getUserByOpenId($openId);
+        if($user){
             $request->attributes->add(['current_user' => $user]);
-        }
-        if(App::environment() === 'local'){
-            $user = User::firstOrFail();
-            $request->attributes->add(['current_user' => $user]);
+        }else {
+            if(App::environment() === 'local'){
+                $user = User::firstOrFail();
+                $request->attributes->add(['current_user' => $user]);
+            }
         }
         return $next($request);
     }

@@ -10,16 +10,16 @@ namespace App\Modules\Invite;
 
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
-use App\Jobs\InviteUserStatisticsDailyJob;
-use App\Jobs\MerchantLevelCalculationJob;
+use App\Jobs\MerchantLevelComputeJob;
+use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Modules\Admin\AdminUser;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
+use App\Modules\Order\Order;
 use App\Modules\Tps\TpsBind;
 use App\Modules\Tps\TpsBindService;
 use App\Modules\User\User;
-use App\Modules\User\UserMapping;
 use App\Modules\User\UserService;
 use App\ResultCode;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -109,7 +109,7 @@ class InviteUserService
         $inviteRecord->save();
 
         if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
-            MerchantLevelCalculationJob::dispatch($inviteRecord->origin_id);
+            MerchantLevelComputeJob::dispatch($inviteRecord->origin_id);
         }
     }
 
@@ -138,7 +138,8 @@ class InviteUserService
         $inviteUserUnbindRecord->old_invite_user_record = $inviteRecord->toJson();
         $inviteUserUnbindRecord->save();
 
-        // todo 更新用户邀请数量统计
+        // 更新用户邀请数量统计
+        InviteStatisticsService::updateDailyStatByOriginInfoAndDate($inviteRecord->origin_id, $inviteRecord->origin_type, $inviteRecord->created_at);
 
     }
 
@@ -258,10 +259,10 @@ class InviteUserService
             $newInviteRecord->save();
 
             if ($newInviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
-                MerchantLevelCalculationJob::dispatch($newInviteRecord->origin_id);
+                MerchantLevelComputeJob::dispatch($newInviteRecord->origin_id);
             }
             if ($inviteUserRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT) {
-                MerchantLevelCalculationJob::dispatch($inviteUserRecord->origin_id);
+                MerchantLevelComputeJob::dispatch($inviteUserRecord->origin_id);
             }
             DB::commit();
         }catch (\Exception $e){
@@ -396,7 +397,133 @@ class InviteUserService
             return $query;
         } else {
             $data = $query->paginate($pageSize);
+            $data->each(function ($item) {
+                $inviteChannel = InviteChannelService::getById($item->invite_channel_id);
+                $item->invite_channel_name = $inviteChannel->name;
+                $item->invite_channel_remark = $inviteChannel->remark;
+            });
             return $data;
         }
     }
+
+
+    /**
+     * 根据月份获取当月的邀请记录
+     * @param $userId
+     * @param $month
+     * @param int $pageSize
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getInviteUsersByMonthAndUserId($userId, $month, $pageSize = 20)
+    {
+        return self::getInviteUsersByMonthAndOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER, $month, $pageSize);
+    }
+
+    /**
+     * 根据月份以及邀请人信息获取邀请的用户列表
+     * @param $originId
+     * @param $originType
+     * @param $month
+     * @param int $pageSize
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getInviteUsersByMonthAndOriginInfo($originId, $originType, $month, $pageSize = 15)
+    {
+        $firstDay = date('Y-m-01 00:00:00', strtotime($month));
+        $lastDay = date('Y-m-d 23:59:59', strtotime("$firstDay + 1 month - 1 day"));
+        $inviteUserRecords = InviteUserRecord::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->whereBetween('created_at', [$firstDay, $lastDay])
+            ->orderBy('created_at', 'desc')
+            ->with('user:id,mobile')
+            ->paginate($pageSize);
+        $inviteUserRecords->each(function(InviteUserRecord $item){
+            $item->user_mobile = $item->user->mobile;
+        });
+
+        return $inviteUserRecords;
+    }
+
+    /**
+     * 获取用户邀请记录, 并根据月份分组
+     * @param $userId
+     * @param int $pageSize
+     * @return array
+     */
+    public static function getInviteUsersGroupByMonthForUser($userId, $pageSize = 20)
+    {
+        $inviteUserRecords = InviteUserRecord::where('origin_id', $userId)
+            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+            ->orderBy('created_at', 'desc')
+            ->with('user:id,mobile')
+            ->simplePaginate($pageSize);
+        $list = collect($inviteUserRecords->items());
+        $data = $list->each(function (InviteUserRecord $item){
+            $item->user_mobile = $item->user->mobile;
+            $item->created_month = $item->created_at->format('Y-m');
+        })
+            ->groupBy('created_month')
+            ->map(function($item, $key) use ($userId){
+                $firstDay = date('Y-m-01 00:00:00', strtotime($key));
+                $lastDay = date('Y-m-d 23:59:59', strtotime("$key + 1 month - 1 day"));
+                $count = InviteUserRecord::where('origin_id', $userId)
+                    ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+                    ->whereBetween('created_at', [$firstDay, $lastDay])
+                    ->count();
+
+                return [
+                    'sub' => $item,
+                    'count' => $count,
+                ];
+            });
+
+        return $data;
+    }
+
+    /**
+     * 根据渠道信息获取渠道邀请的用户列表
+     * @param $originId
+     * @param $originType
+     * @param $params
+     * @param bool $withQuery
+     * @return User|LengthAwarePaginator
+     */
+    public static function getInviteUsersByOriginInfo($originId, $originType, $params = [], $withQuery = false)
+    {
+        $mobile = array_get($params, 'mobile');
+        $userIds = InviteUserRecord::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->select('user_id')
+            ->get()
+            ->pluck('user_id');
+        $query = User::whereIn('id', $userIds)
+            ->when($mobile, function (Builder $query) use ($mobile) {
+                $query->where('mobile', 'like', "%$mobile%");
+            })
+            ->orderBy('created_at', 'desc');
+
+        if($withQuery) return $query;
+
+        $pageSize = array_get($params, 'pageSize', 15);
+        $orderColumn = array_get($params, 'orderColumn', 'id');
+        $orderType = array_get($params, 'orderType', 'descending');
+        $orderType = $orderType == 'descending' ? 'desc' : 'asc';
+
+        $data = $query->orderBy($orderColumn, $orderType)
+            ->paginate($pageSize);
+        return $data;
+    }
+
+    /**
+     * 查询商户邀请用户的列表
+     * @param $merchantId
+     * @param array $params
+     * @param bool $withQuery
+     * @return User|LengthAwarePaginator
+     */
+    public static function getInviteUsersWithOrderCountByMerchantId($merchantId, $params = [], $withQuery = false)
+    {
+        return self::getInviteUsersByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $params, $withQuery);
+    }
+
 }

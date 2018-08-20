@@ -2,11 +2,11 @@
 
 namespace App\Console;
 
-use App\Jobs\AutoDownGoodsJob;
-use App\Jobs\InviteUserStatisticsDailyJob;
-use App\Jobs\OrderAutoFinished;
-use App\Jobs\OrderExpired;
-use App\Jobs\SettlementJob;
+use App\Jobs\Schedule\AutoDownGoodsJob;
+use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
+use App\Jobs\Schedule\OrderAutoFinished;
+use App\Jobs\Schedule\OrderExpired;
+use App\Jobs\Schedule\SettlementJob;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;

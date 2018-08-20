@@ -4,19 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
-use App\Jobs\InviteUserStatisticsDailyJob;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteUserService;
-use App\Modules\Invite\InviteUserChangeBindRecordService;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Oper\OperService;
 use App\Modules\User\UserService;
 use App\Result;
-use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use App\Modules\Invite\InviteUserUnbindRecord;
 use App\ResultCode;
 
 class UsersController extends Controller
@@ -162,8 +159,9 @@ class UsersController extends Controller
 
         try {
             DB::beginTransaction();
-            // 查找换绑后的邀请渠道，没有则创建新的邀请渠道
-            $newInviteChannel = InviteChannelService::getByOriginInfo($user->id, InviteChannel::ORIGIN_TYPE_USER, InviteChannel::FIXED_OPER_ID);
+            // 查找换绑后的邀请渠道，没有则创建新的邀请渠道, 创建邀请渠道时, 使用固定的运营中心ID
+            $fixedOperId = App::environment('production') ? 1 : 3;
+            $newInviteChannel = InviteChannelService::getByOriginInfo($user->id, InviteChannel::ORIGIN_TYPE_USER, $fixedOperId);
 
             //首先操作invite_user_change_bind_records表，写入换绑记录
             $inviteUserBatchChangedRecord = InviteUserService::batchChangeInviter($oldInviteChannel, $newInviteChannel, $currentUser, $inviteUserRecords);

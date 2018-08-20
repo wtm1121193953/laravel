@@ -19,6 +19,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string salt
  * @property string wx_nick_name
  * @property string wx_avatar_url
+ * @property int order_count
  *
  */
 class User extends BaseModel
@@ -47,4 +48,5 @@ class User extends BaseModel
     {
         return ['','萌新', '粉丝', '铁杆', '骨灰'][$level];
     }
+
 }

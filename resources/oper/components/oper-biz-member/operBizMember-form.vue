@@ -88,8 +88,6 @@
         watch: {
             data(){
                 this.initForm();
-                console.log(this.initForm(),111222)
-
             }
         },
         components: {

@@ -3,12 +3,14 @@
 namespace App\Modules\Merchant;
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\PasswordErrorException;
 use App\Exceptions\AccountNotFoundException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
 use App\Modules\Tps\TpsBind;
 use App\Modules\Tps\TpsBindService;
+use Illuminate\Support\Facades\Session;
 
 class MerchantAccountService extends BaseService
 {
@@ -38,6 +40,7 @@ class MerchantAccountService extends BaseService
             throw new NoPermissionException('商户已被冻结');
         }
 
+        // 将用户信息记录到session中
         session([
             config('merchant.user_session') => $user,
         ]);
@@ -48,12 +51,20 @@ class MerchantAccountService extends BaseService
     }
 
     /**
+     * 退出登陆操作
+     */
+    public static function logout()
+    {
+        Session::forget(config('merchant.user_session'));
+    }
+
+    /**
      * @param $operId
      * @return array
      */
     public static function getMenus($operId){
 
-        $menus =  (new self())->Menus();
+        $menus =  (new self())->menus();
 
         $operBindInfo = TpsBindService::getTpsBindInfoByOriginInfo($operId, TpsBind::ORIGIN_TYPE_OPER);
         if(empty($operBindInfo)){
@@ -75,7 +86,7 @@ class MerchantAccountService extends BaseService
     /**
      * @return array
      */
-    public function Menus()
+    public function menus()
     {
         $menus = [
             [ 'id' => 1, 'name' => '商品管理', 'level' => 1, 'url' => 'goods', 'sub' =>
@@ -117,17 +128,13 @@ class MerchantAccountService extends BaseService
      * @param $newPassword
      * @return MerchantAccount|mixed
      */
-    public static function modifyPassword($user,$password,$newPassword){
+    public static function modifyPassword(MerchantAccount $user,$password,$newPassword){
 
         // 检查原密码是否正确
         if(MerchantAccount::genPassword($password, $user->salt) !== $user->password){
             throw new PasswordErrorException();
         }
-        $user = MerchantAccount::findOrFail($user->id);
-        $salt = str_random();
-        $user->salt = $salt;
-        $user->password = MerchantAccount::genPassword($newPassword, $salt);
-        $user->save();
+        $user = self::editAccount($user->id, $newPassword);
 
         // 修改密码成功后更新session中的user
         session([
@@ -140,32 +147,51 @@ class MerchantAccountService extends BaseService
     }
 
     /**
+     * 创建商户账号
      * @param $merchantId
-     * @return Merchant
+     * @param $getAccount
+     * @param $operId
+     * @param $password
+     * @return MerchantAccount
      */
-    public static function getMerchantInfo($merchantId){
+    public static function createAccount($merchantId, $getAccount,$operId,$password){
 
-        $merchant = MerchantService::getById($merchantId,
-            ['id','name','signboard_name','merchant_category_id','province','city','area','address','desc']
-        );
-
-        $mc = MerchantCategory::where('id',$merchant->merchant_category_id)->first(['name','pid']);
-
-        if($mc){
-            //父类别
-            $merchant->merchantCategoryName = $mc->name;
-            while ($mc->pid != 0){
-                $mc = MerchantCategory::where('id',$mc->pid)->first(['name','pid']);
-                $merchant->merchantCategoryName =  $mc->name . ' ' .$merchant->merchantCategoryName;
-            }
-        }else{
-            $merchant->merchantCategoryName = '';
+        $isAccount = MerchantAccount::where('merchant_id', $merchantId)->first();
+        if(!empty($isAccount)){
+            throw new BaseResponseException('该商户账户已存在, 不能重复创建');
+        }
+        // 查询账号是否重复
+        if(!empty(MerchantAccount::where('account', $getAccount)->first())){
+            throw new BaseResponseException('帐号重复, 请更换帐号');
         }
 
-        $merchant->signboardName = $merchant->signboard_name;
-        unset($merchant->merchant_category_id);
-        unset($merchant->signboard_name);
+        $account = new MerchantAccount();
+        $account->oper_id = $operId;
+        $account->account = $getAccount;
+        $account->merchant_id = $merchantId;
+        $salt = str_random();
+        $account->salt = $salt;
+        $account->password = MerchantAccount::genPassword($password, $salt);
+        $account->save();
 
-        return $merchant;
+        return $account;
     }
+
+    /**
+     * 辑商户账号信息, 即修改密码
+     * @param $id
+     * @param $password
+     * @return MerchantAccount
+     */
+    public static function editAccount($id,$password){
+        $account = MerchantAccount::findOrFail($id);
+        $salt = str_random();
+        $account->salt = $salt;
+        $account->password = MerchantAccount::genPassword($password, $salt);
+
+        $account->save();
+
+        return $account;
+    }
+
 }

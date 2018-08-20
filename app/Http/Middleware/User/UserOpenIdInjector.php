@@ -5,9 +5,7 @@ namespace App\Http\Middleware\User;
 use App\Exceptions\HasNotOpenIdException;
 use App\Exceptions\TokenInvalidException;
 use Closure;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 /**
  * 注入微信openId

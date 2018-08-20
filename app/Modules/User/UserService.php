@@ -10,10 +10,7 @@ namespace App\Modules\User;
 
 use App\BaseService;
 use App\Modules\Invite\InviteUserService;
-use App\Modules\Merchant\MerchantService;
 use Illuminate\Database\Eloquent\Builder;
-use App\Modules\Oper\Oper;
-use App\Modules\Invite\InviteUserRecord;
 
 class UserService extends BaseService
 {
@@ -69,5 +66,20 @@ class UserService extends BaseService
         $user = User::find($userId);
 
         return $user;
+    }
+
+    /**
+     * 根据openId获取用户信息
+     * @param $openId
+     * @return User|null
+     */
+    public static function getUserByOpenId($openId)
+    {
+        $userId = UserOpenIdMapping::where('open_id', $openId)->value('user_id');
+        if($userId){
+            $user = UserService::getUserById($userId);
+            return $user;
+        }
+        return null;
     }
 }

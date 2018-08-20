@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Schedule;
 
+use App\Jobs\SettlementForMerchant;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;

@@ -11,7 +11,7 @@
         <el-button class="fr m-l-20" type="primary" @click="add">添加推广渠道</el-button>
         <el-button class="fr m-l-20" type="success" @click="exportExcel">导出Excel</el-button>
 
-        <el-table stripe :data="list" @sort-change="sortChange">
+        <el-table stripe :data="list" v-loading="tableLoading" @sort-change="sortChange">
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="name" label="推广渠道名称"/>
@@ -37,9 +37,9 @@
                                 <el-radio-button label="2">中</el-radio-button>
                                 <el-radio-button label="3">大</el-radio-button>
                             </el-radio-group>
-                            <p v-if="qrcodeSizeType == 1">尺寸: 350 * 396px, 适合打印尺寸: 8cm</p>
-                            <p v-if="qrcodeSizeType == 2">尺寸: 537 * 609px, 适合打印尺寸: 15cm</p>
-                            <p v-if="qrcodeSizeType == 3">尺寸: 1600 * 1813px, 适合打印尺寸: 50cm</p>
+                            <p v-if="qrcodeSizeType == 1">尺寸: 350 * 396px</p>
+                            <p v-if="qrcodeSizeType == 2">尺寸: 537 * 609px</p>
+                            <p v-if="qrcodeSizeType == 3">尺寸: 1600 * 1813px</p>
                         </div>
                         <div style="text-align: right; margin: 0">
                             <el-button type="primary" size="mini" @click="download(scope.row)">确定</el-button>
@@ -89,6 +89,7 @@
                 currentEditData: null,
                 qrcodeSizeType: 1,
                 downloadUrl: '',
+                tableLoading: false,
             }
         },
         components: {
@@ -100,9 +101,11 @@
                 this.getList()
             },
             getList(){
+                this.tableLoading = true;
                 api.get('/inviteChannels', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                    this.tableLoading = false;
                 })
             },
             sortChange (column) {

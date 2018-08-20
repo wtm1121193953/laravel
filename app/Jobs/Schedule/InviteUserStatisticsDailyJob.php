@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Schedule;
 
 use App\Modules\Invite\InviteStatisticsService;
 use Illuminate\Bus\Queueable;
@@ -40,6 +40,6 @@ class InviteUserStatisticsDailyJob implements ShouldQueue
     public function handle()
     {
         // 执行每日数据统计
-        InviteStatisticsService::updateDailyStatisticsByDate($this->date);
+        InviteStatisticsService::batchUpdateDailyStatisticsByDate($this->date);
     }
 }

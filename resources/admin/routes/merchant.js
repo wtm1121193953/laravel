@@ -12,6 +12,7 @@ import MerchantAuditList from '../components/merchant/audit-record-list'
 
 import MerchantPilotList from '../components/pilot-merchant/list'
 import MerchantPilotDetail from '../components/pilot-merchant/detail'
+import MerchantPilotEdit from '../components/pilot-merchant/edit'
 
 /**
  * category 模块
@@ -33,6 +34,7 @@ export default [
 
             {path: '/merchant/pilots', component: MerchantPilotList, name: 'MerchantPilotList'},
             {path: '/merchant/pilot/detail', component: MerchantPilotDetail, name: 'MerchantPilotDetail'},
+            {path: '/merchant/pilot/edit', component: MerchantPilotEdit, name: 'MerchantPilotEdit'},
 
         ]
     },

@@ -64,7 +64,8 @@
                     name: 'MerchantEdit',
                     query: {
                         id: row.id,
-                        type: 'merchant-list'
+                        type: 'merchant-list',
+                        isPilot: true,
                     },
                 })
             }
