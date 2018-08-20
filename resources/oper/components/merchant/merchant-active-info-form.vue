@@ -64,8 +64,8 @@
                 <div>图片尺寸: 190 px * 190 px</div>
             </el-form-item>
             <el-form-item prop="desc_pic_list" label="商家介绍图片">
-                <image-upload :width="750" :height="526" v-model="form.desc_pic_list" :limit="6"/>
-                <div>图片尺寸: 750 px * 526 px</div>
+                <image-upload :width="750" :height="398" v-model="form.desc_pic_list" :limit="6"/>
+                <div>图片尺寸: 750 px * 398 px</div>
             </el-form-item>
             <el-form-item prop="desc" label="商家介绍">
                 <el-input type="textarea" :rows="5" v-model="form.desc"/>
