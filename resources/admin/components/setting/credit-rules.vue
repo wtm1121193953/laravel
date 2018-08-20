@@ -1,76 +1,34 @@
 <template>
     <page title="参数配置">
         <el-form v-model="form" v-loading="formLoading" label-width="200px">
-            <el-form-item label="用户等级积分参数配置"></el-form-item>
-            <el-form-item label="萌新" prop="user_level_1_of_credit_number">
-                <span>0</span>
+            <el-form-item label="用户权益配置"></el-form-item>
+            <el-form-item label="用户自返比例设置" prop="user_level_2_of_credit_number">
+                <el-input-number v-model="form.user_level_2_of_credit_number" :min="0"></el-input-number>%
+                <span class="tips">用户自己消费，平台奖励用户本人的</span>
             </el-form-item>
-            <el-form-item label="粉丝" prop="user_level_2_of_credit_number">
-                <el-input-number v-model="form.user_level_2_of_credit_number" :min="0"></el-input-number>
-            </el-form-item>
-            <el-form-item label="铁杆" prop="user_level_3_of_credit_number">
-                <el-input-number v-model="form.user_level_3_of_credit_number" :min="0"></el-input-number>
-            </el-form-item>
-            <el-form-item label="骨灰" prop="user_level_4_of_credit_number">
-                <el-input-number v-model="form.user_level_4_of_credit_number" :min="0"></el-input-number>
+            <el-form-item label="用户分享他人奖励设置" prop="user_level_3_of_credit_number">
+                <el-input-number v-model="form.user_level_3_of_credit_number" :min="0"></el-input-number>%
+                <span class="tips">用户分享他人，他人消费后，用户可以拿到的奖励</span>
             </el-form-item>
 
-            <el-form-item label="商户等级数量参数配置"></el-form-item>
-            <el-form-item label="签约商户" prop="merchant_level_1_of_invite_user_number">
-                <span>0</span>
+            <el-form-item label="商户权益配置"></el-form-item>
+            <el-form-item label="普通商户奖励" prop="merchant_level_1_of_invite_user_number">
+                <el-input-number v-model="form.merchant_level_2_of_invite_user_number" :min="0"></el-input-number>%
+                <span class="tips">商户分享的用户消费，平台奖励商户的</span>
             </el-form-item>
-            <el-form-item label="联盟商户" prop="merchant_level_2_of_invite_user_number">
-                <el-input-number v-model="form.merchant_level_2_of_invite_user_number" :min="0"></el-input-number>
+            <el-form-item label="金牌商户奖励" prop="merchant_level_2_of_invite_user_number">
+                <el-input-number v-model="form.merchant_level_2_of_invite_user_number" :min="0"></el-input-number>%
+                <span class="tips">商户分享的用户消费，平台奖励商户的</span>
             </el-form-item>
-            <el-form-item label="品牌商户" prop="merchant_level_3_of_invite_user_number">
-                <el-input-number v-model="form.merchant_level_3_of_invite_user_number" :min="0"></el-input-number>
-            </el-form-item>
-
-            <el-form-item label="自返比例参数配置"></el-form-item>
-            <el-form-item label="萌新" prop="credit_to_self_ratio_of_user_level_1">
-                <el-input-number v-model="form.credit_to_self_ratio_of_user_level_1" :min="0"></el-input-number>
-            </el-form-item>
-            <el-form-item label="粉丝" prop="credit_to_self_ratio_of_user_level_2">
-                <el-input-number v-model="form.credit_to_self_ratio_of_user_level_2" :min="0"></el-input-number>
-            </el-form-item>
-            <el-form-item label="铁杆" prop="credit_to_self_ratio_of_user_level_3">
-                <el-input-number v-model="form.credit_to_self_ratio_of_user_level_3" :min="0"></el-input-number>
-            </el-form-item>
-            <el-form-item label="骨灰" prop="credit_to_self_ratio_of_user_level_4">
-                <el-input-number v-model="form.credit_to_self_ratio_of_user_level_4" :min="0"></el-input-number>
+            <el-form-item label="超级商户奖励" prop="merchant_level_3_of_invite_user_number">
+                <el-input-number v-model="form.merchant_level_3_of_invite_user_number" :min="0"></el-input-number>%
+                <span class="tips">商户分享的用户消费，平台奖励商户的</span>
             </el-form-item>
 
-            <el-form-item label="直推返利比例参数配置"></el-form-item>
-            <el-form-item label="粉丝" prop="credit_to_parent_ratio_of_user_level_2">
-                <el-input-number v-model="form.credit_to_parent_ratio_of_user_level_2" :min="0"></el-input-number>
-            </el-form-item>
-            <el-form-item label="铁杆" prop="credit_to_parent_ratio_of_user_level_3">
-                <el-input-number v-model="form.credit_to_parent_ratio_of_user_level_3" :min="0"></el-input-number>
-            </el-form-item>
-            <el-form-item label="骨灰" prop="credit_to_parent_ratio_of_user_level_4">
-                <el-input-number v-model="form.credit_to_parent_ratio_of_user_level_4" :min="0"></el-input-number>
-            </el-form-item>
-
-            <el-form-item label="商家等级加成比例参数配置"></el-form-item>
-            <el-form-item label="签约商家" prop="credit_multiplier_of_merchant_level_1">
-                <el-input-number v-model="form.credit_multiplier_of_merchant_level_1" :min="0"></el-input-number>
-            </el-form-item>
-            <el-form-item label="联盟商户" prop="credit_multiplier_of_merchant_level_2">
-                <el-input-number v-model="form.credit_multiplier_of_merchant_level_2" :min="0"></el-input-number>
-            </el-form-item>
-            <el-form-item label="品牌商户" prop="credit_multiplier_of_merchant_level_3">
-                <el-input-number v-model="form.credit_multiplier_of_merchant_level_3" :min="0"></el-input-number>
-            </el-form-item>
-
-            <el-form-item label="其他"></el-form-item>
-            <el-form-item label="运营中心抽成比例(百分比)" prop="oper_profit_radio">
-                <el-input-number v-model="form.oper_profit_radio" :min="0"></el-input-number>
-            </el-form-item>
-            <el-form-item label="消费额直推比例(百分比)" prop="consume_quota_convert_ratio_to_parent">
-                <el-input-number v-model="form.consume_quota_convert_ratio_to_parent" :min="0"></el-input-number>
-            </el-form-item>
-            <el-form-item label="积分兑换比例(倍数)" prop="credit_multiplier_of_amount">
-                <el-input-number v-model="form.credit_multiplier_of_amount" :min="0"></el-input-number>
+            <el-form-item label="运营中心权益配置"></el-form-item>
+            <el-form-item label="运营中心分享奖励比例设置" prop="credit_multiplier_of_merchant_level_1">
+                <el-input-number v-model="form.credit_multiplier_of_merchant_level_1" :min="0"></el-input-number>%
+                <span class="tips">运营中心分享的用户消费，平台奖励运营中心的</span>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="save">保 存</el-button>
