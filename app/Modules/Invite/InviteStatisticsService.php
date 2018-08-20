@@ -169,6 +169,7 @@ class InviteStatisticsService extends BaseService
     {
         $data = InviteUserStatisticsDaily::where('origin_id', $originId)
             ->where('origin_type', $originType)
+            ->whereDate('date', '<', date('Y-m-d', time()))
             ->orderByDesc('date')
             ->paginate($pageSize);
         return $data;
