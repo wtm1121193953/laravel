@@ -10,8 +10,7 @@ namespace App\Http\Controllers\UserApp;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Goods\Goods;
-use App\Modules\Merchant\Merchant;
+use App\Modules\Goods\GoodsService;
 use App\Result;
 
 class GoodsController extends Controller
@@ -23,12 +22,7 @@ class GoodsController extends Controller
             'merchant_id' => 'required|integer|min:1',
         ]);
         $merchant_id = request('merchant_id');
-        $merchant = Merchant::findOrFail($merchant_id);
-        $list = Goods::where('merchant_id', $merchant_id)->get();
-        $list->each(function ($item) use ($merchant) {
-            $item->pic_list = $item->pic_list ? explode(',', $item->pic_list) : [];
-            $item->business_time = json_decode($merchant->business_time, 1);
-        });
+        $list = GoodsService::userGoodsList($merchant_id);
         return Result::success(['list' => $list]);
     }
 
@@ -37,11 +31,9 @@ class GoodsController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
+        $id = request('id');
 
-        $detail = Goods::findOrFail(request('id'));
-        $detail->pic_list = $detail->pic_list ? explode(',', $detail->pic_list) : [];
-        $merchant = Merchant::findOrFail($detail->merchant_id);
-        $detail->business_time = json_decode($merchant->business_time, 1);
+        $detail = GoodsService::userGoodsDetail($id);
 
         return Result::success($detail);
     }

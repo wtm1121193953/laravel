@@ -20,6 +20,7 @@ use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperService;
 use App\Result;
+use Illuminate\Support\Facades\Log;
 
 class MerchantController extends Controller
 {
@@ -46,9 +47,6 @@ class MerchantController extends Controller
         }
 
         $operId = request('operId');
-        if(!is_null($operId) && is_string($operId)){
-            $operId = -1;
-        }
 
         // 根据输入的运营中心名称获取所属运营中心ID列表
         $operName = request('operName');
@@ -61,7 +59,7 @@ class MerchantController extends Controller
         if($creatorOperName){
             $createOperIds = OperService::getAll(['name' => $creatorOperName], 'id')->pluck('id');
         }
-
+        $startTime = microtime(true);
         $data = MerchantService::getList([
             'id' => $id,
             'operId' => $operIds ?? $operId,
@@ -75,6 +73,9 @@ class MerchantController extends Controller
             'startCreatedAt' => $startDate,
             'endCreatedAt' => $endDate,
         ]);
+        $endTime = microtime(true);
+
+        Log::info('耗时: ', ['start time' => $startTime, 'end time' => $endTime, '耗时: ' => $endTime - $startTime]);
 
         return Result::success([
             'list' => $data->items(),
