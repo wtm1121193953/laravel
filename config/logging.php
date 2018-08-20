@@ -45,7 +45,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
             'level' => 'debug',
-            'days' => 15,
+            'days' => 7,
         ],
         'error-daily' => [
             'driver' => 'daily',

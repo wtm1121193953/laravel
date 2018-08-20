@@ -110,18 +110,18 @@ class MerchantService extends BaseService
      */
     public static function getList(array $data, bool $getWithQuery = false)
     {
-        $id = array_get($data,"id");//$data['id'];
-        $operId = array_get($data,"operId");//$data['operId'];
-        $creatorOperId =array_get($data,"creatorOperId");// $data['creatorOperId'];
-        $name =array_get($data,"name");// $data['name'];
-        $signboardName =array_get($data,"signboardName");// $data['signboardName'];
-        $status =array_get($data,"status");// $data['status'];
-        $auditStatus =array_get($data,"auditStatus");// $data['auditStatus'];
-        $merchantCategory = array_get($data,"merchantCategory");//$data['merchantCategory'];
-        $isPilot =array_get($data,"isPilot");// $data['isPilot'];
-        $startCreatedAt =array_get($data,"startCreatedAt");// $data['startCreatedAt'];
-        $endCreatedAt = array_get($data,"endCreatedAt");//$data['endCreatedAt'];
-        $cityId =array_get($data,"cityId");// $data['cityId'];//所在城市ID
+        $id = array_get($data,'id');
+        $operId = array_get($data,'operId');
+        $creatorOperId = array_get($data,'creatorOperId');
+        $name = array_get($data,'name');
+        $signboardName = array_get($data,'signboardName');
+        $status = array_get($data,'status');
+        $auditStatus = array_get($data,'auditStatus');
+        $merchantCategory = array_get($data,'merchantCategory');
+        $isPilot = array_get($data,'isPilot');
+        $startCreatedAt = array_get($data,'startCreatedAt');
+        $endCreatedAt = array_get($data,'$endCreatedAt');
+        $cityId =array_get($data,"cityId");
 
         // 全局限制条件
         $query = Merchant::where('audit_oper_id', '>', 0)->orderByDesc('id');
@@ -475,12 +475,12 @@ class MerchantService extends BaseService
 
     public static function userAppMerchantList(array $data)
     {
-        $city_id = $data['city_id'];
-        $merchant_category_id = $data['merchant_category_id'];
-        $keyword = $data['keyword'];
-        $lng = $data['lng'];
-        $lat = $data['lat'];
-        $radius = $data['radius'];
+        $city_id = array_get($data,'city_id');
+        $merchant_category_id = array_get($data,'merchant_category_id');
+        $keyword = array_get($data,'keyword');
+        $lng = array_get($data,'lng');
+        $lat = array_get($data,'lat');
+        $radius = array_get($data,'radius');
 
         $distances = null;
         if($lng && $lat && $radius){
@@ -524,7 +524,7 @@ class MerchantService extends BaseService
             $list = $allList->map(function ($item) use ($distances) {
                 $distance = isset($distances[$item->id]) ? $distances[$item->id] : 10000;
                 // 格式化距离
-                $item->distance = $this->_getFormativeDistance($distance);
+                $item->distance = self::_getFormativeDistance($distance);
                 return $item;
             })
                 ->sortBy('distance')->values()
@@ -538,7 +538,7 @@ class MerchantService extends BaseService
                 $data->each(function ($item) use ($lng, $lat, $tempToken){
                     $distance = Lbs::getDistanceOfMerchant($item->id, $tempToken, $lng, $lat);
                     // 格式化距离
-                    $item->distance = $this->_getFormativeDistance($distance);
+                    $item->distance = self::_getFormativeDistance($distance);
                 });
             }
             return $data;
@@ -558,4 +558,8 @@ class MerchantService extends BaseService
         });
     }
 
+    private static function _getFormativeDistance($distance)
+    {
+        return $distance >= 1000 ? (number_format($distance / 1000, 1) . '千米') : ($distance . '米');
+    }
 }
