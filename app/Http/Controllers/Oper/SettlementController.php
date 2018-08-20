@@ -11,14 +11,8 @@ namespace App\Http\Controllers\Oper;
 
 use App\Exports\OperSettlementExport;
 use App\Http\Controllers\Controller;
-use App\Modules\Merchant\Merchant;
-use App\Modules\Oper\OperBizMember;
-use App\Modules\Order\Order;
-use App\Modules\Settlement\Settlement;
 use App\Modules\Settlement\SettlementService;
 use App\Result;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
 class SettlementController extends Controller
 {
@@ -95,11 +89,9 @@ class SettlementController extends Controller
     {
         $settlement_id = request('settlement_id');
         $merchant_id = request('merchant_id');
+        $operId = request()->get('current_user')->oper_id;
 
-        $data = Order::where('oper_id', request()->get('current_user')->oper_id)
-            ->where('settlement_id', $settlement_id)
-            ->where('merchant_id', $merchant_id)
-            ->orderBy('id', 'desc')->paginate();
+        $data = SettlementService::getBySettlementOrders($operId,$settlement_id,$merchant_id);
 
         return Result::success([
             'list' => $data->items(),
@@ -110,12 +102,12 @@ class SettlementController extends Controller
     public function updateInvoice()
     {
         $id = request('id');
-        $settlement = Settlement::findOrFail($id);
-        $settlement->invoice_type = request('invoice_type', 0);
-        $settlement->invoice_pic_url = request('invoice_pic_url', '');
-        $settlement->logistics_name = request('logistics_name', '');
-        $settlement->logistics_no = request('logistics_no', '');
-        $settlement->save();
+        $invoice_type = request('invoice_type', 0);
+        $invoice_pic_url = request('invoice_pic_url', '');
+        $logistics_name = request('logistics_name', '');
+        $logistics_no = request('logistics_no', '');
+
+        $settlement = SettlementService::updateInvoice($id,$invoice_type,$invoice_pic_url,$logistics_name,$logistics_no);
 
         return Result::success($settlement);
     }
@@ -123,10 +115,9 @@ class SettlementController extends Controller
     public function updatePayPicUrl()
     {
         $id = request('id');
-        $settlement = Settlement::findOrFail($id);
-        $settlement->pay_pic_url = request('pay_pic_url', '');
-        $settlement->status = 2;
-        $settlement->save();
+        $pay_pic_url = request('pay_pic_url', '');
+
+        $settlement = SettlementService::updatePayPicUrl($id,$pay_pic_url);
 
         return Result::success($settlement);
     }
