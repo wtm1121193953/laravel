@@ -184,6 +184,7 @@ class InviteStatisticsService extends BaseService
     {
         $totalCount = InviteUserStatisticsDaily::where('origin_id', $originId)
             ->where('origin_type', $originType)
+            ->where('date', '<', date('Y-m-d', time()))
             ->sum('invite_count');
         $todayInviteCount = self::getTodayInviteCountByOriginInfo($originId, $originType);
         return $totalCount + $todayInviteCount;
