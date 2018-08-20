@@ -139,8 +139,7 @@ class InviteUserService
         $inviteUserUnbindRecord->save();
 
         // 更新用户邀请数量统计
-        $date = $inviteRecord->created_at->format('Y-m-d');
-        InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', $date));
+        InviteStatisticsService::updateDailyStatByOriginInfoAndDate($inviteRecord->origin_id, $inviteRecord->origin_type, $inviteRecord->created_at);
 
     }
 
