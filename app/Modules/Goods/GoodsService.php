@@ -15,6 +15,7 @@ use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\FilterKeyword\FilterKeyword;
 use App\Modules\FilterKeyword\FilterKeywordService;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -300,6 +301,27 @@ class GoodsService extends BaseService
         } else {
             return true;
         }
+    }
+
+    public static function userGoodsList($merchant_id)
+    {
+        $merchant = Merchant::findOrFail($merchant_id);
+        $list = Goods::where('merchant_id', $merchant_id)->get();
+        $list->each(function ($item) use ($merchant) {
+            $item->pic_list = $item->pic_list ? explode(',', $item->pic_list) : [];
+            $item->business_time = json_decode($merchant->business_time, 1);
+        });
+
+        return $list;
+    }
+
+    public static function userGoodsDetail($id){
+        $detail = Goods::findOrFail($id);
+        $detail->pic_list = $detail->pic_list ? explode(',', $detail->pic_list) : [];
+        $merchant = Merchant::findOrFail($detail->merchant_id);
+        $detail->business_time = json_decode($merchant->business_time, 1);
+
+        return $detail;
     }
 
 }
