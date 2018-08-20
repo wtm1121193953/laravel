@@ -34,6 +34,7 @@ class PayQrcodeController extends Controller
     /**
      * 下载扫码支付的小程序码
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @deprecated todo 去掉下载二维码操作, 由统一下载控制器下载
      */
     public function downloadMiniprogramAppCode()
     {

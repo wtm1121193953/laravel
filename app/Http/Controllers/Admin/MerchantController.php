@@ -18,7 +18,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantService;
-use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Result;
 
 class MerchantController extends Controller
@@ -53,17 +53,13 @@ class MerchantController extends Controller
         // 根据输入的运营中心名称获取所属运营中心ID列表
         $operName = request('operName');
         if($operName) {
-            $operIds = Oper::where('name', 'like', "%$operName%")
-                ->select('id')->get()
-                ->pluck('id');
+            $operIds = OperService::getAll(['name' => $operName], 'id')->pluck('id');
         }
         $creatorOperId = request('creatorOperId');
         // 根据输入的运营中心名称获取录入信息的运营中心ID列表
         $creatorOperName = request('creatorOperName');
         if($creatorOperName){
-            $createOperIds = Oper::where('name', 'like', "%$creatorOperName%")
-                ->select('id')->get()
-                ->pluck('id');
+            $createOperIds = OperService::getAll(['name' => $creatorOperName], 'id')->pluck('id');
         }
 
         $data = MerchantService::getList([

@@ -12,6 +12,12 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
+/**
+ * 用户积分已经去掉了
+ * Class UserLevelCalculationJob
+ * @package App\Jobs
+ * @deprecated
+ */
 class UserLevelCalculationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;

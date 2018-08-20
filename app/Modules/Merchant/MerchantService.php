@@ -218,6 +218,10 @@ class MerchantService extends BaseService
 
         $merchant = Merchant::findOrFail($id);
         $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
+        $merchant->categoryPathText = '';
+        foreach ($merchant->categoryPath as $item) {
+            $merchant->categoryPathText .= $item->name . ' ';
+        }
         $merchant->categoryPathOnlyEnable = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id, true);
         $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
         $merchant->business_time = json_decode($merchant->business_time, 1);
@@ -236,11 +240,6 @@ class MerchantService extends BaseService
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
         }
         return $merchant;
-    }
-
-    public static function audit()
-    {
-        // todo 审核商户
     }
 
     /**
@@ -469,54 +468,6 @@ class MerchantService extends BaseService
     {
         $value = Merchant::where('id', $merchantId)->value($key);
         return $value;
-    }
-
-    /**
-     * 创建商户账号
-     * @param $merchantId
-     * @param $getAccount
-     * @param $operId
-     * @param $password
-     * @return MerchantAccount
-     */
-    public static function createAccount($merchantId,$getAccount,$operId,$password){
-
-        $isAccount = MerchantAccount::where('merchant_id', $merchantId)->first();
-        if(!empty($isAccount)){
-            throw new BaseResponseException('该商户账户已存在, 不能重复创建');
-        }
-        // 查询账号是否重复
-        if(!empty(MerchantAccount::where('account', $getAccount)->first())){
-            throw new BaseResponseException('帐号重复, 请更换帐号');
-        }
-
-        $account = new MerchantAccount();
-        $account->oper_id = $operId;
-        $account->account = $getAccount;
-        $account->merchant_id = $merchantId;
-        $salt = str_random();
-        $account->salt = $salt;
-        $account->password = MerchantAccount::genPassword($password, $salt);
-        $account->save();
-
-        return $account;
-    }
-
-    /**
-     * 辑商户账号信息, 即修改密码
-     * @param $id
-     * @param $password
-     * @return MerchantAccount
-     */
-    public static function editAccount($id,$password){
-        $account = MerchantAccount::findOrFail($id);
-        $salt = str_random();
-        $account->salt = $salt;
-        $account->password = MerchantAccount::genPassword($password, $salt);
-
-        $account->save();
-
-        return $account;
     }
 
 }

@@ -47,6 +47,10 @@ class SettlementController extends Controller
         ]);
     }
 
+    /**
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     * @deprecated todo 去掉下载二维码操作, 由统一下载控制器下载
+     */
     public function download()
     {
         $id = request('id');

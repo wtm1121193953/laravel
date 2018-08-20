@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Oper;
 
-use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
+use App\Modules\Merchant\MerchantAccountService;
 use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Merchant\MerchantService;
-use App\Modules\Oper\OperBizMember;
 use App\Result;
 
 
@@ -217,11 +216,11 @@ class MerchantController extends Controller
             'password' => 'required|min:6',
         ]);
         $merchantId = request('merchant_id');
-        $getAccount = request('account');
+        $account = request('account');
         $operId = request()->get('current_user')->oper_id;
         $password = request('password');
 
-        $account = MerchantService::createAccount($merchantId,$getAccount,$operId,$password);
+        $account = MerchantAccountService::createAccount($merchantId,$account,$operId,$password);
 
         return Result::success($account);
     }
@@ -240,7 +239,7 @@ class MerchantController extends Controller
         $id = request('id');
         $password = request('password');
 
-        $account = MerchantService::editAccount($id,$password);
+        $account = MerchantAccountService::editAccount($id,$password);
 
         return Result::success($account);
     }
