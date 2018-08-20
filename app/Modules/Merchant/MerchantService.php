@@ -554,6 +554,32 @@ class MerchantService extends BaseService
         });
     }
 
+    public static function userAppMerchantDetial($data)
+    {
+        $id = array_get($data,'id');
+        $lng = array_get($data,'lng');
+        $lat = array_get($data,'lat');
+
+        $detail = Merchant::findOrFail($id);
+        $detail->desc_pic_list = $detail->desc_pic_list ? explode(',', $detail->desc_pic_list) : [];
+        if($detail->business_time) $detail->business_time = json_decode($detail->business_time, 1);
+        if($lng && $lat){
+            $currentUser = request()->get('current_user');
+            $tempToken = empty($currentUser) ? str_random() : $currentUser->id;
+            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, $lng, $lat);
+            // 格式化距离
+            $detail->distance = self::_getFormativeDistance($distance);
+        }
+        $category = MerchantCategory::find($detail->merchant_category_id);
+        $detail->merchantCategoryName = $category->name;
+        // 最低消费
+        $detail->lowestAmount = MerchantService::getLowestPriceForMerchant($detail->id);
+        // 兼容v1.0.0版客服电话字段
+        $detail->contacter_phone = $detail->service_phone;
+
+        return $detail;
+    }
+
     private static function _getFormativeDistance($distance)
     {
         return $distance >= 1000 ? (number_format($distance / 1000, 1) . '千米') : ($distance . '米');
