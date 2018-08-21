@@ -46,4 +46,23 @@ class FeeSplittingService extends BaseService
         // todo
         FeeSplittingRecord::TYPE_TO_PARENT;
     }
+
+    /**
+     * 根据订单解冻分润金额
+     * @param $order
+     */
+    public static function unfreezeSplittingByOrder($order)
+    {
+        // todo
+    }
+
+    /**
+     * 根据订单退回分润金额
+     * @param $order
+     */
+    public static function refundSplittingByOrder($order)
+    {
+        // todo
+        // 判断如果已解冻, 则不能退回
+    }
 }
