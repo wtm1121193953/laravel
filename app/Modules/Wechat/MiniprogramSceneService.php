@@ -10,9 +10,11 @@ namespace App\Modules\Wechat;
 
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Order\Order;
 
 class MiniprogramSceneService extends BaseService
@@ -120,12 +122,46 @@ class MiniprogramSceneService extends BaseService
         return $miniprogramScene;
     }
 
+    /**
+     * 创建扫码二维码
+     * @param int $merchantId
+     * @return MiniprogramScene
+     */
     public static function createScanPayScene(int $merchantId)
     {
-        // todo
+        $merchant = MerchantService::getById($merchantId, 'oper_id');
+        if(empty($merchant) || empty($operId = $merchant->oper_id)){
+            throw new BaseResponseException('商户信息不存在或商户尚未审核');
+        }
+        $scene = new MiniprogramScene();
+        $scene->oper_id = $operId;
+        $scene->merchant_id = $merchantId;
+        $scene->type = MiniprogramScene::TYPE_PAY_SCAN;
+        $scene->page = MiniprogramScene::PAGE_PAY_SCAN;
+        $scene->payload = json_encode([
+            'merchant_id' => $merchantId,
+        ]);
+        $scene->save();
+
+        return $scene;
     }
 
 
+    /**
+     * 获取商户支付小程序码
+     * @param $merchantId
+     * @return MiniprogramScene
+     */
+    public static function getPayAppCodeByMerchantId($merchantId)
+    {
+        $scene = MiniprogramScene::where('type', MiniprogramScene::TYPE_PAY_SCAN)
+            ->where('merchant_id', $merchantId)
+            ->first();
+        if(empty($scene)){
+            $scene = self::createScanPayScene($merchantId);
+        }
+        return $scene;
+    }
 
     /**
      * 编辑场景

@@ -22,6 +22,7 @@
 </template>
 
 <script>
+    import {mapState} from 'vuex'
     import api from '../../../assets/js/api'
     export default {
         name: "pay-qrcode",
@@ -31,9 +32,14 @@
                 qrcodeUrl: ''
             }
         },
+        computed: {
+            ...mapState([
+                'user'
+            ])
+        },
         methods: {
             download(type){
-                location.href = '/api/merchant/pay/qrcode/downloadMiniprogramQrcode?type=' + type
+                location.href = '/download?code=merchant_pay_app_code&type=' + type + '&merchantId=' + this.user.merchant_id
             },
             init(){
                 api.get('/pay/qrcode/miniprogramQrcode').then(data => {

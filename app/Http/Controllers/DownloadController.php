@@ -11,6 +11,9 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Merchant\MerchantService;
+use App\Modules\Wechat\MiniprogramSceneService;
+use App\Modules\Wechat\WechatService;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -19,6 +22,23 @@ class DownloadController extends Controller
 {
 
     public function download()
+    {
+        $code = request('code', 'normal');
+        switch ($code){
+            case 'normal': // 普通下载, 通过文件url或path下载
+                return $this->normalDownload();
+            case 'merchant_pay_app_code':
+                return $this->downloadMerchantPayAppCode();
+            default:
+                abort(404);
+        }
+    }
+
+    /**
+     * 普通下载, 通过文件url或path下载
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    private function normalDownload()
     {
         $path = request('path') ?? request('url');
         $as = request('as');
@@ -54,5 +74,29 @@ class DownloadController extends Controller
             throw new BaseResponseException('要下载的文件不存在');
         }
         return Storage::download($path, $as);
+    }
+
+    /**
+     * 商户支付二维码下载
+     */
+    private function downloadMerchantPayAppCode()
+    {
+        $this->validate(request(), [
+            'merchantId' => 'required|integer|min:1'
+        ]);
+        $type = request('type', 1);
+        $merchantId = request('merchantId');
+
+        $width = $type == 3 ? 1280 : ($type == 2 ? 430 : 258);
+
+        $scene = MiniprogramSceneService::getPayAppCodeByMerchantId($merchantId);
+
+        $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
+
+        $signboardName = MerchantService::getSignboardNameById($merchantId);
+
+        WechatService::addNameToAppCode($filePath, $signboardName);
+
+        return response()->download($filePath, '支付小程序码_' . ['', '小', '中', '大'][$type] . '.jpg');
     }
 }

@@ -1047,6 +1047,40 @@ order_no 订单号
 
 
 
+- [ ] 根据场景ID获取场景信息
+
+  地址：GET `scene/info`
+
+  参数：
+
+  ```
+  sceneId: 场景ID
+  ```
+
+  返回：
+
+  ```
+  {
+      "code": 响应码,
+      "message": 响应信息,
+      "data": {	响应参数
+          "id": 场景ID,
+          "oper_id": 运营中心ID,
+          "merchant_id": 商户ID,
+          "invite_channel_id": 小程序场景码关联的邀请渠道ID,
+          "page": 小程序页面,
+          "type": 场景类型 1-小程序间支付跳转码 2-推广注册小程序码 3-扫码支付,
+          "payload": 场景附带的参数, json格式, type为1时为 {order_no, user_id} type等于2时为: {origin_id, origin_type}, 参见invite_channels表,
+          "created_at": 创建时间,
+          "updated_at": 更新时间,
+          "qrcode_url": 二维码或小程序码url, 如果不存在则需要去微信生成
+      },
+      "timestamp": 时间戳
+  }
+  ```
+
+
+
 - [ ] 绑定推荐人
 
   地址：POST     `invite/bindInviter`

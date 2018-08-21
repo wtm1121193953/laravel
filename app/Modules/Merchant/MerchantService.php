@@ -469,7 +469,7 @@ class MerchantService extends BaseService
         }
     }
 
-    public static function userAppMerchantList(array $data)
+    public static function getListForUserApp(array $data)
     {
         $city_id = array_get($data,'city_id');
         $merchant_category_id = array_get($data,'merchant_category_id');
@@ -552,6 +552,32 @@ class MerchantService extends BaseService
             // 兼容v1.0.0版客服电话字段
             $item->contacter_phone = $item->service_phone;
         });
+    }
+
+    public static function userAppMerchantDetial($data)
+    {
+        $id = array_get($data,'id');
+        $lng = array_get($data,'lng');
+        $lat = array_get($data,'lat');
+
+        $detail = Merchant::findOrFail($id);
+        $detail->desc_pic_list = $detail->desc_pic_list ? explode(',', $detail->desc_pic_list) : [];
+        if($detail->business_time) $detail->business_time = json_decode($detail->business_time, 1);
+        if($lng && $lat){
+            $currentUser = request()->get('current_user');
+            $tempToken = empty($currentUser) ? str_random() : $currentUser->id;
+            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, $lng, $lat);
+            // 格式化距离
+            $detail->distance = self::_getFormativeDistance($distance);
+        }
+        $category = MerchantCategory::find($detail->merchant_category_id);
+        $detail->merchantCategoryName = $category->name;
+        // 最低消费
+        $detail->lowestAmount = MerchantService::getLowestPriceForMerchant($detail->id);
+        // 兼容v1.0.0版客服电话字段
+        $detail->contacter_phone = $detail->service_phone;
+
+        return $detail;
     }
 
     private static function _getFormativeDistance($distance)
