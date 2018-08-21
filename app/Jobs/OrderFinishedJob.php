@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Exceptions\DataNotFoundException;
+use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteUserRecord;
@@ -52,13 +53,28 @@ class OrderFinishedJob implements ShouldQueue
     public function handle()
     {
         // 1. 执行分润
-        // 1.1 分给自己 5%
-        // 1.2 分给上级 25%
-        // 1.3 分给运营中心  50% || 100%
+        $this->feeSplitting();
         // 2. 处理消费额 消费额逻辑暂时去掉, 需要修改
+        $this->consumeQuota();
         // 延迟24小时分发解冻积分以及消费额操作
 //        FeeSplittingUnfreezeJob::dispatch()->delay();
 //        ConsumeQuotaUnfreezeJob::dispatch()->delay();
+    }
+
+    /**
+     * 处理分润
+     */
+    private function feeSplitting()
+    {
+        FeeSplittingService::feeSplittingByOrder($this->order);
+    }
+
+    /**
+     * 处理消费额
+     */
+    private function consumeQuota()
+    {
+
     }
 
 }

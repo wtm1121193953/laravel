@@ -23,7 +23,7 @@ class CreateWalletConsumeQuotaRecordsTable extends Migration
             $table->string('order_no')->index()->default('')->comment('分润的订单号');
             $table->decimal('consume_quota', 8, 2)->default(0)->comment('消费额');
             $table->string('consume_user_mobile', 11)->default('')->comment('消费用户手机号');
-            $table->tinyInteger('status', 11)->index()->default(1)->comment('状态 1-冻结中 2-已解冻待置换 3-已置换 4-已退款');
+            $table->tinyInteger('status')->index()->default(1)->comment('状态 1-冻结中 2-已解冻待置换 3-已置换 4-已退款');
             $table->timestamps();
         });
     }
