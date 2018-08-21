@@ -3,7 +3,7 @@
         <el-col>
             <el-form :model="query" class="fl" inline size="small">
                 <el-form-item label="手机号码">
-                    <el-input v-model="query.mobile" clearable @keyup.enter.native="search"/>
+                    <el-input v-model="query.mobile" clearable placeholder="请输入手机号码" @keyup.enter.native="search"/>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="search">搜 索</el-button>
