@@ -11,12 +11,9 @@ namespace App\Http\Controllers\User;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
-use App\Modules\Dishes\Dishes;
-use App\Modules\Dishes\DishesCategory;
 use App\Modules\Dishes\DishesGoods;
-use App\Modules\Dishes\DishesItem;
-use App\Modules\Goods\Goods;
-use App\Modules\Merchant\Merchant;
+use App\Modules\Dishes\DishesGoodsService;
+use App\Modules\Dishes\DishesService;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Result;
 
@@ -44,13 +41,8 @@ class DishesController extends Controller
      */
     public function getDishesCategory()
     {
-
         $merchantId = request('merchant_id');
-        $categorys =DishesCategory::has('dishesGoods')
-            ->where('merchant_id', $merchantId)
-            ->where('status', 1)
-            ->orderBy('sort', 'desc')
-            ->get();
+        $categorys = DishesService::getDishesCategory($merchantId);
         return Result::success([
             'list' => $categorys
         ]);
@@ -65,10 +57,7 @@ class DishesController extends Controller
     {
 
         $merchantId = request('merchant_id');
-        $hotDishesGoods =DishesGoods::where('merchant_id', $merchantId)
-            ->where('status', 1)
-            ->where('is_hot',1)
-            ->get();
+        $hotDishesGoods = DishesGoodsService::getHotDishesGoods($merchantId);
         return Result::success([
             'list' => $hotDishesGoods
         ]);
@@ -86,11 +75,8 @@ class DishesController extends Controller
         if (!$categoryId){
             throw new BaseResponseException('分类ID不能为空');
         }
-        $list = DishesGoods::where('merchant_id', $merchantId)
-            ->where('status', 1)
-            ->where('dishes_category_id',$categoryId)
-            ->orderBy('sort', 'desc')
-            ->get();
+
+        $list = DishesGoodsService::getDishesGoods($merchantId,$categoryId);
 
          return Result::success([
              'list' => $list,
@@ -128,30 +114,9 @@ class DishesController extends Controller
                 throw new BaseResponseException('菜单已变更, 请刷新页面');
             }
         }
-        $merchant = Merchant::findOrFail($merchantId);
-        $dishes = new Dishes();
-        $dishes->oper_id = $merchant->oper_id;
-        $dishes->merchant_id = $merchant->id;
-        $dishes->user_id = $userId;
-        $dishes->save();
 
-        foreach ($dishesList as $item){
-            $dishesGoods = DishesGoods::findOrFail($item['id']);
-            if ($dishesGoods['oper_id'] !== $merchant->oper_id){
-                continue;
-            }
-            $dishesItem = new DishesItem();
-            $dishesItem->oper_id = $merchant->oper_id;
-            $dishesItem->merchant_id = $merchant->id;
-            $dishesItem->dishes_id = $dishes->id;
-            $dishesItem->user_id = $userId;
-            $dishesItem->dishes_goods_id = $item['id'];
-            $dishesItem->number = $item['number'];
-            $dishesItem->dishes_goods_sale_price = $dishesGoods['sale_price'];
-            $dishesItem->dishes_goods_detail_image = $dishesGoods['detail_image'];
-            $dishesItem->dishes_goods_name = $dishesGoods['name'];
-            $dishesItem->save();
-        }
+        $dishes = DishesService::addDishes($merchantId,$userId,$dishesList);
+
         return Result::success($dishes);
     }
 
@@ -165,16 +130,8 @@ class DishesController extends Controller
             'dishes_id' => 'required|integer|min:1',
         ]);
 
-        $list = DishesItem::where('dishes_id',request('dishes_id'))->get();
-        $detailDishes = [];
-        foreach ($list as  $k=>$item){
-            $detailDishes[$k]['dishes_goods_name'] = $item->dishes_goods_name;
-            $detailDishes[$k]['number'] = $item->number;
-            $detailDishes[$k]['total_price'] = ($item->number)*($item->dishes_goods_sale_price);
-            $detailDishes[$k]['dishes_goods_detail_image'] = $item->dishes_goods_detail_image;
-            $detailDishes[$k]['user_id'] = $item->user_id;
-            $detailDishes[$k]['oper_id'] = $item->oper_id;
-        }
+        $dishesId = request('dishes_id');
+        $detailDishes = DishesService::detailDishes($dishesId);
 
         return Result::success($detailDishes);
     }

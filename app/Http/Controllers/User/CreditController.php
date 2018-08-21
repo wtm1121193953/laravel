@@ -10,13 +10,7 @@ namespace App\Http\Controllers\User;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Merchant\Merchant;
-use App\Modules\Setting\SettingService;
-use App\Modules\User\User;
-use App\Modules\UserCredit\UserConsumeQuotaRecord;
-use App\Modules\UserCredit\UserCredit;
-use App\Modules\UserCredit\UserCreditRecord;
-use App\Modules\UserCredit\UserCreditSettingService;
+use App\Modules\User\UserService;
 use App\Result;
 
 class CreditController extends Controller
@@ -33,17 +27,10 @@ class CreditController extends Controller
 
         $merchantId = request('merchantId');
         $user = request()->get('current_user');
+        $userId= $user->id;
+        $userLevel = $user->level;
 
-        // 获取商户的返利比例(即盈利比例)
-        $settlementRate = Merchant::where('id', $merchantId)->value('settlement_rate'); //分利比例
-        if (!isset($user->level) || empty($user->level)){
-            $userLevel = User::where('id', $user->id)->value('level'); //用户等级
-        }else{
-            $userLevel = $user->level;
-        }
-        $creditRatio = UserCreditSettingService::getCreditToSelfRatioSetting($userLevel); //自反比例
-        $creditMultiplierOfAmount = SettingService::getValueByKey('credit_multiplier_of_amount'); //积分系数
-        $creditRatio = $settlementRate * $creditRatio * $creditMultiplierOfAmount / 100.0 ; //积分换算比例
+        $creditRatio = UserService::getPayAmountToCreditRatio($merchantId,$userId,$userLevel);
 
         return Result::success([
             'creditRatio' => $creditRatio,
@@ -64,30 +51,9 @@ class CreditController extends Controller
             $year = date('Y');
             $month = date('m');
         }
-        $user = request()->get('current_user');
-        $data = UserCreditRecord::where('user_id', $user->id)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->paginate();
+        $userId = request()->get('current_user')->id;
 
-        // 获取当月总积分以及总消耗积分
-        $totalInCredit = UserCreditRecord::where('user_id', $user->id)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->where('inout_type', 1)
-            ->sum('credit');
-        $totalOutCredit = UserCreditRecord::where('user_id', $user->id)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->where('inout_type', 2)
-            ->sum('credit');
-
-        return Result::success([
-            'list' => $data->items(),
-            'total' => $data->total(),
-            'totalInCredit' => $totalInCredit,
-            'totalOutCredit' => $totalOutCredit,
-        ]);
+        UserService::getUserCreditList($userId,$year,$month);
     }
 
     /**
@@ -96,8 +62,8 @@ class CreditController extends Controller
      */
     public function getUserCredit()
     {
-        $user = request()->get('current_user');
-        $userCredit = UserCredit::where('user_id', $user->id)->first();
+        $userId = request()->get('current_user')->id;
+        $userCredit = UserService::getUserIdCredit($userId);
 
         return Result::success($userCredit);
     }
@@ -116,29 +82,8 @@ class CreditController extends Controller
             $year = date('Y');
             $month = date('m');
         }
-        $user = request()->get('current_user');
-        $data = UserConsumeQuotaRecord::where('user_id', $user->id)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->paginate();
+        $userId = request()->get('current_user')->id;
 
-        // 获取当月总消费额
-        $totalInConsumeQuota = UserConsumeQuotaRecord::where('user_id', $user->id)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->where('inout_type', 1)
-            ->sum('consume_quota');
-        $totalOutConsumeQuota = UserConsumeQuotaRecord::where('user_id', $user->id)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->where('inout_type', 2)
-            ->sum('consume_quota');
-
-        return Result::success([
-            'list' => $data->items(),
-            'total' => $data->total(),
-            'totalInConsumeQuota' => $totalInConsumeQuota,
-            'totalOutConsumeQuota' => $totalOutConsumeQuota,
-        ]);
+        UserService::getUserConsumeQuotaRecordList($userId,$year,$month);
     }
 }

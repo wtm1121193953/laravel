@@ -24,8 +24,10 @@ class PayQrcodeController extends Controller
     public function getMiniprogramAppCode()
     {
         $merchantId = request()->get('current_user')->merchant_id;
-        $operId = request()->get('current_user')->oper_id;
-        $qrcode_url = PayQrcodeService::getMiniprogramAppCode($merchantId,$operId);
+
+        $scene = MiniprogramSceneService::getPayAppCodeByMerchantId($merchantId);
+        $qrcode_url = WechatService::getMiniprogramAppCodeUrl($scene);
+
         return Result::success([
             'qrcode_url' => $qrcode_url,
         ]);
@@ -42,7 +44,7 @@ class PayQrcodeController extends Controller
 
         $merchantId = request()->get('current_user')->merchant_id;
 
-        $scene = PayQrcodeService::downloadMiniprogramAppCode($merchantId);
+        $scene = MiniprogramSceneService::getPayAppCodeByMerchantId($merchantId);
 
         $width = $type == 3 ? 1280 : ($type == 2 ? 430 : 258);
 

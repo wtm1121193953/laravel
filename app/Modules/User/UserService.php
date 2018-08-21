@@ -9,8 +9,17 @@
 namespace App\Modules\User;
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Invite\InviteUserService;
+use App\Modules\Invite\InviteUserUnbindRecord;
+use App\Modules\Setting\SettingService;
+use App\Modules\UserCredit\UserConsumeQuotaRecord;
+use App\Modules\UserCredit\UserCredit;
+use App\Modules\UserCredit\UserCreditRecord;
+use App\Modules\UserCredit\UserCreditSettingService;
+use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Merchant\Merchant;
@@ -157,5 +166,181 @@ class UserService extends BaseService
             return $user;
         }
         return null;
+    }
+
+    /**
+     * 获取积分转换率 (百分比)
+     * @param $merchantId
+     * @param $userId
+     * @param $userLevel
+     * @return float
+     */
+    public static function getPayAmountToCreditRatio($merchantId,$userId,$userLevel)
+    {
+
+        $settlementRate = Merchant::where('id', $merchantId)->value('settlement_rate'); //分利比例
+        if (!isset($user->level) || empty($userLevel)){
+            $userLevel = User::where('id', $userId)->value('level'); //用户等级
+        }
+        $creditRatio = UserCreditSettingService::getCreditToSelfRatioSetting($userLevel); //自反比例
+        $creditMultiplierOfAmount = SettingService::getValueByKey('credit_multiplier_of_amount'); //积分系数
+        $creditRatio = $settlementRate * $creditRatio * $creditMultiplierOfAmount / 100.0 ; //积分换算比例
+
+        return $creditRatio;
+    }
+
+    /**
+     * 用户积分列表
+     * @param $userId
+     * @param $year
+     * @param $month
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public static function getUserCreditList($userId,$year,$month)
+    {
+        $data = UserCreditRecord::where('user_id', $userId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->paginate();
+
+        // 获取当月总积分以及总消耗积分
+        $totalInCredit = UserCreditRecord::where('user_id', $userId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 1)
+            ->sum('credit');
+        $totalOutCredit = UserCreditRecord::where('user_id', $userId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 2)
+            ->sum('credit');
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+            'totalInCredit' => $totalInCredit,
+            'totalOutCredit' => $totalOutCredit,
+        ]);
+    }
+
+    /**
+     * 通过user_id获取我的累计积分和累计消费额
+     * @param $userId
+     * @return UserCredit
+     */
+    public static function getUserIdCredit($userId)
+    {
+        return UserCredit::where('user_id', $userId)->first();
+    }
+
+    public static function bindInfoForUserApp($userId)
+    {
+        $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
+        if(empty($inviteRecord)){
+            return Result::success();
+        }
+        $mappingUser = null; // 上级商户或运营中心关联的用户
+        $merchant = null; // 关联的上级商户
+        $oper = null; // 关联的上级运营中心
+        $user = null; // 关联的上级用户
+        if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT){
+            $merchant = Merchant::where('id', $inviteRecord->origin_id)->first();
+            $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
+                ->where('origin_type', UserMapping::ORIGIN_TYPE_MERCHANT)
+                ->first();
+            if(!empty($userMapping)){
+                $mappingUser = User::find($userMapping->user_id);
+            }
+        }else if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER){
+            $oper = Oper::where('id', $inviteRecord->origin_id)->first();
+            $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
+                ->where('origin_type', UserMapping::ORIGIN_TYPE_OPER)
+                ->first();
+            if(!empty($userMapping)){
+                $mappingUser = User::find($userMapping->user_id);
+            }
+        }else {
+            $user = User::find($inviteRecord->origin_id);
+        }
+
+        return Result::success([
+            'origin_type' => $inviteRecord->origin_type,
+            'user' => $user,
+            'merchant' => $merchant,
+            'oper' => $oper,
+            'mappingUser' => $mappingUser,
+        ]);
+    }
+
+    public static function getUserConsumeQuotaRecordList($userId,$year,$month)
+    {
+        $data = UserConsumeQuotaRecord::where('user_id', $userId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->paginate();
+
+        // 获取当月总消费额
+        $totalInConsumeQuota = UserConsumeQuotaRecord::where('user_id', $userId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 1)
+            ->sum('consume_quota');
+        $totalOutConsumeQuota = UserConsumeQuotaRecord::where('user_id', $userId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 2)
+            ->sum('consume_quota');
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+            'totalInConsumeQuota' => $totalInConsumeQuota,
+            'totalOutConsumeQuota' => $totalOutConsumeQuota,
+        ]);
+    }
+
+    public static function unbindForUserApp($userId)
+    {
+        //獲取解綁記錄
+        $UnbindInviteRecordid = InviteUserUnbindRecord:: where([
+            ['user_id', '=', $userId],
+            ['status', '=', '2'],
+        ])->first();
+        if ($UnbindInviteRecordid) {
+            throw new BaseResponseException('每个账户只有一次解绑机会，您已没有解绑次数');
+        } else {
+            $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
+            if (empty($inviteRecord)) {
+                throw new BaseResponseException('未绑定邀请人');
+            } else {
+                $inviteRecord->delete();
+                $unbindInviteRecord = new InviteUserUnbindRecord();
+                $unbindInviteRecord->user_id = $userId;
+                $unbindInviteRecord->status = 2;
+                $unbindInviteRecord->save();
+                return Result::success();
+            }
+        }
+    }
+
+    public static function getinfoForUserApp()
+    {
+        $user = request()->get('current_user');
+        $userMapping = UserMapping::where('user_id', $user->id)->first();
+        if (!empty($userMapping)){
+            if ($userMapping->origin_type == 1){
+                $merchant = Merchant::findOrFail($userMapping->origin_id);
+                $user->mapping_merchant_name = $merchant->name;
+                $user->merchant_level = $merchant->level;
+                $user->merchant_level_text = Merchant::getLevelText($merchant->level);
+            }else{
+                $oper = Oper::findOrFail($userMapping->origin_id);
+                $user->mapping_oper_name = $oper->name;
+            }
+        }
+
+        $user->level_text = User::getLevelText($user->level);
+
+        return $user;
     }
 }

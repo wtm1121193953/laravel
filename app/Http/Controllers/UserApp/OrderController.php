@@ -20,12 +20,12 @@ use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
+use App\Modules\Order\OrderService;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use App\Support\Alipay;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
@@ -36,23 +36,11 @@ class OrderController extends Controller
         $status = request('status');
         $user = request()->get('current_user');
 
-        $data = Order::where('user_id', $user->id)
-            ->where(function (Builder $query){
-                $query->where('type', Order::TYPE_GROUP_BUY)
-                    ->orWhere(function(Builder $query){
-                        $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
-                            ->whereIn('status', [4, 6, 7]);
-                    });
-            })
-            ->when($status, function (Builder $query) use ($status){
-                $query->where('status', $status);
-            })
-            ->orderByDesc('id')
-            ->paginate();
-        $data->each(function ($item) {
-            $item->items = OrderItem::where('order_id', $item->id)->get();
-            $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
-        });
+        $data = OrderService::getList([
+            'userId' => $user->id,
+            'status' => $status
+        ]);
+
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
