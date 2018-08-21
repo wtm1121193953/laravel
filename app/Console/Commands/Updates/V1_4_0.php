@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands\Updates;
 
+use App\Jobs\InviteStatisticsDailyUpdateByDate;
+use App\Jobs\UserOrderCountUpdateJob;
 use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Order\OrderService;
@@ -46,11 +48,9 @@ class V1_4_0 extends Command
         // 更新用户下单总次数
         $this->info('更新用户下单总次数 Start');
         $bar = $this->output->createProgressBar(User::count('id'));
-        User::chunk(1000, function($list) use ($bar){
+        User::select('id')->chunk(1000, function($list) use ($bar){
             $list->map(function(User $user) use ($bar){
-                $user->order_count = OrderService::getOrderCountByUserId($user->id);
-                $user->save();
-                unset($user);
+                UserOrderCountUpdateJob::dispatch($user->id);
                 $bar->advance();
             });
             unset($list);
@@ -71,7 +71,7 @@ class V1_4_0 extends Command
         $totalDays = $date->diffInDays(Carbon::today());
         $bar = $this->output->createProgressBar($totalDays);
         while ($date->lt(Carbon::today())){
-            InviteStatisticsService::batchUpdateDailyStatisticsByDate($date);
+            InviteStatisticsDailyUpdateByDate::dispatch($date);
             $date->addDay();
             $bar->advance();
         }

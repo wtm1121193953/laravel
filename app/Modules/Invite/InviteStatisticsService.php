@@ -106,7 +106,7 @@ class InviteStatisticsService extends BaseService
         }
         return InviteUserRecord::whereDate('created_at', $date)
             ->where('origin_id', $originId)
-            ->select('origin_type', $originType)
+            ->where('origin_type', $originType)
             ->count();
     }
 
