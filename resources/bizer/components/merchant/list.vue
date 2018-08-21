@@ -166,7 +166,7 @@
             });
             this.areaOptions = [];
             
-            api.get('merchant/allOperNames').then(data => {
+            api.get('merchant/opers/tree').then(data => {
                 this.operOptions = data.list;
             });
             this.operOptions = [];

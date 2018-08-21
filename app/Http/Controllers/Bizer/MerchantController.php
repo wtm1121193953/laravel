@@ -63,9 +63,9 @@ class MerchantController extends Controller
     }
     public function allOperNames(){
         $data_where["status"] =1;//获取所有正常状态的运营中心
-        $list = OperService::getList($data_where);
+        $list = OperService::getAll($data_where,["id","name"]);
         return Result::success([
-            'list' => $list->items()
+            'list' => $list
         ]);
     }
 
