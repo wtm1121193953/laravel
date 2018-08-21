@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Order\Order;
 use App\Modules\Wallet\ConsumeQuotaService;
@@ -11,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class OrderFinishedJob implements ShouldQueue
@@ -50,8 +50,8 @@ class OrderFinishedJob implements ShouldQueue
         // 2. 处理消费额 消费额逻辑暂时去掉, 需要修改
         $this->consumeQuota();
         // 延迟24小时分发解冻积分以及消费额操作
-//        FeeSplittingUnfreezeJob::dispatch()->delay();
-//        ConsumeQuotaUnfreezeJob::dispatch()->delay();
+        FeeSplittingUnfreezeJob::dispatch($this->order)->delay(Carbon::now()->addDay(1));
+        ConsumeQuotaUnfreezeJob::dispatch($this->order)->delay(Carbon::now()->addDay(1));
     }
 
     /**

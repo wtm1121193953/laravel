@@ -8,15 +8,12 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
-use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
 use App\Modules\User\User;
 use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserCreditSettingService;
-use App\Modules\Wallet\Wallet;
-use App\Modules\Wallet\WalletBill;
 use App\Modules\Wallet\WalletService;
 
 class FeeSplittingService extends BaseService
@@ -35,6 +32,9 @@ class FeeSplittingService extends BaseService
         // 2 分给上级 25%
         self::feeSplittingToParent($order, $profitAmount);
         // 3 分给运营中心  50% || 100% , 暂时不做
+
+        // 4 修改订单中的分润状态
+        OrderService::updateSplittingStatus($order);
     }
 
     /**
@@ -75,11 +75,14 @@ class FeeSplittingService extends BaseService
 
     /**
      * 根据订单解冻分润金额
-     * @param $order
+     * @param Order $order
      */
-    public static function unfreezeSplittingByOrder($order)
+    public static function unfreezeSplittingByOrder(Order $order)
     {
-        // todo
+        $feeSplittingRecords = FeeSplittingRecord::where('order_id', $order->id)->get();
+        foreach ($feeSplittingRecords as $feeSplittingRecord) {
+            WalletService::unfreezeBalance($feeSplittingRecord);
+        }
     }
 
     /**
