@@ -50,8 +50,10 @@ class V1_4_0 extends Command
             $list->map(function(User $user) use ($bar){
                 $user->order_count = OrderService::getOrderCountByUserId($user->id);
                 $user->save();
+                unset($user);
                 $bar->advance();
             });
+            unset($list);
         });
         $bar->finish();
         $this->info("\n更新用户下单总次数 Finished");
