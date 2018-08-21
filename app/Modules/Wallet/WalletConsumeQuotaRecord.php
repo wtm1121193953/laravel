@@ -2,9 +2,9 @@
 
 namespace App\Modules\Wallet;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class WalletConsumeQuotaRecord extends Model
+class WalletConsumeQuotaRecord extends BaseModel
 {
     //
 }
