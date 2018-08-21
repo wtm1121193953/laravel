@@ -12,41 +12,41 @@
                 </el-date-picker>
             </el-form-item>
             <el-form-item prop="id" label="商户ID">
-                <el-input v-model="query.principal" placeholder="请输入商户ID" clearable @keyup.enter.native="search"/>
+                <el-input v-model="query.id" placeholder="请输入商户ID" clearable @keyup.enter.native="search"/>
             </el-form-item>
-            <el-form-item prop="name" label="商户名称">
-                <el-input v-model="query.name" placeholder="请输入商户名称" clearable @keyup.enter.native="search"/>
+            <el-form-item prop="merchantName" label="商户名称">
+                <el-input v-model="query.merchantName" placeholder="请输入商户名称" clearable @keyup.enter.native="search"/>
             </el-form-item>
-            <el-form-item prop="industry" label="行业">
+            <el-form-item prop="merchant_category" label="行业">
                 <el-cascader
                         change-on-select
                         clearable
                         filterable
-                        :options="industryOptions"
+                        :options="categoryOptions"
                         :props="{
                             value: 'id',
                             label: 'name',
                             children: 'sub',
                         }"
-                        v-model="query.industry">
+                        v-model="query.merchant_category">
                 </el-cascader>
             </el-form-item>
-            <el-form-item prop="city" label="所在城市">
+            <el-form-item prop="cityId" label="所在城市">
                 <el-cascader
                         change-on-select
                         clearable
                         filterable
-                        :options="cityOptions"
+                        :options="areaOptions"
                         :props="{
                             value: 'id',
                             label: 'name',
                             children: 'sub',
                         }"
-                        v-model="query.city">
+                        v-model="query.cityId">
                 </el-cascader>
             </el-form-item>
-            <el-form-item prop="own" label="所属运营中心">
-                <el-select v-model="query.own">
+            <el-form-item prop="creatorOperId" label="所属运营中心">
+                <el-select v-model="query.creatorOperId">
                     <el-option label="全部" value=""/>
                     <el-option label="大千生活深圳运营中心" value="1"/>
                 </el-select>
@@ -57,11 +57,17 @@
         </el-form>
 
         <el-table :data="list" stripe>
-            <el-table-column prop="date" label="添加时间"/>
+            <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="id" label="商户ID"/>
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="signboard_name" label="商户招牌名"/>
-            <el-table-column prop="industry" label="行业"/>
+            <el-table-column prop="categoryPath" label="行业">
+                <template slot-scope="scope">
+                    <span v-for="item in scope.row.categoryPath" :key="item.id">
+                        {{ item.name }}
+                    </span>
+                </template>
+            </el-table-column>
             <el-table-column prop="city" label="所在城市">
                 <template slot-scope="scope">
                     <!-- <span> {{ scope.row.province }} </span> -->
@@ -98,39 +104,15 @@
                 industryOptions: [],
                 cityOptions: [],
                 query: {
-                    createdAt: '',
-                    id: '',
-                    name: '',
-                    industry: '',
-                    own: '',
+                    startTime: '',
+                    endTime: '',
+                    id:'',
+                    merchantName: '',
+                    merchant_category:'',
+                    cityId :'',
                     page: 1
                 },
-                // list: [],
-                list: [{
-                    date: '2018-07-05 12:30:20',
-                    id: '34354354564654',
-                    name: '小哥哥混沌',
-                    signboard_name: '小哥哥混沌',
-                    industry: '美食',
-                    own: '大千生活深圳运营中心',
-                    divided_into: '20%'
-                }, {
-                    date: '2018-07-05 12:30:20',
-                    id: '34354354564654',
-                    name: '小哥哥混沌',
-                    signboard_name: '小哥哥混沌',
-                    industry: '美食',
-                    own: '大千生活深圳运营中心',
-                    divided_into: '20%'
-                }, {
-                    date: '2018-07-05 12:30:20',
-                    id: '34354354564654',
-                    name: '小哥哥混沌',
-                    signboard_name: '小哥哥混沌',
-                    industry: '美食',
-                    own: '大千生活深圳运营中心',
-                    divided_into: '20%'
-                }],
+                list: [],
                 total: 0
             }
         },
@@ -139,30 +121,49 @@
         },
         methods: {
             search(){
-                // this.query.page = 1;
-                // this.getList();
+                 this.query.page = 1;
+                 this.getList();
             },
             getList(){
-                // this.isLoading = true;
-                // let params = {};
-                // Object.assign(params, this.query);
-                // api.get('/merchants', params).then(data => {
-                //     this.query.page = params.page;
-                //     this.isLoading = false;
-                //     this.list = data.list;
-                //     this.total = data.total;
-                // })
+                this.isLoading = true;
+                let params = {};
+                Object.assign(params, this.query);
+                api.get('/merchants', params).then(data => {
+                    this.query.page = params.page;
+                    this.isLoading = false;
+                    this.list = data.list;
+                    this.total = data.total;
+                })
+            },
+            itemChanged(index, data){
+                this.getList();
+            },
+            showMessage(scope){
+                api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
+                    this.auditRecord = [data];
+                })
+            },
+            
+            accountChanged(scope, account){
+                let row = this.list[scope.$index];
+                row.account = account;
+                this.list.splice(scope.$index, 1, row);
+                this.getList();
             },
         },
         created(){
-            // api.get('merchant/categories/tree').then(data => {
-            //     this.categoryOptions = data.list;
-            // });
-            // this.categoryOptions = [];
-            // if (this.$route.params){
-            //     Object.assign(this.query, this.$route.params);
-            // }
-            // this.getList();
+            api.get('area/tree').then(data => {
+                this.areaOptions = data.list;
+            });
+            this.areaOptions = [];
+             api.get('merchant/categories/tree').then(data => {
+                 this.categoryOptions = data.list;
+             });
+             this.categoryOptions = [];
+             if (this.$route.params){
+                 Object.assign(this.query, this.$route.params);
+             }
+             this.getList();
         },
         components: {
 

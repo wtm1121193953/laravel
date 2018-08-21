@@ -21,7 +21,7 @@ class MerchantController extends Controller
     {
         
         $where_data['bizer_id'] = request()->get('current_user')->id;//登录所属业务员ID
-        $where_data['id'] = '';//商户ID
+        $where_data['id'] = request('id');;//商户ID
         //$where_data['operId']= '';//运营中心ID
         $where_data['name']= request('merchantName');//商户名称
        // $where_data['signboardName']= '';//商家招牌名称

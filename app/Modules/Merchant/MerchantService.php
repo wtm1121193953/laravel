@@ -18,6 +18,7 @@ use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizMember;
 use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
+use App\Modules\Area\Area;
 use Illuminate\Support\Collection;
 
 class MerchantService extends BaseService
@@ -153,8 +154,20 @@ class MerchantService extends BaseService
         if($bizer_id){
              $query->where('bizer_id', $bizer_id);
         }
-        if($cityId){
-            $query->where('city_id', $cityId);
+       
+        if(!empty($cityId)){
+            if(isset($cityId[0]) && $cityId[0]){
+                $province_Id = Area::findOrFail($cityId[0]);
+                $query->where('province_id', $province_Id->area_id);
+            }  
+            if(isset($cityId[1]) && $cityId[1]){
+                $city_Id = Area::findOrFail($cityId[1]);
+                $query->where('city_id', $city_Id->area_id);
+            }
+            if(isset($cityId[2]) && $cityId[2]){
+                $area_Id = Area::findOrFail($cityId[2]);
+                $query->where('area_id', $area_Id->area_id);
+            }
         }
         if ($status) {
             $query->where('status', $status);
@@ -209,7 +222,8 @@ class MerchantService extends BaseService
         } else {
 
             $data = $query->paginate();
-
+            $cc = $query->toSql();
+            //echo $cc;exit;
             $data->each(function ($item) {
                 if ($item->merchant_category_id) {
                     $item->categoryPath = MerchantCategoryService::getCategoryPath($item->merchant_category_id);
