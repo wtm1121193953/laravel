@@ -45,11 +45,19 @@
                         v-model="query.cityId">
                 </el-cascader>
             </el-form-item>
-            <el-form-item prop="creatorOperId" label="所属运营中心">
-                <el-select v-model="query.creatorOperId">
-                    <el-option label="全部" value=""/>
-                    <el-option label="大千生活深圳运营中心" value="1"/>
-                </el-select>
+            <el-form-item prop="operId" label="所属运营中心">
+                    <el-cascader
+                        change-on-select
+                        clearable
+                        filterable
+                        :options="operOptions"
+                        :props="{
+                            value: 'id',
+                            label: 'name',
+                            children: 'sub',
+                        }"
+                        v-model="query.operId">
+                    </el-cascader>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
@@ -75,7 +83,7 @@
                     <span> {{ scope.row.area }} </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="own" label="所属运营中心"/>
+            <el-table-column prop="operName" label="所属运营中心"/>
             <el-table-column prop="divided_into" label="分成"/>
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
@@ -110,6 +118,7 @@
                     merchantName: '',
                     merchant_category:'',
                     cityId :'',
+                    operId :'',
                     page: 1
                 },
                 list: [],
@@ -156,7 +165,12 @@
                 this.areaOptions = data.list;
             });
             this.areaOptions = [];
-             api.get('merchant/categories/tree').then(data => {
+            
+            api.get('merchant/allOperNames').then(data => {
+                this.operOptions = data.list;
+            });
+            this.operOptions = [];
+            api.get('merchant/categories/tree').then(data => {
                  this.categoryOptions = data.list;
              });
              this.categoryOptions = [];

@@ -10,6 +10,7 @@ use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Bizer\BizermerchantMember;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use App\Modules\Oper\OperService;
 
 class MerchantController extends Controller
 {
@@ -22,7 +23,7 @@ class MerchantController extends Controller
         
         $where_data['bizer_id'] = request()->get('current_user')->id;//登录所属业务员ID
         $where_data['id'] = request('id');;//商户ID
-        //$where_data['operId']= '';//运营中心ID
+        $where_data['operId']= request('operId');//运营中心ID
         $where_data['name']= request('merchantName');//商户名称
        // $where_data['signboardName']= '';//商家招牌名称
        // $where_data['status']= '';//状态 1-正常 2-禁用
@@ -58,6 +59,13 @@ class MerchantController extends Controller
         $list = MerchantService::getAllNames($data);
         return Result::success([
             'list' => $list
+        ]);
+    }
+    public function allOperNames(){
+        $data_where["status"] =1;//获取所有正常状态的运营中心
+        $list = OperService::getList($data_where);
+        return Result::success([
+            'list' => $list->items()
         ]);
     }
 

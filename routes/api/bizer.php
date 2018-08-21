@@ -17,4 +17,5 @@ Route::prefix('bizer')
         Route::get('sms/getVerifyCode', 'SmsController@sendVerifyCode');
         Route::get('merchant/categories/tree', 'MerchantController@getTree');
         Route::get('area/tree', 'AreaController@getTree');
+        Route::get('merchant/allOperNames', 'MerchantController@allOperNames');
     });
