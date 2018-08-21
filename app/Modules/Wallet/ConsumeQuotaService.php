@@ -4,7 +4,11 @@ namespace App\Modules\Wallet;
 
 
 use App\BaseService;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Order\Order;
+use App\Modules\Order\OrderService;
+use App\Modules\User\UserService;
+use App\Modules\UserCredit\UserCreditSettingService;
 
 /**
  * 消费额相关service
@@ -20,10 +24,10 @@ class ConsumeQuotaService extends BaseService
      */
     public static function addFreezeConsumeQuota(Order $order)
     {
-        // todo
         // 1. 添加自己的消费额
+        self::addFreezeConsumeQuotaToSelf($order);
         // 2. 添加上级的消费额
-
+        self::addFreezeConsumeQuotaToParent($order);
     }
 
     /**
@@ -32,9 +36,13 @@ class ConsumeQuotaService extends BaseService
      */
     public static function addFreezeConsumeQuotaToSelf(Order $order)
     {
-        // todo
         // 1. 添加冻结中的消费额
+        $user = UserService::getUserById($order->user_id);
+        $wallet = WalletService::getWalletInfo($user);
+        $wallet->freeze_consume_quota = $wallet->freeze_consume_quota + $order->pay_price;
+        $wallet->save();
         // 2. 添加消费额记录
+        self::createWalletConsumeQuotaRecord($order, $wallet, WalletConsumeQuotaRecord::TYPE_SELF);
     }
 
     /**
@@ -43,9 +51,17 @@ class ConsumeQuotaService extends BaseService
      */
     public static function addFreezeConsumeQuotaToParent(Order $order)
     {
-        // todo
         // 1. 添加冻结中的消费额
+        $parent = InviteUserService::getParent($order->user_id);
+        if ($parent == null) {
+            return;
+        }
+        $consumeQuotaToParentRatio = UserCreditSettingService::getConsumeQuotaToParentRatio();
+        $wallet = WalletService::getWalletInfo($parent);
+        $wallet->freeze_consume_quota = $wallet->freeze_consume_quota + ($order->pay_price * $consumeQuotaToParentRatio / 100);
+        $wallet->save();
         // 2. 添加消费额记录
+        self::createWalletConsumeQuotaRecord($order, $wallet, WalletConsumeQuotaRecord::TYPE_SUBORDINATE);
     }
 
     /**
@@ -82,5 +98,37 @@ class ConsumeQuotaService extends BaseService
     {
         // todo
         //
+    }
+
+    /**
+     * 创建消费额记录
+     * @param Order $order
+     * @param Wallet $wallet
+     * @param $type
+     * @return WalletConsumeQuotaRecord
+     */
+    private static function createWalletConsumeQuotaRecord(Order $order, Wallet $wallet, $type)
+    {
+        if ($type == WalletConsumeQuotaRecord::TYPE_SUBORDINATE) {
+            $consumeQuotaToParentRatio = UserCreditSettingService::getConsumeQuotaToParentRatio();
+            $consumeQuota = $order->pay_price * $consumeQuotaToParentRatio / 100;
+        } else {
+            $consumeQuota = $order->pay_price;
+        }
+
+        $consumeQuotaRecord = new WalletConsumeQuotaRecord();
+        $consumeQuotaRecord->wallet_id = $wallet->id;
+        $consumeQuotaRecord->origin_id = $wallet->origin_id;
+        $consumeQuotaRecord->origin_type = $wallet->origin_type;
+        $consumeQuotaRecord->type = $type;
+        $consumeQuotaRecord->order_id = $order->id;
+        $consumeQuotaRecord->order_no = $order->order_no;
+        $consumeQuotaRecord->order_profit_amount = OrderService::getProfitAmount($order);
+        $consumeQuotaRecord->consume_quota = $consumeQuota;
+        $consumeQuotaRecord->consume_user_mobile = $order->notify_mobile;
+        $consumeQuotaRecord->status = WalletConsumeQuotaRecord::STATUS_FREEZE;
+        $consumeQuotaRecord->save();
+
+        return $consumeQuotaRecord;
     }
 }

@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Order\Order;
+use App\Modules\Wallet\ConsumeQuotaService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -66,7 +67,7 @@ class OrderFinishedJob implements ShouldQueue
      */
     private function consumeQuota()
     {
-
+        ConsumeQuotaService::addFreezeConsumeQuota($this->order);
     }
 
 }

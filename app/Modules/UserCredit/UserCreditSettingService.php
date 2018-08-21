@@ -151,10 +151,24 @@ class UserCreditSettingService extends SettingService
         return $feeMultiplier;
     }
 
+    /**
+     * 获取运营中心的分润比例
+     * @return int
+     */
     public static function getFeeSplittingRatioToOper()
     {
         // todo noting
         return 100;
+    }
+
+    /**
+     * 获取返给上级的消费额比例
+     * @return int
+     */
+    public static function getConsumeQuotaToParentRatio()
+    {
+        // todo
+        return 50;
     }
 
 }
