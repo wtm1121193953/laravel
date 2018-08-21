@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 57458
- * Date: 2018/8/21
- * Time: 12:00
- */
 
 namespace App\Modules\Wallet;
 
@@ -12,9 +6,22 @@ namespace App\Modules\Wallet;
 use App\BaseService;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
+use App\Modules\Merchant\Merchant;
+use App\Modules\Oper\Oper;
+use App\Modules\User\User;
 
 class WalletService extends BaseService
 {
+
+    /**
+     * 创建钱包
+     * @param User|Merchant|Oper $user
+     * @return Wallet
+     */
+    private static function createWallet($user)
+    {
+        return null;
+    }
 
     /**
      * 增加余额
