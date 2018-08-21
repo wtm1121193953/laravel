@@ -20,9 +20,9 @@ class MerchantController extends Controller
     public function getList()
     {
         
-        $oper_id = request()->get('current_user')->oper_id;
+        $where_data['bizer_id'] = request()->get('current_user')->id;//登录所属业务员ID
         $where_data['id'] = '';//商户ID
-        $where_data['operId']= $oper_id;//运营中心ID
+        //$where_data['operId']= '';//运营中心ID
         $where_data['name']= request('merchantName');//商户名称
        // $where_data['signboardName']= '';//商家招牌名称
        // $where_data['status']= '';//状态 1-正常 2-禁用

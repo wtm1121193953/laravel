@@ -6,6 +6,7 @@ use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperBizMember;
+use App\Modules\Bizer\BizerService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -87,6 +88,13 @@ class OperBizMemberController extends Controller
         return Result::success([
             'list' => $list
         ]);
+         /*
+        $where_data["status"] = request('status');
+        $list = BizerService::getList($where_data);
+        return Result::success([
+            'list' => $list
+        ]);* 
+         */
     }
 
     public function detail()

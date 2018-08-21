@@ -120,9 +120,9 @@ class MerchantService extends BaseService
         $merchantCategory = array_get($data,'merchantCategory');
         $isPilot = array_get($data,'isPilot');
         $startCreatedAt = array_get($data,'startCreatedAt');
-        $endCreatedAt = array_get($data,'$endCreatedAt');
+        $endCreatedAt = array_get($data,'endCreatedAt');
         $cityId =array_get($data,"cityId");
-
+        $bizer_id = array_get($data, "bizer_id");
         // 全局限制条件
         $query = Merchant::where('audit_oper_id', '>', 0)->orderByDesc('id');
 
@@ -149,6 +149,9 @@ class MerchantService extends BaseService
             } else {
                 $query->where('creator_oper_id', $creatorOperId);
             }
+        }
+        if($bizer_id){
+             $query->where('bizer_id', $bizer_id);
         }
         if($cityId){
             $query->where('city_id', $cityId);
