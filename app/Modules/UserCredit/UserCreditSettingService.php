@@ -151,4 +151,10 @@ class UserCreditSettingService extends SettingService
         return $feeMultiplier;
     }
 
+    public static function getFeeSplittingRatioToOper()
+    {
+        // todo noting
+        return 100;
+    }
+
 }
