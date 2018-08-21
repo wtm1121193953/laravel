@@ -179,4 +179,23 @@ class OrderService extends BaseService
             ->count();
         return $count;
     }
+
+    public static function getById($orderId)
+    {
+        return Order::find($orderId);
+    }
+
+    /**
+     * 获取订单利润
+     * @param $order
+     * @return float
+     */
+    public static function getProfitAmount($order)
+    {
+        if(is_int($order)){
+            $order = self::getById($order);
+        }
+        // todo
+        return 0;
+    }
 }
