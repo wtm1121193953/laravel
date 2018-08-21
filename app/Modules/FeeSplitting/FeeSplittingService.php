@@ -4,11 +4,20 @@ namespace App\Modules\FeeSplitting;
 
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
+use App\Modules\Invite\InviteUserService;
+use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
+use App\Modules\User\User;
+use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletBill;
+use App\Modules\Wallet\WalletService;
 
 class FeeSplittingService extends BaseService
 {
@@ -36,40 +45,13 @@ class FeeSplittingService extends BaseService
     private static function feeSplittingToSelf(Order $order, float $profitAmount)
     {
         // 分润记录表 添加分润记录
-        $feeSplittingRecord = new FeeSplittingRecord();
-        $feeSplittingRecord->origin_id = $order->user_id;
-        $feeSplittingRecord->origin_type = FeeSplittingRecord::ORIGIN_TYPE_USER;
-        $feeSplittingRecord->merchant_level = 0;
-        $feeSplittingRecord->order_id = $order->id;
-        $feeSplittingRecord->order_no = $order->order_no;
-        $feeSplittingRecord->order_profit_amount = $profitAmount;
-        $feeMultiplier = UserCreditSettingService::getFeeSplittingRatioToParentOfUserSetting(); // 自反的分润比例
-        $feeSplittingRecord->ratio = $feeMultiplier;
-        $feeSplittingRecord->amount = $profitAmount * $feeMultiplier;
-        $feeSplittingRecord->type = FeeSplittingRecord::TYPE_TO_SELF;
-        $feeSplittingRecord->status = FeeSplittingRecord::STATUS_FREEZE;
-        $feeSplittingRecord->save();
+        $originInfo = UserService::getUserById($order->user_id);
+        $feeSplittingRecord = self::createFeeSplittingRecord($order, $originInfo, FeeSplittingRecord::TYPE_TO_SELF, $profitAmount);
 
         // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
-        $wallet = Wallet::where('origin_id', $order->user_id)
-            ->where('origin_type', Wallet::ORIGIN_TYPE_USER)
-            ->first();
-        if (empty($wallet)) {
-            $wallet = new Wallet();
-            $wallet->origin_id = $order->user_id;
-            $wallet->origin_type = Wallet::ORIGIN_TYPE_USER;
-            $wallet->save();
-        }
-        $wallet->freeze_balance = $wallet->freeze_balance + $feeSplittingRecord->amount;  // 更新钱包的冻结金额
-        $wallet->save();
+        $wallet = WalletService::getWalletInfo($originInfo);
 
-        // 钱包流水表 添加钱包流水记录
-        $walletBill = new WalletBill();
-        $walletBill->wallet_id = $wallet->id;
-        $walletBill->origin_id = $order->user_id;
-        $walletBill->origin_type = WalletBill::ORIGIN_TYPE_USER;
-        $walletBill->bill_no = 0;
-
+        WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
     }
 
     /**
@@ -79,8 +61,16 @@ class FeeSplittingService extends BaseService
      */
     private static function feeSplittingToParent(Order $order, float $profitAmount)
     {
-        // todo
-        FeeSplittingRecord::TYPE_TO_PARENT;
+        $parent = InviteUserService::getParent($order->user_id);
+        if ($parent == null) {
+            return;
+        }
+        $feeSplittingRecord = self::createFeeSplittingRecord($order, $parent, FeeSplittingRecord::TYPE_TO_PARENT, $profitAmount);
+
+        // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
+        $wallet = WalletService::getWalletInfo($parent);
+
+        WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
     }
 
     /**
@@ -100,5 +90,59 @@ class FeeSplittingService extends BaseService
     {
         // todo
         // 判断如果已解冻, 则不能退回
+    }
+
+    /**
+     * 创建分润记录
+     * @param Order $order
+     * @param User|Merchant|Oper $originInfo
+     * @param float $profitAmount
+     * @param $type
+     * @return FeeSplittingRecord
+     */
+    private static function createFeeSplittingRecord(Order $order, $originInfo, $type, float $profitAmount)
+    {
+        $merchantLevel = 0;
+        if($originInfo instanceof User){
+            $originType = FeeSplittingRecord::ORIGIN_TYPE_USER;
+        }else if ($originInfo instanceof Merchant) {
+            $originType = FeeSplittingRecord::ORIGIN_TYPE_MERCHANT;
+        }else if($originInfo instanceof Oper){
+            $originType = FeeSplittingRecord::ORIGIN_TYPE_OPER;
+        }else {
+            throw new BaseResponseException('用户类型错误');
+        }
+        if ($type == FeeSplittingRecord::TYPE_TO_SELF) {
+            $feeRatio = UserCreditSettingService::getFeeSplittingRatioToSelfSetting(); // 自反的分润比例
+        } elseif ($type == FeeSplittingRecord::TYPE_TO_PARENT) {
+            if($originType == FeeSplittingRecord::ORIGIN_TYPE_USER){
+                $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfUserSetting();
+            }else if($originType == FeeSplittingRecord::ORIGIN_TYPE_MERCHANT){
+                $merchantLevel = $originInfo->level;
+                $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfMerchantSetting($merchantLevel);
+            }else if($originType == FeeSplittingRecord::ORIGIN_TYPE_OPER) {
+                $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfOperSetting();
+            }else {
+                throw new BaseResponseException();
+            }
+        } elseif ($type == FeeSplittingRecord::TYPE_TO_OPER) {
+            $feeRatio = UserCreditSettingService::getFeeSplittingRatioToOper();
+        } else {
+            throw new ParamInvalidException('分润类型错误');
+        }
+
+        $feeSplittingRecord = new FeeSplittingRecord();
+        $feeSplittingRecord->origin_id = $originInfo->id;
+        $feeSplittingRecord->origin_type = $originType;
+        $feeSplittingRecord->merchant_level = $merchantLevel ?: 0;
+        $feeSplittingRecord->order_id = $order->id;
+        $feeSplittingRecord->order_no = $order->order_no;
+        $feeSplittingRecord->order_profit_amount = $profitAmount;
+        $feeSplittingRecord->ratio = $feeRatio;
+        $feeSplittingRecord->amount = $profitAmount * $feeRatio / 100;
+        $feeSplittingRecord->type = $type;
+        $feeSplittingRecord->status = FeeSplittingRecord::STATUS_FREEZE;
+        $feeSplittingRecord->save();
+        return $feeSplittingRecord;
     }
 }

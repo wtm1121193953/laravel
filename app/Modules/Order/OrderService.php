@@ -197,6 +197,6 @@ class OrderService extends BaseService
         }
         $settlementRate = Merchant::where('id', $order->merchant_id)->value('settlement_rate'); //分利比例
 
-        return $order->pay_price * $settlementRate;
+        return $order->pay_price * $settlementRate / 100;
     }
 }
