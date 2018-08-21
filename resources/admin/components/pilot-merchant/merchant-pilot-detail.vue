@@ -40,7 +40,9 @@
                         {{data.operBizMemberName}}
                     </template>
                 </el-form-item>
-
+                <el-form-item prop="service_phone" label="客服电话">
+                    {{data.service_phone}}
+                </el-form-item>
                 <el-form-item prop="logo" label="商家logo">
                     <div v-viewer>
                         <img :src="data.logo" alt="商家logo" width="200px" height="100px" />
@@ -57,9 +59,6 @@
                 </el-form-item>
                 <el-form-item prop="contacter_phone" label="负责人手机号码">
                     {{data.contacter_phone}}
-                </el-form-item>
-                <el-form-item prop="service_phone" label="客服电话">
-                    {{data.service_phone}}
                 </el-form-item>
                 <el-col v-if="type != 'poolOnly' ">
                     <el-form-item prop="audit_suggestion" label="审核意见">
