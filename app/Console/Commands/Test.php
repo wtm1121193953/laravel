@@ -55,6 +55,9 @@ class Test extends Command
      */
     public function handle()
     {
+        dd(date('Ymd') .substr(time(), -7, 7). str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT));
+
+
         $url = 'http://yunjipin-o2o.com/storage/miniprogram/app_code/_123_375.jpg';
         WechatService::addNameToAppCode($url, '招牌名称哈哈哈哈哈哈哈哈哈哈');
         dd(pathinfo($url, PATHINFO_BASENAME));

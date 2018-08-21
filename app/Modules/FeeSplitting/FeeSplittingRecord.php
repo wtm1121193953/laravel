@@ -4,6 +4,21 @@ namespace App\Modules\FeeSplitting;
 
 use App\BaseModel;
 
+/**
+ * Class FeeSplittingRecord
+ * @package App\Modules\FeeSplitting
+ *
+ * @property integer origin_id
+ * @property integer origin_type
+ * @property integer merchant_level
+ * @property integer order_id
+ * @property string order_no
+ * @property float order_profit_amount
+ * @property float ratio
+ * @property float amount
+ * @property integer type
+ * @property integer status
+ */
 class FeeSplittingRecord extends BaseModel
 {
     //

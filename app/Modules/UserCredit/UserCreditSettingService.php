@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/5/30
- * Time: 15:17
- */
 
 namespace App\Modules\UserCredit;
 
@@ -37,6 +31,33 @@ class UserCreditSettingService extends SettingService
     public static function getOperProfitRadioSetting()
     {
         return self::getValueByKey('oper_profit_radio');
+    }
+
+    /**
+     * 获取 分润: 自返比例
+     * @return string
+     */
+    public static function getFeeSplittingRatioToSelfSetting()
+    {
+        return self::getValueByKey('fee_splitting_ratio_to_self');
+    }
+
+    /**
+     * 获取 分润: 返上级比例(用户)
+     * @return string
+     */
+    public static function getFeeSplittingRatioToParentOfUserSetting()
+    {
+        return self::getValueByKey('fee_splitting_ratio_to_parent_of_user');
+    }
+
+    /**
+     * 获取 分润: 返上级比例(运营中心)
+     * @return string
+     */
+    public static function getFeeSplittingRatioToParentOfOperSetting()
+    {
+        return self::getValueByKey('fee_splitting_ratio_to_parent_of_oper');
     }
 
     /**
@@ -116,6 +137,18 @@ class UserCreditSettingService extends SettingService
         $key = 'credit_multiplier_of_merchant_level_'.$merchantLevel;
         $creditMultiplier = self::getValueByKey($key);
         return $creditMultiplier;
+    }
+
+    /**
+     * 根据商户等级获取 分润: 返上级比例(商户等级)
+     * @param $merchantLevel
+     * @return string
+     */
+    public static function getFeeSplittingRatioToParentOfMerchantSetting($merchantLevel)
+    {
+        $key = 'fee_splitting_ratio_to_parent_of_merchant_level_'.$merchantLevel;
+        $feeMultiplier = self::getValueByKey($key);
+        return $feeMultiplier;
     }
 
 }

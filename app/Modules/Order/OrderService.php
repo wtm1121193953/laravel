@@ -195,7 +195,8 @@ class OrderService extends BaseService
         if(is_int($order)){
             $order = self::getById($order);
         }
-        // todo
-        return 0;
+        $settlementRate = Merchant::where('id', $order->merchant_id)->value('settlement_rate'); //分利比例
+
+        return $order->pay_price * $settlementRate;
     }
 }

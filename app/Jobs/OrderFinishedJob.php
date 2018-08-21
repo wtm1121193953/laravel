@@ -2,29 +2,14 @@
 
 namespace App\Jobs;
 
-use App\Exceptions\DataNotFoundException;
+use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
-use App\Modules\Invite\InviteChannel;
-use App\Modules\Invite\InviteChannelService;
-use App\Modules\Invite\InviteUserRecord;
-use App\Modules\Invite\InviteUserService;
-use App\Modules\Merchant\Merchant;
-use App\Modules\Merchant\MerchantService;
-use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
-use App\Modules\Order\OrderService;
-use App\Modules\Setting\SettingService;
-use App\Modules\User\User;
-use App\Modules\User\UserService;
-use App\Modules\UserCredit\UserConsumeQuotaRecord;
-use App\Modules\UserCredit\UserCredit;
-use App\Modules\UserCredit\UserCreditRecord;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class OrderFinishedJob implements ShouldQueue
@@ -41,6 +26,13 @@ class OrderFinishedJob implements ShouldQueue
     public function __construct(Order $order)
     {
         //
+        if ($order->status != Order::STATUS_FINISHED) {
+            Log::info('订单号：'.$order->order_no. ', 状态：'.$order->status. ', 不能进行分润！');
+            return;
+        } elseif ($order->splitting_status == Order::SPLITTING_STATUS_YES) {
+            Log::info('订单号: ' . $order->order_no . ' 已分润, 不再重复计算');
+            return;
+        }
         $this->order = $order;
     }
 
