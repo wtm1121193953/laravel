@@ -24,7 +24,7 @@ class CreateFeeSplittingRecordsTable extends Migration
             $table->decimal('ratio', 4, 2)->default(0)->comment('返利时的分润比例');
             $table->decimal('amount', 8, 2)->default(0)->comment('分润金额, 单位: 元');
             $table->tinyInteger('type')->default(1)->comment('分润类型 1-自返, 2-返上级 3-运营中心交易分润');
-            $table->tinyInteger('status')->default(1)->comment('状态 1-冻结中 2-已解冻 2-已退款退回');
+            $table->tinyInteger('status')->default(1)->comment('状态 1-冻结中 2-已解冻 3-已退款退回');
             $table->timestamps();
 
             $table->comment = '分润记录表';
