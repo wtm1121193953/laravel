@@ -11,6 +11,7 @@ namespace App\Modules\Wechat;
 
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\MiniprogramPageNotExistException;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperMiniprogram;
 use App\ResultCode;
 use App\Support\ImageTool;
@@ -82,15 +83,19 @@ class WechatService
      * @param string $page
      * @param int $width
      * @param bool $getWithFilename
-     * @return string
+     * @param string $merchantId
+     * @return bool|int|string
      */
-    public static function genMiniprogramAppCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false)
+    public static function genMiniprogramAppCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false,$merchantId ='')
     {
         $app = WechatService::getWechatMiniAppForOper($operId);
         $response = $app->app_code->getUnlimit($sceneId, [
             'page' => $page,
             'width' => $width,
         ]);
+
+        $name = MerchantService::getSignboardNameById($merchantId);
+
         if($json = json_decode($response, 1)){
             if($json['errcode'] == 41030){
                 throw new MiniprogramPageNotExistException();
@@ -103,6 +108,7 @@ class WechatService
             $path = storage_path('app/public/miniprogram/app_code/') . "_{$sceneId}_{$width}.jpg";
 
             self::addSceneIdToAppCode($path, $sceneId);
+            self::addNameToAppCode($path,$name);
 
         } catch (InvalidArgumentException $e) {
             throw new BaseResponseException('小程序码生成失败');
@@ -128,7 +134,7 @@ class WechatService
         if(!empty($scene->qrcode_url)){
             return $scene->qrcode_url;
         }else {
-            $url = self::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page);
+            $url = self::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page,'',false,$scene->merchant_id);
             $scene->qrcode_url = $url;
             $scene->save();
             return $url;
