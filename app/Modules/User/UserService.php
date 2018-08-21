@@ -14,6 +14,11 @@ use App\Exceptions\ParamInvalidException;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserUnbindRecord;
+use App\Modules\Setting\SettingService;
+use App\Modules\UserCredit\UserConsumeQuotaRecord;
+use App\Modules\UserCredit\UserCredit;
+use App\Modules\UserCredit\UserCreditRecord;
+use App\Modules\UserCredit\UserCreditSettingService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Invite\InviteChannelService;
@@ -163,6 +168,71 @@ class UserService extends BaseService
         return null;
     }
 
+    /**
+     * 获取积分转换率 (百分比)
+     * @param $merchantId
+     * @param $userId
+     * @param $userLevel
+     * @return float
+     */
+    public static function getPayAmountToCreditRatio($merchantId,$userId,$userLevel)
+    {
+
+        $settlementRate = Merchant::where('id', $merchantId)->value('settlement_rate'); //分利比例
+        if (!isset($user->level) || empty($userLevel)){
+            $userLevel = User::where('id', $userId)->value('level'); //用户等级
+        }
+        $creditRatio = UserCreditSettingService::getCreditToSelfRatioSetting($userLevel); //自反比例
+        $creditMultiplierOfAmount = SettingService::getValueByKey('credit_multiplier_of_amount'); //积分系数
+        $creditRatio = $settlementRate * $creditRatio * $creditMultiplierOfAmount / 100.0 ; //积分换算比例
+
+        return $creditRatio;
+    }
+
+    /**
+     * 用户积分列表
+     * @param $userId
+     * @param $year
+     * @param $month
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public static function getUserCreditList($userId,$year,$month)
+    {
+        $data = UserCreditRecord::where('user_id', $userId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->paginate();
+
+        // 获取当月总积分以及总消耗积分
+        $totalInCredit = UserCreditRecord::where('user_id', $userId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 1)
+            ->sum('credit');
+        $totalOutCredit = UserCreditRecord::where('user_id', $userId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 2)
+            ->sum('credit');
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+            'totalInCredit' => $totalInCredit,
+            'totalOutCredit' => $totalOutCredit,
+        ]);
+    }
+
+    /**
+     * 通过user_id获取我的累计积分和累计消费额
+     * @param $userId
+     * @return UserCredit
+     */
+    public static function getUserIdCredit($userId)
+    {
+        return UserCredit::where('user_id', $userId)->first();
+    }
+
     public static function bindInfoForUserApp($userId)
     {
         $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
@@ -199,6 +269,33 @@ class UserService extends BaseService
             'merchant' => $merchant,
             'oper' => $oper,
             'mappingUser' => $mappingUser,
+        ]);
+    }
+
+    public static function getUserConsumeQuotaRecordList($userId,$year,$month)
+    {
+        $data = UserConsumeQuotaRecord::where('user_id', $userId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->paginate();
+
+        // 获取当月总消费额
+        $totalInConsumeQuota = UserConsumeQuotaRecord::where('user_id', $userId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 1)
+            ->sum('consume_quota');
+        $totalOutConsumeQuota = UserConsumeQuotaRecord::where('user_id', $userId)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 2)
+            ->sum('consume_quota');
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+            'totalInConsumeQuota' => $totalInConsumeQuota,
+            'totalOutConsumeQuota' => $totalOutConsumeQuota,
         ]);
     }
 
