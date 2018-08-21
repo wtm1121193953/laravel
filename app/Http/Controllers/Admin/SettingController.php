@@ -48,26 +48,14 @@ class SettingController extends Controller
      */
     public function getCreditRulesList()
     {
-        $list = SettingService::get('oper_profit_radio',
-            'consume_quota_convert_ratio_to_parent',
-            'credit_multiplier_of_amount',
-            'user_level_1_of_credit_number',
-            'user_level_2_of_credit_number',
-            'user_level_3_of_credit_number',
-            'user_level_4_of_credit_number',
-            'merchant_level_1_of_invite_user_number',
-            'merchant_level_2_of_invite_user_number',
-            'merchant_level_3_of_invite_user_number',
-            'credit_to_self_ratio_of_user_level_1',
-            'credit_to_self_ratio_of_user_level_2',
-            'credit_to_self_ratio_of_user_level_3',
-            'credit_to_self_ratio_of_user_level_4',
-            'credit_to_parent_ratio_of_user_level_2',
-            'credit_to_parent_ratio_of_user_level_3',
-            'credit_to_parent_ratio_of_user_level_4',
-            'credit_multiplier_of_merchant_level_1',
-            'credit_multiplier_of_merchant_level_2',
-            'credit_multiplier_of_merchant_level_3');
+        $list = SettingService::get(
+            'fee_splitting_ratio_to_self',
+            'fee_splitting_ratio_to_parent_of_user',
+            'fee_splitting_ratio_to_parent_of_merchant_level_1',
+            'fee_splitting_ratio_to_parent_of_merchant_level_2',
+            'fee_splitting_ratio_to_parent_of_merchant_level_3',
+            'fee_splitting_ratio_to_parent_of_oper'
+        );
         return Result::success([
             'list' => $list
         ]);
@@ -80,26 +68,12 @@ class SettingController extends Controller
     public function setCreditRules()
     {
         $data = request()->all([
-            'oper_profit_radio',
-            'consume_quota_convert_ratio_to_parent',
-            'credit_multiplier_of_amount',
-            'user_level_1_of_credit_number',
-            'user_level_2_of_credit_number',
-            'user_level_3_of_credit_number',
-            'user_level_4_of_credit_number',
-            'merchant_level_1_of_invite_user_number',
-            'merchant_level_2_of_invite_user_number',
-            'merchant_level_3_of_invite_user_number',
-            'credit_to_self_ratio_of_user_level_1',
-            'credit_to_self_ratio_of_user_level_2',
-            'credit_to_self_ratio_of_user_level_3',
-            'credit_to_self_ratio_of_user_level_4',
-            'credit_to_parent_ratio_of_user_level_2',
-            'credit_to_parent_ratio_of_user_level_3',
-            'credit_to_parent_ratio_of_user_level_4',
-            'credit_multiplier_of_merchant_level_1',
-            'credit_multiplier_of_merchant_level_2',
-            'credit_multiplier_of_merchant_level_3',
+            'fee_splitting_ratio_to_self',
+            'fee_splitting_ratio_to_parent_of_user',
+            'fee_splitting_ratio_to_parent_of_merchant_level_1',
+            'fee_splitting_ratio_to_parent_of_merchant_level_2',
+            'fee_splitting_ratio_to_parent_of_merchant_level_3',
+            'fee_splitting_ratio_to_parent_of_oper',
         ]);
         foreach ($data as $key => $value) {
             SettingService::set($key, $value);
