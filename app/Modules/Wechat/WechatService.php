@@ -94,7 +94,11 @@ class WechatService
             'width' => $width,
         ]);
 
-        $name = MerchantService::getSignboardNameById($merchantId);
+        if($merchantId){
+            $name = MerchantService::getSignboardNameById($merchantId);
+        }else{
+            $name = '';
+        }
 
         if($json = json_decode($response, 1)){
             if($json['errcode'] == 41030){
