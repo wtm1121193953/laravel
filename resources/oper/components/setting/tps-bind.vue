@@ -2,7 +2,7 @@
     <page title="TPS会员帐号管理">
         <div>
             <div v-if="bindInfo == null" class="title">
-                <el-tag type="danger">请联系客服进行TPS账号绑定</el-tag>
+                <el-tag type="danger">请联系大千生活客服进行TPS账号绑定</el-tag>
             </div>
             <div v-if="bindInfo" class="title">
                 <el-tag type="success">已绑定TPS帐号：{{bindInfo.tps_account}}</el-tag>

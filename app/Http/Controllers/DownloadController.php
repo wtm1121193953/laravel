@@ -29,6 +29,8 @@ class DownloadController extends Controller
                 return $this->normalDownload();
             case 'merchant_pay_app_code':
                 return $this->downloadMerchantPayAppCode();
+            default:
+                abort(404);
         }
     }
 

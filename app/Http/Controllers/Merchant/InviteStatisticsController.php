@@ -80,10 +80,6 @@ class InviteStatisticsController
 
         $data = InviteUserService::getInviteUsersWithOrderCountByMerchantId($merchantId, $param, false);
 
-        $data->each(function($item){
-            $item->order_number = $item->order_count;
-        });
-
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),

@@ -9,21 +9,15 @@
 namespace App\Http\Controllers;
 
 
-use App\Exceptions\DataNotFoundException;
 use App\Jobs\OrderPaidJob;
 use App\Modules\Goods\Goods;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Dishes\DishesGoods;
-use App\Modules\Invite\InviteChannel;
-use App\Modules\Invite\InviteChannelService;
-use App\Modules\Invite\InviteUserService;
-use App\Modules\Invite\InviteUserRecord;
-use App\Modules\Merchant\Merchant;
-use App\Modules\Merchant\MerchantService;
-use App\Modules\Oper\OperMiniprogram;
+use App\Modules\Oper\OperMiniprogramService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
+use App\Modules\Order\OrderService;
 use App\Modules\Sms\SmsService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
@@ -50,7 +44,7 @@ class PayController extends Controller
             }
         }
         // 获取appid对应的运营中心小程序
-        $miniprogram = OperMiniprogram::where('appid', $appid)->first();
+        $miniprogram = OperMiniprogramService::getByAppid($appid);
 
         $app = WechatService::getWechatPayAppForOper($miniprogram);
         $response = $app->handlePaidNotify(function ($message, $fail){
@@ -90,7 +84,7 @@ class PayController extends Controller
     private function paySuccess($orderNo, $transactionId, $totalFee)
     {
         // 处理订单支付成功逻辑
-        $order = Order::where('order_no', $orderNo)->firstOrFail();
+        $order = OrderService::getinfoByOrderNo($orderNo);
 
         if($order->status === Order::STATUS_UN_PAY
             || $order->status === Order::STATUS_CANCEL

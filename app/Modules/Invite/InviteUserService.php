@@ -101,7 +101,8 @@ class InviteUserService
         }
         $inviteChannelParent = self::getParent($inviteChannel->origin_id);
         if ($inviteChannelParent && $inviteChannelParent instanceof User && $inviteChannelParent->id == $userId) {
-            throw new BaseResponseException("您的推荐人是{$inviteChannelParent->mobile}，您不能再推荐{$inviteChannelParent->mobile}，请换一个人推荐");
+            $name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
+            throw new BaseResponseException("您的推荐人是{$name}，您不能在接受{$name}的分享");
         }
 
         $inviteRecord = new InviteUserRecord();
@@ -503,8 +504,7 @@ class InviteUserService
         $query = User::whereIn('id', $userIds)
             ->when($mobile, function (Builder $query) use ($mobile) {
                 $query->where('mobile', 'like', "%$mobile%");
-            })
-            ->orderBy('created_at', 'desc');
+            });
 
         if($withQuery) return $query;
 
