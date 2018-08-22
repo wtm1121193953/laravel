@@ -112,10 +112,6 @@
                     </dd> -->
                 </dl>
             </div>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogDetailVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogDetailVisible = false">发送申请</el-button>
-            </div>
         </el-dialog>
     </page>
 </template>
