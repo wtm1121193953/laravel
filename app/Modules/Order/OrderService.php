@@ -14,6 +14,7 @@ use App\Exceptions\BaseResponseException;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Merchant\Merchant;
 use App\Modules\User\User;
+use App\Modules\Oper\Oper;
 use App\Modules\UserCredit\UserCreditRecord;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -122,6 +123,8 @@ class OrderService extends BaseService
         $merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
         foreach ($data as $key => $item){
             $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
+            $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
+            $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
             if ($item->type == 3){
                 $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
                 $data[$key]['dishes_items'] = $dishesItems;

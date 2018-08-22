@@ -16,25 +16,23 @@ class MerchantController extends Controller
 {
 
     /**
-     * 获取列表 (分页)
+     * 获取业务员的商户列表 (分页)
      */
     public function getList()
     {
-        
-        $where_data['bizer_id'] = request()->get('current_user')->id;//登录所属业务员ID
-        $where_data['id'] = request('id');;//商户ID
-        $where_data['operId']= request('operId');//运营中心ID
-        $where_data['name']= request('merchantName');//商户名称
-       // $where_data['signboardName']= '';//商家招牌名称
-       // $where_data['status']= '';//状态 1-正常 2-禁用
-       // $where_data['auditStatus']= '';//商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核
-        $where_data['merchantCategory']= request('merchant_category');//商家类别ID   所属行业
-       // $where_data['isPilot']= '';//是否是试点商户 0普通商户 1试点商户
-        $where_data['startCreatedAt']= request('startTime');//添加时间
-        $where_data['endCreatedAt']= request('endTime');//添加时间
-        $where_data["cityId"] = request('cityId');// 所在城市id
-        $where_data["creatorOperId"] = request('creatorOperId');// 所属运营中心ID
-       // print_r($where_data);exit;
+        $where_data = [
+            'bizer_id'=>request()->get('current_user')->id,//登录所属业务员ID
+            'id'=>request('id'),//商户ID
+            'operId'=>request('operId'),//运营中心ID
+            'name'=>request('merchantName'),//商户名称
+            'merchantCategory'=>request('merchant_category'),//商家类别ID   所属行业
+            'cityId'=>request('cityId'),// 所在城市id
+            'creatorOperId'=>request('creatorOperId'),// 所属运营中心ID
+            'startCreatedAt'=>request('startTime'),//添加时间
+            'endCreatedAt'=>request('endTime'),//添加时间
+            
+        ];
+        //echo "<pre>";print_r($where_data);exit;
         $data = MerchantService::getList($where_data);
         return Result::success([
             'list' => $data->items(),
@@ -42,25 +40,20 @@ class MerchantController extends Controller
         ]);
     }
     
+    /**
+     * 获取所属行业树形
+     * @return type
+     */
     public function getTree()
     {
         $tree = MerchantCategoryService::getTree();
         return Result::success(['list' => $tree]);
     }
+   
     /**
-     * 获取全部的商户名称
+     * 获取业务员所属的运营中心名称
+     * @return type
      */
-    public function allNames()
-    {
-        $data = [
-            'audit_status' => request('audit_status'),
-            'status' => request('status'),
-        ];
-        $list = MerchantService::getAllNames($data);
-        return Result::success([
-            'list' => $list
-        ]);
-    }
     public function allOperNames(){
         $data_where["status"] =1;//获取所有正常状态的运营中心
         $list = OperService::getAll($data_where,["id","name"]);
@@ -68,7 +61,4 @@ class MerchantController extends Controller
             'list' => $list
         ]);
     }
-
-  
-
 }
