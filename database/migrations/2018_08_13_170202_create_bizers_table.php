@@ -15,6 +15,7 @@ class CreateBizersTable extends Migration
     {
         Schema::create('bizers', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('name',128)->default('')->comment('业务员姓名');
             $table->string('mobile', 11)->unique()->comment('手机号');
             $table->string('password', 64)->comment('密码');
             $table->string('salt', 64)->default('')->comment('盐值');
