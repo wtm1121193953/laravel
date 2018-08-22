@@ -10,16 +10,32 @@ use App\Result;
 class OperController extends Controller {
 
     /**
-     * 有效的运营中心列表
+     * 已添加的运营中心列表
      * @author tong.chen
      * @date 2018-8-22
      */
     public function getList() {
 
+//        $data = OperService::getAll(['status' => 1], 'id,name');
+//
+//        return Result::success([
+//                    'list' => $data,
+//                    'total' => $data->total(),
+//        ]);
+    }
+    
+    /**
+     * 添加运营中心列表
+     * @author tong.chen
+     * @date 2018-8-22
+     */
+    public function getAddList() {
+
         $data = OperService::getAll(['status' => 1], 'id,name');
 
         return Result::success([
                     'list' => $data,
+                    'total' => $data->total(),
         ]);
     }
 
