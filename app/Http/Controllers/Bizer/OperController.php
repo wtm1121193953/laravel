@@ -16,6 +16,15 @@ class OperController extends Controller {
      */
     public function getList() {
 
+        $startTime = request('startTime');
+        $endTime = request('endTime');
+        $name = request('name');
+        $contacter = request('contacter');
+        $tel = request('tel');
+        $provinceId = request('provinceId');
+        $cityId = request('cityId');
+        $status = request('status');
+        
 //        $data = OperService::getAll(['status' => 1], 'id,name');
 //
 //        return Result::success([
