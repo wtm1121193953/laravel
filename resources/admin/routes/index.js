@@ -15,6 +15,9 @@ import merchant from './merchant'
 import members from './members'
 import setting from './setting'
 
+import WithdrawDashboard from '../components/withdraw/dashboard'
+import WithdrawRecords from '../components/withdraw/record-index'
+
 /**
  *
  */
@@ -40,6 +43,16 @@ const routes = [
     ...merchant,
     ...members,
     ...setting,
+
+    // 提现管理
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'withdraw/dashboard', component: WithdrawDashboard, name: 'WithdrawDashboard'},
+            {path: 'withdraw/records', component: WithdrawRecords, name: 'WithdrawRecords'},
+        ]
+    },
 
     {
         path: '/',
