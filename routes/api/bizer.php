@@ -18,4 +18,6 @@ Route::prefix('bizer')
         Route::get('merchant/categories/tree', 'MerchantController@getTree');
         Route::get('area/tree', 'AreaController@getTree');
         Route::get('merchant/opers/tree', 'MerchantController@allOperNames');
+        Route::get('orders', 'OrderController@getList');
+        Route::get('merchant/allMerchantNames', 'OrderController@allMerchantNames');
     });

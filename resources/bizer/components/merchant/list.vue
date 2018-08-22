@@ -3,13 +3,21 @@
         <el-form class="fl" inline size="small">
             <el-form-item prop="createdAt" label="添加时间">
                 <el-date-picker
-                        v-model="query.createdAt"
-                        type="daterange"
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        value-format="yyyy-MM-dd">
-                </el-date-picker>
+                        class="w-150"
+                        v-model="query.startTime"
+                        type="date"
+                        placeholder="开始日期"
+                        value-format="yyyy-MM-dd 00:00:00"
+
+                />
+                -
+                <el-date-picker
+                        class="w-150"
+                        v-model="query.endTime"
+                        type="date"
+                        placeholder="结束日期"
+                        value-format="yyyy-MM-dd 23:59:59"
+                />
             </el-form-item>
             <el-form-item prop="id" label="商户ID">
                 <el-input v-model="query.id" placeholder="请输入商户ID" clearable @keyup.enter.native="search"/>
@@ -45,19 +53,10 @@
                         v-model="query.cityId">
                 </el-cascader>
             </el-form-item>
-            <el-form-item prop="operId" label="所属运营中心">
-                    <el-cascader
-                        change-on-select
-                        clearable
-                        filterable
-                        :options="operOptions"
-                        :props="{
-                            value: 'id',
-                            label: 'name',
-                            children: 'sub',
-                        }"
-                        v-model="query.operId">
-                    </el-cascader>
+            <el-form-item label="所属运营中心">
+                <el-select v-model="query.operId" filterable clearable >
+                    <el-option v-for="item in operOptions" :key="item.id" :value="item.id" :label="item.name"/>
+                </el-select>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
@@ -87,7 +86,7 @@
             <el-table-column prop="divided_into" label="分成"/>
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
-                    <el-button type="text">查看订单</el-button>
+                    <el-button type="text" @click="searchorders(scope.row.id)">查看订单</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -133,6 +132,14 @@
                  this.query.page = 1;
                  this.getList();
             },
+            searchorders(merchant_id){
+                router.push({
+                    name: 'OrderList',
+                    params: {
+                        merchantId: merchant_id
+                    }
+                });
+            },
             getList(){
                 this.isLoading = true;
                 let params = {};
@@ -143,9 +150,6 @@
                     this.list = data.list;
                     this.total = data.total;
                 })
-            },
-            itemChanged(index, data){
-                this.getList();
             },
             showMessage(scope){
                 api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {

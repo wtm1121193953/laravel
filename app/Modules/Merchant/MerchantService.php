@@ -71,15 +71,24 @@ class MerchantService extends BaseService
     public static function getAllNames(array $data)
     {
         // todo 后期可以对查询结果做缓存
-        $auditStatus = $data['audit_status'];
-        $status = $data['status'];
-        $operId = $data['operId'];
-        $list = Merchant::where(function (Builder $query) use ($operId) {
-            $query->where('oper_id', $operId)
+        $auditStatus = array_get($data, 'audit_status');
+        $status =array_get($data, 'status');
+        $operId =array_get($data, 'operId'); //运营中心ID
+        $bizer_id = array_get($data, 'bizer_id');//业务员ID 
+//        $list = Merchant::where(function (Builder $query) use ($operId) {
+//            $query->where('oper_id', $operId)
+//                ->orWhere('audit_oper_id', $operId);
+//        })
+        $list = Merchant::select('id', 'name')
+            ->when(!empty($operId), function (Builder $query) use ($operId) {
+                $query->where('oper_id', $operId)
                 ->orWhere('audit_oper_id', $operId);
-        })
+            })
             ->when($status, function (Builder $query) use ($status) {
                 $query->where('status', $status);
+            })
+            ->when(!empty($bizer_id), function (Builder $query) use ($bizer_id) {
+                $query->where('bizer_id', $bizer_id);
             })
             ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus) {
                 if ($auditStatus == -1) {
@@ -222,7 +231,7 @@ class MerchantService extends BaseService
         } else {
 
             $data = $query->paginate();
-            $cc = $query->toSql();
+            //$cc = $query->toSql();
             //echo $cc;exit;
             $data->each(function ($item) {
                 if ($item->merchant_category_id) {

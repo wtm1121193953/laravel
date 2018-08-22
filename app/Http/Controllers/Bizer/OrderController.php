@@ -1,0 +1,63 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Administrator
+ * Date: 2018/5/23
+ * Time: 22:56
+ */
+
+namespace App\Http\Controllers\Bizer;
+
+
+use App\Exports\OperOrderExport;
+use App\Http\Controllers\Controller;
+use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
+use App\Modules\Dishes\DishesItem;
+use App\Modules\Order\Order;
+use App\Modules\Order\OrderService;
+use App\Result;
+use Illuminate\Database\Eloquent\Builder;
+
+class OrderController extends Controller
+{
+     function index(){
+         
+     }
+    public function getList()
+    {
+        $where = [
+            "orderNo"=>request('orderId'),
+            "type"=>request('order_type'),
+            "goodsName"=>request('goodsName'),
+            "merchantId"=>request('merchantId'),
+            "operId"=>request('operId'),
+            //'startPayTime' => $startPayTime ?? null,
+            //'endPayTime' => $endPayTime ?? null,
+            'startFinishTime' => request('startTime'),
+            'endFinishTime' => request('endTime'),
+        ];
+        //echo "<pre>";print_r($where);exit;
+        $data = OrderService::getList($where);
+        
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
+    }
+     /**
+     * 获取业务员全部的商户名称
+     */
+    public function allMerchantNames()
+    {
+        $data = [
+            'bizer_id'=>request()->get('current_user')->id,//登录所属业务员ID
+            'audit_status' => request('audit_status'),
+            'status' => request('status'),
+        ];
+        $list = MerchantService::getAllNames($data);
+        return Result::success([
+            'list' => $list
+        ]);
+    }
+}

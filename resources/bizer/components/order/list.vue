@@ -3,40 +3,44 @@
         <el-form class="fl" inline size="small">
             <el-form-item prop="createdAt" label="创建时间">
                 <el-date-picker
-                        v-model="query.createdAt"
-                        type="daterange"
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        value-format="yyyy-MM-dd">
-                </el-date-picker>
+                        class="w-150"
+                        v-model="query.startTime"
+                        type="date"
+                        placeholder="开始日期"
+                        value-format="yyyy-MM-dd 00:00:00"
+
+                />
+                -
+                <el-date-picker
+                        class="w-150"
+                        v-model="query.endTime"
+                        type="date"
+                        placeholder="结束日期"
+                        value-format="yyyy-MM-dd 23:59:59"
+                />
             </el-form-item>
-            <el-form-item prop="id" label="订单号">
-                <el-input v-model="query.name" placeholder="请输入订单号" clearable @keyup.enter.native="search"/>
+            <el-form-item prop="orderId" label="订单号">
+                <el-input v-model="query.orderId" placeholder="请输入订单号" clearable @keyup.enter.native="search"/>
             </el-form-item>
-            <el-form-item prop="type" label="订单类型">
-                <el-select v-model="query.type" class="w-100">
+            <el-form-item prop="order_type" label="订单类型">
+                <el-select v-model="query.order_type" class="w-100" clearable>
                     <el-option label="全部" value=""/>
-                    <el-option label="团购订单" value="1"/>
-                    <el-option label="扫码买单" value="2"/>
-                    <el-option label="单品订单" value="3"/>
+                    <el-option label="团购" :value="1"/>
+                    <el-option label="买单" :value="2"/>
+                    <el-option label="单品" :value="3"/>
                 </el-select>
             </el-form-item>
-            <el-form-item prop="name" label="商品名称">
-                <el-input v-model="query.name" placeholder="请输入商品名称" clearable @keyup.enter.native="search"/>
+            <el-form-item prop="goodsName" label="商品名称">
+                <el-input v-model="query.goodsName" placeholder="请输入商品名称" clearable @keyup.enter.native="search"/>
             </el-form-item>
-            <el-form-item prop="businessName" label="商户名称">
-                <el-select v-model="query.businessName">
-                    <el-option label="全部" value=""/>
-                    <el-option label="团购订单" value="1"/>
-                    <el-option label="扫码买单" value="2"/>
-                    <el-option label="单品订单" value="3"/>
+            <el-form-item label="商户名称">
+                <el-select v-model="query.merchantId" filterable clearable >
+                    <el-option v-for="item in merchantOptions" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
             </el-form-item>
-            <el-form-item prop="own" label="所属运营中心">
-                <el-select v-model="query.own">
-                    <el-option label="全部" value=""/>
-                    <el-option label="大千生活华南地区运营中心" value="1"/>
+            <el-form-item label="所属运营中心">
+                <el-select v-model="query.operId" filterable clearable >
+                    <el-option v-for="item in operOptions" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -45,18 +49,19 @@
         </el-form>
 
         <el-table :data="list" stripe>
-            <el-table-column prop="date" label="创建时间"/>
-            <el-table-column prop="id" label="订单号"/>
+            <el-table-column prop="created_at" label="创建时间"/>
+            <el-table-column prop="order_no" label="订单号"/>
             <el-table-column prop="type" label="订单类型">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.type === 1">团购订单</span>
-                    <span v-else-if="scope.row.type === 2">扫码买单</span>
-                    <span v-else-if="scope.row.type === 3">单品订单</span>
+                    <span v-if="scope.row.type == 1">团购</span>
+                    <span v-else-if="scope.row.type == 2">买单</span>
+                    <span v-else-if="scope.row.type == 3">单品</span>
+                    <span v-else>未知({{scope.row.type}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="name" label="商品名称"/>
-            <el-table-column prop="price" label="总价（元）"/>
-            <el-table-column prop="tel" label="手机号"/>
+            <el-table-column prop="goods_name" label="商品名称"/>
+            <el-table-column prop="pay_price" label="总价（元）"/>
+            <el-table-column prop="notify_mobile" label="手机号"/>
             <el-table-column prop="status" label="订单状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1">已消费</span>
@@ -65,8 +70,8 @@
                     <span v-else-if="scope.row.status === 4">已完成</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="business_name" label="商户名称"/>
-            <el-table-column prop="own" label="所属运营中心"/>            
+            <el-table-column prop="merchant_name" label="商户名称"/>
+            <el-table-column prop="operName" label="所属运营中心"/>            
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="details()">查看详情</el-button>
@@ -123,56 +128,16 @@
             return {
                 isLoading: false,
                 query: {
-                    createdAt: '',
-                    id: '',
-                    type: '',
-                    name: '',
-                    businessName: '',
-                    own: '',
+                    startTime: '',
+                    endTime :'',
+                    orderId: '',
+                    order_type: '',
+                    goodsName: '',
+                    merchantName: '',
+                    operId: '',
                     page: 1
                 },
-                // list: [],
-                list: [{
-                    date: '2018-07-05 12:30:20',
-                    id: '564565465344',
-                    type: 1,
-                    name: '榴莲蛋糕',
-                    price: '100.00',
-                    tel: '139********3321',
-                    status: 1,
-                    business_name: '小哥哥椰子鸡',
-                    own: '大千生活华南地区运营中心'
-                }, {
-                    date: '2018-07-05 12:30:20',
-                    id: '564565465344',
-                    type: 2,
-                    name: '榴莲蛋糕',
-                    price: '100.00',
-                    tel: '139********3321',
-                    status: 2,
-                    business_name: '小哥哥椰子鸡',
-                    own: '大千生活华南地区运营中心'
-                }, {
-                    date: '2018-07-05 12:30:20',
-                    id: '564565465344',
-                    type: 3,
-                    name: '榴莲蛋糕',
-                    price: '100.00',
-                    tel: '139********3321',
-                    status: 3,
-                    business_name: '小哥哥椰子鸡',
-                    own: '大千生活华南地区运营中心'
-                }, {
-                    date: '2018-07-05 12:30:20',
-                    id: '564565465344',
-                    type: 1,
-                    name: '榴莲蛋糕',
-                    price: '100.00',
-                    tel: '139********3321',
-                    status: 4,
-                    business_name: '小哥哥椰子鸡',
-                    own: '大千生活华南地区运营中心'
-                }],
+                list: [],
                 total: 0,
 
                 dialogDetailVisible: false
@@ -183,33 +148,42 @@
         },
         methods: {
             search(){
-                // this.query.page = 1;
-                // this.getList();
+                 this.query.page = 1;
+                 this.getList();
             },
             getList(){
-                // this.isLoading = true;
-                // let params = {};
-                // Object.assign(params, this.query);
-                // api.get('/merchants', params).then(data => {
-                //     this.query.page = params.page;
-                //     this.isLoading = false;
-                //     this.list = data.list;
-                //     this.total = data.total;
-                // })
+                 this.isLoading = true;
+                 let params = {};
+                 Object.assign(params, this.query);
+                 api.get('/orders', params).then(data => {
+                     this.query.page = params.page;
+                     this.isLoading = false;
+                     this.list = data.list;
+                     this.total = data.total;
+                 })
+            },
+            showMessage(scope){
+                api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
+                    this.auditRecord = [data];
+                })
             },
             details(){
                 this.dialogDetailVisible = true;
             },
         },
         created(){
-            // api.get('merchant/categories/tree').then(data => {
-            //     this.categoryOptions = data.list;
-            // });
-            // this.categoryOptions = [];
-            // if (this.$route.params){
-            //     Object.assign(this.query, this.$route.params);
-            // }
-            // this.getList();
+            api.get('merchant/opers/tree').then(data => {
+                this.operOptions = data.list;
+            });
+            this.operOptions = [];
+            api.get('merchant/allMerchantNames').then(data => {
+                 this.merchantOptions = data.list;
+             });
+             this.merchantOptions = [];
+             if (this.$route.params){
+                 Object.assign(this.query, this.$route.params);
+             }
+             this.getList();
         },
         components: {
 
