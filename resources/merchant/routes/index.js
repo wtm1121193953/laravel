@@ -8,6 +8,7 @@ import goods from './goods'
 import settlements from './settlements'
 import dishesCategory from './dishesCategory'
 import dishesGoods from './dishesGoods'
+import wallet from './wallet'
 
 import InviteChannel from '../components/invite-channel'
 import PayQrcode from '../components/pay-qrcode'
@@ -34,6 +35,7 @@ const routes = [
     ...settlements,
     ...dishesCategory,
     ...dishesGoods,
+    ...wallet,
 
     // 我的会员
     {
