@@ -70,12 +70,26 @@ class ConsumeQuotaService extends BaseService
      */
     public static function unfreezeConsumeQuota(Order $order)
     {
-        // todo
         // 1. 解冻自己的消费额
         // 2. 解冻上级的消费额
 
         // 3. 发送同步消费额到tps的队列
 
+        $walletConsumeQuotaRecords = WalletConsumeQuotaRecord::where('order_id', $order->id)->get();
+        foreach ($walletConsumeQuotaRecords as $walletConsumeQuotaRecord) {
+            // 1.找到钱包
+            $wallet = WalletService::getWalletInfoByOriginInfo($walletConsumeQuotaRecord->origin_id, $walletConsumeQuotaRecord->origin_type);
+            // 2.添加消费额解冻记录
+            self::createWalletConsumeQuotaUnfreezeRecord($walletConsumeQuotaRecord, $wallet);
+            // 3.更新钱包信息
+            $wallet->consume_quota = $wallet->consume_quota + $walletConsumeQuotaRecord->consume_quota;
+            $wallet->freeze_consume_quota = $wallet->freeze_consume_quota - $walletConsumeQuotaRecord->consume_quota;
+            $wallet->total_consume_quota = $wallet->total_consume_quota + $walletConsumeQuotaRecord->consume_quota;
+            $wallet->save();
+            // 4.更新消费额记录
+            $walletConsumeQuotaRecord->status = WalletConsumeQuotaRecord::STATUS_UNFREEZE;
+            $walletConsumeQuotaRecord->save();
+        }
     }
 
     /**
@@ -130,5 +144,23 @@ class ConsumeQuotaService extends BaseService
         $consumeQuotaRecord->save();
 
         return $consumeQuotaRecord;
+    }
+
+    /**
+     * 创建 消费额解冻记录
+     * @param WalletConsumeQuotaRecord $walletConsumeQuotaRecord
+     * @param Wallet $wallet
+     * @return WalletConsumeQuotaUnfreezeRecord
+     */
+    private static function createWalletConsumeQuotaUnfreezeRecord(WalletConsumeQuotaRecord $walletConsumeQuotaRecord, Wallet $wallet)
+    {
+        $walletConsumeQuotaUnfreezeRecord = new WalletConsumeQuotaUnfreezeRecord();
+        $walletConsumeQuotaUnfreezeRecord->wallet_id = $wallet->id;
+        $walletConsumeQuotaUnfreezeRecord->origin_id = $walletConsumeQuotaRecord->origin_id;
+        $walletConsumeQuotaUnfreezeRecord->origin_type = $walletConsumeQuotaRecord->origin_type;
+        $walletConsumeQuotaUnfreezeRecord->unfreeze_consume_quota = $walletConsumeQuotaRecord->consume_quota;
+        $walletConsumeQuotaUnfreezeRecord->save();
+
+        return $walletConsumeQuotaUnfreezeRecord;
     }
 }

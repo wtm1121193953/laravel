@@ -6,7 +6,6 @@ namespace App\Modules\Wallet;
 use App\BaseService;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
-use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
@@ -96,9 +95,17 @@ class WalletService extends BaseService
      */
     public static function unfreezeBalance(FeeSplittingRecord $feeSplittingRecord)
     {
-        // todo
-        // 1. 解冻金额
-        // 2. 添加解冻记录
+        // 1.找到每条记录对应的钱包
+        $wallet = self::getWalletInfoByOriginInfo($feeSplittingRecord->origin_id, $feeSplittingRecord->origin_type);
+        // 2.添加钱包金额解冻记录
+        self::createWalletBalanceUnfreezeRecord($feeSplittingRecord, $wallet);
+        // 3.更新钱包
+        $wallet->freeze_balance = $wallet->freeze_balance - $feeSplittingRecord->amount;
+        $wallet->balance = $wallet->balance + $feeSplittingRecord->amount;
+        $wallet->save();
+        // 4.更新分润记录
+        $feeSplittingRecord->status = FeeSplittingRecord::STATUS_UNFREEZE;
+        $feeSplittingRecord->save();
     }
 
     /**
@@ -121,5 +128,41 @@ class WalletService extends BaseService
     {
         $billNo = date('Ymd') .substr(time(), -7, 7). str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
         return $billNo;
+    }
+
+    /**
+     * 根据用户ID和类型 获取 钱包信息
+     * @param $originId
+     * @param $originType
+     * @return Wallet
+     */
+    public static function getWalletInfoByOriginInfo($originId, $originType)
+    {
+        $wallet = Wallet::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->first();
+        if (empty($wallet)) {
+            $wallet = self::createWallet($originId, $originType);
+        }
+        return $wallet;
+    }
+
+    /**
+     * 创建钱包金额解冻记录
+     * @param FeeSplittingRecord $feeSplittingRecord
+     * @param Wallet $wallet
+     * @return WalletBalanceUnfreezeRecord
+     */
+    public static function createWalletBalanceUnfreezeRecord(FeeSplittingRecord $feeSplittingRecord, Wallet $wallet)
+    {
+        $walletBalanceUnfreezeRecord = new WalletBalanceUnfreezeRecord();
+        $walletBalanceUnfreezeRecord->wallet_id = $wallet->id;
+        $walletBalanceUnfreezeRecord->origin_id = $feeSplittingRecord->origin_id;
+        $walletBalanceUnfreezeRecord->origin_type = $feeSplittingRecord->origin_type;
+        $walletBalanceUnfreezeRecord->fee_splitting_record_id = $feeSplittingRecord->id;
+        $walletBalanceUnfreezeRecord->unfreeze_amount = $feeSplittingRecord->amount;
+        $walletBalanceUnfreezeRecord->save();
+
+        return $walletBalanceUnfreezeRecord;
     }
 }

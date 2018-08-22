@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\OrderFinishedJob;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
@@ -11,6 +12,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
+use App\Modules\Order\OrderService;
 use App\Modules\Settlement\Settlement;
 use App\Modules\Sms\SmsService;
 use App\Modules\User\User;
@@ -55,6 +57,9 @@ class Test extends Command
      */
     public function handle()
     {
+        $order = OrderService::getById(596);
+        OrderFinishedJob::dispatch($order);
+        dd('ok');
         dd(date('Ymd') .substr(time(), -7, 7). str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT));
 
 

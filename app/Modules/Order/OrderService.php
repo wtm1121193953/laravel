@@ -14,8 +14,6 @@ use App\Exceptions\BaseResponseException;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
-use App\Modules\User\User;
-use App\Modules\UserCredit\UserCreditRecord;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
@@ -211,5 +209,22 @@ class OrderService extends BaseService
         $settlementRate = Merchant::where('id', $order->merchant_id)->value('settlement_rate'); //分利比例
 
         return $order->pay_price * $settlementRate / 100;
+    }
+
+    /**
+     * 更新分润状态 和 时间
+     * @param $order
+     * @return Order
+     */
+    public static function updateSplittingStatus($order)
+    {
+        if (is_int($order)) {
+            $order = self::getById($order);
+        }
+        $order->splitting_status = Order::SPLITTING_STATUS_YES;
+        $order->splitting_time = Carbon::now();
+        $order->save();
+
+        return $order;
     }
 }
