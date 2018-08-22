@@ -64,10 +64,14 @@
             <el-table-column prop="notify_mobile" label="手机号"/>
             <el-table-column prop="status" label="订单状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1">已消费</span>
-                    <span v-else-if="scope.row.status === 2">已支付</span>
-                    <span v-else-if="scope.row.status === 3">已退款</span>
-                    <span v-else-if="scope.row.status === 4">已完成</span>
+                    <span v-if="parseInt(scope.row.status) === 1" class="c-danger">未支付</span>
+                    <span v-else-if="parseInt(scope.row.status) === 2">已取消</span>
+                    <span v-else-if="parseInt(scope.row.status) === 3">已关闭[超时自动关闭]</span>
+                    <span v-else-if="parseInt(scope.row.status) === 4" class="c-green" >已支付</span>
+                    <span v-else-if="parseInt(scope.row.status) === 5">退款中[保留状态]</span>
+                    <span v-else-if="parseInt(scope.row.status) === 6">已退款</span>
+                    <span v-else-if="parseInt(scope.row.status) === 7">已完成</span>
+                    <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
             <el-table-column prop="merchant_name" label="商户名称"/>
