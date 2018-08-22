@@ -16,6 +16,7 @@ use App\BaseModel;
  * @property integer inout_type
  * @property float amount
  * @property integer amount_type
+ * @property float after_amount
  */
 
 class WalletBill extends BaseModel

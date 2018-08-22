@@ -57,7 +57,7 @@ class Test extends Command
      */
     public function handle()
     {
-        $order = OrderService::getById(596);
+        $order = OrderService::getById(174);
         OrderFinishedJob::dispatch($order);
         dd('ok');
         dd(date('Ymd') .substr(time(), -7, 7). str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT));

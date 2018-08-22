@@ -39,14 +39,36 @@
                 <el-button type="success" @click="download">导出Excel</el-button>
             </el-form-item>
         </el-form>
-        <el-table :data="list" stripe>
+        <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="created_at" label="交易时间"></el-table-column>
             <el-table-column prop="bill_no" label="交易号"></el-table-column>
             <el-table-column prop="merchant_name" label="商户名称"></el-table-column>
-            <el-table-column prop="type" label="交易类型"></el-table-column>
-            <el-table-column prop="status" label="交易状态"></el-table-column>
-            <el-table-column prop="amount" label="账户交易金额"></el-table-column>
-            <el-table-column prop="balance_amount" label="账户余额"></el-table-column>
+            <el-table-column prop="type" label="交易类型">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.type == 2">交易分润入账</span>
+                    <span v-else-if="scope.row.type == 4">交易分润退款</span>
+                    <span v-else-if="scope.row.type == 7">提现</span>
+                    <span v-else-if="scope.row.type == 8">提现失败</span>
+                    <span v-else>未知{{scope.row.type}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="status" label="交易状态">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.status == 0">成功</span>
+                    <span v-else-if="scope.row.status == 1">提现中</span>
+                    <span v-else-if="scope.row.status == 2">提现成功</span>
+                    <span v-else-if="scope.row.status == 3">提现失败</span>
+                    <span v-else>未知{{scope.row.status}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="amount" label="账户交易金额">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.inout_type == 1">+</span>
+                    <span v-else>-</span>
+                    {{scope.row.amount}}
+                </template>
+            </el-table-column>
+            <el-table-column prop="after_amount" label="账户余额"></el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope.row)">查 看</el-button>
@@ -81,14 +103,21 @@
                 },
                 total: 0,
                 list: [],
+                tableLoading: false,
             }
         },
         methods: {
             getList() {
-
+                this.tableLoading = true;
+                api.get('/wallet/bill/list', this.query).then(data => {
+                    this.list = data.list;
+                    this.total = data.total;
+                    this.tableLoading = false;
+                })
             },
             search() {
-
+                this.query.page = 1;
+                this.getList();
             },
             download() {
 

@@ -7,8 +7,10 @@ use App\BaseService;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
+use Illuminate\Database\Eloquent\Builder;
 
 class WalletService extends BaseService
 {
@@ -86,6 +88,7 @@ class WalletService extends BaseService
         $walletBill->inout_type = WalletBill::IN_TYPE;
         $walletBill->amount = $feeSplittingRecord->amount;
         $walletBill->amount_type = WalletBill::AMOUNT_TYPE_FREEZE;
+        $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
         $walletBill->save();
     }
 
@@ -164,5 +167,54 @@ class WalletService extends BaseService
         $walletBalanceUnfreezeRecord->save();
 
         return $walletBalanceUnfreezeRecord;
+    }
+
+    /**
+     * 根据用户信息获取钱包流水
+     * @param $param
+     * @param $originId
+     * @param $originType
+     * @param int $pageSize
+     * @param bool $withQuery
+     * @return WalletBill|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getWalletBillListByOriginInfo($param, $originId, $originType, $pageSize = 15, $withQuery = false)
+    {
+        $billNo = array_get($param, 'billNo', '');
+        $startDate = array_get($param, 'startDate', '');
+        $endDate = array_get($param, 'endDate', '');
+        $typeArr = array_get($param, 'typeArr', []);
+
+        $query = WalletBill::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->when($billNo, function (Builder $query) use ($billNo) {
+                $query->where('bill_no', $billNo);
+            })
+            ->when($startDate, function (Builder $query) use ($startDate) {
+                $query->whereDate('created_at', '>', $startDate);
+            })
+            ->when($endDate, function (Builder $query) use ($endDate) {
+                $query->whereDate('created_at', '<', $endDate);
+            })
+            ->when($typeArr, function (Builder $query) use ($typeArr) {
+                $query->whereIn('type', $typeArr);
+            })
+            ->orderBy('created_at', 'desc');
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate($pageSize);
+            $data->each(function ($item) {
+                $item->merchant_name = MerchantService::getNameById($item->origin_id);
+                if (in_array($item->type, [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED])) {
+                    $walletWithdraw = WalletWithdrawService::getWalletWithdrawById($item->obj_id);
+                    $item->status = $walletWithdraw->status;
+                } else {
+                    $item->status = 0;
+                }
+            });
+
+            return $data;
+        }
     }
 }

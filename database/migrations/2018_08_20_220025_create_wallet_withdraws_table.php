@@ -22,7 +22,7 @@ class CreateWalletWithdrawsTable extends Migration
             $table->decimal('amount', 11, 2)->default(0)->comment('提现金额');
             $table->decimal('charge_amount', 11, 2)->default(0)->comment('手续费');
             $table->decimal('remit_amount', 11, 2)->default(0)->comment('打款金额');
-            $table->tinyInteger('status')->index()->default(1)->comment('状态 1-提现中 2-提现成功');
+            $table->tinyInteger('status')->index()->default(1)->comment('状态 1-提现中 2-提现成功 3-提现失败');
             $table->string('invoice_express_company')->default('')->comment('发票快递公司');
             $table->string('invoice_express_no')->default('')->comment('发票快递编号');
             $table->tinyInteger('bank_card_type')->default(1)->comment('账户类型 1-公司 2-个人');

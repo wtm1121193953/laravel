@@ -13,4 +13,15 @@ use App\BaseService;
 class WalletWithdrawService extends BaseService
 {
 
+    /**
+     * 根据id获取提现记录
+     * @param $id
+     * @return WalletWithdraw
+     */
+    public static function getWalletWithdrawById($id)
+    {
+        $walletWithdraw = WalletWithdraw::find($id);
+
+        return $walletWithdraw;
+    }
 }
