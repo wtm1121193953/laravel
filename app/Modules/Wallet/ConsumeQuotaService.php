@@ -174,7 +174,7 @@ class ConsumeQuotaService extends BaseService
      * @param $withQuery
      * @return WalletConsumeQuotaRecord|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getWalletConsumeQuotaRecordList($param, $pageSize = 15, $withQuery = false)
+    public static function getConsumeQuotaRecordList($param, $pageSize = 15, $withQuery = false)
     {
         $consumeQuotaNo = array_get($param, 'consumeQuotaNo', '');
         $startDate = array_get($param, 'startDate', '');
@@ -219,6 +219,19 @@ class ConsumeQuotaService extends BaseService
     public static function getConsumeQuotaRecordById($id)
     {
         $consumeQuotaRecord = WalletConsumeQuotaRecord::find($id);
+        return $consumeQuotaRecord;
+    }
+
+    /**
+     * 获取消费额详情, 包含订单信息, 解冻信息等
+     * @param $id
+     * @return WalletConsumeQuotaRecord|WalletConsumeQuotaRecord[]|Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null
+     */
+    public static function getDetailById($id)
+    {
+        $consumeQuotaRecord = WalletConsumeQuotaRecord::with('order:id,pay_time')
+            ->with('unfreezeRecord')
+            ->find($id);
         return $consumeQuotaRecord;
     }
 
