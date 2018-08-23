@@ -26,7 +26,7 @@ class ReapalPay
     /**
      * 代付批次查询
      */
-    public static function queryAgentpayBatch()
+    public static function agentpayQueryBatch()
     {
 
     }
@@ -34,7 +34,7 @@ class ReapalPay
     /**
      * 代付单笔查询
      */
-    public static function queryAgentpaySingle()
+    public static function agentpayQuerySingle()
     {
 
     }
@@ -42,7 +42,23 @@ class ReapalPay
     /**
      * 代付账户查询余额
      */
-    public static function queryBalance()
+    public static function agentpayQueryBalance()
+    {
+
+    }
+
+    /**
+     * 预支付接口, 返回调起微信支付需要的参数
+     */
+    public static function prepay()
+    {
+
+    }
+
+    /**
+     * 支付通知接口
+     */
+    public static function payNotify()
     {
 
     }

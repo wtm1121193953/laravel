@@ -75,6 +75,14 @@ class PayController extends Controller
     }
 
     /**
+     * 融宝支付
+     */
+    public function reapalPayNotify()
+    {
+
+    }
+
+    /**
      * 支付成功
      * @param $orderNo
      * @param $transactionId
