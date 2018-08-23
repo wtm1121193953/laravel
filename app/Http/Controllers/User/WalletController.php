@@ -30,13 +30,17 @@ class WalletController extends Controller
         return Result::success($wallet);
     }
 
+    /**
+     * 获取账单信息
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function getBills()
     {
         $startDate = request('startDate');
         $endDate = request('endDate');
         $type = request('type');
         $user = request('current_user');
-        $bills = WalletService::getWalletBillList([
+        $bills = WalletService::getBillList([
             'originId' => $user->id,
             'originType' => WalletBill::ORIGIN_TYPE_USER,
             'startDate' => $startDate,
@@ -45,5 +49,20 @@ class WalletController extends Controller
         ], 20);
 
         return Result::success($bills);
+    }
+
+    /**
+     * 获取账单详情
+     * @return WalletBill|null
+     */
+    public function getBillDetail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $billInfo = WalletService::getBillDetailById($id);
+
+        return $billInfo;
     }
 }

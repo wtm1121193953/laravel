@@ -1,5 +1,7 @@
 ### 用户端小程序接口列表
 
+[TOC]
+
 ##### 接口统一前缀地址: https://domain/api/user
 
 ##### 请求统一参数:
@@ -1274,6 +1276,36 @@ order_no 订单号
       "code": 响应码
       "message": 响应信息,
       "data": { },
+      "timestamp": 时间戳
+  }
+  ```
+
+
+#### **钱包**
+
+- [ ] 更新用户微信昵称和头像
+
+  地址：GET`wallet/info`
+
+  参数：
+
+  ```
+  无
+  ```
+
+  返回： 
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应信息,
+      "data": {
+      	balance: 余额(不包含冻结余额),
+      	freeze_balance: 冻结余额,
+      	consume_quota: 当月消费额(不包含冻结),
+      	freeze_consume_quota: 冻结消费额,
+      	total_consume_quota: 累计消费额,
+      },
       "timestamp": 时间戳
   }
   ```

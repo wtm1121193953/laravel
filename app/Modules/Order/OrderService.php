@@ -191,9 +191,9 @@ class OrderService extends BaseService
         return Order::where('order_no', $orderNo)->firstOrFail();
     }
 
-    public static function getById($orderId)
+    public static function getById($orderId, $fields = ['*'])
     {
-        return Order::find($orderId);
+        return Order::find($orderId, $fields);
     }
 
     /**
@@ -226,5 +226,16 @@ class OrderService extends BaseService
         $order->save();
 
         return $order;
+    }
+
+    /**
+     * 获取退款单信息
+     * @param $refundId
+     * @param $fields
+     * @return OrderRefund
+     */
+    public static function getRefundById($refundId, $fields = ['*'])
+    {
+        return OrderRefund::find($refundId, $fields);
     }
 }
