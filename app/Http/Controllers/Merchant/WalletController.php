@@ -101,7 +101,7 @@ class WalletController extends Controller
     {
         $id = request('id');
         if (!$id) throw new BaseResponseException('id不能为空');
-        $walletBill = WalletService::getWalletBillById($id);
+        $walletBill = WalletService::getBillById($id);
         if (empty($walletBill)) throw new BaseResponseException('该钱包流水不存在');
 
         $walletBill->merchant_name = MerchantService::getNameById($walletBill->origin_id);

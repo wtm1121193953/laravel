@@ -228,7 +228,7 @@ class WalletService extends BaseService
      * @param $id
      * @return WalletBill
      */
-    public static function getWalletBillById($id)
+    public static function getBillById($id)
     {
         $walletBill = WalletBill::find($id);
         return $walletBill;
@@ -241,7 +241,7 @@ class WalletService extends BaseService
      */
     public static function getBillDetailById($id)
     {
-        $bill = self::getWalletBillById($id);
+        $bill = self::getBillById($id);
         if(empty($bill)){
             return null;
         }
