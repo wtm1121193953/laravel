@@ -11,8 +11,8 @@
             <el-table-column prop="status" label="签约状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1">已签约</span>
-                    <span v-else-if="scope.row.status === 2">已拒绝</span>
-                    <span v-else-if="scope.row.status === 3">待签约</span>
+                    <span v-else-if="scope.row.status === -1">已拒绝</span>
+                    <span v-else-if="scope.row.status === 0">待签约</span>
                 </template>
             </el-table-column>
             <el-table-column prop="remark" label="原因"/>
