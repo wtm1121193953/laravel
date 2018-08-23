@@ -5,5 +5,5 @@ import record from '../components/oper/record.vue'
  */
 export default [
     {path: '/opers', component: OperList, name: 'OperList'},
-    {path: '/opers/record', component: record, name: 'record'},
+    {path: '/opersRecord', component: record, name: 'record'},
 ];
