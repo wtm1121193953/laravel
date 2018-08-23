@@ -47,7 +47,7 @@ class WalletController extends Controller
         $originId = request()->get('current_user')->merchant_id;
         $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
         $param = compact('billNo', 'startDate', 'endDate', 'typeArr', 'originId', 'originType');
-        $data = WalletService::getWalletBillList($param, $pageSize);
+        $data = WalletService::getBillList($param, $pageSize);
         // 获取钱包信息
         $wallet = WalletService::getWalletInfoByOriginInfo($originId, $originType);
 
@@ -88,7 +88,7 @@ class WalletController extends Controller
         $originId = request()->get('current_user')->merchant_id;
         $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
         $param = compact('billNo', 'startDate', 'endDate', 'typeArr', 'originId', 'originType');
-        $query = WalletService::getWalletBillList($param, $pageSize, true);
+        $query = WalletService::getBillList($param, $pageSize, true);
 
         return (new WalletBillExport($query))->download('商户交易流水.xlsx');
     }
@@ -101,7 +101,7 @@ class WalletController extends Controller
     {
         $id = request('id');
         if (!$id) throw new BaseResponseException('id不能为空');
-        $walletBill = WalletService::getWalletBillById($id);
+        $walletBill = WalletService::getBillById($id);
         if (empty($walletBill)) throw new BaseResponseException('该钱包流水不存在');
 
         $walletBill->merchant_name = MerchantService::getNameById($walletBill->origin_id);

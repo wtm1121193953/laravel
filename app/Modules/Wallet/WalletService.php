@@ -9,6 +9,7 @@ use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
+use App\Modules\Order\OrderService;
 use App\Modules\User\User;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -176,7 +177,7 @@ class WalletService extends BaseService
      * @param bool $withQuery
      * @return WalletBill|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getWalletBillList($param, $pageSize = 15, $withQuery = false)
+    public static function getBillList($param, $pageSize = 15, $withQuery = false)
     {
         $billNo = array_get($param, 'billNo', '');
         $startDate = array_get($param, 'startDate', '');
@@ -227,9 +228,44 @@ class WalletService extends BaseService
      * @param $id
      * @return WalletBill
      */
-    public static function getWalletBillById($id)
+    public static function getBillById($id)
     {
         $walletBill = WalletBill::find($id);
         return $walletBill;
+    }
+
+    /**
+     * 获取账单详情, 包含账单的来源信息
+     * @param $id
+     * @return WalletBill|null
+     */
+    public static function getBillDetailById($id)
+    {
+        $bill = self::getBillById($id);
+        if(empty($bill)){
+            return null;
+        }
+        if(in_array($bill->type, [
+            WalletBill::TYPE_SELF,
+            WalletBill::TYPE_SUBORDINATE,
+            WalletBill::TYPE_OPER,
+        ])){
+            // 如果是消费相关, 补充订单号信息
+            $bill->order = OrderService::getById($bill->obj_id, ['order_no', 'status', 'created_at']);
+        }else if(in_array($bill->type, [
+            WalletBill::TYPE_SELF_CONSUME_REFUND,
+            WalletBill::TYPE_SUBORDINATE_REFUND,
+            WalletBill::TYPE_OPER_REFUND,
+        ])){
+            // 如果是退款相关, 补充退款信息
+            $bill->refund = OrderService::getRefundById($bill->obj_id, ['refund_no', 'status', 'created_at']);
+        }else if(in_array($bill->type, [
+            WalletBill::TYPE_WITHDRAW,
+            WalletBill::TYPE_WITHDRAW_FAILED,
+        ])){
+            // 提现相关, 补充提现单号
+            $bill->withdraw = WalletWithdrawService::getWalletWithdrawById($bill->obj_id, ['withdraw_no']);
+        }
+        return $bill;
     }
 }

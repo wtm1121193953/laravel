@@ -16,11 +16,12 @@ class WalletWithdrawService extends BaseService
     /**
      * 根据id获取提现记录
      * @param $id
+     * @param array $fields
      * @return WalletWithdraw
      */
-    public static function getWalletWithdrawById($id)
+    public static function getWalletWithdrawById($id, $fields = ['*'])
     {
-        $walletWithdraw = WalletWithdraw::find($id);
+        $walletWithdraw = WalletWithdraw::find($id, $fields);
 
         return $walletWithdraw;
     }

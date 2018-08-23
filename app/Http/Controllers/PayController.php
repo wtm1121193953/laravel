@@ -84,7 +84,7 @@ class PayController extends Controller
     private function paySuccess($orderNo, $transactionId, $totalFee)
     {
         // 处理订单支付成功逻辑
-        $order = OrderService::getinfoByOrderNo($orderNo);
+        $order = OrderService::getInfoByOrderNo($orderNo);
 
         if($order->status === Order::STATUS_UN_PAY
             || $order->status === Order::STATUS_CANCEL

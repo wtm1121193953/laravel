@@ -186,14 +186,14 @@ class OrderService extends BaseService
         return $count;
     }
 
-    public static function getinfoByOrderNo($orderNo)
+    public static function getInfoByOrderNo($orderNo)
     {
         return Order::where('order_no', $orderNo)->firstOrFail();
     }
 
-    public static function getById($orderId)
+    public static function getById($orderId, $fields = ['*'])
     {
-        return Order::find($orderId);
+        return Order::find($orderId, $fields);
     }
 
     /**
@@ -226,5 +226,33 @@ class OrderService extends BaseService
         $order->save();
 
         return $order;
+    }
+
+    /**
+     * 获取退款单信息
+     * @param $refundId
+     * @param $fields
+     * @return OrderRefund
+     */
+    public static function getRefundById($refundId, $fields = ['*'])
+    {
+        return OrderRefund::find($refundId, $fields);
+    }
+
+    /**
+     * 生成退款单号
+     * @param int $retry
+     * @return string
+     */
+    public static function genRefundNo($retry = 1000)
+    {
+        if($retry == 0){
+            throw new BaseResponseException('退款单号生成已超过最大重试次数');
+        }
+        $refundNo = 'R' . date('YmdHis') . rand(1000, 9999);
+        if(OrderRefund::where('refund_no', $refundNo)->first()){
+            $refundNo = self::genRefundNo(--$retry);
+        }
+        return $refundNo;
     }
 }
