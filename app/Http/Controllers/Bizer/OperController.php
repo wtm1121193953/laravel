@@ -5,46 +5,66 @@ namespace App\Http\Controllers\Bizer;
 use App\Http\Controllers\Controller;
 use App\Modules\Oper\OperService;
 use App\Modules\Oper\OperBizer;
+use App\Modules\Oper\OperBizerService;
 use App\Result;
 
 class OperController extends Controller {
 
     /**
-     * 已添加的运营中心列表
+     * 运营中心列表
      * @author tong.chen
      * @date 2018-8-22
      */
     public function getList() {
 
-        $startTime = request('startTime');
-        $endTime = request('endTime');
+        $startTime = request('start_time');
+        $endTime = request('end_time');
         $name = request('name');
         $contacter = request('contacter');
         $tel = request('tel');
-        $provinceId = request('provinceId');
-        $cityId = request('cityId');
+        $provinceId = request('province_id');
+        $cityId = request('city_id');
         $status = request('status');
-        
-//        $data = OperService::getAll(['status' => 1], 'id,name');
-//
-//        return Result::success([
-//                    'list' => $data,
-//                    'total' => $data->total(),
-//        ]);
+        $bizerId = request()->get('current_user')->id;
+
+        $opers = OperService::getAll([
+                    'name' => $name,
+                    'contacter' => $contacter,
+                    'tel' => $tel,
+                    'province_id' => $provinceId,
+                    'city_id' => $cityId
+                        ], 'id');
+
+        $operIds = [];
+        $opers->each(function ($oper) use (&$operIds) {
+            $operIds[] = $oper->id;
+        });
+
+        $data = OperBizerService::getList([
+                    'bizer_id' => $bizerId,
+                    'oper_ids' => $operIds,
+                    'start_time' => $startTime,
+                    'end_time' => $endTime,
+                    'status' => $status
+        ]);
+
+        return Result::success([
+                    'list' => $data->items(),
+                    'total' => $data->total(),
+        ]);
     }
-    
+
     /**
-     * 添加运营中心列表
+     * 运营中心名称列表
      * @author tong.chen
      * @date 2018-8-22
      */
-    public function getAddList() {
-
+    public function getNameList() {
         $data = OperService::getAll(['status' => 1], 'id,name');
 
         return Result::success([
                     'list' => $data,
-                    'total' => $data->total(),
+//                    'total' => $data->total(),
         ]);
     }
 
@@ -55,13 +75,13 @@ class OperController extends Controller {
      */
     public function add() {
         $this->validate(request(), [
-            'operId' => 'required',
-            'bizerId' => 'required',
+            'oper_id' => 'required',
+            'bizer_id' => 'required',
             'remark' => 'required'
         ]);
 
-        $operId = request('operId');
-        $bizerId = request('bizerId');
+        $operId = request('oper_id');
+        $bizerId = request()->get('current_user')->id;
         $remark = request('remark');
 //        $model = new OperBizer();
 

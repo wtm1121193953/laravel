@@ -22,5 +22,5 @@ Route::prefix('bizer')
         Route::get('orders', 'OrderController@getList');
         Route::get('merchant/allMerchantNames', 'OrderController@allMerchantNames');
         
-        Route::group([], base_path('routes/api/admin/oper.php'));
+        Route::group([], base_path('routes/api/bizer/oper.php'));
     });
