@@ -49,7 +49,10 @@ class WalletController extends Controller
             'typeArr' => [$type],
         ], 20);
 
-        return Result::success($bills);
+        return Result::success([
+            'list' => $bills->items(),
+            'total' => $bills->total(),
+        ]);
     }
 
     /**
@@ -71,6 +74,6 @@ class WalletController extends Controller
             throw new NoPermissionException('账单信息不存在');
         }
 
-        return $billInfo;
+        return Result::success($billInfo);
     }
 }

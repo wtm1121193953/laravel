@@ -1283,9 +1283,9 @@ order_no 订单号
 
 #### **钱包**
 
-- [ ] 更新用户微信昵称和头像
+- [ ] 获取钱包信息接口
 
-  地址：GET`wallet/info`
+  地址：GET `wallet/info`
 
   参数：
 
@@ -1311,6 +1311,108 @@ order_no 订单号
   ```
 
   
+
+
+
+- [ ] 获取账单接口
+
+  地址：GET `wallet/bills`
+
+  参数：
+
+  ```
+  {
+      startDate: 起始日期,
+      endDate: 结束日期,
+      type: 类型 1-个人消费返利  2-下级消费返利  3-个人消费返利退款  4-下级消费返利退款 5-运营中心交易分润 6-运营中心交易分润退款 7-提现 8-提现失败退回
+  }
+  ```
+
+  返回： 
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应信息,
+      "data": {
+      	list: {
+              id: 流水ID,
+              bill_no: 流水单号,
+              type: 类型 1-个人消费返利  2-下级消费返利  3-个人消费返利退款  4-下级消费返利退款 5-运营中心交易分润 6-运营中心交易分润退款 7-提现 8-提现失败,
+              obj_id: 产生流水的来源ID, 返利相关为返利记录ID, 提现为提现记录ID,
+              inout_type: 收支类型 1-收入 2-支出,
+              amount: 变动金额,
+              amount_type: 变动金额类型, 1-冻结金额, 2-非冻结金额,
+              created_at: 交易时间,
+              status: 提现状态(若类型是提现相关[7,8]),
+      	},
+      	total: 总记录数
+      },
+      "timestamp": 时间戳
+  }
+  ```
+
+- [ ] 获取账单详情接口
+
+  地址: GET `wallet/bill/detail`
+
+  参数: 
+
+  ```
+  id: 必填
+  page: 当前页码
+  ```
+
+  返回:
+
+  ```
+  {
+      "code": 响应码
+      "message": 响应信息,
+      "data": {
+      	id: 流水ID,
+      	bill_no: 流水单号,
+      	type: 类型 1-个人消费返利  2-下级消费返利  3-个人消费返利退款  4-下级消费返利退款 5-运营中心交易分润 6-运营中心交易分润退款 7-提现 8-提现失败,
+      	obj_id: 产生流水的来源ID, 返利相关为返利记录ID, 提现为提现记录ID,
+      	inout_type: 收支类型 1-收入 2-支出,
+      	amount: 变动金额,
+      	amount_type: 变动金额类型, 1-冻结金额, 2-非冻结金额,
+      	created_at: 交易时间,
+      	status: 提现状态(若类型是提现相关[7,8]),
+      	order: 订单信息, 当类型为返利相关时存在(1,2,3,4,5,6) {
+              id: 订单ID,
+              order_no: 订单号,
+              status: 订单状态,
+              created_at: 订单创建时间,
+              pay_time: 支付时间(交易时间)
+      	},
+      	refund: 退款信息, 当类型为返利退款时存在(3,4,6) {
+              id: 退款ID,
+              refund_no: 退款单号,
+              status: 退款状态,
+              created_at: 退款时间,
+      	},
+      	withdraw: 提现信息, 当类型为提现时存在(7,8)  {
+              id: 提现ID,
+              withdraw_no: 提现编号,
+              amount: 提现金额,
+              charge_amount: 手续费,
+              status: 状态 1-提现中 2-提现成功 3-提现失败,
+              bank_card_type: 账户类型 1-公司 2-个人,
+              bank_card_open_name: 银行卡开户名,
+              bank_card_no: 银行卡号,
+              bank_name: 开户行,
+              created_at: 提现时间,
+      	}
+      	
+      },
+      "timestamp": 时间戳
+  }
+  ```
+
+  
+
+
 
 
 
