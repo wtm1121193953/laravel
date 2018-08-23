@@ -210,7 +210,7 @@ class MerchantService extends BaseService
             if (count($merchantCategory) == 1) {
                 $merchantCategoryFinalId = MerchantCategory::where('pid', $merchantCategory[0])
                     ->select('id')->get()
-                    ->pluck('id');
+                    ->pluck('id')->toArray();
             } else {
                 $merchantCategoryFinalId = intval($merchantCategory[1]);
             }
