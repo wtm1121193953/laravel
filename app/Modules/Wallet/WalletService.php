@@ -172,21 +172,25 @@ class WalletService extends BaseService
     /**
      * 根据用户信息获取钱包流水
      * @param $param
-     * @param $originId
-     * @param $originType
      * @param int $pageSize
      * @param bool $withQuery
      * @return WalletBill|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getWalletBillListByOriginInfo($param, $originId, $originType, $pageSize = 15, $withQuery = false)
+    public static function getWalletBillList($param, $pageSize = 15, $withQuery = false)
     {
         $billNo = array_get($param, 'billNo', '');
         $startDate = array_get($param, 'startDate', '');
         $endDate = array_get($param, 'endDate', '');
         $typeArr = array_get($param, 'typeArr', []);
+        $originId = array_get($param, 'originId', 0);
+        $originType = array_get($param, 'originType', 0);
 
-        $query = WalletBill::where('origin_id', $originId)
-            ->where('origin_type', $originType)
+        $query = WalletBill::when($originId, function (Builder $query) use ($originId) {
+                $query->where('origin_id', $originId);
+            })
+            ->when($originType, function (Builder $query) use ($originType) {
+                $query->where('origin_type', $originType);
+            })
             ->when($billNo, function (Builder $query) use ($billNo) {
                 $query->where('bill_no', $billNo);
             })
@@ -216,5 +220,16 @@ class WalletService extends BaseService
 
             return $data;
         }
+    }
+
+    /**
+     * 通过ID获取钱包流水
+     * @param $id
+     * @return WalletBill
+     */
+    public static function getWalletBillById($id)
+    {
+        $walletBill = WalletBill::find($id);
+        return $walletBill;
     }
 }

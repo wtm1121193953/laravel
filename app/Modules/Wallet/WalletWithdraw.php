@@ -34,10 +34,11 @@ class WalletWithdraw extends BaseModel
     const ORIGIN_TYPE_OPER = 3; // 运营中心
 
     /**
-     * 状态 1-提现中 2-提现成功
+     * 状态 1-提现中 2-提现成功 3-提现失败
      */
     const STATUS_WITHDRAWING = 1;
     const STATUS_WITHDRAW_SUCCESS = 2;
+    const STATUS_WITHDRAW_FAILED = 3;
 
     /**
      * 账户类型 1-公司 2-个人

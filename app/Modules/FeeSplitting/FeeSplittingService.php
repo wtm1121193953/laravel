@@ -148,4 +148,15 @@ class FeeSplittingService extends BaseService
         $feeSplittingRecord->save();
         return $feeSplittingRecord;
     }
+
+    /**
+     * 通过id获取分润记录
+     * @param $id
+     * @return FeeSplittingRecord
+     */
+    public static function getFeeSplittingRecordById($id)
+    {
+        $feeSplittingRecord = FeeSplittingRecord::find($id);
+        return $feeSplittingRecord;
+    }
 }
