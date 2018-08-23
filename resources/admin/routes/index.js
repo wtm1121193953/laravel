@@ -15,6 +15,9 @@ import merchant from './merchant'
 import members from './members'
 import setting from './setting'
 
+import SettlementList from '../components/settlement/list.vue'
+import SettlementPlatfroms from '../components/settlement/platform.vue'
+
 /**
  *
  */
@@ -40,6 +43,16 @@ const routes = [
     ...merchant,
     ...members,
     ...setting,
+
+    // 财务模块
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: '/settlements', component: SettlementList, name: 'SettlementList'},
+            {path: '/settlement/platforms', component: SettlementPlatfroms, name: 'SettlementPlatfroms'},
+        ]
+    },
 
     {
         path: '/',

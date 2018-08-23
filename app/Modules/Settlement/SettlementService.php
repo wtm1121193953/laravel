@@ -11,6 +11,7 @@ namespace App\Modules\Settlement;
 
 use App\BaseService;
 use App\Modules\Order\Order;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class SettlementService extends BaseService
@@ -27,6 +28,25 @@ class SettlementService extends BaseService
         $data = Settlement::where('merchant_id', $merchantId)
             ->orderBy('id', 'desc')
             ->paginate();
+        return $data;
+    }
+
+    /**
+     * SAAS获取结算单列表【旧】
+     * @param array $params {merchantId, operId}
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getListForSaas(array $params = [])
+    {
+        //DB::enableQueryLog();
+        $data = Settlement::where('id', '>', 0)
+            ->whereHas('merchant', function( $query){
+                $query->where('name', 'like', '百事可乐');
+            })
+            ->with('merchant:id,name')
+            ->orderBy('id', 'desc')
+            ->paginate();
+        //dd(DB::getQueryLog());
         return $data;
     }
 
