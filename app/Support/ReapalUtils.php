@@ -173,7 +173,7 @@ class ReapalUtils
     }
 
 
-    function send($paramArr, $url, $apiKey, $reapalPublicKey, $merchant_id,$version,$sign_type){
+    function send($paramArr, $url, $apiKey, $reapalPublicKey, $merchant_id,$version,$sign_type=''){
         //生成签名
         $sign = $this->createSign($paramArr,$apiKey);
         $paramArr['sign_type'] = 'MD5';

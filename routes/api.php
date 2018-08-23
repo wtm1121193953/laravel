@@ -26,6 +26,7 @@ Route::post('/upload/image', 'UploadController@image');
 
 // 微信支付回调
 Route::any('/pay/notify', 'PayController@notify');
+Route::any('/pay/reapalPayNotify', 'PayController@reapalPayNotify');
 // 模拟支付成功接口, 只有本地才有效
 Route::any('/pay/mockPaySuccess', 'PayController@mockPaySuccess');
 Route::any('/app/user/pay/mockPaySuccess', 'PayController@mockPaySuccess');
