@@ -15,6 +15,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperBizer;
 use App\Modules\Oper\OperBizMember;
 use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
@@ -242,6 +243,7 @@ class MerchantService extends BaseService
                 $item->business_time = json_decode($item->business_time, 1);
                 $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
                 $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
+                $item->divide = (OperBizer::where('oper_id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('divide')) * 100 ."%";
                 $item->operBizMemberName = OperBizMember::where('oper_id', $item->operId)->where('code', $item->oper_biz_member_code)->value('name') ?: '无';
             });
 
