@@ -53,9 +53,9 @@
             <el-table-column prop="order_no" label="订单号"/>
             <el-table-column prop="type" label="订单类型">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.type == 1">团购</span>
-                    <span v-else-if="scope.row.type == 2">买单</span>
-                    <span v-else-if="scope.row.type == 3">单品</span>
+                    <span v-if="scope.row.type == 1">团购订单</span>
+                    <span v-else-if="scope.row.type == 2">扫码买单</span>
+                    <span v-else-if="scope.row.type == 3">单品订单</span>
                     <span v-else>未知({{scope.row.type}})</span>
                 </template>
             </el-table-column>
@@ -95,15 +95,17 @@
             <div class="dialog-details clearfix">
                 <dl>
                     
-                    <dd v-if="detailOption.type== 1" class="c-danger">订单类型：团购</dd>
-                    <dd v-else-if="detailOption.type== 2" class="c-danger">订单类型：买单</dd>
-                    <dd v-else-if="detailOption.type== 3" class="c-danger">订单类型：单品</dd>
+                    <dd v-if="detailOption.type== 1" class="c-danger">订单类型：团购订单</dd>
+                    <dd v-else-if="detailOption.type== 2" class="c-danger">订单类型：扫码买单</dd>
+                    <dd v-else-if="detailOption.type== 3" class="c-danger">订单类型：单品订单</dd>
                     <dd v-else class="c-danger">订单类型：未知</dd>
                     
                     <dd>商户名称：{{detailOption.merchant_name}}</dd>
-                    <dd>单价：{{detailOption.price}}元</dd>
-                    <dd>总价：{{detailOption.pay_price}}元</dd>
-                    <dd>身份：{{detailOption.merchant_name}}</dd>
+                    <template v-if="detailOption.type== 1 || detailOption.type== 3">    
+                        <dd>单价：{{detailOption.price}}元</dd>
+                        <dd>总价：{{detailOption.pay_price}}元</dd>
+                        <dd>身份：{{detailOption.merchant_name}}</dd>
+                    </template>
                     
                     <dd v-if="parseInt(detailOption.status) === 1">订单状态：未支付</dd>
                     <dd v-else-if="parseInt(detailOption.status) === 2">订单状态：已取消</dd>
@@ -117,7 +119,9 @@
                 </dl>
                 <dl>
                     <dd>订单号：{{detailOption.order_no}}</dd>
-                    <dd>商品名称：{{detailOption.goods_name}}</dd>
+                    <template v-if="detailOption.type== 1 || detailOption.type== 3">
+                        <dd>商品名称：{{detailOption.goods_name}}</dd>
+                    </template>
                     <dd>数量：{{detailOption.buy_number}}</dd>
                     <dd>手机号：{{detailOption.notify_mobile}}</dd>
                     <!--<dd>返利积分：20</dd>-->
