@@ -54,8 +54,15 @@ class OrderService extends BaseService
                     $query->where('type', Order::TYPE_DISHES);
                 });
         });
-        if($merchantId > 0){
-            $query->where('merchant_id', $merchantId);
+        //if($merchantId > 0){
+            //$query->where('merchant_id', $merchantId);
+       // }
+        if(!empty($merchantId)){
+            if (is_array($merchantId) || $merchantId instanceof Collection) {
+                $query->whereIn('merchant_id', $merchantId);
+            } else {
+                $query->where('merchant_id', $merchantId);
+            }
         }
         if($operId > 0){
             $query->where('oper_id', $operId);

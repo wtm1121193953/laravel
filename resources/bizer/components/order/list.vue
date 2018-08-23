@@ -91,7 +91,7 @@
                 :page-size="15"
                 :total="total"/>
 
-        <el-dialog title="订单详情" :visible.sync="dialogDetailVisible" width="40%">
+        <el-dialog title="订单详情" :visible.sync="dialogDetailVisible">
             <div class="dialog-details clearfix">
                 <dl>
                     <dd class="c-danger">订单类型：团购订单</dd>

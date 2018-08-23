@@ -37,6 +37,10 @@ class OrderController extends Controller
             'startFinishTime' => request('startTime'),
             'endFinishTime' => request('endTime'),
         ];
+        if(empty(request('merchantId'))){//当商户ID 不存在的时候，取当前业务员的所有商户
+            $where["merchantId"] = Merchant::where('bizer_id', request()->get('current_user')->id)->where('status', 1)->select('id')->get()->pluck('id')->toArray();
+        }
+        
         //echo "<pre>";print_r($where);exit;
         $data = OrderService::getList($where);
         

@@ -83,7 +83,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="operName" label="所属运营中心"/>
-            <el-table-column prop="divided_into" label="分成"/>
+            <el-table-column prop="divide" label="分成"/>
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="searchorders(scope.row.id)">查看订单</el-button>
