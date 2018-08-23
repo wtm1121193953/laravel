@@ -15,7 +15,7 @@ class AlertOrderRefundsTableAddRefundNoColumn extends Migration
     {
         //
         Schema::table('order_refunds', function (Blueprint $table) {
-            $table->string('refund_no')->default('')->comment('退款单号')->after('id');
+            $table->string('refund_no')->index()->default('')->comment('退款单号')->after('id');
         });
     }
 
