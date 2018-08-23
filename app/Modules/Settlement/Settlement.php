@@ -3,6 +3,7 @@
 namespace App\Modules\Settlement;
 
 use App\BaseModel;
+use App\Modules\Merchant\Merchant;
 use Illuminate\Support\Carbon;
 
 
@@ -37,4 +38,8 @@ use Illuminate\Support\Carbon;
 class Settlement extends BaseModel
 {
     //
+    public function merchant()
+    {
+        return $this->belongsTo(Merchant::class);
+    }
 }
