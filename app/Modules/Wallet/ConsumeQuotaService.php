@@ -9,6 +9,7 @@ use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
 use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserCreditSettingService;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * 消费额相关service
@@ -27,7 +28,7 @@ class ConsumeQuotaService extends BaseService
         // 1. 添加自己的消费额
         self::addFreezeConsumeQuotaToSelf($order);
         // 2. 添加上级的消费额
-        self::addFreezeConsumeQuotaToParent($order);
+//        self::addFreezeConsumeQuotaToParent($order);
     }
 
     /**
@@ -132,11 +133,13 @@ class ConsumeQuotaService extends BaseService
 
         $consumeQuotaRecord = new WalletConsumeQuotaRecord();
         $consumeQuotaRecord->wallet_id = $wallet->id;
+        $consumeQuotaRecord->consume_quota_no = WalletService::createWalletBillNo();
         $consumeQuotaRecord->origin_id = $wallet->origin_id;
         $consumeQuotaRecord->origin_type = $wallet->origin_type;
         $consumeQuotaRecord->type = $type;
         $consumeQuotaRecord->order_id = $order->id;
         $consumeQuotaRecord->order_no = $order->order_no;
+        $consumeQuotaRecord->pay_price = $order->pay_price;
         $consumeQuotaRecord->order_profit_amount = OrderService::getProfitAmount($order);
         $consumeQuotaRecord->consume_quota = $consumeQuota;
         $consumeQuotaRecord->consume_user_mobile = $order->notify_mobile;
@@ -162,5 +165,71 @@ class ConsumeQuotaService extends BaseService
         $walletConsumeQuotaUnfreezeRecord->save();
 
         return $walletConsumeQuotaUnfreezeRecord;
+    }
+
+    /**
+     * 获取消费额记录
+     * @param $param
+     * @param int $pageSize
+     * @param $withQuery
+     * @return WalletConsumeQuotaRecord|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getWalletConsumeQuotaRecordList($param, $pageSize = 15, $withQuery = false)
+    {
+        $consumeQuotaNo = array_get($param, 'consumeQuotaNo', '');
+        $startDate = array_get($param, 'startDate', '');
+        $endDate = array_get($param, 'endDate', '');
+        $status = array_get($param, 'status', 0);
+        $originId = array_get($param, 'originId', 0);
+        $originType = array_get($param, 'originType', 0);
+
+        $query = WalletConsumeQuotaRecord::when($originId, function (Builder $query) use ($originId) {
+            $query->where('origin_id', $originId);
+        })
+            ->when($originType, function (Builder $query) use ($originType) {
+                $query->where('origin_type', $originType);
+            })
+            ->when($consumeQuotaNo, function (Builder $query) use ($consumeQuotaNo) {
+                $query->where('consume_quota_no', $consumeQuotaNo);
+            })
+            ->when($startDate, function (Builder $query) use ($startDate) {
+                $query->whereDate('created_at', '>', $startDate);
+            })
+            ->when($endDate, function (Builder $query) use ($endDate) {
+                $query->whereDate('created_at', '<', $endDate);
+            })
+            ->when($status, function (Builder $query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->orderBy('created_at', 'desc');
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate($pageSize);
+
+            return $data;
+        }
+    }
+
+    /**
+     * 根据id获取消费额记录
+     * @param $id
+     * @return WalletConsumeQuotaRecord
+     */
+    public static function getConsumeQuotaRecordById($id)
+    {
+        $consumeQuotaRecord = WalletConsumeQuotaRecord::find($id);
+        return $consumeQuotaRecord;
+    }
+
+    /**
+     * 根据id获取消费额解冻记录
+     * @param $id
+     * @return WalletConsumeQuotaUnfreezeRecord
+     */
+    public static function getConsumeQuotaUnfreezeRecordById($id)
+    {
+        $unfreezeRecord = WalletConsumeQuotaUnfreezeRecord::find($id);
+        return $unfreezeRecord;
     }
 }

@@ -8,6 +8,7 @@ use App\BaseModel;
  * Class WalletConsumeQuotaUnfreezeRecord
  * @package App\Modules\Wallet
  * @property integer wallet_id
+ * @property integer consume_quota_record_id
  * @property integer origin_id
  * @property integer origin_type
  * @property float unfreeze_consume_quota

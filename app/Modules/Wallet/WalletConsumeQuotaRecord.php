@@ -8,11 +8,13 @@ use App\BaseModel;
  * Class WalletConsumeQuotaRecord
  * @package App\Modules\Wallet
  * @property integer wallet_id
+ * @property string consume_quota_no
  * @property integer origin_id
  * @property integer origin_type
  * @property integer type
  * @property integer order_id
  * @property string order_no
+ * @property float pay_price
  * @property float order_profit_amount
  * @property float consume_quota
  * @property string consume_user_mobile

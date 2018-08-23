@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Merchant;
 
 use App\Exceptions\BaseResponseException;
 use App\Exports\WalletBillExport;
+use App\Exports\WalletConsumeQuotaRecordExport;
 use App\Http\Controllers\Controller;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Merchant\MerchantService;
-use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
+use App\Modules\Wallet\ConsumeQuotaService;
 use App\Modules\Wallet\WalletBill;
+use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use App\Modules\Wallet\WalletService;
 use App\Modules\Wallet\WalletWithdrawService;
 use App\Result;
@@ -62,7 +64,7 @@ class WalletController extends Controller
      * 导出商户的交易流水
      * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function exportExcel()
+    public function exportBillExcel()
     {
         $billNo = request('billNo', '');
         $startDate = request('startDate', '');
@@ -91,6 +93,10 @@ class WalletController extends Controller
         return (new WalletBillExport($query))->download('商户交易流水.xlsx');
     }
 
+    /**
+     * 获取钱包流水明细
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
     public function getBillDetail()
     {
         $id = request('id');
@@ -116,5 +122,78 @@ class WalletController extends Controller
             'billData' => $walletBill,
             'orderOrWithdrawData' => $orderOrWithdrawData,
         ]);
+    }
+
+    /**
+     * 获取消费额记录列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getConsumeQuotaList()
+    {
+        $consumeQuotaNo = request('consumeQuotaNo', '');
+        $startDate = request('startDate', '');
+        $endDate = request('endDate', '');
+        $status = request('status', 0);
+        $pageSize = request('pageSize', 15);
+
+        $originId = request()->get('current_user')->merchant_id;
+        $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
+        $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
+        $data = ConsumeQuotaService::getWalletConsumeQuotaRecordList($param, $pageSize);
+        // 获取钱包信息
+        $wallet = WalletService::getWalletInfoByOriginInfo($originId, $originType);
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+            'consumeQuota' => $wallet->consume_quota,
+            'freezeConsumeQuota' => $wallet->freeze_consume_quota,
+        ]);
+    }
+
+    /**
+     * 导出消费额记录
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportConsumeQuotaRecordExcel()
+    {
+        $consumeQuotaNo = request('consumeQuotaNo', '');
+        $startDate = request('startDate', '');
+        $endDate = request('endDate', '');
+        $status = request('status', 0);
+        $pageSize = request('pageSize', 15);
+
+        $originId = request()->get('current_user')->merchant_id;
+        $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
+        $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
+        $query = ConsumeQuotaService::getWalletConsumeQuotaRecordList($param, $pageSize);
+
+        return (new WalletConsumeQuotaRecordExport($query))->download('消费额记录表.xlsx');
+    }
+
+    /**
+     * 获取消费额记录详情
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getConsumeQuotaDetail()
+    {
+        $id = request('id');
+        if (!$id) throw new BaseResponseException('id不能为空');
+        $consumeQuotaRecord = ConsumeQuotaService::getConsumeQuotaRecordById($id);
+        if (empty($consumeQuotaRecord)) throw new BaseResponseException('该消费额记录不存在');
+
+        if ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_FREEZE) {
+            $consumeQuotaRecord->time = $consumeQuotaRecord->created_at->addDays(1);
+        } elseif ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_REPLACEMENT) {
+            $consumeQuotaUnfreezeRecord = ConsumeQuotaService::getConsumeQuotaUnfreezeRecordById($consumeQuotaRecord->id);
+            $consumeQuotaRecord->time = $consumeQuotaUnfreezeRecord->created_at;
+        } elseif ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_REFUND) {
+            $order = OrderService::getById($consumeQuotaRecord->order_id);
+            $consumeQuotaRecord->time = $order->refund_time;
+        } else {
+            $consumeQuotaRecord->time = null;
+        }
+
+        return Result::success($consumeQuotaRecord);
     }
 }
