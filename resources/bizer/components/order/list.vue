@@ -78,7 +78,7 @@
             <el-table-column prop="operName" label="所属运营中心"/>            
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
-                    <el-button type="text" @click="details()">查看详情</el-button>
+                    <el-button type="text" @click="details(scope.$index)">查看详情</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -167,7 +167,7 @@
                     this.auditRecord = [data];
                 })
             },
-            details(){
+            details(index){
                 this.dialogDetailVisible = true;
             },
         },
