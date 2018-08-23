@@ -66,4 +66,8 @@ Route::prefix('user')
 
         Route::get('tps/getBindInfo', 'TpsBindController@getBindInfo')->middleware(UserLoginFilter::class);
         Route::post('tps/bindAccount', 'TpsBindController@bindAccount')->middleware(UserLoginFilter::class);
+
+
+        Route::get('wallet/info', 'WalletController@getWallet')->middleware(UserLoginFilter::class);
+        Route::get('wallet/bills', 'WalletController@getBills')->middleware(UserLoginFilter::class);
     });
