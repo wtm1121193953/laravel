@@ -21,17 +21,17 @@
                 <el-input v-model="query.contactNumber" placeholder="请输入联系电话" clearable @keyup.enter.native="search"/>
             </el-form-item>
             <el-form-item prop="city" label="所在城市">
-                <el-cascader
-                        change-on-select
-                        clearable
-                        filterable
-                        :options="cityOptions"
-                        :props="{
+                <el-cascader 
+                    change-on-select
+                    clearable
+                    filterable
+                    :options="cityOptions"
+                    :props="{
                             value: 'id',
                             label: 'name',
                             children: 'sub',
                         }"
-                        v-model="query.city">
+                    v-model="query.city">
                 </el-cascader>
             </el-form-item>
             <el-form-item prop="status" label="状态">
@@ -153,14 +153,15 @@
             },
         },
         created(){
-            // api.get('merchant/categories/tree').then(data => {
-            //     this.categoryOptions = data.list;
-            // });
-            // this.categoryOptions = [];
-            // if (this.$route.params){
-            //     Object.assign(this.query, this.$route.params);
-            // }
-            // this.getList();
+            let _self = this;
+            if (_self.$route.params){
+                Object.assign(_self.query, _self.$route.params);
+            }
+            api.get('/api/bizer/area/tree?tier=2').then(data => {
+                console.log(data.list)
+                _self.cityOptions = data.list;
+            });
+            //this.getList();
         },
         components: {
 
