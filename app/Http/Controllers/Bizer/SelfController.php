@@ -155,7 +155,7 @@ class SelfController extends Controller {
             ['id' => 3, 'name' => '运营中心管理', 'level' => 1, 'url' => '/bizer/opers', 'sub' =>
                 [
                     ['id' => 30, 'name' => '运营中心列表', 'level' => 2, 'url' => '/bizer/opers', 'pid' => 3],
-                    ['id' => 31, 'name' => '申请记录', 'level' => 2, 'url' => '', 'pid' => 3],
+                    ['id' => 31, 'name' => '申请记录', 'level' => 2, 'url' => '/bizer/opers/record', 'pid' => 3],
                 ]
             ],
 //            ['id' => 4, 'name' => '财务管理', 'level' => 1, 'url' => '/bizer/settlements', 'sub' =>
