@@ -94,20 +94,34 @@
         <el-dialog title="订单详情" :visible.sync="dialogDetailVisible">
             <div class="dialog-details clearfix">
                 <dl>
-                    <dd class="c-danger">订单类型：团购订单</dd>
-                    <dd>商户名称：我是宇宙牛逼店铺</dd>
-                    <dd>单价：100元</dd>
-                    <dd>总价：200</dd>
-                    <dd>身份：萌新</dd>
-                    <dd>订单状态：已消费</dd>
+                    
+                    <dd v-if="detailOption.type== 1" class="c-danger">订单类型：团购</dd>
+                    <dd v-else-if="detailOption.type== 2" class="c-danger">订单类型：买单</dd>
+                    <dd v-else-if="detailOption.type== 3" class="c-danger">订单类型：单品</dd>
+                    <dd v-else class="c-danger">订单类型：未知</dd>
+                    
+                    <dd>商户名称：{{detailOption.merchant_name}}</dd>
+                    <dd>单价：{{detailOption.price}}元</dd>
+                    <dd>总价：{{detailOption.pay_price}}元</dd>
+                    <dd>身份：{{detailOption.merchant_name}}</dd>
+                    
+                    <dd v-if="parseInt(detailOption.status) === 1">订单状态：未支付</dd>
+                    <dd v-else-if="parseInt(detailOption.status) === 2">订单状态：已取消</dd>
+                    <dd v-else-if="parseInt(detailOption.status) === 3">订单状态：已关闭[超时自动关闭]</dd>
+                    <dd v-else-if="parseInt(detailOption.status) === 4">订单状态：已支付</dd>
+                    <dd v-else-if="parseInt(detailOption.status) === 5">订单状态：退款中[保留状态]</dd>
+                    <dd v-else-if="parseInt(detailOption.status) === 6">订单状态：已退款</dd>
+                    <dd v-else-if="parseInt(detailOption.status) === 7">订单状态：已完成</dd>
+                    <dd v-else>订单状态：未知</dd>
+                    
                 </dl>
                 <dl>
-                    <dd>订单号：45675678567</dd>
-                    <dd>商品名称：我是宇宙牛逼店铺的商品名</dd>
-                    <dd>数量：2</dd>
-                    <dd>手机号：159****2307</dd>
-                    <dd>返利积分：20</dd>
-                    <dd>订单创建时间：2018-07-05 12:30:20</dd>
+                    <dd>订单号：{{detailOption.order_no}}</dd>
+                    <dd>商品名称：{{detailOption.goods_name}}</dd>
+                    <dd>数量：{{detailOption.buy_number}}</dd>
+                    <dd>手机号：{{detailOption.notify_mobile}}</dd>
+                    <!--<dd>返利积分：20</dd>-->
+                    <dd>订单创建时间：{{detailOption.created_at}}</dd>
                     <!-- <dd>
                         <p>商品信息：</p>
                         <p class="clearfix"><span class="fl">我是宇宙牛逼店铺的商品名</span><span class="fr">100¥</span></p>
@@ -140,7 +154,8 @@
                 list: [],
                 total: 0,
 
-                dialogDetailVisible: false
+                dialogDetailVisible: false,
+                detailOption: {},
             }
         },
         computed: {
@@ -168,6 +183,8 @@
                 })
             },
             details(index){
+                this.detailOption = this.list[index];
+                //console.log("test",this.detailOption);
                 this.dialogDetailVisible = true;
             },
         },
