@@ -44,10 +44,8 @@ class Kernel extends ConsoleKernel
         // 周结, 旧结算逻辑, 支付到运营中心的订单结算
         $schedule->job(new SettlementWeekly(Merchant::SETTLE_WEEKLY))
             ->weeklyOn(1);
-        // 半月结
-        $schedule->job(new SettlementDaily)->daily();
         // T+1结算统计 Author：Jerry Date：180824
-        $schedule->job(new SettlementForMerchantDaily)->daily();
+        $schedule->job(new SettlementDaily())->daily();
         /**团购商品过期自动下架*/
         $schedule->job(AutoDownGoodsJob::class)->daily();
     }
