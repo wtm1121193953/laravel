@@ -26,7 +26,7 @@ class InviteChannelController extends Controller
      */
     public function getInviteQrcode()
     {
-        $operId = request()->get('current_oper')->id;
+        $operId = request()->get('current_oper_id');
         $userId = request()->get('current_user')->id;
         $inviteChannel = InviteChannelService::getByOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER, $operId);
         $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
