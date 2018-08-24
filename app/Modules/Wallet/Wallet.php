@@ -3,6 +3,7 @@
 namespace App\Modules\Wallet;
 
 use App\BaseModel;
+use App\Modules\User\GenPassword;
 
 /**
  * Class Wallet
@@ -15,10 +16,12 @@ use App\BaseModel;
  * @property float freeze_consume_quota
  * @property float total_consume_quota
  * @property string withdraw_password
+ * @property string salt
  */
 
 class Wallet extends BaseModel
 {
+    use GenPassword;
     /**
      * 钱包用户类型
      */

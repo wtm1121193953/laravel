@@ -1,7 +1,8 @@
 <template>
     <page title="提现密码设置">
         <el-col :span="6">
-            <el-form :model="form" status-icon :rules="formRules" ref="form" label-width="100px">
+            <el-button v-if="editPassword" @click="editPassword = false">修改提现密码</el-button>
+            <el-form :model="form" status-icon :rules="formRules" ref="form" v-if="!editPassword" label-width="100px">
                 <el-form-item label="商户手机号码">
                     {{mobile}}
                     <el-button type="success" @click="getVerifyCode" :disabled="isDisabled" size="small" style="margin-left: 10px">{{buttonName}}</el-button>
@@ -68,6 +69,7 @@
 
             return {
                 mobile: '',
+                editPassword: false,
                 form: {
                     verifyCode: '',
                     password: '',
@@ -92,7 +94,18 @@
         },
         methods: {
             commit() {
-
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        if (!(/^1[3,4,5,6,7,8,9]\d{9}$/.test(this.mobile))) {
+                            this.$message.error('手机号码格式错误');
+                        }
+                        this.form.mobile = this.mobile;
+                        api.post('/wallet/withdraw/setWalletPassword', this.form).then(data => {
+                            this.$message.success('提现密码设置成功');
+                            this.initForm();
+                        });
+                    }
+                })
             },
             cancel() {
                 router.go(-1);
@@ -117,9 +130,15 @@
                     self.$message.success('发送成功');
                 })
             },
+            initForm() {
+                api.get('/wallet/withdraw/getPasswordInfo').then(data => {
+                    this.mobile = data.mobile;
+                    this.editPassword = data.editPassword;
+                })
+            }
         },
         created() {
-
+            this.initForm();
         }
     }
 </script>
