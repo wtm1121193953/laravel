@@ -48,6 +48,37 @@ class WechatService
     }
 
     /**
+     * 获取平台的小程序
+     * @return \EasyWeChat\MiniProgram\Application
+     */
+    public static function getWechatMiniAppForPlatform()
+    {
+        $miniProgram = config('platform.miniprogram');
+        $config = [
+            'app_id' => $miniProgram['app_id'],
+            'secret' => $miniProgram['app_secret'],
+
+            'response_type' => 'array',
+            'log' => [
+                'level' => 'debug',
+                'file' => storage_path().'/logs/wechat.log',
+            ],
+        ];
+
+        return Factory::miniProgram($config);
+    }
+
+    public static function getWechatMiniAppFromRequest()
+    {
+        $oper = request()->get('current_oper');
+        if(empty($oper)){
+            return self::getWechatMiniAppForPlatform();
+        }else {
+            return WechatService::getWechatMiniAppForOper(request()->get('current_oper')->id);
+        }
+    }
+
+    /**
      * 获取微信支付的 EasyWechat App
      * @param $operId
      * @return \EasyWeChat\Payment\Application
