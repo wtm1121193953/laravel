@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Oper;
 use App\Http\Controllers\Controller;
 use App\Modules\Oper\OperService;
 use App\Modules\Oper\OperBizerService;
-use App\Modules\Oper\OperBizMember;
+use App\Modules\Oper\OperBizer;
 
 use App\Result;
 
@@ -35,24 +35,25 @@ class BizerRecordController extends Controller {
      */
     public function contractBizer()
     {
-        $this->validate(request(), [
-            'id' => 'required|integer|min:1',
-            'status' => 'required|integer',
-            'remark' => 'required|integer',
-            'divide' => 'required',
-        ]);
+//        $this->validate(request(), [
+//            'id' => 'required|integer|min:1',
+//            'status' => 'required|integer',
+//            'remark' => 'required|integer',
+//            'divide' => 'required',
+//        ]);
 
         $id = request('id');
         $status = request('status');
         $remark = request('remark');
         $divide = request('divide');
-        $operBizMember = OperBizMember::findOrFail($id);
+        $operBizMember = OperBizer::findOrFail($id);
         $operBizMember->status = $status;
         $operBizMember->remark = $remark;
         if($status==1){//签约成功，更新签约时间,分成比例
-            $operBizMember->divide = number_format(2,$divide/100);        
+            $operBizMember->divide = number_format($divide/100,2);        
             $operBizMember->sign_time = date("Y-m-d H:i:s");
         }
+        //echo "<pre>";print_r($operBizMember);exit;
         $operBizMember->save();
         return Result::success($operBizMember);
     }
