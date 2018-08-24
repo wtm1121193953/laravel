@@ -46,6 +46,9 @@ class CurrentOperInjector
             }
             $oper = Oper::findOrFail($operId);
             $request->attributes->add(['current_oper' => $oper]);
+            $request->attributes->add(['current_oper_id' => $oper->id]);
+        }else {
+            $request->attributes->add(['current_oper_id' => 0]);
         }
 
         return $next($request);

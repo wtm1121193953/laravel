@@ -58,7 +58,7 @@ class MerchantController extends Controller
 
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
 
-        $currentOperId = request()->get('current_oper')->id;
+        $currentOperId = request()->get('current_oper_id');
         $query = Merchant::when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
                 $query->where('oper_id', $currentOperId);
             })
