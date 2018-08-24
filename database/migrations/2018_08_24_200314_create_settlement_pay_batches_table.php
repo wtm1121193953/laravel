@@ -23,7 +23,9 @@ class CreateSettlementPayBatchesTable extends Migration
         });
 
         Schema::table('settlement_platforms', function (Blueprint $table) {
-            $table->integer('settlement_pay_batch_id')->index()->default(0)->comment('打款批次ID')->after('status');
+            $table->string('settlement_no')->index()->default('')->comment('结算单号')->after('id');
+            $table->string('reason')->index()->default('')->comment('打款失败原因')->after('status');
+            $table->integer('settlement_pay_batch_id')->index()->default(0)->comment('打款批次ID')->after('reason');
             $table->string('pay_batch_no')->index()->default('')->comment('打款批次号, 对应 settlement_pay_batches 表 batch_no 字段')->after('settlement_pay_batch_id');
         });
     }
@@ -39,7 +41,10 @@ class CreateSettlementPayBatchesTable extends Migration
 
         Schema::table('settlement_platforms', function (Blueprint $table) {
             $table->dropColumn([
-                'batch_no'
+                'settlement_no',
+                'reason',
+                'settlement_pay_batch_id',
+                'pay_batch_no',
             ]);
         });
     }
