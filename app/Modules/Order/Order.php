@@ -39,6 +39,8 @@ use Carbon\Carbon;
  * @property number origin_app_type
  * @property string remark
  * @property number settlement_id
+ * @property number settlement_real_amount
+ * @property number settlement_charge_amount
  */
 
 class Order extends BaseModel
