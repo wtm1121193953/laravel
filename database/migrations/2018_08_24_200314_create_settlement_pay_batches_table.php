@@ -22,12 +22,6 @@ class CreateSettlementPayBatchesTable extends Migration
             $table->comment = '结算自动打款批次表';
         });
 
-        Schema::table('settlement_platforms', function (Blueprint $table) {
-            $table->string('settlement_no')->index()->default('')->comment('结算单号')->after('id');
-            $table->string('reason')->index()->default('')->comment('打款失败原因')->after('status');
-            $table->integer('settlement_pay_batch_id')->index()->default(0)->comment('打款批次ID')->after('reason');
-            $table->string('pay_batch_no')->index()->default('')->comment('打款批次号, 对应 settlement_pay_batches 表 batch_no 字段')->after('settlement_pay_batch_id');
-        });
     }
 
     /**
@@ -38,14 +32,5 @@ class CreateSettlementPayBatchesTable extends Migration
     public function down()
     {
         Schema::dropIfExists('settlement_pay_batches');
-
-        Schema::table('settlement_platforms', function (Blueprint $table) {
-            $table->dropColumn([
-                'settlement_no',
-                'reason',
-                'settlement_pay_batch_id',
-                'pay_batch_no',
-            ]);
-        });
     }
 }
