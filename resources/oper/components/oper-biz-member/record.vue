@@ -17,16 +17,20 @@
                     <span> {{ scope.row.operInfo.tel }} </span>
                 </template>
             </el-table-column>
-
-            <el-table-column prop="updated_at" label="拒绝签约时间" v-if="secondTable"/>
-            <el-table-column prop="remark" label="原因" v-if="secondTable"/>
-
-            <el-table-column fixed="right" label="操作" v-if="firstTable">
-                <template slot-scope="scope">
-                    <el-button type="text" @click="signing">签约</el-button>
-                    <el-button type="text" @click="refusal">拒绝</el-button>
-                </template>
-            </el-table-column>
+            
+            <template v-if="secondTable">
+                <el-table-column prop="updated_at" label="拒绝签约时间"/>
+                <el-table-column prop="remark" label="原因"/>
+            </template>
+            
+            <div v-if="!secondTable">
+                <el-table-column fixed="right" label="操作">
+                    <template slot-scope="scope">
+                        <el-button type="text" @click="signing">签约</el-button>
+                        <el-button type="text" @click="refusal">拒绝</el-button>
+                    </template>
+                </el-table-column>
+            </div>
         </el-table>
 
         <el-pagination
@@ -80,7 +84,6 @@
             return {
                 isLoading: false,
                 activeName: 'first',
-                firstTable: true,
                 secondTable: false,
                 query: {
                     page: 1
@@ -126,10 +129,8 @@
                 let _self = this;
                 if ( _self.activeName == "first" ) {
                     _self.secondTable = false;
-                    // _self.firstTable = true;
                 } else if ( _self.activeName == "second" ) {
                     _self.secondTable = true;
-                    // _self.firstTable = false;
                 }
             },
             signing() {
