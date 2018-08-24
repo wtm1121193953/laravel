@@ -12,7 +12,7 @@ use Illuminate\Support\Carbon;
  * @package App\Modules\Settlement
  *
  * @property int    oper_id
- * @property int    merchant_category_id
+ * @property int    merchant_id
  * @property Carbon settlement_date
  * @property Carbon start_date
  * @property Carbon end_date
