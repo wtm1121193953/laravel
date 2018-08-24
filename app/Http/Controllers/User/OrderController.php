@@ -18,6 +18,7 @@ use App\Modules\Dishes\Dishes;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantSettingService;
+use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
@@ -123,6 +124,7 @@ class OrderController extends Controller
         $user = request()->get('current_user');
 
         $merchant = Merchant::findOrFail($goods->merchant_id);
+        $merchant_oper = Oper::findOrFail($merchant->oper_id);
         $oper_id = request()->get('current_oper_id');
 
         $order = new Order();
@@ -144,6 +146,7 @@ class OrderController extends Controller
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $goods->price * $number;
         $order->remark = request('remark', '');
+        $order->pay_target_type = $merchant_oper->pay_to_platform?2:1;
         $order->save();
 
         $isOperSelf = $merchant->oper_id === $oper_id ? 1 : 0;
