@@ -18,6 +18,7 @@ use App\Modules\Dishes\Dishes;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantSettingService;
+use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
@@ -41,7 +42,7 @@ class OrderController extends Controller
 
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
 
-        $currentOperId = request()->get('current_oper')->id;
+        $currentOperId = request()->get('current_oper_id');
         $data = Order::where('user_id', $user->id)
             ->where(function (Builder $query){
                 $query->where('type', Order::TYPE_GROUP_BUY)
@@ -83,7 +84,7 @@ class OrderController extends Controller
         // 只返回一个核销码
         $orderItem = OrderItem::where('order_id', $detail->id)->first();
         $detail->items = !empty($orderItem) ? [$orderItem] : [];
-        $currentOperId = request()->get('current_oper')->id;
+        $currentOperId = request()->get('current_oper_id');
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
         $detail->signboard_name = Merchant::where('id', $detail->merchant_id)->value('signboard_name');
@@ -123,7 +124,8 @@ class OrderController extends Controller
         $user = request()->get('current_user');
 
         $merchant = Merchant::findOrFail($goods->merchant_id);
-        $oper = request()->get('current_oper');
+        $merchant_oper = Oper::findOrFail($merchant->oper_id);
+        $oper_id = request()->get('current_oper_id');
 
         $order = new Order();
         $orderNo = Order::genOrderNo();
@@ -144,9 +146,10 @@ class OrderController extends Controller
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $goods->price * $number;
         $order->remark = request('remark', '');
+        $order->pay_target_type = $merchant_oper->pay_to_platform?2:1;
         $order->save();
 
-        $isOperSelf = $merchant->oper_id === $oper->id ? 1 : 0;
+        $isOperSelf = $merchant->oper_id === $oper_id ? 1 : 0;
         if($isOperSelf == 1) {
             $payApp = WechatService::getWechatPayAppForOper($merchant->oper_id);
             $data = [
@@ -195,7 +198,7 @@ class OrderController extends Controller
         $userIdByDish = $dishes->user_id;
         $user = request()->get('current_user');
         $merchant = Merchant::findOrFail($dishes->merchant_id);
-        $oper = request()->get('current_oper');
+        $oper_id = request()->get('current_oper_id');
 
         if($userIdByDish!=$user->id){
             throw new ParamInvalidException('参数错误');
@@ -233,7 +236,7 @@ class OrderController extends Controller
         $order->remark = request('remark', '');
         $order->save();
 
-        $isOperSelf = $merchant->oper_id === $oper->id ? 1 : 0;
+        $isOperSelf = $merchant->oper_id === $oper_id ? 1 : 0;
         if($isOperSelf == 1) {
             $payApp = WechatService::getWechatPayAppForOper($merchant->oper_id);
             $data = [
@@ -325,7 +328,7 @@ class OrderController extends Controller
         $order->remark = request('remark', '');
         $order->save();
 
-        $isOperSelf = $merchant->oper_id === request()->get('current_oper')->id ? 1 : 0;
+        $isOperSelf = $merchant->oper_id === request()->get('current_oper_id') ? 1 : 0;
         if($isOperSelf == 1) {
             $sdkConfig = $this->_wechatUnifyPay($order);
         }else {
@@ -359,7 +362,7 @@ class OrderController extends Controller
             throw new BaseResponseException('订单状态异常');
         }
 
-        if($order->oper_id !== request()->get('current_oper')->id){
+        if($order->oper_id !== request()->get('current_oper_id')){
             throw new BaseResponseException('该订单不是当前运营中心的订单');
         }
 

@@ -19,8 +19,12 @@ class ReapalPay
     protected $dsfUrl;
     protected $notify_url;
     protected $charset;
-    protected $sign_type;
-    protected $version;
+    protected $dsf_sign_type;
+    protected $dsfVersion;
+
+    protected $apiUrl;
+    protected $apiVersion;
+    protected $api_sign_type;
 
     public function __construct()
     {
@@ -39,8 +43,12 @@ class ReapalPay
         $this->dsfUrl   = config('reapal.dsfUrl');
         $this->notify_url   = config('reapal.notify_url');
         $this->charset   = config('reapal.charset');
-        $this->sign_type   = config('reapal.sign_type');
-        $this->version   = config('reapal.version');
+        $this->dsf_sign_type   = config('reapal.dsf_sign_type');
+        $this->dsfVersion   = config('reapal.dsf_version');
+
+        $this->apiUrl   = config('reapal.api_url');
+        $this->apiVersion   = config('reapal.api_version');
+        $this->api_sign_type   = config('reapal.api_sign_type');
     }
 
     /**
@@ -66,7 +74,7 @@ class ReapalPay
         );
 
         $url = $this->dsfUrl.'agentpay/pay';
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId,$this->version,$this->sign_type);
+        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId,$this->dsfVersion,$this->dsf_sign_type);
         $response = json_decode($result,true);
         $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'],$this->merchantPrivateKey);
         return $reapalMap->AESDecryptResponse($encryptkey,$response['data']);
@@ -93,7 +101,7 @@ class ReapalPay
         $reapalMap = new ReapalUtils();
 
         $url = $this->dsfUrl.'agentpay/batchpayquery';
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId,$this->version);
+        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId,$this->dsfVersion);
         $response = json_decode($result,true);
         $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'],$this->merchantPrivateKey);
         return $reapalMap->AESDecryptResponse($encryptkey,$response['data']);
@@ -119,7 +127,7 @@ class ReapalPay
         $reapalMap = new ReapalUtils();
 
         $url = $this->dsfUrl.'agentpay/singlepayquery';
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId,$this->version);
+        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId,$this->dsfVersion);
         $response = json_decode($result,true);
         $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'],$this->merchantPrivateKey);
 
@@ -142,7 +150,7 @@ class ReapalPay
         $reapalMap = new ReapalUtils();
 
         $url = $this->dsfUrl.'agentpay/balancequery';
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId,$this->version);
+        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId,$this->dsfVersion);
         $response = json_decode($result,true);
         $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'],$this->merchantPrivateKey);
         return $reapalMap->AESDecryptResponse($encryptkey,$response['data']);
@@ -153,14 +161,137 @@ class ReapalPay
      */
     public function prepay()
     {
+        $merchantId = request('merchat_id')?request('merchat_id'):$this->merchantId;
+        //参数数组
+        $paramArr = [
+
+            'seller_email'=> $this->sellerEmail,
+            'merchant_id' => $merchantId,
+            'body' => request('body'),
+            'title' => request('title'),
+            'order_no' => request('order_no'),
+            'total_fee' => request('total_fee'),
+
+            'notify_url' => $this->notify_url,
+            'transtime' => Carbon::now(),
+            'currency' => '156',
+            'member_ip' => '192.168.1.1',
+            'terminal_type' => 'mobile',
+            'terminal_info' => 'terminal_info',
+            'token_id' => '154545487879852200',
+
+            'client_type'=>request('client_type'),
+            'user_id'=>request('user_id'),
+            'appid_source'=>request('appid_source'),
+            'store_phone'=>request('store_phone'),
+            'store_name'=>request('store_name'),
+            'version'=>$this->apiVersion,
+
+        ];
+
+        $reapalMap = new ReapalUtils();
+
+        $url = $this->apiUrl.'/qrcode/scan/encryptline';
+        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId);
+        $response = json_decode($result,true);
+        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'],$this->merchantPrivateKey);
+        return $reapalMap->AESDecryptResponse($encryptkey,$response['data']);
+    }
+
+    /**
+     * 支付结果查询接口
+     */
+    public function paySearch()
+    {
+
+        $merchantId = request('merchat_id')?request('merchat_id'):$this->merchantId;
+        //参数数组
+        $paramArr = array(
+            'merchant_id' => $merchantId,
+            'order_no' => request('order_no'),
+        );
+        $reapalMap = new ReapalUtils();
+
+        $url = $this->apiUrl.'/qrcode/scan/encryptSearch';
+
+        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId);
+        $response = json_decode($result,true);
+        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'],$this->merchantPrivateKey);
+
+        return $reapalMap->AESDecryptResponse($encryptkey,$response['data']);
+    }
+
+    /**
+     * 退款接口
+     */
+    public function refund()
+    {
+        //参数数组
+        $paramArr = [
+            'merchant_id' => request('merchant_id'),
+            'refund_order_no' => request('refund_order_no'),
+            'order_no' => request('order_no'),
+            'amount' => request('amount'),
+
+        ];
+
+        $merchantId = request('merchat_id')?request('merchat_id'):$this->merchantId;
+
+        $reapalMap = new ReapalUtils();
+
+        $url = $this->apiUrl.'/qrcode/scan/encryptRefundApply';
+        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId);
+        $response = json_decode($result,true);
+        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'],$this->merchantPrivateKey);
+        return $reapalMap->AESDecryptResponse($encryptkey,$response['data']);
 
     }
 
     /**
-     * 支付通知接口
+     * 退款接口查询
      */
-    public function payNotify()
+    public function refundSearch()
     {
+        //参数数组
+        $paramArr = [
+            'merchant_id' => request('merchant_id'),
+            'refund_order_no' => request('refund_order_no'),
+            'order_no' => request('order_no'),
+        ];
+
+        $merchantId = request('merchat_id')?request('merchat_id'):$this->merchantId;
+
+        $reapalMap = new ReapalUtils();
+
+        $url = $this->apiUrl.'/qrcode/scan/encryptRefundQuery';
+        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId,$this->apiVersion,$this->api_sign_type);
+        $response = json_decode($result,true);
+        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'],$this->merchantPrivateKey);
+        return $reapalMap->AESDecryptResponse($encryptkey,$response['data']);
 
     }
+
+    /**
+     * 异步通知接口
+     */
+
+    public function ajaxMessage(){
+
+        //获取参数
+        $resultArr = json_decode(request(),true);
+        return $resultArr;
+    }
+
+    /**
+     * 异步通知接口(退款)
+     */
+
+    public function ajaxRefundMessage(){
+
+        //获取参数
+        $resultArr = json_decode(request(),true);
+        return $resultArr;
+    }
+
+
 }

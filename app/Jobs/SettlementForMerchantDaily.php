@@ -23,8 +23,7 @@ class SettlementForMerchantDaily implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $merchantId;
-    protected $start;
-    protected $end;
+    protected $date;
 
     /**
      *
@@ -35,11 +34,10 @@ class SettlementForMerchantDaily implements ShouldQueue
      * @param    Carbon $end
      * @return void
      */
-    public function __construct($merchantId, Carbon $start, Carbon $end)
+    public function __construct($merchantId, Carbon $date )
     {
         $this->merchantId   = $merchantId;
-        $this->start        = $start;
-        $this->end          = $end;
+        $this->date         = $date;
     }
 
 
@@ -69,7 +67,7 @@ class SettlementForMerchantDaily implements ShouldQueue
             ]);
             return ;
         }
-        $res = SettlementPlatformService::settlement( $merchant, $this->start, $this->end);
+        $res = SettlementPlatformService::settlement( $merchant, $date );
         if( !$res )  Log::info('该商家每日结算错误，商家id：'.$this->merchantId);
     }
 }

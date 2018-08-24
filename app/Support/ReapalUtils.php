@@ -134,7 +134,7 @@ class ReapalUtils
     }
     function sendHttpRequest($params, $url) {
         $opts = $this->getRequestParamString ( $params );
-        echo $opts;
+        //echo $opts;
         $ch = curl_init ();
         curl_setopt ( $ch, CURLOPT_URL, $url );
         curl_setopt ( $ch, CURLOPT_POST, 1 );
@@ -173,10 +173,10 @@ class ReapalUtils
     }
 
 
-    function send($paramArr, $url, $apiKey, $reapalPublicKey, $merchant_id,$version,$sign_type=''){
+    function send($paramArr, $url, $apiKey, $reapalPublicKey, $merchant_id,$version='',$sign_type=''){
         //生成签名
         $sign = $this->createSign($paramArr,$apiKey);
-        $paramArr['sign_type'] = 'MD5';
+        $paramArr['sign_type'] = $sign_type;
         $paramArr['sign'] = $sign;
         //生成AESkey
         $generateAESKey = $this->generateAESKey();
