@@ -23,12 +23,12 @@ class BizerService extends BaseService
     
 
     /**
-     * 查询业务员
+     * 查询所有业务员，不分页
      * @param array $data
      * @param bool $getWithQuery
      * @return type
      */
-    public static function getList(array $data, bool $getWithQuery = false)
+    public static function getAll(array $data, bool $getWithQuery = false)
     {
         $status = array_get($data,"status");
         // 全局限制条件

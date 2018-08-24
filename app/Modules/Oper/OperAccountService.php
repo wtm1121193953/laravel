@@ -118,6 +118,7 @@ class OperAccountService extends BaseService
                 [
 //                    [ 'id' => 5, 'name' => '我的会员', 'level' => 2, 'url' => '/oper/invite/statistics/daily', 'pid' => 4,],
                     [ 'id' => 6, 'name' => '我的业务员', 'level' => 2, 'url' => '/oper/operBizMembers', 'pid' => 4,],
+                    [ 'id' => 22, 'name' => '业务员申请', 'level' => 2, 'url' => '/oper/bizerRecord', 'pid' => 4,],
                 ]
             ],
 

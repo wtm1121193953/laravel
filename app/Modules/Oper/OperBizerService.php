@@ -57,6 +57,8 @@ class OperBizerService extends BaseService {
         $startTime = array_get($params, 'start_time');
         $endTime = array_get($params, 'end_time');
         $operIds = array_get($params, 'oper_ids');
+        $operId = array_get($params, 'oper_id');
+        
 
         if (is_string($fields)) {
             $fields = explode(',', preg_replace('# #', '', $fields));
@@ -66,6 +68,9 @@ class OperBizerService extends BaseService {
                 })
                 ->when(is_array($operIds), function (Builder $query) use ($operIds) {
                     $query->whereIn('oper_id', $operIds);
+                })
+                ->when(!empty($operId), function (Builder $query) use ($operId) {
+                    $query->where('oper_id', $operId);
                 })
                 ->when($status, function (Builder $query) use ($status) {
                     $query->whereIn('status', $status);
