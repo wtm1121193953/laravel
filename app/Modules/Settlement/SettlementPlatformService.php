@@ -90,5 +90,92 @@ class SettlementPlatformService extends BaseService
         return $data;
     }
 
+    /**
+     * 处理每日结算细节入库
+     * @Author   Jerry
+     * @DateTime 2018-08-24
+     * @param    [type]
+     * @param    [type]
+     * @param    [type]
+     * @return   [type]
+     */
+    public static function settlement( $merchant, $start, $end )
+    {
+        // 生成结算单，方便之后结算订单中保存结算信息
+        $saveData= [
+            'open_id'           => $merchant->oper_id,
+            'merchant_id'       => $merchant->merchantId,
+            'settlement_date'   => Carbon::now(),
+            'start_date'        => $start,
+            'end_date'          => $end,
+            'settlement_cycle_type' => $merchant->settlement_cycle_type,
+            'settlement_rate'   => $merchant->settlement_rate,
+            'bank_open_name'    => $merchant->bank_open_name,
+            'bank_card_no'      => $merchant->bank_card_no,
+            'sub_bank_name'     => $merchant->sub_bank_name,
+            'bank_open_address' => $merchant->bank_open_address,
+            'invoice_title'     => $merchant->invoice_title,
+            'invoice_no'        => $merchant->invoice_no,
+            'amount'            => 0,
+            'charge_amount'     => 0,
+            'real_amount'       => 0,
+        ];
+        
+        $SettlementPlatform = new SettlementPlatform( $saveData );
+        // 开启事务
+        DB::beginTransaction();
+        try{
+            $SettlementPlatform->save();
+            // 统计订单总金额与改变每笔订单状态
+            Order::where('merchant_id', $merchant->id)
+                ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
+                ->where('', Order::STATUS_FINISHED )
+                ->whereBetween('finish_time', [$start, $end])
+                ->chunk(1000, function( Collection $orders ) use( $merchant, $SettlementPlatform ){
+                    $orders->each( function( $item) use ( $merchant, $SettlementPlatform ){
+                        $SettlementPlatform->amount += $item->pay_price;
+
+                        $item->settlement_status = Order::SETTLEMENT_STATUS_FINISHED;
+                        $item->settlement_id = $SettlementPlatform->id;
+                        $item->save();
+                    });
+                });
+
+            $SettlementPlatform->charge_amount = self::coutChargeAmount( $SettlementPlatform );
+            $SettlementPlatform->real_amount= self::countRealAmount( $SettlementPlatform );
+            $SettlementPlatform->save();
+            DB::commit();
+            return true;
+        }catch (\Exception $e) {
+            DB::rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * 结算手续费
+     * @Author   Jerry
+     * @DateTime 2018-08-23
+     * @param    [obj] $settlement
+     * @return   [float]
+     */
+    public function coutChargeAmount( SettlementPlatform $settlement )
+    {
+        return $settlement->charge_amount = $settlement->amount * 1.0 * $settlement->settlement_rate / 100;
+    }
+
+    /**
+     * 结算商家实际收到的金额
+     * @Author   Jerry
+     * @DateTime 2018-08-23
+     * @param    SettlementPlatform $settlement
+     * @return   [float]
+     */
+    public function countRealAmount( SettlementPlatform $settlement )
+    {
+        return $settlement->amount - $settlement->charge_amount;
+    }
+
+
 
 }
