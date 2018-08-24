@@ -46,16 +46,14 @@ class SettlementDaily implements ShouldQueue
         //计算昨天要结算的任务
         Log::info('开始执行每日结算任务');
         $date   = $this->date;
-        $start  = $date->startOfDay();
-        $end    = $date->endOfDay();
         // 获取运营中心支付到平台(平台参与分成) 商家
         DB::table('merchants')
             ->join('opers', 'merchants.oper_id', '=', 'opers.id')
-            ->where('opers.pay_to_platform', Oper::PAY_TO_PLATFORM_YES2)
+            ->whereIn('opers.pay_to_platform', [ Oper::PAY_TO_PLATFORM_YES, Oper::PAY_TO_PLATFORM_YES2 ])
             ->select('merchant.id')
-            ->chunk(100, function( $merchants ) use ( $start, $end ) {
-                $merchants->each( function( $item ) use ( $start, $end ) {
-                    SettlementForMerchantDaily::dispatch( $item->id, $start, $end );
+            ->chunk(100, function( $merchants ) use ( $date ) {
+                $merchants->each( function( $item ) use ( $date) {
+                    SettlementForMerchantDaily::dispatch( $item->id, $date );
                 });
             });
         Log::info('每日结算任务完成');

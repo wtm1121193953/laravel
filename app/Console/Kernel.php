@@ -46,6 +46,8 @@ class Kernel extends ConsoleKernel
             ->weeklyOn(1);
         // 半月结
         $schedule->job(new SettlementDaily)->daily();
+        // T+1结算统计 Author：Jerry Date：180824
+        $schedule->job(new SettlementForMerchantDaily)->daily();
         /**团购商品过期自动下架*/
         $schedule->job(AutoDownGoodsJob::class)->daily();
     }
