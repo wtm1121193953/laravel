@@ -71,9 +71,6 @@
         transform: translate3d(0, -50px, 0);
         opacity: 0;
     }
-    .w-160 {
-        width: 160px;
-    }
 </style>
 <template>
     <div class="login-container">
@@ -112,13 +109,13 @@
         </transition>
         <div id="loginThree"></div>
 
-        <el-dialog title="忘记密码" :visible.sync="dialogForgetPassword" width="454px">
-            <el-form :model="dialogForgetPasswordForm" ref="dialogForgetPasswordForm" :rules="dialogForgetPasswordFormRules">
-                <el-form-item label="帐号" :label-width="dialogFormLabelWidth" prop="account">
+        <el-dialog title="忘记密码" :visible.sync="dialogForgetPassword" width="434px">
+            <el-form :model="dialogForgetPasswordForm" ref="dialogForgetPasswordForm" :rules="dialogForgetPasswordFormRules" label-width="70px">
+                <el-form-item label="帐号" prop="account">
                     <el-input type="text" v-model="dialogForgetPasswordForm.account" auto-complete="off" placeholder="请输入手机号"/>
                 </el-form-item>
-                <el-form-item label="验证码" :label-width="dialogFormLabelWidth"  prop="verify_code">
-                    <el-input type="text" v-model="dialogForgetPasswordForm.verify_code" auto-complete="off" placeholder="请输入验证码" class="w-160" maxlength="4"/>
+                <el-form-item label="验证码" prop="verify_code">
+                    <el-input type="text" v-model="dialogForgetPasswordForm.verify_code" auto-complete="off" placeholder="请输入验证码" class="w-180" maxlength="4"/>
                     <el-button type="primary" class="fr" style="width:132px;" :disabled="buttonCode.isDisabled" @click.native.prevent="sendCode">{{buttonCode.buttonName}}</el-button>
                 </el-form-item>
             </el-form>
@@ -128,11 +125,11 @@
         </el-dialog>
 
         <el-dialog title="设置密码" :visible.sync="dialogSetPassword" width="454px">
-            <el-form :model="dialogSetPasswordForm">
-                <el-form-item label="设置密码" :label-width="dialogFormLabelWidth">
+            <el-form :model="dialogSetPasswordForm" label-width="108px">
+                <el-form-item label="设置密码">
                     <el-input type="password" v-model="dialogSetPasswordForm.password" auto-complete="off" placeholder="请设置6-12位密码，不区分大小写"/>
                 </el-form-item>
-                <el-form-item label="再次输入密码" :label-width="dialogFormLabelWidth">
+                <el-form-item label="再次输入密码">
                     <el-input type="password" v-model="dialogSetPasswordForm.confirmPassword" auto-complete="off" placeholder="请再次输入密码"/>
                 </el-form-item>
             </el-form>
@@ -213,7 +210,6 @@
                     password: '',
                     confirmPassword: ''
                 },
-                dialogFormLabelWidth: '110px',
                 buttonCode:{
                     buttonName: "获取验证码",
                     isDisabled: false,
