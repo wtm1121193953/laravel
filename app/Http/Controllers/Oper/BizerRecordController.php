@@ -35,12 +35,11 @@ class BizerRecordController extends Controller {
      */
     public function contractBizer()
     {
-//        $this->validate(request(), [
-//            'id' => 'required|integer|min:1',
-//            'status' => 'required|integer',
-//            'remark' => 'required|integer',
-//            'divide' => 'required',
-//        ]);
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'status' => 'required|integer',
+            'divide' => 'required|integer',
+        ]);
 
         $id = request('id');
         $status = request('status');
