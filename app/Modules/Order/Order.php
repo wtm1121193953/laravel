@@ -68,6 +68,14 @@ class Order extends BaseModel
     const ORIGIN_APP_TYPE_IOS = 2; // iOS
     const ORIGIN_APP_TYPE_MINIPROGRAM = 3; // 小程序
 
+     /**
+     * 结算状态
+     * Author:Jerry
+     * Date:180824
+     */
+    const SETTLEMENT_STATUS_NO = 1;         // 未结算
+    const SETTLEMENT_STATUS_FINISHED = 2;   // 已结算
+
     /**
      * 订单状态
      */

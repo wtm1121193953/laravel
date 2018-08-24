@@ -6,6 +6,7 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Exports\SettlementPlatformExport;
 use App\Http\Controllers\Controller;
 use App\Result;
 use Illuminate\Support\Facades\Log;
@@ -25,6 +26,8 @@ class SettlementPlatformController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $status = request('status');
+        $show_zero = request('show_zero');
+
 
         $startTime = microtime(true);
         $data = SettlementPlatformService::getListForSaas([
@@ -33,6 +36,7 @@ class SettlementPlatformController extends Controller
             'startDate' => $startDate,
             'endDate' => $endDate,
             'status' => $status,
+            'show_zero' => $show_zero,
         ]);
         $endTime = microtime(true);
 
@@ -62,6 +66,25 @@ class SettlementPlatformController extends Controller
      */
     public function downloadExcel()
     {
+        $merchant_name = request('merchant_name');
+        $merchant_id = request('merchant_id');
+        $startDate = request('startDate');
+        $endDate = request('endDate');
+        $status = request('status');
+        $show_zero = request('show_zero');
+
+
+
+        $query = SettlementPlatformService::getListForSaas([
+            'merchant_name' => $merchant_name,
+            'merchant_id' => $merchant_id,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'status' => $status,
+            'show_zero' => $show_zero,
+        ],true);
+
+        return (new SettlementPlatformExport($query))->download('结算报表.xlsx');
     }
 
 
