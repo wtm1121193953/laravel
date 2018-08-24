@@ -21,17 +21,17 @@
                 <el-input v-model="query.contactNumber" placeholder="请输入联系电话" clearable @keyup.enter.native="search"/>
             </el-form-item>
             <el-form-item prop="city" label="所在城市">
-                <el-cascader
-                        change-on-select
-                        clearable
-                        filterable
-                        :options="cityOptions"
-                        :props="{
+                <el-cascader 
+                    change-on-select
+                    clearable
+                    filterable
+                    :options="cityOptions"
+                    :props="{
                             value: 'id',
                             label: 'name',
                             children: 'sub',
                         }"
-                        v-model="query.city">
+                    v-model="query.city">
                 </el-cascader>
             </el-form-item>
             <el-form-item prop="status" label="状态">
@@ -70,6 +70,7 @@
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
                     <el-button type="text">查看商户</el-button>
+                    <el-button type="text" @click="contract">查看合同</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -83,21 +84,36 @@
                 :total="total"/>
 
         <el-dialog title="添加运营中心" :visible.sync="dialogFormVisible" width="30%">
-            <el-form :model="form">
-                <el-form-item label="运营中心名称" :label-width="formLabelWidth">
-                    <el-select v-model="form.region" placeholder="请选择运营中心">
-                        <el-option label="运营中心1" value="1"></el-option>
-                        <el-option label="运营中心2" value="2"></el-option>
+            <el-form :model="form" label-width="100px">
+                <el-form-item label="运营中心名称">
+                    <el-select v-model="form.region" placeholder="请选择运营中心" style="width:100%;">
+                        <el-option label="运营中心1" value="1"/>
+                        <el-option label="运营中心2" value="2"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="备注" :label-width="formLabelWidth">
-                    <el-input type="textarea" v-model="form.desc" auto-complete="off"></el-input>
+                <el-form-item label="备注">
+                    <el-input type="textarea" v-model="form.desc" auto-complete="off"/>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
                 <el-button type="primary" @click="dialogFormVisible = false">发送申请</el-button>
             </div>
+        </el-dialog>
+
+        <el-dialog title="合同" :visible.sync="dialogContractVisible">
+            合同内容
+        </el-dialog>
+
+        <el-dialog title="提示" :visible.sync="dialogPromptVisible" width="30%">
+            <el-form :model="form" label-width="110px">
+                <el-form-item label="运营中心名称：">
+                    大千互娱深圳运营中心
+                </el-form-item>
+                <el-form-item label="不通过原因：">
+                    <div class="prompt-txt">不想通过，就是酱紫任性不想通过，就是酱紫任性不想通过，就是酱紫任性不想通过，就是酱紫任性不想通过，就是酱紫任性</div>
+                </el-form-item>
+            </el-form>
         </el-dialog>
     </page>
 </template>
@@ -122,11 +138,12 @@
                 total: 0,
 
                 dialogFormVisible: false,
+                dialogContractVisible: false,
+                dialogPromptVisible: false,
                 form: {
                     region: '',
                     desc: ''
-                },
-                formLabelWidth: '120px'
+                }
             }
         },
         computed: {
@@ -151,16 +168,23 @@
             add(){
                 this.dialogFormVisible = true;
             },
+            contract(){
+                this.dialogContractVisible = true;
+            },
+            prompt(){
+                this.dialogPromptVisible = true;
+            },
         },
         created(){
-            // api.get('merchant/categories/tree').then(data => {
-            //     this.categoryOptions = data.list;
-            // });
-            // this.categoryOptions = [];
-            // if (this.$route.params){
-            //     Object.assign(this.query, this.$route.params);
-            // }
-            // this.getList();
+            let _self = this;
+            if (_self.$route.params){
+                Object.assign(_self.query, _self.$route.params);
+            }
+            api.get('/api/bizer/area/tree?tier=2').then(data => {
+                console.log(data.list)
+                _self.cityOptions = data.list;
+            });
+            //this.getList();
         },
         components: {
 
@@ -169,5 +193,8 @@
 </script>
 
 <style scoped>
-
+.prompt-txt {
+    line-height: 24px;
+    padding: 8px 0;
+}
 </style>

@@ -71,9 +71,6 @@
         transform: translate3d(0, -50px, 0);
         opacity: 0;
     }
-    .w-160 {
-        width: 160px;
-    }
 </style>
 <template>
     <div class="login-container">
@@ -112,27 +109,27 @@
         </transition>
         <div id="loginThree"></div>
 
-        <el-dialog title="忘记密码" :visible.sync="dialogForgetPassword" width="454px">
-            <el-form :model="dialogForgetPasswordForm">
-                <el-form-item label="帐号" :label-width="dialogFormLabelWidth">
+        <el-dialog title="忘记密码" :visible.sync="dialogForgetPassword" width="434px">
+            <el-form :model="dialogForgetPasswordForm" ref="dialogForgetPasswordForm" :rules="dialogForgetPasswordFormRules" label-width="70px">
+                <el-form-item label="帐号" prop="account">
                     <el-input type="text" v-model="dialogForgetPasswordForm.account" auto-complete="off" placeholder="请输入手机号"/>
                 </el-form-item>
-                <el-form-item label="验证码" :label-width="dialogFormLabelWidth">
-                    <el-input type="text" v-model="dialogForgetPasswordForm.verify_code" auto-complete="off" placeholder="请输入验证码" class="w-160" maxlength="4"/>
+                <el-form-item label="验证码" prop="verify_code">
+                    <el-input type="text" v-model="dialogForgetPasswordForm.verify_code" auto-complete="off" placeholder="请输入验证码" class="w-180" maxlength="4"/>
                     <el-button type="primary" class="fr" style="width:132px;" :disabled="buttonCode.isDisabled" @click.native.prevent="sendCode">{{buttonCode.buttonName}}</el-button>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="setPassword">提交</el-button>
+                <el-button  v-loading="forgetPasswordLoading" :disabled="forgetPasswordLoading" type="primary" @click="setPassword">提交</el-button>
             </div>
         </el-dialog>
 
         <el-dialog title="设置密码" :visible.sync="dialogSetPassword" width="454px">
-            <el-form :model="dialogSetPasswordForm">
-                <el-form-item label="设置密码" :label-width="dialogFormLabelWidth">
+            <el-form :model="dialogSetPasswordForm" label-width="108px">
+                <el-form-item label="设置密码">
                     <el-input type="password" v-model="dialogSetPasswordForm.password" auto-complete="off" placeholder="请设置6-12位密码，不区分大小写"/>
                 </el-form-item>
-                <el-form-item label="再次输入密码" :label-width="dialogFormLabelWidth">
+                <el-form-item label="再次输入密码">
                     <el-input type="password" v-model="dialogSetPasswordForm.confirmPassword" auto-complete="off" placeholder="请再次输入密码"/>
                 </el-form-item>
             </el-form>
@@ -158,18 +155,18 @@
             //         callback();
             //       }
             // };
-            // var validateMobile = (rule, value, callback) => {            
-            //     if (value === '') {
-            //         callback(new Error('请输入帐号'));
-            //         this.mobileValidate = false;
-            //       } else if (!/^1[3|4|5|7|8][0-9]\d{8}$/.test(value)) {
-            //         callback(new Error('帐号格式错误'));
-            //         this.mobileValidate = false;
-            //       } else {
-            //         callback();
-            //         this.mobileValidate = true;
-            //       }
-            // };
+            var validateMobile = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请输入手机号'));
+                    this.forgetPasswordValidation = false;
+                  } else if (!/^1[3|4|5|7|8][0-9]\d{8}$/.test(value)) {
+                    callback(new Error('手机号格式错误'));
+                    this.forgetPasswordValidation = false;
+                  } else {
+                    callback();
+                    this.forgetPasswordValidation = true;
+                  }
+            };
             return {
                 form: {
                     account: '',
@@ -193,24 +190,33 @@
                 loading: false,
                 autoLoginLoading: false,
                 showLogin: false,
-
+                forgetPasswordLoading: false,
                 dialogForgetPassword: false,
                 dialogSetPassword: false,
                 dialogForgetPasswordForm: {
                     account: '',
                     verify_code: ''
                 },
+                dialogForgetPasswordFormRules:{
+                    account:[
+                        {validator: validateMobile, trigger: 'blur'}
+                    ],
+                    verify_code:[
+                        {required: true, message: '请输入验证码', trigger: 'blur'},
+                        { min: 4, max: 6, message: '请输入4位验证码', trigger: 'blur' }
+                    ]
+                },
                 dialogSetPasswordForm: {
                     password: '',
                     confirmPassword: ''
                 },
-                dialogFormLabelWidth: '110px',
                 buttonCode:{
                     buttonName: "获取验证码",
                     isDisabled: false,
                     time: 60,
                 },
                 mobileValidate: false, //处理手机验证是否通过
+                forgetPasswordValidation: false, //忘记密码框验证是否通过
             }
         },
         computed:{
@@ -226,15 +232,31 @@
                 this.dialogForgetPassword = true;
             },
             setPassword(){
-                this.dialogForgetPassword = false;
-                this.dialogSetPassword = true;
+                let _self = this;
+                _self.$refs.dialogForgetPasswordForm.validate(valid => {
+                    if(valid){
+                        _self.forgetPasswordLoading = true;
+                       api.get('', _self.dialogForgetPasswordForm).then(data => {
+                           _self.dialogForgetPassword = false;
+                            _self.dialogSetPassword = true;
+                        }).catch(() => {
+                            _self.$message({
+                              message: '请求失败',
+                              type: 'warning'
+                            });
+                        }).finally(() => {
+                            _self.forgetPasswordLoading = false;
+                        })
+                    }
+                }) 
             },
             sendCode() {
                 let _self = this;
-                // if (!_self.mobileValidate) {
-                //     this.$refs.form.validateField('mobile')
-                //     return;
-                // }
+                if (!_self.forgetPasswordValidation) {
+                    console.log(this.$refs.dialogForgetPasswordForm)
+                    this.$refs.dialogForgetPasswordForm.validateField('account')
+                    return;
+                }
                 _self.buttonCode.isDisabled = true;
                 let interval = window.setInterval(function() {
                     _self.buttonCode.buttonName = '重新发送(' +  _self.buttonCode.time + 's)';
@@ -246,14 +268,20 @@
                         window.clearInterval(interval);
                     }
                 }, 1000);
-                // api.get('/sms/getVerifyCode', this.form).then(data => {
-                //     store.dispatch('storeUserInfo', data);
-                //     _self.relocation();
-                // }).catch(() => {
-                //     // _self.refreshVerify();
-                // }).finally(() => {
-                //     _self.loading = false;
-                // })
+                api.get('/sms/getVerifyCode', {'mobile':this.dialogForgetPasswordForm.account}).then(data => {
+                    this.$message({
+                      message: '发送验证码成功',
+                      type: 'success'
+                    });
+                }).catch(() => {
+                    this.$message({
+                      message: '发送验证码失败',
+                      type: 'warning'
+                    });
+                    // _self.refreshVerify();
+                }).finally(() => {
+                    // _self.loading = false;
+                })
             },
             goReg() {
                 router.push('/register');

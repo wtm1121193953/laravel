@@ -12,6 +12,7 @@ namespace App\Modules\Oper;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use Illuminate\Database\Eloquent\Builder;
+use App\Modules\Bizer\BizerService;
 
 class OperBizerService extends BaseService {
 
@@ -64,11 +65,18 @@ class OperBizerService extends BaseService {
         $data = OperBizer::when($bizerId, function (Builder $query) use ($bizerId) {
                     $query->where('bizer_id', $bizerId);
                 })
-                ->when(is_array($operIds), function (Builder $query) use ($operIds) {
-                    $query->whereIn('oper_id', $operIds);
+                ->when(!empty($operIds), function (Builder $query) use ($operIds) {
+                    if(is_array($operIds)){
+                        $query->whereIn('oper_id', $operIds);
+                    }else{
+                        $query->where('oper_id', $operIds);
+                    }
                 })
-                ->when($status, function (Builder $query) use ($status) {
-                    $query->whereIn('status', $status);
+                ->when(is_array($status), function (Builder $query) use ($status) {
+                     $query->whereIn('status', $status);
+                })
+                ->when(is_numeric($status), function (Builder $query) use ($status) {
+                     $query->where('status', $status);
                 })
                 ->when($startTime, function (Builder $query) use ($startTime) {
                     $query->where('created_at', '>=', $startTime);
@@ -79,14 +87,14 @@ class OperBizerService extends BaseService {
                 ->orderBy('id', 'desc')
                 ->select($fields)
                 ->paginate();
-
+       
         if ($getOperInfo) {
             $data->each(function ($item) {
                 $item->operInfo = OperService::getById($item->oper_id, 'name,contacter,tel,province,city') ?: null;
+                $item->bizerInfo = BizerService::getById($item->bizer_id, 'name,mobile,status') ?: null;
             });
         }
 
         return $data;
     }
-
 }

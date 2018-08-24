@@ -13,21 +13,14 @@ class OperRecordController extends Controller {
      * 运营中心申请列表
      */
     public function getList() {
-
-        $startTime = request('startTime');
-        $endTime = request('endTime');
-        $name = request('name');
-        $contacter = request('contacter');
-        $tel = request('tel');
-        $provinceId = request('provinceId');
-        $cityId = request('cityId');
-        $status = request('status');
+        $where =[
+            "bizer_id" => request()->get('current_user')->id,//登录所属业务员ID
+        ];
+        $data = OperBizerService::getList($where);
         
-//        $data = OperService::getAll(['status' => 1], 'id,name');
-//
-//        return Result::success([
-//                    'list' => $data,
-//                    'total' => $data->total(),
-//        ]);
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
     }
 }
