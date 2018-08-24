@@ -84,6 +84,7 @@ class WalletWithdrawService extends BaseService
         } elseif ($obj instanceof Oper) {
             $originType = WalletWithdraw::ORIGIN_TYPE_OPER;
             $ratio = UserCreditSettingService::getOperWithdrawChargeRatio();
+            $obj->bank_card_type = 1;
         } else {
             throw new BaseResponseException('用户类型错误');
         }

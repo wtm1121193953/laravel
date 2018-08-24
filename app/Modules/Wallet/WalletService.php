@@ -10,6 +10,7 @@ use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Modules\Order\OrderService;
 use App\Modules\User\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -212,6 +213,7 @@ class WalletService extends BaseService
             $data = $query->paginate($pageSize);
             $data->each(function ($item) {
                 $item->merchant_name = MerchantService::getNameById($item->origin_id);
+                $item->oper_name = OperService::getNameById($item->origin_id);
                 if (in_array($item->type, [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED])) {
                     $walletWithdraw = WalletWithdrawService::getWalletWithdrawById($item->obj_id);
                     $item->status = $walletWithdraw->status;

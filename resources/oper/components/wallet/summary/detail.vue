@@ -1,11 +1,13 @@
 <template>
     <page title="订单明细" :breadcrumbs="{账户总览: '/wallet/summary/list'}">
-        <el-row :gutter="20" v-if="billData.type == 2 || billData.type == 4">
+        <el-row :gutter="20" v-if="billData.type == 2 || billData.type == 4 || billData.type == 5 || billData.type == 6">
             <el-form label-width="120px" label-position="left" size="small">
                 <el-col :span="12">
                     <el-form-item label="订单类型">
                         <span v-if="billData.type == 2">用户消费返利</span>
                         <span v-else-if="billData.type == 4">用户消费返利退款</span>
+                        <span v-else-if="billData.type == 5">交易分润入账</span>
+                        <span v-else-if="billData.type == 6">交易分润退款</span>
                         <span v-else>未知 ({{billData.type}})</span>
                     </el-form-item>
                     <el-form-item label="入账金额">
@@ -24,14 +26,14 @@
                     <el-form-item label="余额">
                         {{billData.after_amount}}元
                     </el-form-item>
-                    <el-form-item label="商户名称">
-                        {{billData.merchant_name}}
+                    <el-form-item label="运营中心名称">
+                        {{billData.oper_name}}
                     </el-form-item>
                 </el-col>
             </el-form>
         </el-row>
         <div v-if="billData.type == 2 || billData.type == 4" style="border: 1px solid #DCDFE6;"></div>
-        <el-row :gutter="20" v-if="billData.type == 2 || billData.type == 4">
+        <el-row :gutter="20" v-if="billData.type == 2 || billData.type == 4 || billData.type == 5 || billData.type == 6">
             <el-form label-width="120px" label-position="left" size="small">
                 <el-col :span="12">
                     <el-form-item label="交易用户">

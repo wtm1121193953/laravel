@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Merchant;
+namespace App\Http\Controllers\Oper;
 
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\OperService;
 use App\Modules\Sms\SmsService;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\Wallet;
@@ -16,25 +17,25 @@ use App\Result;
 class WalletWithdrawController extends Controller
 {
     /**
-     * 获取钱包密码是否设置 和 商户电话号码
+     * 获取钱包密码是否设置 和 运营中心电话号码
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function getWalletPasswordInfo()
     {
-        $merchantId = request()->get('current_user')->merchant_id;
-        $merchant = MerchantService::getById($merchantId);
+        $operId = request()->get('current_user')->oper_id;
+        $oper = OperService::getById($operId);
 
-        $wallet = WalletService::getWalletInfo($merchant);
+        $wallet = WalletService::getWalletInfo($oper);
         $editPassword = $wallet->withdraw_password != '';
 
         return Result::success([
             'editPassword' => $editPassword,
-            'mobile' => $merchant->contacter_phone,
+            'mobile' => $oper->tel,
         ]);
     }
 
     /**
-     * 设置更新商户取现密码
+     * 设置更新运营中心取现密码
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function setWalletPassword()
@@ -51,10 +52,10 @@ class WalletWithdrawController extends Controller
         $password = request('password');
 
         if (SmsService::checkVerifyCode($mobile, $verifyCode)){
-            $merchantId = request()->get('current_user')->merchant_id;
-            $merchant = MerchantService::getById($merchantId);
+            $operId = request()->get('current_user')->oper_id;
+            $oper = OperService::getById($operId);
 
-            $wallet = WalletService::getWalletInfo($merchant);
+            $wallet = WalletService::getWalletInfo($oper);
             WalletService::updateWalletWithdrawPassword($wallet, $password);
 
             return Result::success();
@@ -69,24 +70,23 @@ class WalletWithdrawController extends Controller
      */
     public function getWithdrawInfoAndBankInfo()
     {
-        $merchantId = request()->get('current_user')->merchant_id;
-        $merchant = MerchantService::getById($merchantId);
-        $wallet = WalletService::getWalletInfo($merchant);
-        $ratio = UserCreditSettingService::getMerchantWithdrawChargeRatioByBankCardType($merchant->bank_card_type);
+        $operId = request()->get('current_user')->oper_id;
+        $oper = OperService::getById($operId);
+        $wallet = WalletService::getWalletInfo($oper);
+        $ratio = UserCreditSettingService::getOperWithdrawChargeRatio();
 
         return Result::success([
             'balance' => $wallet->balance,  // 可提现金额
-            'bankOpenName' => $merchant->bank_open_name,
-            'bankCardNo' => $merchant->bank_card_no,
-            'subBankName' => $merchant->sub_bank_name,
-            'bankCardType' => $merchant->bank_card_type, // 账户类型 1-公司 2-个人
+            'bankOpenName' => $oper->bank_open_name,
+            'bankCardNo' => $oper->bank_card_no,
+            'subBankName' => $oper->sub_bank_name,
             'ratio' => $ratio,  // 手续费百分比
             'isSetPassword' => $wallet->withdraw_password != '',
         ]);
     }
 
     /**
-     * 商户提现操作
+     * 运营中心提现操作
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function withdrawApplication()
@@ -101,14 +101,14 @@ class WalletWithdrawController extends Controller
         $invoiceExpressCompany = request('invoiceExpressCompany', '');
         $invoiceExpressNo = request('invoiceExpressNo', '');
 
-        $merchantId = request()->get('current_user')->merchant_id;
-        $merchant = MerchantService::getById($merchantId);
-        $wallet = WalletService::getWalletInfo($merchant);
-        $checkPass = WalletWithdrawService::checkWithdrawPasswordByOriginInfo($withdrawPassword, $merchantId, Wallet::ORIGIN_TYPE_MERCHANT);
+        $operId = request()->get('current_user')->oper_id;
+        $oper = OperService::getById($operId);
+        $wallet = WalletService::getWalletInfo($oper);
+        $checkPass = WalletWithdrawService::checkWithdrawPasswordByOriginInfo($withdrawPassword, $operId, Wallet::ORIGIN_TYPE_OPER);
 
         if ($checkPass) {
             $param = compact('invoiceExpressCompany', 'invoiceExpressNo');
-            $walletWithdraw = WalletWithdrawService::createWalletWithdrawAndUpdateWallet($wallet, $merchant, $amount, $param);
+            $walletWithdraw = WalletWithdrawService::createWalletWithdrawAndUpdateWallet($wallet, $oper, $amount, $param);
 
             return Result::success($walletWithdraw);
         } else {
@@ -117,7 +117,7 @@ class WalletWithdrawController extends Controller
     }
 
     /**
-     * 获取商户的提现明细
+     * 获取运营中心的提现明细
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function getWithdrawDetail()

@@ -12,10 +12,10 @@
                 <el-form-item prop="withdrawPassword" label="提现密码">
                     <el-input v-model="form.withdrawPassword" type="password" :maxlength="6" placeholder="6位存数字密码"/>
                 </el-form-item>
-                <el-form-item v-if="initForm.bankCardType == 1" prop="invoiceExpressCompany" label="发票快递公司">
+                <el-form-item prop="invoiceExpressCompany" label="发票快递公司">
                     <el-input v-model="form.invoiceExpressCompany"/>
                 </el-form-item>
-                <el-form-item v-if="initForm.bankCardType == 1" prop="invoiceExpressNo" label="快递单号">
+                <el-form-item prop="invoiceExpressNo" label="快递单号">
                     <el-input v-model="form.invoiceExpressNo"/>
                 </el-form-item>
                 <el-form-item label="到账金额">
@@ -36,9 +36,9 @@
             <div class="tips">
                 温馨提示： 1.提现手续费{{initForm.ratio}}%
 
-                <p v-if="initForm.bankCardType == 1">2.提现需要邮寄发票，发票总面额至少要大于提现额度，否则可能造成提现不成功</p>
+                <p>2.提现需要邮寄发票，发票总面额至少要大于提现额度，否则可能造成提现不成功</p>
 
-                <p v-if="initForm.bankCardType == 1">发票邮寄地址：深圳市福田区安化工业区4栋3楼 华翎科技有限公司  联系人：华翎财务部  电话 ：0755- 82563639</p>
+                <p>发票邮寄地址：深圳市福田区安化工业区4栋3楼 华翎科技有限公司  联系人：华翎财务部  电话 ：0755- 82563639</p>
 
                 <p>3.提现成功发起后，7个工作日左右到账。</p>
 
@@ -75,27 +75,19 @@
                 }
             };
             let validateCompany = (rule, value, callback) => {
-                if (this.initForm.bankCardType == 1) {
-                    if (value === '') {
-                        callback(new Error('发票快递公司不能为空'));
-                    } else if (value.length > 30) {
-                        callback(new Error('发票快递公司不能超过30个字'));
-                    } else {
-                        callback();
-                    }
+                if (value === '') {
+                    callback(new Error('发票快递公司不能为空'));
+                } else if (value.length > 30) {
+                    callback(new Error('发票快递公司不能超过30个字'));
                 } else {
                     callback();
                 }
             };
             let validateNo = (rule, value, callback) => {
-                if (this.initForm.bankCardType == 1) {
-                    if (value === '') {
-                        callback(new Error('快递单号不能为空'));
-                    } else if (value.length > 30) {
-                        callback(new Error('快递单号不能超过30个字'));
-                    } else {
-                        callback();
-                    }
+                if (value === '') {
+                    callback(new Error('快递单号不能为空'));
+                } else if (value.length > 30) {
+                    callback(new Error('快递单号不能超过30个字'));
                 } else {
                     callback();
                 }
@@ -113,7 +105,6 @@
                     bankOpenName: '',
                     bankCardNo: '',
                     subBankName: '',
-                    bankCardType: 1, // 账户类型 1-公司 2-个人
                     ratio: 0,  // 手续费百分比
                 },
                 formLoading: false,

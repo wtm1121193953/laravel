@@ -7,6 +7,7 @@ import welcome from '../components/welcome.vue'
 import merchant from './merchant'
 import settlements from './settlements'
 import operBizMembers from './operBizMember'
+import wallet from './wallet'
 
 import OrderList from '../components/order/list'
 
@@ -31,6 +32,7 @@ const routes = [
     ...merchant,
     ...settlements,
     ...operBizMembers,
+    ...wallet,
 
     // 订单模块
     {

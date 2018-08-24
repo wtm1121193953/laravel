@@ -116,6 +116,16 @@ class ConsumeQuotaService extends BaseService
     }
 
     /**
+     * 生成 消费额流水单号
+     * @return string
+     */
+    public static function createConsumeQuotaNo()
+    {
+        $billNo = date('Ymd') .substr(time(), -7, 7). str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+        return $billNo;
+    }
+
+    /**
      * 创建消费额记录
      * @param Order $order
      * @param Wallet $wallet
@@ -133,7 +143,7 @@ class ConsumeQuotaService extends BaseService
 
         $consumeQuotaRecord = new WalletConsumeQuotaRecord();
         $consumeQuotaRecord->wallet_id = $wallet->id;
-        $consumeQuotaRecord->consume_quota_no = WalletService::createWalletBillNo();
+        $consumeQuotaRecord->consume_quota_no = self::createConsumeQuotaNo();
         $consumeQuotaRecord->origin_id = $wallet->origin_id;
         $consumeQuotaRecord->origin_type = $wallet->origin_type;
         $consumeQuotaRecord->type = $type;

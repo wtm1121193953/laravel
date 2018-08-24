@@ -22,6 +22,12 @@
             <el-form-item label="开户行">
                 {{form.bank_name}}
             </el-form-item>
+            <el-form-item label="发票快递公司">
+                {{form.invoice_express_company}}
+            </el-form-item>
+            <el-form-item label="快递编号">
+                {{form.invoice_express_no}}
+            </el-form-item>
             <el-form-item label="提现发起时间">
                 {{form.created_at}}
             </el-form-item>
