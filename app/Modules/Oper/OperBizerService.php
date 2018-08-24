@@ -57,7 +57,6 @@ class OperBizerService extends BaseService {
         $startTime = array_get($params, 'start_time');
         $endTime = array_get($params, 'end_time');
         $operIds = array_get($params, 'oper_ids');
-        $operId = array_get($params, 'oper_id');
         
 
         if (is_string($fields)) {
@@ -66,11 +65,12 @@ class OperBizerService extends BaseService {
         $data = OperBizer::when($bizerId, function (Builder $query) use ($bizerId) {
                     $query->where('bizer_id', $bizerId);
                 })
-                ->when(is_array($operIds), function (Builder $query) use ($operIds) {
-                    $query->whereIn('oper_id', $operIds);
-                })
-                ->when(!empty($operId), function (Builder $query) use ($operId) {
-                    $query->where('oper_id', $operId);
+                ->when(!empty($operIds), function (Builder $query) use ($operIds) {
+                    if(is_array($operIds)){
+                        $query->whereIn('oper_id', $operIds);
+                    }else{
+                        $query->where('oper_id', $operIds);
+                    }
                 })
                 ->when($status, function (Builder $query) use ($status) {
                     $query->whereIn('status', $status);
@@ -93,5 +93,4 @@ class OperBizerService extends BaseService {
 
         return $data;
     }
-
 }
