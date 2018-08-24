@@ -42,6 +42,10 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
+                    <!-- `checked` 为 true 或 false -->
+                    <el-checkbox v-model="query.show_zero" prop="show_zero">显示结算金额为0 的数据</el-checkbox>
+                </el-form-item>
+                <el-form-item>
                     <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                 </el-form-item>
                 <el-form-item>
@@ -95,13 +99,14 @@
                     status: '',
                     page: 1,
                     startDate: '',
-                    endDate: ''
+                    endDate: '',
+                    show_zero:true
                 },
                 list: [],
                 auditRecord:[],
                 total: 0,
                 currentMerchant: null,
-                tableLoading: false,
+                tableLoading: false
             }
         },
         methods: {
@@ -132,7 +137,13 @@
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
                 this.$confirm(message).then(() => {
-                    window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&signboardName='+ this.query.signboardName+ '&auditStatus=' + this.query.auditStatus + '&operName=' + this.query.operName + '&operId=' + this.query.operId + '&creatorOperName=' + this.query.creatorOperName + '&creatorOperId=' + this.query.creatorOperId;
+                    window.location.href = window.location.origin + '/api/admin/settlement/download?'
+                        + 'merchant_name=' + this.query.merchant_name
+                        + '&startDate=' + this.query.startDate
+                        + '&endDate=' + this.query.endDate
+                        + '&merchant_id=' + this.query.merchant_id
+                        + '&status='+ this.query.status
+                        + '&show_zero=' + this.query.show_zero ;
                 })
             }
         },

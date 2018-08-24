@@ -31,6 +31,7 @@ use Carbon\Carbon;
  * @property number pay_price
  * @property Carbon pay_time
  * @property number pay_target_type
+ * @property float settlement_rate
  * @property number refund_price
  * @property Carbon refund_time
  * @property Carbon finish_time
@@ -38,6 +39,8 @@ use Carbon\Carbon;
  * @property number origin_app_type
  * @property string remark
  * @property number settlement_id
+ * @property number settlement_real_amount
+ * @property number settlement_charge_amount
  */
 
 class Order extends BaseModel
@@ -67,6 +70,14 @@ class Order extends BaseModel
     const ORIGIN_APP_TYPE_ANDROID = 1; // 安卓
     const ORIGIN_APP_TYPE_IOS = 2; // iOS
     const ORIGIN_APP_TYPE_MINIPROGRAM = 3; // 小程序
+
+     /**
+     * 结算状态
+     * Author:Jerry
+     * Date:180824
+     */
+    const SETTLEMENT_STATUS_NO = 1;         // 未结算
+    const SETTLEMENT_STATUS_FINISHED = 2;   // 已结算
 
     /**
      * 订单状态

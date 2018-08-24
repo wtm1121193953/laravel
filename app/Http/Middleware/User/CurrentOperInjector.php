@@ -39,13 +39,15 @@ class CurrentOperInjector
 //            $appid = 'wx1abb4cf60ffea6c9';
         }
 
-        $operId = OperMiniprogram::where('appid', $appid)->value('oper_id');
-        if(empty($operId)){
-            throw new BaseResponseException('微信小程序appid错误', ResultCode::WECHAT_APPID_INVALID);
+        if($appid != config('platform.miniprogram.app_id')){
+            $operId = OperMiniprogram::where('appid', $appid)->value('oper_id');
+            if(empty($operId)){
+                throw new BaseResponseException('微信小程序appid错误', ResultCode::WECHAT_APPID_INVALID);
+            }
+            $oper = Oper::findOrFail($operId);
+            $request->attributes->add(['current_oper' => $oper]);
         }
 
-        $oper = Oper::findOrFail($operId);
-        $request->attributes->add(['current_oper' => $oper]);
         return $next($request);
     }
 }
