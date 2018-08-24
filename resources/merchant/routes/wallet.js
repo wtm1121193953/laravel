@@ -5,7 +5,9 @@ import WalletSummaryDetail from '../components/wallet/summary/detail'
 import WalletConsumeList from '../components/wallet/my-consume-quota/list'
 import WalletConsumeDetail from '../components/wallet/my-consume-quota/detail'
 
-import WalletWithdrawPassword from '../components/wallet/withdraw-password/set-password'
+import WalletWithdrawPassword from '../components/wallet/withdraw/set-password'
+import WalletWithdrawForm from '../components/wallet/withdraw/form'
+import WalletWithdrawSuccess from '../components/wallet/withdraw/success'
 
 export default [
     {
@@ -19,6 +21,8 @@ export default [
             {path: '/wallet/consume/detail', component: WalletConsumeDetail, name: 'WalletConsumeDetail'},
 
             {path: '/wallet/withdraw/password', component: WalletWithdrawPassword, name: 'WalletWithdrawPassword'},
+            {path: '/wallet/withdraw/form', component: WalletWithdrawForm, name: 'WalletWithdrawForm'},
+            {path: '/wallet/withdraw/success', component: WalletWithdrawSuccess, name: 'WalletWithdrawSuccess'},
         ]
     }
 ];

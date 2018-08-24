@@ -98,10 +98,12 @@
                     if (valid) {
                         if (!(/^1[3,4,5,6,7,8,9]\d{9}$/.test(this.mobile))) {
                             this.$message.error('手机号码格式错误');
+                            return false;
                         }
                         this.form.mobile = this.mobile;
                         api.post('/wallet/withdraw/setWalletPassword', this.form).then(data => {
                             this.$message.success('提现密码设置成功');
+                            this.$refs.form.resetFields();
                             this.initForm();
                         });
                     }

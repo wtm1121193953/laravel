@@ -3,6 +3,7 @@
 namespace App\Modules\UserCredit;
 
 
+use App\Modules\Merchant\Merchant;
 use App\Modules\Setting\SettingService;
 
 
@@ -169,6 +170,30 @@ class UserCreditSettingService extends SettingService
     {
         // todo
         return 50;
+    }
+
+    /**
+     * 根据银行卡类型 获取商户取现的手续费百分比
+     * @param $type
+     * @return float|int
+     */
+    public static function getMerchantWithdrawChargeRatioByBankCardType($type)
+    {
+        if ($type == Merchant::BANK_CARD_TYPE_COMPANY) {
+            $ratio = 0.2;
+        } else {
+            $ratio = 7;
+        }
+        return $ratio;
+    }
+
+    /**
+     * 获取运营中心提现手续费百分比
+     * @return float
+     */
+    public static function getOperWithdrawChargeRatio()
+    {
+        return 0.2;
     }
 
 }

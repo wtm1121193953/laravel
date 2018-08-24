@@ -6,7 +6,7 @@
                 <p class="val">{{item.val}}</p >
             </div>
             <div class="handler">
-                <el-button type="success">我要提现</el-button>
+                <el-button type="success" @click="withdraw">我要提现</el-button>
             </div>
         </div>
 
@@ -161,6 +161,9 @@
                         id: row.id,
                     }
                 });
+            },
+            withdraw() {
+                router.push('/wallet/withdraw/form');
             }
         },
         created() {

@@ -11,3 +11,6 @@ Route::get('/wallet/consume/exportExcel', 'WalletController@exportConsumeQuotaRe
 
 Route::get('/wallet/withdraw/getPasswordInfo', 'WalletWithdrawController@getWalletPasswordInfo');
 Route::post('/wallet/withdraw/setWalletPassword', 'WalletWithdrawController@setWalletPassword');
+Route::get('/wallet/withdraw/getWithdrawInfo', 'WalletWithdrawController@getWithdrawInfoAndBankInfo');
+Route::post('/wallet/withdraw/withdrawApplication', 'WalletWithdrawController@withdrawApplication');
+Route::get('/wallet/withdraw/getWithdrawDetail', 'WalletWithdrawController@getWithdrawDetail');
