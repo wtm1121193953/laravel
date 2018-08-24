@@ -1,6 +1,6 @@
 <template>
     <page title="申请记录" v-loading="isLoading">
-	<el-table :data="list" stripe>
+    <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="申请签约时间"/>
             <el-table-column prop="name" label="运营中心名称">
                 <template slot-scope="scope">
@@ -39,7 +39,7 @@
                     page: 1
                 },
                 list: [],
-		total: 0
+                total: 0
             }
         },
         computed: {
@@ -47,15 +47,15 @@
         },
         methods: {
             getList(){
-                 this.isLoading = true;
-                 let params = {};
-                 Object.assign(params, this.query);
-                 api.get('/opersRecord', params).then(data => {
-                     this.query.page = params.page;
-                     this.isLoading = false;
-                     this.list = data.list;
-                     this.total = data.total;
-                 })
+                this.isLoading = true;
+                let params = {};
+                Object.assign(params, this.query);
+                api.get('/opersRecord', params).then(data => {
+                    this.query.page = params.page;
+                    this.isLoading = false;
+                    this.list = data.list;
+                    this.total = data.total;
+                })
             },
         },
         created(){
