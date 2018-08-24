@@ -23,6 +23,7 @@ class CreateWalletsTable extends Migration
             $table->decimal('freeze_consume_quota', 11, 2)->default(0)->comment('当月冻结中的消费额');
             $table->decimal('total_consume_quota', 11, 2)->default(0)->comment('累计消费额(不包含冻结消费额)');
             $table->string('withdraw_password')->default('')->comment('提现密码');
+            $table->string('salt')->default('')->comment('盐值');
             $table->timestamps();
 
             $table->comment = '钱包表';

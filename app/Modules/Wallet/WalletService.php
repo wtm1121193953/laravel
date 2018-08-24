@@ -276,4 +276,19 @@ class WalletService extends BaseService
         }
         return $bill;
     }
+
+    /**
+     * 更新钱包提现密码
+     * @param Wallet $wallet
+     * @param $password
+     * @return Wallet
+     */
+    public static function updateWalletWithdrawPassword(Wallet $wallet, $password)
+    {
+        $salt = str_random();
+        $wallet->salt = $salt;
+        $wallet->withdraw_password = Wallet::genPassword($password, $salt);
+        $wallet->save();
+        return $wallet;
+    }
 }

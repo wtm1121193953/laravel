@@ -206,7 +206,7 @@ class OrderService extends BaseService
         if(is_int($order)){
             $order = self::getById($order);
         }
-        $settlementRate = Merchant::where('id', $order->merchant_id)->value('settlement_rate'); //分利比例
+        $settlementRate = $order->settlement_rate; //分利比例
         // 分利比例要从订单中获取  $order->settlement_rate
         // 计算盈利金额
         $grossProfit = $order->pay_price * $settlementRate / 100;
