@@ -70,7 +70,7 @@
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
                     <el-button type="text">查看商户</el-button>
-                    <el-button type="text">查看合同</el-button>
+                    <el-button type="text" @click="contract">查看合同</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -100,6 +100,21 @@
                 <el-button type="primary" @click="dialogFormVisible = false">发送申请</el-button>
             </div>
         </el-dialog>
+
+        <el-dialog title="合同" :visible.sync="dialogContractVisible">
+            合同内容
+        </el-dialog>
+
+        <el-dialog title="提示" :visible.sync="dialogPromptVisible" width="30%">
+            <el-form :model="form" label-width="110px">
+                <el-form-item label="运营中心名称：">
+                    大千互娱深圳运营中心
+                </el-form-item>
+                <el-form-item label="不通过原因：">
+                    <div class="prompt-txt">不想通过，就是酱紫任性不想通过，就是酱紫任性不想通过，就是酱紫任性不想通过，就是酱紫任性不想通过，就是酱紫任性</div>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
     </page>
 </template>
 
@@ -123,6 +138,8 @@
                 total: 0,
 
                 dialogFormVisible: false,
+                dialogContractVisible: false,
+                dialogPromptVisible: false,
                 form: {
                     region: '',
                     desc: ''
@@ -151,6 +168,12 @@
             add(){
                 this.dialogFormVisible = true;
             },
+            contract(){
+                this.dialogContractVisible = true;
+            },
+            prompt(){
+                this.dialogPromptVisible = true;
+            },
         },
         created(){
             let _self = this;
@@ -170,5 +193,8 @@
 </script>
 
 <style scoped>
-
+.prompt-txt {
+    line-height: 24px;
+    padding: 8px 0;
+}
 </style>
