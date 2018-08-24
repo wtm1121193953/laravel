@@ -83,15 +83,15 @@
                 :total="total"/>
 
         <el-dialog title="添加运营中心" :visible.sync="dialogFormVisible" width="30%">
-            <el-form :model="form">
-                <el-form-item label="运营中心名称" :label-width="formLabelWidth">
-                    <el-select v-model="form.region" placeholder="请选择运营中心">
-                        <el-option label="运营中心1" value="1"></el-option>
-                        <el-option label="运营中心2" value="2"></el-option>
+            <el-form :model="form" label-width="100px">
+                <el-form-item label="运营中心名称">
+                    <el-select v-model="form.region" placeholder="请选择运营中心" style="width:100%;">
+                        <el-option label="运营中心1" value="1"/>
+                        <el-option label="运营中心2" value="2"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="备注" :label-width="formLabelWidth">
-                    <el-input type="textarea" v-model="form.desc" auto-complete="off"></el-input>
+                <el-form-item label="备注">
+                    <el-input type="textarea" v-model="form.desc" auto-complete="off"/>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -125,8 +125,7 @@
                 form: {
                     region: '',
                     desc: ''
-                },
-                formLabelWidth: '120px'
+                }
             }
         },
         computed: {
