@@ -9,12 +9,12 @@
             <el-table-column prop="created_at" label="申请签约时间"/>
             <el-table-column prop="name" label="姓名">
                 <template slot-scope="scope">
-                    <span> {{ scope.row.operInfo.name }} </span>
+                    <span> {{ scope.row.bizerInfo.name }} </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="tel" label="手机号">
+            <el-table-column prop="mobile" label="手机号">
                 <template slot-scope="scope">
-                    <span> {{ scope.row.operInfo.tel }} </span>
+                    <span> {{ scope.row.bizerInfo.mobile }} </span>
                 </template>
             </el-table-column>
             

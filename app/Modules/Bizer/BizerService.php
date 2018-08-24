@@ -43,4 +43,12 @@ class BizerService extends BaseService
             return $data;
         }
     }
+    public static function getById($id, $fields = ['*'])
+    {
+        if (is_string($fields)) {
+            $fields = explode(',', $fields);
+        }
+        $bizer = Bizer::find($id, $fields);
+        return $bizer;
+    }
 }

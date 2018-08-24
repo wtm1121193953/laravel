@@ -12,6 +12,7 @@ namespace App\Modules\Oper;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use Illuminate\Database\Eloquent\Builder;
+use App\Modules\Bizer\BizerService;
 
 class OperBizerService extends BaseService {
 
@@ -90,6 +91,7 @@ class OperBizerService extends BaseService {
         if ($getOperInfo) {
             $data->each(function ($item) {
                 $item->operInfo = OperService::getById($item->oper_id, 'name,contacter,tel,province,city') ?: null;
+                $item->bizerInfo = BizerService::getById($item->bizer_id, 'name,mobile,status') ?: null;
             });
         }
 
