@@ -13,6 +13,7 @@ use App\BaseService;
 use App\Modules\Order\Order;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use phpDocumentor\Reflection\Types\Boolean;
 use tests\Mockery\Adapter\Phpunit\EmptyTestCase;
 
 class SettlementPlatformService extends BaseService
@@ -42,11 +43,12 @@ class SettlementPlatformService extends BaseService
     }
 
     /**
-     * SAAS获取结算单列表【旧】
-     * @param array $params {merchantId, operId}
+     * SAAS获取结算单列表【新】
+     * @param array $params
+     * @param bool $return_query
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getListForSaas(array $params = [])
+    public static function getListForSaas(array $params = [],bool $return_query = false)
     {
         //DB::enableQueryLog();
         $query = SettlementPlatform::where('id', '>', 0);
@@ -69,11 +71,17 @@ class SettlementPlatformService extends BaseService
             $query->whereIn('status', $params['status']);
         }
 
-        $data = $query
-            ->with('merchant:id,name')
+        if ($params['show_zero'] == 'false') {
+            $query->where('real_amount','>', 0);
+        }
+
+        $query->with('merchant:id,name')
             ->with('oper:id,name')
-            ->orderBy('id', 'desc')
-            ->paginate();
+            ->orderBy('id', 'desc');
+        if ($return_query) {
+            return  $query;
+        }
+        $data = $query->paginate();
 
         $data->each(function ($item) {
             $item->status_val = self::$status_vals[$item->status];
