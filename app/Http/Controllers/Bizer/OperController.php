@@ -77,12 +77,12 @@ class OperController extends Controller {
     public function add() {
         $this->validate(request(), [
             'oper_id' => 'required',
-            'remark' => 'required'
+            // 'remark' => 'required'
         ]);
 
         $operId = request('oper_id');
         $bizerId = request()->get('current_user')->id;
-        $remark = request('remark');
+        $remark = request('remark', '');
         
         $operBizer = OperBizer::where('oper_id', $operId)->where('bizer_id', $bizerId)->first();
         if($operBizer){
