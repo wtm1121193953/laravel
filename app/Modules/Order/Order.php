@@ -31,6 +31,7 @@ use Carbon\Carbon;
  * @property number pay_price
  * @property Carbon pay_time
  * @property number pay_target_type
+ * @property float settlement_rate
  * @property number refund_price
  * @property Carbon refund_time
  * @property Carbon finish_time

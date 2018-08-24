@@ -143,6 +143,7 @@ class OrderController extends Controller
         $order->buy_number = $number;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $goods->price * $number;
+        $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->save();
 
@@ -230,6 +231,7 @@ class OrderController extends Controller
         $order->dishes_id = $dishesId;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $this->getTotalPrice();
+        $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->save();
 
@@ -322,6 +324,7 @@ class OrderController extends Controller
         $order->price = $price;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $price;
+        $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->save();
 
