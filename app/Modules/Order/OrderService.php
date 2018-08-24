@@ -197,7 +197,7 @@ class OrderService extends BaseService
     }
 
     /**
-     * 获取订单剩余利润
+     * 获取订单利润
      * @param $order
      * @return float
      */
