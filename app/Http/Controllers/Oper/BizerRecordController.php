@@ -16,26 +16,10 @@ class BizerRecordController extends Controller {
      * @return type
      */
     public function getList() {
+        $status = request("selectStatus")=='first' ? 0 : -1;
         $where =[
             "oper_ids" => request()->get('current_user')->oper_id,//登录所属运营中心ID
-            "status" =>0,//默认获取申请中的业务员
-        ];
-        //echo "<pre>";print_r($where);exit;
-        $data = OperBizerService::getList($where);
-        
-        return Result::success([
-            'list' => $data->items(),
-            'total' => $data->total(),
-        ]);
-    }
-    /**
-     * 获取已经拒绝的业务员申请
-     * @return type
-     */
-    public function getRefuseList() {
-        $where =[
-            "oper_ids" => request()->get('current_user')->oper_id,//登录所属运营中心ID
-            "status" =>-1,//默认获取申请中的业务员
+            "status" =>$status,//查询业务员的状态
         ];
         //echo "<pre>";print_r($where);exit;
         $data = OperBizerService::getList($where);

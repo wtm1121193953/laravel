@@ -57,7 +57,6 @@ class OperBizerService extends BaseService {
         $startTime = array_get($params, 'start_time');
         $endTime = array_get($params, 'end_time');
         $operIds = array_get($params, 'oper_ids');
-        
 
         if (is_string($fields)) {
             $fields = explode(',', preg_replace('# #', '', $fields));
@@ -72,8 +71,11 @@ class OperBizerService extends BaseService {
                         $query->where('oper_id', $operIds);
                     }
                 })
-                ->when($status, function (Builder $query) use ($status) {
-                    $query->whereIn('status', $status);
+                ->when(is_array($status), function (Builder $query) use ($status) {
+                     $query->whereIn('status', $status);
+                })
+                ->when(is_numeric($status), function (Builder $query) use ($status) {
+                     $query->where('status', $status);
                 })
                 ->when($startTime, function (Builder $query) use ($startTime) {
                     $query->where('created_at', '>=', $startTime);
@@ -84,7 +86,7 @@ class OperBizerService extends BaseService {
                 ->orderBy('id', 'desc')
                 ->select($fields)
                 ->paginate();
-
+       
         if ($getOperInfo) {
             $data->each(function ($item) {
                 $item->operInfo = OperService::getById($item->oper_id, 'name,contacter,tel,province,city') ?: null;

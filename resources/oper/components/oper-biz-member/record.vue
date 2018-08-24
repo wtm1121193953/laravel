@@ -1,7 +1,7 @@
 <template>
     <page title="业务员申请" v-loading="isLoading">
         <el-tabs type="card" v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="新申请10" name="first"></el-tab-pane>
+            <el-tab-pane label="新申请" name="first"></el-tab-pane>
             <el-tab-pane label="已拒绝" name="second"></el-tab-pane>
         </el-tabs>
 
@@ -55,7 +55,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogSigningFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogSigningFormVisible = false">提 交</el-button>
+                <el-button type="primary" @click="dialogSigningFormVisible">提 交</el-button>
             </div>
         </el-dialog>
 
@@ -115,6 +115,7 @@
             getList() {
                 this.isLoading = true;
                 let params = {};
+                this.query.selectStatus = this.activeName;
                 Object.assign(params, this.query);
                 api.get('/bizerRecord', params).then(data => {
                     // console.log(data.list)
@@ -127,6 +128,7 @@
             handleClick(tab, event) {
                 // console.log(tab, event);
                 let _self = this;
+                this.getList();
                 if ( _self.activeName == "first" ) {
                     _self.secondTable = false;
                 } else if ( _self.activeName == "second" ) {
