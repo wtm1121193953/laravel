@@ -31,7 +31,7 @@ class WechatController extends Controller
             'code' => 'required'
         ]);
         $code = request('code', '');
-        $app = WechatService::getWechatMiniAppForOper(request()->get('current_oper')->id);
+        $app = WechatService::getWechatMiniAppFromRequest();
         $result = $app->auth->session($code);
         if(is_string($result)) $result = json_decode($result, 1);
         Log::info('wxLogin 返回', $result);
