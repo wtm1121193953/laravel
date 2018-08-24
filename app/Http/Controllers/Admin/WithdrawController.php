@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 57458
- * Date: 2018/8/21
- * Time: 22:18
- */
 
 namespace App\Http\Controllers\Admin;
 

@@ -51,12 +51,16 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
         } elseif ($row->type == WalletBill::TYPE_SUBORDINATE_REFUND) {
             $typeText = '用户消费返利退款';
         } elseif ($row->type = WalletBill::TYPE_WITHDRAW) {
-            if ($row->status == WalletWithdraw::STATUS_WITHDRAWING) {
-                $typeText = '提现（提现中）';
-            } elseif ($row->status == WalletWithdraw::STATUS_WITHDRAW_SUCCESS) {
-                $typeText = '提现（提现成功）';
+            if ($row->status == WalletWithdraw::STATUS_AUDITING) {
+                $typeText = '提现（审核中）';
+            } elseif ($row->status == WalletWithdraw::STATUS_AUDIT) {
+                $typeText = '提现（审核通过）';
+            } elseif ($row->status == WalletWithdraw::STATUS_WITHDRAW) {
+                $typeText = '提现（已打款）';
             } elseif ($row->status == WalletWithdraw::STATUS_WITHDRAW_FAILED) {
-                $typeText = '提现（提现失败）';
+                $typeText = '提现（打款失败）';
+            } elseif ($row->status == WalletWithdraw::STATUS_AUDIT_FAILED) {
+                $typeText = '提现（审核不通过）';
             } else {
                 $typeText = '提现（未知'.$row->status.'）';
             }

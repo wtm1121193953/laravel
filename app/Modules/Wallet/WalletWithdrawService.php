@@ -98,7 +98,7 @@ class WalletWithdrawService extends BaseService
         $withdraw->amount = $amount;
         $withdraw->charge_amount = number_format($amount * $ratio / 100, 2);
         $withdraw->remit_amount = number_format($amount - number_format($amount * $ratio / 100, 2), 2);
-        $withdraw->status = WalletWithdraw::STATUS_WITHDRAWING;
+        $withdraw->status = WalletWithdraw::STATUS_AUDITING;
         $withdraw->invoice_express_company = $invoiceExpressCompany;
         $withdraw->invoice_express_no = $invoiceExpressNo;
         $withdraw->bank_card_type = $obj->bank_card_type;
