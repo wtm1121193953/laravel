@@ -94,10 +94,9 @@ class SettlementPlatformService extends BaseService
      * 处理每日结算细节入库
      * @Author   Jerry
      * @DateTime 2018-08-24
-     * @param    [type]
-     * @param    [type]
-     * @param    [type]
-     * @return   [type]
+     * @param    [obj]  $merchant
+     * @param    [obj]  $date
+     * @return   [bool]
      */
     public static function settlement( $merchant, $date )
     {
@@ -137,13 +136,13 @@ class SettlementPlatformService extends BaseService
                         $item->settlement_charge_amount = $item->pay_price * $item->settlement_rate / 100;  // 手续费
                         $item->settlement_real_amount = $item->pay_price - $item->settlement_charge_amount;   // 货款
                         $item->settlement_status = Order::SETTLEMENT_STATUS_FINISHED;
-                        $item->settlement_id = $SettlementPlatform->id;
+                        $item->settlement_id = $settlementPlatform->id;
                         $item->save();
 
                         // 结算实收金额
-                        $SettlementPlatform->amount += $item->pay_price;
-                        $SettlementPlatform->charge_amount += $item->settlement_real_amount;
-                        $SettlementPlatform->real_amount += $item->settlement_real_amount;
+                        $settlementPlatform->amount += $item->pay_price;
+                        $settlementPlatform->charge_amount += $item->settlement_real_amount;
+                        $settlementPlatform->real_amount += $item->settlement_real_amount;
 
                     });
                 });
