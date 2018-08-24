@@ -11,10 +11,13 @@ namespace App\Http\Controllers\User;
 
 use App\Exceptions\NoPermissionException;
 use App\Http\Controllers\Controller;
+use App\Modules\Wallet\ConsumeQuotaService;
 use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletBill;
+use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use App\Modules\Wallet\WalletService;
 use App\Result;
+use Illuminate\Support\Carbon;
 
 class WalletController extends Controller
 {
@@ -49,7 +52,10 @@ class WalletController extends Controller
             'typeArr' => [$type],
         ], 20);
 
-        return Result::success($bills);
+        return Result::success([
+            'list' => $bills->items(),
+            'total' => $bills->total(),
+        ]);
     }
 
     /**
@@ -71,6 +77,46 @@ class WalletController extends Controller
             throw new NoPermissionException('账单信息不存在');
         }
 
-        return $billInfo;
+        return Result::success($billInfo);
+    }
+
+    /**
+     * 获取消费额记录
+     */
+    public function getConsumeQuotas()
+    {
+        $month = request('month');
+        if(empty($month)){
+            $month = date('Y-m');
+        }
+        $status = request('status');
+        $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
+        $data = ConsumeQuotaService::getConsumeQuotaRecordList([
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'status' => $status,
+            'originId' => request()->get('current_user')->id,
+            'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+        ]);
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
+    }
+
+    /**
+     * 获取消费额详情
+     */
+    public function getConsumeQuotaDetail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $consumeQuota = ConsumeQuotaService::getDetailById($id);
+
+        return Result::success($consumeQuota);
     }
 }

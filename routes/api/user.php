@@ -71,4 +71,6 @@ Route::prefix('user')
         Route::get('wallet/info', 'WalletController@getWallet')->middleware(UserLoginFilter::class);
         Route::get('wallet/bills', 'WalletController@getBills')->middleware(UserLoginFilter::class);
         Route::get('wallet/bill/detail', 'WalletController@getBillDetail')->middleware(UserLoginFilter::class);
+        Route::get('wallet/consumeQuotas', 'WalletController@getConsumeQuotas')->middleware(UserLoginFilter::class);
+        Route::get('wallet/consumeQuota/detail', 'WalletController@getConsumeQuotaDetail')->middleware(UserLoginFilter::class);
     });

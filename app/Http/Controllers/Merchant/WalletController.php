@@ -139,7 +139,7 @@ class WalletController extends Controller
         $originId = request()->get('current_user')->merchant_id;
         $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
         $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
-        $data = ConsumeQuotaService::getWalletConsumeQuotaRecordList($param, $pageSize);
+        $data = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
         // 获取钱包信息
         $wallet = WalletService::getWalletInfoByOriginInfo($originId, $originType);
 
@@ -166,7 +166,7 @@ class WalletController extends Controller
         $originId = request()->get('current_user')->merchant_id;
         $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
         $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
-        $query = ConsumeQuotaService::getWalletConsumeQuotaRecordList($param, $pageSize);
+        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
 
         return (new WalletConsumeQuotaRecordExport($query))->download('消费额记录表.xlsx');
     }

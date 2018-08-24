@@ -6,6 +6,7 @@ namespace App\Modules\Wallet;
 use App\BaseService;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
+use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
@@ -245,26 +246,33 @@ class WalletService extends BaseService
         if(empty($bill)){
             return null;
         }
+        // 如果是返利相关, 补充返利的订单信息
         if(in_array($bill->type, [
             WalletBill::TYPE_SELF,
             WalletBill::TYPE_SUBORDINATE,
             WalletBill::TYPE_OPER,
-        ])){
-            // 如果是消费相关, 补充订单号信息
-            $bill->order = OrderService::getById($bill->obj_id, ['order_no', 'status', 'created_at']);
-        }else if(in_array($bill->type, [
             WalletBill::TYPE_SELF_CONSUME_REFUND,
             WalletBill::TYPE_SUBORDINATE_REFUND,
             WalletBill::TYPE_OPER_REFUND,
         ])){
+            $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordById($bill->obj_id);
+            $bill->order = OrderService::getById($feeSplittingRecords->order_id, ['id', 'order_no', 'status', 'created_at', 'pay_time']);
+
             // 如果是退款相关, 补充退款信息
-            $bill->refund = OrderService::getRefundById($bill->obj_id, ['refund_no', 'status', 'created_at']);
-        }else if(in_array($bill->type, [
+            if(in_array($bill->type, [
+                WalletBill::TYPE_SELF_CONSUME_REFUND,
+                WalletBill::TYPE_SUBORDINATE_REFUND,
+                WalletBill::TYPE_OPER_REFUND,
+            ])){
+                $bill->refund = OrderService::getRefundById($bill->order->id, ['id', 'refund_no', 'status', 'created_at']);
+            }
+        }
+        // 提现相关, 补充提现单号
+        if(in_array($bill->type, [
             WalletBill::TYPE_WITHDRAW,
             WalletBill::TYPE_WITHDRAW_FAILED,
         ])){
-            // 提现相关, 补充提现单号
-            $bill->withdraw = WalletWithdrawService::getWalletWithdrawById($bill->obj_id, ['withdraw_no']);
+            $bill->withdraw = WalletWithdrawService::getWalletWithdrawById($bill->obj_id);
         }
         return $bill;
     }

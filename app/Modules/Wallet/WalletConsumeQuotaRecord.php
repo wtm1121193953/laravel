@@ -3,6 +3,7 @@
 namespace App\Modules\Wallet;
 
 use App\BaseModel;
+use App\Modules\Order\Order;
 
 /**
  * Class WalletConsumeQuotaRecord
@@ -44,4 +45,22 @@ class WalletConsumeQuotaRecord extends BaseModel
     const STATUS_UNFREEZE = 2;
     const STATUS_REPLACEMENT = 3;
     const STATUS_REFUND = 4;
+
+    /**
+     * 消费额所属订单
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    /**
+     * 消费额对应的冻结记录
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function unfreezeRecord()
+    {
+        return $this->hasOne(WalletConsumeQuotaUnfreezeRecord::class, 'consume_quota_record_id');
+    }
 }

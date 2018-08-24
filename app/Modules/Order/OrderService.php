@@ -197,7 +197,7 @@ class OrderService extends BaseService
     }
 
     /**
-     * 获取订单利润
+     * 获取订单剩余利润
      * @param $order
      * @return float
      */
@@ -207,8 +207,12 @@ class OrderService extends BaseService
             $order = self::getById($order);
         }
         $settlementRate = Merchant::where('id', $order->merchant_id)->value('settlement_rate'); //分利比例
+        // 分利比例要从订单中获取  $order->settlement_rate
+        // 计算盈利金额
+        $grossProfit = $order->pay_price * $settlementRate / 100;
+        $taxAmount = $grossProfit * 0.06 * 1.12 / 1.06 + $grossProfit * 0.1 * 0.25 + 0.006 * $order->pay_price;
 
-        return $order->pay_price * $settlementRate / 100;
+        return $grossProfit - $taxAmount;
     }
 
     /**
