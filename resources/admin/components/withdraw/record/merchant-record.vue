@@ -77,7 +77,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="merchant_name" label="商户名称"></el-table-column>
-            <el-table-column prop="merchant_id" label="商户ID"></el-table-column>
+            <el-table-column prop="origin_id" label="商户ID"></el-table-column>
             <el-table-column prop="oper_name" label="运营中心"></el-table-column>
             <el-table-column prop="status" label="提现状态">
                 <template slot-scope="scope">
@@ -140,13 +140,30 @@
         },
         methods: {
             getList() {
-
+                this.tableLoading = true;
+                api.get('/withdraw/records', this.form).then(data => {
+                    this.list = data.list;
+                    this.total = data.total;
+                    this.tableLoading = false;
+                })
             },
             search() {
-
+                this.form.page = 1;
+                this.getList();
             },
             exportExcel() {
+                let data = this.form;
+                let params = [];
+                Object.keys(data).forEach((key) => {
+                    let value =  data[key];
+                    if (typeof value === 'undefined') {
+                        value = '';
+                    }
+                    params.push([key, encodeURIComponent(value)].join('='))
+                }) ;
+                let uri = params.join('&');
 
+                location.href = `/api/admin/withdraw/record/export?${uri}`;
             },
             detail() {
 
@@ -162,7 +179,7 @@
             }
         },
         created() {
-
+            this.getList();
         }
     }
 </script>
