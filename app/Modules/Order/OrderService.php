@@ -260,6 +260,7 @@ class OrderService extends BaseService
                 $orderPay->amount = $totalFee * 1.0 / 100;
                 $orderPay->save();
 
+                var_dump($orderPay);exit;
                 OrderPaidJob::dispatch($order);
                 DB::commit();
             }catch (\Exception $e){
