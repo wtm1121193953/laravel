@@ -149,30 +149,11 @@ class OrderController extends Controller
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->save();
 
-        if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
+        if($order->pay_target_type == Order::PAY_TARGET_TYPE_OPER){ // 如果是支付到平台
             if($currentOperId == 0){ // 在平台小程序下
                 // 调平台支付, 走融宝支付接口
                 $isOperSelf = 1;
-                $payApp = WechatService::getWechatPayAppForOper($merchant->oper_id);
-                $data = [
-                    'body' => $order->goods_name,
-                    'out_trade_no' => $orderNo,
-                    'total_fee' => $order->pay_price * 100,
-                    'trade_type' => 'JSAPI',
-                    'openid' => $order->open_id,
-                ];
-                $unifyResult = $payApp->order->unify($data);
-                if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
-                    $order->save();
-                }else {
-                    Log::error('微信统一下单失败', [
-                        'payConfig' => $payApp->getConfig(),
-                        'data' => $data,
-                        'result' => $unifyResult,
-                    ]);
-                    throw new BaseResponseException('微信统一下单失败');
-                }
-                $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+                $sdkConfig = null; // 走融宝支付接口
             }else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
