@@ -9,6 +9,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditSettingService;
+use Illuminate\Support\Collection;
 
 /**
  * 提现相关Service
@@ -112,5 +113,43 @@ class WalletWithdrawService extends BaseService
         $wallet->save();
 
         return $withdraw;
+    }
+
+    public static function getWithdrawTotalAmountAndCount($params = [])
+    {
+        $start = array_get($params, 'start');
+        $end = array_get($params, 'end');
+        $originType = array_get($params, 'originType');
+        $originId = array_get($params, 'originId');
+        $status = array_get($params, 'status');
+        $query = WalletWithdraw::query();
+        if($originType){
+            $query->where('origin_type', $originType);
+        }
+        if($originId){
+            $query->where('origin_id', $originId);
+        }
+        if($status){
+            if(is_array($status) || $status instanceof Collection){
+                $query->whereIn('status', $status);
+            }else {
+                $query->where('status', $status);
+            }
+        }
+        if($start && $end){
+            $query->whereBetween('created_at', [$start, $end]);
+        }else if($start){
+            $query->where('created_at', '>', $start);
+        }else if($end){
+            $query->where('created_at', '<', $end);
+        }
+
+        $count = $query->count();
+        $amount = $query->sum('amount');
+
+        return [
+            'count' => $count,
+            'amount' => $amount,
+        ];
     }
 }
