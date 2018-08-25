@@ -264,7 +264,7 @@ class OrderService extends BaseService
                 $orderPay->order_id = $order->id;
                 $orderPay->order_no = $orderNo;
                 $orderPay->transaction_no = $transactionId;
-                $orderPay->amount = $totalFee * 1.0 / 100;
+                $orderPay->amount = $totalFee;
                 $orderPay->save();
                 OrderPaidJob::dispatch($order);
                 DB::commit();

@@ -114,7 +114,8 @@ class PayController extends Controller
         $response = $app->handlePaidNotify(function ($message, $fail){
             if($message['return_code'] === 'SUCCESS' && array_get($message, 'result_code') === 'SUCCESS'){
                 $orderNo = $message['out_trade_no'];
-                OrderService::paySuccess($orderNo, $message['transaction_id'], $message['total_fee']);
+                $totalFee = $message['total_fee'];
+                OrderService::paySuccess($orderNo, $message['transaction_id'], $totalFee / 100);
             } else {
                 return $fail('通信失败，请稍后再通知我');
             }
