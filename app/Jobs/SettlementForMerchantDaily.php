@@ -11,8 +11,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 use App\Modules\Merchant\Merchant;
-use App\Modules\Merchant\SettlementPlatform;
-use App\Modules\Merchant\SettlementPlatformService;
+use App\Modules\Settlement\SettlementPlatform;
+use App\Modules\Settlement\SettlementPlatformService;
 /**
  * Author: Jerry
  * Date:    180823

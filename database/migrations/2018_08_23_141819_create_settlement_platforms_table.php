@@ -41,6 +41,10 @@ class CreateSettlementPlatformsTable extends Migration
             $table->string('logistics_no')->default('')->comment('发票邮寄物流单号  纸质发票有效');
 
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-未打款 2-已打款 3-已到账 4-打款失败');
+            $table->string('settlement_no')->index()->default('')->comment('结算单号')->after('id');
+            $table->string('reason')->index()->default('')->comment('打款失败原因')->after('status');
+            $table->integer('settlement_pay_batch_id')->index()->default(0)->comment('打款批次ID')->after('reason');
+            $table->string('pay_batch_no')->index()->default('')->comment('打款批次号, 对应 settlement_pay_batches 表 batch_no 字段')->after('settlement_pay_batch_id');
 
             $table->timestamps();
         });
