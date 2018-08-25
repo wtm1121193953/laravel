@@ -15,6 +15,12 @@ class CreateSettlementPayBatchesTable extends Migration
         Schema::create('settlement_pay_batches', function (Blueprint $table) {
             $table->increments('id');
             $table->string('batch_no')->index()->default('')->comment('打款批次号');
+            $table->string('batch_count')->default('')->comment('批次总数量');
+            $table->tinyInteger('pay_type')->default('1')->comment('记账方式 0-加急 1-普通');
+            $table->string('pay_sight')->default('')->comment('付款场景');
+            $table->string('batch_amount')->default('')->comment('批次总金额');
+            $table->string('platform_merchant_id')->default('')->comment('平台商户号');
+            $table->text('content')->comment('批次明细');
             $table->tinyInteger('type')->index()->default(1)->comment('状态 1-融宝打款批次 ');
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-未提交 2-已提交');
             $table->timestamps();
