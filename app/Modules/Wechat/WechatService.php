@@ -119,7 +119,12 @@ class WechatService
      */
     public static function genMiniprogramAppCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false,$merchantId ='')
     {
-        $app = WechatService::getWechatMiniAppForOper($operId);
+        if(!$operId){
+            $app = WechatService::getWechatMiniAppForPlatform();
+        }else {
+            $app = WechatService::getWechatMiniAppForOper($operId);
+        }
+
         $response = $app->app_code->getUnlimit($sceneId, [
             'page' => $page,
             'width' => $width,
