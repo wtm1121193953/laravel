@@ -28,7 +28,8 @@ class WalletController extends Controller
      */
     public function getWallet()
     {
-        $user = request('current_user');
+        $user = request()->get('current_user');
+
         $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
 
         return Result::success($wallet);
@@ -43,7 +44,7 @@ class WalletController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $type = request('type');
-        $user = request('current_user');
+        $user = request()->get('current_user');
         $bills = WalletService::getBillList([
             'originId' => $user->id,
             'originType' => WalletBill::ORIGIN_TYPE_USER,
