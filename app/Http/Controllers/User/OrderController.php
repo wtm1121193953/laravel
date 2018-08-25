@@ -155,6 +155,7 @@ class OrderController extends Controller
                 // 调平台支付, 走融宝支付接口
                 $isOperSelf = 2;
                 $sdkConfig = null; // todo 走融宝支付接口
+                var_dump($order->pay_price);exit;
                 OrderService::paySuccess($orderNo, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
             }else {
                 $isOperSelf = 0;
