@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property number amount
  * @property number charge_amount
  * @property number real_amount
+ * @property integer bank_card_type
  * @property string bank_open_name
  * @property string bank_card_no
  * @property string sub_bank_name

@@ -20,7 +20,6 @@ class CreateSettlementPayBatchesTable extends Migration
             $table->string('pay_sight')->default('')->comment('付款场景');
             $table->string('batch_amount')->default('')->comment('批次总金额');
             $table->string('platform_merchant_id')->default('')->comment('平台商户号');
-            $table->text('content')->comment('批次明细');
             $table->tinyInteger('type')->index()->default(1)->comment('状态 1-融宝打款批次 ');
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-未提交 2-已提交');
             $table->timestamps();

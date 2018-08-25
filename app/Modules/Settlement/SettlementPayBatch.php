@@ -9,6 +9,8 @@ use App\BaseModel;
  * @package App\Modules\Settlement
  *
  * @property string batch_no
+ * @property integer batch_count
+ * @property number batch_amount
  * @property integer type
  * @property integer status
  */
