@@ -343,4 +343,18 @@ class UserService extends BaseService
 
         return $user;
     }
+
+    /**
+     * 通过手机号获取user中某个字段的数组
+     * @param $mobile
+     * @param $field
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getUserColumnArrayByMobile($mobile, $field)
+    {
+        $arr = User::where('mobile', 'like', "%$mobile%")
+            ->get()
+            ->pluck($field);
+        return $arr;
+    }
 }

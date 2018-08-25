@@ -6,9 +6,13 @@ namespace App\Modules\Wallet;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Modules\User\User;
+use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserCreditSettingService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 /**
@@ -113,6 +117,69 @@ class WalletWithdrawService extends BaseService
         $wallet->save();
 
         return $withdraw;
+    }
+
+    /**
+     * admin 获取提现记录
+     * @param $param
+     * @param int $pageSize
+     * @param bool $withQuery
+     * @return WalletWithdraw|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getWithdrawRecords($param, $pageSize = 15, $withQuery = false)
+    {
+        $originType = array_get($param, 'originType', '');
+        $originId = array_get($param, 'originId', '');
+        $originIdArr = array_get($param, 'originIdArr', []);
+        $withdrawNo = array_get($param, 'withdrawNo', '');
+        $bankCardType = array_get($param, 'bankCardType', '');
+        $startDate = array_get($param, 'startDate', '');
+        $endDate = array_get($param, 'endDate', '');
+        $status = array_get($param, 'status', '');
+
+        $query = WalletWithdraw::when($originType, function (Builder $query) use ($originType) {
+                $query->where('origin_type', $originType);
+            })
+            ->when($originId, function (Builder $query) use ($originId) {
+                $query->where('origin_id', $originId);
+            })
+            ->when(!empty($originIdArr), function (Builder $query) use ($originIdArr) {
+                $query->whereIn('origin_id', $originIdArr);
+            })
+            ->when($withdrawNo, function (Builder $query) use ($withdrawNo) {
+                $query->where('withdraw_no', $withdrawNo);
+            })
+            ->when($bankCardType, function (Builder $query) use ($bankCardType) {
+                $query->where('bank_card_type', $bankCardType);
+            })
+            ->when($startDate, function (Builder $query) use ($startDate) {
+                $query->where('created_at', '>', $startDate);
+            })
+            ->when($endDate, function (Builder $query) use ($endDate) {
+                $query->where('created_at', '<', $endDate);
+            })
+            ->when($status, function (Builder $query) use ($status) {
+                $query->where('status', $status);
+            });
+
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate($pageSize);
+            $data->each(function($item) {
+                if ($item->origin_type == WalletWithdraw::ORIGIN_TYPE_USER) {
+                    $user = UserService::getUserById($item->origin_id);
+                    $item->mobile = $user->mobile;
+                } elseif ($item->origin_type == WalletWithdraw::ORIGIN_TYPE_MERCHANT) {
+                    $merchant = MerchantService::getById($item->origin_id);
+                    $item->merchant_name = $merchant->name;
+                    $item->oper_name = OperService::getNameById($merchant->oper_id);
+                } elseif ($item->origin_type == WalletWithdraw::ORIGIN_TYPE_OPER) {
+                    $item->oper_name = OperService::getNameById($item->origin_id);
+                }
+            });
+            return $data;
+        }
     }
 
     public static function getWithdrawTotalAmountAndCount($params = [])
