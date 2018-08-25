@@ -37,6 +37,11 @@ use Illuminate\Support\Carbon;
 class SettlementPlatform extends BaseModel
 {
     //
+    const STATUS_UN_PAY = 1;
+    const STATUS_PAYING = 2;
+    const STATUS_PAID = 3;
+    const STATUS_INTO_ACCOUNT = 4;
+    const STATUS_FAIL = 5;
     //
     public function merchant()
     {
