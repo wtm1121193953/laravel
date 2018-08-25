@@ -6,6 +6,7 @@ use App\Jobs\Schedule\AutoDownGoodsJob;
 use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Jobs\Schedule\OrderAutoFinished;
 use App\Jobs\Schedule\OrderExpired;
+use App\Jobs\Schedule\SettlementAgentPayDaily;
 use App\Jobs\Schedule\SettlementDaily;
 use App\Jobs\Schedule\SettlementWeekly;
 use App\Modules\Merchant\Merchant;
@@ -46,6 +47,8 @@ class Kernel extends ConsoleKernel
             ->weeklyOn(1);
         // T+1结算统计 Author：Jerry Date：180824
         $schedule->job(new SettlementDaily())->daily();
+        // T+1结算分账任务， 生成的结算单每天8点自动打款
+        $schedule->job(new SettlementAgentPayDaily())->dailyAt('08:00');;
         /**团购商品过期自动下架*/
         $schedule->job(AutoDownGoodsJob::class)->daily();
     }
