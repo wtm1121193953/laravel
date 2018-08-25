@@ -13,6 +13,7 @@ use App\Modules\User\User;
 use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserCreditSettingService;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /**
@@ -124,44 +125,11 @@ class WalletWithdrawService extends BaseService
      * @param $param
      * @param int $pageSize
      * @param bool $withQuery
-     * @return WalletWithdraw|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return WalletWithdraw|\Illuminate\Contracts\Pagination\LengthAwarePaginator|Builder
      */
     public static function getWithdrawRecords($param, $pageSize = 15, $withQuery = false)
     {
-        $originType = array_get($param, 'originType', '');
-        $originId = array_get($param, 'originId', '');
-        $originIdArr = array_get($param, 'originIdArr', []);
-        $withdrawNo = array_get($param, 'withdrawNo', '');
-        $bankCardType = array_get($param, 'bankCardType', '');
-        $startDate = array_get($param, 'startDate', '');
-        $endDate = array_get($param, 'endDate', '');
-        $status = array_get($param, 'status', '');
-
-        $query = WalletWithdraw::when($originType, function (Builder $query) use ($originType) {
-                $query->where('origin_type', $originType);
-            })
-            ->when($originId, function (Builder $query) use ($originId) {
-                $query->where('origin_id', $originId);
-            })
-            ->when(!empty($originIdArr), function (Builder $query) use ($originIdArr) {
-                $query->whereIn('origin_id', $originIdArr);
-            })
-            ->when($withdrawNo, function (Builder $query) use ($withdrawNo) {
-                $query->where('withdraw_no', $withdrawNo);
-            })
-            ->when($bankCardType, function (Builder $query) use ($bankCardType) {
-                $query->where('bank_card_type', $bankCardType);
-            })
-            ->when($startDate, function (Builder $query) use ($startDate) {
-                $query->where('created_at', '>', $startDate);
-            })
-            ->when($endDate, function (Builder $query) use ($endDate) {
-                $query->where('created_at', '<', $endDate);
-            })
-            ->when($status, function (Builder $query) use ($status) {
-                $query->where('status', $status);
-            });
-
+        $query = self::parseWithdrawQuery($param);
         if ($withQuery) {
             return $query;
         } else {
@@ -182,19 +150,67 @@ class WalletWithdrawService extends BaseService
         }
     }
 
+    /**
+     * 获取提现数据汇总
+     * @param array $params
+     * @return array
+     */
     public static function getWithdrawTotalAmountAndCount($params = [])
+    {
+        $query = self::parseWithdrawQuery($params);
+        $count = $query->count();
+        $amount = $query->sum('amount');
+
+        return [
+            'count' => $count,
+            'amount' => $amount,
+        ];
+    }
+
+    /**
+     * 根据参数组装 query
+     * @param $params
+     * @return Builder
+     */
+    private static function parseWithdrawQuery($params)
     {
         $start = array_get($params, 'start');
         $end = array_get($params, 'end');
         $originType = array_get($params, 'originType');
         $originId = array_get($params, 'originId');
         $status = array_get($params, 'status');
+        $userMobile = array_get($params, 'userMobile');
+        $merchantName = array_get($params, 'merchantName');
+        $operName = array_get($params, 'operName');
+        $withdrawNo = array_get($params, 'withdrawNo');
+        $bankCardType = array_get($params, 'bankCardType');
+
         $query = WalletWithdraw::query();
+
+        if($withdrawNo){
+            $query->where('withdraw_no', $withdrawNo);
+        }
+
         if($originType){
             $query->where('origin_type', $originType);
         }
         if($originId){
             $query->where('origin_id', $originId);
+        }
+        if($bankCardType){
+            $query->where('bank_card_type', $bankCardType);
+        }
+        if($originType == WalletWithdraw::ORIGIN_TYPE_USER && $userMobile){
+            $originIds = UserService::getUserColumnArrayByMobile($userMobile, 'id');
+        }
+        if($originType == WalletWithdraw::ORIGIN_TYPE_MERCHANT && $merchantName){
+            $originIds = MerchantService::getMerchantColumnArrayByMerchantName($merchantName, 'id');
+        }
+        if ($originType == WalletWithdraw::ORIGIN_TYPE_OPER && $operName) {
+            $originIds = OperService::getOperColumnArrayByOperName($operName, 'id');
+        }
+        if(isset($originIds)){
+            $query->whereIn('origin_id', $originIds);
         }
         if($status){
             if(is_array($status) || $status instanceof Collection){
@@ -203,6 +219,12 @@ class WalletWithdrawService extends BaseService
                 $query->where('status', $status);
             }
         }
+        if($start instanceof Carbon){
+            $start = $start->format('Y-m-d H:i:s');
+        }
+        if($end instanceof Carbon){
+            $end = $end->format('Y-m-d H:i:s');
+        }
         if($start && $end){
             $query->whereBetween('created_at', [$start, $end]);
         }else if($start){
@@ -210,13 +232,6 @@ class WalletWithdrawService extends BaseService
         }else if($end){
             $query->where('created_at', '<', $end);
         }
-
-        $count = $query->count();
-        $amount = $query->sum('amount');
-
-        return [
-            'count' => $count,
-            'amount' => $amount,
-        ];
+        return $query;
     }
 }

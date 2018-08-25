@@ -71,7 +71,6 @@ class WithdrawController extends Controller
                 break;
         }
 
-        // todo 查询提现汇总数据
         $params = [
             'start' => $start,
             'end' => $end,
@@ -102,7 +101,7 @@ class WithdrawController extends Controller
     public function withdrawRecord()
     {
         $pageSize = request('pageSize', 15);
-        $param = self::getRequest();
+        $param = self::getWithdrawListParamsFromRequest();
         $data = WalletWithdrawService::getWithdrawRecords($param, $pageSize);
 
         return Result::success([
@@ -115,41 +114,31 @@ class WithdrawController extends Controller
      * 获取request 构建查询参数数组
      * @return array
      */
-    private static function getRequest()
+    private static function getWithdrawListParamsFromRequest()
     {
         $originType = request('originType', 0);
-        $mobile = request('mobile', '');
+        $userMobile = request('mobile', '');
         $merchantName = request('merchantName', '');
         $operName = request('operName', '');
         $merchantId = request('merchantId', '');
         $operId = request('operId', '');
         $withdrawNo = request('withdrawNo', '');
         $bankCardType = request('bankCardType', '');
-        $startDate = request('startDate', '');
-        $endDate = request('endDate', '');
+        $start = request('startDate', '');
+        $end = request('endDate', '');
         $status = request('status', '');
 
-        $originIdArr = [];
+        $start = date('Y-m-d 00:00:00', strtotime($start));
+        $end = date('Y-m-d 23:59:59', strtotime($end));
+
         $originId = '';
-        if ($originType == WalletWithdraw::ORIGIN_TYPE_USER) {
-            if ($mobile) {
-                $originIdArr = UserService::getUserColumnArrayByMobile($mobile, 'id');
-            }
-        } elseif ($originType == WalletWithdraw::ORIGIN_TYPE_MERCHANT) {
-            if ($merchantName) {
-                $originIdArr = MerchantService::getMerchantColumnArrayByMerchantName($merchantName, 'id');
-            }
-            if ($merchantId) $originId = $merchantId;
+        if ($originType == WalletWithdraw::ORIGIN_TYPE_MERCHANT) {
+            $originId = $merchantId;
         } elseif ($originType == WalletWithdraw::ORIGIN_TYPE_OPER) {
-            if ($operName) {
-                $originIdArr = OperService::getOperColumnArrayByOperName($operName, 'id');
-            }
-            if ($operId) $originId = $operId;
-        } else {
-            $originIdArr = [];
+            $originId = $operId;
         }
 
-        $param = compact('originType', 'originId', 'originIdArr', 'withdrawNo', 'bankCardType', 'startDate', 'endDate', 'status');
+        $param = compact('originType', 'originId', 'withdrawNo', 'bankCardType', 'start', 'end', 'status', 'userMobile', 'merchantName', 'operName');
         return $param;
     }
 
@@ -157,7 +146,7 @@ class WithdrawController extends Controller
     {
         $pageSize = request('pageSize', 15);
         $originType = request('originType', 0);
-        $param = self::getRequest();
+        $param = self::getWithdrawListParamsFromRequest();
         $query = WalletWithdrawService::getWithdrawRecords($param, $pageSize, true);
 
         return (new WalletWithdrawExport($query, $originType))->download('提现记录.xlsx');
