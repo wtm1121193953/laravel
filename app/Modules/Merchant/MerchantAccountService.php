@@ -106,8 +106,8 @@ class MerchantAccountService extends BaseService
             ],
              [ 'id' => 5, 'name' => '财务管理', 'level' => 1, 'url' => '/merchant/settlements',
                  'sub' => [
-                    [ 'id' => 15, 'name' => '结算列表【旧】', 'level' => 2, 'url' => '/merchant/settlements', 'pid' => 5,],
-                    [ 'id' => 14, 'name' => '结算列表【新】', 'level' => 2, 'url' => '/merchant/settlements/platform', 'pid' => 5,],
+                    [ 'id' => 15, 'name' => '运营中心结算管理', 'level' => 2, 'url' => '/merchant/settlements', 'pid' => 5,],
+                    [ 'id' => 14, 'name' => 'T+1结算管理', 'level' => 2, 'url' => '/merchant/settlements/platform', 'pid' => 5,],
                 ]
             ],
 

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\Types\Boolean;
 use tests\Mockery\Adapter\Phpunit\EmptyTestCase;
 
+
 class SettlementPlatformService extends BaseService
 {
 
@@ -36,6 +37,8 @@ class SettlementPlatformService extends BaseService
     public static function getList(array $params)
     {
         $merchantId = array_get($params, 'merchantId');
+        /*var_dump($merchantId);
+        exit();*/
         $data = SettlementPlatform::where('merchant_id', $merchantId)
             ->orderBy('id', 'desc')
             ->paginate();
@@ -91,6 +94,25 @@ class SettlementPlatformService extends BaseService
     }
 
     /**
+     * 生成随机结算单号
+     * @param int $retry
+     * @return string
+     *
+     */
+    public static function genSettlementNo($retry = 100)
+    {
+        if($retry == 0){
+            return false;
+        }
+        $orderNo = date('ymd') . explode(' ', microtime())[0] * 1000000 . rand(1000, 9999);
+        if(SettlementPlatform::where('settlement_no', $orderNo)->first())
+        {
+            $orderNo = self::genSettlementNo(--$retry);
+        }
+        return $orderNo;
+    }
+
+    /**
      * 处理每日结算细节入库
      * @Author   Jerry
      * @DateTime 2018-08-24
@@ -101,12 +123,13 @@ class SettlementPlatformService extends BaseService
     public static function settlement( $merchant, $date )
     {
         // 生成结算单，方便之后结算订单中保存结算信息
+        $settlementNum = self::settlementNo(10);
+        if( !$settlementNum ) return false;
         $saveData= [
             'open_id'           => $merchant->oper_id,
             'merchant_id'       => $merchant->merchantId,
             'settlement_date'   => Carbon::now(),
-            'start_date'        => $start,
-            'end_date'          => $end,
+            'settlement_no'     => $settlementNum,
             'settlement_cycle_type' => $merchant->settlement_cycle_type,
             'settlement_rate'   => $merchant->settlement_rate,
             'bank_open_name'    => $merchant->bank_open_name,
@@ -130,8 +153,8 @@ class SettlementPlatformService extends BaseService
                 ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
                 ->where('', Order::STATUS_FINISHED )
                 ->whereDate('finish_time', $date->format('Y-m-d'))
-                ->chunk(1000, function( Collection $orders ) use( $merchant, $SettlementPlatform ){
-                    $orders->each( function( $item) use ( $merchant, $SettlementPlatform ){
+                ->chunk(1000, function( Collection $orders ) use( $merchant, $settlementPlatform ){
+                    $orders->each( function( $item) use ( $merchant, $settlementPlatform ){
 
                         $item->settlement_charge_amount = $item->pay_price * $item->settlement_rate / 100;  // 手续费
                         $item->settlement_real_amount = $item->pay_price - $item->settlement_charge_amount;   // 货款
@@ -154,6 +177,32 @@ class SettlementPlatformService extends BaseService
             DB::rollBack();
             return false;
         }
+    }
+
+    /**
+     * 根据商户ID及结算单获取结算单信息
+     * @param $settlementId
+     * @param $merchantId
+     * @return Settlement
+     */
+    public static function getByIdAndMerchantId($settlementId, $merchantId)
+    {
+        return SettlementPlatform::where('id', $settlementId)->where('merchant_id', $merchantId)->first();
+    }
+
+    /**
+     * 获取结算单的订单列表
+     * @param $settlementId
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getSettlementOrders($settlementId)
+    {
+//        DB::enableQueryLog();
+        $data = Order::where('settlement_id', $settlementId)
+            ->orderBy('id', 'desc')->paginate();
+//        var_dump( $data, \DB::getQueryLog());
+//        exit();
+        return $data;
     }
 
 }
