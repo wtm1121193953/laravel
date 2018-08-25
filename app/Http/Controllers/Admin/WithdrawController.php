@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Http\Controllers\Controller;
+use App\Modules\Wallet\WalletWithdraw;
 use App\Result;
 
 class WithdrawController extends Controller
@@ -27,5 +28,15 @@ class WithdrawController extends Controller
             'failAmount' => rand(0, 1000000),
             'failCount' => rand(0, 100000),
         ]);
+    }
+
+    public function withdrawRecord()
+    {
+        $originType = request('originType', 0);
+        $mobile = request('mobile', '');
+
+        if ($originType = WalletWithdraw::ORIGIN_TYPE_USER) {
+
+        }
     }
 }

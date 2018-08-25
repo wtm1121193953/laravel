@@ -76,7 +76,5 @@ Route::prefix('admin')
         Route::group([], base_path('routes/api/admin/oper_account.php'));
         Route::group([], base_path('routes/api/admin/miniprogram.php'));
         Route::group([], base_path('routes/api/admin/setting.php'));
-
-        Route::get('/withdraw/dashboard', 'WithdrawController@dashboard');
-
+        Route::group([], base_path('routes/api/admin/wallet.php'));
     });

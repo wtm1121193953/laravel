@@ -29,6 +29,8 @@ class CreateWalletWithdrawsTable extends Migration
             $table->string('bank_card_open_name')->default('')->comment('银行卡开户名');
             $table->string('bank_card_no')->default('')->comment('银行卡号');
             $table->string('bank_name')->default('')->comment('开户行');
+            $table->integer('batch_id')->index()->default(0)->comment('批次ID');
+            $table->integer('batch_no')->index()->default(0)->comment('批次编号');
             $table->string('remark')->default('')->comment('备注');
             $table->timestamps();
 
