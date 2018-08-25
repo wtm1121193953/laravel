@@ -202,6 +202,13 @@ class OrderService extends BaseService
         return Order::where('order_no', $orderNo)->firstOrFail();
     }
 
+    /**
+     * @param $orderNo
+     * @param $transactionId
+     * @param $totalFee
+     * @param int $payType
+     * @return bool
+     */
     public static function paySuccess($orderNo, $transactionId, $totalFee, $payType = Order::PAY_TYPE_WECHAT)
     {
         // 处理订单支付成功逻辑
@@ -260,7 +267,8 @@ class OrderService extends BaseService
                 $orderPay->amount = $totalFee * 1.0 / 100;
                 $orderPay->save();
 
-                var_dump($orderPay);exit;
+                var_dump($totalFee);
+                var_dump($totalFee * 1.0 / 100);exit;
                 OrderPaidJob::dispatch($order);
                 DB::commit();
             }catch (\Exception $e){
