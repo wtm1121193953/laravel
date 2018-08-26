@@ -21,8 +21,6 @@ class SettlementPlatformController extends Controller
 {
     public function getList()
     {
-       /* var_dump(request()->get('current_user')->merchant_id);
-        exit();*/
         $data = SettlementPlatformService::getList([
             'merchantId' => request()->get('current_user')->merchant_id,
         ]);
@@ -46,8 +44,18 @@ class SettlementPlatformController extends Controller
         if(empty($settlement)){
             throw new DataNotFoundException('结算单不存在');
         }
-        $data = SettlementPlatformService::getSettlementOrders($settlementId);
+        return $this->getOrdersByService( $settlementId );
+    }
 
+    /**
+     * 获取结算单的订单列表
+     * Author: Jerry
+     * Date:    180826
+     * @param $settlementId
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function getOrdersByService( $settlementId ){
+        $data = SettlementPlatformService::getSettlementOrders($settlementId);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),

@@ -56,6 +56,9 @@
 
         </el-col>
 
+        <el-dialog :visible.sync="isShowSettlementDetail"  width="60%">
+            <settlement-detail :scope="settlement"/>
+        </el-dialog>
 
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="merchant.name" label="结算商户"  width="160px" />
@@ -69,7 +72,7 @@
             <el-table-column prop="" label="备注" />
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
-                    <el-button type="text">查看</el-button>
+                    <el-button type="text" @click="showOrders(scope)">查看</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -85,10 +88,15 @@
 </template>
 
 <script>
+    import api from '../../../assets/js/api'
+    import SettlementDetail from './platform-detail'
+
     export default {
         name: "settlement-platform",
         data(){
             return {
+                isShowSettlementDetail: false,
+                settlement: {},
                 activeTab: 'merchant',
                 showDetail: false,
                 isLoading: false,
@@ -132,7 +140,10 @@
                     this.tableLoading = false;
                 })
             },
-
+            showOrders(scope) {
+                this.settlement = scope.row;
+                this.isShowSettlementDetail = true;
+            },
             downloadExcel() {
                 let message = '确定要导出当前筛选的商户列表么？'
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
@@ -155,6 +166,9 @@
 
 
         },
+        components: {
+            SettlementDetail,
+        }
     }
 </script>
 
