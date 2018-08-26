@@ -24,7 +24,8 @@ class CreateWalletBillsTable extends Migration
             $table->tinyInteger('inout_type')->default(1)->comment('收支类型 1-收入 2-支出');
             $table->decimal('amount', 11, 2)->default(0)->comment('变动金额');
             $table->tinyInteger('amount_type')->default(1)->comment('变动金额类型, 1-冻结金额, 2-非冻结金额');
-            $table->decimal('after_amount', 11, 2)->default(0)->comment('变动后账户余额');
+            $table->decimal('after_amount', 11, 2)->default(0)->comment('变动后账户余额（包含冻结金额）');
+            $table->decimal('after_balance', 11, 2)->default(0)->comment('变动后可提现金额');
             $table->timestamps();
 
             $table->comment = '钱包流水表';

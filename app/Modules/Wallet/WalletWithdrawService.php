@@ -15,6 +15,8 @@ use App\Modules\UserCredit\UserCreditSettingService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * 提现相关Service
@@ -82,42 +84,66 @@ class WalletWithdrawService extends BaseService
         $invoiceExpressNo = array_get($param, 'invoiceExpressNo', '');
 
         if ($obj instanceof User) {
-            $originType = WalletWithdraw::ORIGIN_TYPE_USER;
             throw new BaseResponseException('暂不支持提现');
         } elseif ($obj instanceof Merchant) {
-            $originType = WalletWithdraw::ORIGIN_TYPE_MERCHANT;
             $ratio = UserCreditSettingService::getMerchantWithdrawChargeRatioByBankCardType($obj->bank_card_type);
         } elseif ($obj instanceof Oper) {
-            $originType = WalletWithdraw::ORIGIN_TYPE_OPER;
             $ratio = UserCreditSettingService::getOperWithdrawChargeRatio();
             $obj->bank_card_type = 1;
         } else {
             throw new BaseResponseException('用户类型错误');
         }
 
-        // 1.创建提现记录
-        $withdraw = new WalletWithdraw();
-        $withdraw->wallet_id = $wallet->id;
-        $withdraw->origin_id = $obj->id;
-        $withdraw->origin_type = $originType;
-        $withdraw->withdraw_no = self::createWalletWithdrawNo();
-        $withdraw->amount = $amount;
-        $withdraw->charge_amount = number_format($amount * $ratio / 100, 2);
-        $withdraw->remit_amount = number_format($amount - number_format($amount * $ratio / 100, 2), 2);
-        $withdraw->status = WalletWithdraw::STATUS_AUDITING;
-        $withdraw->invoice_express_company = $invoiceExpressCompany;
-        $withdraw->invoice_express_no = $invoiceExpressNo;
-        $withdraw->bank_card_type = $obj->bank_card_type;
-        $withdraw->bank_card_open_name = $obj->bank_open_name;
-        $withdraw->bank_card_no = $obj->bank_card_no;
-        $withdraw->bank_name = $obj->sub_bank_name;
-        $withdraw->save();
+        try{
+            DB::beginTransaction();
+            // 1.创建提现记录
+            $withdraw = new WalletWithdraw();
+            $withdraw->wallet_id = $wallet->id;
+            $withdraw->origin_id = $wallet->origin_id;
+            $withdraw->origin_type = $wallet->origin_type;
+            $withdraw->withdraw_no = self::createWalletWithdrawNo();
+            $withdraw->amount = $amount;
+            $withdraw->charge_amount = number_format($amount * $ratio / 100, 2);
+            $withdraw->remit_amount = number_format($amount - number_format($amount * $ratio / 100, 2), 2);
+            $withdraw->status = WalletWithdraw::STATUS_AUDITING;
+            $withdraw->invoice_express_company = $invoiceExpressCompany;
+            $withdraw->invoice_express_no = $invoiceExpressNo;
+            $withdraw->bank_card_type = $obj->bank_card_type;
+            $withdraw->bank_card_open_name = $obj->bank_open_name;
+            $withdraw->bank_card_no = $obj->bank_card_no;
+            $withdraw->bank_name = $obj->sub_bank_name;
+            $withdraw->save();
 
-        // 2.更新钱包余额
-        $wallet->balance = number_format($wallet->balance - $amount, 2);
-        $wallet->save();
+            // 2.更新钱包余额
+            $wallet->balance = number_format($wallet->balance - $amount, 2);
+            $wallet->save();
 
-        return $withdraw;
+            // 3.创建钱包流水记录
+            $walletBill = new WalletBill();
+            $walletBill->wallet_id = $wallet->id;
+            $walletBill->origin_id = $wallet->origin_id;
+            $walletBill->origin_type = $wallet->origin_type;
+            $walletBill->bill_no = WalletService::createWalletBillNo();
+            $walletBill->type = WalletBill::TYPE_WITHDRAW;
+            $walletBill->obj_id = $withdraw->id;
+            $walletBill->inout_type = WalletBill::OUT_TYPE;
+            $walletBill->amount = $amount;
+            $walletBill->amount_type = WalletBill::AMOUNT_TYPE_UNFREEZE;
+            $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
+            $walletBill->after_balance = $wallet->balance;
+            $walletBill->save();
+
+            DB::commit();
+
+            return $withdraw;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::info('提现失败', [
+                'message' => $e->getMessage(),
+                'data' => $e
+            ]);
+            throw new BaseResponseException('提现失败');
+        }
     }
 
     /**
@@ -233,5 +259,129 @@ class WalletWithdrawService extends BaseService
             $query->where('created_at', '<', $end);
         }
         return $query;
+    }
+
+    /**
+     * 通过id 获取提现记录详情
+     * @param $id
+     * @return WalletWithdraw
+     */
+    public static function getWalletWithdrawDetailById($id)
+    {
+        $withdraw = WalletWithdraw::find($id);
+        if (empty($withdraw)) {
+            throw new BaseResponseException('该提现记录不存在');
+        }
+
+        if ($withdraw->origin_type == WalletWithdraw::ORIGIN_TYPE_USER) {
+            $withdraw->user_mobile = UserService::getUserById($withdraw->origin_id)->mobile;
+        } elseif ($withdraw->origin_type == WalletWithdraw::ORIGIN_TYPE_MERCHANT) {
+            $merchant = MerchantService::getById($withdraw->origin_id);
+            $withdraw->merchant_name = $merchant->name;
+            $withdraw->oper_id = $merchant->oper_id;
+            $withdraw->oper_name = OperService::getNameById($merchant->oper_id);
+        } elseif ($withdraw->origin_type == WalletWithdraw::ORIGIN_TYPE_OPER) {
+            $withdraw->oper_name = OperService::getNameById($withdraw->origin_id);
+        } else {
+            throw new BaseResponseException('该提现记录用户类型不存在');
+        }
+
+        if (in_array($withdraw->status, [WalletWithdraw::STATUS_AUDITING, WalletWithdraw::STATUS_AUDIT, WalletWithdraw::STATUS_WITHDRAW])) {
+            $walletBill = WalletBill::where('type', WalletBill::TYPE_WITHDRAW)
+                ->where('obj_id', $withdraw->id)
+                ->first();
+        } elseif (in_array($withdraw->status, [WalletWithdraw::STATUS_WITHDRAW_FAILED, WalletWithdraw::STATUS_AUDIT_FAILED])) {
+            $walletBill = WalletBill::where('type', WalletBill::TYPE_WITHDRAW_FAILED)
+                ->where('obj_id', $withdraw->id)
+                ->first();
+        } else {
+            throw new BaseResponseException('该提现状态不存在');
+        }
+        $withdraw->after_amount = isset($walletBill->after_amount) ? $walletBill->after_amount : '未知';
+        $withdraw->after_balance = isset($walletBill->after_balance) ? $walletBill->after_balance : '未知';
+
+        return $withdraw;
+    }
+
+    /**
+     * 提现审核成功操作
+     * @param WalletWithdraw $walletWithdraw
+     * @param $batchId
+     * @param string $remark
+     * @return WalletWithdraw
+     */
+    public static function auditSuccess(WalletWithdraw $walletWithdraw, $batchId, $remark = '')
+    {
+        try{
+            DB::beginTransaction();
+            // 1.更新提现批次表的总金额和总笔数
+            $walletBatch = WalletBatchService::getById($batchId);
+            if (empty($walletBatch)) throw new \Exception('该提现批次不存在');
+
+            $walletBatch->amount += $walletWithdraw->amount;
+            $walletBatch->total += 1;
+            $walletBatch->save();
+            // 2.更新提现记录表状态 和 批次id、编号
+            $walletWithdraw->status = WalletWithdraw::STATUS_AUDIT;
+            $walletWithdraw->batch_id = $batchId;
+            $walletWithdraw->batch_no = $walletBatch->batch_no;
+            $walletWithdraw->remark = $remark;
+            $walletWithdraw->save();
+            DB::commit();
+            return $walletWithdraw;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::info('提现审核成功操作失败', [
+                'message' => $e->getMessage(),
+                'data' => $e,
+            ]);
+            throw new BaseResponseException('审核失败');
+        }
+    }
+
+    /**
+     * 提现审核不通过操作
+     * @param WalletWithdraw $walletWithdraw
+     * @param string $remark
+     * @return WalletWithdraw
+     */
+    public static function auditFailed(WalletWithdraw $walletWithdraw, $remark = '')
+    {
+        try{
+            DB::beginTransaction();
+            // 1. 提现记录表 审核状态修改为 审核不通过
+            $walletWithdraw->status = WalletWithdraw::STATUS_AUDIT_FAILED;
+            $walletWithdraw->remark = $remark;
+            $walletWithdraw->save();
+            // 2. 更新钱包表
+            $wallet = WalletService::getWalletById($walletWithdraw->wallet_id);
+            if (empty($wallet)) throw new \Exception('该钱包不存在');
+            $wallet->balance += $walletWithdraw->amount;
+            $wallet->save();
+            // 3. 添加钱包流水表 提现失败记录
+            $walletBill = new WalletBill();
+            $walletBill->wallet_id = $wallet->id;
+            $walletBill->origin_id = $wallet->origin_id;
+            $walletBill->origin_type = $wallet->origin_type;
+            $walletBill->bill_no = WalletService::createWalletBillNo();
+            $walletBill->type = WalletBill::TYPE_WITHDRAW_FAILED;
+            $walletBill->obj_id = $walletWithdraw->id;
+            $walletBill->inout_type = WalletBill::IN_TYPE;
+            $walletBill->amount = $walletWithdraw->amount;
+            $walletBill->amount_type = WalletBill::AMOUNT_TYPE_UNFREEZE;
+            $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
+            $walletBill->after_balance = $wallet->balance;
+            $walletBill->save();
+
+            DB::commit();
+            return $walletWithdraw;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::info('审核不通过操作失败', [
+                'message' => $e->getMessage(),
+                'data' => $e,
+            ]);
+            throw new BaseResponseException('审核操作失败');
+        }
     }
 }

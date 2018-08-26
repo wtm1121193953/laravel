@@ -91,10 +91,10 @@
             </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <el-button type="text" @click="detail">查看明细</el-button>
-                    <el-button type="text" v-if="scope.row.status == 1" @click="audit">审 核</el-button>
-                    <el-button type="text" v-if="scope.row.status == 2" @click="success">打款成功</el-button>
-                    <el-button type="text" v-if="scope.row.status == 2" @click="failed">打款失败</el-button>
+                    <el-button type="text" @click="detail(scope.row)">查看明细</el-button>
+                    <el-button type="text" v-if="scope.row.status == 1" @click="audit(scope.row)">审 核</el-button>
+                    <el-button type="text" v-if="scope.row.status == 2" @click="success(scope.row)">打款成功</el-button>
+                    <el-button type="text" v-if="scope.row.status == 2" @click="failed(scope.row)">打款失败</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -165,16 +165,28 @@
 
                 location.href = `/api/admin/withdraw/record/export?${uri}`;
             },
-            detail() {
+            detail(row) {
+                router.push({
+                    path: '/withdraw/record/merchant',
+                    query: {
+                        id: row.id,
+                    }
+                });
+            },
+            audit(row) {
+                router.push({
+                    path: '/withdraw/record/merchant',
+                    query: {
+                        id: row.id,
+                        audit: true,
+                        type: row.bank_card_type, //批次类型
+                    }
+                });
+            },
+            success(row) {
 
             },
-            audit() {
-
-            },
-            success() {
-
-            },
-            failed() {
+            failed(row) {
 
             }
         },

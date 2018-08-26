@@ -4,6 +4,21 @@ namespace App\Modules\Wallet;
 
 use App\BaseModel;
 
+/**
+ * Class WalletBatch
+ * @package App\Modules\Wallet
+ * @property string batch_no
+ * @property integer type
+ * @property integer status
+ * @property float amount
+ * @property integer total
+ * @property float success_amount
+ * @property integer success_total
+ * @property float failed_amount
+ * @property integer failed_total
+ * @property string remark
+ */
+
 class WalletBatch extends BaseModel
 {
     /**

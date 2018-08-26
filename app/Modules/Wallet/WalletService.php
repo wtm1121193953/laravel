@@ -92,6 +92,7 @@ class WalletService extends BaseService
         $walletBill->amount = $feeSplittingRecord->amount;
         $walletBill->amount_type = WalletBill::AMOUNT_TYPE_FREEZE;
         $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
+        $walletBill->after_balance = $wallet->balance;
         $walletBill->save();
     }
 
@@ -291,6 +292,18 @@ class WalletService extends BaseService
         $wallet->salt = $salt;
         $wallet->withdraw_password = Wallet::genPassword($password, $salt);
         $wallet->save();
+        return $wallet;
+    }
+
+    /**
+     * 根据id 获取钱包信息
+     * @param $id
+     * @param array $filed
+     * @return Wallet
+     */
+    public static function getWalletById($id, $filed = ['*'])
+    {
+        $wallet = Wallet::find($id, $filed);
         return $wallet;
     }
 }

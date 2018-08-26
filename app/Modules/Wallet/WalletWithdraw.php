@@ -21,6 +21,9 @@ use App\BaseModel;
  * @property string bank_card_open_name
  * @property string bank_card_no
  * @property string bank_name
+ * @property integer batch_id
+ * @property string batch_no
+ * @property string remark
  */
 
 class WalletWithdraw extends BaseModel

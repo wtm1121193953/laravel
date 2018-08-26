@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Exports\WalletWithdrawExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantService;
@@ -142,6 +143,10 @@ class WithdrawController extends Controller
         return $param;
     }
 
+    /**
+     * 提现记录导出
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function exportExcel()
     {
         $pageSize = request('pageSize', 15);
@@ -150,5 +155,49 @@ class WithdrawController extends Controller
         $query = WalletWithdrawService::getWithdrawRecords($param, $pageSize, true);
 
         return (new WalletWithdrawExport($query, $originType))->download('提现记录.xlsx');
+    }
+
+    /**
+     * 提现记录详情
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function withdrawDetail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $data = WalletWithdrawService::getWalletWithdrawDetailById($id);
+
+        return Result::success($data);
+    }
+
+    /**
+     * admin提现审核
+     */
+    public function audit()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'status' => 'required'
+        ]);
+
+        $id = request('id');
+        $status = request('status');
+        $remark = request('remark', '');
+
+        $walletWithdraw = WalletWithdrawService::getWalletWithdrawById($id);
+        if (empty($walletWithdraw)) throw new BaseResponseException('改提现记录不存在');
+
+        if ($status == WalletWithdraw::STATUS_AUDIT) {
+            $this->validate(request(), ['batchId' => 'required']);
+            $batchId = request('batchId');
+            WalletWithdrawService::auditSuccess($walletWithdraw, $batchId, $remark);
+        } elseif ($status == WalletWithdraw::STATUS_AUDIT_FAILED) {
+            WalletWithdrawService::auditFailed($walletWithdraw, $remark);
+        } else {
+            throw new BaseResponseException('状态错误');
+        }
+        return Result::success();
     }
 }
