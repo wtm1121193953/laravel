@@ -38,7 +38,8 @@
                         <el-option label="未打款" value="1"/>
                         <el-option label="打款中" value="2"/>
                         <el-option label="已打款" value="3"/>
-                        <el-option label="打款失败" value="4"/>
+                        <el-option label="已到账" value="4"/>
+                        <el-option label="打款失败" value="5"/>
                     </el-select>
                 </el-form-item>
                 <el-form-item>

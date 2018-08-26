@@ -25,9 +25,10 @@ class SettlementPlatformService extends BaseService
      */
     public static $status_vals = [
         1 => '未打款',
-        2 => '已打款',
+        2 => '打款中',
         3 => '已到账',
-        4 => '打款失败',
+        4 => '已到账',
+        5 => '打款失败',            // changed by Jerry 新增状态
     ];
     /**
      * 获取结算单列表
@@ -37,33 +38,9 @@ class SettlementPlatformService extends BaseService
     public static function getList(array $params)
     {
         $merchantId = array_get($params, 'merchantId');
-        /*var_dump($merchantId);
-        exit();*/
         $data = SettlementPlatform::where('merchant_id', $merchantId)
             ->orderBy('id', 'desc')
             ->paginate();
-        return $data;
-    }
-
-    /**
-     * 通过id获取结算单列表
-     * @param $id
-     * @return SettlementPlatform
-     */
-    public static function getListById($id)
-    {
-        $data = SettlementPlatform::with('merchant:id,bank_card_type')->where('id', $id);
-        return $data;
-    }
-
-    /**
-     * 通过id获取结算单总金额
-     * @param $ids
-     * @return int
-     */
-    public static function getAmountById($ids)
-    {
-        $data = SettlementPlatform::whereIn('id', $ids)->sum('real_amount');
         return $data;
     }
 
@@ -75,7 +52,6 @@ class SettlementPlatformService extends BaseService
      */
     public static function getListForSaas(array $params = [],bool $return_query = false)
     {
-        //DB::enableQueryLog();
         $query = SettlementPlatform::where('id', '>', 0);
         if (!empty($params['merchant_name'])) {
             $query->whereHas('merchant',function($q) use ($params) {
@@ -110,8 +86,8 @@ class SettlementPlatformService extends BaseService
 
         $data->each(function ($item) {
             $item->status_val = self::$status_vals[$item->status];
+            if($item->satatus==5) $item->status_val .= $item->reason;
         });
-        //dd(DB::getQueryLog());
         return $data;
     }
 
@@ -219,11 +195,8 @@ class SettlementPlatformService extends BaseService
      */
     public static function getSettlementOrders($settlementId)
     {
-//        DB::enableQueryLog();
         $data = Order::where('settlement_id', $settlementId)
             ->orderBy('id', 'desc')->paginate();
-//        var_dump( $data, \DB::getQueryLog());
-//        exit();
         return $data;
     }
 
