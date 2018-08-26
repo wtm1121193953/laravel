@@ -219,10 +219,10 @@ class WalletWithdrawService extends BaseService
                 $query->where('status', $status);
             }
         }
-        if($start instanceof Carbon){
+        if($start && $start instanceof Carbon){
             $start = $start->format('Y-m-d H:i:s');
         }
-        if($end instanceof Carbon){
+        if($end && $end instanceof Carbon){
             $end = $end->format('Y-m-d H:i:s');
         }
         if($start && $end){

@@ -128,8 +128,8 @@ class WithdrawController extends Controller
         $end = request('endDate', '');
         $status = request('status', '');
 
-        $start = date('Y-m-d 00:00:00', strtotime($start));
-        $end = date('Y-m-d 23:59:59', strtotime($end));
+        $start = $start ? date('Y-m-d 00:00:00', strtotime($start)) : '';
+        $end = $end ? date('Y-m-d 23:59:59', strtotime($end)) : '';
 
         $originId = '';
         if ($originType == WalletWithdraw::ORIGIN_TYPE_MERCHANT) {
