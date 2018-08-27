@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Oper\OperService;
 use App\Modules\Oper\OperBizer;
 use App\Modules\Oper\OperBizerService;
+use App\Exceptions\BaseResponseException;
 use App\Result;
 
 class OperController extends Controller {
@@ -76,16 +77,25 @@ class OperController extends Controller {
     public function add() {
         $this->validate(request(), [
             'oper_id' => 'required',
-            'bizer_id' => 'required',
-            'remark' => 'required'
+            // 'remark' => 'required'
         ]);
 
         $operId = request('oper_id');
         $bizerId = request()->get('current_user')->id;
-        $remark = request('remark');
-//        $model = new OperBizer();
-
-        $model = OperBizer::where('oper_id', $operId)->where('bizer_id', $bizerId)->first();
+        $remark = request('remark', '');
+        
+        $operBizer = OperBizer::where('oper_id', $operId)->where('bizer_id', $bizerId)->first();
+        if($operBizer){
+            if($operBizer->status == 0){
+                 throw new BaseResponseException('此运营中心已在申请中');
+            } 
+            if($operBizer->status == 1){
+                 throw new BaseResponseException('此运营中心已经签约成功');
+            }
+            $model = $operBizer;
+        }else{
+            $model = new OperBizer();
+        }
 
         $model->oper_id = $operId;
         $model->bizer_id = $bizerId;

@@ -84,20 +84,19 @@
                 :total="total"/>
 
         <el-dialog title="添加运营中心" :visible.sync="dialogFormVisible" width="30%">
-            <el-form :model="form" label-width="100px">
+            <el-form label-width="100px">
                 <el-form-item label="运营中心名称">
-                    <el-select v-model="form.region" placeholder="请选择运营中心" style="width:100%;">
-                        <el-option label="运营中心1" value="1"/>
-                        <el-option label="运营中心2" value="2"/>
+                    <el-select v-model="addRegionData.oper_id" placeholder="请选择运营中心" style="width:100%;">
+                        <el-option v-for="item in regionOptions" :label="item.name" :value="item.id"/>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="备注">
-                    <el-input type="textarea" v-model="form.desc" auto-complete="off"/>
+                    <el-input type="textarea" v-model="addRegionData.remark" auto-complete="off"/>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogFormVisible = false">发送申请</el-button>
+                <el-button type="primary" @click="addRegion" v-loading="regionLoading">发送申请</el-button>
             </div>
         </el-dialog>
 
@@ -106,7 +105,7 @@
         </el-dialog>
 
         <el-dialog title="提示" :visible.sync="dialogPromptVisible" width="30%">
-            <el-form :model="form" label-width="110px">
+            <el-form label-width="110px">
                 <el-form-item label="运营中心名称：">
                     大千互娱深圳运营中心
                 </el-form-item>
@@ -120,12 +119,12 @@
 
 <script>
     import api from '../../../assets/js/api'
-
     export default {
         data(){
             return {
                 isLoading: false,
                 cityOptions: [],
+                regionOptions:[],
                 query: {
                     createdAt: '',
                     name: '',
@@ -140,14 +139,14 @@
                 dialogFormVisible: false,
                 dialogContractVisible: false,
                 dialogPromptVisible: false,
-                form: {
-                    region: '',
-                    desc: ''
-                }
+                addRegionData: {
+                    oper_id: '',
+                    remark: ''
+                },
+                regionLoading: false,
             }
         },
         computed: {
-
         },
         methods: {
             search(){
@@ -174,6 +173,32 @@
             prompt(){
                 this.dialogPromptVisible = true;
             },
+            addRegion(){
+                let _self = this;
+                if (!_self.addRegionData.oper_id) {
+                    _self.$message({
+                      message: '请选择运营中心',
+                      type: 'warning'
+                    });
+                    return;
+                }
+                _self.regionLoading = true;
+                api.post('/api/bizer/oper/add', _self.addRegionData).then(data => {
+                    _self.regionLoading = false;
+                    _self.dialogFormVisible = false;
+                    _self.$message({
+                      message: '添加成功',
+                      type: 'success'
+                    });
+                }).catch(() => {
+                    _self.$message({
+                      message: '添加失败',
+                      type: 'warning'
+                    });
+                }).finally(() => {
+                    _self.regionLoading = false;
+                })
+            },
         },
         created(){
             let _self = this;
@@ -181,8 +206,12 @@
                 Object.assign(_self.query, _self.$route.params);
             }
             api.get('/api/bizer/area/tree?tier=2').then(data => {
-                console.log(data.list)
+                // console.log(data.list)
                 _self.cityOptions = data.list;
+            });
+            api.get('/api/bizer/oper/name_list').then(data => {
+                console.log(data.list)
+                _self.regionOptions = data.list;
             });
             //this.getList();
         },
