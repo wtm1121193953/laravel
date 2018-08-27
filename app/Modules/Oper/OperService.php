@@ -239,4 +239,18 @@ class OperService extends BaseService
         $oper->save();
         return $oper;
     }
+
+    /**
+     * 根据运营中心名获取运营中心某个字段的数组
+     * @param $operName
+     * @param $field
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getOperColumnArrayByOperName($operName, $field)
+    {
+        $arr = Oper::where('name', 'like', "%$operName%")
+            ->get()
+            ->pluck($field);
+        return $arr;
+    }
 }

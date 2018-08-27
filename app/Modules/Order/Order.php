@@ -41,6 +41,8 @@ use Carbon\Carbon;
  * @property number settlement_id
  * @property number settlement_real_amount
  * @property number settlement_charge_amount
+ * @property integer splitting_status
+ * @property Carbon splitting_time
  */
 
 class Order extends BaseModel
@@ -90,6 +92,12 @@ class Order extends BaseModel
     const STATUS_REFUNDING = 5; // 退款中
     const STATUS_REFUNDED = 6; // 已退款
     const STATUS_FINISHED = 7; // 已完成
+
+    /**
+     * 分润状态
+     */
+    const SPLITTING_STATUS_YES = 2; //已分润
+    const SPLITTING_STATUS_NO = 1; //未分润
 
     /**
      * 生成订单号, 订单号规则: O{年月日时分秒}{6位随机数}

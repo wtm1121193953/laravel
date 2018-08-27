@@ -13,6 +13,7 @@ use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Jobs\OrderPaidJob;
 use App\Modules\Dishes\DishesGoods;
+use App\Jobs\OrderFinishedJob;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
@@ -197,9 +198,78 @@ class OrderService extends BaseService
      * @param $orderNo
      * @return Order
      */
-    public static function getinfoByOrderNo($orderNo)
+    public static function getInfoByOrderNo($orderNo)
     {
         return Order::where('order_no', $orderNo)->firstOrFail();
+    }
+
+    public static function getById($orderId, $fields = ['*'])
+    {
+        return Order::find($orderId, $fields);
+    }
+
+    /**
+     * 获取订单利润
+     * @param $order
+     * @return float
+     */
+    public static function getProfitAmount($order)
+    {
+        if(is_int($order)){
+            $order = self::getById($order);
+        }
+        $settlementRate = $order->settlement_rate; //分利比例
+        // 分利比例要从订单中获取  $order->settlement_rate
+        // 计算盈利金额
+        $grossProfit = $order->pay_price * $settlementRate / 100;
+        $taxAmount = $grossProfit * 0.06 * 1.12 / 1.06 + $grossProfit * 0.1 * 0.25 + 0.006 * $order->pay_price;
+
+        return $grossProfit - $taxAmount;
+    }
+
+    /**
+     * 更新分润状态 和 时间
+     * @param $order
+     * @return Order
+     */
+    public static function updateSplittingStatus($order)
+    {
+        if (is_int($order)) {
+            $order = self::getById($order);
+        }
+        $order->splitting_status = Order::SPLITTING_STATUS_YES;
+        $order->splitting_time = Carbon::now();
+        $order->save();
+
+        return $order;
+    }
+
+    /**
+     * 获取退款单信息
+     * @param $refundId
+     * @param $fields
+     * @return OrderRefund
+     */
+    public static function getRefundById($refundId, $fields = ['*'])
+    {
+        return OrderRefund::find($refundId, $fields);
+    }
+
+    /**
+     * 生成退款单号
+     * @param int $retry
+     * @return string
+     */
+    public static function genRefundNo($retry = 1000)
+    {
+        if($retry == 0){
+            throw new BaseResponseException('退款单号生成已超过最大重试次数');
+        }
+        $refundNo = 'R' . date('YmdHis') . rand(1000, 9999);
+        if(OrderRefund::where('refund_no', $refundNo)->first()){
+            $refundNo = self::genRefundNo(--$retry);
+        }
+        return $refundNo;
     }
 
     /**
@@ -208,18 +278,20 @@ class OrderService extends BaseService
      * @param $totalFee
      * @param int $payType
      * @return bool
+     * @throws \Exception
      */
     public static function paySuccess($orderNo, $transactionId, $totalFee, $payType = Order::PAY_TYPE_WECHAT)
     {
         // 处理订单支付成功逻辑
-        $order = OrderService::getinfoByOrderNo($orderNo);
+        $order = OrderService::getInfoByOrderNo($orderNo);
 
         if($order->status === Order::STATUS_UN_PAY
             || $order->status === Order::STATUS_CANCEL
             || $order->status === Order::STATUS_CLOSED
         ){
+            DB::beginTransaction();
             try{
-                DB::beginTransaction();
+                $order->pay_type = $payType;
                 $order->pay_time = Carbon::now(); // 更新支付时间为当前时间
                 if($order->type == Order::TYPE_SCAN_QRCODE_PAY){
                     // 如果是扫码付款, 直接改变订单状态为已完成
@@ -267,6 +339,9 @@ class OrderService extends BaseService
                 $orderPay->amount = $totalFee;
                 $orderPay->save();
                 OrderPaidJob::dispatch($order);
+                if($order->status == Order::STATUS_FINISHED){
+                    OrderFinishedJob::dispatch($order);
+                }
                 DB::commit();
             }catch (\Exception $e){
                 DB::rollBack();

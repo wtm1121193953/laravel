@@ -12,6 +12,7 @@ namespace App\Modules\Settlement;
 use App\BaseService;
 use App\Modules\Order\Order;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\Types\Boolean;
 use tests\Mockery\Adapter\Phpunit\EmptyTestCase;
@@ -44,6 +45,28 @@ class SettlementPlatformService extends BaseService
         $data = SettlementPlatform::where('merchant_id', $merchantId)
             ->orderBy('id', 'desc')
             ->paginate();
+        return $data;
+    }
+
+    /**
+     * 通过id获取结算单列表
+     * @param $id
+     * @return SettlementPlatform
+     */
+    public static function getListById($id)
+    {
+        $data = SettlementPlatform::with('merchant:id,bank_card_type')->where('id', $id);
+        return $data;
+    }
+
+    /**
+     * 通过id获取结算单总金额
+     * @param $ids
+     * @return int
+     */
+    public static function getAmountById($ids)
+    {
+        $data = SettlementPlatform::whereIn('id', $ids)->sum('real_amount');
         return $data;
     }
 

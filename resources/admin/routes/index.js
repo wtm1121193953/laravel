@@ -14,6 +14,7 @@ import oper_accounts from './oper_account'
 import merchant from './merchant'
 import members from './members'
 import setting from './setting'
+import withdraw from './withdraw'
 
 import SettlementList from '../components/settlement/list.vue'
 import SettlementPlatfroms from '../components/settlement/platform.vue'
@@ -43,6 +44,7 @@ const routes = [
     ...merchant,
     ...members,
     ...setting,
+    ...withdraw,
 
     // 财务模块
     {
