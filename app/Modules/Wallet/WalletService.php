@@ -56,7 +56,7 @@ class WalletService extends BaseService
         $wallet->origin_id = $originId;
         $wallet->origin_type = $originType;
         $wallet->save();
-        return $wallet;
+        return Wallet::find($wallet->id);
     }
 
     /**

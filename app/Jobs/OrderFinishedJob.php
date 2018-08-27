@@ -47,9 +47,9 @@ class OrderFinishedJob implements ShouldQueue
             return;
         }
 
-        // 1. 执行分润
         DB::beginTransaction();
         try{
+            // 1. 执行分润
             $this->feeSplitting();
             // 2. 处理消费额 消费额逻辑暂时去掉, 需要修改
             $this->consumeQuota();
