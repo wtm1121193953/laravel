@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class OrderFinishedJob implements ShouldQueue
@@ -47,16 +48,25 @@ class OrderFinishedJob implements ShouldQueue
         }
 
         // 1. 执行分润
-        $this->feeSplitting();
-        // 2. 处理消费额 消费额逻辑暂时去掉, 需要修改
-        $this->consumeQuota();
-        // 延迟24小时分发解冻积分以及消费额操作
-        FeeSplittingUnfreezeJob::dispatch($this->order)->delay(Carbon::now()->addDay(1));
-        ConsumeQuotaUnfreezeJob::dispatch($this->order)->delay(Carbon::now()->addDay(1));
+        DB::beginTransaction();
+        try{
+            $this->feeSplitting();
+            // 2. 处理消费额 消费额逻辑暂时去掉, 需要修改
+            $this->consumeQuota();
+            // 延迟24小时分发解冻积分以及消费额操作
+            FeeSplittingUnfreezeJob::dispatch($this->order)->delay(Carbon::now()->addDay(1));
+            ConsumeQuotaUnfreezeJob::dispatch($this->order)->delay(Carbon::now()->addDay(1));
+
+            DB::commit();
+        }catch (\Exception $e){
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     /**
      * 处理分润
+     * @throws \Exception
      */
     private function feeSplitting()
     {

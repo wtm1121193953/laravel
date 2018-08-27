@@ -15,6 +15,7 @@ use App\Modules\User\User;
 use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\WalletService;
+use Illuminate\Support\Facades\DB;
 
 class FeeSplittingService extends BaseService
 {
@@ -22,42 +23,62 @@ class FeeSplittingService extends BaseService
     /**
      * 根据订单执行分润
      * @param Order $order
+     * @throws \Exception
      */
     public static function feeSplittingByOrder(Order $order)
     {
         // 获取订单利润
         $profitAmount = OrderService::getProfitAmount($order);
-        // 1 分给自己 5%
-        self::feeSplittingToSelf($order, $profitAmount);
-        // 2 分给上级 25%
-        self::feeSplittingToParent($order, $profitAmount);
-        // 3 分给运营中心  50% || 100% , 暂时不做
+        DB::beginTransaction();
+        try {
+            // 1 分给自己 5%
+            self::feeSplittingToSelf($order, $profitAmount);
+            // 2 分给上级 25%
+            self::feeSplittingToParent($order, $profitAmount);
+            // 3 分给运营中心  50% || 100% , 暂时不做
 
-        // 4 修改订单中的分润状态
-        OrderService::updateSplittingStatus($order);
+            // 4 修改订单中的分润状态
+            OrderService::updateSplittingStatus($order);
+
+            DB::commit();
+        }catch (\Exception $e){
+            DB::rollBack();
+            throw  $e;
+        }
     }
 
     /**
      * 自返逻辑
      * @param Order $order
      * @param float $profitAmount
+     * @throws \Exception
      */
     private static function feeSplittingToSelf(Order $order, float $profitAmount)
     {
         // 分润记录表 添加分润记录
         $originInfo = UserService::getUserById($order->user_id);
-        $feeSplittingRecord = self::createFeeSplittingRecord($order, $originInfo, FeeSplittingRecord::TYPE_TO_SELF, $profitAmount);
 
-        // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
-        $wallet = WalletService::getWalletInfo($originInfo);
+        DB::beginTransaction();
+        try {
+            $feeSplittingRecord = self::createFeeSplittingRecord($order, $originInfo, FeeSplittingRecord::TYPE_TO_SELF, $profitAmount);
 
-        WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
+            // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
+            $wallet = WalletService::getWalletInfo($originInfo);
+
+            WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
+
+            DB::commit();
+        }catch (\Exception $e){
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     /**
      * 返利给上级逻辑
      * @param Order $order
      * @param float $profitAmount
+     * @throws \Exception
      */
     private static function feeSplittingToParent(Order $order, float $profitAmount)
     {
@@ -65,12 +86,19 @@ class FeeSplittingService extends BaseService
         if ($parent == null) {
             return;
         }
-        $feeSplittingRecord = self::createFeeSplittingRecord($order, $parent, FeeSplittingRecord::TYPE_TO_PARENT, $profitAmount);
+        DB::beginTransaction();
+        try {
+            $feeSplittingRecord = self::createFeeSplittingRecord($order, $parent, FeeSplittingRecord::TYPE_TO_PARENT, $profitAmount);
 
-        // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
-        $wallet = WalletService::getWalletInfo($parent);
+            // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
+            $wallet = WalletService::getWalletInfo($parent);
 
-        WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
+            WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     /**
