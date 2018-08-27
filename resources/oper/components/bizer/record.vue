@@ -26,8 +26,8 @@
             <div v-if="!secondTable">
                 <el-table-column fixed="right" label="操作">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="signing">签约</el-button>
-                        <el-button type="text" @click="refusal">拒绝</el-button>
+                        <el-button type="text" @click="signing(scope.$index)">签约</el-button>
+                        <el-button type="text" @click="refusal(scope.$index)">拒绝</el-button>
                     </template>
                 </el-table-column>
             </div>
@@ -42,12 +42,12 @@
                 :total="total"/>
 
         <el-dialog title="签约业务员" :visible.sync="dialogSigningFormVisible" width="30%">
-            <el-form :model="formSigning" :rules="rules" label-width="70px">
+            <el-form :model="formSigning" ref="formSigning" :rules="rules" label-width="70px">
                 <el-form-item>
-                    确定签约业务员<span class="c-danger">张三</span>
+                    确定签约业务员<span class="c-danger">{{detailOption.bizerInfo.name}}</span>
                 </el-form-item>
-                <el-form-item label="分成" prop="divided_into">
-                    <el-input v-model="formSigning.divided_into" auto-complete="off" style="width:90%;"/> %
+                <el-form-item label="分成" prop="divide">
+                    <el-input v-model="formSigning.divide" auto-complete="off" style="width:90%;"/> %
                 </el-form-item>
                 <el-form-item label="备注">
                     <el-input type="textarea" v-model="formSigning.remark" auto-complete="off" placeholder="最多50个字" style="width:90%;"/>
@@ -55,14 +55,14 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogSigningFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogSigningFormVisible">提 交</el-button>
+                <el-button type="primary" @click="signingSubmit(1)" v-loading="bntLoading" :disabled="bntLoading">提 交</el-button>
             </div>
         </el-dialog>
 
         <el-dialog title="拒绝业务员" :visible.sync="dialogRefusalFormVisible" width="30%">
             <el-form :model="formRefusal" label-width="70px">
                 <el-form-item>
-                    确定拒绝签约业务员<span class="c-danger">张三</span>
+                    确定拒绝签约业务员<span class="c-danger">{{detailOption.bizerInfo.name}}</span>
                 </el-form-item>
                 <el-form-item label="原因">
                     <el-input type="textarea" v-model="formRefusal.remark" auto-complete="off" placeholder="最多50个字"/>
@@ -70,7 +70,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogRefusalFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogRefusalFormVisible = false">提 交</el-button>
+                <el-button type="primary"  v-loading="bntLoading" :disabled="bntLoading" @click="signingSubmit(-1)">提 交</el-button>
             </div>
         </el-dialog>
     </page>
@@ -81,6 +81,15 @@
 
     export default {
         data(){
+            var validateDivided = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请输入分成'));
+                  } else if (!/^(\d|[1-9]\d|100)(\.\d{1,2})?$/.test(value) || value > 100) {
+                    callback(new Error('分成格式错误'));
+                  } else {
+                    callback();
+                  }
+            };
             return {
                 isLoading: false,
                 activeName: 'first',
@@ -94,18 +103,26 @@
                 dialogSigningFormVisible: false,
                 dialogRefusalFormVisible: false,
                 formSigning: {
-                    divided_into: '',
+                    status: 1,
+                    divide: '',
                     remark: ''
                 },
                 formRefusal: {
+                    status: -1,
                     remark: ''
                 },
                 rules: {
-                    divided_into: [
-                        { required: true, message: '请输入分成', trigger: 'blur' },
-                        { min: 0, max: 100, message: '长度在 0 到 100 个字符', trigger: 'blur' }
+                    divide: [
+                        {validator: validateDivided, trigger: 'blur'}
                     ]
-                }
+                },
+                bntLoading: false,
+                detailOption:{
+                    bizerInfo:{
+                        name:'',
+                    },
+                    id:'',
+                },
             }
         },
         computed: {
@@ -118,7 +135,7 @@
                 this.query.selectStatus = this.activeName;
                 Object.assign(params, this.query);
                 api.get('/bizerRecord', params).then(data => {
-                    // console.log(data.list)
+                    console.log(data.list)
                     this.query.page = params.page;
                     this.isLoading = false;
                     this.list = data.list;
@@ -135,12 +152,68 @@
                     _self.secondTable = true;
                 }
             },
-            signing() {
+            signing(index) {
                 this.dialogSigningFormVisible = true;
+                // alert(index)
+                this.detailOption = this.list[index]
             },
-            refusal() {
+            refusal(index) {
                 this.dialogRefusalFormVisible = true;
+                this.detailOption = this.list[index];
             },
+            signingSubmit(status){
+                let _self = this;
+                let params;
+                if(status && status == 1){
+                    let isValid;
+                    _self.$refs.formSigning.validate(valid => {
+                        if (valid) {
+                            _self.formSigning.id = this.detailOption.id;
+                            _self.formSigning.divide = parseInt(_self.formSigning.divide);
+                            params = _self.formSigning;
+                            isValid = true;
+                        }else{
+                            isValid = false;
+                        }
+                    })
+                    if(!isValid)return false;
+                }else{
+                    _self.formRefusal.id = _self.detailOption.id;
+                    params = _self.formRefusal;
+                }
+                _self.bntLoading = true;
+                api.get('/bizerRecord/contractBizer', params).then(data => {
+                    _self.dialogSigningFormVisible = _self.dialogRefusalFormVisible = false;
+                    _self.$message({
+                        message: '签约成功',
+                        type: 'success'
+                    });
+                    _self.getList();
+                }).catch((error) => {
+                    _self.$message({
+                      message: error.response && error.response.message ? error.response.message:'请求失败',
+                      type: 'warning'
+                    });
+                }).finally(() => {
+                    _self.bntLoading = false;
+                })
+                    
+            },
+            // refusalSubmit(){
+            //     let _self = this;
+            //     _self.bntLoading = true;
+            //     _self.formRefusal.id = this.detailOption.id;
+            //     api.get('/bizerRecord/contractBizer', _self.formRefusal).then(data => {
+            //        _self.dialogRefusalFormVisible = false;
+            //     }).catch((error) => {
+            //         _self.$message({
+            //           message: error.response && error.response.message ? error.response.message:'请求失败',
+            //           type: 'warning'
+            //         });
+            //     }).finally(() => {
+            //         _self.bntLoading = false;
+            //     })
+            // },
         },
         created(){
             this.getList();

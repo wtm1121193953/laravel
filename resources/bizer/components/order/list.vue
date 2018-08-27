@@ -39,7 +39,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="所属运营中心">
-                <el-select v-model="query.operId" filterable clearable >
+                <el-select v-model="query.operId" filterable clearable>
                     <el-option v-for="item in operOptions" :key="item.oper_id" :value="item.oper_id" :label="item.operName"/>
                 </el-select>
             </el-form-item>
@@ -158,13 +158,15 @@
                     goodsName: '',
                     merchantName: '',
                     operId: '',
-                    page: 1
+                    page: 1,
+                    merchantId:''
                 },
                 list: [],
                 total: 0,
-
+                operOptions:[],
                 dialogDetailVisible: false,
                 detailOption: {},
+                merchantOptions:[],
             }
         },
         computed: {
@@ -198,18 +200,24 @@
             },
         },
         created(){
+            let _self = this;
+            
             api.get('merchant/opers/tree').then(data => {
-                this.operOptions = data.list;
+                _self.operOptions = data.list;
             });
-            this.operOptions = [];
             api.get('merchant/allMerchantNames').then(data => {
-                 this.merchantOptions = data.list;
-             });
-             this.merchantOptions = [];
-             if (this.$route.params){
-                 Object.assign(this.query, this.$route.params);
-             }
-             this.getList();
+                _self.merchantOptions = data.list; 
+            });
+            if (_self.$route.params){
+                Object.assign(_self.query, _self.$route.params);
+            }
+            if (_self.$route.query) {
+                Object.assign(_self.query,_self.$route.query);
+                _self.query.merchantId = parseInt(_self.query.merchantId);
+            }
+
+            _self.getList();
+             
         },
         components: {
 
