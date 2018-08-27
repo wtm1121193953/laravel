@@ -87,7 +87,7 @@
             <el-form label-width="100px">
                 <el-form-item label="运营中心名称">
                     <el-select v-model="addRegionData.oper_id" placeholder="请选择运营中心" style="width:100%;">
-                        <el-option v-for="item in regionOptions" :label="item.name" :value="item.id"/>
+                        <el-option v-for="item in regionOptions" :label="item.name"  :key="item.id" :value="item.id"/>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="备注">
@@ -152,7 +152,7 @@
         methods: {
             search(){
                 var _self = this;
-                // this.query.page = 1;
+                this.query.page = 1;
                 this.getList();
             },
             getList(){
@@ -216,7 +216,7 @@
             toMerchants(oper_id){
                 //改变vuex状态
                 store.commit('setCurrentMenu', '/merchants');
-                router.push({ path: '/merchants', query: { oper_id: oper_id }})
+                router.push({ path: '/merchants', query: { operId: oper_id }})
             },
         },
         created(){

@@ -39,7 +39,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="所属运营中心">
-                <el-select v-model="query.operId" filterable clearable >
+                <el-select v-model="query.operId" filterable clearable>
                     <el-option v-for="item in operOptions" :key="item.oper_id" :value="item.oper_id" :label="item.operName"/>
                 </el-select>
             </el-form-item>
@@ -153,7 +153,8 @@
                     goodsName: '',
                     merchantName: '',
                     operId: '',
-                    page: 1
+                    page: 1,
+                    merchantId:''
                 },
                 list: [],
                 total: 0,
@@ -195,18 +196,21 @@
         },
         created(){
             let _self = this;
-            if (_self.$route.query && _self.$route.query.merchant_id) {
-                    _self.query.merchantId = _self.$route.query.merchant_id;
-                }
+            
             api.get('merchant/opers/tree').then(data => {
                 _self.operOptions = data.list;
             });
             api.get('merchant/allMerchantNames').then(data => {
-                 _self.merchantOptions = data.list; 
-             });
-             if (_self.$route.params){
-                 Object.assign(_self.query, _self.$route.params);
-             }
+                _self.merchantOptions = data.list; 
+            });
+            if (_self.$route.params){
+                Object.assign(_self.query, _self.$route.params);
+            }
+            if (_self.$route.query) {
+                Object.assign(_self.query,_self.$route.query);
+                _self.query.merchantId = parseInt(_self.query.merchantId);
+            }
+
             _self.getList();
              
         },

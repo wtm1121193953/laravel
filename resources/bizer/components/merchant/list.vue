@@ -124,6 +124,7 @@
                 total: 0,
                 areaOptions:[],
                 operOptions:[],
+                categoryOptions:[],
             }
         },
         computed: {
@@ -135,21 +136,20 @@
                  this.getList();
             },
             searchorders(merchant_id){
+                store.commit('setCurrentMenu', '/orders');
                 // router.push({
                 //     name: 'OrderList',
                 //     params: {
                 //         merchantId: merchant_id
                 //     }
                 // });
-                store.commit('setCurrentMenu', '/orders');
-                router.push({ path: '/orders', query: { merchant_id: merchant_id }})
+                router.push({ path: '/orders', query: { merchantId: merchant_id }})
             },
             getList(){
                 this.isLoading = true;
                 let params = {};
                 Object.assign(params, this.query);
                 api.get('/merchants', params).then(data => {
-                    console.log(data)
                     this.query.page = params.page;
                     this.isLoading = false;
                     this.list = data.list;
@@ -173,10 +173,6 @@
             let _self = this;
 
             //城市出来后如果有id就选上
-            if (_self.$route.query && _self.$route.query.oper_id) {
-                _self.query.operId = _self.$route.query.oper_id;
-            }
-
             api.get('area/tree').then(data => {
                 _self.areaOptions = data.list;
             });
@@ -189,11 +185,13 @@
             api.get('merchant/categories/tree').then(data => {
                  _self.categoryOptions = data.list;
              });
-             _self.categoryOptions = [];
              if (_self.$route.params){
                  Object.assign(_self.query, _self.$route.params);
              }
-
+            if (_self.$route.query) {
+                Object.assign(_self.query,_self.$route.query);
+                _self.query.operId = parseInt(_self.query.operId);
+            }
             _self.getList();
         },
         components: {
