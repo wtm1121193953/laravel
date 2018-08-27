@@ -175,7 +175,6 @@ class OrderService extends BaseService
             $order->status = Order::STATUS_FINISHED;
             $order->finish_time = Carbon::now();
             $order->save();
-            OrderFinishedJob::dispatch($order);
             return $order;
         } else {
             throw new BaseResponseException('该订单已退款，不能核销');
@@ -279,18 +278,20 @@ class OrderService extends BaseService
      * @param $totalFee
      * @param int $payType
      * @return bool
+     * @throws \Exception
      */
     public static function paySuccess($orderNo, $transactionId, $totalFee, $payType = Order::PAY_TYPE_WECHAT)
     {
         // 处理订单支付成功逻辑
-        $order = OrderService::getinfoByOrderNo($orderNo);
+        $order = OrderService::getInfoByOrderNo($orderNo);
 
         if($order->status === Order::STATUS_UN_PAY
             || $order->status === Order::STATUS_CANCEL
             || $order->status === Order::STATUS_CLOSED
         ){
+            DB::beginTransaction();
             try{
-                DB::beginTransaction();
+                $order->pay_type = $payType;
                 $order->pay_time = Carbon::now(); // 更新支付时间为当前时间
                 if($order->type == Order::TYPE_SCAN_QRCODE_PAY){
                     // 如果是扫码付款, 直接改变订单状态为已完成
@@ -338,6 +339,9 @@ class OrderService extends BaseService
                 $orderPay->amount = $totalFee;
                 $orderPay->save();
                 OrderPaidJob::dispatch($order);
+                if($order->status == Order::STATUS_FINISHED){
+                    OrderFinishedJob::dispatch($order);
+                }
                 DB::commit();
             }catch (\Exception $e){
                 DB::rollBack();
