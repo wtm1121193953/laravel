@@ -29,9 +29,10 @@ class SettlementDaily implements ShouldQueue
      * @Author   Jerry
      * @DateTime 2018-08-23
      */
-    public function __construct()
+    public function __construct(  $date=null )
     {
-        $this->date = Carbon::yesterday();
+        $date = $date ?? Carbon::yesterday();
+        $this->date = $date;
     }
 
 
