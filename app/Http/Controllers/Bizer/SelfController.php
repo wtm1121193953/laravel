@@ -82,7 +82,7 @@ class SelfController extends Controller {
         }
 
         $verifyCodeRes = SmsService::checkVerifyCode($mobile, $verifyCode);
-        if($verifyCodeRes === FALSE){
+        if ($verifyCodeRes === FALSE) {
             throw new ParamInvalidException('验证码错误');
         }
 
@@ -90,7 +90,7 @@ class SelfController extends Controller {
         $bizer->mobile = $mobile;
         $salt = str_random();
         $bizer->salt = $salt;
-        $bizer->password = MerchantAccount::genPassword($password, $salt);
+        $bizer->password = Bizer::genPassword($password, $salt);
         $bizer->save();
 
         unset($bizer['password']);
@@ -139,6 +139,59 @@ class SelfController extends Controller {
         return Result::success($user);
     }
 
+    /**
+     * 忘记密码
+     * @author tong.chen
+     */
+    public function forgotPassword() {
+        $this->validate(request(), [
+            'mobile' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}/',
+            'verify_code' => 'required|size:4'
+        ]);
+
+        $mobile = request('mobile');
+        $verifyCode = request('verify_code');
+        $password = request('password');
+        $confirmPassword = request('confirm_password');
+
+        $bizer = Bizer::where('mobile', $mobile)->first();
+        if (empty($bizer)) {
+            throw new AccountNotFoundException();
+        }
+        
+        if (!($password && $confirmPassword)) {
+            if (App::environment('production') || $verifyCode != '6666') {
+                $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
+                        ->where('verify_code', $verifyCode)
+                        ->where('status', 1)
+                        ->where('expire_time', '>', Carbon::now())
+                        ->first();
+                if (empty($verifyCodeRecord)) {
+                    throw new ParamInvalidException('验证码错误');
+                }
+                return Result::success();
+            }
+            return Result::success();
+        }
+
+        $this->validate(request(), [
+            'password' => 'required|between:6,12',
+            'confirmPassword' => 'required|same:password',
+        ]);
+        
+        $verifyCodeRes = SmsService::checkVerifyCode($mobile, $verifyCode);
+        if ($verifyCodeRes === FALSE) {
+            throw new ParamInvalidException('验证码错误');
+        }
+        
+        $salt = str_random();
+        $bizer->salt = $salt;
+        $bizer->password = Bizer::genPassword($password, $salt);
+        $bizer->save();
+        
+        return Result::success();
+    }
+
     private function getMenus() {
         // todo 返回业务员菜单
         return [
@@ -170,4 +223,5 @@ class SelfController extends Controller {
 //            ],
         ];
     }
+
 }
