@@ -9,6 +9,10 @@ import WithdrawRecordMerchantDetailAudit from '../components/withdraw/record/mer
 import WithdrawRecordOperDetailAudit from '../components/withdraw/record/oper-detail-audit'
 import WithdrawRecordUserDetailAudit from '../components/withdraw/record/user-detail-audit'
 
+// 提现批次管理
+import WithdrawBatch from '../components/withdraw/batch/list'
+import WithdrawBatchDetail from '../components/withdraw/batch/detail'
+
 export default [
     {
         path: '/',
@@ -20,6 +24,9 @@ export default [
             {path: '/withdraw/record/merchant', component: WithdrawRecordMerchantDetailAudit, name: 'WithdrawRecordMerchantDetailAudit'},
             {path: '/withdraw/record/oper', component: WithdrawRecordOperDetailAudit, name: 'WithdrawRecordOperDetailAudit'},
             {path: '/withdraw/record/user', component: WithdrawRecordUserDetailAudit, name: 'WithdrawRecordUserDetailAudit'},
+
+            {path: '/withdraw/batch', component: WithdrawBatch, name: 'WithdrawBatch'},
+            {path: '/withdraw/batch/detail', component: WithdrawBatchDetail, name: 'WithdrawBatchDetail'},
         ]
     }
 ]

@@ -1,7 +1,7 @@
 <template>
     <page :title="pageTitle" :breadcrumbs="{提现记录: '/withdraw/records'}">
         <el-row :gutter="20" v-loading="loading">
-            <el-form size="small" label-width="100px">
+            <el-form size="small" label-width="130px">
                 <el-col :span="12">
                     <el-form-item label="提现时间">
                         {{data.created_at}}
@@ -75,10 +75,10 @@
                     </el-form-item>
                 </el-col>
             </el-form>
-            <el-col v-if="audit">
+            <el-col>
                 <el-button size="small" @click="goBack">返 回</el-button>
-                <el-button size="small" type="primary" @click="auditSuccess">审核通过</el-button>
-                <el-button size="small" type="warning" @click="auditFailed">审核不通过</el-button>
+                <el-button v-if="audit" size="small" type="primary" @click="auditSuccess">审核通过</el-button>
+                <el-button v-if="audit" size="small" type="warning" @click="auditFailed">审核不通过</el-button>
             </el-col>
         </el-row>
 
@@ -135,7 +135,8 @@
                 })
             },
             goBack() {
-                router.push('/withdraw/records');
+                // router.push('/withdraw/records');
+                router.go(-1);
             },
             auditSuccess() {
                 this.showDialog = true;

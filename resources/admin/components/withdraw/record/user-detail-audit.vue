@@ -59,10 +59,10 @@
                     </el-form-item>
                 </el-col>
             </el-form>
-            <el-col v-if="audit">
+            <el-col>
                 <el-button size="small" @click="goBack">返 回</el-button>
-                <el-button size="small" type="primary" @click="auditSuccess">审核通过</el-button>
-                <el-button size="small" type="warning" @click="auditFailed">审核不通过</el-button>
+                <el-button v-if="audit" size="small" type="primary" @click="auditSuccess">审核通过</el-button>
+                <el-button v-if="audit" size="small" type="warning" @click="auditFailed">审核不通过</el-button>
             </el-col>
         </el-row>
 
@@ -119,7 +119,8 @@
                 })
             },
             goBack() {
-                router.push('/withdraw/records');
+                // router.push('/withdraw/records');
+                router.go(-1);
             },
             auditSuccess() {
                 this.showDialog = true;

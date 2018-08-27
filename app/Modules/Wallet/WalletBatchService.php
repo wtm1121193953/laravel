@@ -4,6 +4,7 @@ namespace App\Modules\Wallet;
 
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
 use Illuminate\Support\Carbon;
 
 class WalletBatchService extends BaseService
@@ -48,6 +49,7 @@ class WalletBatchService extends BaseService
         }else if($end){
             $query->where('created_at', '<', $end);
         }
+        $query->orderBy('created_at', 'desc');
         if ($withQuery) {
             return $query;
         } else {
@@ -66,5 +68,44 @@ class WalletBatchService extends BaseService
     {
         $walletBatch = WalletBatch::find($id, $field);
         return $walletBatch;
+    }
+
+    /**
+     * 添加批次
+     * @param $type
+     * @param string $remark
+     * @return WalletBatch
+     */
+    public static function addBatch($type, $remark = '')
+    {
+        $batch = new WalletBatch();
+        $batch->type = $type;
+        $batch->remark = $remark;
+        $batch->status = 1;
+        $batch->save();
+
+        $batch->batch_no = str_pad($batch->id, 8, "0", STR_PAD_LEFT);
+        $batch->save();
+
+        return $batch;
+    }
+
+    /**
+     * 删除提现批次
+     * @param $id
+     * @return WalletBatch
+     * @throws \Exception
+     */
+    public static function deleteBatch($id)
+    {
+        $batch = self::getById($id);
+        if (empty($batch)) {
+            throw new BaseResponseException('该批次不存在');
+        }
+        if ($batch->status != WalletBatch::STATUS_SETTLEMENT || $batch->total != 0) {
+            throw new BaseResponseException('该批次不能删除');
+        }
+        $batch->delete();
+        return $batch;
     }
 }

@@ -155,7 +155,7 @@ class WalletWithdrawService extends BaseService
      */
     public static function getWithdrawRecords($param, $pageSize = 15, $withQuery = false)
     {
-        $query = self::parseWithdrawQuery($param);
+        $query = self::parseWithdrawQuery($param)->orderBy('created_at', 'desc');
         if ($withQuery) {
             return $query;
         } else {
@@ -410,16 +410,19 @@ class WalletWithdrawService extends BaseService
             $ids = [$ids];
         }
         $amount = 0;
-        $total = count($ids);
+        $total = 0;
         $batchId = 0;
         try {
             DB::beginTransaction();
             foreach ($ids as $id) {
                 $walletWithdraw = self::getWalletWithdrawById($id);
-                $walletWithdraw->status = WalletWithdraw::STATUS_WITHDRAW;
-                $walletWithdraw->save();
-                $amount += $walletWithdraw->amount;
-                $batchId = $walletWithdraw->batch_id;
+                if ($walletWithdraw->status == WalletWithdraw::STATUS_AUDIT) {
+                    $walletWithdraw->status = WalletWithdraw::STATUS_WITHDRAW;
+                    $walletWithdraw->save();
+                    $amount += $walletWithdraw->amount;
+                    $total += 1;
+                    $batchId = $walletWithdraw->batch_id;
+                }
             }
             $walletBatch = WalletBatchService::getById($batchId);
             $walletBatch->amount += $amount;
@@ -449,16 +452,19 @@ class WalletWithdrawService extends BaseService
             $ids = [$ids];
         }
         $amount = 0;
-        $total = count($ids);
+        $total = 0;
         $batchId = 0;
         try {
             DB::beginTransaction();
             foreach ($ids as $id) {
                 $walletWithdraw = self::getWalletWithdrawById($id);
-                self::withdrawFail($walletWithdraw, WalletWithdraw::STATUS_WITHDRAW_FAILED, $remark);
+                if ($walletWithdraw->status == WalletWithdraw::STATUS_AUDIT) {
+                    self::withdrawFail($walletWithdraw, WalletWithdraw::STATUS_WITHDRAW_FAILED, $remark);
 
-                $amount += $walletWithdraw->amount;
-                $batchId = $walletWithdraw->batch_id;
+                    $amount += $walletWithdraw->amount;
+                    $total += 1;
+                    $batchId = $walletWithdraw->batch_id;
+                }
             }
             $walletBatch = WalletBatchService::getById($batchId);
             $walletBatch->amount += $amount;

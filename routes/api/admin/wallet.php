@@ -12,4 +12,15 @@ Route::post('/withdraw/record/payFail', 'WithdrawController@payFail');
 
 // 提现批次管理
 Route::get('/withdraw/batches', 'WalletBatchController@walletBatchList');
+Route::get('/withdraw/batch/export', 'WalletBatchController@exportExcel');
+Route::post('/withdraw/batch/add', 'WalletBatchController@add');
+Route::post('/withdraw/batch/delete', 'WalletBatchController@delete');
+Route::get('/withdraw/batch/detail', 'WalletBatchController@detail');
+
+/*/admin/withdraw/batch
+/api/admin/withdraw/batches
+/api/admin/withdraw/batch/detail
+/api/admin/withdraw/record/detail
+/api/admin/withdraw/record/paysuccess
+/api/admin/withdraw/record/payfail*/
 
