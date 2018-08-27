@@ -14,13 +14,13 @@
             <el-form-item prop="name" label="运营中心名称">
                 <el-input v-model="query.name" placeholder="请输入运营中心名称" clearable @keyup.enter.native="search"/>
             </el-form-item>
-            <el-form-item prop="principal" label="负责人">
-                <el-input v-model="query.principal" placeholder="请输入负责人" clearable @keyup.enter.native="search"/>
+            <el-form-item prop="contacter" label="负责人">
+                <el-input v-model="query.contacter" placeholder="请输入负责人" clearable @keyup.enter.native="search"/>
             </el-form-item>
-            <el-form-item prop="contactNumber" label="联系电话">
-                <el-input v-model="query.contactNumber" placeholder="请输入联系电话" clearable @keyup.enter.native="search"/>
+            <el-form-item prop="tel" label="联系电话">
+                <el-input v-model="query.tel" placeholder="请输入联系电话" clearable @keyup.enter.native="search"/>
             </el-form-item>
-            <el-form-item prop="city" label="所在城市">
+            <el-form-item prop="cityId" label="所在城市">
                 <el-cascader 
                     change-on-select
                     clearable
@@ -31,7 +31,7 @@
                             label: 'name',
                             children: 'sub',
                         }"
-                    v-model="query.city">
+                    v-model="query.cityId">
                 </el-cascader>
             </el-form-item>
             <el-form-item prop="status" label="状态">
@@ -50,17 +50,17 @@
 
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
-            <el-table-column prop="id" label="运营中心名称"/>
-            <el-table-column prop="name" label="负责人"/>
-            <el-table-column prop="signboard_name" label="联系电话"/>
-            <el-table-column prop="city" label="所在城市">
+            <el-table-column prop="operInfo.name" label="运营中心名称"/>
+            <el-table-column prop="operInfo.contacter" label="负责人"/>
+            <el-table-column prop="operInfo.tel" label="联系电话"/>
+            <el-table-column prop="operInfo" label="所在城市">
                 <template slot-scope="scope">
                     <!-- <span> {{ scope.row.province }} </span> -->
-                    <span> {{ scope.row.city }} </span>
-                    <span> {{ scope.row.area }} </span>
+                    <span> {{ scope.row.operInfo.province }} </span>
+                    <span> {{ scope.row.operInfo.city }} </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="operBizMemberName" label="我的分成"/>
+            <el-table-column prop="divide" label="我的分成"/>
             <el-table-column prop="status" label="合作状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1">正常</span>
@@ -69,7 +69,7 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
-                    <el-button type="text">查看商户</el-button>
+                    <el-button @click="toMerchants(scope.row.id)" type="text">查看商户</el-button>
                     <el-button type="text" @click="contract">查看合同</el-button>
                 </template>
             </el-table-column>
@@ -128,14 +128,15 @@
                 query: {
                     createdAt: '',
                     name: '',
-                    principal: '',
-                    contactNumber: '',
+                    contacter: '',
+                    tel: '',
+                    provinceId:'',//省份ID
+                    //cityId:'',//城市ID不能写,组件是自动生成的
                     status: '',
                     page: 1
                 },
                 list: [],
                 total: 0,
-
                 dialogFormVisible: false,
                 dialogContractVisible: false,
                 dialogPromptVisible: false,
@@ -150,19 +151,32 @@
         },
         methods: {
             search(){
+                var _self = this;
                 // this.query.page = 1;
-                // this.getList();
+                this.getList();
             },
             getList(){
-                // this.isLoading = true;
-                // let params = {};
-                // Object.assign(params, this.query);
-                // api.get('/merchants', params).then(data => {
-                //     this.query.page = params.page;
-                //     this.isLoading = false;
-                //     this.list = data.list;
-                //     this.total = data.total;
-                // })
+                let _self = this;
+                _self.isLoading = true;
+                let params = {};
+                if (_self.query.createdAt.length > 0 ) {
+                    params.startTime = _self.query.createdAt[0];
+                    params.endTime = _self.query.createdAt[1];
+                }
+                Object.assign(params, _self.query);
+                api.get('/api/bizer/opers', params).then(data => {
+                    _self.query.page = params.page;
+                    _self.list = data.list;
+                    _self.total = data.total;
+                    console.log(_self.list)
+                }).catch(() =>{
+                    _self.$message({
+                      message: '请求失败',
+                      type: 'warning'
+                    });
+                }).finally(() => {
+                    _self.isLoading = false;
+                })
             },
             add(){
                 this.dialogFormVisible = true;
@@ -199,6 +213,11 @@
                     _self.regionLoading = false;
                 })
             },
+            toMerchants(oper_id){
+                //改变vuex状态
+                store.commit('setCurrentMenu', '/merchants');
+                router.push({ path: '/merchants', query: { oper_id: oper_id }})
+            },
         },
         created(){
             let _self = this;
@@ -210,10 +229,10 @@
                 _self.cityOptions = data.list;
             });
             api.get('/api/bizer/oper/name_list').then(data => {
-                console.log(data.list)
+                // console.log(data.list)
                 _self.regionOptions = data.list;
             });
-            //this.getList();
+            _self.getList();
         },
         components: {
 

@@ -115,13 +115,15 @@
                     endTime: '',
                     id:'',
                     merchantName: '',
-                    merchant_category:'',
-                    cityId :'',
+                    //merchant_category:'',//自动生成的
+                    //cityId :'',//自动生成的
                     operId :'',
                     page: 1
                 },
                 list: [],
-                total: 0
+                total: 0,
+                areaOptions:[],
+                operOptions:[],
             }
         },
         computed: {
@@ -133,18 +135,21 @@
                  this.getList();
             },
             searchorders(merchant_id){
-                router.push({
-                    name: 'OrderList',
-                    params: {
-                        merchantId: merchant_id
-                    }
-                });
+                // router.push({
+                //     name: 'OrderList',
+                //     params: {
+                //         merchantId: merchant_id
+                //     }
+                // });
+                store.commit('setCurrentMenu', '/orders');
+                router.push({ path: '/orders', query: { merchant_id: merchant_id }})
             },
             getList(){
                 this.isLoading = true;
                 let params = {};
                 Object.assign(params, this.query);
                 api.get('/merchants', params).then(data => {
+                    console.log(data)
                     this.query.page = params.page;
                     this.isLoading = false;
                     this.list = data.list;
@@ -165,23 +170,31 @@
             },
         },
         created(){
+            let _self = this;
+
+            //城市出来后如果有id就选上
+            if (_self.$route.query && _self.$route.query.oper_id) {
+                _self.query.operId = _self.$route.query.oper_id;
+            }
+
             api.get('area/tree').then(data => {
-                this.areaOptions = data.list;
+                _self.areaOptions = data.list;
             });
-            this.areaOptions = [];
             
             api.get('merchant/opers/tree').then(data => {
-                this.operOptions = data.list;
+                _self.operOptions = data.list;
+                
+                
             });
-            this.operOptions = [];
             api.get('merchant/categories/tree').then(data => {
-                 this.categoryOptions = data.list;
+                 _self.categoryOptions = data.list;
              });
-             this.categoryOptions = [];
-             if (this.$route.params){
-                 Object.assign(this.query, this.$route.params);
+             _self.categoryOptions = [];
+             if (_self.$route.params){
+                 Object.assign(_self.query, _self.$route.params);
              }
-             this.getList();
+
+            _self.getList();
         },
         components: {
 

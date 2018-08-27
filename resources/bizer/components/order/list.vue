@@ -157,9 +157,10 @@
                 },
                 list: [],
                 total: 0,
-
+                operOptions:[],
                 dialogDetailVisible: false,
                 detailOption: {},
+                merchantOptions:[],
             }
         },
         computed: {
@@ -193,18 +194,21 @@
             },
         },
         created(){
+            let _self = this;
+            if (_self.$route.query && _self.$route.query.merchant_id) {
+                    _self.query.merchantId = _self.$route.query.merchant_id;
+                }
             api.get('merchant/opers/tree').then(data => {
-                this.operOptions = data.list;
+                _self.operOptions = data.list;
             });
-            this.operOptions = [];
             api.get('merchant/allMerchantNames').then(data => {
-                 this.merchantOptions = data.list;
+                 _self.merchantOptions = data.list; 
              });
-             this.merchantOptions = [];
-             if (this.$route.params){
-                 Object.assign(this.query, this.$route.params);
+             if (_self.$route.params){
+                 Object.assign(_self.query, _self.$route.params);
              }
-             this.getList();
+            _self.getList();
+             
         },
         components: {
 
