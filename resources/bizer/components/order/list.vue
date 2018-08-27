@@ -25,9 +25,9 @@
             <el-form-item prop="order_type" label="订单类型">
                 <el-select v-model="query.order_type" class="w-100" clearable>
                     <el-option label="全部" value=""/>
-                    <el-option label="团购" :value="1"/>
-                    <el-option label="买单" :value="2"/>
-                    <el-option label="单品" :value="3"/>
+                    <el-option label="团购订单" :value="1"/>
+                    <el-option label="扫码买单" :value="2"/>
+                    <el-option label="单品订单" :value="3"/>
                 </el-select>
             </el-form-item>
             <el-form-item prop="goodsName" label="商品名称">
