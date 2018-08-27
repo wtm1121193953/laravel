@@ -7,12 +7,9 @@ Route::get('/withdraw/records', 'WithdrawController@withdrawRecord');
 Route::get('/withdraw/record/export', 'WithdrawController@exportExcel');
 Route::get('/withdraw/record/detail', 'WithdrawController@withdrawDetail');
 Route::post('/withdraw/record/audit', 'WithdrawController@audit');
+Route::post('/withdraw/record/paySuccess', 'WithdrawController@paySuccess');
+Route::post('/withdraw/record/payFail', 'WithdrawController@payFail');
 
 // 提现批次管理
 Route::get('/withdraw/batches', 'WalletBatchController@walletBatchList');
 
-/*/withdraw/record/detail
-/withdraw/record/audit
-/withdraw/record/paysuccess
-/withdraw/record/payfail
-/withdraw/record/export*/

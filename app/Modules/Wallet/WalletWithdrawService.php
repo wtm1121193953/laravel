@@ -210,6 +210,7 @@ class WalletWithdrawService extends BaseService
         $operName = array_get($params, 'operName');
         $withdrawNo = array_get($params, 'withdrawNo');
         $bankCardType = array_get($params, 'bankCardType');
+        $batchId = array_get($params, 'batchId');
 
         $query = WalletWithdraw::query();
 
@@ -225,6 +226,9 @@ class WalletWithdrawService extends BaseService
         }
         if($bankCardType){
             $query->where('bank_card_type', $bankCardType);
+        }
+        if ($batchId) {
+            $query->where('batch_id', $batchId);
         }
         if($originType == WalletWithdraw::ORIGIN_TYPE_USER && $userMobile){
             $originIds = UserService::getUserColumnArrayByMobile($userMobile, 'id');
@@ -349,29 +353,7 @@ class WalletWithdrawService extends BaseService
     {
         try{
             DB::beginTransaction();
-            // 1. 提现记录表 审核状态修改为 审核不通过
-            $walletWithdraw->status = WalletWithdraw::STATUS_AUDIT_FAILED;
-            $walletWithdraw->remark = $remark;
-            $walletWithdraw->save();
-            // 2. 更新钱包表
-            $wallet = WalletService::getWalletById($walletWithdraw->wallet_id);
-            if (empty($wallet)) throw new \Exception('该钱包不存在');
-            $wallet->balance += $walletWithdraw->amount;
-            $wallet->save();
-            // 3. 添加钱包流水表 提现失败记录
-            $walletBill = new WalletBill();
-            $walletBill->wallet_id = $wallet->id;
-            $walletBill->origin_id = $wallet->origin_id;
-            $walletBill->origin_type = $wallet->origin_type;
-            $walletBill->bill_no = WalletService::createWalletBillNo();
-            $walletBill->type = WalletBill::TYPE_WITHDRAW_FAILED;
-            $walletBill->obj_id = $walletWithdraw->id;
-            $walletBill->inout_type = WalletBill::IN_TYPE;
-            $walletBill->amount = $walletWithdraw->amount;
-            $walletBill->amount_type = WalletBill::AMOUNT_TYPE_UNFREEZE;
-            $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
-            $walletBill->after_balance = $wallet->balance;
-            $walletBill->save();
+            self::withdrawFail($walletWithdraw, WalletWithdraw::STATUS_AUDIT_FAILED, $remark);
 
             DB::commit();
             return $walletWithdraw;
@@ -382,6 +364,116 @@ class WalletWithdrawService extends BaseService
                 'data' => $e,
             ]);
             throw new BaseResponseException('审核操作失败');
+        }
+    }
+
+    /**
+     * 审核不通过 和 打款失败 公用操作
+     * @param WalletWithdraw $walletWithdraw
+     * @param $status
+     * @param string $remark
+     * @throws \Exception
+     */
+    private static function withdrawFail(WalletWithdraw $walletWithdraw, $status, $remark = '') {
+        // 1. 提现记录表 审核状态修改为 审核不通过
+        $walletWithdraw->status = $status;
+        $walletWithdraw->remark = $remark;
+        $walletWithdraw->save();
+        // 2. 更新钱包表
+        $wallet = WalletService::getWalletById($walletWithdraw->wallet_id);
+        if (empty($wallet)) throw new \Exception('该钱包不存在');
+        $wallet->balance += $walletWithdraw->amount;
+        $wallet->save();
+        // 3. 添加钱包流水表 提现失败记录
+        $walletBill = new WalletBill();
+        $walletBill->wallet_id = $wallet->id;
+        $walletBill->origin_id = $wallet->origin_id;
+        $walletBill->origin_type = $wallet->origin_type;
+        $walletBill->bill_no = WalletService::createWalletBillNo();
+        $walletBill->type = WalletBill::TYPE_WITHDRAW_FAILED;
+        $walletBill->obj_id = $walletWithdraw->id;
+        $walletBill->inout_type = WalletBill::IN_TYPE;
+        $walletBill->amount = $walletWithdraw->amount;
+        $walletBill->amount_type = WalletBill::AMOUNT_TYPE_UNFREEZE;
+        $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
+        $walletBill->after_balance = $wallet->balance;
+        $walletBill->save();
+    }
+
+    /**
+     * admin 打款成功操作 单独或者批量
+     * @param $ids
+     */
+    public static function paySuccess($ids)
+    {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $amount = 0;
+        $total = count($ids);
+        $batchId = 0;
+        try {
+            DB::beginTransaction();
+            foreach ($ids as $id) {
+                $walletWithdraw = self::getWalletWithdrawById($id);
+                $walletWithdraw->status = WalletWithdraw::STATUS_WITHDRAW;
+                $walletWithdraw->save();
+                $amount += $walletWithdraw->amount;
+                $batchId = $walletWithdraw->batch_id;
+            }
+            $walletBatch = WalletBatchService::getById($batchId);
+            $walletBatch->amount += $amount;
+            $walletBatch->total += $total;
+            $walletBatch->success_amount += $amount;
+            $walletBatch->success_total += $total;
+            $walletBatch->save();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::info('打款成功操作失败', [
+                'message' => $e->getMessage(),
+                'data' => $e,
+            ]);
+            throw new BaseResponseException('打款成功操作失败');
+        }
+    }
+
+    /**
+     * 打款失败的操作 单个或者批量
+     * @param $ids
+     * @param string $remark
+     */
+    public static function payFail($ids, $remark = '')
+    {
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $amount = 0;
+        $total = count($ids);
+        $batchId = 0;
+        try {
+            DB::beginTransaction();
+            foreach ($ids as $id) {
+                $walletWithdraw = self::getWalletWithdrawById($id);
+                self::withdrawFail($walletWithdraw, WalletWithdraw::STATUS_WITHDRAW_FAILED, $remark);
+
+                $amount += $walletWithdraw->amount;
+                $batchId = $walletWithdraw->batch_id;
+            }
+            $walletBatch = WalletBatchService::getById($batchId);
+            $walletBatch->amount += $amount;
+            $walletBatch->total += $total;
+            $walletBatch->failed_amount += $amount;
+            $walletBatch->failed_total += $total;
+            $walletBatch->save();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::info('打款失败的操作失败', [
+                'message' => $e->getMessage(),
+                'data' => $e,
+            ]);
+            throw new BaseResponseException('打款失败的操作失败');
         }
     }
 }
