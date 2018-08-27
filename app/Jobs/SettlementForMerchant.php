@@ -83,6 +83,8 @@ class SettlementForMerchant implements ShouldQueue
         Order::where('merchant_id', $this->merchantId)
             ->where('settlement_status', 1)
             ->where('status', Order::STATUS_FINISHED)
+            // Author:Jerry Date:180827 添加订单查询筛选
+            ->where('pay_target_type', Order::PAY_TARGET_TYPE_OPER)
             ->whereBetween('finish_time', [$this->start, $this->end])
             ->chunk(1000, function (Collection $orders) use ($merchant, $settlement){
                 $orders->each(function($item) use ($merchant, $settlement){

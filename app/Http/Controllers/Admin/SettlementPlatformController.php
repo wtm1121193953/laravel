@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Result;
 use Illuminate\Support\Facades\Log;
 use App\Modules\Settlement\SettlementPlatformService;
+use App\Exceptions\DataNotFoundException;
 
 class SettlementPlatformController extends Controller
 {
@@ -89,15 +90,14 @@ class SettlementPlatformController extends Controller
 
     public function getSettlementOrders()
     {
-//        var_dump(request()->get('current_user')->id);
         $settlementId   = request()->get('settlement_id');
         $merchantId     = request()->get('merchant_id');
         $settlement = SettlementPlatformService::getByIdAndMerchantId($settlementId, $merchantId);
         if(empty($settlement)){
             throw new DataNotFoundException('结算单不存在');
         }
-        $MerchantContorller = new \App\Http\Controllers\Merchant\SettlementPlatformController();
-        return $MerchantContorller->getOrdersByService( $settlementId );
+        $MerchantController = new \App\Http\Controllers\Merchant\SettlementPlatformController();
+        return $MerchantController->getOrdersByService( $settlementId );
     }
 
 
