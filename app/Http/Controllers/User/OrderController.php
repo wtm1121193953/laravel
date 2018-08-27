@@ -12,6 +12,7 @@ namespace App\Http\Controllers\User;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\PayController;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
 use App\Modules\Dishes\Dishes;
@@ -29,6 +30,7 @@ use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use App\Support\ReapalPay;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
@@ -108,6 +110,7 @@ class OrderController extends Controller
      * 订单创建
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \Exception
      */
     public function buy()
     {
@@ -156,7 +159,17 @@ class OrderController extends Controller
                 // 调平台支付, 走融宝支付接口
                 $isOperSelf = 2;
                 $sdkConfig = null; // todo 走融宝支付接口
-                OrderService::paySuccess($orderNo, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
+                //OrderService::paySuccess($orderNo, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
+                $param = [
+                    'title' => $order->goods_name,
+                    'body' => $order->goods_id,
+                    'order_no' => $order->order_no,
+                    'total_fee' => $order->pay_price,
+                    'store_name' => $order->merchant_name,
+                    'store_phone' => $merchant->contacter_phone ?? '',
+                ];
+                $reapal = new ReapalPay($param);
+                $reapal->prepay();
             }else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
@@ -241,7 +254,8 @@ class OrderController extends Controller
                 // 调平台支付, 走融宝支付接口
                 $isOperSelf = 2;
                 $sdkConfig = null; // todo 走融宝支付接口
-                OrderService::paySuccess($orderNo, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
+                $reapal = new PayController();
+                $reapal->reapalPaySuccess();
             }else {
                 $isOperSelf = 0;
                 $sdkConfig = null;

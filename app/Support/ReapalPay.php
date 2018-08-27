@@ -157,32 +157,31 @@ class ReapalPay
     /**
      * 预支付接口, 返回调起微信支付需要的参数
      */
-    public function prepay()
+    public function prepay(array $param)
     {
-        $merchantId = $this->merchantId;
         //参数数组
         $paramArr = [
 
             'seller_email'=> $this->sellerEmail,
-            'merchant_id' => $merchantId,
-            'body' => request('body'),
-            'title' => request('title'),
-            'order_no' => request('order_no'),
-            'total_fee' => request('total_fee'),
+            'merchant_id' => $this->merchantId,
+            'body' => array_get($param,'body'),
+            'title' => array_get($param,'title'),
+            'order_no' => array_get($param,'order_no'),
+            'total_fee' => array_get($param,'total_fee'),
 
-            'notify_url' => $this->notify_url,
+            'notify_url' => url('/pay/payNotify'),
             'transtime' => Carbon::now(),
             'currency' => '156',
-            'member_ip' => '192.168.1.1',
+            'member_ip' => request()->ip(),
             'terminal_type' => 'mobile',
-            'terminal_info' => 'terminal_info',
-            'token_id' => '154545487879852200',
+            'terminal_info' => 'null_MAC/'.Utils::create_uuid().'_SIM',
+            'token_id' => Utils::create_uuid(),
 
-            'client_type'=>request('client_type'),
-            'user_id'=>request('user_id'),
-            'appid_source'=>request('appid_source'),
-            'store_phone'=>request('store_phone'),
-            'store_name'=>request('store_name'),
+            'client_type'=>'0',
+            'user_id'=>request()->get('current_open_id'),
+            'appid_source'=>config('platform.miniprogram.app_id'),
+            'store_phone'=>array_get($param,'store_phone'),
+            'store_name'=>array_get($param,'store_name'),
             'version'=>$this->apiVersion,
 
         ];
@@ -190,7 +189,7 @@ class ReapalPay
         $reapalMap = new ReapalUtils();
 
         $url = $this->apiUrl.'/qrcode/scan/encryptline';
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId);
+        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $this->merchantId);
         $response = json_decode($result,true);
         $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'],$this->merchantPrivateKey);
         return $reapalMap->AESDecryptResponse($encryptkey,$response['data']);
@@ -202,17 +201,16 @@ class ReapalPay
     public function paySearch()
     {
 
-        $merchantId = request('merchat_id')?request('merchat_id'):$this->merchantId;
         //参数数组
         $paramArr = array(
-            'merchant_id' => $merchantId,
+            'merchant_id' => $this->merchantId,
             'order_no' => request('order_no'),
         );
         $reapalMap = new ReapalUtils();
 
         $url = $this->apiUrl.'/qrcode/scan/encryptSearch';
 
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId);
+        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $this->merchantId);
         $response = json_decode($result,true);
         $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'],$this->merchantPrivateKey);
 
@@ -273,7 +271,7 @@ class ReapalPay
      * 异步通知接口
      */
 
-    public function ajaxMessage(){
+    public function payNotify(){
 
         //获取参数
         $resultArr = json_decode(request(),true);
@@ -284,7 +282,7 @@ class ReapalPay
      * 异步通知接口(退款)
      */
 
-    public function ajaxRefundMessage(){
+    public function refundNotify(){
 
         //获取参数
         $resultArr = json_decode(request(),true);
