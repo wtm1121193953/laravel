@@ -45,6 +45,9 @@
         data(){
             return {
                 isLoading: false,
+                query: {
+                    page: 1,
+                },
                 list: [],
                 total: 0,
             }
@@ -53,26 +56,26 @@
 
         },
         methods: {
-            // search(){
-            //     this.query.page = 1;
-            //     this.getList()
-            // },
-            // getList(){
-            //     api.get('/operBizMembers', this.query).then(data => {
-            //         this.list = data.list;
-            //         this.total = data.total;
-            //     })
-            // },
-            // itemChanged(index, data){
-            //     this.list.splice(index, 1, data);
-            //         router.replace({
-            //             path: '/refresh',
-            //             query: {
-            //                 name: 'OperBizMemberList',
-            //                 key: '/operBizMembers'
-            //             }
-            //         })
-            // },
+            search(){
+                this.query.page = 1;
+                this.getList()
+            },
+            getList(){
+                // api.get('/operBizMembers', this.query).then(data => {
+                //     this.list = data.list;
+                //     this.total = data.total;
+                // })
+            },
+            itemChanged(index, data){
+                // this.list.splice(index, 1, data);
+                //     router.replace({
+                //         path: '/refresh',
+                //         query: {
+                //             name: 'OperBizMemberList',
+                //             key: '/operBizMembers'
+                //         }
+                //     })
+            },
         },
         created(){
             this.getList();
