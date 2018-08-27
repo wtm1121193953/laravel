@@ -176,7 +176,7 @@ class SelfController extends Controller {
 
         $this->validate(request(), [
             'password' => 'required|between:6,12',
-            'confirmPassword' => 'required|same:password',
+            'confirm_password' => 'required|same:password',
         ]);
         
         $verifyCodeRes = SmsService::checkVerifyCode($mobile, $verifyCode);
