@@ -584,4 +584,18 @@ class MerchantService extends BaseService
     {
         return $distance >= 1000 ? (number_format($distance / 1000, 1) . '千米') : ($distance . '米');
     }
+
+    /**
+     * 根据商户名称获取商户某个字段的数组
+     * @param $merchantName
+     * @param $field
+     * @return Collection
+     */
+    public static function getMerchantColumnArrayByMerchantName($merchantName, $field)
+    {
+        $arr = Merchant::where('name', 'like', "%$merchantName%")
+            ->get()
+            ->pluck($field);
+        return $arr;
+    }
 }

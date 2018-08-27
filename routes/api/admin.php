@@ -76,6 +76,7 @@ Route::prefix('admin')
         Route::group([], base_path('routes/api/admin/oper_account.php'));
         Route::group([], base_path('routes/api/admin/miniprogram.php'));
         Route::group([], base_path('routes/api/admin/setting.php'));
+        Route::group([], base_path('routes/api/admin/wallet.php'));
 
         Route::get('settlements', 'SettlementController@getList');
         Route::get('settlement/platforms', 'SettlementPlatformController@getList');

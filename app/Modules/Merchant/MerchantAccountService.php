@@ -112,6 +112,14 @@ class MerchantAccountService extends BaseService
             ],
 
 
+            [ 'id' => 5, 'name' => '财务管理', 'level' => 1, 'url' => '/merchant/settlements',],
+            [ 'id' => 15, 'name' => '账户管理', 'level' => 1, 'url' => '/wallet', 'sub' =>
+                [
+                    [ 'id' => 16, 'name' => '账总总览', 'level' => 2, 'url' => '/merchant/wallet/summary/list', 'pid' => 15,],
+                    [ 'id' => 17, 'name' => '我的消费额', 'level' => 2, 'url' => '/merchant/wallet/consume/list', 'pid' => 15,],
+                    [ 'id' => 18, 'name' => '提现密码管理', 'level' => 2, 'url' => '/merchant/wallet/withdraw/password', 'pid' => 15,],
+                ]
+            ],
             [ 'id' => 6, 'name' => '素材中心', 'level' => 1, 'url' => 'material', 'sub' =>
                 [
                     [ 'id' => 7, 'name' => '分享会员二维码', 'level' => 2, 'url' => '/merchant/invite/channel', 'pid' => 6,],
@@ -122,7 +130,7 @@ class MerchantAccountService extends BaseService
                 [
 //                    [ 'id' => 10, 'name' => '关联用户', 'level' => 2, 'url' => '/merchant/setting/mapping_user', 'pid' => 9],
                     [ 'id' => 12, 'name' => '系统配置', 'level' => 2, 'url' => '/merchant/setting', 'pid' => 9 ],
-                    [ 'id' => 13, 'name' => 'TPS会员账号管理', 'level' => 2, 'url' => '/merchant/tps-bind', 'pid' => 9 ],
+                    [ 'id' => 14, 'name' => 'TPS会员账号管理', 'level' => 2, 'url' => '/merchant/tps-bind', 'pid' => 9 ],
                 ]
             ],
         ];

@@ -13,6 +13,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
+use App\Jobs\OrderFinishedJob;
 use App\Jobs\OrderPaidJob;
 use App\Modules\Goods\Goods;
 use App\Modules\Dishes\DishesItem;
@@ -147,4 +148,94 @@ class PayController extends Controller
 
     }
 
+    /**
+     * 支付成功
+     * @param $orderNo
+     * @param $transactionId
+     * @param $totalFee
+     * @return bool
+     */
+    private function paySuccess($orderNo, $transactionId, $totalFee)
+    {
+        // 处理订单支付成功逻辑
+        $order = OrderService::getInfoByOrderNo($orderNo);
+
+        if($order->status === Order::STATUS_UN_PAY
+            || $order->status === Order::STATUS_CANCEL
+            || $order->status === Order::STATUS_CLOSED
+        ){
+            try{
+                DB::beginTransaction();
+                $order->pay_time = Carbon::now(); // 更新支付时间为当前时间
+                if($order->type == Order::TYPE_SCAN_QRCODE_PAY){
+                    // 如果是扫码付款, 直接改变订单状态为已完成
+                    $order->status = Order::STATUS_FINISHED;
+                    $order->finish_time = Carbon::now();
+                    $order->save();
+                }else if($order->type == Order::TYPE_DISHES){
+                    $order->status = Order::STATUS_FINISHED;
+                    $order->finish_time = Carbon::now();
+                    $order->save();
+                }else {
+                    $order->status = Order::STATUS_PAID;
+                    $order->save();
+                }
+
+                if($order->type == Order::TYPE_GROUP_BUY){
+                    // 添加商品已售数量
+                    Goods::where('id', $order->goods_id)->increment('sell_number', max($order->buy_number, 1));
+                    // 生成核销码, 线上需要放到支付成功通知中
+                    $verify_code = OrderItem::createVerifyCode($order->merchant_id);
+                    for ($i = 0; $i < $order->buy_number; $i ++){
+                        $orderItem = new OrderItem();
+                        $orderItem->oper_id = $order->oper_id;
+                        $orderItem->merchant_id = $order->merchant_id;
+                        $orderItem->order_id = $order->id;
+                        $orderItem->verify_code = $verify_code;
+                        $orderItem->status = 1;
+                        $orderItem->save();
+                    }
+                } else if($order->type == Order::TYPE_DISHES){
+                    //添加菜单已售数量
+                    $dishesItems = DishesItem::where('dishes_id',$order->dishes_id)->get();
+                    foreach ($dishesItems as $k=>$item){
+                        DishesGoods::where('id', $item->dishes_goods_id)->increment('sell_number', max($item->number, 1));
+                    }
+                }
+
+
+
+                // 生成订单支付记录
+                $orderPay = new OrderPay();
+                $orderPay->order_id = $order->id;
+                $orderPay->order_no = $orderNo;
+                $orderPay->transaction_no = $transactionId;
+                $orderPay->amount = $totalFee * 1.0 / 100;
+                $orderPay->save();
+
+                OrderPaidJob::dispatch($order);
+                if($order->status == Order::STATUS_FINISHED){
+                    OrderFinishedJob::dispatch($order);
+                }
+                DB::commit();
+            }catch (\Exception $e){
+                DB::rollBack();
+                Log::error('订单支付成功回调操作失败,失败信息:'.$e->getMessage());
+                return false;
+            }
+            SmsService::sendBuySuccessNotify($orderNo);
+
+            return true;
+        }else if($order->status == Order::STATUS_PAID){
+            // 已经支付成功了
+            return true;
+        }else if($order->status == Order::STATUS_REFUNDING
+            || $order->status === Order::STATUS_REFUNDED
+            || $order->status === Order::STATUS_FINISHED
+        ){
+            // 订单已退款或已完成
+            return true;
+        }
+        return false;
+    }
 }

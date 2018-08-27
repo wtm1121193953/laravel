@@ -43,6 +43,7 @@ class OrderAutoFinished implements ShouldQueue
             ->where('pay_time', '<', Carbon::yesterday())
             ->where('status', Order::STATUS_PAID)
             ->update(['status' => Order::STATUS_FINISHED, 'finish_time' => Carbon::now()]);
+        // todo 需要分发订单完成时的任务
         Log::info('输入金额付款订单自动完成定时任务执行完成');
     }
 }
