@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
 use App\Exports\WalletWithdrawExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantService;
@@ -128,6 +129,7 @@ class WithdrawController extends Controller
         $start = request('startDate', '');
         $end = request('endDate', '');
         $status = request('status', '');
+        $batchId = request('batchId', '');
 
         $start = $start ? date('Y-m-d 00:00:00', strtotime($start)) : '';
         $end = $end ? date('Y-m-d 23:59:59', strtotime($end)) : '';
@@ -139,7 +141,7 @@ class WithdrawController extends Controller
             $originId = $operId;
         }
 
-        $param = compact('originType', 'originId', 'withdrawNo', 'bankCardType', 'start', 'end', 'status', 'userMobile', 'merchantName', 'operName');
+        $param = compact('originType', 'originId', 'withdrawNo', 'bankCardType', 'start', 'end', 'status', 'userMobile', 'merchantName', 'operName', 'batchId');
         return $param;
     }
 
@@ -198,6 +200,45 @@ class WithdrawController extends Controller
         } else {
             throw new BaseResponseException('状态错误');
         }
+        return Result::success();
+    }
+
+    /**
+     * 打款成功操作 或者 批量打款成功操作
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function paySuccess()
+    {
+        $ids = request('ids');
+        $batchId = request('batchId');
+        if (empty($ids) && !$batchId) {
+            throw new ParamInvalidException('参数错误');
+        }
+        if ($batchId) {
+            $withdrawQuery = WalletWithdrawService::getWithdrawRecords(compact('batchId'), 15, true);
+            $ids = $withdrawQuery->select('id')->get()->pluck('id');
+        }
+        WalletWithdrawService::paySuccess($ids);
+        return Result::success();
+    }
+
+    /**
+     * 打款失败操作 或者 批量打款失败操作
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function payFail()
+    {
+        $ids = request('ids');
+        $batchId = request('batchId');
+        $remark = request('remark');
+        if (empty($ids) && !$batchId) {
+            throw new ParamInvalidException('参数错误');
+        }
+        if ($batchId) {
+            $withdrawQuery = WalletWithdrawService::getWithdrawRecords(compact('batchId'), 15, true);
+            $ids = $withdrawQuery->select('id')->get()->pluck('id');
+        }
+        WalletWithdrawService::payFail($ids, $remark);
         return Result::success();
     }
 }

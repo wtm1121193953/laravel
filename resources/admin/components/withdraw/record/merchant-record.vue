@@ -84,8 +84,28 @@
                     <span v-if="scope.row.status == 1">审核中</span>
                     <span v-else-if="scope.row.status == 2">审核通过</span>
                     <span v-else-if="scope.row.status == 3">已打款</span>
-                    <span v-else-if="scope.row.status == 4">打款失败</span>
-                    <span v-else-if="scope.row.status == 5">审核不通过</span>
+                    <span v-else-if="scope.row.status == 4">
+                        打款失败
+                        <el-popover
+                            placement="top-start"
+                            title="备注"
+                            width="200"
+                            trigger="hover"
+                            :content="scope.row.remark">
+                            <div class="tips" slot="reference">{{scope.row.remark}}</div>
+                        </el-popover>
+                    </span>
+                    <span v-else-if="scope.row.status == 5">
+                        审核不通过
+                        <el-popover
+                            placement="top-start"
+                            title="备注"
+                            width="200"
+                            trigger="hover"
+                            :content="scope.row.remark">
+                            <div class="tips" slot="reference">{{scope.row.remark}}</div>
+                        </el-popover>
+                    </span>
                     <span v-else>未知({{scope.row.status}})</span>
                 </template>
             </el-table-column>
@@ -136,6 +156,8 @@
 
                 list: [],
                 tableLoading: false,
+
+                remark: '',
             }
         },
         methods: {
@@ -184,10 +206,43 @@
                 });
             },
             success(row) {
+                this.$confirm('<div class="tips">提现金额：'+row.amount+'</div><div>确定将这笔订单标记为打款成功！</div><div class="tips">请确认您已打过款</div>','打款成功提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true,
+                    dangerouslyUseHTMLString: true,
+                }).then(() => {
+                    api.post('/withdraw/record/paySuccess', {ids: row.id}).then(data => {
+                        this.$alert('操作成功');
+                        row.status = 3; // 已打款状态
+                    })
+                }).catch(() => {
 
+                })
             },
             failed(row) {
+                this.$prompt('<div>确定将这笔订单标记为打款失败！</div>','打款失败提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true,
+                    dangerouslyUseHTMLString: true,
+                    inputType: 'textarea',
+                    inputPlaceholder: '请填写失败原因，必填，最多50字',
+                    inputValidator: (val) => {if(val.length > 50) return '备注不能超过50个字'}
+                }).then((value) => {
+                    let param = {
+                        ids: row.id,
+                        remark: value,
+                    };
+                    api.post('/withdraw/record/payFail', param).then(data => {
+                        this.$alert('操作成功');
+                        row.status = 4; // 打款失败状态
+                    })
+                }).catch(() => {
 
+                })
             }
         },
         created() {
@@ -197,5 +252,9 @@
 </script>
 
 <style scoped>
-
+    .tips {
+        overflow: hidden;
+        text-overflow:ellipsis;
+        white-space: nowrap;
+    }
 </style>
