@@ -3,11 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Jobs\Schedule\SettlementAgentPayDaily;
-<<<<<<< HEAD
+
 use App\Jobs\Schedule\SettlementDaily;
-=======
+use App\Jobs\Schedule\SettlementWeekly;
+
 use App\Jobs\OrderFinishedJob;
->>>>>>> e5f562f396cf6a1b88658f4ea5601c94177302c4
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
@@ -62,7 +62,8 @@ class Test extends Command
      */
     public function handle()
     {
-
+        SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY);
+        dd('hi');
         SettlementDaily::dispatch(Carbon::today());
         dd(12);
         SettlementAgentPayDaily::dispatch();

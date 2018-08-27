@@ -58,16 +58,7 @@ class SettlementDaily implements ShouldQueue
             $merchants->each( function( $item ) use ( $date) {
                 SettlementForMerchantDaily::dispatch( $item->id, $date );
             });
-        });/*
-        DB::table('merchants')
-            ->join('opers', 'merchants.oper_id', '=', 'opers.id')
-            ->whereIn('opers.pay_to_platform', [ Oper::PAY_TO_PLATFORM_YES, Oper::PAY_TO_PLATFORM_YES2 ])
-            ->select('merchants.id')
-            ->chunk(100, function( $merchants ) use ( $date ) {
-                $merchants->each( function( $item ) use ( $date) {
-                    SettlementForMerchantDaily::dispatch( $item->id, $date );
-                });
-            });*/
+        });
         Log::info('每日结算任务完成');
     }
 }
