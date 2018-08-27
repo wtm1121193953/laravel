@@ -5,6 +5,7 @@ namespace App\Console\Commands\Updates;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderRefund;
+use App\Modules\UserCredit\UserCreditSettingService;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -42,6 +43,13 @@ class V1_4_2 extends Command
     public function handle()
     {
         //
+        // 初始化分润默认配置
+        UserCreditSettingService::set('fee_splitting_ratio_to_self', 5);
+        UserCreditSettingService::set('fee_splitting_ratio_to_parent_of_user', 20);
+        UserCreditSettingService::set('fee_splitting_ratio_to_parent_of_merchant_level_1', 20);
+        UserCreditSettingService::set('fee_splitting_ratio_to_parent_of_merchant_level_2', 25);
+        UserCreditSettingService::set('fee_splitting_ratio_to_parent_of_merchant_level_3', 30);
+        UserCreditSettingService::set('fee_splitting_ratio_to_parent_of_oper', 20);
         // 历史订单分润
         // 历史订单消费额转换
         // 补充退款中的退款单号
