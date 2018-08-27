@@ -62,13 +62,14 @@ class V1_4_2 extends Command
         // 1. 更新现有订单数据中的费率字段
         $this->info('更新现有订单数据中的费率字段 Start');
         $bar = $this->output->createProgressBar(Order::where('settlement_rate', 0)->count('id'));
-        Order::where('settlement_rate', 0)
-            ->chunk(1000, function ($list) use ($bar) {
+        Order::chunk(1000, function ($list) use ($bar) {
                 $list->each(function (Order $item) use ($bar) {
-                    $item->settlement_rate = MerchantService::getById($item->merchant_id, ['id', 'settlement_rate'])->settlement_rate;
-                    $item->save();
+                    if($item->settlement_rate == 0){
+                        $item->settlement_rate = MerchantService::getById($item->merchant_id, ['id', 'settlement_rate'])->settlement_rate;
+                        $item->save();
 
-                    $bar->advance();
+                        $bar->advance();
+                    }
                 });
             });
         $bar->finish();
