@@ -108,20 +108,21 @@
         data(){
             return {
                 isLoading: false,
-                industryOptions: [],
-                cityOptions: [],
                 query: {
                     startTime: '',
                     endTime: '',
                     id:'',
                     merchantName: '',
-                    merchant_category:'',
-                    cityId :'',
+                    //merchant_category:'',//自动生成的
+                    //cityId :'',//自动生成的
                     operId :'',
                     page: 1
                 },
                 list: [],
-                total: 0
+                total: 0,
+                areaOptions:[],
+                operOptions:[],
+                categoryOptions:[],
             }
         },
         computed: {
@@ -133,12 +134,14 @@
                  this.getList();
             },
             searchorders(merchant_id){
-                router.push({
-                    name: 'OrderList',
-                    params: {
-                        merchantId: merchant_id
-                    }
-                });
+                store.commit('setCurrentMenu', '/orders');
+                // router.push({
+                //     name: 'OrderList',
+                //     params: {
+                //         merchantId: merchant_id
+                //     }
+                // });
+                router.push({ path: '/orders', query: { merchantId: merchant_id }})
             },
             getList(){
                 this.isLoading = true;
@@ -165,23 +168,29 @@
             },
         },
         created(){
+            let _self = this;
+
+            //城市出来后如果有id就选上
             api.get('area/tree').then(data => {
-                this.areaOptions = data.list;
+                _self.areaOptions = data.list;
             });
-            this.areaOptions = [];
             
             api.get('merchant/opers/tree').then(data => {
-                this.operOptions = data.list;
+                _self.operOptions = data.list;
+                
+                
             });
-            this.operOptions = [];
             api.get('merchant/categories/tree').then(data => {
-                 this.categoryOptions = data.list;
+                 _self.categoryOptions = data.list;
              });
-             this.categoryOptions = [];
-             if (this.$route.params){
-                 Object.assign(this.query, this.$route.params);
+             if (_self.$route.params){
+                 Object.assign(_self.query, _self.$route.params);
              }
-             this.getList();
+            if (_self.$route.query) {
+                Object.assign(_self.query,_self.$route.query);
+                _self.query.operId = parseInt(_self.query.operId);
+            }
+            _self.getList();
         },
         components: {
 

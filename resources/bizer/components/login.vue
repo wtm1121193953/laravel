@@ -112,7 +112,7 @@
         <el-dialog title="忘记密码" :visible.sync="dialogForgetPassword" width="434px">
             <el-form :model="dialogForgetPasswordForm" ref="dialogForgetPasswordForm" :rules="dialogForgetPasswordFormRules" label-width="70px">
                 <el-form-item label="帐号" prop="account">
-                    <el-input type="text" v-model="dialogForgetPasswordForm.account" auto-complete="off" placeholder="请输入手机号"/>
+                    <el-input type="text" v-model="dialogForgetPasswordForm.mobile" auto-complete="off" placeholder="请输入手机号"/>
                 </el-form-item>
                 <el-form-item label="验证码" prop="verify_code">
                     <el-input type="text" v-model="dialogForgetPasswordForm.verify_code" auto-complete="off" placeholder="请输入验证码" class="w-180" maxlength="4"/>
@@ -194,11 +194,11 @@
                 dialogForgetPassword: false,
                 dialogSetPassword: false,
                 dialogForgetPasswordForm: {
-                    account: '',
+                    mobile: '',
                     verify_code: ''
                 },
                 dialogForgetPasswordFormRules:{
-                    account:[
+                    mobile:[
                         {validator: validateMobile, trigger: 'blur'}
                     ],
                     verify_code:[
@@ -236,7 +236,7 @@
                 _self.$refs.dialogForgetPasswordForm.validate(valid => {
                     if(valid){
                         _self.forgetPasswordLoading = true;
-                       api.get('', _self.dialogForgetPasswordForm).then(data => {
+                       api.get('/api/forgot_password', _self.dialogForgetPasswordForm).then(data => {
                            _self.dialogForgetPassword = false;
                             _self.dialogSetPassword = true;
                         }).catch(() => {
