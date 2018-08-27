@@ -163,7 +163,7 @@ class WalletWithdrawService extends BaseService
             $data->each(function($item) {
                 if ($item->origin_type == WalletWithdraw::ORIGIN_TYPE_USER) {
                     $user = UserService::getUserById($item->origin_id);
-                    $item->mobile = $user->mobile;
+                    $item->user_mobile = $user->mobile;
                 } elseif ($item->origin_type == WalletWithdraw::ORIGIN_TYPE_MERCHANT) {
                     $merchant = MerchantService::getById($item->origin_id);
                     $item->merchant_name = $merchant->name;

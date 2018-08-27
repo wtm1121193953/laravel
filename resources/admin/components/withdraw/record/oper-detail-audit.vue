@@ -20,10 +20,7 @@
                         <span v-else-if="data.bank_card_type == 2">个人</span>
                         <span v-else>未知</span>
                     </el-form-item>
-                    <el-form-item label="商户名称">
-                        {{data.merchant_name}}
-                    </el-form-item>
-                    <el-form-item label="商户所属运营中心">
+                    <el-form-item label="运营中心名称">
                         {{data.oper_name}}
                     </el-form-item>
                     <el-form-item label="提现状态">
@@ -61,11 +58,8 @@
                         <span v-else-if="data.bank_card_type == 2">无需发票</span>
                         <span v-else>未知</span>
                     </el-form-item>
-                    <el-form-item label="商户ID">
-                        {{data.origin_id}}
-                    </el-form-item>
                     <el-form-item label="运营中心ID">
-                        {{data.oper_id}}
+                        {{data.origin_id}}
                     </el-form-item>
                     <el-form-item label="备注">
                         {{data.remark}}
@@ -195,13 +189,13 @@
                 this.goBack();
             }
             if (this.audit) {
-                this.pageTitle = '商户提现审核';
+                this.pageTitle = '运营中心提现审核';
                 if (!this.type) {
                     this.$message.error('批次类型不能为空');
                     this.goBack();
                 }
             } else {
-                this.pageTitle = '商户提现明细';
+                this.pageTitle = '运营中心提现明细';
             }
             this.getDetail();
             this.getBatchList();

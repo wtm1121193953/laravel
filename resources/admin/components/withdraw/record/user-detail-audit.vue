@@ -15,16 +15,8 @@
                     <el-form-item label="账户名">
                         {{data.bank_card_open_name}}
                     </el-form-item>
-                    <el-form-item label="账户类型">
-                        <span v-if="data.bank_card_type == 1">公司</span>
-                        <span v-else-if="data.bank_card_type == 2">个人</span>
-                        <span v-else>未知</span>
-                    </el-form-item>
-                    <el-form-item label="商户名称">
-                        {{data.merchant_name}}
-                    </el-form-item>
-                    <el-form-item label="商户所属运营中心">
-                        {{data.oper_name}}
+                    <el-form-item label="提现用户手机号码">
+                        {{data.user_mobile}}
                     </el-form-item>
                     <el-form-item label="提现状态">
                         <span v-if="data.status == 1">审核中</span>
@@ -54,18 +46,10 @@
                     <el-form-item label="开户行">
                         {{data.bank_name}}
                     </el-form-item>
-                    <el-form-item label="发票快递信息">
-                        <span v-if="data.bank_card_type == 1">
-                            {{data.invoice_express_company}}/{{data.invoice_express_no}}
-                        </span>
-                        <span v-else-if="data.bank_card_type == 2">无需发票</span>
+                    <el-form-item label="账户类型">
+                        <span v-if="data.bank_card_type == 1">公司</span>
+                        <span v-else-if="data.bank_card_type == 2">个人</span>
                         <span v-else>未知</span>
-                    </el-form-item>
-                    <el-form-item label="商户ID">
-                        {{data.origin_id}}
-                    </el-form-item>
-                    <el-form-item label="运营中心ID">
-                        {{data.oper_id}}
                     </el-form-item>
                     <el-form-item label="备注">
                         {{data.remark}}
@@ -195,13 +179,13 @@
                 this.goBack();
             }
             if (this.audit) {
-                this.pageTitle = '商户提现审核';
+                this.pageTitle = '用户提现审核';
                 if (!this.type) {
                     this.$message.error('批次类型不能为空');
                     this.goBack();
                 }
             } else {
-                this.pageTitle = '商户提现明细';
+                this.pageTitle = '用户提现明细';
             }
             this.getDetail();
             this.getBatchList();
