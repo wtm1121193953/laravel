@@ -17,7 +17,6 @@ class ReapalPay
     protected $reapalPublicKey;
     protected $apiKey;
     protected $dsfUrl;
-    protected $notify_url;
     protected $charset;
     protected $dsf_sign_type;
     protected $dsfVersion;
@@ -41,7 +40,6 @@ class ReapalPay
 
         $this->apiKey   = config('reapal.apiKey');
         $this->dsfUrl   = config('reapal.dsfUrl');
-        $this->notify_url   = config('reapal.notify_url');
         $this->charset   = config('reapal.charset');
         $this->dsf_sign_type   = config('reapal.dsf_sign_type');
         $this->dsfVersion   = config('reapal.dsf_version');
@@ -54,23 +52,23 @@ class ReapalPay
     /**
      * 代付提交
      */
-    public function agentpay()
+    public function agentpay($batch_no,$batch_count,$batch_amount,$content)
     {
         $reapalMap = new ReapalUtils();
 
         $nowTime = Carbon::now();
 
-        $merchantId = request('merchat_id')?request('merchat_id'):$this->merchantId;
+        $merchantId = $this->merchantId;
 
         $paramArr = array(
             'charset' => $this->charset,
-            'notify_url' => $this->notify_url,
+            'notify_url' => url('/pay/reapalPayNotify'),
             'trans_time' => $nowTime,
-            'batch_no' => request('batch_no'),
-            'batch_count' => request('batch_count'),
-            'batch_amount' => request('batch_amount'),
-            'pay_type' => request('pay_type'),
-            'content' => request('content'),
+            'batch_no' => $batch_no,
+            'batch_count' => $batch_count,
+            'batch_amount' => $batch_amount,
+            'pay_type' => 1,
+            'content' => $content,
         );
 
         $url = $this->dsfUrl.'agentpay/pay';
@@ -161,7 +159,7 @@ class ReapalPay
      */
     public function prepay()
     {
-        $merchantId = request('merchat_id')?request('merchat_id'):$this->merchantId;
+        $merchantId = $this->merchantId;
         //参数数组
         $paramArr = [
 

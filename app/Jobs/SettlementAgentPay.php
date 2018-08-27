@@ -6,6 +6,7 @@ use App\Exceptions\BaseResponseException;
 use App\Modules\Settlement\SettlementPayBatch;
 use App\Modules\Settlement\SettlementPlatform;
 use App\Modules\Settlement\SettlementPlatformService;
+use App\Support\ReapalPay;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -35,25 +36,41 @@ class SettlementAgentPay implements ShouldQueue
     public function handle()
     {
         //打款批次号
-        $batch_no = $this->genOrderNo();
+        $batch_no = SettlementPlatformService::genSettlementNo();
         //批次总数量
         $batch_count = count($this->settlementIds);
         //批次总金额(商家实际收到的金额)
         $batch_amount = SettlementPlatformService::getAmountById($this->settlementIds);
 
-        /*$contArr = [];
+        foreach ($this->settlementIds as $key => $val) {
+            $settlement = SettlementPlatform::with('merchant:id,bank_card_type')->findOrFail($val);
+
+            //更新打款状态为已打款、更新批次号
+            $settlement->status = 2;
+            $settlement->pay_batch_no = $batch_no;
+            $settlement->save();
+
+        }
+        $res = new SettlementPayBatch();
+        $res->batch_no = $batch_no;
+        $res->batch_count = $batch_count;
+        $res->batch_amount = $batch_amount;
+        $res->save();
+
+        //发起支付
+        $contArr = [];
         foreach ($this->settlementIds as $key => $val) {
             //$data = SettlementPlatformService::getListById($val);
             $settlement = SettlementPlatform::with('merchant:id,bank_card_type')->findOrFail($val);
             if($settlement){
                 $content = [
-                    'cid' => $key,
+                    'cid' => $settlement->id,
                     'bank_card_no' => $settlement->bank_card_no,
                     'bank_open_name' => $settlement->bank_open_name,
                     'sub_bank_name' => $settlement->sub_bank_name,
                     'bank_open_address' => $settlement->bank_open_address,
                     'bank_open_address_branch' => '',
-                    'bank_public_or_private' => $settlement->bank_card_type == 1 ? '公' : $settlement->bank_card_type == 2 ? '私':'',
+                    'bank_public_or_private' => $settlement->bank_card_type == 1 ? '公' : '私',
                     'real_amount' => $settlement->real_amount,
                     'currency' => '',
                     'bank_province' => '',
@@ -71,38 +88,10 @@ class SettlementAgentPay implements ShouldQueue
                 array_push($contArr,implode(',',$res[1]));
 
             }
-            //更新打款状态为已打款
-            $settlement->status = 2;
-            $settlement->save();
             $content = implode('|',$contArr);
-        }*/
-
-        foreach ($this->settlementIds as $key => $val) {
-            $settlement = SettlementPlatform::with('merchant:id,bank_card_type')->findOrFail($val);
-
-            //更新打款状态为已打款、更新批次号
-            $settlement->status = 2;
-            $settlement->pay_batch_no = $batch_no;
-            $settlement->save();
-
         }
-        $res = new SettlementPayBatch();
-        $res->batch_no = $batch_no;
-        $res->batch_count = $batch_count;
-        $res->batch_amount = $batch_amount;
-        $res->save();
+        $reapal =  new ReapalPay();
+        $reapal->agentpay($batch_no,$batch_count,$batch_amount,$content);
 
-    }
-
-    private function genOrderNo($retry = 100)
-    {
-        if($retry == 0){
-            throw new BaseResponseException('订单号生成已超过最大重试次数');
-        }
-        $orderNo = date('ymd') . explode(' ', microtime())[0] * 1000000 . rand(1000, 9999);
-        if(SettlementPayBatch::where('batch_no', $orderNo)->first()){
-            $orderNo = $this->genOrderNo(--$retry);
-        }
-        return $orderNo;
     }
 }
