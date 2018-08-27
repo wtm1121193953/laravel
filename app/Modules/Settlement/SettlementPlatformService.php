@@ -48,6 +48,29 @@ class SettlementPlatformService extends BaseService
     }
 
     /**
+     * 通过id获取结算单列表
+     * @param $id
+     * @return SettlementPlatform
+     */
+    public static function getListById($id)
+    {
+        $data = SettlementPlatform::with('merchant:id,bank_card_type')->where('id', $id);
+        return $data;
+    }
+
+    /**
+     * 通过id获取结算单总金额
+     * @param $ids
+     * @return int
+     */
+    public static function getAmountById($ids)
+    {
+        $data = SettlementPlatform::whereIn('id', $ids)->sum('real_amount');
+        return $data;
+    }
+
+
+    /**
      * SAAS获取结算单列表【新】
      * @param array $params
      * @param bool $return_query
