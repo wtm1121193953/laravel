@@ -89,16 +89,21 @@ class SettlementForMerchant implements ShouldQueue
             ->chunk(1000, function (Collection $orders) use ($merchant, $settlement){
                 $orders->each(function($item) use ($merchant, $settlement){
 
-                    $settlement->amount += $item->pay_price;
+                    // ChangeByJerry Date:180827 结算金额统计在订单内
 
-                    $item->settlement_status = 2;
+                    $item->settlement_charge_amount = $item->pay_price * $item->settlement_rate / 100;  // 手续费
+                    $item->settlement_real_amount = $item->pay_price - $item->settlement_charge_amount;   // 货款
+                    $item->settlement_status = Order::SETTLEMENT_STATUS_FINISHED;
                     $item->settlement_id = $settlement->id;
                     $item->save();
+
+                    // 结算实收金额
+                    $settlement->amount += $item->pay_price;
+                    $settlement->charge_amount += $item->settlement_real_amount;
+                    $settlement->real_amount += $item->settlement_real_amount;
                 });
             });
 
-        $settlement->charge_amount = $settlement->amount * 1.0 * $settlement->settlement_rate / 100;
-        $settlement->real_amount = $settlement->amount - $settlement->charge_amount;
         $settlement->save();
     }
 }
