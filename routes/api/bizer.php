@@ -12,7 +12,8 @@ Route::prefix('bizer')
         Route::post('login', 'SelfController@login');
         Route::post('logout', 'SelfController@logout');
         Route::post('register', 'SelfController@register');
-//        Route::post('self/modifyPassword', 'SelfController@modifyPassword');
+        Route::post('forgot_password', 'SelfController@forgotPassword');
+        
         Route::get('merchants', 'MerchantController@getList');
         Route::get('sms/getVerifyCode', 'SmsController@sendVerifyCode');
         Route::get('merchant/categories/tree', 'MerchantController@getTree');

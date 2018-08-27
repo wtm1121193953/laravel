@@ -108,8 +108,6 @@
         data(){
             return {
                 isLoading: false,
-                industryOptions: [],
-                cityOptions: [],
                 query: {
                     startTime: '',
                     endTime: '',
