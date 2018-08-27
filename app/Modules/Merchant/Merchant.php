@@ -4,6 +4,7 @@ namespace App\Modules\Merchant;
 
 use App\BaseModel;
 use App\Modules\Area\Area;
+use App\Modules\Oper\Oper;
 use Carbon\Carbon;
 
 /**
@@ -134,6 +135,11 @@ class Merchant extends BaseModel
     public static function getLevelText($level)
     {
         return ['', '签约商户', '联盟商户', '品牌商户'][$level];
+    }
+
+    public function oper()
+    {
+        return $this->belongsTo(Oper::class);
     }
 
     /**
