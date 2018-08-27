@@ -23,6 +23,7 @@ use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
+use App\Modules\Order\OrderService;
 use App\Modules\Setting\SettingService;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
@@ -152,8 +153,9 @@ class OrderController extends Controller
         if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
             if($currentOperId == 0){ // 在平台小程序下
                 // 调平台支付, 走融宝支付接口
-                $isOperSelf = 1;
-                $sdkConfig = null; // 走融宝支付接口
+                $isOperSelf = 2;
+                $sdkConfig = null; // todo 走融宝支付接口
+                OrderService::paySuccess($orderNo, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
             }else {
                 $isOperSelf = 0;
                 $sdkConfig = null;

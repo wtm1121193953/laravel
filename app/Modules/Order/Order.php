@@ -57,6 +57,7 @@ class Order extends BaseModel
      */
     const PAY_TYPE_WECHAT = 1; // 微信支付
     const PAY_TYPE_ALIPAY = 2; // 支付宝支付
+    const PAY_TYPE_REAPAL = 3; // 融宝支付
 
     /**
      * 支付目标类型

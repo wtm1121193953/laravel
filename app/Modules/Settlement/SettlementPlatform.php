@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property number amount
  * @property number charge_amount
  * @property number real_amount
+ * @property integer bank_card_type
  * @property string bank_open_name
  * @property string bank_card_no
  * @property string sub_bank_name
@@ -36,6 +37,11 @@ use Illuminate\Support\Carbon;
 class SettlementPlatform extends BaseModel
 {
     //
+    const STATUS_UN_PAY = 1;
+    const STATUS_PAYING = 2;
+    const STATUS_PAID = 3;
+    const STATUS_INTO_ACCOUNT = 4;
+    const STATUS_FAIL = 5;
     //
     public function merchant()
     {

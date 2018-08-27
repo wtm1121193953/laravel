@@ -35,6 +35,7 @@
     import api from '../../../assets/js/api'
 
     export default {
+        name: "settlement-detail",
         props: {
             scope: {type: Object, required: true}
         },
@@ -52,7 +53,7 @@
         },
         methods: {
             getSettlementOrders() {
-                api.get('/getSettlementOrders', this.query).then(data => {
+                api.get('/getPlatformOrders', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                 })

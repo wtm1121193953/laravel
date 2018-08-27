@@ -87,5 +87,18 @@ class SettlementPlatformController extends Controller
         return (new SettlementPlatformExport($query))->download('结算报表.xlsx');
     }
 
+    public function getSettlementOrders()
+    {
+//        var_dump(request()->get('current_user')->id);
+        $settlementId   = request()->get('settlement_id');
+        $merchantId     = request()->get('merchant_id');
+        $settlement = SettlementPlatformService::getByIdAndMerchantId($settlementId, $merchantId);
+        if(empty($settlement)){
+            throw new DataNotFoundException('结算单不存在');
+        }
+        $MerchantContorller = new \App\Http\Controllers\Merchant\SettlementPlatformController();
+        return $MerchantContorller->getOrdersByService( $settlementId );
+    }
+
 
 }
