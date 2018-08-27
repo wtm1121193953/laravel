@@ -11,6 +11,7 @@ namespace App\Modules\Order;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use App\Jobs\OrderFinishedJob;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
@@ -167,6 +168,7 @@ class OrderService extends BaseService
             $order->status = Order::STATUS_FINISHED;
             $order->finish_time = Carbon::now();
             $order->save();
+            OrderFinishedJob::dispatch($order);
             return $order;
         }else{
             throw new BaseResponseException('该订单已退款，不能核销');

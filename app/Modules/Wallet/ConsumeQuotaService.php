@@ -10,6 +10,7 @@ use App\Modules\Order\OrderService;
 use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserCreditSettingService;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 /**
  * 消费额相关service
@@ -34,16 +35,25 @@ class ConsumeQuotaService extends BaseService
     /**
      * 添加自己的消费额
      * @param Order $order
+     * @throws \Exception
      */
     public static function addFreezeConsumeQuotaToSelf(Order $order)
     {
         // 1. 添加冻结中的消费额
         $user = UserService::getUserById($order->user_id);
         $wallet = WalletService::getWalletInfo($user);
-        $wallet->freeze_consume_quota = $wallet->freeze_consume_quota + $order->pay_price;
-        $wallet->save();
-        // 2. 添加消费额记录
-        self::createWalletConsumeQuotaRecord($order, $wallet, WalletConsumeQuotaRecord::TYPE_SELF);
+        DB::beginTransaction();
+        try {
+            $wallet->freeze_consume_quota = $wallet->freeze_consume_quota + $order->pay_price;
+            $wallet->save();
+            // 2. 添加消费额记录
+            self::createWalletConsumeQuotaRecord($order, $wallet, WalletConsumeQuotaRecord::TYPE_SELF);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     /**

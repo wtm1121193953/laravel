@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Jobs\OrderFinishedJob;
 use App\Jobs\OrderPaidJob;
 use App\Modules\Goods\Goods;
 use App\Modules\Dishes\DishesItem;
@@ -140,6 +141,9 @@ class PayController extends Controller
                 $orderPay->save();
 
                 OrderPaidJob::dispatch($order);
+                if($order->status == Order::STATUS_FINISHED){
+                    OrderFinishedJob::dispatch($order);
+                }
                 DB::commit();
             }catch (\Exception $e){
                 DB::rollBack();
