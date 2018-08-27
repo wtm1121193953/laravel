@@ -1,7 +1,7 @@
 <template>
 <template>
 
-    <page :title="'业务-' + operBizMember.name" :breadcrumbs="{我的员工: '/operBizMembers'}" v-loading="isLoading">
+    <page :title="'业务-' + operBizMember.name" :breadcrumbs="{我的业务员: '/operBizMembers'}" v-loading="isLoading">
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加商户时间"/>
             <el-table-column prop="audit_done_time" label="商户审核通过时间"/>
