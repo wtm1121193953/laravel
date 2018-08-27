@@ -27,7 +27,7 @@
 
 <script>
     export default {
-        name: "oper-biz-member-merchants",
+        // name: "oper-biz-member-merchants",
         data() {
             return {
                 isLoading: false,
