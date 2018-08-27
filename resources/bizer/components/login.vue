@@ -262,7 +262,6 @@
             setPassword(){
                 let _self = this;
                 _self.$refs.dialogSetPasswordForm.validate(valid => {
-                    console.log(valid)
                     if(valid){
                         let params = _self.dialogForgetPasswordForm;
                         Object.assign(params, this.dialogSetPasswordForm);
