@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\Schedule\SettlementAgentPayDaily;
+use App\Jobs\OrderFinishedJob;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
@@ -12,6 +13,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
+use App\Modules\Order\OrderService;
 use App\Modules\Settlement\Settlement;
 use App\Modules\Sms\SmsService;
 use App\Modules\User\User;
@@ -58,6 +60,12 @@ class Test extends Command
     {
         SettlementAgentPayDaily::dispatch();
         dd(123);
+        $order = OrderService::getById(174);
+        OrderFinishedJob::dispatch($order);
+        dd('ok');
+        dd(date('Ymd') .substr(time(), -7, 7). str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT));
+
+
         $url = 'http://yunjipin-o2o.com/storage/miniprogram/app_code/_123_375.jpg';
         WechatService::addNameToAppCode($url, '招牌名称哈哈哈哈哈哈哈哈哈哈');
         dd(pathinfo($url, PATHINFO_BASENAME));

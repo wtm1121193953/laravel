@@ -119,6 +119,12 @@ class Merchant extends BaseModel
     const STATUS_ON = 1;
     const STATUS_OFF = 2;
 
+    /**
+     * 银行账户类型 1-公司账户 2-个人账户
+     */
+    const BANK_CARD_TYPE_COMPANY = 1;
+    const BANK_CARD_TYPE_PEOPLE = 2;
+
 
     /**
      * 获取商户等级描述

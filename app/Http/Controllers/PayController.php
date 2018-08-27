@@ -13,6 +13,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
+use App\Jobs\OrderFinishedJob;
 use App\Jobs\OrderPaidJob;
 use App\Modules\Goods\Goods;
 use App\Modules\Dishes\DishesItem;
@@ -52,7 +53,7 @@ class PayController extends Controller
 
             $page = request('page', 'pages/severs/index/index');
 
-            $order = OrderService::getinfoByOrderNo($orderNo);
+            $order = OrderService::getInfoByOrderNo($orderNo);
             if(empty($order)){
                 throw new DataNotFoundException('订单信息不存在');
             }
@@ -128,6 +129,7 @@ class PayController extends Controller
 
     /**
      * 本地模拟支付成功
+     * @throws Exception
      */
     public function mockPaySuccess()
     {

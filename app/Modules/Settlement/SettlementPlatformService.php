@@ -172,7 +172,7 @@ class SettlementPlatformService extends BaseService
             // 统计订单总金额与改变每笔订单状态
             Order::where('merchant_id', $merchant->id)
                 ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
-                ->where('', Order::STATUS_FINISHED )
+                ->where('status', Order::STATUS_FINISHED )
                 ->whereDate('finish_time', $date->format('Y-m-d'))
                 ->chunk(1000, function( Collection $orders ) use( $merchant, $settlementPlatform ){
                     $orders->each( function( $item) use ( $merchant, $settlementPlatform ){

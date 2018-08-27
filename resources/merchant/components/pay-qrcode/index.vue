@@ -39,7 +39,7 @@
         },
         methods: {
             download(type){
-                location.href = '/download?code=merchant_pay_app_code&type=' + type + '&merchantId=' + this.user.merchant_id
+                location.href = '/api/download?code=merchant_pay_app_code&type=' + type + '&merchantId=' + this.user.merchant_id
             },
             init(){
                 api.get('/pay/qrcode/miniprogramQrcode').then(data => {
