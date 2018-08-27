@@ -25,9 +25,9 @@
             <el-form-item prop="order_type" label="订单类型">
                 <el-select v-model="query.order_type" class="w-100" clearable>
                     <el-option label="全部" value=""/>
-                    <el-option label="团购" :value="1"/>
-                    <el-option label="买单" :value="2"/>
-                    <el-option label="单品" :value="3"/>
+                    <el-option label="团购订单" :value="1"/>
+                    <el-option label="扫码买单" :value="2"/>
+                    <el-option label="单品订单" :value="3"/>
                 </el-select>
             </el-form-item>
             <el-form-item prop="goodsName" label="商品名称">
@@ -101,12 +101,13 @@
                     <dd v-else class="c-danger">订单类型：未知</dd>
                     
                     <dd>商户名称：{{detailOption.merchant_name}}</dd>
-                    <template v-if="detailOption.type== 1 || detailOption.type== 3">    
-                        <dd>单价：{{detailOption.price}}元</dd>
-                        <dd>总价：{{detailOption.pay_price}}元</dd>
+                    <template v-if="detailOption.type== 1">    
                         <dd>身份：{{detailOption.merchant_name}}</dd>
                     </template>
-                    
+                    <template v-if="detailOption.type== 1 || detailOption.type== 3">    
+                        <dd>单价：{{detailOption.price}}元</dd>
+                    </template>
+                    <dd>总价：{{detailOption.pay_price}}元</dd>
                     <dd v-if="parseInt(detailOption.status) === 1">订单状态：未支付</dd>
                     <dd v-else-if="parseInt(detailOption.status) === 2">订单状态：已取消</dd>
                     <dd v-else-if="parseInt(detailOption.status) === 3">订单状态：已关闭[超时自动关闭]</dd>
@@ -119,19 +120,23 @@
                 </dl>
                 <dl>
                     <dd>订单号：{{detailOption.order_no}}</dd>
-                    <template v-if="detailOption.type== 1 || detailOption.type== 3">
+                    <template v-if="detailOption.type== 1">
                         <dd>商品名称：{{detailOption.goods_name}}</dd>
                     </template>
-                    <dd>数量：{{detailOption.buy_number}}</dd>
+                    <template v-if="detailOption.type== 1 || detailOption.type== 2">
+                        <dd>数量：{{detailOption.buy_number}}</dd>
+                    </template>
                     <dd>手机号：{{detailOption.notify_mobile}}</dd>
                     <!--<dd>返利积分：20</dd>-->
                     <dd>订单创建时间：{{detailOption.created_at}}</dd>
-                    <!-- <dd>
-                        <p>商品信息：</p>
-                        <p class="clearfix"><span class="fl">我是宇宙牛逼店铺的商品名</span><span class="fr">100¥</span></p>
-                        <p class="clearfix"><span class="fl">我是宇宙牛逼店铺的商品名</span><span class="fr">100¥</span></p>
-                        <p class="clearfix"><span class="fl">我是宇宙牛逼店铺的商品名</span><span class="fr">100¥</span></p>
-                    </dd> -->
+                    <template v-if="detailOption.type== 3">
+                        <dd>
+                            <p>商品信息：</p>
+                            <p class="clearfix"><span class="fl">我是宇宙牛逼店铺的商品名</span><span class="fr">100¥</span></p>
+                            <p class="clearfix"><span class="fl">我是宇宙牛逼店铺的商品名</span><span class="fr">100¥</span></p>
+                            <p class="clearfix"><span class="fl">我是宇宙牛逼店铺的商品名</span><span class="fr">100¥</span></p>
+                        </dd>
+                    </template>
                 </dl>
             </div>
         </el-dialog>
