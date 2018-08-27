@@ -3,9 +3,9 @@
 return [
 
     //测试商户ID
-    'merchant_id' => '100000000000147',
+    'merchant_id' => env('MERCHANT_ID'),
     //测试商户邮箱
-    'seller_email' => '850138237@qq.com',
+    'seller_email' => env('SELLER_EMAIL'),
 
     //商户私钥
     'merchantPrivateKey' => resource_path('reapal/cert/itrus001_pri.pem'),
