@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands\Updates;
 
+use App\Modules\Merchant\MerchantService;
+use App\Modules\Order\Order;
 use App\Modules\Order\OrderRefund;
-use App\Modules\Order\OrderService;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class V1_4_2 extends Command
@@ -50,5 +50,20 @@ class V1_4_2 extends Command
                 $item->refund_no = 'R' . $item->created_at->format('YmdHis') . rand(1000, 9999);
             });
         });
+
+        // 1. 更新现有订单数据中的费率字段
+        $this->info('更新现有订单数据中的费率字段 Start');
+        $bar = $this->output->createProgressBar(Order::where('settlement_rate', 0)->count('id'));
+        Order::where('settlement_rate', 0)
+            ->chunk(1000, function ($list) use ($bar) {
+                $list->each(function (Order $item) use ($bar) {
+                    $item->settlement_rate = MerchantService::getById($item->merchant_id, ['id', 'settlement_rate'])->settlement_rate;
+                    $item->save();
+
+                    $bar->advance();
+                });
+            });
+        $bar->finish();
+        $this->info("\n更新现有订单数据中的费率字段 Finished");
     }
 }
