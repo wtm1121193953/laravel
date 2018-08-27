@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\Schedule\SettlementAgentPayDaily;
+use App\Jobs\Schedule\SettlementDaily;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
@@ -56,6 +57,9 @@ class Test extends Command
      */
     public function handle()
     {
+
+        SettlementDaily::dispatch(Carbon::today());
+        dd(12);
         SettlementAgentPayDaily::dispatch();
         dd(123);
         $url = 'http://yunjipin-o2o.com/storage/miniprogram/app_code/_123_375.jpg';

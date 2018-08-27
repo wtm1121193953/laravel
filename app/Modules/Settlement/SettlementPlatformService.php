@@ -15,6 +15,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\Types\Boolean;
 use tests\Mockery\Adapter\Phpunit\EmptyTestCase;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Collection;
 
 
 class SettlementPlatformService extends BaseService
@@ -121,14 +124,13 @@ class SettlementPlatformService extends BaseService
     public static function settlement( $merchant, $date )
     {
         // 生成结算单，方便之后结算订单中保存结算信息
-        $settlementNum = self::settlementNo(10);
+        $settlementNum = self::genSettlementNo(10);
         if( !$settlementNum ) return false;
         $saveData= [
-            'open_id'           => $merchant->oper_id,
-            'merchant_id'       => $merchant->merchantId,
-            'settlement_date'   => Carbon::now(),
+            'oper_id'           => $merchant->oper_id,
+            'merchant_id'       => $merchant->id,
+            'date'              => Carbon::now(),
             'settlement_no'     => $settlementNum,
-            'settlement_cycle_type' => $merchant->settlement_cycle_type,
             'settlement_rate'   => $merchant->settlement_rate,
             'bank_open_name'    => $merchant->bank_open_name,
             'bank_card_no'      => $merchant->bank_card_no,
@@ -140,20 +142,20 @@ class SettlementPlatformService extends BaseService
             'charge_amount'     => 0,
             'real_amount'       => 0,
         ];
-        
+
         $settlementPlatform = new SettlementPlatform( $saveData );
+
         // 开启事务
         DB::beginTransaction();
         try{
             $settlementPlatform->save();
             // 统计订单总金额与改变每笔订单状态
             Order::where('merchant_id', $merchant->id)
-                ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
+                ->where('settlement_status', Order::SETTLEMENT_STATUS_FINISHED )
                 ->where('status', Order::STATUS_FINISHED )
                 ->whereDate('finish_time', $date->format('Y-m-d'))
                 ->chunk(1000, function( Collection $orders ) use( $merchant, $settlementPlatform ){
-                    $orders->each( function( $item) use ( $merchant, $settlementPlatform ){
-
+                    $orders->each( function( $item ) use ( $merchant, $settlementPlatform ){
                         $item->settlement_charge_amount = $item->pay_price * $item->settlement_rate / 100;  // 手续费
                         $item->settlement_real_amount = $item->pay_price - $item->settlement_charge_amount;   // 货款
                         $item->settlement_status = Order::SETTLEMENT_STATUS_FINISHED;
@@ -162,9 +164,8 @@ class SettlementPlatformService extends BaseService
 
                         // 结算实收金额
                         $settlementPlatform->amount += $item->pay_price;
-                        $settlementPlatform->charge_amount += $item->settlement_real_amount;
+                        $settlementPlatform->charge_amount += $item->settlement_charge_amount;
                         $settlementPlatform->real_amount += $item->settlement_real_amount;
-
                     });
                 });
 
@@ -173,6 +174,8 @@ class SettlementPlatformService extends BaseService
             return true;
         }catch (\Exception $e) {
             DB::rollBack();
+//            var_dump($e);
+            Log::info('该商家每日结算错误，错误原因：'.$e->getMessage());
             return false;
         }
     }
