@@ -38,7 +38,8 @@
                 <el-select v-model="query.status" class="w-100">
                     <el-option label="全部" value=""/>
                     <el-option label="正常" value="1"/>
-                    <el-option label="申请中" value="2"/>
+                    <el-option label="拒绝" value="-1"/>
+                    <el-option label="申请中" value="0"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -60,17 +61,22 @@
                     <span> {{ scope.row.operInfo.city }} </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="divide" label="我的分成"/>
+            <el-table-column prop="divide" label="我的分成">
+                <template slot-scope="scope">
+                    <span>{{scope.row.divide * 100}}%</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="status" label="合作状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1">正常</span>
-                    <span v-else-if="scope.row.status === 2" class="c-danger">申请中</span>
+                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
+                    <span v-else-if="scope.row.status === 0" class="c-warning">申请中</span>
+                    <span v-else-if="scope.row.status === -1" class="c-danger">拒绝</span>
                 </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
                     <el-button @click="toMerchants(scope.row.id)" type="text">查看商户</el-button>
-                    <el-button type="text" @click="contract">查看合同</el-button>
+                    <!-- <el-button type="text" @click="contract">查看合同</el-button> -->
                 </template>
             </el-table-column>
         </el-table>
@@ -104,7 +110,7 @@
             合同内容
         </el-dialog>
 
-        <el-dialog title="提示" :visible.sync="dialogPromptVisible" width="30%">
+        <el-dialog title="提示" :visible.sync="dialogPromptVisible" width="30%" @closed="closeDialogPrompt">
             <el-form label-width="110px">
                 <el-form-item label="运营中心名称：">
                     大千互娱深圳运营中心
@@ -218,6 +224,10 @@
                 store.commit('setCurrentMenu', '/merchants');
                 router.push({ path: '/merchants', query: { operId: oper_id }})
             },
+            closeDialogPrompt(){
+                //关闭弹窗事件
+                this.dialogPromptVisible = true;
+            }
         },
         created(){
             let _self = this;

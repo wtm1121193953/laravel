@@ -55,7 +55,7 @@
             </el-form-item>
             <el-form-item label="所属运营中心">
                 <el-select v-model="query.operId" filterable clearable >
-                    <el-option v-for="item in operOptions" :key="item.oper_id" :value="item.oper_id" :label="item.operName"/>
+                    <el-option v-for="item in operOptions" :key="item.id" :value="item.oper_id" :label="item.operName"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -188,7 +188,7 @@
              }
             if (_self.$route.query) {
                 Object.assign(_self.query,_self.$route.query);
-                _self.query.operId = parseInt(_self.query.operId);
+                _self.$route.query.operId ? _self.query.operId = parseInt(_self.query.operId):'';
             }
             _self.getList();
         },

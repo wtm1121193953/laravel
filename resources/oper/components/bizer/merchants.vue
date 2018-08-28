@@ -1,5 +1,5 @@
 <template>
-    <page :title="'业务-' + operBizMember.name" :breadcrumbs="{我的员工: '/operBizMembers'}" v-loading="isLoading">
+    <page :title="'业务-' + operBizMember.name" :breadcrumbs="{我的业务员: '/operBizMembers'}" v-loading="isLoading">
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加商户时间"/>
             <el-table-column prop="audit_done_time" label="商户审核通过时间"/>
@@ -25,14 +25,21 @@
 
 <script>
     export default {
-        name: "oper-biz-member-merchants",
+        // name: "oper-biz-member-merchants",
         data() {
             return {
                 isLoading: false,
                 query: {
                     page: 1,
                 },
-                list: [],
+                list: [
+                    {
+                        created_at: '2018',
+                        audit_done_time: '2018',
+                        name: '一个名词',
+                        status: 1,
+                    }
+                ],
                 total: 0,
                 operBizMember: {},
             }

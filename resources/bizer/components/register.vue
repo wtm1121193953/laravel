@@ -110,6 +110,7 @@
     import api from '../../assets/js/api'
     import THREE from '../../assets/js/three/three';
     import {mapState} from 'vuex'
+    
     export default {
         data(){
             var validatePass = (rule, value, callback) => {        
@@ -123,10 +124,10 @@
             };
             var validateMobile = (rule, value, callback) => {            
                 if (value === '') {
-                    callback(new Error('请输入帐号'));
+                    callback(new Error('请输入手机号'));
                     this.mobileValidate = false;
                   } else if (!/^1[3|4|5|7|8][0-9]\d{8}$/.test(value)) {
-                    callback(new Error('帐号格式错误'));
+                    callback(new Error('手机号格式错误'));
                     this.mobileValidate = false;
                   } else {
                     callback();
@@ -146,7 +147,7 @@
                     ],
                     verify_code: [
                         {required: true, message: '请输入验证码', trigger: 'blur'},
-                        { min: 4, max: 6, message: '请输入4位验证码', trigger: 'blur' }
+                        {min: 4, max: 6, message: '请输入4位验证码', trigger: 'blur'}
                     ],
                     password: [
                         {required: true, message: '请输入密码', trigger: 'blur'}
