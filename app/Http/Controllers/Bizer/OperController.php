@@ -49,9 +49,22 @@ class OperController extends Controller {
                     'status' => $status
         ]);
 
+        $tips = [];
+
+        $data->each(function ($item) use (&$tips) {
+            if($item->status == -1 && $item->is_tips == 0 && $item->note){
+                $tips[] = [
+                    'operName' => $item->operInfo->name,
+                    'note' => $item->note,
+                ];
+            }
+            OperBizerService::updateIsTipsById($item->id);
+        });
+        
         return Result::success([
                     'list' => $data->items(),
                     'total' => $data->total(),
+                    'tips' => $tips
         ]);
     }
 
@@ -77,23 +90,23 @@ class OperController extends Controller {
     public function add() {
         $this->validate(request(), [
             'oper_id' => 'required',
-            // 'remark' => 'required'
+                // 'remark' => 'required'
         ]);
 
         $operId = request('oper_id');
         $bizerId = request()->get('current_user')->id;
         $remark = request('remark', '');
-        
+
         $operBizer = OperBizer::where('oper_id', $operId)->where('bizer_id', $bizerId)->first();
-        if($operBizer){
-            if($operBizer->status == 0){
-                 throw new BaseResponseException('此运营中心已在申请中');
-            } 
-            if($operBizer->status == 1){
-                 throw new BaseResponseException('此运营中心已经签约成功');
+        if ($operBizer) {
+            if ($operBizer->status == 0) {
+                throw new BaseResponseException('此运营中心已在申请中');
+            }
+            if ($operBizer->status == 1) {
+                throw new BaseResponseException('此运营中心已经签约成功');
             }
             $model = $operBizer;
-        }else{
+        } else {
             $model = new OperBizer();
         }
 
