@@ -1,14 +1,11 @@
 <template>
-    <page title="商户账户管理">
+    <page title="运营中心账户管理">
         <el-form v-model="form" inline size="small">
-            <el-form-item prop="merchantName" label="商户名称">
-                <el-input v-model="form.merchantName" clearable/>
-            </el-form-item>
-            <el-form-item prop="merchantId" label="商户ID">
-                <el-input v-model="form.merchantId" clearable class="w-100"/>
-            </el-form-item>
             <el-form-item prop="operName" label="运营中心名称">
                 <el-input v-model="form.operName" clearable/>
+            </el-form-item>
+            <el-form-item prop="operId" label="运营中心ID">
+                <el-input v-model="form.operId" clearable class="w-100"/>
             </el-form-item>
             <el-form-item label="账户状态">
                 <el-select v-model="form.status" clearable class="w-100">
@@ -23,8 +20,8 @@
             </el-form-item>
         </el-form>
         <el-table :data="list" v-loading="tableLoading" stripe>
-            <el-table-column prop="merchant_name" label="商户名称"></el-table-column>
-            <el-table-column prop="origin_id" label="商户ID"></el-table-column>
+            <el-table-column prop="oper_name" label="运营中心名称"></el-table-column>
+            <el-table-column prop="origin_id" label="运营中心ID"></el-table-column>
             <el-table-column prop="amount" label="账户余额">
                 <template slot-scope="scope">
                     {{(parseInt(scope.row.balance) + parseInt(scope.row.freeze_balance)).toFixed(2)}}
@@ -37,13 +34,11 @@
                     <span v-if="scope.row.bank_card_no">
                         {{scope.row.bank_card_no.substr(0,5) + '****' + scope.row.bank_card_no.substr(-4,4)}}
                     </span>
-                    <span v-if="scope.row.bank_card_type && scope.row.bank_card_type == 1">(企业)</span>
-                    <span v-if="scope.row.bank_card_type && scope.row.bank_card_type == 2">(个人)</span>
+                    (企业)
                 </template>
             </el-table-column>
             <el-table-column prop="bank_open_name" label="账户名"></el-table-column>
             <el-table-column prop="sub_bank_name" label="开户行"></el-table-column>
-            <el-table-column prop="oper_name" label="运营中心"></el-table-column>
             <el-table-column prop="status" label="账户状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1">正常</span>
@@ -76,17 +71,16 @@
     import api from '../../../../assets/js/api'
 
     export default {
-        name: "wallet-merchant-list",
+        name: "wallet-oper-list",
         data() {
             return {
                 form: {
-                    merchantName: '',
-                    merchantId: '',
                     operName: '',
+                    operId: '',
                     status: 0,
 
                     // 商户提现记录
-                    originType: 2,
+                    originType: 3,
 
                     page: 1,
                     pageSize: 15,
@@ -127,7 +121,7 @@
             },
             detail(row) {
                 router.push({
-                    path: '/wallet/merchant/bill',
+                    path: '/wallet/oper/bill',
                     query: {
                         id: row.id,
                     }

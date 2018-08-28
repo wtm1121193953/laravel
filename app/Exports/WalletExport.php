@@ -82,10 +82,10 @@ class WalletExport implements FromQuery, WithMapping, WithHeadings
             $user = UserService::getUserById($row->origin_id);
             $bankCard = WalletService::getBankCardByOriginInfo($row->origin_id, $row->origin_type);
             $row->user_mobile = $user->mobile;
-            $row->bank_open_name = $bankCard->bank_card_open_name;
-            $row->bank_card_no = $bankCard->bank_card_no;
-            $row->sub_bank_name = $bankCard->bank_name;
-            $row->bank_card_type = $bankCard->bank_card_type;
+            $row->bank_open_name = isset($bankCard->bank_card_open_name) ?: '';
+            $row->bank_card_no = isset($bankCard->bank_card_no) ?: '';
+            $row->sub_bank_name = isset($bankCard->bank_name) ?: '';
+            $row->bank_card_type = isset($bankCard->bank_card_type) ?: 0;
         } elseif ($row->origin_type == Wallet::ORIGIN_TYPE_MERCHANT) {
             $merchant = MerchantService::getById($row->origin_id);
             $row->merchant_name = $merchant->name;
@@ -109,7 +109,7 @@ class WalletExport implements FromQuery, WithMapping, WithHeadings
                 $row->balance + $row->freeze_balance,
                 $row->balance,
                 $row->freeze_balance,
-                substr($row->bank_card_no, 0, 5).'****'.substr($row->bank_card_no, -4).'('.['','企业','个人'][$row->bank_card_type].')',
+                $row->bank_card_no ? substr($row->bank_card_no, 0, 5).'****'.substr($row->bank_card_no, -4).'('.['','企业','个人'][$row->bank_card_type].')' : '',
                 $row->bank_open_name,
                 $row->sub_bank_name,
                 ['', '正常', '已冻结'][$row->status]
@@ -121,7 +121,7 @@ class WalletExport implements FromQuery, WithMapping, WithHeadings
                 $row->balance + $row->freeze_balance,
                 $row->balance,
                 $row->freeze_balance,
-                substr($row->bank_card_no, 0, 5).'****'.substr($row->bank_card_no, -4).'('.['','企业','个人'][$row->bank_card_type].')',
+                $row->bank_card_no ? substr($row->bank_card_no, 0, 5).'****'.substr($row->bank_card_no, -4).'('.['','企业','个人'][$row->bank_card_type].')' : '',
                 $row->bank_open_name,
                 $row->sub_bank_name,
                 $row->oper_name,
@@ -134,7 +134,7 @@ class WalletExport implements FromQuery, WithMapping, WithHeadings
                 $row->balance + $row->freeze_balance,
                 $row->balance,
                 $row->freeze_balance,
-                substr($row->bank_card_no, 0, 5).'****'.substr($row->bank_card_no, -4).'(企业)',
+                $row->bank_card_no ? substr($row->bank_card_no, 0, 5).'****'.substr($row->bank_card_no, -4).'(企业)' : '',
                 $row->bank_open_name,
                 $row->sub_bank_name,
                 ['', '正常', '已冻结'][$row->status]

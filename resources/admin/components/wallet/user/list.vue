@@ -1,14 +1,11 @@
 <template>
-    <page title="商户账户管理">
+    <page title="用户账户管理">
         <el-form v-model="form" inline size="small">
-            <el-form-item prop="merchantName" label="商户名称">
-                <el-input v-model="form.merchantName" clearable/>
+            <el-form-item prop="mobile" label="手机号码">
+                <el-input v-model="form.mobile" clearable/>
             </el-form-item>
-            <el-form-item prop="merchantId" label="商户ID">
-                <el-input v-model="form.merchantId" clearable class="w-100"/>
-            </el-form-item>
-            <el-form-item prop="operName" label="运营中心名称">
-                <el-input v-model="form.operName" clearable/>
+            <el-form-item prop="userId" label="用户ID">
+                <el-input v-model="form.userId" clearable class="w-100"/>
             </el-form-item>
             <el-form-item label="账户状态">
                 <el-select v-model="form.status" clearable class="w-100">
@@ -23,8 +20,8 @@
             </el-form-item>
         </el-form>
         <el-table :data="list" v-loading="tableLoading" stripe>
-            <el-table-column prop="merchant_name" label="商户名称"></el-table-column>
-            <el-table-column prop="origin_id" label="商户ID"></el-table-column>
+            <el-table-column prop="user_mobile" label="用户手机号码"></el-table-column>
+            <el-table-column prop="origin_id" label="用户ID"></el-table-column>
             <el-table-column prop="amount" label="账户余额">
                 <template slot-scope="scope">
                     {{(parseInt(scope.row.balance) + parseInt(scope.row.freeze_balance)).toFixed(2)}}
@@ -43,7 +40,6 @@
             </el-table-column>
             <el-table-column prop="bank_open_name" label="账户名"></el-table-column>
             <el-table-column prop="sub_bank_name" label="开户行"></el-table-column>
-            <el-table-column prop="oper_name" label="运营中心"></el-table-column>
             <el-table-column prop="status" label="账户状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1">正常</span>
@@ -76,17 +72,16 @@
     import api from '../../../../assets/js/api'
 
     export default {
-        name: "wallet-merchant-list",
+        name: "wallet-user-list",
         data() {
             return {
                 form: {
-                    merchantName: '',
-                    merchantId: '',
-                    operName: '',
+                    mobile: '',
+                    userId: '',
                     status: 0,
 
                     // 商户提现记录
-                    originType: 2,
+                    originType: 1,
 
                     page: 1,
                     pageSize: 15,
@@ -127,7 +122,7 @@
             },
             detail(row) {
                 router.push({
-                    path: '/wallet/merchant/bill',
+                    path: '/wallet/user/bill',
                     query: {
                         id: row.id,
                     }
