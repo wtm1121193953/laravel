@@ -109,7 +109,7 @@
         methods: {
             search(){
                 this.query.page = 1;
-                this.getList()
+                this.getList();
             },
             getList(){
                 let _self = this;
