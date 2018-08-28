@@ -91,6 +91,9 @@
 
         <el-dialog title="添加运营中心" :visible.sync="dialogFormVisible" width="30%">
             <el-form label-width="100px">
+                <el-form-item label="电话">
+                    {{ username }}
+                </el-form-item>
                 <el-form-item label="运营中心名称">
                     <el-select v-model="addRegionData.oper_id" placeholder="请选择运营中心" style="width:100%;">
                         <el-option v-for="item in regionOptions" :label="item.name"  :key="item.id" :value="item.id"/>
@@ -113,10 +116,10 @@
         <el-dialog title="提示" :visible.sync="dialogPromptVisible" width="30%" @closed="closeDialogPrompt">
             <el-form label-width="110px">
                 <el-form-item label="运营中心名称：">
-                    大千互娱深圳运营中心
+                    {{dialogTips[dialogTipsCurrent].operName}}
                 </el-form-item>
                 <el-form-item label="不通过原因：">
-                    <div class="prompt-txt">不想通过，就是酱紫任性不想通过，就是酱紫任性不想通过，就是酱紫任性不想通过，就是酱紫任性不想通过，就是酱紫任性</div>
+                    <div class="prompt-txt">{{dialogTips[dialogTipsCurrent].note}}</div>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -125,6 +128,8 @@
 
 <script>
     import api from '../../../assets/js/api'
+    import {mapState} from 'vuex'
+
     export default {
         data(){
             return {
@@ -151,9 +156,22 @@
                     remark: ''
                 },
                 regionLoading: false,
+                dialogTips:[
+                    {
+                        operName:'',
+                        note:''
+                    }
+                ],
+                dialogTipsCurrent: 0,
             }
         },
         computed: {
+            ...mapState([
+                'user',
+            ]),
+            username(){
+                return this.user ? (this.user.operName || this.user.account || this.user.mobile) : '';
+            }
         },
         methods: {
             search(){
@@ -174,7 +192,11 @@
                     _self.query.page = params.page;
                     _self.list = data.list;
                     _self.total = data.total;
-                    console.log(_self.list)
+                    if (data.tips && data.tips.length > 0) {
+                        _self.dialogTips = data.tips;
+                        _self.dialogPromptVisible = true;
+                    }
+                    console.log(data)
                 }).catch(() =>{
                     _self.$message({
                       message: '请求失败',
@@ -226,7 +248,12 @@
             },
             closeDialogPrompt(){
                 //关闭弹窗事件
-                this.dialogPromptVisible = true;
+                let _self = this;
+                if (_self.dialogTipsCurrent < _self.dialogTips.length - 1) {
+                    _self.dialogTipsCurrent ++;
+                    _self.dialogPromptVisible = true;
+                }
+                
             }
         },
         created(){
