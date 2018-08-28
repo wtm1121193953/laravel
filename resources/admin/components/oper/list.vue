@@ -35,6 +35,13 @@
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
+            <el-table-column prop="pay_to_platform" label="支付到平台">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.pay_to_platform === 0" >支付给运营中心自己</span>
+                    <span v-else-if="scope.row.pay_to_platform === 1" >支付到平台(平台不参与分成)</span>
+                    <span v-else-if="scope.row.pay_to_platform === 2" >支付到平台(平台参与分成)</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="bindInfo" label="绑定TPS帐号">
                 <template slot-scope="scope">
                     <span v-if="scope.row.bindInfo" class="title">{{scope.row.bindInfo.tps_account}}</span>
