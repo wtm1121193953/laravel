@@ -83,6 +83,10 @@ class WalletWithdrawService extends BaseService
         $invoiceExpressCompany = array_get($param, 'invoiceExpressCompany', '');
         $invoiceExpressNo = array_get($param, 'invoiceExpressNo', '');
 
+        if ($wallet->status == Wallet::STATUS_OFF) {
+            throw new BaseResponseException('钱包已冻结，暂不支持提现');
+        }
+
         if ($obj instanceof User) {
             throw new BaseResponseException('暂不支持提现');
         } elseif ($obj instanceof Merchant) {

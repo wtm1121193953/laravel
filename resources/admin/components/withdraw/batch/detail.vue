@@ -317,6 +317,10 @@
                     this.$message.error('类型错误');
                     return;
                 }
+                if (length <= 0) {
+                    this.$message.error('请选择打款订单');
+                    return;
+                }
                 this.$confirm(`<div>确定将这${length}笔订单全部标记为打款成功！</div><div class="tips">请确认您已打过款</div>`,'打款成功提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -344,6 +348,10 @@
                     param = {batchId: this.form.batchId};
                 } else {
                     this.$message.error('类型错误');
+                    return;
+                }
+                if (length <= 0) {
+                    this.$message.error('请选择打款订单');
                     return;
                 }
                 this.$prompt(`<div>确定将这${length}笔订单全部标记为打款失败！</div>`,'打款失败提示', {

@@ -17,6 +17,7 @@ use App\Modules\User\GenPassword;
  * @property float total_consume_quota
  * @property string withdraw_password
  * @property string salt
+ * @property integer status
  */
 
 class Wallet extends BaseModel
@@ -28,4 +29,10 @@ class Wallet extends BaseModel
     const ORIGIN_TYPE_USER = 1; // 用户
     const ORIGIN_TYPE_MERCHANT = 2; // 商户
     const ORIGIN_TYPE_OPER = 3; // 运营中心
+
+    /**
+     * 钱包状态 状态 1-正常 2-冻结
+     */
+    const STATUS_ON = 1;
+    const STATUS_OFF = 2;
 }
