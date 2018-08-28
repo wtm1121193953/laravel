@@ -111,7 +111,7 @@
 
         <el-dialog title="忘记密码" :visible.sync="dialogForgetPassword" width="434px">
             <el-form :model="dialogForgetPasswordForm" ref="dialogForgetPasswordForm" :rules="dialogForgetPasswordFormRules" label-width="70px">
-                <el-form-item label="帐号" prop="account">
+                <el-form-item label="帐号" prop="mobile">
                     <el-input type="text" v-model="dialogForgetPasswordForm.mobile" auto-complete="off" placeholder="请输入手机号"/>
                 </el-form-item>
                 <el-form-item label="验证码" prop="verify_code">
@@ -144,6 +144,7 @@
     import api from '../../assets/js/api'
     import THREE from '../../assets/js/three/three';
     import {mapState} from 'vuex'
+
     export default {
         data(){
             var validatePass = (rule, value, callback) => {        
@@ -158,13 +159,13 @@
             var validateMobile = (rule, value, callback) => {
                 if (value === '') {
                     callback(new Error('请输入手机号'));
-                    this.forgetPasswordValidation = false;
+                    this.mobileValidate = false;
                   } else if (!/^1[3|4|5|7|8][0-9]\d{8}$/.test(value)) {
                     callback(new Error('手机号格式错误'));
-                    this.forgetPasswordValidation = false;
+                    this.mobileValidate = false;
                   } else {
                     callback();
-                    this.forgetPasswordValidation = true;
+                    this.mobileValidate = true;
                   }
             };
             return {
@@ -175,14 +176,14 @@
                 },
                 formRules: {
                     account: [
-                        {required: true, message: '请输入帐号', trigger: 'blur'}
+                        {validator: validateMobile, trigger: 'blur'}
                     ],
                     password: [
                         {required: true, message: '请输入密码', trigger: 'blur'}
                     ],
                     verifyCode: [
                         {required: true, message: '请输入验证码', trigger: 'blur'},
-                        { min: 4, max: 6, message: '请输入4-6位验证码', trigger: 'blur' }
+                        {min: 4, max: 6, message: '请输入4-6位验证码', trigger: 'blur'}
                     ]
                 },
                 captchaUrl: captcha_url,
@@ -203,7 +204,7 @@
                     ],
                     verify_code:[
                         {required: true, message: '请输入验证码', trigger: 'blur'},
-                        { min: 4, max: 6, message: '请输入4位验证码', trigger: 'blur' }
+                        {min: 4, max: 6, message: '请输入4位验证码', trigger: 'blur'}
                     ]
                 },
                 dialogSetPasswordForm: {
@@ -213,7 +214,7 @@
                 dialogSetPasswordFormRules: {
                     password: [
                         {required: true, message: '请输入密码', trigger: 'blur'},
-                        { min: 6, max: 12, message: '请输入6-12位密码', trigger: 'blur' }
+                        {min: 6, max: 12, message: '请输入6-12位密码', trigger: 'blur'}
                     ],
                     confirm_password: [
                         {validator: validatePass, trigger: 'blur'}
@@ -226,7 +227,6 @@
                     time: 60,
                 },
                 mobileValidate: false, //处理手机验证是否通过
-                forgetPasswordValidation: false, //忘记密码框验证是否通过
             }
         },
         computed:{
@@ -247,7 +247,7 @@
                            _self.dialogForgetPassword = false;
                             _self.dialogSetPassword = true;
                         }).catch((error) => {
-                            console.log(error)
+                            // console.log(error)
                             _self.$message({
                               message: error.response && error.response.message ? error.response.message:'请求失败',
                               type: 'warning'
@@ -262,7 +262,7 @@
             setPassword(){
                 let _self = this;
                 _self.$refs.dialogSetPasswordForm.validate(valid => {
-                    console.log(valid)
+                    // console.log(valid)
                     if(valid){
                         let params = _self.dialogForgetPasswordForm;
                         Object.assign(params, this.dialogSetPasswordForm);
@@ -287,9 +287,9 @@
             },
             sendCode() {
                 let _self = this;
-                if (!_self.forgetPasswordValidation) {
-                    console.log(this.$refs.dialogForgetPasswordForm)
-                    _self.$refs.dialogForgetPasswordForm.validateField('account')
+                if (!_self.mobileValidate) {
+                    // console.log(this.$refs.dialogForgetPasswordForm)
+                    _self.$refs.dialogForgetPasswordForm.validateField('mobile')
                     return;
                 }
                 _self.buttonCode.isDisabled = true;
