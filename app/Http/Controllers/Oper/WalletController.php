@@ -98,7 +98,7 @@ class WalletController extends Controller
         $param = compact('billNo', 'startDate', 'endDate', 'typeArr', 'originId', 'originType');
         $query = WalletService::getBillList($param, $pageSize, true);
 
-        return (new WalletBillExport($query))->download('商户交易流水.xlsx');
+        return (new WalletBillExport($query, $originType))->download('运营中心交易流水.xlsx');
     }
 
     /**

@@ -13,7 +13,9 @@ use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
 use App\Modules\Order\OrderService;
 use App\Modules\User\User;
+use App\Modules\User\UserService;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class WalletService extends BaseService
 {
@@ -186,8 +188,10 @@ class WalletService extends BaseService
         $startDate = array_get($param, 'startDate', '');
         $endDate = array_get($param, 'endDate', '');
         $typeArr = array_get($param, 'typeArr', []);
+        $type = array_get($param, 'type', '');
         $originId = array_get($param, 'originId', 0);
         $originType = array_get($param, 'originType', 0);
+        $walletId = array_get($param, 'walletId', 0);
 
         $query = WalletBill::when($originId, function (Builder $query) use ($originId) {
                 $query->where('origin_id', $originId);
@@ -198,13 +202,19 @@ class WalletService extends BaseService
             ->when($billNo, function (Builder $query) use ($billNo) {
                 $query->where('bill_no', $billNo);
             })
+            ->when($walletId, function (Builder $query) use ($walletId) {
+                $query->where('wallet_id', $walletId);
+            })
+            ->when($type, function (Builder $query) use ($type) {
+                $query->where('type', $type);
+            })
             ->when($startDate, function (Builder $query) use ($startDate) {
                 $query->whereDate('created_at', '>', $startDate);
             })
             ->when($endDate, function (Builder $query) use ($endDate) {
                 $query->whereDate('created_at', '<', $endDate);
             })
-            ->when($typeArr, function (Builder $query) use ($typeArr) {
+            ->when(!empty($typeArr), function (Builder $query) use ($typeArr) {
                 $query->whereIn('type', $typeArr);
             })
             ->orderBy('created_at', 'desc');
@@ -215,6 +225,12 @@ class WalletService extends BaseService
             $data->each(function ($item) {
                 $item->merchant_name = MerchantService::getNameById($item->origin_id);
                 $item->oper_name = OperService::getNameById($item->origin_id);
+                if ($item->origin_type == WalletBill::ORIGIN_TYPE_MERCHANT) {
+                    $item->merchant_level = MerchantService::getById($item->origin_id)->level;
+                }
+                if ($item->origin_type == WalletBill::ORIGIN_TYPE_USER) {
+                    $item->user_mobile = UserService::getUserById($item->origin_id)->mobile;
+                }
                 if (in_array($item->type, [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED])) {
                     $walletWithdraw = WalletWithdrawService::getWalletWithdrawById($item->obj_id);
                     $item->status = $walletWithdraw->status;
@@ -304,6 +320,110 @@ class WalletService extends BaseService
     public static function getWalletById($id, $filed = ['*'])
     {
         $wallet = Wallet::find($id, $filed);
+        return $wallet;
+    }
+
+    /**
+     * 获取钱包列表
+     * @param $params
+     * @param int $pageSize
+     * @param bool $withQuery
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|Builder
+     */
+    public static function getWalletList($params, $pageSize = 15, $withQuery = false)
+    {
+        $originType = array_get($params, 'originType');
+        $originId = array_get($params, 'originId');
+        $status = array_get($params, 'status');
+        $userMobile = array_get($params, 'userMobile');
+        $merchantName = array_get($params, 'merchantName');
+        $operName = array_get($params, 'operName');
+
+        $query = Wallet::query();
+
+        if($originType){
+            $query->where('origin_type', $originType);
+        }
+        if($originId){
+            $query->where('origin_id', $originId);
+        }
+        if($originType == Wallet::ORIGIN_TYPE_USER && $userMobile){
+            $originIds = UserService::getUserColumnArrayByMobile($userMobile, 'id');
+        }
+        if($originType == Wallet::ORIGIN_TYPE_MERCHANT && $merchantName){
+            $originIds = MerchantService::getMerchantColumnArrayByMerchantName($merchantName, 'id');
+        }
+        if ($originType == Wallet::ORIGIN_TYPE_OPER && $operName) {
+            $originIds = OperService::getOperColumnArrayByOperName($operName, 'id');
+        }
+        if(isset($originIds)){
+            $query->whereIn('origin_id', $originIds);
+        }
+        if($status){
+            if(is_array($status) || $status instanceof Collection){
+                $query->whereIn('status', $status);
+            }else {
+                $query->where('status', $status);
+            }
+        }
+        $query->orderBy('created_at', 'desc');
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate($pageSize);
+            $data->each(function($item) {
+                if ($item->origin_type == Wallet::ORIGIN_TYPE_USER) {
+                    $user = UserService::getUserById($item->origin_id);
+                    $bankCard = self::getBankCardByOriginInfo($item->origin_id, $item->origin_type);
+                    $item->user_mobile = $user->mobile;
+                    $item->bank_open_name = $bankCard->bank_card_open_name;
+                    $item->bank_card_no = $bankCard->bank_card_no;
+                    $item->sub_bank_name = $bankCard->bank_name;
+                    $item->bank_card_type = $bankCard->bank_card_type;
+                } elseif ($item->origin_type == Wallet::ORIGIN_TYPE_MERCHANT) {
+                    $merchant = MerchantService::getById($item->origin_id);
+                    $item->merchant_name = $merchant->name;
+                    $item->oper_name = OperService::getNameById($merchant->oper_id);
+                    $item->bank_open_name = $merchant->bank_open_name;
+                    $item->bank_card_no = $merchant->bank_card_no;
+                    $item->sub_bank_name = $merchant->sub_bank_name;
+                    $item->bank_card_type = $merchant->bank_card_type;
+                } elseif ($item->origin_type == Wallet::ORIGIN_TYPE_OPER) {
+                    $oper = OperService::getById($item->origin_id);
+                    $item->oper_name = $oper->name;
+                    $item->bank_open_name = $oper->bank_open_name;
+                    $item->bank_card_no = $oper->bank_card_no;
+                    $item->sub_bank_name = $oper->sub_bank_name;
+                }
+            });
+            return $data;
+        }
+    }
+
+    /**
+     * 获取银行卡信息
+     * @param $originId
+     * @param $originType
+     * @return BankCard
+     */
+    public static function getBankCardByOriginInfo($originId, $originType)
+    {
+        $bankCard = BankCard::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->first();
+        return $bankCard;
+    }
+
+    /**
+     * 更改钱包状态
+     * @param $id
+     * @return Wallet
+     */
+    public static function changeWalletStatus($id)
+    {
+        $wallet = self::getWalletById($id);
+        $wallet->status = $wallet->status == Wallet::STATUS_ON ? Wallet::STATUS_OFF : Wallet::STATUS_ON;
+        $wallet->save();
         return $wallet;
     }
 }

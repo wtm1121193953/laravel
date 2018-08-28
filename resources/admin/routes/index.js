@@ -15,6 +15,7 @@ import merchant from './merchant'
 import members from './members'
 import setting from './setting'
 import withdraw from './withdraw'
+import wallet from './wallet'
 
 /**
  *
@@ -42,6 +43,7 @@ const routes = [
     ...members,
     ...setting,
     ...withdraw,
+    ...wallet,
 
     {
         path: '/',
