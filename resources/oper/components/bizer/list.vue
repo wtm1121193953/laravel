@@ -19,7 +19,7 @@
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作">
+            <el-table-column fixed="right" label="操作" width="210px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="remarks">备注</el-button>
                     <el-button type="text" @click="merchants">业务</el-button>
