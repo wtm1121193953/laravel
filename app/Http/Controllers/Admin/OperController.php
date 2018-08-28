@@ -89,6 +89,20 @@ class OperController extends Controller
     }
 
     /**
+     * 修改小程序支付对象设置
+     */
+    public function changePayToPlatform()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'pay_to_platform' => 'required|integer',
+        ]);
+        $oper = OperService::changePayToPlatform(request('id'), request('pay_to_platform'));
+
+        return Result::success($oper);
+    }
+
+    /**
      * 支付到平台状态修改
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
