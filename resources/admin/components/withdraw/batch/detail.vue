@@ -1,5 +1,12 @@
 <template>
     <page title="批次明细">
+        <el-col style="margin-bottom: 10px">
+            <span class="span-top">第{{batchData.batch_no}}批</span>
+            <span class="span-top" v-if="batchData.status == 1">结算中</span>
+            <span class="span-top" v-else-if="batchData.status == 2">准备打款</span>
+            <span class="span-top" v-else-if="batchData.status == 3">打款完成</span>
+            <el-button v-if="batchData.status == 1" size="small" type="success">准备打款</el-button>
+        </el-col>
         <div class="group">
             <div class="item" v-for="item in statistics">
                 <p class="label">{{item.label}}</p >
@@ -47,11 +54,11 @@
             <el-form-item>
                 <el-button type="primary" @click="search">查 询</el-button>
                 <el-button type="success" @click="exportExcel">导出Excel</el-button>
-                <el-select class="w-100" placeholder="批量打款">
-                    <el-option @click.native="batchPaySuccess">打款成功</el-option>
-                    <el-option @click.native="batchPayFail">打款失败</el-option>
-                    <el-option @click.native="batchPaySuccess">全部打款成功</el-option>
-                    <el-option @click.native="batchPayFail">全部打款失败</el-option>
+                <el-select v-model="checkBatch" class="w-100" placeholder="批量打款">
+                    <el-option @click.native="batchPaySuccess(1)" :value="1" label="打款成功"></el-option>
+                    <el-option @click.native="batchPayFail(1)" :value="2" label="打款失败"></el-option>
+                    <el-option @click.native="batchPaySuccess(2)" :value="3" label="全部打款成功"></el-option>
+                    <el-option @click.native="batchPayFail(2)" :value="4" label="全部打款失败"></el-option>
                 </el-select>
             </el-form-item>
         </el-form>
@@ -159,13 +166,15 @@
                     success_total: 0,
                     failed_amount: 0.00,
                     failed_total: 0,
+                    batch_no: '',
+                    status: 0,
                 },
                 selection: [],
 
                 list: [],
                 tableLoading: false,
 
-                remark: '',
+                checkBatch: '',
             }
         },
         computed: {
@@ -184,6 +193,13 @@
                         val: this.batchData.failed_amount + '/' + this.batchData.failed_total,
                     },
                 ];
+            },
+            seletcionIds() {
+                let ids = [];
+                this.selection.forEach(function (item) {
+                    ids.push(item.id);
+                });
+                return ids;
             }
         },
         methods: {
@@ -269,7 +285,7 @@
                     inputType: 'textarea',
                     inputPlaceholder: '请填写失败原因，必填，最多50字',
                     inputValidator: (val) => {if(val.length > 50) return '备注不能超过50个字'}
-                }).then((value) => {
+                }).then(({value}) => {
                     let param = {
                         ids: row.id,
                         remark: value,
@@ -287,11 +303,67 @@
                     this.batchData = data;
                 })
             },
-            batchPaySuccess() {
+            batchPaySuccess(type) {
+                this.checkBatch = '';
+                let length = 0;
+                let param = {};
+                if (type == 1) {
+                    length = this.seletcionIds.length;
+                    param = {ids: this.seletcionIds};
+                } else if (type == 2) {
+                    length = this.total;
+                    param = {batchId: this.form.batchId};
+                } else {
+                    this.$message.error('类型错误');
+                    return;
+                }
+                this.$confirm(`<div>确定将这${length}笔订单全部标记为打款成功！</div><div class="tips">请确认您已打过款</div>`,'打款成功提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true,
+                    dangerouslyUseHTMLString: true,
+                }).then(() => {
+                    api.post('/withdraw/record/paySuccess', param).then(data => {
+                        this.$alert('操作成功');
+                        this.getList();
+                    })
+                }).catch(() => {
 
+                })
             },
-            batchPayFail() {
+            batchPayFail(type) {
+                this.checkBatch = '';
+                let length = 0;
+                let param = {};
+                if (type == 1) {
+                    length = this.seletcionIds.length;
+                    param = {ids: this.seletcionIds};
+                } else if (type == 2) {
+                    length = this.total;
+                    param = {batchId: this.form.batchId};
+                } else {
+                    this.$message.error('类型错误');
+                    return;
+                }
+                this.$prompt(`<div>确定将这${length}笔订单全部标记为打款失败！</div>`,'打款失败提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true,
+                    dangerouslyUseHTMLString: true,
+                    inputType: 'textarea',
+                    inputPlaceholder: '请填写失败原因，必填，最多50字',
+                    inputValidator: (val) => {if(val.length > 50) return '备注不能超过50个字'}
+                }).then(({value}) => {
+                    param.remark = value;
+                    api.post('/withdraw/record/payFail', param).then(data => {
+                        this.$alert('操作成功');
+                        this.getList();
+                    })
+                }).catch(() => {
 
+                })
             }
         },
         created() {
@@ -357,5 +429,9 @@
             background: #999;
             color: #fff;
         }
+    }
+    .span-top {
+        margin-right: 10px;
+        font-weight: bold
     }
 </style>
