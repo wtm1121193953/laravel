@@ -91,6 +91,9 @@
 
         <el-dialog title="添加运营中心" :visible.sync="dialogFormVisible" width="30%">
             <el-form label-width="100px">
+                <el-form-item label="电话">
+                    {{ username }}
+                </el-form-item>
                 <el-form-item label="运营中心名称">
                     <el-select v-model="addRegionData.oper_id" placeholder="请选择运营中心" style="width:100%;">
                         <el-option v-for="item in regionOptions" :label="item.name"  :key="item.id" :value="item.id"/>
@@ -125,6 +128,8 @@
 
 <script>
     import api from '../../../assets/js/api'
+    import {mapState} from 'vuex'
+
     export default {
         data(){
             return {
@@ -154,6 +159,12 @@
             }
         },
         computed: {
+            ...mapState([
+                'user',
+            ]),
+            username(){
+                return this.user ? (this.user.operName || this.user.account || this.user.mobile) : '';
+            }
         },
         methods: {
             search(){
@@ -174,7 +185,7 @@
                     _self.query.page = params.page;
                     _self.list = data.list;
                     _self.total = data.total;
-                    console.log(_self.list)
+                    // console.log(_self.list)
                 }).catch(() =>{
                     _self.$message({
                       message: '请求失败',
