@@ -27,7 +27,7 @@ class OperBizerService extends BaseService {
         // 全局限制条件
         $query = OperBizer::where('status', 1)->orderByDesc('id');
         if (!empty($bizer_id)) {
-            $query->where("bizer_id", $bizer_id);
+            $query->where;
         }
         if ($getWithQuery) {
             return $query;
@@ -43,6 +43,17 @@ class OperBizerService extends BaseService {
         }
     }
 
+    /**
+     * 根据id更新是否已读
+     * @param $id
+     * @param $isTips
+     * @author tong.chen
+     * @date 2018-08-23
+     */
+    public static function updateIsTipsById($id, $isTips = 1){
+        OperBizer::where('id', $id)->update(['is_tips' => $isTips]);
+    }
+    
     /**
      *  获取列表
      * @param array $params 参数数组
