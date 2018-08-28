@@ -10,6 +10,7 @@ use App\BaseModel;
  *
  * @property int origin_type
  * @property int origin_id
+ * @property string tps_uid
  * @property string tps_account
  */
 class TpsBind extends BaseModel

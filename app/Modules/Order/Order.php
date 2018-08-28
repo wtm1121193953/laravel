@@ -4,6 +4,7 @@ namespace App\Modules\Order;
 
 use App\BaseModel;
 use App\Exceptions\BaseResponseException;
+use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use Carbon\Carbon;
 
 /**
@@ -141,4 +142,11 @@ class Order extends BaseModel
         return ['', '安卓', 'iOS', '小程序'][$originAppType];
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany|WalletConsumeQuotaRecord
+     */
+    public function consumeQuotaRecords()
+    {
+        return $this->hasMany(WalletConsumeQuotaRecord::class);
+    }
 }

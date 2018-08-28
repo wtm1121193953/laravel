@@ -4,9 +4,11 @@ namespace App\Modules\Wallet;
 
 
 use App\BaseService;
+use App\Jobs\ConsumeQuotaSyncToTpsJob;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
+use App\Modules\Tps\TpsBindService;
 use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserCreditSettingService;
 use Illuminate\Database\Eloquent\Builder;
@@ -83,9 +85,6 @@ class ConsumeQuotaService extends BaseService
     {
         // 1. 解冻自己的消费额
         // 2. 解冻上级的消费额
-
-        // 3. 发送同步消费额到tps的队列
-
         $walletConsumeQuotaRecords = WalletConsumeQuotaRecord::where('order_id', $order->id)->get();
         foreach ($walletConsumeQuotaRecords as $walletConsumeQuotaRecord) {
             // 1.找到钱包
@@ -101,6 +100,9 @@ class ConsumeQuotaService extends BaseService
             $walletConsumeQuotaRecord->status = WalletConsumeQuotaRecord::STATUS_UNFREEZE;
             $walletConsumeQuotaRecord->save();
         }
+
+        // 3. 发送同步消费额到tps的队列
+        ConsumeQuotaSyncToTpsJob::dispatch($order);
     }
 
     /**
@@ -121,8 +123,26 @@ class ConsumeQuotaService extends BaseService
      */
     public static function syncConsumeQuotaToTps(Order $order)
     {
-        // todo
-        //
+        // 同步消费额到TPS
+        $records = $order->consumeQuotaRecords()->whereIn('status', [1, 2])->get();
+//        $records = WalletConsumeQuotaRecord::where('order_id', $order->id)
+//            ->whereIn('status', [1, 2])
+//            ->get();
+        // 拼装要发送的数据
+        $data = [];
+        foreach ($records as $record) {
+            $tpsBind = TpsBindService::getTpsBindInfoByOriginInfo($record->origin_id, $record->origin_type);
+            $data[] = [
+                'orderId' => $order->order_no,
+                'orderPayTime' => $order->pay_time,
+                'createTime' => $order->created_at,
+                'customerId' => $tpsBind->tps_uid,
+                'shopkeeperId' => $tpsBind->tps_uid,
+                'orderAmountUsd' => '',
+                'orderProfitUsd' => '',
+            ];
+        }
+//        ConsumeQuotaService::syncConsumeQuotaToTps($order);
     }
 
     /**
