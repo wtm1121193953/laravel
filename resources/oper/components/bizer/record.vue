@@ -163,9 +163,10 @@
             },
             signingSubmit(status){
                 let _self = this;
-                let params;
+                let params,successMsg;
                 if(status && status == 1){
                     let isValid;
+                    
                     _self.$refs.formSigning.validate(valid => {
                         if (valid) {
                             _self.formSigning.id = this.detailOption.id;
@@ -176,16 +177,18 @@
                             isValid = false;
                         }
                     })
+                    successMsg = "签约成功";
                     if(!isValid)return false;
                 }else{
                     _self.formRefusal.id = _self.detailOption.id;
                     params = _self.formRefusal;
+                    successMsg = "已拒绝";
                 }
                 _self.bntLoading = true;
                 api.get('/bizerRecord/contractBizer', params).then(data => {
                     _self.dialogSigningFormVisible = _self.dialogRefusalFormVisible = false;
                     _self.$message({
-                        message: '签约成功',
+                        message: successMsg,
                         type: 'success'
                     });
                     _self.getList();
