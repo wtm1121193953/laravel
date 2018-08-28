@@ -68,8 +68,8 @@
             </el-table-column>
             <el-table-column prop="status" label="合作状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1">正常</span>
-                    <span v-else-if="scope.row.status === 0" class="c-danger">申请中</span>
+                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
+                    <span v-else-if="scope.row.status === 0" class="c-warning">申请中</span>
                     <span v-else-if="scope.row.status === -1" class="c-danger">拒绝</span>
                 </template>
             </el-table-column>
