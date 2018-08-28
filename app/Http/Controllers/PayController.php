@@ -142,12 +142,25 @@ class PayController extends Controller
         }
     }
 
+
     /**
-     * 融宝支付
+     * 融宝支付通知接口, 用于接收微信支付的通知
      */
-    public function reapalPaySuccess()
+    public function payNotify()
     {
-        $request = ReapalPay::payNotify();
+        /*$reapal = new ReapalPay();
+
+        $request =  $reapal->payNotify();
+        var_dump($request);die();*/
+        //获取参数
+        /*$resultArr = json_decode(request(),true);
+        return $resultArr;*/
+
+        $reapal = request()->getContent();
+        $request = simplexml_load_string($reapal);
+
+        var_dump(1111111111);die();
+
 
         $merchant_id = array_get($request,'merchant_id');
         $result_code = array_get($request,'result_code');

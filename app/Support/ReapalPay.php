@@ -190,9 +190,11 @@ class ReapalPay
 
         $url = $this->apiUrl.'/qrcode/scan/encryptline';
         $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $this->merchantId);
+        dd($result);
         $response = json_decode($result,true);
         $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'],$this->merchantPrivateKey);
-        return $reapalMap->AESDecryptResponse($encryptkey,$response['data']);
+        $result = $reapalMap->AESDecryptResponse($encryptkey,$response['data']);
+        dd($result);
     }
 
     /**
@@ -271,12 +273,16 @@ class ReapalPay
      * 异步通知接口
      */
 
-    public function payNotify(){
+    //public function payNotify(){
 
         //获取参数
-        $resultArr = json_decode(request(),true);
-        return $resultArr;
-    }
+        /*$resultArr = json_decode(request(),true);
+        return $resultArr;*/
+
+        //$str = request()->getContent();
+        //$xml = simplexml_load_string($str);
+        //return $xml;
+    //}
 
     /**
      * 异步通知接口(退款)
