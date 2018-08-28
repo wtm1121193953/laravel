@@ -116,10 +116,10 @@
         <el-dialog title="提示" :visible.sync="dialogPromptVisible" width="30%" @closed="closeDialogPrompt">
             <el-form label-width="110px">
                 <el-form-item label="运营中心名称：">
-                    大千互娱深圳运营中心
+                    {{dialogTips[dialogTipsCurrent].operName}}
                 </el-form-item>
                 <el-form-item label="不通过原因：">
-                    <div class="prompt-txt">不想通过，就是酱紫任性不想通过，就是酱紫任性不想通过，就是酱紫任性不想通过，就是酱紫任性不想通过，就是酱紫任性</div>
+                    <div class="prompt-txt">{{dialogTips[dialogTipsCurrent].note}}</div>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -156,6 +156,13 @@
                     remark: ''
                 },
                 regionLoading: false,
+                dialogTips:[
+                    {
+                        operName:'',
+                        note:''
+                    }
+                ],
+                dialogTipsCurrent: 0,
             }
         },
         computed: {
@@ -185,7 +192,11 @@
                     _self.query.page = params.page;
                     _self.list = data.list;
                     _self.total = data.total;
-                    // console.log(_self.list)
+                    if (data.tips && data.tips.length > 0) {
+                        _self.dialogTips = data.tips;
+                        _self.dialogPromptVisible = true;
+                    }
+                    console.log(data)
                 }).catch(() =>{
                     _self.$message({
                       message: '请求失败',
@@ -237,7 +248,12 @@
             },
             closeDialogPrompt(){
                 //关闭弹窗事件
-                this.dialogPromptVisible = true;
+                let _self = this;
+                if (_self.dialogTipsCurrent < _self.dialogTips.length - 1) {
+                    _self.dialogTipsCurrent ++;
+                    _self.dialogPromptVisible = true;
+                }
+                
             }
         },
         created(){

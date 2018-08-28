@@ -22,7 +22,7 @@
             <el-table-column fixed="right" label="操作" width="210px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="remarks">备注</el-button>
-                    <el-button type="text" @click="merchants">业务</el-button>
+                    <el-button type="text" @click="merchants(scope.row.id)">业务</el-button>
                     <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '冻结' : '解冻'}}</el-button>
                     <el-button type="text" @click="dividedIntoSettings">分成设置</el-button>
                 </template>
@@ -126,12 +126,13 @@
                 })
             },
             merchants(){
-                // router.push({
-                //     path: '/operBizMember/merchants',
-                //     query: {
-                //         id: this.scope.row.id
-                //     }
-                // })
+                let _self = this;
+                router.push({
+                    path: '/bizers/BizerMerchants',
+                    query: {
+                        id: _self.scope.row.id
+                    }
+                })
             },
             changeStatus(){
                 // let status = this.scope.row.status === 1 ? 2 : 1;
