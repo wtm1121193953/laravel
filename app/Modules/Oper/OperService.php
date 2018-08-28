@@ -225,6 +225,25 @@ class OperService extends BaseService
     }
 
     /**
+     * 更新小程序支付对象设置
+     * @param $id
+     * @param $pay_to_platform
+     * @return Oper
+     */
+    public static function changePayToPlatform($id, $pay_to_platform)
+    {
+
+        $oper = Oper::find($id);
+        if (empty($oper)) {
+            throw new DataNotFoundException('运营中心信息不存在');
+        }
+        $oper->pay_to_platform = $pay_to_platform;
+
+        $oper->save();
+        return $oper;
+    }
+
+    /**
      * 切换运营中心支付到平台
      * @param $id
      * @return Oper

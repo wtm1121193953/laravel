@@ -29,6 +29,7 @@ use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use App\Support\ReapalPay;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
@@ -108,6 +109,7 @@ class OrderController extends Controller
      * 订单创建
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \Exception
      */
     public function buy()
     {
@@ -151,50 +153,41 @@ class OrderController extends Controller
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->save();
 
-        if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
-            if($currentOperId == 0){ // 在平台小程序下
+//        if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
+//            if($currentOperId == 0){ // 在平台小程序下
                 // 调平台支付, 走融宝支付接口
                 $isOperSelf = 2;
                 $sdkConfig = null; // todo 走融宝支付接口
-                OrderService::paySuccess($orderNo, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
-            }else {
+                //OrderService::paySuccess($orderNo, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
+                $param = [
+                    'title' => $order->goods_name,
+                    'body' => $order->goods_id,
+                    'order_no' => $order->order_no,
+                    'total_fee' => $order->pay_price,
+                    'store_name' => $order->merchant_name,
+                    'store_phone' => $merchant->contacter_phone ?? '',
+                ];
+                $reapal = new ReapalPay();
+                $reapal->prepay($param);
+            /*}else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
             }
         }else {
             $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
             if($isOperSelf == 1) {
-                $payApp = WechatService::getWechatPayAppForOper($merchant->oper_id);
-                $data = [
-                    'body' => $order->goods_name,
-                    'out_trade_no' => $orderNo,
-                    'total_fee' => $order->pay_price * 100,
-                    'trade_type' => 'JSAPI',
-                    'openid' => $order->open_id,
-                ];
-                $unifyResult = $payApp->order->unify($data);
-                if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
-                    $order->save();
-                }else {
-                    Log::error('微信统一下单失败', [
-                        'payConfig' => $payApp->getConfig(),
-                        'data' => $data,
-                        'result' => $unifyResult,
-                    ]);
-                    throw new BaseResponseException('微信统一下单失败');
-                }
-                $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+                $sdkConfig = $this->_wechatUnifyPay($order);
             }else {
                 $sdkConfig = null;
             }
 
-        }
+        }*/
 
-        return Result::success([
+        /*return Result::success([
             'order_no' => $orderNo,
             'isOperSelf' => $isOperSelf,
             'sdk_config' => $sdkConfig,
-        ]);
+        ]);*/
     }
 
 
@@ -255,44 +248,36 @@ class OrderController extends Controller
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->save();
 
-        if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
-            if($currentOperId == 0){ // 在平台小程序下
+        //if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
+            //if($currentOperId == 0){ // 在平台小程序下
                 // 调平台支付, 走融宝支付接口
                 $isOperSelf = 2;
                 $sdkConfig = null; // todo 走融宝支付接口
-                OrderService::paySuccess($orderNo, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
-            }else {
+//                OrderService::paySuccess($orderNo, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
+                $param = [
+                    'title' => $order->goods_name,
+                    'body' => $order->goods_name,
+                    'order_no' => $order->order_no,
+                    'total_fee' => $order->pay_price,
+                    'store_name' => $order->merchant_name,
+                    'store_phone' => $merchant->contacter_phone ?? '',
+                ];
+                //var_dump($param);die();
+                $reapal = new ReapalPay();
+                $reapal->prepay($param);
+            /*}else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
             }
         }else {
             $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
             if($isOperSelf == 1) {
-                $payApp = WechatService::getWechatPayAppForOper($merchant->oper_id);
-                $data = [
-                    'body' =>  $merchant->name,
-                    'out_trade_no' => $orderNo,
-                    'total_fee' => $order->pay_price * 100,
-                    'trade_type' => 'JSAPI',
-                    'openid' => $order->open_id,
-                ];
-                $unifyResult = $payApp->order->unify($data);
-                if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
-                    $order->save();
-                }else {
-                    Log::error('微信统一下单失败', [
-                        'payConfig' => $payApp->getConfig(),
-                        'data' => $data,
-                        'result' => $unifyResult,
-                    ]);
-                    throw new BaseResponseException('微信统一下单失败');
-                }
-                $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+                $sdkConfig = $this->_wechatUnifyPay($order);
             }else {
                 $sdkConfig = null;
             }
 
-        }
+        }*/
 
 
 
@@ -379,26 +364,7 @@ class OrderController extends Controller
         }else {
             $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
             if($isOperSelf == 1) {
-                $payApp = WechatService::getWechatPayAppForOper($merchant->oper_id);
-                $data = [
-                    'body' => $order->goods_name,
-                    'out_trade_no' => $orderNo,
-                    'total_fee' => $order->pay_price * 100,
-                    'trade_type' => 'JSAPI',
-                    'openid' => $order->open_id,
-                ];
-                $unifyResult = $payApp->order->unify($data);
-                if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){
-                    $order->save();
-                }else {
-                    Log::error('微信统一下单失败', [
-                        'payConfig' => $payApp->getConfig(),
-                        'data' => $data,
-                        'result' => $unifyResult,
-                    ]);
-                    throw new BaseResponseException('微信统一下单失败');
-                }
-                $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+                $sdkConfig = $this->_wechatUnifyPay($order);
             }else {
                 $sdkConfig = null;
             }
@@ -515,7 +481,7 @@ class OrderController extends Controller
             'out_trade_no' => $order->order_no,
             'total_fee' => $order->pay_price * 100,
             'trade_type' => 'JSAPI',
-            'openid' => request()->get('current_open_id'),
+            'openid' => $order->open_id,
         ];
         $unifyResult = $payApp->order->unify($data);
         if($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS'){

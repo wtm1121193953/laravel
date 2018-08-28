@@ -29,10 +29,8 @@ class SettlementForMerchantDaily implements ShouldQueue
      *
      * @Author   Jerry
      * @DateTime 2018-08-23
-     * @param    int    $merchantId
-     * @param    Carbon $start
-     * @param    Carbon $end
-     * @return void
+     * @param    int $merchantId
+     * @param Carbon $date
      */
     public function __construct($merchantId, Carbon $date )
     {
@@ -56,18 +54,17 @@ class SettlementForMerchantDaily implements ShouldQueue
     {
         $merchant   = Merchant::findOrFail( $this->merchantId );
         // 判断该店是否已结算
-        $exist      = SettlementPlatform::where('merchant_id', $this->merchantId );
+        $exist      = SettlementPlatform::where('merchant_id', $this->merchantId )
+                            ->where('date', $this->date)->first();
         if( $exist )
         {
             Log::info('该每日结算已结算,跳过结算', [
                 'merchantId' => $this->merchantId,
-                'date' => Carbon::now()->format('Y-m-d'),
-                'start' => $this->start,
-                'end' => $this->end,
+                'date' => Carbon::now()->format('Y-m-d')
             ]);
             return ;
         }
-        $res = SettlementPlatformService::settlement( $merchant, $date );
+        $res = SettlementPlatformService::settlement( $merchant, $this->date );
         if( !$res )  Log::info('该商家每日结算错误，商家id：'.$this->merchantId);
     }
 }

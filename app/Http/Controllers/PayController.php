@@ -27,6 +27,7 @@ use App\Modules\Sms\SmsService;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use App\Support\ReapalPay;
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
@@ -141,11 +142,58 @@ class PayController extends Controller
         }
     }
 
+
     /**
-     * 融宝支付
+     * 融宝支付通知接口, 用于接收微信支付的通知
      */
-    public function reapalPayNotify()
+    public function payNotify()
     {
+        /*$reapal = new ReapalPay();
+
+        $request =  $reapal->payNotify();
+        var_dump($request);die();*/
+        //获取参数
+        /*$resultArr = json_decode(request(),true);
+        return $resultArr;*/
+
+        $reapal = request()->getContent();
+        $request = simplexml_load_string($reapal);
+
+        var_dump(1111111111);die();
+
+
+        $merchant_id = array_get($request,'merchant_id');
+        $result_code = array_get($request,'result_code');
+        $result_msg = array_get($request,'result_msg');
+        $order_no = array_get($request,'order_no');
+
+        //0000表示成功
+        if($result_code == 0000){
+            $wxjsapi_str = array_get($request,'wxjsapi_str');
+
+            $appid = array_get($wxjsapi_str,'appId');
+
+            // 获取appid对应的运营中心小程序
+            $miniprogram = OperMiniprogramService::getByAppid($appid);
+
+            $app = WechatService::getWechatPayAppForOper($miniprogram);
+            $response = $app->handlePaidNotify(function ($message, $fail) {
+                if($message['return_code'] === 'SUCCESS' && array_get($message, 'result_code') === 'SUCCESS'){
+                    $orderNo = $message['out_trade_no'];
+                    $totalFee = $message['total_fee'];
+                    OrderService::paySuccess($orderNo, $message['transaction_id'], $totalFee / 100);
+                } else {
+                    return $fail('通信失败，请稍后再通知我');
+                }
+
+                // 其他未知情况
+                return false;
+            });
+            return $response;
+        }else{
+            throw new BaseResponseException($result_code.':'.$result_msg);
+        }
+
 
     }
 

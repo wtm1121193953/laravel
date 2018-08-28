@@ -49,6 +49,7 @@ class RequestLog
                 $request->is('api/oper/inviteChannel/downloadInviteQrcode')
                 || $request->is('api/merchant/inviteChannel/downloadInviteQrcode')
                 || $request->is('api/pay/notify')
+                || $request->is('/pay/reapalPayNotify')
             )
             && !(
                 isset($responseData['code']) &&

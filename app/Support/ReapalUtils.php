@@ -11,6 +11,10 @@ namespace App\Support;
 class ReapalUtils
 {
 
+    private $hex_iv = '00000000000000000000000000000000'; # converted JAVA byte code in to HEX and placed it here
+
+    private $key = 'g0be2385657fa355af68b74e9913a1320af82gb7ae5f580g79bffd04a402ba8f'; #Same as in JAVA
+
     //签名函数
     function createSign ($paramArr,$apiKey) {
         global $appSecret;
@@ -50,9 +54,9 @@ class ReapalUtils
     function RSAEncryptkey($encryptKey,$reapalPublicKey){
         $public_key= $this->getPublicKey($reapalPublicKey);
 
-        $pu_key = $this->openssl_pkey_get_public($public_key);//这个函数可用来判断公钥是否是可用的
+        $pu_key = openssl_pkey_get_public($public_key);//这个函数可用来判断公钥是否是可用的
 
-        $this->openssl_public_encrypt($encryptKey,$encrypted,$pu_key);//公钥加密
+        openssl_public_encrypt($encryptKey,$encrypted,$pu_key);//公钥加密
 
         return base64_encode($encrypted);
 
@@ -66,8 +70,8 @@ class ReapalUtils
      */
     function RSADecryptkey($encryptKey,$merchantPrivateKey){
         $private_key= $this->getPrivateKey($merchantPrivateKey);
-        $pi_key =  $this->openssl_pkey_get_private($private_key);//这个函数可用来判断私钥是否是可用的，可用返回资源id Resource id
-        $this->openssl_private_decrypt(base64_decode($encryptKey),$decrypted,$pi_key);//私钥解密
+        $pi_key =  openssl_pkey_get_private($private_key);//这个函数可用来判断私钥是否是可用的，可用返回资源id Resource id
+        openssl_private_decrypt(base64_decode($encryptKey),$decrypted,$pi_key);//私钥解密
         return $decrypted;
 
     }
@@ -92,9 +96,9 @@ class ReapalUtils
         return $this->decrypt($data,$encryptKey);
 
     }
-    function encrypt($input, $key) {
+    /*function encrypt($input, $key) {
         $size = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_ECB);
-        $input = pkcs5_pad($input, $size);
+        $input = $this->pkcs5_pad($input, $size);
         $td = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_ECB, '');
         $iv = mcrypt_create_iv (mcrypt_enc_get_iv_size($td), MCRYPT_RAND);
         mcrypt_generic_init($td, $key, $iv);
@@ -103,13 +107,19 @@ class ReapalUtils
         mcrypt_module_close($td);
         $data = base64_encode($data);
         return $data;
+    }*/
+    public function encrypt($input)
+    {
+        $data = openssl_encrypt($input, 'AES-256-CBC', $this->key, OPENSSL_RAW_DATA, $this->hexToStr($this->hex_iv));
+        $data = base64_encode($data);
+        return $data;
     }
 
-    function pkcs5_pad ($text, $blocksize) {
+    /*function pkcs5_pad ($text, $blocksize) {
         $pad = $blocksize - (strlen($text) % $blocksize);
         return $text . str_repeat(chr($pad), $pad);
-    }
-    function decrypt($sStr, $sKey) {
+    }*/
+    /*function decrypt($sStr, $sKey) {
         $decrypted= mcrypt_decrypt(
             MCRYPT_RIJNDAEL_128,
             $sKey,
@@ -120,6 +130,11 @@ class ReapalUtils
         $dec_s = strlen($decrypted);
         $padding = ord($decrypted[$dec_s-1]);
         $decrypted = substr($decrypted, 0, -$padding);
+        return $decrypted;
+    }*/
+    public function decrypt($input)
+    {
+        $decrypted = openssl_decrypt(base64_decode($input), 'AES-256-CBC', $this->key, OPENSSL_RAW_DATA, $this->hexToStr($this->hex_iv));
         return $decrypted;
     }
 
@@ -187,7 +202,46 @@ class ReapalUtils
         //加密数据
         $request['data'] = $this->AESEncryptRequest($generateAESKey,$paramArr);
         $request['version'] = $version;
-        echo json_encode($paramArr);
+        //echo json_encode($paramArr);
         return $this->sendHttpRequest($request,$url);
+    }
+
+    /*
+  For PKCS7 padding
+ */
+
+    private function addpadding($string, $blocksize = 16) {
+
+        $len = strlen($string);
+
+        $pad = $blocksize - ($len % $blocksize);
+
+        $string .= str_repeat(chr($pad), $pad);
+
+        return $string;
+
+    }
+
+    private function strippadding($string) {
+
+        $slast = ord(substr($string, -1));
+        $slastc = chr($slast);
+        $pcheck = substr($string, -$slast);
+        if (preg_match("/$slastc{" . $slast . "}/", $string)) {
+            $string = substr($string, 0, strlen($string) - $slast);
+            return $string;
+        } else {
+            return false;
+        }
+    }
+
+    function hexToStr($hex)
+    {
+        $string='';
+        for ($i=0; $i < strlen($hex)-1; $i+=2)
+        {
+            $string .= chr(hexdec($hex[$i].$hex[$i+1]));
+        }
+        return $string;
     }
 }

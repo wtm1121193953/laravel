@@ -3,6 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Jobs\Schedule\SettlementAgentPayDaily;
+
+use App\Jobs\Schedule\SettlementDaily;
+use App\Jobs\Schedule\SettlementWeekly;
+
 use App\Jobs\OrderFinishedJob;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
@@ -58,6 +62,10 @@ class Test extends Command
      */
     public function handle()
     {
+        SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY);
+        dd('hi');
+        SettlementDaily::dispatch(Carbon::today());
+        dd(12);
         SettlementAgentPayDaily::dispatch();
         dd(123);
         $order = OrderService::getById(174);
