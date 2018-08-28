@@ -82,19 +82,7 @@
                 query: {
                     page: 1,
                 },
-                list: [
-                    // {
-                    //     created_at:'2018',
-                    //     name: '詹三',
-                    //     mobile: '13800138000',
-                    //     dividedInto: '10%',
-                    //     activeMerchantNumber: '五谷鱼粉',
-                    //     auditMerchantNumber: '牛粪火锅',
-                    //     remark: '随便',
-                    //     status: 1,
-
-                    // }
-                ],
+                list: [],
                 total: 0,
                 dialogRemarksFormVisible: false,
                 dialogDividedIntoSettingsFormVisible: false,
