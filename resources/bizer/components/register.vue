@@ -22,8 +22,8 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        margin: -230px 0 0 -180px;
-        width: 310px;
+        margin: -230px 0 0 -225px;
+        width: 400px;
         padding: 25px;
         box-shadow: 0 0 100px rgba(0,0,0,.08);
         background-color: #fff;
@@ -79,23 +79,23 @@
                 <el-form :model="form" :rules="formRules" ref="form"
                          @keyup.native.enter="doLogin"
                          label-position="left"
-                         label-width="0px">
-                    <el-form-item prop="mobile" ref="mobile">
-                        <el-input type="text" v-model="form.mobile" auto-complete="off" placeholder="帐号"/>
+                         label-width="98px">
+                    <el-form-item label="帐号" prop="mobile" ref="mobile">
+                        <el-input type="text" v-model="form.mobile" auto-complete="off" placeholder="请输入手机号"/>
                     </el-form-item>
-                    <el-form-item prop="verify_code">
+                    <el-form-item label="验证码" prop="verify_code">
                         <el-input type="text" v-model="form.verify_code" auto-complete="off" class="w-160"
-                                  placeholder="验证码" maxlength="4"/>
+                                  placeholder="请输入验证码" maxlength="4"/>
                         <el-button type="primary" class="fr" style="width:132px;" :disabled="buttonCode.isDisabled" @click.native.prevent="sendCode">{{buttonCode.buttonName}}</el-button>
                     </el-form-item>
-                    <el-form-item prop="password">
-                        <el-input type="password" v-model="form.password" auto-complete="off" placeholder="设置密码"/>
+                    <el-form-item label="设置密码" prop="password">
+                        <el-input type="password" v-model="form.password" auto-complete="off" placeholder="请设置6-12位密码，不区分大小写"/>
                     </el-form-item>
-                    <el-form-item prop="confirmPassword">
-                        <el-input type="password" v-model="form.confirmPassword" auto-complete="off" placeholder="再次输入密码"/>
+                    <el-form-item label="再次输入密码" prop="confirmPassword">
+                        <el-input type="password" v-model="form.confirmPassword" auto-complete="off" placeholder="请再次输入密码"/>
                     </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" style="width:100%;" v-loading="loading" :disabled="loading"
+                    <el-form-item label-width="0">
+                        <el-button type="primary" style="width:75%; display: block; margin: 0 auto;" v-loading="loading" :disabled="loading"
                                    @click.native.prevent="doLogin">立即注册
                         </el-button>
                     </el-form-item>
