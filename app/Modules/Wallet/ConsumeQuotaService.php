@@ -11,8 +11,11 @@ use App\Modules\Order\OrderService;
 use App\Modules\Tps\TpsBindService;
 use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserCreditSettingService;
+use App\Support\TpsApi;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Carbon;
 
 /**
  * 消费额相关service
@@ -130,19 +133,35 @@ class ConsumeQuotaService extends BaseService
 //            ->get();
         // 拼装要发送的数据
         $data = [];
+        $tpsId= [];
         foreach ($records as $record) {
             $tpsBind = TpsBindService::getTpsBindInfoByOriginInfo($record->origin_id, $record->origin_type);
             $data[] = [
-                'orderId' => $order->order_no,
-                'orderPayTime' => $order->pay_time,
-                'createTime' => $order->created_at,
-                'customerId' => $tpsBind->tps_uid,
-                'shopkeeperId' => $tpsBind->tps_uid,
-                'orderAmountUsd' => '',
-                'orderProfitUsd' => '',
+                'orderId'       => $order->order_no,
+                'orderPayTime'  => $order->pay_time,
+                'createTime'    => $order->created_at->toDateTimeString(),
+                'customerId'    => $tpsBind->tps_uid,
+                'shopkeeperId'  => $tpsBind->tps_uid,
+                'orderAmountUsd'=> $record->consume_quota,
+                'orderProfitUsd'=> $record->order_profit_amount,
+                'score'         => '1000',
+                'status'        => $record->status,
+//                'scoreYearMonth'=> '',
             ];
+            $tpsId[] = $record->id;
         }
-//        ConsumeQuotaService::syncConsumeQuotaToTps($order);
+        if( empty($data) )
+        {
+            return false;
+        }
+        // 发起请求
+        $res = TpsApi::quotaRecords( $data );
+        $saveData['status'] = ( $res['code']=='101' ) ? WalletConsumeQuotaRecord::STATUS_FAILED : WalletConsumeQuotaRecord::STATUS_REPLACEMENT;
+
+        if( !WalletConsumeQuotaRecord::whereIn('id', $tpsId)->update( $saveData ) )
+        {
+            Log::info('消费记录提交成功，但入库修改失败');
+        }
     }
 
     /**

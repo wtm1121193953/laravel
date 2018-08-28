@@ -39,12 +39,13 @@ class WalletConsumeQuotaRecord extends BaseModel
     const TYPE_SUBORDINATE = 2;
 
     /**
-     * 状态 1-冻结中 2-已解冻待置换 3-已置换 4-已退款
+     * 状态 1-冻结中 2-已解冻待置换 3-已置换 4-已退款 5-置换失败
      */
     const STATUS_FREEZE = 1;
     const STATUS_UNFREEZE = 2;
     const STATUS_REPLACEMENT = 3;
     const STATUS_REFUND = 4;
+    const STATUS_FAILED = 5;
 
     /**
      * 消费额所属订单

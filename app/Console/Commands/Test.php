@@ -27,6 +27,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
+use App\Jobs\ConsumeQuotaSyncToTpsJob;
+
 use App\Support\TpsApi;
 
 class Test extends Command
@@ -62,6 +64,9 @@ class Test extends Command
      */
     public function handle()
     {
+        $order = Order::where('id', 984)->first();
+        ConsumeQuotaSyncToTpsJob::dispatch($order);
+        dd('hi');
         SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY);
         dd('hi');
         SettlementDaily::dispatch(Carbon::today());
