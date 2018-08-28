@@ -188,7 +188,7 @@
              }
             if (_self.$route.query) {
                 Object.assign(_self.query,_self.$route.query);
-                _self.query.operId = parseInt(_self.query.operId);
+                _self.$route.query.operId ? _self.query.operId = parseInt(_self.query.operId):'';
             }
             _self.getList();
         },
