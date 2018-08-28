@@ -213,7 +213,7 @@
             }
             if (_self.$route.query) {
                 Object.assign(_self.query,_self.$route.query);
-                _self.query.merchantId = parseInt(_self.query.merchantId);
+                _self.$route.query.merchantId ? _self.query.merchantId = parseInt(_self.$route.query.merchantId):'';
             }
 
             _self.getList();
