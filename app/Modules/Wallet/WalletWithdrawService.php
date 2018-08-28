@@ -424,12 +424,17 @@ class WalletWithdrawService extends BaseService
                     $batchId = $walletWithdraw->batch_id;
                 }
             }
+            // 因为是同一批次或者是单个的，所以批次表就更新一次
             $walletBatch = WalletBatchService::getById($batchId);
             $walletBatch->amount += $amount;
             $walletBatch->total += $total;
             $walletBatch->success_amount += $amount;
             $walletBatch->success_total += $total;
             $walletBatch->save();
+            // 更新批次表后，判断该批次的提现订单是否都已经打款 且 该批次状态为准备打款，如果是则 修改状态为 打款完成
+            if (WalletBatchService::checkBatchPayOrNot($batchId) && $walletBatch->status == WalletBatch::STATUS_PREPARE_WITHDRAW) {
+                WalletBatchService::changeStatus($walletBatch, WalletBatch::STATUS_WITHDRAW_SUCCESS);
+            }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -466,12 +471,17 @@ class WalletWithdrawService extends BaseService
                     $batchId = $walletWithdraw->batch_id;
                 }
             }
+            // 因为是同一批次或者是单个的，所以批次表就更新一次
             $walletBatch = WalletBatchService::getById($batchId);
             $walletBatch->amount += $amount;
             $walletBatch->total += $total;
             $walletBatch->failed_amount += $amount;
             $walletBatch->failed_total += $total;
             $walletBatch->save();
+            // 更新批次表后，判断该批次的提现订单是否都已经打款 且 该批次状态为准备打款，如果是则 修改状态为 打款完成
+            if (WalletBatchService::checkBatchPayOrNot($batchId) && $walletBatch->status == WalletBatch::STATUS_PREPARE_WITHDRAW) {
+                WalletBatchService::changeStatus($walletBatch, WalletBatch::STATUS_WITHDRAW_SUCCESS);
+            }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

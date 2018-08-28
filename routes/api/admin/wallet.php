@@ -16,11 +16,5 @@ Route::get('/withdraw/batch/export', 'WalletBatchController@exportExcel');
 Route::post('/withdraw/batch/add', 'WalletBatchController@add');
 Route::post('/withdraw/batch/delete', 'WalletBatchController@delete');
 Route::get('/withdraw/batch/detail', 'WalletBatchController@detail');
-
-/*/admin/withdraw/batch
-/api/admin/withdraw/batches
-/api/admin/withdraw/batch/detail
-/api/admin/withdraw/record/detail
-/api/admin/withdraw/record/paysuccess
-/api/admin/withdraw/record/payfail*/
+Route::post('/withdraw/batch/changeStatus', 'WalletBatchController@changeBatchStatus');
 

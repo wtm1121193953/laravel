@@ -5,7 +5,7 @@
             <span class="span-top" v-if="batchData.status == 1">结算中</span>
             <span class="span-top" v-else-if="batchData.status == 2">准备打款</span>
             <span class="span-top" v-else-if="batchData.status == 3">打款完成</span>
-            <el-button v-if="batchData.status == 1" size="small" type="success">准备打款</el-button>
+            <el-button v-if="batchData.status == 1" size="small" type="success" @click.native="preparePay">准备打款</el-button>
         </el-col>
         <div class="group">
             <div class="item" v-for="item in statistics">
@@ -360,6 +360,22 @@
                     api.post('/withdraw/record/payFail', param).then(data => {
                         this.$alert('操作成功');
                         this.getList();
+                    })
+                }).catch(() => {
+
+                })
+            },
+            preparePay() {
+                this.$confirm(`<div>确认将此批次标记成准备打款状态吗？</div><div>标记成功后不能再添加新的订单，此操作不可取消</div>`,'批次操作提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'info',
+                    center: true,
+                    dangerouslyUseHTMLString: true,
+                }).then(() => {
+                    api.post('/withdraw/batch/changeStatus', {id: this.form.batchId}).then(data => {
+                        this.$alert('操作成功');
+                        this.batchData = data;
                     })
                 }).catch(() => {
 

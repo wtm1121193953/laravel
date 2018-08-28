@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Exports\WithdrawBatchExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Wallet\WalletBatch;
@@ -100,6 +101,29 @@ class WalletBatchController extends Controller
         ]);
         $id = request('id');
         $batch = WalletBatchService::getById($id);
+        return Result::success($batch);
+    }
+
+    /**
+     * 批次明细 准备打款按钮功能 修改状态为准备打款
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function changeBatchStatus()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $batch = WalletBatchService::getById($id);
+        if (empty($batch)) {
+            throw new BaseResponseException('该批次不存在');
+        }
+        // 1.修改为准备打款
+        $batch = WalletBatchService::changeStatus($batch, WalletBatch::STATUS_PREPARE_WITHDRAW);
+        // 2.判断该批次是否都已经打款 且 该批次状态为准备打款，如果是则 修改状态为 打款完成
+        if (WalletBatchService::checkBatchPayOrNot($batch->id) && $batch->status == WalletBatch::STATUS_PREPARE_WITHDRAW) {
+            $batch = WalletBatchService::changeStatus($batch, WalletBatch::STATUS_WITHDRAW_SUCCESS);
+        }
         return Result::success($batch);
     }
 }
