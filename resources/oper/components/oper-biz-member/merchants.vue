@@ -1,5 +1,4 @@
 <template>
-<template>
 
     <page :title="'业务-' + operBizMember.name" :breadcrumbs="{我的员工: '/operBizMembers'}" v-loading="isLoading">
         <el-table :data="list" stripe>
