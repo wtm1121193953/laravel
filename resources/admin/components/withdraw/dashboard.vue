@@ -173,7 +173,8 @@
                 })
             },
             goWithdrawRecords(status){
-                this.$menu.change('/withdraw/record?type=' + this.originType + '&status=' + status)
+                this.$menu.change('/withdraw/records?type=' + this.originType + '&status=' + status)
+                store.commit('setCurrentMenu', '/withdraw/records');
             },
             originTypeChange(){
                 this.timeType = 'today';

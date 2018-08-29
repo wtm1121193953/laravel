@@ -33,19 +33,26 @@
             </el-form>
         </el-col>
         <el-col>
-            <div class="tips">
-                温馨提示： 1.提现手续费{{initForm.ratio}}%
+            <div class="tips" style="display: inline;">
+                <div style="float:left;">
+                    <p>温馨提示： </p>
+                </div>
 
-                <p>2.提现需要邮寄发票，发票总面额至少要大于提现额度，否则可能造成提现不成功</p>
-
-                <p>发票邮寄地址：深圳市福田区安化工业区4栋3楼 华翎科技有限公司  联系人：华翎财务部  电话 ：0755- 82563639</p>
-
-                <p>3.提现成功发起后，7个工作日左右到账。</p>
-
-                <p>4.每月10号、20号、30号才能提现</p>
-
-                <p>5.最低提现金额100元</p>
+                <div style="float:left;">
+                    <ol>
+                        <li><p>提现手续费{{initForm.ratio}}%</p></li>
+                        <li>
+                            <p>提现需要邮寄发票，发票总面额至少要大于提现额度，否则可能造成提现不成功</p>
+                            <p>发票邮寄地址：深圳市福田区安化工业区4栋3楼 华翎科技有限公司  联系人：华翎财务部  电话 ：0755- 82563639</p>
+                        </li>
+                        <li><p>提现成功发起后，7个工作日左右到账。</p></li>
+                        <li><p>每月10号、20号、30号才能提现</p></li>
+                        <li><p>最低提现金额100元</p></li>
+                    </ol>
+                </div>
             </div>
+        </el-col>
+        <el-col>
             <el-button @click="cancel">取 消</el-button>
             <el-button type="primary" @click="commit">确 定</el-button>
         </el-col>

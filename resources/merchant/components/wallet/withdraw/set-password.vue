@@ -48,6 +48,8 @@
                     callback(new Error('请输入密码'));
                 } else if (isNaN(value)) {
                     callback(new Error('请输入数字值'));
+                } else if (value.length !== 6) {
+                    callback(new Error('密码需为6位'));
                 } else {
                     if (this.form.checkPassword !== '') {
                         this.$refs.form.validateField('checkPassword');
@@ -60,7 +62,7 @@
                     callback(new Error('请再次输入密码'));
                 } else if (isNaN(value)) {
                     callback(new Error('请输入数字值'));
-                }  else if (value !== this.form.password) {
+                } else if (value !== this.form.password) {
                     callback(new Error('两次输入密码不一致!'));
                 } else {
                     callback();
@@ -105,6 +107,9 @@
                             this.$message.success('提现密码设置成功');
                             this.$refs.form.resetFields();
                             this.initForm();
+                            if(this.$route.query.redirect){
+                                router.replace(this.$route.query.redirect)
+                            }
                         });
                     }
                 })
