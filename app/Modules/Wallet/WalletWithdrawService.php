@@ -431,8 +431,6 @@ class WalletWithdrawService extends BaseService
             }
             // 因为是同一批次或者是单个的，所以批次表就更新一次
             $walletBatch = WalletBatchService::getById($batchId);
-            $walletBatch->amount += $amount;
-            $walletBatch->total += $total;
             $walletBatch->success_amount += $amount;
             $walletBatch->success_total += $total;
             $walletBatch->save();
@@ -478,8 +476,6 @@ class WalletWithdrawService extends BaseService
             }
             // 因为是同一批次或者是单个的，所以批次表就更新一次
             $walletBatch = WalletBatchService::getById($batchId);
-            $walletBatch->amount += $amount;
-            $walletBatch->total += $total;
             $walletBatch->failed_amount += $amount;
             $walletBatch->failed_total += $total;
             $walletBatch->save();
