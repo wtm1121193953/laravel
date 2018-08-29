@@ -71,7 +71,7 @@ class WalletWithdrawService extends BaseService
     }
 
     /**
-     * 创建提现记录 并更新钱包可提现余额
+     * 创建 提现记录 并更新钱包可提现余额
      * @param Wallet $wallet
      * @param Merchant|Oper|User $obj
      * @param $amount
@@ -86,6 +86,9 @@ class WalletWithdrawService extends BaseService
 
         if ($wallet->status == Wallet::STATUS_OFF) {
             throw new BaseResponseException('钱包已冻结，暂不支持提现');
+        }
+        if ($wallet->balance - $amount < 0) {
+            throw new BaseResponseException('钱包余额不足');
         }
 
         if ($obj instanceof User) {

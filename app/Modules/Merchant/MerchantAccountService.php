@@ -107,7 +107,7 @@ class MerchantAccountService extends BaseService
             [ 'id' => 5, 'name' => '财务管理', 'level' => 1, 'url' => '/merchant/settlements',],
             [ 'id' => 15, 'name' => '账户管理', 'level' => 1, 'url' => '/wallet', 'sub' =>
                 [
-                    [ 'id' => 16, 'name' => '账总总览', 'level' => 2, 'url' => '/merchant/wallet/summary/list', 'pid' => 15,],
+                    [ 'id' => 16, 'name' => '账户总览', 'level' => 2, 'url' => '/merchant/wallet/summary/list', 'pid' => 15,],
 //                    [ 'id' => 17, 'name' => '我的消费额', 'level' => 2, 'url' => '/merchant/wallet/consume/list', 'pid' => 15,],
                     [ 'id' => 18, 'name' => '提现密码管理', 'level' => 2, 'url' => '/merchant/wallet/withdraw/password', 'pid' => 15,],
                 ]
