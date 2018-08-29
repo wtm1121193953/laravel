@@ -71,12 +71,13 @@ class WalletWithdrawService extends BaseService
     }
 
     /**
-     * 创建提现记录 并更新钱包可提现余额
+     * 创建 提现记录 并更新钱包可提现余额
      * @param Wallet $wallet
      * @param Merchant|Oper|User $obj
      * @param $amount
      * @param $param
      * @return WalletWithdraw
+     * @throws \Exception
      */
     public static function createWalletWithdrawAndUpdateWallet(Wallet $wallet, $obj, $amount, $param)
     {
@@ -85,6 +86,9 @@ class WalletWithdrawService extends BaseService
 
         if ($wallet->status == Wallet::STATUS_OFF) {
             throw new BaseResponseException('钱包已冻结，暂不支持提现');
+        }
+        if ($wallet->balance - $amount < 0) {
+            throw new BaseResponseException('钱包余额不足');
         }
 
         if ($obj instanceof User) {
@@ -98,8 +102,8 @@ class WalletWithdrawService extends BaseService
             throw new BaseResponseException('用户类型错误');
         }
 
+        DB::beginTransaction();
         try{
-            DB::beginTransaction();
             // 1.创建提现记录
             $withdraw = new WalletWithdraw();
             $withdraw->wallet_id = $wallet->id;
@@ -107,8 +111,8 @@ class WalletWithdrawService extends BaseService
             $withdraw->origin_type = $wallet->origin_type;
             $withdraw->withdraw_no = self::createWalletWithdrawNo();
             $withdraw->amount = $amount;
-            $withdraw->charge_amount = number_format($amount * $ratio / 100, 2);
-            $withdraw->remit_amount = number_format($amount - number_format($amount * $ratio / 100, 2), 2);
+            $withdraw->charge_amount = number_format($amount * $ratio / 100, 2, '.', '');
+            $withdraw->remit_amount = $amount - $withdraw->charge_amount;
             $withdraw->status = WalletWithdraw::STATUS_AUDITING;
             $withdraw->invoice_express_company = $invoiceExpressCompany;
             $withdraw->invoice_express_no = $invoiceExpressNo;
@@ -119,7 +123,7 @@ class WalletWithdrawService extends BaseService
             $withdraw->save();
 
             // 2.更新钱包余额
-            $wallet->balance = number_format($wallet->balance - $amount, 2);
+            $wallet->balance = $wallet->balance - $amount;
             $wallet->save();
 
             // 3.创建钱包流水记录
@@ -146,7 +150,7 @@ class WalletWithdrawService extends BaseService
                 'message' => $e->getMessage(),
                 'data' => $e
             ]);
-            throw new BaseResponseException('提现失败');
+            throw $e;
         }
     }
 
@@ -381,7 +385,7 @@ class WalletWithdrawService extends BaseService
     private static function withdrawFail(WalletWithdraw $walletWithdraw, $status, $remark = '') {
         // 1. 提现记录表 审核状态修改为 审核不通过
         $walletWithdraw->status = $status;
-        $walletWithdraw->remark = $remark;
+        $walletWithdraw->remark = $remark ?: '';
         $walletWithdraw->save();
         // 2. 更新钱包表
         $wallet = WalletService::getWalletById($walletWithdraw->wallet_id);
@@ -430,8 +434,6 @@ class WalletWithdrawService extends BaseService
             }
             // 因为是同一批次或者是单个的，所以批次表就更新一次
             $walletBatch = WalletBatchService::getById($batchId);
-            $walletBatch->amount += $amount;
-            $walletBatch->total += $total;
             $walletBatch->success_amount += $amount;
             $walletBatch->success_total += $total;
             $walletBatch->save();
@@ -477,8 +479,6 @@ class WalletWithdrawService extends BaseService
             }
             // 因为是同一批次或者是单个的，所以批次表就更新一次
             $walletBatch = WalletBatchService::getById($batchId);
-            $walletBatch->amount += $amount;
-            $walletBatch->total += $total;
             $walletBatch->failed_amount += $amount;
             $walletBatch->failed_total += $total;
             $walletBatch->save();

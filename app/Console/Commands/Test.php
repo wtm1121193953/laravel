@@ -75,9 +75,14 @@ class Test extends Command
         dd(123);
         $order = OrderService::getById(174);
         OrderFinishedJob::dispatch($order);
+        $orders = Order::whereIn('user_id', [20,31,36])->get();
+        foreach ($orders as $order) {
+//            $order->splitting_status = 1;
+//            $order->settlement_rate = 10;
+//            $order->save();
+            OrderFinishedJob::dispatch($order);
+        }
         dd('ok');
-        dd(date('Ymd') .substr(time(), -7, 7). str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT));
-
 
         $url = 'http://yunjipin-o2o.com/storage/miniprogram/app_code/_123_375.jpg';
         WechatService::addNameToAppCode($url, '招牌名称哈哈哈哈哈哈哈哈哈哈');

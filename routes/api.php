@@ -31,7 +31,8 @@ Route::any('/pay/notify', 'PayController@notify');
 //融宝支付回调
 Route::any('/pay/payNotify', 'PayController@payNotify');
 //融宝支付
-Route::any('/pay/reapalPayNotify', 'PayController@reapalPayNotify');
+Route::any('/pay/reapalPayNotify', 'PayController@notifyRealpay');
+Route::any('/pay/reapalRefundNotify', 'PayController@refundRealpay');
 
 // 模拟支付成功接口, 只有本地才有效
 Route::any('/pay/mockPaySuccess', 'PayController@mockPaySuccess');

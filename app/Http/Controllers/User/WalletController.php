@@ -9,8 +9,11 @@
 namespace App\Http\Controllers\User;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\NoPermissionException;
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\MerchantService;
+use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\ConsumeQuotaService;
 use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletBill;
@@ -103,12 +106,7 @@ class WalletController extends Controller
         ], $pageSize, true);
         $data = $query->paginate($pageSize);
         // 当月总消费额
-        $amount = 0;
-        $query->chunk(100, function ($items) use (&$amount) {
-            foreach ($items as $item) {
-                $amount += $item->consume_quota;
-            }
-        });
+        $amount = $query->sum('consume_quota');
 
         return Result::success([
             'list' => $data->items(),
@@ -129,5 +127,28 @@ class WalletController extends Controller
         $consumeQuota = ConsumeQuotaService::getDetailById($id);
 
         return Result::success($consumeQuota);
+    }
+
+    /**
+     * 获取商户订单 分润给用户自己 的 分润系数
+     * @return float|int
+     */
+    public function getUserFeeSplittingRatioToSelf()
+    {
+        $this->validate(request(), [
+            'merchantId' => 'required|integer|min:1'
+        ]);
+        $merchantId = request('merchantId');
+        $feeRatio = UserCreditSettingService::getFeeSplittingRatioToSelfSetting(); // 自反的分润比例
+        $merchant = MerchantService::getById($merchantId);
+        if (empty($merchant)) {
+            throw new BaseResponseException('该商户不存在');
+        }
+        $settlementRate = $merchant->settlement_rate;
+        $ratio = $feeRatio / 100 * ($settlementRate / 100 - ($settlementRate / 100 * 0.06 * 1.12 / 1.06 + $settlementRate / 100 * 0.1 * 0.25 + 0.0068));
+        // 返回的是系数 直接乘以金额就好了
+        return Result::success([
+            'ratio' => $ratio,
+        ]);
     }
 }

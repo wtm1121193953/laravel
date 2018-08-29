@@ -58,7 +58,6 @@ class ReapalAgentPay
 
         $nowTime = date('Y-m-d H:i:s');
 
-        $merchantId = $this->merchantId;
 
         $paramArr = array(
             'charset' => $this->charset,
@@ -72,7 +71,7 @@ class ReapalAgentPay
         );
 
         $url = $this->dsfUrl . 'agentpay/pay';
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId, $this->dsfVersion, $this->dsf_sign_type);
+        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $this->merchantId, $this->dsfVersion, $this->dsf_sign_type);
         $response = json_decode($result, true);
         $encryptkey = $reapalMap->encryptKey($response['encryptkey'], $this->merchantPrivateKey);
         return $reapalMap->decrypt($encryptkey, $response['data']);

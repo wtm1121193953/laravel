@@ -6,7 +6,7 @@
                     {{initForm.balance}}
                 </el-form-item>
                 <el-form-item prop="amount" label="提现金额">
-                    <el-input-number v-model="form.amount" :min="0" :max="parseInt(initForm.balance)"/>
+                    <el-input-number v-model="form.amount" :min="0" :max="initForm.balance"/>
                     <div>手续费{{chargeAmount}}</div>
                 </el-form-item>
                 <el-form-item prop="withdrawPassword" label="提现密码">
@@ -20,6 +20,9 @@
                 </el-form-item>
                 <el-form-item label="到账金额">
                     {{remitAmount}}
+                </el-form-item>
+                <el-form-item label="账户类型">
+                    {{initForm.bankCardType == 1 ? '公账' : '私账'}}
                 </el-form-item>
                 <el-form-item label="提现账户名">
                     {{initForm.bankOpenName}}
@@ -157,7 +160,12 @@
                 this.formLoading = true;
                 api.get('/wallet/withdraw/getWithdrawInfo').then(data => {
                     if (!data.isSetPassword) {
-                        router.push('/wallet/withdraw/password');
+                        router.push({
+                            path: '/wallet/withdraw/password',
+                            query: {
+                                redirect: '/wallet/withdraw/form'
+                            }
+                        });
                     }
                     this.initForm = data;
                     this.formLoading = false;

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateLogReapalPayRequestsTable extends Migration
+class CreateLogOrderNotifyReapalsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateLogReapalPayRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::create('log_reapal_pay_requests', function (Blueprint $table) {
+        Schema::create('log_order_notify_reapals', function (Blueprint $table) {
             $table->increments('id');
             $table->tinyInteger('type')->default(0)->comment('请求类型');
-            $table->string('order_no',50)->index()->default('')->comment('订单号');
-            $table->string('request', 5000)->default('')->comment('请求内容');
-            $table->string('response',5000)->default('')->comment('相应内容');
+            $table->string('content',5000)->default('')->comment('异步回调内容');
             $table->timestamps();
             $table->index('created_at');
         });
@@ -31,6 +29,6 @@ class CreateLogReapalPayRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('log_reapal_pay_requests');
+        Schema::dropIfExists('log_order_notify_reapals');
     }
 }

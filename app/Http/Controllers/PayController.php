@@ -18,6 +18,8 @@ use App\Jobs\OrderPaidJob;
 use App\Modules\Goods\Goods;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Dishes\DishesGoods;
+use App\Modules\Log\LogDbService;
+use App\Modules\Log\LogOrderNotifyReapal;
 use App\Modules\Oper\OperMiniprogramService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
@@ -144,9 +146,18 @@ class PayController extends Controller
 
 
     /**
+     * 融宝退款通知
+     */
+    public function refundRealpay()
+    {
+        $reapal = request()->getContent();
+        LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_REFUND, $reapal);
+    }
+
+    /**
      * 融宝支付通知接口, 用于接收微信支付的通知
      */
-    public function payNotify()
+    public function notifyRealpay()
     {
         /*$reapal = new ReapalPay();
 
@@ -157,6 +168,7 @@ class PayController extends Controller
         return $resultArr;*/
 
         $reapal = request()->getContent();
+        LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_PAY,$reapal);
         $request = simplexml_load_string($reapal);
 
         var_dump(1111111111);die();
@@ -193,6 +205,8 @@ class PayController extends Controller
         }else{
             throw new BaseResponseException($result_code.':'.$result_msg);
         }
+
+
 
 
     }

@@ -34,4 +34,13 @@ class LogDbService
         $log->response = $response;
         $log->save();
     }
+
+    public static function reapalNotify($type, $content)
+    {
+
+        $log = new LogOrderNotifyReapal();
+        $log->type = $type;
+        $log->content = $content;
+        $log->save();
+    }
 }

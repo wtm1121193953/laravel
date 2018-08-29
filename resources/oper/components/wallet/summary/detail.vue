@@ -4,8 +4,8 @@
             <el-form label-width="120px" label-position="left" size="small">
                 <el-col :span="12">
                     <el-form-item label="订单类型">
-                        <span v-if="billData.type == 2">用户消费返利</span>
-                        <span v-else-if="billData.type == 4">用户消费返利退款</span>
+                        <span v-if="billData.type == 2">下级消费返利</span>
+                        <span v-else-if="billData.type == 4">下级消费返利退款</span>
                         <span v-else-if="billData.type == 5">交易分润入账</span>
                         <span v-else-if="billData.type == 6">交易分润退款</span>
                         <span v-else>未知 ({{billData.type}})</span>
@@ -80,7 +80,7 @@
                         <span v-else>未知 ({{billData.type}})</span>
                     </el-form-item>
                     <el-form-item label="提现金额">
-                        -{{orderOrWithdrawData.amount}}元
+                        {{orderOrWithdrawData.amount}}元
                     </el-form-item>
                     <el-form-item label="到账金额">
                         {{orderOrWithdrawData.remit_amount}}元
@@ -92,9 +92,11 @@
                         {{orderOrWithdrawData.bank_name}}
                     </el-form-item>
                     <el-form-item label="交易状态">
-                        <span v-if="orderOrWithdrawData.status == 1">提现中</span>
-                        <span v-else-if="orderOrWithdrawData.status == 2">提现成功</span>
-                        <span v-else-if="orderOrWithdrawData.status == 3">提现失败</span>
+                        <span v-if="orderOrWithdrawData.status == 1">审核中</span>
+                        <span v-else-if="orderOrWithdrawData.status == 2">审核通过</span>
+                        <span v-else-if="orderOrWithdrawData.status == 3">已打款</span>
+                        <span v-else-if="orderOrWithdrawData.status == 4">打款失败</span>
+                        <span v-else-if="orderOrWithdrawData.status == 5">审核不通过</span>
                         <span v-else>未知 ({{orderOrWithdrawData.status}})</span>
                     </el-form-item>
                     <el-form-item label="发票快递公司">

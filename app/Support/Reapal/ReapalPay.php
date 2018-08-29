@@ -75,7 +75,7 @@ class ReapalPay
             'member_ip' => request()->ip(),
             'seller_email' => $this->sellerEmail,
 
-            'notify_url' => url('/pay/reapalPayNotify'),
+            'notify_url' => url('/api/pay/reapalPayNotify'),
 
             'version' => $this->apiVersion,
 
@@ -112,36 +112,32 @@ class ReapalPay
 
         $url = $this->apiUrl . '/qrcode/scan/encryptSearch';
 
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $this->merchantId);
-        $response = json_decode($result, true);
-        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'], $this->merchantPrivateKey);
+        $result = $this->apiPost($url, $paramArr);
+        LogDbService::reapalPayRequest(1,$paramArr['order_no'],$paramArr,$result);
 
-        return $reapalMap->AESDecryptResponse($encryptkey, $response['data']);
+        dd($result);
     }
 
     /**
      * 退款接口
      */
-    public function refund()
+    public function refund($order, $orderPay)
     {
         //参数数组
         $paramArr = [
-            'merchant_id' => request('merchant_id'),
-            'refund_order_no' => request('refund_order_no'),
-            'order_no' => request('order_no'),
-            'amount' => request('amount'),
-
+            'merchant_id' => $this->merchantId,
+            'refund_order_no' => $orderPay->transaction_no,
+            'order_no' => $order->order_no,
+            'amount' => $orderPay->amount * 100,
+            'notify_url' => url('/api/pay/reapalRefundNotify'),
+            'version' => $this->apiVersion,
         ];
 
-        $merchantId = request('merchat_id') ? request('merchat_id') : $this->merchantId;
-
-        $reapalMap = new ReapalUtils();
 
         $url = $this->apiUrl . '/qrcode/scan/encryptRefundApply';
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId);
-        $response = json_decode($result, true);
-        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'], $this->merchantPrivateKey);
-        return $reapalMap->AESDecryptResponse($encryptkey, $response['data']);
+        $result = $this->apiPost($url, $paramArr);
+        LogDbService::reapalPayRequest(1,$paramArr['order_no'],$paramArr,$result);
+        dd($result);
 
     }
 

@@ -236,6 +236,12 @@ class WalletService extends BaseService
                 }
                 if ($item->origin_type == WalletBill::ORIGIN_TYPE_USER) {
                     $item->user_mobile = UserService::getUserById($item->origin_id)->mobile;
+                    // 如果是下级消费返利 返回下级的手机号码
+                    if (in_array($item->type, [WalletBill::TYPE_SUBORDINATE, WalletBill::TYPE_SUBORDINATE_REFUND])) {
+                        $feeSplitting = FeeSplittingService::getFeeSplittingRecordById($item->obj_id);
+                        $order = OrderService::getById($feeSplitting->order_id);
+                        $item->user_mobile = $order->notify_mobile;
+                    }
                 }
                 if (in_array($item->type, [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED])) {
                     $walletWithdraw = WalletWithdrawService::getWalletWithdrawById($item->obj_id);

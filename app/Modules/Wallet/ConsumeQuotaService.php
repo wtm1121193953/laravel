@@ -26,7 +26,8 @@ class ConsumeQuotaService extends BaseService
 
     /**
      * 添加消费额
-     * @param $order
+     * @param Order $order
+     * @throws \Exception
      */
     public static function addFreezeConsumeQuota(Order $order)
     {
