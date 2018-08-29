@@ -64,13 +64,13 @@ class Test extends Command
      */
     public function handle()
     {
-        $order = Order::where('id', 984)->first();
+        /*$order = Order::where('id', 984)->first();
         ConsumeQuotaSyncToTpsJob::dispatch($order);
         dd('hi');
         SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY);
         dd('hi');
         SettlementDaily::dispatch(Carbon::today());
-        dd(12);
+        dd(12);*/
         SettlementAgentPayDaily::dispatch();
         dd(123);
         $order = OrderService::getById(174);

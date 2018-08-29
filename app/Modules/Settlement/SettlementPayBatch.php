@@ -13,6 +13,8 @@ use App\BaseModel;
  * @property number batch_amount
  * @property integer type
  * @property integer status
+ * @property string error_code
+ * @property string error_msg
  */
 class SettlementPayBatch extends BaseModel
 {

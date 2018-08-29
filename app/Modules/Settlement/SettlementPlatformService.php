@@ -69,6 +69,17 @@ class SettlementPlatformService extends BaseService
         return $data;
     }
 
+    /**
+     * 通过结算单号获取列表
+     * @param $num
+     * @return SettlementPlatform
+     */
+    public static function getAmountByPayBatchNo($num)
+    {
+        $data = SettlementPlatform::with('merchant:id,bank_card_type')->where('pay_batch_no', $num);
+        return $data;
+    }
+
 
     /**
      * SAAS获取结算单列表【新】
