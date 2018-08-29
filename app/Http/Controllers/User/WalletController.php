@@ -91,19 +91,29 @@ class WalletController extends Controller
             $month = date('Y-m');
         }
         $status = request('status');
+        $pageSize = request('pageSize', 15);
         $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
         $endDate = $startDate->copy()->endOfMonth();
-        $data = ConsumeQuotaService::getConsumeQuotaRecordList([
+        $query = ConsumeQuotaService::getConsumeQuotaRecordList([
             'startDate' => $startDate,
             'endDate' => $endDate,
             'status' => $status,
             'originId' => request()->get('current_user')->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
-        ]);
+        ], $pageSize, true);
+        $data = $query->paginate($pageSize);
+        // 当月总消费额
+        $amount = 0;
+        $query->chunk(100, function ($items) use (&$amount) {
+            foreach ($items as $item) {
+                $amount += $item->consume_quota;
+            }
+        });
 
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
+            'amount' => $amount,
         ]);
     }
 
