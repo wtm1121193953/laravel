@@ -1445,7 +1445,8 @@ order_no 订单号
                   status: 状态 1-冻结中 2-已解冻待置换 3-已置换 4-已退款
               }
       	],
-      	total: 总记录数
+      	total: 总记录数，
+      	amount: 当月总消费额
       },
       "timestamp": 时间戳
   }
