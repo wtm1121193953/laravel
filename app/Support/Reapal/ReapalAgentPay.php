@@ -17,14 +17,11 @@ class ReapalAgentPay
     protected $merchantPrivateKey;
     protected $reapalPublicKey;
     protected $apiKey;
-    protected $dsfUrl;
     protected $charset;
+
+    protected $dsfUrl;
     protected $dsf_sign_type;
     protected $dsfVersion;
-
-    protected $apiUrl;
-    protected $apiVersion;
-    protected $api_sign_type;
 
     public function __construct()
     {
@@ -45,9 +42,6 @@ class ReapalAgentPay
         $this->dsf_sign_type = config('reapal.dsf_sign_type');
         $this->dsfVersion = config('reapal.dsf_version');
 
-        $this->apiUrl = config('reapal.api_url');
-        $this->apiVersion = config('reapal.api_version');
-        $this->api_sign_type = config('reapal.api_sign_type');
     }
 
     /**
