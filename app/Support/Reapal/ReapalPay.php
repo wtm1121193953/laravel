@@ -121,15 +121,15 @@ class ReapalPay
     /**
      * 退款接口
      */
-    public function refund($order)
+    public function refund($order, $orderPay)
     {
         //参数数组
         $paramArr = [
             'merchant_id' => $this->merchantId,
-            'refund_order_no' => '11213231',
-            'order_no' => $order['order_no'],
-            'amount' => $order['pay_price'] * 100,
-            'notify_url' => url('/api/pay/reapalPayNotify'),
+            'refund_order_no' => $orderPay->transaction_no,
+            'order_no' => $order->order_no,
+            'amount' => $order->amount * 100,
+            'notify_url' => url('/api/pay/reapalRefundNotify'),
             'version' => $this->apiVersion,
         ];
 

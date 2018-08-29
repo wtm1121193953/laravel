@@ -444,7 +444,7 @@ class OrderController extends Controller
         if ($order->pay_target_type == $order::PAY_TARGET_TYPE_PLATFORM) {
             //支付到平台的用融宝支付退款
             $reapal = new ReapalPay();
-            $result = $reapal->refund($order);
+            $result = $reapal->refund($order,$orderPay);
             exit;
 
         } else {
