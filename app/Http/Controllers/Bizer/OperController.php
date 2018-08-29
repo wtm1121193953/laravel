@@ -8,6 +8,7 @@ use App\Modules\Oper\OperBizer;
 use App\Modules\Oper\OperBizerService;
 use App\Exceptions\BaseResponseException;
 use App\Result;
+use App\Modules\Area\Area;
 
 class OperController extends Controller {
 
@@ -18,16 +19,24 @@ class OperController extends Controller {
      */
     public function getList() {
 
-        $startTime = request('start_time');
-        $endTime = request('end_time');
+        $startTime = request('startTime');
+        $endTime = request('endTime');
         $name = request('name');
         $contacter = request('contacter');
         $tel = request('tel');
-        $provinceId = request('province_id');
-        $cityId = request('city_id');
+//        $provinceId = request('provinceId');
+        $areaIds = request('cityId');
         $status = request('status');
         $bizerId = request()->get('current_user')->id;
 
+        $provinceId = 0;
+        $cityId = 0;
+        if(isset($areaIds[0])){
+            $provinceId = Area::findOrFail($areaIds[0])->area_id;
+        }
+        if(isset($areaIds[1])){
+            $cityId = Area::findOrFail($areaIds[1])->area_id;
+        }
         $opers = OperService::getAll([
                     'name' => $name,
                     'contacter' => $contacter,
@@ -40,10 +49,10 @@ class OperController extends Controller {
         $opers->each(function ($oper) use (&$operIds) {
             $operIds[] = $oper->id;
         });
-
+        
         $data = OperBizerService::getList([
                     'bizer_id' => $bizerId,
-                    'oper_ids' => $operIds,
+                    'oper_ids' => $operIds ? $operIds : [0],
                     'start_time' => $startTime,
                     'end_time' => $endTime,
                     'status' => $status

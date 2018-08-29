@@ -85,7 +85,7 @@ class OperService extends BaseService
         $contacter = array_get($params, 'contacter');
         $provinceId = array_get($params, 'province_id');
         $cityId = array_get($params, 'city_id');
-
+        
         $data = Oper::when($status, function (Builder $query) use ($status) {
                     $query->where('status', $status);
                 })
