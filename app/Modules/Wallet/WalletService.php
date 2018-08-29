@@ -180,7 +180,7 @@ class WalletService extends BaseService
      * @param $param
      * @param int $pageSize
      * @param bool $withQuery
-     * @return WalletBill|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|Builder
      */
     public static function getBillList($param, $pageSize = 15, $withQuery = false)
     {
@@ -193,31 +193,37 @@ class WalletService extends BaseService
         $originType = array_get($param, 'originType', 0);
         $walletId = array_get($param, 'walletId', 0);
 
-        $query = WalletBill::when($originId, function (Builder $query) use ($originId) {
-                $query->where('origin_id', $originId);
-            })
-            ->when($originType, function (Builder $query) use ($originType) {
-                $query->where('origin_type', $originType);
-            })
-            ->when($billNo, function (Builder $query) use ($billNo) {
-                $query->where('bill_no', $billNo);
-            })
-            ->when($walletId, function (Builder $query) use ($walletId) {
-                $query->where('wallet_id', $walletId);
-            })
-            ->when($type, function (Builder $query) use ($type) {
-                $query->where('type', $type);
-            })
-            ->when($startDate, function (Builder $query) use ($startDate) {
-                $query->whereDate('created_at', '>', $startDate);
-            })
-            ->when($endDate, function (Builder $query) use ($endDate) {
-                $query->whereDate('created_at', '<', $endDate);
-            })
-            ->when(!empty($typeArr), function (Builder $query) use ($typeArr) {
-                $query->whereIn('type', $typeArr);
-            })
-            ->orderBy('created_at', 'desc');
+        $query = WalletBill::query();
+        if ($originId) {
+            $query->where('origin_id', $originId);
+        }
+        if ($originType) {
+            $query->where('origin_type', $originType);
+        }
+        if ($billNo) {
+            $query->where('bill_no', $billNo);
+        }
+        if ($walletId) {
+            $query->where('wallet_id', $walletId);
+        }
+        if ($type) {
+            $query->where('type', $type);
+        }
+        if (!empty($typeArr)) {
+            $query->whereIn('type', $typeArr);
+        }
+        if ($startDate && $endDate) {
+            $startDate = date('Y-m-d 00:00:00', strtotime($startDate));
+            $endDate = date('Y-m-d 23:59:59', strtotime($endDate));
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $startDate = date('Y-m-d 00:00:00', strtotime($startDate));
+            $query->where('created_at', '>', $startDate);
+        } elseif ($endDate) {
+            $endDate = date('Y-m-d 23:59:59', strtotime($endDate));
+            $query->where('created_at', '<', $endDate);
+        }
+        $query->orderBy('created_at', 'desc');
         if ($withQuery) {
             return $query;
         } else {
@@ -425,5 +431,17 @@ class WalletService extends BaseService
         $wallet->status = $wallet->status == Wallet::STATUS_ON ? Wallet::STATUS_OFF : Wallet::STATUS_ON;
         $wallet->save();
         return $wallet;
+    }
+
+    /**
+     * 通过分润记录id 获取解冻分润记录
+     * @param $feeSplittingRecordId
+     * @return WalletBalanceUnfreezeRecord
+     */
+    public static function getBalanceUnfreezeRecordByFeeSplittingId($feeSplittingRecordId)
+    {
+        $balanceUnfreezeRecord = WalletBalanceUnfreezeRecord::where('fee_splitting_record_id', $feeSplittingRecordId)
+            ->first();
+        return $balanceUnfreezeRecord;
     }
 }

@@ -52,7 +52,6 @@
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="created_at" label="交易时间"></el-table-column>
             <el-table-column prop="bill_no" label="交易号"></el-table-column>
-            <el-table-column prop="merchant_name" label="商户名称"></el-table-column>
             <el-table-column prop="type" label="交易类型">
                 <template slot-scope="scope">
                     <span v-if="scope.row.type == 2">用户消费返利</span>
