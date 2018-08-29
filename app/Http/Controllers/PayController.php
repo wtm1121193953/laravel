@@ -146,6 +146,15 @@ class PayController extends Controller
 
 
     /**
+     * 融宝退款通知
+     */
+    public function refundRealpay()
+    {
+        $reapal = request()->getContent();
+        LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_REFUND, $reapal);
+    }
+
+    /**
      * 融宝支付通知接口, 用于接收微信支付的通知
      */
     public function notifyRealpay()
@@ -159,7 +168,7 @@ class PayController extends Controller
         return $resultArr;*/
 
         $reapal = request()->getContent();
-        LogDbService::reapalNotify($reapal);
+        LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_PAY,$reapal);
         $request = simplexml_load_string($reapal);
 
         var_dump(1111111111);die();

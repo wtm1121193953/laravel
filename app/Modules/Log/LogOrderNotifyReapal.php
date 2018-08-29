@@ -13,4 +13,6 @@ use Illuminate\Database\Eloquent\Model;
 class LogOrderNotifyReapal extends Model
 {
     //
+    const TYPE_PAY = 1;
+    const TYPE_REFUND = 2;
 }
