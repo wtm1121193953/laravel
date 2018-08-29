@@ -40,10 +40,10 @@
             ])
         },
         methods: {
-            change(key, query){
+            change(key){
                 store.commit('setCurrentMenu', key);
                 if (key !== this.$route.path) {
-                    router.push({path: key, query: query})
+                    router.push(key)
                 } else {
                     router.replace({path: '/refresh', query: {name: this.$route.name}})
                 }

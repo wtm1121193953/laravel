@@ -1500,7 +1500,34 @@ order_no 订单号
   }
   ```
 
+- [ ] 根据商户ID获取该商户订单下 分润给用户自己的分润系数
+
+  地址：GET `wallet/userFeeSplitting/ratio`
+
+  参数：
+
+  ```
+  merchantId: 商户ID
+  ```
+
+  返回
+
+  ```
+  {
+      "code": 0,
+      "message": "请求成功",
+      "data": {
+          "ratio": 分润给用户自己的系数 （直接乘以订单金额就好了）
+      },
+      "timestamp": 1535528467
+  }
+  ```
+
   
+
+
+
+
 
 
 

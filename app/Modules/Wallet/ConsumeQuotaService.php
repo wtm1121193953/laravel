@@ -15,7 +15,6 @@ use App\Support\TpsApi;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Carbon;
 
 /**
  * 消费额相关service
@@ -27,7 +26,8 @@ class ConsumeQuotaService extends BaseService
 
     /**
      * 添加消费额
-     * @param $order
+     * @param Order $order
+     * @throws \Exception
      */
     public static function addFreezeConsumeQuota(Order $order)
     {
@@ -120,31 +120,34 @@ class ConsumeQuotaService extends BaseService
         // 2. 退回上级的消费额
     }
 
+
     /**
      * 同步消费额数据到tps, 需要按订单去同步
      * @param Order $order
+     * @return bool
      */
     public static function syncConsumeQuotaToTps(Order $order)
     {
         // 同步消费额到TPS
-        $records = $order->consumeQuotaRecords()->whereIn('status', [1, 2])->get();
-//        $records = WalletConsumeQuotaRecord::where('order_id', $order->id)
-//            ->whereIn('status', [1, 2])
-//            ->get();
+        $records = $order->consumeQuotaRecords()->whereIn('status', [
+            WalletConsumeQuotaRecord::STATUS_FAILED ,
+            WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+            WalletConsumeQuotaRecord::STATUS_FAILED]
+        )->get();
         // 拼装要发送的数据
         $data = [];
         $tpsId= [];
         foreach ($records as $record) {
-            $tpsBind = TpsBindService::getTpsBindInfoByOriginInfo($record->origin_id, $record->origin_type);
+            $tpsBind = TpsBindService::getTpsBindInfoByOriginInfo( $record->origin_id, $record->origin_type );
             $data[] = [
                 'orderId'       => $order->order_no,
                 'orderPayTime'  => $order->pay_time,
                 'createTime'    => $order->created_at->toDateTimeString(),
                 'customerId'    => $tpsBind->tps_uid,
                 'shopkeeperId'  => $tpsBind->tps_uid,
-                'orderAmountUsd'=> $record->consume_quota,
-                'orderProfitUsd'=> $record->order_profit_amount,
-                'score'         => '1000',
+                'orderAmountUsd'=> $record->consume_quota/6.5,
+                'orderProfitUsd'=> $record->consume_quota_profit/6.5,
+                'score'         => $record->tps_credit*100,
                 'status'        => $record->status,
 //                'scoreYearMonth'=> '',
             ];

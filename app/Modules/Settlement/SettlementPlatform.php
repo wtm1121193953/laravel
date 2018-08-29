@@ -52,21 +52,4 @@ class SettlementPlatform extends BaseModel
     {
         return $this->belongsTo(Oper::class);
     }
-
-    protected $fillable = [
-        'oper_id',
-        'merchant_id',
-        'date',
-        'settlement_no',
-        'settlement_rate',
-        'bank_open_name',
-        'bank_card_no',
-        'sub_bank_name',
-        'bank_open_address',
-        'invoice_title',
-        'invoice_no',
-        'amount',
-        'charge_amount',
-        'real_amount',
-    ];
 }

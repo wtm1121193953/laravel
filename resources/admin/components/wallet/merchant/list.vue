@@ -27,7 +27,7 @@
             <el-table-column prop="origin_id" label="商户ID"></el-table-column>
             <el-table-column prop="amount" label="账户余额">
                 <template slot-scope="scope">
-                    {{(parseInt(scope.row.balance) + parseInt(scope.row.freeze_balance)).toFixed(2)}}
+                    {{(parseFloat(scope.row.balance) + parseFloat(scope.row.freeze_balance)).toFixed(2)}}
                 </template>
             </el-table-column>
             <el-table-column prop="balance" label="可提现金额"></el-table-column>
