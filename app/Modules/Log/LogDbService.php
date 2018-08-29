@@ -30,8 +30,8 @@ class LogDbService
         $log = new LogReapalPayRequest();
         $log->type = $type;
         $log->order_no = $order_no;
-        $log->$requst = $requst;
-        $log->$response = $response;
+        $log->requst = $requst;
+        $log->response = $response;
         $log->save();
     }
 }
