@@ -39,7 +39,7 @@ class SettlementAgentPay implements ShouldQueue
         //批次总数量
         $batch_count = count($this->settlementIds);
         //批次总金额(商家实际收到的金额)
-        $batch_amount = SettlementPlatformService::getAmountById($this->settlementIds);
+        $batch_amount = SettlementPlatformService::getRealAmountByIds($this->settlementIds);
 
         foreach ($this->settlementIds as $key => $val) {
             $settlement = SettlementPlatform::with('merchant:id,bank_card_type')->findOrFail($val);

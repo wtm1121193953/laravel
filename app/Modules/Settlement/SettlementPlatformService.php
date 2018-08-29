@@ -10,6 +10,7 @@ namespace App\Modules\Settlement;
 
 
 use App\BaseService;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -48,22 +49,11 @@ class SettlementPlatformService extends BaseService
     }
 
     /**
-     * 通过id获取结算单列表
-     * @param $id
-     * @return SettlementPlatform
-     */
-    public static function getListById($id)
-    {
-        $data = SettlementPlatform::with('merchant:id,bank_card_type')->where('id', $id);
-        return $data;
-    }
-
-    /**
      * 通过id获取结算单总金额
-     * @param $ids
-     * @return int
+     * @param array $ids
+     * @return float
      */
-    public static function getAmountById($ids)
+    public static function getRealAmountByIds(array $ids)
     {
         $data = SettlementPlatform::whereIn('id', $ids)->sum('real_amount');
         return $data;
@@ -140,9 +130,10 @@ class SettlementPlatformService extends BaseService
      * 处理每日结算细节入库
      * @Author   Jerry
      * @DateTime 2018-08-24
-     * @param    [obj]  $merchant
-     * @param    [obj]  $date
-     * @return   [bool]
+     * @param Merchant $merchant
+     * @param Carbon $date
+     * @return bool
+     * @throws \Exception
      */
     public static function settlement( $merchant, $date )
     {
@@ -208,7 +199,7 @@ class SettlementPlatformService extends BaseService
      * 根据商户ID及结算单获取结算单信息
      * @param $settlementId
      * @param $merchantId
-     * @return Settlement
+     * @return SettlementPlatform
      */
     public static function getByIdAndMerchantId($settlementId, $merchantId)
     {
