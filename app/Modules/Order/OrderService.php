@@ -212,7 +212,7 @@ class OrderService extends BaseService
         // 分利比例要从订单中获取  $order->settlement_rate
         // 计算盈利金额
         $grossProfit = $order->pay_price * $settlementRate / 100;
-        $taxAmount = $grossProfit * 0.06 * 1.12 / 1.06 + $grossProfit * 0.1 * 0.25 + 0.006 * $order->pay_price;
+        $taxAmount = $grossProfit * 0.06 * 1.12 / 1.06 + $grossProfit * 0.1 * 0.25 + 0.0068 * $order->pay_price;
 
         return max(floor(($grossProfit - $taxAmount) * 100) / 100, 0);
     }

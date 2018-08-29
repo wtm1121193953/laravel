@@ -150,7 +150,7 @@ class WalletController extends Controller
             throw new BaseResponseException('该商户不存在');
         }
         $settlementRate = $merchant->settlement_rate;
-        $ratio = $feeRatio / 100 * ($settlementRate / 100 - ($settlementRate / 100 * 0.06 * 1.12 / 1.06 + $settlementRate / 100 * 0.1 * 0.25 + 0.006));
+        $ratio = $feeRatio / 100 * ($settlementRate / 100 - ($settlementRate / 100 * 0.06 * 1.12 / 1.06 + $settlementRate / 100 * 0.1 * 0.25 + 0.0068));
         // 返回的是系数 直接乘以金额就好了
         return Result::success([
             'ratio' => $ratio,
