@@ -170,7 +170,7 @@ class FeeSplittingService extends BaseService
         $feeSplittingRecord->order_no = $order->order_no;
         $feeSplittingRecord->order_profit_amount = $profitAmount;
         $feeSplittingRecord->ratio = $feeRatio;
-        $feeSplittingRecord->amount = $profitAmount * $feeRatio / 100;
+        $feeSplittingRecord->amount = floor($profitAmount * $feeRatio) / 100;
         $feeSplittingRecord->type = $type;
         $feeSplittingRecord->status = FeeSplittingRecord::STATUS_FREEZE;
         $feeSplittingRecord->save();

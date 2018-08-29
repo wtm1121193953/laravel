@@ -201,6 +201,8 @@ class ConsumeQuotaService extends BaseService
         $consumeQuotaRecord->pay_price = $order->pay_price;
         $consumeQuotaRecord->order_profit_amount = OrderService::getProfitAmount($order);
         $consumeQuotaRecord->consume_quota = $consumeQuota;
+        $consumeQuotaRecord->consume_quota_profit = $consumeQuotaRecord->order_profit_amount / 2;
+        $consumeQuotaRecord->tps_credit = $consumeQuota / 6 / 6.5;
         $consumeQuotaRecord->consume_user_mobile = $order->notify_mobile;
         $consumeQuotaRecord->status = WalletConsumeQuotaRecord::STATUS_FREEZE;
         $consumeQuotaRecord->save();

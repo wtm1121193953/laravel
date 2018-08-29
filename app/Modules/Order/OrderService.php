@@ -224,7 +224,7 @@ class OrderService extends BaseService
         $grossProfit = $order->pay_price * $settlementRate / 100;
         $taxAmount = $grossProfit * 0.06 * 1.12 / 1.06 + $grossProfit * 0.1 * 0.25 + 0.006 * $order->pay_price;
 
-        return $grossProfit - $taxAmount;
+        return max(floor(($grossProfit - $taxAmount) * 100) / 100, 0);
     }
 
     /**

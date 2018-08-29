@@ -15,6 +15,7 @@ import merchant from './merchant'
 import members from './members'
 import setting from './setting'
 import withdraw from './withdraw'
+import wallet from './wallet'
 
 import SettlementList from '../components/settlement/list.vue'
 import SettlementPlatfroms from '../components/settlement/platform.vue'
@@ -45,6 +46,7 @@ const routes = [
     ...members,
     ...setting,
     ...withdraw,
+    ...wallet,
 
     // 财务模块
     {

@@ -90,7 +90,7 @@ class WalletController extends Controller
         $param = compact('billNo', 'startDate', 'endDate', 'typeArr', 'originId', 'originType');
         $query = WalletService::getBillList($param, $pageSize, true);
 
-        return (new WalletBillExport($query))->download('商户交易流水.xlsx');
+        return (new WalletBillExport($query, $originType))->download('商户交易流水.xlsx');
     }
 
     /**
@@ -105,12 +105,15 @@ class WalletController extends Controller
         if (empty($walletBill)) throw new BaseResponseException('该钱包流水不存在');
 
         $walletBill->merchant_name = MerchantService::getNameById($walletBill->origin_id);
+        $walletBill->balance_unfreeze_time = '';
 
         $orderOrWithdrawData = null;
         if (in_array($walletBill->type, [WalletBill::TYPE_SUBORDINATE, WalletBill::TYPE_SUBORDINATE_REFUND])) {
             $feeSplittingRecord = FeeSplittingService::getFeeSplittingRecordById($walletBill->obj_id);
             $order = OrderService::getById($feeSplittingRecord->order_id);
             $orderOrWithdrawData = $order;
+            $walletBalanceUnfreezeRecord = WalletService::getBalanceUnfreezeRecordByFeeSplittingId($walletBill->obj_id);
+            $walletBill->balance_unfreeze_time = !empty($walletBalanceUnfreezeRecord) ? $walletBalanceUnfreezeRecord->created_at : '';
         }
 
         if (in_array($walletBill->type, [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED])) {

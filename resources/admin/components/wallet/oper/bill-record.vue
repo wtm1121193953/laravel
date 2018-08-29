@@ -1,15 +1,5 @@
 <template>
-    <page title="账户总览">
-        <div class="group">
-            <div class="item" v-for="item in wallet">
-                <p class="label">{{item.label}}</p >
-                <p class="val">{{item.val}}</p >
-            </div>
-            <div class="handler">
-                <el-button type="success" @click="withdraw">我要提现</el-button>
-            </div>
-        </div>
-
+    <page title="运营中心账户交易记录" :breadcrumbs="{运营中心账户管理: '/wallet/oper'}">
         <el-form :model="query" inline size="small">
             <el-form-item prop="billNo" label="交易号">
                 <el-input v-model="query.billNo" clearable/>
@@ -39,9 +29,11 @@
             <el-form-item label="交易类型">
                 <el-select v-model="query.type" placeholder="请选择" clearable class="w-150">
                     <el-option label="全部" :value="0"></el-option>
-                    <el-option label="提现" :value="1"></el-option>
+                    <el-option label="提现" :value="7"></el-option>
                     <el-option label="用户消费返利" :value="2"></el-option>
-                    <el-option label="用户消费返利退款" :value="3"></el-option>
+                    <el-option label="用户消费返利退款" :value="4"></el-option>
+                    <el-option label="交易分润入账" :value="5"></el-option>
+                    <el-option label="交易分润退款" :value="6"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -52,10 +44,15 @@
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="created_at" label="交易时间"></el-table-column>
             <el-table-column prop="bill_no" label="交易号"></el-table-column>
+            <el-table-column prop="merchant_name" label="商户名称"></el-table-column>
             <el-table-column prop="type" label="交易类型">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.type == 2">用户消费返利</span>
+                    <span v-if="scope.row.type == 1">自己消费返利</span>
+                    <span v-else-if="scope.row.type == 2">用户消费返利</span>
+                    <span v-else-if="scope.row.type == 3">自己消费返利退款</span>
                     <span v-else-if="scope.row.type == 4">用户消费返利退款</span>
+                    <span v-else-if="scope.row.type == 5">交易分润入账</span>
+                    <span v-else-if="scope.row.type == 6">交易分润退款</span>
                     <span v-else-if="scope.row.type == 7">
                         提现
                         <span v-if="scope.row.status == 1">(审核中)</span>
@@ -76,11 +73,6 @@
                 </template>
             </el-table-column>
             <el-table-column prop="after_amount" label="账户余额"></el-table-column>
-            <el-table-column label="操作">
-                <template slot-scope="scope">
-                    <el-button type="text" @click="detail(scope.row)">查 看</el-button>
-                </template>
-            </el-table-column>
         </el-table>
         <el-pagination
                 class="fr m-t-20"
@@ -97,7 +89,7 @@
     import api from '../../../../assets/js/api'
 
     export default {
-        name: "wallet-summary-list",
+        name: "wallet-oper-bill",
         data() {
             return {
                 query: {
@@ -105,34 +97,15 @@
                     startDate: '',
                     endDate: '',
                     type: 0,
+                    originType: 3, // 商户类型
+                    walletId: null, // 钱包id
+
                     page: 1,
                     pageSize: 15,
                 },
                 total: 0,
                 list: [],
                 tableLoading: false,
-
-                amount_balance: 0,
-                balance: 0,
-                freeze_balance: 0,
-            }
-        },
-        computed: {
-            wallet() {
-                return [
-                    {
-                        label: '账号余额',
-                        val: this.amount_balance
-                    },
-                    {
-                        label: '可提现金额',
-                        val: this.balance
-                    },
-                    {
-                        label: '冻结金额',
-                        val: this.freeze_balance
-                    },
-                ];
             }
         },
         methods: {
@@ -141,9 +114,6 @@
                 api.get('/wallet/bill/list', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
-                    this.amount_balance = data.amountBalance;
-                    this.balance = data.balance;
-                    this.freeze_balance = data.freezeBalance;
                     this.tableLoading = false;
                 })
             },
@@ -152,72 +122,32 @@
                 this.getList();
             },
             download() {
-                let query = this.query;
-                location.href = '/api/merchant/wallet/bill/exportExcel?billNo=' + query.billNo + '&startDate=' + query.startDate + '&endDate=' + query.endDate +'&type=' + query.type;
-            },
-            detail(row) {
-                router.push({
-                    path: '/wallet/summary/detail',
-                    query: {
-                        id: row.id,
+                let data = this.query;
+                let params = [];
+                Object.keys(data).forEach((key) => {
+                    let value =  data[key];
+                    if (typeof value === 'undefined') {
+                        value = '';
                     }
-                });
+                    params.push([key, encodeURIComponent(value)].join('='))
+                }) ;
+                let uri = params.join('&');
+
+                location.href = `/api/admin/wallet/bill/exportExcel?${uri}`;
             },
-            withdraw() {
-                router.push('/wallet/withdraw/form');
-            }
         },
         created() {
+            this.query.walletId = this.$route.query.id;
+            if (!this.query.walletId) {
+                this.$message.error('id不能为空');
+                router.push('/wallet/oper');
+                return;
+            }
             this.getList();
         },
     }
 </script>
 
 <style lang="less" scoped>
-    .group {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 30px 0;
-        text-align: center;
-        border: 1px solid #ccc;
-        margin-bottom: 30px;
 
-        & > * {
-              border-right: 1px solid #ccc;
-              padding: 15px 0;
-          }
-
-        .item {
-            flex: 1;
-
-            p {
-                margin: 0;
-            }
-
-            .label {
-                font-size: 14px;
-            }
-
-            .val {
-                margin-top: 10px;
-                font-size: 28px;
-                font-weight: bold;
-            }
-        }
-
-        .handler {
-            flex: 1;
-            border-right: 0 none;
-        }
-
-        .btn {
-            width: 150px;
-            height: 40px;
-            line-height: 40px;
-            margin: 0 auto;
-            background: #999;
-            color: #fff;
-        }
-    }
 </style>

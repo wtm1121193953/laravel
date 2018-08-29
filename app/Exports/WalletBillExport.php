@@ -9,8 +9,12 @@
 namespace App\Exports;
 
 
+use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\OperService;
+use App\Modules\User\UserService;
 use App\Modules\Wallet\WalletBill;
 use App\Modules\Wallet\WalletWithdraw;
+use App\Modules\Wallet\WalletWithdrawService;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -21,10 +25,12 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
     use Exportable;
 
     protected $query;
+    protected $originType;
 
-    public function __construct($query)
+    public function __construct($query, $originType)
     {
         $this->query = $query;
+        $this->originType = $originType;
     }
 
     public function query()
@@ -34,22 +40,69 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
 
     public function headings() : array
     {
-        return [
-            '交易时间',
-            '交易号',
-            '商户名称',
-            '交易类型',
-            '账户交易金额',
-            '账户余额',
-        ];
+        if ($this->originType == WalletBill::ORIGIN_TYPE_USER) {
+            $array = [
+                '交易时间',
+                '交易号',
+                '用户手机号码',
+                '交易类型',
+                '账户交易金额',
+                '账户余额',
+            ];
+        } elseif ($this->originType == WalletBill::ORIGIN_TYPE_MERCHANT) {
+            $array = [
+                '交易时间',
+                '交易号',
+                '商户名称',
+                '商户等级',
+                '交易类型',
+                '账户交易金额',
+                '账户余额',
+            ];
+        } elseif ($this->originType == WalletBill::ORIGIN_TYPE_OPER) {
+            $array = [
+                '交易时间',
+                '交易号',
+                '运营中心名称',
+                '交易类型',
+                '账户交易金额',
+                '账户余额',
+            ];
+        } else {
+            $array = [];
+        }
+        return $array;
     }
 
     public function map($row) : array
     {
-        if ($row->type == WalletBill::TYPE_SUBORDINATE) {
+        $row->merchant_name = MerchantService::getNameById($row->origin_id);
+        $row->oper_name = OperService::getNameById($row->origin_id);
+        if ($row->origin_type == WalletBill::ORIGIN_TYPE_MERCHANT) {
+            $row->merchant_level = MerchantService::getById($row->origin_id)->level;
+        }
+        if ($row->origin_type == WalletBill::ORIGIN_TYPE_USER) {
+            $row->user_mobile = UserService::getUserById($row->origin_id)->mobile;
+        }
+        if (in_array($row->type, [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED])) {
+            $walletWithdraw = WalletWithdrawService::getWalletWithdrawById($row->obj_id);
+            $row->status = $walletWithdraw->status;
+        } else {
+            $row->status = 0;
+        }
+
+        if ($row->type == WalletBill::TYPE_SELF) {
+            $typeText = '自己消费返利';
+        } elseif ($row->type == WalletBill::TYPE_SUBORDINATE) {
             $typeText = '用户消费返利';
+        } elseif ($row->type == WalletBill::TYPE_SELF_CONSUME_REFUND) {
+            $typeText = '自己消费返利退款';
         } elseif ($row->type == WalletBill::TYPE_SUBORDINATE_REFUND) {
             $typeText = '用户消费返利退款';
+        } elseif ($row->type == WalletBill::TYPE_OPER) {
+            $typeText = '交易分润入账';
+        } elseif ($row->type == WalletBill::TYPE_OPER_REFUND) {
+            $typeText = '交易分润退款';
         } elseif ($row->type = WalletBill::TYPE_WITHDRAW) {
             if ($row->status == WalletWithdraw::STATUS_AUDITING) {
                 $typeText = '提现（审核中）';
@@ -70,13 +123,37 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
             $typeText = '未知'.$row->type;
         }
 
-        return [
-            $row->created_at,
-            $row->bill_no,
-            $row->merchant_name,
-            $typeText,
-            $row->amount,
-            $row->after_amount,
-        ];
+        if ($this->originType == WalletBill::ORIGIN_TYPE_USER) {
+            $array = [
+                $row->created_at,
+                $row->bill_no,
+                $row->user_mobile,
+                $typeText,
+                $row->amount,
+                $row->after_amount,
+            ];
+        } elseif ($this->originType == WalletBill::ORIGIN_TYPE_MERCHANT) {
+            $array = [
+                $row->created_at,
+                $row->bill_no,
+                $row->merchant_name,
+                ['', '普通商户', '金牌商户', '超级商户'][$row->merchant_level],
+                $typeText,
+                $row->amount,
+                $row->after_amount,
+            ];
+        } elseif ($this->originType == WalletBill::ORIGIN_TYPE_OPER) {
+            $array = [
+                $row->created_at,
+                $row->bill_no,
+                $row->oper_name,
+                $typeText,
+                $row->amount,
+                $row->after_amount,
+            ];
+        } else {
+            $array = [];
+        }
+        return $array;
     }
 }

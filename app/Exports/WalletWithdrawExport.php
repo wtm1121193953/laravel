@@ -74,7 +74,19 @@ class WalletWithdrawExport implements FromQuery, WithMapping, WithHeadings
                 '提现状态'
             ];
         } else {
-            $array = [];
+            // 批次明细 导出
+            $array = [
+                '提现时间',
+                '订单编号',
+                '批次编号',
+                '批次类型',
+                '提现类型',
+                '提现账户名称',
+                '提现金额',
+                '手续费',
+                '到账金额',
+                '提现状态',
+            ];
         }
         return $array;
     }
@@ -176,7 +188,19 @@ class WalletWithdrawExport implements FromQuery, WithMapping, WithHeadings
                 $status
             ];
         } else {
-            $array = [];
+            // 批次明细 导出
+            $array = [
+                $row->created_at,
+                $row->withdraw_no,
+                $row->batch_no,
+                ['', '对公', '对私'][$row->bank_card_type],
+                ['', '用户提现', '商户提现', '运营中心提现'][$row->origin_type],
+                $row->bank_card_open_name,
+                $row->amount,
+                $row->charge_amount,
+                $row->remit_amount,
+                $status,
+            ];
         }
         return $array;
     }

@@ -4,8 +4,6 @@ namespace App\Jobs;
 
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
-use App\Modules\User\User;
-use App\Modules\UserCredit\UserCredit;
 use App\Modules\UserCredit\UserCreditSettingService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -18,10 +16,11 @@ class MerchantLevelComputeJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $merchantId;
+
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param $merchantId
      */
     public function __construct($merchantId)
     {

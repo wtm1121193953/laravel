@@ -211,12 +211,12 @@ class WithdrawController extends Controller
     {
         $ids = request('ids');
         $batchId = request('batchId');
-        if (empty($ids) && !$batchId) {
-            throw new ParamInvalidException('参数错误');
-        }
         if ($batchId) {
             $withdrawQuery = WalletWithdrawService::getWithdrawRecords(compact('batchId'), 15, true);
             $ids = $withdrawQuery->select('id')->get()->pluck('id');
+        }
+        if (empty($ids)) {
+            throw new ParamInvalidException('参数错误');
         }
         WalletWithdrawService::paySuccess($ids);
         return Result::success();
@@ -231,12 +231,12 @@ class WithdrawController extends Controller
         $ids = request('ids');
         $batchId = request('batchId');
         $remark = request('remark');
-        if (empty($ids) && !$batchId) {
-            throw new ParamInvalidException('参数错误');
-        }
         if ($batchId) {
             $withdrawQuery = WalletWithdrawService::getWithdrawRecords(compact('batchId'), 15, true);
             $ids = $withdrawQuery->select('id')->get()->pluck('id');
+        }
+        if (empty($ids)) {
+            throw new ParamInvalidException('参数错误');
         }
         WalletWithdrawService::payFail($ids, $remark);
         return Result::success();

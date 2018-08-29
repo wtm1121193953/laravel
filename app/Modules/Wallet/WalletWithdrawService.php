@@ -83,6 +83,10 @@ class WalletWithdrawService extends BaseService
         $invoiceExpressCompany = array_get($param, 'invoiceExpressCompany', '');
         $invoiceExpressNo = array_get($param, 'invoiceExpressNo', '');
 
+        if ($wallet->status == Wallet::STATUS_OFF) {
+            throw new BaseResponseException('钱包已冻结，暂不支持提现');
+        }
+
         if ($obj instanceof User) {
             throw new BaseResponseException('暂不支持提现');
         } elseif ($obj instanceof Merchant) {
@@ -155,7 +159,7 @@ class WalletWithdrawService extends BaseService
      */
     public static function getWithdrawRecords($param, $pageSize = 15, $withQuery = false)
     {
-        $query = self::parseWithdrawQuery($param);
+        $query = self::parseWithdrawQuery($param)->orderBy('created_at', 'desc');
         if ($withQuery) {
             return $query;
         } else {
@@ -410,23 +414,31 @@ class WalletWithdrawService extends BaseService
             $ids = [$ids];
         }
         $amount = 0;
-        $total = count($ids);
+        $total = 0;
         $batchId = 0;
         try {
             DB::beginTransaction();
             foreach ($ids as $id) {
                 $walletWithdraw = self::getWalletWithdrawById($id);
-                $walletWithdraw->status = WalletWithdraw::STATUS_WITHDRAW;
-                $walletWithdraw->save();
-                $amount += $walletWithdraw->amount;
-                $batchId = $walletWithdraw->batch_id;
+                if ($walletWithdraw->status == WalletWithdraw::STATUS_AUDIT) {
+                    $walletWithdraw->status = WalletWithdraw::STATUS_WITHDRAW;
+                    $walletWithdraw->save();
+                    $amount += $walletWithdraw->amount;
+                    $total += 1;
+                    $batchId = $walletWithdraw->batch_id;
+                }
             }
+            // 因为是同一批次或者是单个的，所以批次表就更新一次
             $walletBatch = WalletBatchService::getById($batchId);
             $walletBatch->amount += $amount;
             $walletBatch->total += $total;
             $walletBatch->success_amount += $amount;
             $walletBatch->success_total += $total;
             $walletBatch->save();
+            // 更新批次表后，判断该批次的提现订单是否都已经打款 且 该批次状态为准备打款，如果是则 修改状态为 打款完成
+            if (WalletBatchService::checkBatchPayOrNot($batchId) && $walletBatch->status == WalletBatch::STATUS_PREPARE_WITHDRAW) {
+                WalletBatchService::changeStatus($walletBatch, WalletBatch::STATUS_WITHDRAW_SUCCESS);
+            }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -449,23 +461,31 @@ class WalletWithdrawService extends BaseService
             $ids = [$ids];
         }
         $amount = 0;
-        $total = count($ids);
+        $total = 0;
         $batchId = 0;
         try {
             DB::beginTransaction();
             foreach ($ids as $id) {
                 $walletWithdraw = self::getWalletWithdrawById($id);
-                self::withdrawFail($walletWithdraw, WalletWithdraw::STATUS_WITHDRAW_FAILED, $remark);
+                if ($walletWithdraw->status == WalletWithdraw::STATUS_AUDIT) {
+                    self::withdrawFail($walletWithdraw, WalletWithdraw::STATUS_WITHDRAW_FAILED, $remark);
 
-                $amount += $walletWithdraw->amount;
-                $batchId = $walletWithdraw->batch_id;
+                    $amount += $walletWithdraw->amount;
+                    $total += 1;
+                    $batchId = $walletWithdraw->batch_id;
+                }
             }
+            // 因为是同一批次或者是单个的，所以批次表就更新一次
             $walletBatch = WalletBatchService::getById($batchId);
             $walletBatch->amount += $amount;
             $walletBatch->total += $total;
             $walletBatch->failed_amount += $amount;
             $walletBatch->failed_total += $total;
             $walletBatch->save();
+            // 更新批次表后，判断该批次的提现订单是否都已经打款 且 该批次状态为准备打款，如果是则 修改状态为 打款完成
+            if (WalletBatchService::checkBatchPayOrNot($batchId) && $walletBatch->status == WalletBatch::STATUS_PREPARE_WITHDRAW) {
+                WalletBatchService::changeStatus($walletBatch, WalletBatch::STATUS_WITHDRAW_SUCCESS);
+            }
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
