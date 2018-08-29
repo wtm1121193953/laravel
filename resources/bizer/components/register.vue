@@ -78,7 +78,7 @@
                 </div>
                 <el-form :model="form" :rules="formRules" ref="form"
                          @keyup.native.enter="doLogin"
-                         label-position="left"
+                         label-position="right"
                          label-width="98px">
                     <el-form-item label="帐号" prop="mobile" ref="mobile">
                         <el-input type="text" v-model="form.mobile" auto-complete="off" placeholder="请输入手机号"/>
