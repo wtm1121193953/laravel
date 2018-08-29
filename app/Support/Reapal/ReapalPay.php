@@ -80,7 +80,6 @@ class ReapalPay
 
         ];
 
-        print_r($paramArr);exit;
         $url = $this->apiUrl . '/qrcode/scan/encryptline';
         $result = $this->apiPost($url, $paramArr);
         return $result;
