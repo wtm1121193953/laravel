@@ -170,7 +170,7 @@
                     _self.$refs.formSigning.validate(valid => {
                         if (valid) {
                             _self.formSigning.id = this.detailOption.id;
-                            _self.formSigning.divide = parseInt(_self.formSigning.divide);
+                            _self.formSigning.divide = parseFloat(_self.formSigning.divide);
                             params = _self.formSigning;
                             isValid = true;
                         }else{

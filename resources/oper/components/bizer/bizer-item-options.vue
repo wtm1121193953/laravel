@@ -101,7 +101,18 @@
                 let _self = this;
                 if (_self.formRemarks.remark) {
                     //提交
-                    _self.$emit('refresh');
+                    api.post('/operBizMember/changeStatus', {id: _self.scope.row.id, remark: _self.formRemarks.remark}).then((data) => {
+                        _self.dialogRemarksFormVisible = false
+                        _self.$emit('refresh');
+                    }).catch(() => {
+                        _self.$message({
+                          message: '修改失败',
+                          type: 'warning'
+                        });
+                    }).finally(() => {
+
+                    })
+                    
                 }else{
                     _self.$message({
                           message: '请填写备注',
@@ -114,10 +125,10 @@
                 let _self = this;
                 _self.$refs.formDivided.validate(valid => {
                     if (valid) {
-                        _self.formDividedIntoSettings.id = this.detailOption.id;
-                        _self.formDividedIntoSettings.divide = parseInt(_self.formDividedIntoSettings.divide);
+                        _self.formDividedIntoSettings.id = _self.scope.row.id;
+                        _self.formDividedIntoSettings.divide = parseFloat(_self.formDividedIntoSettings.divide);
                         let params = _self.formDividedIntoSettings;
-                        api.get('', params).then(data => {
+                        api.get('/operBizer/changeDetail', params).then(data => {
                             _self.dialogDividedIntoSettingsFormVisible = _self.dialogRemarksFormVisible = false;
                             _self.$message({
                                 message: '修改成功',

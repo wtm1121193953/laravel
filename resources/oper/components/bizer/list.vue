@@ -6,16 +6,16 @@
                     {{scope.row.created_at.substr(0, 16)}}
                 </template>
             </el-table-column>
-            <el-table-column prop="name" label="姓名"/>
-            <el-table-column prop="mobile" label="手机号"/>
-            <el-table-column prop="dividedInto" label="业务员分成"/>
-            <el-table-column prop="activeMerchantNumber" label="发展商户（家）"/>
-            <el-table-column prop="auditMerchantNumber" label="审核通过商户（家）"/>
+            <el-table-column prop="bizerInfo.name" label="姓名"/>
+            <el-table-column prop="bizerInfo.mobile" label="手机号"/>
+            <el-table-column prop="divide" label="业务员分成"/>
+            <el-table-column prop="activeNum" label="发展商户（家）"/>
+            <el-table-column prop="auditNum" label="审核通过商户（家）"/>
             <el-table-column prop="remark" label="备注"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.status === 2" class="c-danger">冻结</span>
+                    <span v-else-if="scope.row.status === -1" class="c-danger">冻结</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
@@ -67,7 +67,8 @@
             },
             getList(){
                 let _self = this;
-                api.get('/operBizMembers', this.query).then(data => {
+                api.get('/oper/bizers', this.query).then(data => {
+                    console.log(data)
                     _self.list = data.list;
                     _self.total = data.total;
                 }).catch((error) => {
