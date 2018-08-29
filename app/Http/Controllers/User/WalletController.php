@@ -106,12 +106,7 @@ class WalletController extends Controller
         ], $pageSize, true);
         $data = $query->paginate($pageSize);
         // 当月总消费额
-        $amount = 0;
-        $query->chunk(100, function ($items) use (&$amount) {
-            foreach ($items as $item) {
-                $amount += $item->consume_quota;
-            }
-        });
+        $amount = $query->sum('consume_quota');
 
         return Result::success([
             'list' => $data->items(),
