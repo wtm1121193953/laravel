@@ -2,6 +2,7 @@
 
 namespace App\Support\Reapal;
 
+use App\Modules\Log\LogDbService;
 use App\Support\Utils;
 
 /**
@@ -82,6 +83,7 @@ class ReapalPay
 
         $url = $this->apiUrl . '/qrcode/scan/encryptline';
         $result = $this->apiPost($url, $paramArr);
+        LogDbService::reapalPayRequest(1,$paramArr['order_no'],$paramArr,$result);
         return $result;
     }
 
