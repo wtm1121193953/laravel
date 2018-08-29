@@ -26,6 +26,11 @@
                 activeTab: 'merchant',
             }
         },
+        created() {
+            if (this.$route.query.type === 'user' || this.$route.query.type === 'oper') {
+                this.activeTab = this.$route.query.type;
+            }
+        },
         components: {
             MerchantRecord,
             UserRecord,
