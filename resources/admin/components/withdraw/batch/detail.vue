@@ -284,7 +284,7 @@
                     dangerouslyUseHTMLString: true,
                     inputType: 'textarea',
                     inputPlaceholder: '请填写失败原因，必填，最多50字',
-                    inputValidator: (val) => {if(val.length > 50) return '备注不能超过50个字'}
+                    inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
                 }).then(({value}) => {
                     let param = {
                         ids: row.id,
@@ -362,7 +362,7 @@
                     dangerouslyUseHTMLString: true,
                     inputType: 'textarea',
                     inputPlaceholder: '请填写失败原因，必填，最多50字',
-                    inputValidator: (val) => {if(val.length > 50) return '备注不能超过50个字'}
+                    inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
                 }).then(({value}) => {
                     param.remark = value;
                     api.post('/withdraw/record/payFail', param).then(data => {
