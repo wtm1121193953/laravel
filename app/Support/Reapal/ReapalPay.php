@@ -128,7 +128,7 @@ class ReapalPay
             'merchant_id' => $this->merchantId,
             'refund_order_no' => $orderPay->transaction_no,
             'order_no' => $order->order_no,
-            'amount' => $order->amount * 100,
+            'amount' => $orderPay->amount * 100,
             'notify_url' => url('/api/pay/reapalRefundNotify'),
             'version' => $this->apiVersion,
         ];
