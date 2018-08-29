@@ -17,6 +17,7 @@ class CreateLogOrderNotifyReapalsTable extends Migration
             $table->increments('id');
             $table->string('content',5000)->default('')->comment('异步回调内容');
             $table->timestamps();
+            $table->index('created_at');
         });
     }
 

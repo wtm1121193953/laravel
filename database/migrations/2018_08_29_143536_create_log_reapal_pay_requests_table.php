@@ -20,6 +20,7 @@ class CreateLogReapalPayRequestsTable extends Migration
             $table->string('request', 5000)->default('')->comment('请求内容');
             $table->string('response',5000)->default('')->comment('相应内容');
             $table->timestamps();
+            $table->index('created_at');
         });
     }
 
