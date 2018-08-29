@@ -172,7 +172,7 @@ class OrderController extends Controller
                 ];
                 $reapal = new ReapalPay();
                 $result = $reapal->prepay($param);
-                print_r($result);
+                //print_r($result);
             }else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
