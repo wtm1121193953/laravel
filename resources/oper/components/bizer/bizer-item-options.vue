@@ -60,7 +60,7 @@
                 },
                 divideRules: {
                     divide: [
-                        {validator: validateDivided, trigger: 'blur'}
+                        {required: true, validator: validateDivided, trigger: 'blur'}
                     ]
                 },
                 detailOption:{

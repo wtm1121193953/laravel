@@ -113,7 +113,7 @@
                 },
                 rules: {
                     divide: [
-                        {validator: validateDivided, trigger: 'blur'}
+                        {required: true, validator: validateDivided, trigger: 'blur'}
                     ]
                 },
                 bntLoading: false,
