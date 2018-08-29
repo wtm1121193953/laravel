@@ -19,7 +19,7 @@ class LogDbService
      * @param $requst
      * @param $response
      */
-    public static function reapalPayRequest($type, $order_no, $requst, $response)
+    public static function reapalPayRequest($type, $order_no, $request, $response)
     {
         if (is_array($requst)) {
             $requst = json_encode($requst);
@@ -30,7 +30,7 @@ class LogDbService
         $log = new LogReapalPayRequest();
         $log->type = $type;
         $log->order_no = $order_no;
-        $log->requst = $requst;
+        $log->request = $request;
         $log->response = $response;
         $log->save();
     }
