@@ -92,9 +92,11 @@
                         {{orderOrWithdrawData.bank_name}}
                     </el-form-item>
                     <el-form-item label="交易状态">
-                        <span v-if="orderOrWithdrawData.status == 1">提现中</span>
-                        <span v-else-if="orderOrWithdrawData.status == 2">提现成功</span>
-                        <span v-else-if="orderOrWithdrawData.status == 3">提现失败</span>
+                        <span v-if="orderOrWithdrawData.status == 1">审核中</span>
+                        <span v-else-if="orderOrWithdrawData.status == 2">审核通过</span>
+                        <span v-else-if="orderOrWithdrawData.status == 3">已打款</span>
+                        <span v-else-if="orderOrWithdrawData.status == 4">打款失败</span>
+                        <span v-else-if="orderOrWithdrawData.status == 5">审核不通过</span>
                         <span v-else>未知 ({{orderOrWithdrawData.status}})</span>
                     </el-form-item>
                     <el-form-item label="发票快递公司">
