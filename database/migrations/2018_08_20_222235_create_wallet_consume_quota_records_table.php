@@ -19,7 +19,7 @@ class CreateWalletConsumeQuotaRecordsTable extends Migration
             $table->string('consume_quota_no')->index()->default('')->comment('消费额交易号');
             $table->integer('origin_id')->index()->default(0)->comment('用户ID');
             $table->tinyInteger('origin_type')->index()->default(1)->comment('用户类型 1-用户 2-商户 3-运营中心');
-            $table->tinyInteger('type')->index()->default(1)->comment('来源类型 1-消费自返 2-直接下级消费返');
+            $table->tinyInteger('type')->index()->default(1)->comment('来源类型 1-消费自返 2-直接下级消费返 3-下级退款退回');
             $table->integer('order_id')->index()->default(0)->comment('分润的订单ID');
             $table->string('order_no')->index()->default('')->comment('分润的订单号');
             $table->decimal('pay_price', 8, 2)->default(0)->comment('支付金额');
