@@ -2,6 +2,7 @@
 
 namespace App\Support\Reapal;
 
+use App\Support\Utils;
 use Illuminate\Support\Carbon;
 
 /**
@@ -49,115 +50,7 @@ class ReapalPay
         $this->api_sign_type = config('reapal.api_sign_type');
     }
 
-    /**
-     * 代付提交
-     * @param $batch_no
-     * @param $batch_count
-     * @param $batch_amount
-     * @param $content
-     * @return string
-     */
-    public function agentpay($batch_no, $batch_count, $batch_amount, $content)
-    {
-        $reapalMap = new ReapalUtils();
 
-        $nowTime = Carbon::now();
-
-        $merchantId = $this->merchantId;
-
-        $paramArr = array(
-            'charset' => $this->charset,
-            'notify_url' => url('/pay/reapalPayNotify'),
-            'trans_time' => $nowTime,
-            'batch_no' => $batch_no,
-            'batch_count' => $batch_count,
-            'batch_amount' => $batch_amount,
-            'pay_type' => 1,
-            'content' => $content,
-        );
-
-        $url = $this->dsfUrl . 'agentpay/pay';
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId, $this->dsfVersion, $this->dsf_sign_type);
-        $response = json_decode($result, true);
-        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'], $this->merchantPrivateKey);
-        return $reapalMap->AESDecryptResponse($encryptkey, $response['data']);
-
-    }
-
-    /**
-     * 代付批次查询
-     */
-    public function agentpayQueryBatch()
-    {
-
-        //参数数组
-        $paramArr = array(
-            'charset' => $this->charset,
-            'notify_url' => $this->notify_url,
-            'trans_time' => request('trans_time'),
-            'batch_no' => request('batch_no'),
-            'next_tag' => request('next_tag'),
-        );
-
-        $merchantId = request('merchat_id') ? request('merchat_id') : $this->merchantId;
-
-        $reapalMap = new ReapalUtils();
-
-        $url = $this->dsfUrl . 'agentpay/batchpayquery';
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId, $this->dsfVersion);
-        $response = json_decode($result, true);
-        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'], $this->merchantPrivateKey);
-        return $reapalMap->AESDecryptResponse($encryptkey, $response['data']);
-
-    }
-
-    /**
-     * 代付单笔查询
-     */
-    public function agentpayQuerySingle()
-    {
-        //参数数组
-        $paramArr = array(
-            'charset' => $this->charset,
-            'notify_url' => $this->notify_url,
-            'trans_time' => request('trans_time'),
-            'batch_no' => request('batch_no'),
-            'detail_no' => request('detail_no'),
-        );
-
-        $merchantId = request('merchat_id') ? request('merchat_id') : $this->merchantId;
-
-        $reapalMap = new ReapalUtils();
-
-        $url = $this->dsfUrl . 'agentpay/singlepayquery';
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId, $this->dsfVersion);
-        $response = json_decode($result, true);
-        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'], $this->merchantPrivateKey);
-
-        return $reapalMap->AESDecryptResponse($encryptkey, $response['data']);
-    }
-
-    /**
-     * 代付账户查询余额
-     */
-    public function agentpayQueryBalance()
-    {
-
-        //参数数组
-        $paramArr = array(
-            'charset' => $this->charset,
-        );
-
-        $merchantId = request('merchat_id') ? request('merchat_id') : $this->merchantId;
-
-        $reapalMap = new ReapalUtils();
-
-        $url = $this->dsfUrl . 'agentpay/balancequery';
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId, $this->dsfVersion);
-        $response = json_decode($result, true);
-        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'], $this->merchantPrivateKey);
-        return $reapalMap->AESDecryptResponse($encryptkey, $response['data']);
-    }
 
     /**
      * 预支付接口, 返回调起微信支付需要的参数
@@ -194,29 +87,6 @@ class ReapalPay
             'version' => $this->apiVersion,
 
         ];
-        $paramArr = [
-            "merchant_id" => "100000001304038",
-            "order_no" => "O20180828183515561090",
-            "transtime" => "2018-08-28 18:35:15",
-            "currency" => "156",
-            "total_fee" => 3.0,
-            "title" => "深圳1北",
-            "body" => "39",
-            "client_type" => "0",
-            "user_id" => "mock_open_id",
-            "appid_source" => "wx8d0f5e945df699c2",
-            "store_phone" => "15914021584",
-            "store_name" => "虾庄就是用来吃虾的。天下第一虾了解一下",
-            "store_id" => 19,
-            "token_id" => "aacf86e5-7a17-f407-801b-4c65a5af9270",
-            "terminal_type" => "mobile",
-            "terminal_info" => "null_MAC/e682f7ad-a378-4bde-48dd-1bf07268e4d7_SIM",
-            "member_ip" => "127.0.0.1",
-            "seller_email" => "daqian@shoptps.com",
-            "notify_url" => "http://o.local.evlee.top/pay/payNotify",
-            "version" => "3.1.3",
-        ];
-
 
         $url = $this->apiUrl . '/qrcode/scan/encryptline';
         $result = $this->apiPost($url, $paramArr);
