@@ -117,7 +117,6 @@ class WalletWithdrawService extends BaseService
             $withdraw->bank_card_open_name = $obj->bank_open_name;
             $withdraw->bank_card_no = $obj->bank_card_no;
             $withdraw->bank_name = $obj->sub_bank_name;
-            dump($withdraw);
             $withdraw->save();
 
             // 2.更新钱包余额
