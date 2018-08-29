@@ -179,49 +179,18 @@ class ReapalUtils
     {
         //生成签名
         $sign = $this->createSign($paramArr, $apiKey);
-//        $paramArr['sign_type'] = $sign_type;
+        $paramArr['sign_type'] = $sign_type;
         $paramArr['sign'] = $sign;
         //生成AESkey
-//        $generateAESKey = $this->generateAESKey();
-        $generateAESKey = 'rlMTDspJSugOsHff';
+        $generateAESKey = $this->generateAESKey();
         $request = array();
         $request['merchant_id'] = $merchant_id;
         //加密key
         $request['encryptkey'] = $this->encryptKey($generateAESKey, $reapalPublicKey);
         //加密数据
         $request['data'] = $this->encrypt(json_encode($paramArr), $generateAESKey);
-//        $request['version'] = $version;
+        $request['version'] = $version;
         return $this->sendHttpRequest($request, $url);
-    }
-
-    /*
-  For PKCS7 padding
- */
-
-    private function addpadding($string, $blocksize = 16)
-    {
-
-        $len = strlen($string);
-
-        $pad = $blocksize - ($len % $blocksize);
-
-        $string .= str_repeat(chr($pad), $pad);
-
-        return $string;
-
-    }
-
-    private function strippadding($string)
-    {
-
-        $slast = ord(substr($string, -1));
-        $slastc = chr($slast);
-        if (preg_match("/$slastc{" . $slast . "}/", $string)) {
-            $string = substr($string, 0, strlen($string) - $slast);
-            return $string;
-        } else {
-            return $string;
-        }
     }
 
     function hexToStr($hex)
