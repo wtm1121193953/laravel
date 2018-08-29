@@ -58,7 +58,7 @@ class ReapalPay
             'order_no' => array_get($param, 'order_no'),
             'transtime' => date('Y-m-d H:i:s'),
             'currency' => '156',
-            'total_fee' => array_get($param, 'total_fee'),
+            'total_fee' => array_get($param, 'total_fee') * 100,
             'title' => array_get($param, 'title'),
             'body' => array_get($param, 'body'),
 
