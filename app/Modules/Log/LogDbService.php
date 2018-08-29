@@ -21,8 +21,8 @@ class LogDbService
      */
     public static function reapalPayRequest($type, $order_no, $request, $response)
     {
-        if (is_array($requst)) {
-            $requst = json_encode($requst);
+        if (is_array($request)) {
+            $request = json_encode($request);
         }
         if (is_array($response)) {
             $response = json_encode($response);
