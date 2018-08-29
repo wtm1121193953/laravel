@@ -171,7 +171,8 @@ class OrderController extends Controller
                     'open_id' => request()->get('current_open_id'),
                 ];
                 $reapal = new ReapalPay();
-                $reapal->prepay($param);
+                $result = $reapal->prepay($param);
+                dd($result);
             }else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
