@@ -29,7 +29,7 @@ use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
-use App\Support\ReapalPay;
+use App\Support\Reapal\ReapalPay;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
@@ -267,6 +267,7 @@ class OrderController extends Controller
                 ];
                 $reapal = new ReapalPay();
                 $result = $reapal->prepay($param);
+                dd($result);
             }else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
