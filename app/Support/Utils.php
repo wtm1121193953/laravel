@@ -70,7 +70,7 @@ class Utils
      * @param string $prefix
      * @return string
      */
-    public static function create_uuid($prefix = "daqian"){    //可以指定前缀
+    public static function create_uuid($prefix = ""){    //可以指定前缀
         $str = md5(uniqid(mt_rand(), true));
         $uuid  = substr($str,0,8) . '-';
         $uuid .= substr($str,8,4) . '-';
