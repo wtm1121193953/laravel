@@ -33,12 +33,6 @@
                     page: 1,
                 },
                 list: [
-                    {
-                        created_at: '2018',
-                        audit_done_time: '2018',
-                        name: '一个名词',
-                        status: 1,
-                    }
                 ],
                 total: 0,
                 operBizMember: {},
@@ -46,23 +40,25 @@
         },
         methods: {
             getList(){
-                this.query.code = this.operBizMember.code;
-                api.get('/operBizMember/merchants', this.query).then(data => {
-                    this.list = data.list;
-                    this.total = data.total;
+                let _self = this;
+                _self.query.code = _self.operBizMember.code;
+                api.get('/operBizMember/merchants', _self.query).then(data => {
+                    _self.list = data.list;
+                    _self.total = data.total;
                 })
             },
         },
         created(){
-            let id = this.$route.query.id;
-            if(!id){
-                this.$message.warning('id不能为空');
+            let _self = this;
+            let bizer_id = _self.$route.query.bizer_id;
+            if(!bizer_id){
+                _self.$message.warning('无效用户');
                 router.go(-1);
                 return ;
             }
-            api.get('/operBizMembers/detail', {id: id}).then(data => {
-                this.operBizMember = data;
-                this.getList();
+            api.get('/operBizMembers/detail', {id: bizer_id}).then(data => {
+                _self.operBizMember = data;
+                _self.getList();
             });
         },
     }

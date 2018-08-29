@@ -79,18 +79,24 @@
                 router.push({
                     path: '/bizers/BizerMerchants',
                     query: {
-                        id: _self.scope.row.id
+                        bizer_id: _self.scope.row.bizer_id
                     }
                 })
             },
             changeStatus(){
-                let status = this.scope.row.status === 1 ? 2 : 1;
-                this.$emit('before-request')
-                api.post('/operBizMember/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
-                    this.scope.row.status = status;
-                    this.$emit('change', this.scope.$index, data)
+                let _self = this;
+                let status = _self.scope.row.status === 1 ? 2 : 1;
+                api.post('/operBizMember/changeStatus', {id: _self.scope.row.id, status: status}).then((data) => {
+                    _self.scope.row.status = status;
+                    _self.$message({
+                        message: status === 1 ? '解冻成功' : '冻结成功',
+                        type: 'success'
+                    });
+                    _self.$emit('change', this.scope.$index, data)
+                }).catch(() => {
+                    _self.$message.warning('操作失败');
                 }).finally(() => {
-                    this.$emit('after-request')
+                    
                 })
             },
             remarks() {
@@ -114,10 +120,7 @@
                     })
                     
                 }else{
-                    _self.$message({
-                          message: '请填写备注',
-                          type: 'warning'
-                    });
+                    _self.$message.warning('请填写备注');
                 }
             },
             submitSettingsdivide(){

@@ -150,7 +150,8 @@
                         {min: 4, max: 6, message: '请输入4位验证码', trigger: 'blur'}
                     ],
                     password: [
-                        {required: true, message: '请输入密码', trigger: 'blur'}
+                        {required: true, message: '请输入密码', trigger: 'blur'},
+                        {min: 6, max: 12, message: '请输入6-12位密码', trigger: 'blur'}
                     ],
                     confirmPassword: [
                         {validator: validatePass, trigger: 'blur'}

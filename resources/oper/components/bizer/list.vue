@@ -16,6 +16,7 @@
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>
                     <span v-else-if="scope.row.status === -1" class="c-danger">冻结</span>
+                    <span v-else-if="scope.row.status === 2" class="c-warning">申请中</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
