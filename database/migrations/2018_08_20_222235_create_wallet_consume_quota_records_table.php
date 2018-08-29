@@ -25,6 +25,8 @@ class CreateWalletConsumeQuotaRecordsTable extends Migration
             $table->decimal('pay_price', 8, 2)->default(0)->comment('支付金额');
             $table->decimal('order_profit_amount', 8, 2)->default(0)->comment('订单利润');
             $table->decimal('consume_quota', 8, 2)->default(0)->comment('消费额');
+            $table->decimal('consume_quota_profit', 8, 2)->default(0)->comment('消费额对应的利润金额');
+            $table->decimal('tps_credit', 8, 2)->default(0)->comment('消费额转化的tps积分值');
             $table->string('consume_user_mobile', 11)->default('')->comment('消费用户手机号');
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-冻结中 2-已解冻待置换 3-已置换 4-已退款');
             $table->timestamps();
