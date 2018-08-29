@@ -48,6 +48,8 @@
                     callback(new Error('请输入密码'));
                 } else if (isNaN(value)) {
                     callback(new Error('请输入数字值'));
+                } else if (value.length !== 6) {
+                    callback(new Error('密码需为6位'));
                 } else {
                     if (this.form.checkPassword !== '') {
                         this.$refs.form.validateField('checkPassword');

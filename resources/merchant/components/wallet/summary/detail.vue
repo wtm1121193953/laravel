@@ -83,7 +83,7 @@
                         <span v-else>未知 ({{billData.type}})</span>
                     </el-form-item>
                     <el-form-item label="提现金额">
-                        -{{orderOrWithdrawData.amount}}元
+                        {{orderOrWithdrawData.amount}}元
                     </el-form-item>
                     <el-form-item label="到账金额">
                         {{orderOrWithdrawData.remit_amount}}元

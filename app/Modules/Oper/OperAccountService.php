@@ -124,7 +124,7 @@ class OperAccountService extends BaseService
             [ 'id' => 16, 'name' => '账户管理', 'level' => 1, 'url' => '/wallet', 'sub' =>
                 [
                     [ 'id' => 17, 'name' => '账总总览', 'level' => 2, 'url' => '/oper/wallet/summary/list', 'pid' => 16,],
-                    [ 'id' => 18, 'name' => '我的消费额', 'level' => 2, 'url' => '/oper/wallet/consume/list', 'pid' => 16,],
+//                    [ 'id' => 18, 'name' => '我的消费额', 'level' => 2, 'url' => '/oper/wallet/consume/list', 'pid' => 16,],
                     [ 'id' => 19, 'name' => '提现密码管理', 'level' => 2, 'url' => '/oper/wallet/withdraw/password', 'pid' => 16,],
                 ]
             ],
