@@ -35,7 +35,9 @@
                 list: [
                 ],
                 total: 0,
-                operBizMember: {},
+                operBizMember: {
+                    name:''
+                },
             }
         },
         methods: {
