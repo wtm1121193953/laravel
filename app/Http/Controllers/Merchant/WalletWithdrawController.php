@@ -88,6 +88,7 @@ class WalletWithdrawController extends Controller
     /**
      * 商户提现操作
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function withdrawApplication()
     {

@@ -77,6 +77,7 @@ class WalletWithdrawService extends BaseService
      * @param $amount
      * @param $param
      * @return WalletWithdraw
+     * @throws \Exception
      */
     public static function createWalletWithdrawAndUpdateWallet(Wallet $wallet, $obj, $amount, $param)
     {
@@ -98,8 +99,8 @@ class WalletWithdrawService extends BaseService
             throw new BaseResponseException('用户类型错误');
         }
 
+        DB::beginTransaction();
         try{
-            DB::beginTransaction();
             // 1.创建提现记录
             $withdraw = new WalletWithdraw();
             $withdraw->wallet_id = $wallet->id;
@@ -107,8 +108,8 @@ class WalletWithdrawService extends BaseService
             $withdraw->origin_type = $wallet->origin_type;
             $withdraw->withdraw_no = self::createWalletWithdrawNo();
             $withdraw->amount = $amount;
-            $withdraw->charge_amount = number_format($amount * $ratio / 100, 2);
-            $withdraw->remit_amount = number_format($amount - number_format($amount * $ratio / 100, 2), 2);
+            $withdraw->charge_amount = number_format($amount * $ratio / 100, 2, '.', '');
+            $withdraw->remit_amount = $amount - $withdraw->charge_amount;
             $withdraw->status = WalletWithdraw::STATUS_AUDITING;
             $withdraw->invoice_express_company = $invoiceExpressCompany;
             $withdraw->invoice_express_no = $invoiceExpressNo;
@@ -119,7 +120,7 @@ class WalletWithdrawService extends BaseService
             $withdraw->save();
 
             // 2.更新钱包余额
-            $wallet->balance = number_format($wallet->balance - $amount, 2);
+            $wallet->balance = $wallet->balance - $amount;
             $wallet->save();
 
             // 3.创建钱包流水记录
@@ -146,7 +147,7 @@ class WalletWithdrawService extends BaseService
                 'message' => $e->getMessage(),
                 'data' => $e
             ]);
-            throw new BaseResponseException('提现失败');
+            throw $e;
         }
     }
 

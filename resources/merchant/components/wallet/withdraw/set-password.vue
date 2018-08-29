@@ -107,6 +107,9 @@
                             this.$message.success('提现密码设置成功');
                             this.$refs.form.resetFields();
                             this.initForm();
+                            if(this.$route.query.redirect){
+                                router.replace(this.$route.query.redirect)
+                            }
                         });
                     }
                 })
