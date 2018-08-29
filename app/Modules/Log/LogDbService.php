@@ -22,10 +22,10 @@ class LogDbService
     public static function reapalPayRequest($type, $order_no, $request, $response)
     {
         if (is_array($request)) {
-            $request = json_encode($request);
+            $request = json_encode($request,JSON_UNESCAPED_UNICODE);
         }
         if (is_array($response)) {
-            $response = json_encode($response);
+            $response = json_encode($response,JSON_UNESCAPED_UNICODE);
         }
         $log = new LogReapalPayRequest();
         $log->type = $type;
