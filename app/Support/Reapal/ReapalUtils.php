@@ -6,7 +6,7 @@
  * Time: 14:31
  */
 
-namespace App\Support;
+namespace App\Support\Reapal;
 
 class ReapalUtils
 {

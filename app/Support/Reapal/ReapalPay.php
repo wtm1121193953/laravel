@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace App\Support\Reapal;
 
 use Illuminate\Support\Carbon;
 
@@ -217,15 +217,19 @@ class ReapalPay
             "version" => "3.1.3",
         ];
 
-        $reapalMap = new ReapalUtils();
 
         $url = $this->apiUrl . '/qrcode/scan/encryptline';
-        $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $this->merchantId, $this->apiVersion, $this->api_sign_type);
+        $result = $this->apiPost($url, $paramArr);
+        return $result;
+    }
+
+    protected function apiPost($url, $data){
+        $reapalMap = new ReapalUtils();
+        $result = $reapalMap->send($data, $url, $this->apiKey, $this->reapalPublicKey, $this->merchantId, $this->apiVersion, $this->api_sign_type);
         $response = json_decode($result, true);
         $encryptkey = $reapalMap->decryptKey($response['encryptkey'], $this->merchantPrivateKey);
         $result = $reapalMap->decrypt($response['data'], $encryptkey);
-        dd($url, $paramArr, $result);
-        dd($result);
+        $result = json_decode($result, 1);
         return $result;
     }
 
