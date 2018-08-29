@@ -57,7 +57,7 @@ class TpsApi
      * 消费记录对接
      * Author：Jerry
      * Date:180828
-     * @param $data 存储数据
+     * @param $data array 存储数据
      * @return mixed|string
      */
     public static function quotaRecords( $data )
