@@ -29,7 +29,7 @@ use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
-use App\Support\ReapalPay;
+use App\Support\Reapal\ReapalPay;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
