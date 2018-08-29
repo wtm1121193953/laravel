@@ -75,7 +75,7 @@ class ReapalPay
             'member_ip' => request()->ip(),
             'seller_email' => $this->sellerEmail,
 
-            'notify_url' => url('/pay/reapalPayNotify'),
+            'notify_url' => url('/api/pay/reapalPayNotify'),
 
             'version' => $this->apiVersion,
 
