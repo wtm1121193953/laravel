@@ -54,6 +54,20 @@ class TpsApi
     }
 
     /**
+     * 消费记录对接
+     * Author：Jerry
+     * Date:180828
+     * @param $data 存储数据
+     * @return mixed|string
+     */
+    public static function quotaRecords( $data )
+    {
+        $url = config('tpsapi.quota_url');
+        $result = self::postMiddleground($url, $data);
+        return $result;
+    }
+
+    /**
      * 创建账号
      * @param $account string 账号
      * @param $password string 密码
@@ -90,7 +104,6 @@ class TpsApi
             'Accept' => 'application/json',
             'token' => $token
         ];
-
         $client = new Client();
         $response = $client->post($url, [
             'body' => $postData,
@@ -122,7 +135,6 @@ class TpsApi
             'token' => $encryToken,
             'data' => $encryData,
         ];
-
         $client = new Client();
         $response = $client->post($url, [
             'form_params' => $postData

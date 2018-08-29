@@ -5,4 +5,5 @@ return [
 	'key'            => env('TPS_APIKEY'),
 	'mail_url'       => env('TPS_MAILURL').'/order/sendMail',
 	'mail_token'     => env('TPS_MAILTOKEN'),
+    'quota_url'      => env('TPS_QUOTAURL').'/order/addDaQian',
 ];
