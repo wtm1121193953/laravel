@@ -74,8 +74,8 @@ class ReapalAgentPay
         $url = $this->dsfUrl . 'agentpay/pay';
         $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId, $this->dsfVersion, $this->dsf_sign_type);
         $response = json_decode($result, true);
-        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'], $this->merchantPrivateKey);
-        return $reapalMap->AESDecryptResponse($encryptkey, $response['data']);
+        $encryptkey = $reapalMap->encryptKey($response['encryptkey'], $this->merchantPrivateKey);
+        return $reapalMap->decrypt($encryptkey, $response['data']);
 
     }
 
@@ -101,8 +101,8 @@ class ReapalAgentPay
         $url = $this->dsfUrl . 'agentpay/batchpayquery';
         $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId, $this->dsfVersion);
         $response = json_decode($result, true);
-        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'], $this->merchantPrivateKey);
-        return $reapalMap->AESDecryptResponse($encryptkey, $response['data']);
+        $encryptkey = $reapalMap->encryptKey($response['encryptkey'], $this->merchantPrivateKey);
+        return $reapalMap->decrypt($encryptkey, $response['data']);
 
     }
 
@@ -127,9 +127,9 @@ class ReapalAgentPay
         $url = $this->dsfUrl . 'agentpay/singlepayquery';
         $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId, $this->dsfVersion);
         $response = json_decode($result, true);
-        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'], $this->merchantPrivateKey);
+        $encryptkey = $reapalMap->encryptKey($response['encryptkey'], $this->merchantPrivateKey);
 
-        return $reapalMap->AESDecryptResponse($encryptkey, $response['data']);
+        return $reapalMap->decrypt($encryptkey, $response['data']);
     }
 
     /**
@@ -150,7 +150,7 @@ class ReapalAgentPay
         $url = $this->dsfUrl . 'agentpay/balancequery';
         $result = $reapalMap->send($paramArr, $url, $this->apiKey, $this->reapalPublicKey, $merchantId, $this->dsfVersion);
         $response = json_decode($result, true);
-        $encryptkey = $reapalMap->RSADecryptkey($response['encryptkey'], $this->merchantPrivateKey);
-        return $reapalMap->AESDecryptResponse($encryptkey, $response['data']);
+        $encryptkey = $reapalMap->encryptKey($response['encryptkey'], $this->merchantPrivateKey);
+        return $reapalMap->decrypt($encryptkey, $response['data']);
     }
 }

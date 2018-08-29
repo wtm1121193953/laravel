@@ -2,11 +2,10 @@
 
 namespace App\Jobs;
 
-use App\Exceptions\BaseResponseException;
 use App\Modules\Settlement\SettlementPayBatch;
 use App\Modules\Settlement\SettlementPlatform;
 use App\Modules\Settlement\SettlementPlatformService;
-use App\Support\ReapalPay;
+use App\Support\Reapal\ReapalAgentPay;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -90,7 +89,7 @@ class SettlementAgentPay implements ShouldQueue
             }
             $content = implode('|',$contArr);
         }
-        $reapal =  new ReapalPay();
+        $reapal =  new ReapalAgentPay();
         $reapal->agentpay($batch_no,$batch_count,$batch_amount,$content);
 
     }
