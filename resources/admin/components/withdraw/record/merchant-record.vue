@@ -234,7 +234,7 @@
                 }).then(({value}) => {
                     let param = {
                         ids: row.id,
-                        remark: value,
+                        remark: value ? value : '',
                     };
                     api.post('/withdraw/record/payFail', param).then(data => {
                         this.$alert('操作成功');

@@ -382,7 +382,7 @@ class WalletWithdrawService extends BaseService
     private static function withdrawFail(WalletWithdraw $walletWithdraw, $status, $remark = '') {
         // 1. 提现记录表 审核状态修改为 审核不通过
         $walletWithdraw->status = $status;
-        $walletWithdraw->remark = $remark;
+        $walletWithdraw->remark = $remark ?: '';
         $walletWithdraw->save();
         // 2. 更新钱包表
         $wallet = WalletService::getWalletById($walletWithdraw->wallet_id);
