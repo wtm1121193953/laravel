@@ -13,7 +13,7 @@ return [
     'reapalPublicKey' => resource_path('reapal/cert/itrus001.pem'),
 
     'apiKey' => env('REAPAL_APIKEY'),
-    'dsfUrl' => env('REAPAL_DSFUrl'),
+    'dsfUrl' => env('REAPAL_DSFURL'),
 //    'notify_url' => env('REAPAL_NOTIFY_URL'),
     'charset' => 'utf-8',
     'dsf_sign_type' => 'MD5',
