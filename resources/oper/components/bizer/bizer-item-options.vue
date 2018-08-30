@@ -85,8 +85,8 @@
             },
             changeStatus(){
                 let _self = this;
-                let status = _self.scope.row.status === 1 ? 2 : 1;
-                api.post('/operBizMember/changeStatus', {id: _self.scope.row.id, status: status}).then((data) => {
+                let status = _self.scope.row.status === 1 ? -1 : 1;
+                api.get('/operBizer/changeDetail', {id: _self.scope.row.id, status: status}).then((data) => {
                     _self.scope.row.status = status;
                     _self.$message({
                         message: status === 1 ? '解冻成功' : '冻结成功',
