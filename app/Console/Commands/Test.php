@@ -78,7 +78,7 @@ class Test extends Command
         dd('hi');
         SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY);
         dd('hi');*/
-        SettlementDaily::dispatch(Carbon::today());
+        SettlementDaily::dispatch('2018-04-28');
         //dd(12);
         SettlementAgentPayDaily::dispatch();
         dd(123);

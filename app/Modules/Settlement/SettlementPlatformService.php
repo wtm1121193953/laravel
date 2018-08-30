@@ -135,22 +135,6 @@ class SettlementPlatformService extends BaseService
         // 生成结算单，方便之后结算订单中保存结算信息
         $settlementNum = self::genSettlementNo(10);
         if( !$settlementNum ) return false;
-        $saveData= [
-            'oper_id'           => $merchant->oper_id,
-            'merchant_id'       => $merchant->id,
-            'date'              => Carbon::now(),
-            'settlement_no'     => $settlementNum,
-            'settlement_rate'   => $merchant->settlement_rate,
-            'bank_open_name'    => $merchant->bank_open_name,
-            'bank_card_no'      => $merchant->bank_card_no,
-            'sub_bank_name'     => $merchant->sub_bank_name,
-            'bank_open_address' => $merchant->bank_open_address,
-            'invoice_title'     => $merchant->invoice_title,
-            'invoice_no'        => $merchant->invoice_no,
-            'amount'            => 0,
-            'charge_amount'     => 0,
-            'real_amount'       => 0,
-        ];
 
         $settlementPlatform = new SettlementPlatform();
         $settlementPlatform->oper_id = $merchant->oper_id;
