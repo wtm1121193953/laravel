@@ -183,9 +183,12 @@
                 let _self = this;
                 _self.isLoading = true;
                 let params = {};
-                if (_self.query.createdAt.length > 0 ) {
+                if (_self.query.createdAt && _self.query.createdAt.length > 0 ) {
                     params.startTime = _self.query.createdAt[0];
                     params.endTime = _self.query.createdAt[1];
+                }else{
+                    params.startTime = '';
+                    params.endTime = '';
                 }
                 Object.assign(params, _self.query);
                 api.get('/api/bizer/opers', params).then(data => {
