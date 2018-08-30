@@ -47,45 +47,45 @@ class SettlementAgentPay implements ShouldQueue
         DB::beginTransaction();
         try {
 
+            $payBatch = new SettlementPayBatch();
+            $payBatch->batch_no = $batch_no;
+            $payBatch->batch_count = $batch_count;
+            $payBatch->batch_amount = $batch_amount;
+            $payBatch->save();
+
             foreach ($list as $settlement){
 
                 //更新打款状态为已打款、更新批次号
                 $settlement->status = SettlementPlatform::STATUS_PAYING;
                 $settlement->pay_batch_no = $batch_no;
+                $settlement->settlement_pay_batch_id = $payBatch->id;
                 $settlement->save();
             }
 
-            $res = new SettlementPayBatch();
-            $res->batch_no = $batch_no;
-            $res->batch_count = $batch_count;
-            $res->batch_amount = $batch_amount;
-            $res->save();
-
+            $contArr = [];
             foreach ($list as $settlement) {
-                if($settlement){
-                    $item = [
-                        '序号' => $settlement->id,
-                        '银行账户' => $settlement->bank_card_no,
-                        '开户名' => $settlement->bank_open_name,
-                        '开户行' => $settlement->sub_bank_name,
-                        '分行' => $settlement->bank_open_address,
-                        '支行' => '',
-                        '公/私' => $settlement->bank_card_type == 1 ? '公' : '私',
-                        '金额' => $settlement->real_amount,
-                        '币种' => '',
-                        '省' => '',
-                        '市' => '',
-                        '手机号' => '',
-                        '证件类型' => '',
-                        '证件号' => '',
-                        '用户协议号' => '',
-                        '商户订单号' => $settlement->settlement_no,
-                        '备注' => '',
-                        '会员号' => '',
-                        '绑卡Id' => ''
-                    ];
-                    $contArr[] = implode(',', array_values($item));
-                }
+                $item = [
+                    '序号' => $settlement->id,
+                    '银行账户' => $settlement->bank_card_no,
+                    '开户名' => $settlement->bank_open_name,
+                    '开户行' => $settlement->sub_bank_name,
+                    '分行' => $settlement->bank_open_address,
+                    '支行' => '',
+                    '公/私' => $settlement->bank_card_type == 1 ? '公' : '私',
+                    '金额' => $settlement->real_amount,
+                    '币种' => '',
+                    '省' => '',
+                    '市' => '',
+                    '手机号' => '',
+                    '证件类型' => '',
+                    '证件号' => '',
+                    '用户协议号' => '',
+                    '商户订单号' => $settlement->settlement_no,
+                    '备注' => '',
+                    '会员号' => '',
+                    '绑卡Id' => ''
+                ];
+                $contArr[] = implode(',', array_values($item));
             }
             $content = implode('|',$contArr);
             $reapal =  new ReapalAgentPay();
