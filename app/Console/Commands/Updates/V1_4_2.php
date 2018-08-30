@@ -66,6 +66,8 @@ class V1_4_2 extends Command
                     if($item->settlement_rate == 0){
                         $merchant = MerchantService::getById($item->merchant_id, ['id', 'settlement_rate']);
                         $item->settlement_rate = !empty($merchant) ? $merchant->settlement_rate : 0;
+                        $item->settlement_charge_amount = $item->price * $item->settlement_rate / 100;
+                        $item->settlement_real_amount = $item->price - $item->settlement_charge_amount;
                         $item->save();
 
                         $bar->advance();
