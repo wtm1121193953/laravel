@@ -8,6 +8,7 @@ use App\Jobs\Schedule\SettlementDaily;
 use App\Jobs\Schedule\SettlementWeekly;
 
 use App\Jobs\OrderFinishedJob;
+use App\Jobs\SettlementAgentPay;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
@@ -80,7 +81,7 @@ class Test extends Command
         dd('hi');*/
         //SettlementDaily::dispatch('2018-04-28');
         //dd(12);
-        SettlementAgentPayDaily::dispatch();
+        SettlementAgentPay::dispatch([1]);
         dd(123);
         $order = OrderService::getById(174);
         OrderFinishedJob::dispatch($order);
