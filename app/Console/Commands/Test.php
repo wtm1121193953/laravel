@@ -64,6 +64,15 @@ class Test extends Command
      */
     public function handle()
     {
+//        $settlementRate = 20; //分利比例
+//        // 分利比例要从订单中获取  $order->settlement_rate
+//        $pay_price = 188;
+//        // 计算盈利金额
+//        $grossProfit = $pay_price * $settlementRate / 100;
+//        $taxAmount = $grossProfit * 0.06 * 1.12 / 1.06 + $grossProfit * 0.1 * 0.25 + 0.0068 * $pay_price;
+//
+//        $a = max(floor(($grossProfit - $taxAmount) * 100) / 100, 0);
+//        dd($a);
         /*$order = Order::where('id', 984)->first();
         ConsumeQuotaSyncToTpsJob::dispatch($order);
         dd('hi');
@@ -82,14 +91,11 @@ class Test extends Command
         $grossProfit = $pay_price * $settlementRate / 100;
         $taxAmount = $grossProfit * 0.06 * 1.12 / 1.06 + $grossProfit * 0.1 * 0.25 + 0.0068 * $pay_price;
 
-        $a = max(floor(($grossProfit - $taxAmount) * 100) / 100, 0);
-        dd($a);
 
-
-        $orders = Order::whereIn('user_id', [20,31,36])->get();
+        $orders = Order::all();
         foreach ($orders as $order) {
 //            $order->splitting_status = 1;
-//            $order->settlement_rate = 10;
+//            $order->settlement_rate = 20;
 //            $order->save();
             OrderFinishedJob::dispatch($order);
         }

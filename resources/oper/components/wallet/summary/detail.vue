@@ -18,6 +18,9 @@
                     <el-form-item label="交易时间">
                         {{billData.created_at}}
                     </el-form-item>
+                    <el-form-item label="解冻时间">
+                        {{billData.balance_unfreeze_time}}
+                    </el-form-item>
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="交易编号">
@@ -72,9 +75,12 @@
                     <el-form-item label="订单类型">
                         <span v-if="billData.type == 7">
                         提现
-                        <span v-if="orderOrWithdrawData.status == 1">(提现中)</span>
-                        <span v-else-if="orderOrWithdrawData.status == 2">(提现成功)</span>
-                        <span v-else-if="orderOrWithdrawData.status == 3">(提现失败)</span>
+                        <span v-if="orderOrWithdrawData.status == 1">[审核中]</span>
+                        <span v-else-if="orderOrWithdrawData.status == 2">[审核通过]</span>
+                        <span v-else-if="orderOrWithdrawData.status == 3">[已打款]</span>
+                        <span v-else-if="orderOrWithdrawData.status == 4">[打款失败]</span>
+                        <span v-else-if="orderOrWithdrawData.status == 5">[审核不通过]</span>
+                        <span v-else>[未知 ({{orderOrWithdrawData.status}})]</span>
                     </span>
                         <span v-else-if="billData.type == 8">提现失败</span>
                         <span v-else>未知 ({{billData.type}})</span>
@@ -91,6 +97,12 @@
                     <el-form-item label="开户行">
                         {{orderOrWithdrawData.bank_name}}
                     </el-form-item>
+                    <el-form-item label="运营中心名称">
+                        {{billData.oper_name}}
+                    </el-form-item>
+                    <el-form-item label="快递编号">
+                        {{orderOrWithdrawData.invoice_express_no}}
+                    </el-form-item>
                     <el-form-item label="交易状态">
                         <span v-if="orderOrWithdrawData.status == 1">审核中</span>
                         <span v-else-if="orderOrWithdrawData.status == 2">审核通过</span>
@@ -98,9 +110,6 @@
                         <span v-else-if="orderOrWithdrawData.status == 4">打款失败</span>
                         <span v-else-if="orderOrWithdrawData.status == 5">审核不通过</span>
                         <span v-else>未知 ({{orderOrWithdrawData.status}})</span>
-                    </el-form-item>
-                    <el-form-item label="发票快递公司">
-                        {{orderOrWithdrawData.invoice_express_company}}
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
@@ -119,11 +128,14 @@
                     <el-form-item label="提现发起时间">
                         {{orderOrWithdrawData.created_at}}
                     </el-form-item>
-                    <el-form-item label="商户名称">
-                        {{billData.merchant_name}}
+                    <el-form-item label="发票快递公司">
+                        {{orderOrWithdrawData.invoice_express_company}}
                     </el-form-item>
-                    <el-form-item label="快递编号">
-                        {{orderOrWithdrawData.invoice_express_no}}
+                    <el-form-item label="提现编号">
+                        {{orderOrWithdrawData.withdraw_no}}
+                    </el-form-item>
+                    <el-form-item label="备注">
+                        {{orderOrWithdrawData.remark}}
                     </el-form-item>
                 </el-col>
             </el-form>

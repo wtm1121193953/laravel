@@ -79,4 +79,18 @@ class Utils
         $uuid .= substr($str,20,12);
         return $prefix . $uuid;
     }
+
+    /**
+     * 保留n位小数 且 不四舍五入
+     * @param $number
+     * @param int $decimalQuantity
+     * @return float|int
+     */
+    public static function getDecimalByNotRounding($number, $decimalQuantity = 2)
+    {
+        if ($decimalQuantity < 0) $decimalQuantity = 2;
+        $pow = pow(10, $decimalQuantity);
+        $decimal = floor($number * $pow) / $pow;
+        return $decimal;
+    }
 }
