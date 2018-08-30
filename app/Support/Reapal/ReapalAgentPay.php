@@ -71,6 +71,7 @@ class ReapalAgentPay
         $encryptkey = $reapalMap->decryptKey($response['encryptkey'], $this->merchantPrivateKey);
         $result = $reapalMap->decrypt($response['data'], $encryptkey);
         $result = json_decode($result, 1);
+        dd($result);
         return $result;
     }
 
@@ -101,7 +102,7 @@ class ReapalAgentPay
 
         $url = $this->dsfUrl . 'agentpay/pay';
         $result = $this->apiPost($url, $paramArr);
-        var_dump($paramArr);die();
+
         $settlement = SettlementPayBatch::where('batch_no', $batch_no)->firstOr();
         if ($result['result_code'] == 0000) {
             $settlement->status = SettlementPayBatch::STATUS_IS_SUBMIT;
