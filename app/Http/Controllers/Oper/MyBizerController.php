@@ -50,7 +50,7 @@ class MyBizerController extends Controller {
             $operBizMember->status = $status;
         }
         if(!empty($divide)){
-            $operBizMember->divide = $divide;
+            $operBizMember->divide = $divide/100;
         }
         if(!empty($remark)){
             $operBizMember->remark = $remark;
