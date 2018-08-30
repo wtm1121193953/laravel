@@ -10,6 +10,8 @@ namespace App\Support\Reapal;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Modules\Log\LogDbService;
+use App\Modules\Log\LogOrderNotifyReapal;
 use App\Modules\Settlement\SettlementPayBatch;
 use App\Modules\Settlement\SettlementPlatformService;
 
@@ -180,6 +182,9 @@ class ReapalAgentPay
         $reapalMap = new ReapalUtils();
         $encryptkey = $reapalMap->decryptKey($resultArr['encryptkey'], $this->merchantPrivateKey);
         $result = $reapalMap->decrypt($resultArr['data'], $encryptkey);
+
+        LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_AGENT_PAY, $result);
+
         $result = json_decode($result, 1);
         return $result;
     }
