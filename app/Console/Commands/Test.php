@@ -77,9 +77,9 @@ class Test extends Command
         ConsumeQuotaSyncToTpsJob::dispatch($order);
         dd('hi');
         SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY);
-        dd('hi');
+        dd('hi');*/
         SettlementDaily::dispatch(Carbon::today());
-        dd(12);*/
+        //dd(12);
         SettlementAgentPayDaily::dispatch();
         dd(123);
         $order = OrderService::getById(174);
