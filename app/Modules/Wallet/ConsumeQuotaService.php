@@ -76,13 +76,18 @@ class ConsumeQuotaService extends BaseService
         $userWallet = WalletService::getWalletInfo($user);
         $parentWallet = WalletService::getWalletInfo($parent);
         // 3. 计算返给上级的消费额
-        $consumeQuota = floor((($userWallet->total_consume_quota % 100) + $order->pay_price) / 100) * 50;
-        // 4. 添加当月冻结中的消费额 和 累计分享消费额
-        $parentWallet->freeze_consume_quota += $consumeQuota;         // 上级添加冻结消费额
-        $parentWallet->total_share_consume_quota += $consumeQuota;    // 上级添加 下级消费返的累计消费额
-        $parentWallet->save();
-        // 5. 添加消费额记录
-        self::createWalletConsumeQuotaRecord($order, $parentWallet, WalletConsumeQuotaRecord::TYPE_SUBORDINATE, $consumeQuota);
+        $hundred = floor((($userWallet->total_consume_quota % 100) + $order->pay_price) / 100);
+        if($hundred > 0){
+            // 只有当前消费额与累计消费额累加后超过一百, 才给上级反消费额
+            $consumeQuota = $hundred * 50;
+            // 4. 添加当月冻结中的消费额 和 累计分享消费额
+            $parentWallet->freeze_consume_quota += $consumeQuota;         // 上级添加冻结消费额
+            $parentWallet->total_share_consume_quota += $consumeQuota;    // 上级添加 下级消费返的累计消费额
+            $parentWallet->save();
+            // 5. 添加消费额记录
+            self::createWalletConsumeQuotaRecord($order, $parentWallet, WalletConsumeQuotaRecord::TYPE_SUBORDINATE, $consumeQuota);
+        }
+
     }
 
     /**
