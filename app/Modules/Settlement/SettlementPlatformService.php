@@ -152,7 +152,24 @@ class SettlementPlatformService extends BaseService
             'real_amount'       => 0,
         ];
 
-        $settlementPlatform = new SettlementPlatform( $saveData );
+        $settlementPlatform = new SettlementPlatform();
+        $settlementPlatform->oper_id = $merchant->oper_id;
+        $settlementPlatform->merchant_id = $merchant->id;
+        $settlementPlatform->date = Carbon::now();
+        $settlementPlatform->settlement_no = $settlementNum;
+        $settlementPlatform->settlement_rate = $merchant->settlement_rate;
+        $settlementPlatform->bank_open_name = $merchant->bank_open_name;
+        $settlementPlatform->bank_card_no = $merchant->bank_card_no;
+        $settlementPlatform->bank_card_type = $merchant->bank_card_type;
+        $settlementPlatform->sub_bank_name = $merchant->sub_bank_name;
+        $settlementPlatform->bank_open_address = $merchant->bank_open_address;
+        $settlementPlatform->invoice_title = $merchant->invoice_title;
+        $settlementPlatform->invoice_no = $merchant->invoice_no;
+        $settlementPlatform->amount = 0;
+        $settlementPlatform->charge_amount = 0;
+        $settlementPlatform->real_amount = 0;
+        $settlementPlatform->save();
+
 
         // 开启事务
         DB::beginTransaction();
