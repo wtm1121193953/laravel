@@ -18,7 +18,10 @@ use App\BaseModel;
  */
 class SettlementPayBatch extends BaseModel
 {
-    //
+
+    const STATUS_NOT_SUBMIT = 1;
+    const STATUS_IS_SUBMIT = 2;
+
     public function settlements()
     {
         return $this->hasMany(Settlement::class);

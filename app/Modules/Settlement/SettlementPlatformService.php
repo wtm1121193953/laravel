@@ -11,10 +11,7 @@ namespace App\Modules\Settlement;
 
 use App\BaseService;
 use App\Modules\Order\Order;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use phpDocumentor\Reflection\Types\Boolean;
-use tests\Mockery\Adapter\Phpunit\EmptyTestCase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Collection;
@@ -48,36 +45,14 @@ class SettlementPlatformService extends BaseService
     }
 
     /**
-     * 通过id获取结算单列表
-     * @param $id
-     * @return SettlementPlatform
-     */
-    public static function getListById($id)
-    {
-        $data = SettlementPlatform::with('merchant:id,bank_card_type')->where('id', $id);
-        return $data;
-    }
-
-    /**
-     * 通过id获取结算单总金额
-     * @param $ids
-     * @return int
-     */
-    public static function getRealAmountByIds($ids)
-    {
-        $data = SettlementPlatform::whereIn('id', $ids)->sum('real_amount');
-        return $data;
-    }
-
-    /**
-     * 通过结算单号,序号获取列表
-     * @param $id
+     * 通过结算单号获取列表
      * @param $num
+     * @param $batchNO
      * @return SettlementPlatform
      */
-    public static function getAmountByPayBatchNo($id,$num)
+    public static function getListByMerchantNo($num,$batchNO)
     {
-        $data = SettlementPlatform::with('merchant:id,bank_card_type')->where('id',$id)->where('pay_batch_no', $num);
+        $data = SettlementPlatform::where('settlement_no', $num)->where('pay_batch_no',$batchNO)->first();
         return $data;
     }
 

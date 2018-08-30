@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Modules\Merchant\Merchant;
 use App\Modules\Settlement\SettlementPayBatch;
 use App\Modules\Settlement\SettlementPlatform;
 use App\Modules\Settlement\SettlementPlatformService;
@@ -11,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\DB;
 
 class SettlementAgentPay implements ShouldQueue
 {
@@ -31,66 +33,69 @@ class SettlementAgentPay implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     * @throws \Exception
      */
     public function handle()
     {
         //打款批次号
         $batch_no = SettlementPlatformService::genSettlementNo();
-        //批次总数量
-        $batch_count = count($this->settlementIds);
-        //批次总金额(商家实际收到的金额)
-        $batch_amount = SettlementPlatformService::getRealAmountByIds($this->settlementIds);
 
-        foreach ($this->settlementIds as $key => $val) {
-            $settlement = SettlementPlatform::with('merchant:id,bank_card_type')->findOrFail($val);
+        $list = SettlementPlatform::whereIn('id', $this->settlementIds)->get();
+        $batch_count = $list->count();
+        $batch_amount = $list->pluck('real_amount')->sum();
 
-            //更新打款状态为已打款、更新批次号
-            $settlement->status = 2;
-            $settlement->pay_batch_no = $batch_no;
-            $settlement->save();
+        DB::beginTransaction();
+        try {
 
-        }
-        $res = new SettlementPayBatch();
-        $res->batch_no = $batch_no;
-        $res->batch_count = $batch_count;
-        $res->batch_amount = $batch_amount;
-        $res->save();
+            foreach ($list as $settlement){
 
-        //发起支付
-        $contArr = [];
-        foreach ($this->settlementIds as $key => $val) {
-            //$data = SettlementPlatformService::getListById($val);
-            $settlement = SettlementPlatform::with('merchant:id,bank_card_type')->findOrFail($val);
-            if($settlement){
-                $content = [
-                    'cid' => $settlement->id,
-                    'bank_card_no' => $settlement->bank_card_no,
-                    'bank_open_name' => $settlement->bank_open_name,
-                    'sub_bank_name' => $settlement->sub_bank_name,
-                    'bank_open_address' => $settlement->bank_open_address,
-                    'bank_open_address_branch' => '',
-                    'bank_public_or_private' => $settlement->bank_card_type == 1 ? '公' : '私',
-                    'real_amount' => $settlement->real_amount,
-                    'currency' => '',
-                    'bank_province' => '',
-                    'bank_city' => '',
-                    'bank_mobile' => '',
-                    'ID_type' => '',
-                    'ID_card_NO' => '',
-                    'user_accord' => '',
-                    'merchant_id' => '',
-                    'remark' => '',
-                    'member_id' => '',
-                    'bind_bank_id' => ''
-                ];
-                $res = array_divide($content);
-                array_push($contArr,implode(',',$res[1]));
+                //更新打款状态为已打款、更新批次号
+                $settlement->status = SettlementPlatform::STATUS_PAYING;
+                $settlement->pay_batch_no = $batch_no;
+                $settlement->save();
+            }
 
+            $res = new SettlementPayBatch();
+            $res->batch_no = $batch_no;
+            $res->batch_count = $batch_count;
+            $res->batch_amount = $batch_amount;
+            $res->save();
+
+            foreach ($list as $settlement) {
+                if($settlement){
+                    $item = [
+                        '序号' => $settlement->id,
+                        '银行账户' => $settlement->bank_card_no,
+                        '开户名' => $settlement->bank_open_name,
+                        '开户行' => $settlement->sub_bank_name,
+                        '分行' => $settlement->bank_open_address,
+                        '支行' => '',
+                        '公/私' => $settlement->bank_card_type == 1 ? '公' : '私',
+                        '金额' => $settlement->real_amount,
+                        '币种' => '',
+                        '省' => '',
+                        '市' => '',
+                        '手机号' => '',
+                        '证件类型' => '',
+                        '证件号' => '',
+                        '用户协议号' => '',
+                        '商户订单号' => $settlement->settlement_no,
+                        '备注' => '',
+                        '会员号' => '',
+                        '绑卡Id' => ''
+                    ];
+                    $contArr[] = implode(',', array_values($item));
+                }
             }
             $content = implode('|',$contArr);
+            $reapal =  new ReapalAgentPay();
+            $reapal->agentpay($batch_no,$batch_count,$batch_amount,$content);
+
+            DB::commit();
+        }catch (\Exception $e){
+            DB::rollBack();
+            throw $e;
         }
-        $reapal =  new ReapalAgentPay();
-        $reapal->agentpay($batch_no,$batch_count,$batch_amount,$content);
 
     }
 }

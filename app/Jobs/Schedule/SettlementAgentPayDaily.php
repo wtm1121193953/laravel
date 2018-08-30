@@ -40,8 +40,7 @@ class SettlementAgentPayDaily implements ShouldQueue
         Log::info('开始执行每天需要打款的结算单');
 
         SettlementPlatform::select('id')
-            ->where('id', '>', 0)
-            ->where('status','=', 1)
+            ->where('status','=', SettlementPlatform::STATUS_UN_PAY)
             ->chunk(1000, function(Collection $list){
                 SettlementAgentPay::dispatch($list->pluck('id'));
             });

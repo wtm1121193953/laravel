@@ -8,7 +8,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Modules\Settlement\SettlementPlatform;
 use App\Modules\Settlement\SettlementPlatformService;
+use App\Result;
 use App\Support\Reapal\ReapalAgentPay;
 
 /**
@@ -24,24 +26,38 @@ class AgentPayController extends Controller
     public function notifyAgentRealpay()
     {
         $reapalAgentPay = new ReapalAgentPay();
-        $resultArr = $reapalAgentPay->agentNotify();
+        $res = $reapalAgentPay->agentNotify();
 
-        //"data":"交易日期，批次号,序号,银行账户,开户名,分行,支行,开户行,公/私,金额,币种,备注,商户订单号,交易反馈,失败原因"
-        $arraykey = [
-            'trade_date', 'batch_no', 'serial_num', 'bank_account', 'bank_name', 'bank_branch', 'bank_sub_branch', 'opening_bank', 'bank_public_or_private', 'amount', 'currency', 'remark', 'merchant_num', 'return_msg', 'error_message'
-        ];
-        $res = array_combine($arraykey, $resultArr);
-
-        $settlement = SettlementPlatformService::getAmountByPayBatchNo($res['serial_num'],$res['batch_no']);
+        $settlement = SettlementPlatformService::getListByMerchantNo($res['merchant_num'],$res['batch_no']);
         if($settlement){
             if($res['return_msg'] == '成功'){
-                $settlement->status = 3;
+                $settlement->status = SettlementPlatform::STATUS_PAID;
             }elseif ($res['return_msg'] == '失败'){
-                $settlement->status = 5;
+                $settlement->status = SettlementPlatform::STATUS_FAIL;
                 $settlement->reason = $res['return_msg'];
             }
             $settlement->save();
         }
         return 'success';
     }
+
+    /**
+     * 代付批次查询
+     */
+    /*public function agentpayQueryBatch()
+    {
+        $params = [
+            'trans_time' => request('trans_time'),
+            'batch_no' => request('batch_no'),
+            'next_tag' => request('next_tag')
+        ];
+
+        $reapalAgentPay = new ReapalAgentPay();
+        $resultArr = $reapalAgentPay->agentpayQueryBatch($params);
+
+        if($resultArr['result_code'] == '0001'){
+            return Result::success($resultArr);
+        }
+
+    }*/
 }

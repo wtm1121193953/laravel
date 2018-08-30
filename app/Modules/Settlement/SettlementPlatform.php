@@ -11,6 +11,7 @@ use Illuminate\Support\Carbon;
  * Class SettlementPlatform
  * @package App\Modules\Settlement
  *
+ * @property string settlement_no
  * @property int    oper_id
  * @property int    merchant_id
  * @property Carbon date
@@ -33,6 +34,7 @@ use Illuminate\Support\Carbon;
  * @property int status
  * @property int settlement_pay_batch_id
  * @property string pay_batch_no
+ * @property string reason
  */
 class SettlementPlatform extends BaseModel
 {
@@ -42,7 +44,10 @@ class SettlementPlatform extends BaseModel
     const STATUS_PAID = 3;
     const STATUS_INTO_ACCOUNT = 4;
     const STATUS_FAIL = 5;
-    //
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function merchant()
     {
         return $this->belongsTo(Merchant::class);

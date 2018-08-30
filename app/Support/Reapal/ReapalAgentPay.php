@@ -104,7 +104,7 @@ class ReapalAgentPay
 
         $settlement = SettlementPayBatch::where('batch_no', $batch_no)->firstOr();
         if ($result['result_code'] == 0000) {
-            $settlement->status = 2;
+            $settlement->status = SettlementPayBatch::STATUS_IS_SUBMIT;
         } else {
             $settlement->error_code = $result['result_code'];
             $settlement->error_msg = $result['result_msg'];
@@ -115,15 +115,17 @@ class ReapalAgentPay
 
     /**
      * 代付批次查询
+     * @param array $params
+     * @return bool|mixed|string
      */
-    public function agentpayQueryBatch()
+    public function agentpayQueryBatch(array $params)
     {
         //参数数组
         $paramArr = array(
             'charset' => $this->charset,
-            'trans_time' => request('trans_time'),
-            'batch_no' => request('batch_no'),
-            'next_tag' => request('next_tag'),
+            'trans_time' => array_get($params,'trans_time'),
+            'batch_no' => array_get($params,'batch_no'),
+            'next_tag' => array_get($params,'next_tag'),
         );
 
         $url = $this->dsfUrl . 'agentpay/batchpayquery';
@@ -134,15 +136,17 @@ class ReapalAgentPay
 
     /**
      * 代付单笔查询
+     * @param array $params
+     * @return bool|mixed|string
      */
-    public function agentpayQuerySingle()
+    public function agentpayQuerySingle(array $params)
     {
         //参数数组
         $paramArr = array(
             'charset' => $this->charset,
-            'trans_time' => request('trans_time'),
-            'batch_no' => request('batch_no'),
-            'detail_no' => request('detail_no'),
+            'trans_time' => array_get($params,'trans_time'),
+            'batch_no' => array_get($params,'batch_no'),
+            'detail_no' => array_get($params,'detail_no'),
         );
 
         $url = $this->dsfUrl . 'agentpay/singlepayquery';
@@ -166,6 +170,7 @@ class ReapalAgentPay
     }
 
     /**
+     * 融宝代付异步通知接口
      * @return \Illuminate\Config\Repository|mixed
      */
     public function agentNotify()
@@ -179,7 +184,14 @@ class ReapalAgentPay
         LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_AGENT_PAY, $result);
 
         $result = json_decode($result, 1);
-        return $result;
+
+        //"data":"交易日期，批次号,序号,银行账户,开户名,分行,支行,开户行,公/私,金额,币种,备注,商户订单号,交易反馈,失败原因"
+
+        $arraykey = [
+            'trade_date', 'batch_no', 'serial_num', 'bank_account', 'bank_name', 'bank_branch', 'bank_sub_branch', 'opening_bank', 'bank_public_or_private', 'amount', 'currency', 'remark', 'merchant_num', 'return_msg', 'error_message'
+        ];
+        $res = array_combine($arraykey, $result);
+        return $res;
     }
 }
 

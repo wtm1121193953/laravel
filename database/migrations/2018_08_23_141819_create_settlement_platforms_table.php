@@ -28,6 +28,7 @@ class CreateSettlementPlatformsTable extends Migration
             // 打款信息
             $table->string('bank_open_name')->default('')->comment('银行开户名');
             $table->string('bank_card_no')->default('')->comment('银行账号');
+            $table->integer('bank_card_type')->default('')->comment('银行类型 1-公 2-私');
             $table->string('sub_bank_name')->default('')->comment('开户支行名称');
             $table->string('bank_open_address')->default('')->comment('开户支行地址');
 
