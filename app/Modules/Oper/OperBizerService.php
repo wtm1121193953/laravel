@@ -27,7 +27,7 @@ class OperBizerService extends BaseService {
         // 全局限制条件
         $query = OperBizer::where('status', 1)->orderByDesc('id');
         if (!empty($bizer_id)) {
-            $query->where;
+            $query->where("bizer_id",$bizer_id);
         }
         if ($getWithQuery) {
             return $query;
