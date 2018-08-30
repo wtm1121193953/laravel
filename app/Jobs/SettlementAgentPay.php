@@ -13,6 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SettlementAgentPay implements ShouldQueue
 {
@@ -38,6 +39,7 @@ class SettlementAgentPay implements ShouldQueue
     public function handle()
     {
         //打款批次号
+        Log::info('开始执行自动打款任务， 执行结算单ID：', $this->settlementIds);
         $batch_no = SettlementPlatformService::genSettlementNo();
 
         $list = SettlementPlatform::whereIn('id', $this->settlementIds)->get();
