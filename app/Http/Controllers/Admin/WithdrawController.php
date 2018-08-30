@@ -211,12 +211,13 @@ class WithdrawController extends Controller
     {
         $ids = request('ids');
         $batchId = request('batchId');
+        $status = WalletWithdraw::STATUS_AUDIT;  // 审核成功的才能打款
         if ($batchId) {
-            $withdrawQuery = WalletWithdrawService::getWithdrawRecords(compact('batchId'), 15, true);
+            $withdrawQuery = WalletWithdrawService::getWithdrawRecords(compact('batchId', 'status'), 15, true);
             $ids = $withdrawQuery->select('id')->get()->pluck('id')->toArray();
         }
         if (empty($ids)) {
-            throw new ParamInvalidException('参数错误');
+            throw new ParamInvalidException('没有需要打款的订单');
         }
         WalletWithdrawService::paySuccess($ids);
         return Result::success();
@@ -230,13 +231,14 @@ class WithdrawController extends Controller
     {
         $ids = request('ids');
         $batchId = request('batchId');
+        $status = WalletWithdraw::STATUS_AUDIT;  // 审核成功的才能打款
         $remark = request('remark');
         if ($batchId) {
-            $withdrawQuery = WalletWithdrawService::getWithdrawRecords(compact('batchId'), 15, true);
+            $withdrawQuery = WalletWithdrawService::getWithdrawRecords(compact('batchId', 'status'), 15, true);
             $ids = $withdrawQuery->select('id')->get()->pluck('id')->toArray();
         }
         if (empty($ids)) {
-            throw new ParamInvalidException('参数错误');
+            throw new ParamInvalidException('没有需要打款的订单');
         }
         WalletWithdrawService::payFail($ids, $remark);
         return Result::success();
