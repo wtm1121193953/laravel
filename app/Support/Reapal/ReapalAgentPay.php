@@ -120,11 +120,9 @@ class ReapalAgentPay
      */
     public function agentpayQueryBatch()
     {
-
         //参数数组
         $paramArr = array(
             'charset' => $this->charset,
-            'notify_url' => $this->notify_url,
             'trans_time' => request('trans_time'),
             'batch_no' => request('batch_no'),
             'next_tag' => request('next_tag'),
@@ -134,7 +132,6 @@ class ReapalAgentPay
 
         $result = $this->apiPost($url, $paramArr);
         return $result;
-
     }
 
     /**
@@ -145,7 +142,6 @@ class ReapalAgentPay
         //参数数组
         $paramArr = array(
             'charset' => $this->charset,
-            'notify_url' => $this->notify_url,
             'trans_time' => request('trans_time'),
             'batch_no' => request('batch_no'),
             'detail_no' => request('detail_no'),
@@ -161,7 +157,6 @@ class ReapalAgentPay
      */
     public function agentpayQueryBalance()
     {
-
         //参数数组
         $paramArr = array(
             'charset' => $this->charset,

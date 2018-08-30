@@ -179,8 +179,8 @@ class PayController extends Controller
                 $settlement->reason = $res['return_msg'];
             }
             $settlement->save();
-            return 'success';
         }
+        return 'success';
     }
 
 
