@@ -140,7 +140,7 @@ class SettlementPlatformService extends BaseService
         if($retry == 0){
             return false;
         }
-        $orderNo = date('ymd') . explode(' ', microtime())[0] * 1000000 . rand(1000, 9999);
+        $orderNo = 'PB'.date('ymd') . explode(' ', microtime())[0] * 1000000 . rand(1000, 9999);
         if(SettlementPlatform::where('settlement_no', $orderNo)->first())
         {
             $orderNo = self::genSettlementNo(--$retry);
