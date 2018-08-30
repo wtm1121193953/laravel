@@ -16,12 +16,12 @@
                 >
                     <el-option
                             v-for="item in operBizMembers"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.code">
+                            :key="item.bizerId"
+                            :label="item.bizerMobile"
+                            :value="item.bizerId">
                         <!--<span class="c-gray">{{item.code}}</span>-->
-                        <span class="c-blue">{{item.name}}</span>
-                        <span class="c-light-gray">{{item.mobile}}</span>
+                        <span class="c-blue">{{item.bizerNme}}</span>
+                        <span class="c-light-gray">{{item.bizerMobile}}</span>
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -366,7 +366,7 @@
         },
         methods: {
             getOperBizMember(){
-                api.get('/operBizMembers/search', {status: 1}).then(data => {
+                api.get('/operBizer/getbizers', {status: 1}).then(data => {
                     this.operBizMembers = data.list;
                 })
             },

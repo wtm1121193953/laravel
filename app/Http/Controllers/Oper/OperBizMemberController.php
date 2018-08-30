@@ -9,6 +9,7 @@ use App\Modules\Oper\OperBizMember;
 use App\Modules\Bizer\BizerService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use App\Modules\Oper\OperBizerService;
 
 /**
  * 原有的业务员操作不再提取到service中, 后面会去掉
@@ -95,6 +96,24 @@ class OperBizMemberController extends Controller
             'list' => $list
         ]);* 
          */
+    }
+
+    public function getAllbizer(){
+        $name = request('name', '');
+        $mobile = request('mobile', '');
+        $keyword = request('keyword', '');
+        $status = request('status');
+        $where_arr = [
+            "name"=>$name,
+            "mobile"=>$mobile,
+            "keyword"=>$keyword,
+            "status"=>$status,
+        ];
+        $data = OperBizerService::getAllbizer($where_arr);
+        //echo "<pre>";print_r($data);exit;
+        return Result::success([
+            'list' => $data->items(),
+        ]);
     }
 
     public function detail()

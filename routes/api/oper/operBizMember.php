@@ -20,4 +20,6 @@ Route::get('/oper/bizers', 'MyBizerController@getList');
 Route::get('/operBizer/changeDetail', 'MyBizerController@changeDetail');
 Route::get('/operBizer/merchants', 'MyBizerController@getMerchants');
 
+Route::get('/operBizer/getbizers', 'OperBizMemberController@getAllbizer');
+
 

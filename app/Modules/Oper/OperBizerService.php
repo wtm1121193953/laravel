@@ -108,4 +108,57 @@ class OperBizerService extends BaseService {
 
         return $data;
     }
+
+    /**
+     * 获取所有业务员，不分页
+     * @param $params
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @internal param array $fields
+     */
+    public static function getAllbizer($params, $fields = ['*'])
+    {
+        $bizerId = array_get($params, "bizer_id");
+        $status = array_get($params, "status");
+        $startTime = array_get($params, 'start_time');
+        $endTime = array_get($params, 'end_time');
+        $operIds = array_get($params, 'oper_ids');
+
+        if (is_string($fields)) {
+            $fields = explode(',', preg_replace('# #', '', $fields));
+        }
+        $data = OperBizer::when($bizerId, function (Builder $query) use ($bizerId) {
+            $query->where('bizer_id', $bizerId);
+        })
+            ->when(!empty($operIds), function (Builder $query) use ($operIds) {
+                if(is_array($operIds)){
+                    $query->whereIn('oper_id', $operIds);
+                }else{
+                    $query->where('oper_id', $operIds);
+                }
+            })
+            ->when(is_array($status), function (Builder $query) use ($status) {
+                $query->whereIn('status', $status);
+            })
+            ->when(is_numeric($status), function (Builder $query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->when($startTime, function (Builder $query) use ($startTime) {
+                $query->where('created_at', '>=', $startTime);
+            })
+            ->when($endTime, function (Builder $query) use ($endTime) {
+                $query->where('created_at', '<', date('Y-m-d', strtotime('+1 day', strtotime($endTime))));
+            })
+            ->orderBy('id', 'desc')
+            ->select($fields)
+            ->paginate();
+
+            $data->each(function ($item) {
+                $bizerInfo = BizerService::getById($item->bizer_id) ?: null;
+                $item->bizerId = $bizerInfo->id;
+                $item->bizerNme = $bizerInfo->name;
+                $item->bizerMobile = $bizerInfo->mobile;
+            });
+
+        return $data;
+    }
 }
