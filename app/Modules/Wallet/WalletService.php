@@ -135,7 +135,7 @@ class WalletService extends BaseService
      */
     public static function createWalletBillNo()
     {
-        $billNo = date('Ymd') .substr(time(), -7, 7). str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
+        $billNo = 'B'. date('Ymd') .substr(time(), -6, 6). str_pad(mt_rand(1, 99999), 5, '0', STR_PAD_LEFT);
         return $billNo;
     }
 
