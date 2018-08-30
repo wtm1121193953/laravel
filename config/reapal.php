@@ -20,6 +20,6 @@ return [
     'dsf_version' => '1.0',
 
     'api_url' => env('REAPAL_APIURL'),
-    'api_version' => '3.1.3',
+    'api_version' => '4.0.1',
     'api_sign_type' => 'MD5',
 ];
