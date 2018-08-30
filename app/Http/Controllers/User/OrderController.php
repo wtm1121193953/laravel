@@ -296,9 +296,8 @@ class OrderController extends Controller
      * @return mixed|string
      * @throws \Exception
      */
-    public function reapalPrepay($order)
+    private function reapalPrepay($order)
     {
-        OrderService::paySuccess($order->order_no, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
         $param = [
             'title' => $order->goods_name,
             'body' => $order->goods_id,
