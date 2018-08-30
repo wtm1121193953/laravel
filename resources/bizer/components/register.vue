@@ -69,7 +69,7 @@
 <template>
     <div class="login-container">
         <transition name="form-fade" mode="in-out">
-            <div class="login-form" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
+            <div class="login-form form-label-noBefore" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
                 <div class="login-link">
                     <el-button type="text" @click="goLogin">已有账号，立即登录</el-button>
                 </div>
@@ -317,34 +317,8 @@
     }
 </script>
 
-<style scoped>
-    .verify-pos {
-        position: absolute;
-        right: 100px;
-        top: 0;
-    }
-
-    .card-box {
-        padding: 20px;
-        /*box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02);*/
-        -webkit-border-radius: 5px;
-        border-radius: 5px;
-        -moz-border-radius: 5px;
-        background-clip: padding-box;
-        background-color: #F9FAFC;
-        margin: 120px auto;
-        width: 400px;
-        border: 2px solid #8492A6;
-    }
-
-    .title {
-        margin: 0 auto 40px auto;
-        text-align: center;
-        color: #505458;
-    }
-
-    .loginform {
-        width: 350px;
-        padding: 35px 35px 15px 35px;
+<style>
+    .form-label-noBefore .el-form-item.is-required .el-form-item__label::before {
+        content: none;
     }
 </style>
