@@ -98,7 +98,6 @@ class ReapalAgentPay
             'pay_type' => 1,
             'content' => $content,
         );
-        dd($paramArr);
 
         $url = $this->dsfUrl . 'agentpay/pay';
         $result = $this->apiPost($url, $paramArr);

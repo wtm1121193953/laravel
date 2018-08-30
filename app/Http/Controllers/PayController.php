@@ -25,6 +25,7 @@ use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderService;
+use App\Modules\Settlement\SettlementPlatformService;
 use App\Modules\Sms\SmsService;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
@@ -169,11 +170,16 @@ class PayController extends Controller
         ];
         $res = array_combine($arraykey, $resultArr);
 
-        $settlement = SettlementPlatformService::getAmountByPayBatchNo($res['batch_no']);
-        foreach ($settlement as $item => $val) {
-            if ($item['id'] == $res['serial_num']) {
-
+        $settlement = SettlementPlatformService::getAmountByPayBatchNo($res['serial_num'],$res['batch_no']);
+        if($settlement){
+            if($res['return_msg'] == '成功'){
+                $settlement->status = 3;
+            }elseif ($res['return_msg'] == '失败'){
+                $settlement->status = 5;
+                $settlement->reason = $res['return_msg'];
             }
+            $settlement->save();
+            return 'success';
         }
     }
 

@@ -70,13 +70,14 @@ class SettlementPlatformService extends BaseService
     }
 
     /**
-     * 通过结算单号获取列表
+     * 通过结算单号,序号获取列表
+     * @param $id
      * @param $num
      * @return SettlementPlatform
      */
-    public static function getAmountByPayBatchNo($num)
+    public static function getAmountByPayBatchNo($id,$num)
     {
-        $data = SettlementPlatform::with('merchant:id,bank_card_type')->where('pay_batch_no', $num);
+        $data = SettlementPlatform::with('merchant:id,bank_card_type')->where('id',$id)->where('pay_batch_no', $num);
         return $data;
     }
 
