@@ -68,7 +68,7 @@ class ReapalAgentPay
     {
         $reapalMap = new ReapalUtils();
         $result = $reapalMap->send($data, $url, $this->apiKey, $this->reapalPublicKey, $this->merchantId, $this->dsfVersion, $this->dsf_sign_type);
-        Log::info('融宝代付接口返回', ['result' => $result]);
+        Log::info('融宝代付接口返回', ['data' => $data, 'url' => $url,'result' => $result]);
         $response = json_decode($result, true);
         $encryptkey = $reapalMap->decryptKey($response['encryptkey'], $this->merchantPrivateKey);
         $result = $reapalMap->decrypt($response['data'], $encryptkey);
