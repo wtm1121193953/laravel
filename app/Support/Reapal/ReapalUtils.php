@@ -17,6 +17,7 @@ class ReapalUtils
     //签名函数
     function createSign($paramArr, $apiKey)
     {
+        unset($paramArr['sign']);
         global $appSecret;
         $sign = $appSecret;
         ksort($paramArr);
