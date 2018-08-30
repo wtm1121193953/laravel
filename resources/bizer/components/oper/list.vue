@@ -176,8 +176,8 @@
         methods: {
             search(){
                 var _self = this;
-                this.query.page = 1;
-                this.getList();
+                _self.query.page = 1;
+                _self.getList();
             },
             getList(){
                 let _self = this;
@@ -199,7 +199,7 @@
                         _self.dialogTips = data.tips;
                         _self.dialogPromptVisible = true;
                     }
-                    console.log(data)
+                    // console.log(data)
                 }).catch(() =>{
                     _self.$message({
                       message: '请求失败',

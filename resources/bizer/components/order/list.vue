@@ -3,6 +3,14 @@
         <el-form class="fl" inline size="small">
             <el-form-item prop="createdAt" label="创建时间">
                 <el-date-picker
+                        v-model="query.createdAt"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd">
+                </el-date-picker>
+                <!-- <el-date-picker
                         class="w-150"
                         v-model="query.startTime"
                         type="date"
@@ -17,7 +25,7 @@
                         type="date"
                         placeholder="结束日期"
                         value-format="yyyy-MM-dd 23:59:59"
-                />
+                /> -->
             </el-form-item>
             <el-form-item prop="orderId" label="订单号">
                 <el-input v-model="query.orderId" placeholder="请输入订单号" clearable @keyup.enter.native="search"/>
@@ -151,8 +159,9 @@
             return {
                 isLoading: false,
                 query: {
-                    startTime: '',
-                    endTime :'',
+                    createdAt: '',
+                    // startTime: '',
+                    // endTime :'',
                     orderId: '',
                     order_type: '',
                     goodsName: '',
@@ -174,19 +183,35 @@
         },
         methods: {
             search(){
-                 this.query.page = 1;
-                 this.getList();
+                let _self = this;
+                _self.query.page = 1;
+                _self.getList();
             },
             getList(){
-                 this.isLoading = true;
-                 let params = {};
-                 Object.assign(params, this.query);
-                 api.get('/orders', params).then(data => {
-                     this.query.page = params.page;
-                     this.isLoading = false;
-                     this.list = data.list;
-                     this.total = data.total;
-                 })
+                let _self = this;
+                _self.isLoading = true;
+                let params = {};
+                if (_self.query.createdAt && _self.query.createdAt.length > 0 ) {
+                    params.startTime = _self.query.createdAt[0];
+                    params.endTime = _self.query.createdAt[1];
+                }else{
+                    params.startTime = '';
+                    params.endTime = '';
+                }
+                Object.assign(params, _self.query);
+                api.get('/orders', params).then(data => {
+                    _self.query.page = params.page;
+                    // _self.isLoading = false;
+                    _self.list = data.list;
+                    _self.total = data.total;
+                }).catch(() =>{
+                    _self.$message({
+                      message: '请求失败',
+                      type: 'warning'
+                    });
+                }).finally(() => {
+                    _self.isLoading = false;
+                })
             },
             showMessage(scope){
                 api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
