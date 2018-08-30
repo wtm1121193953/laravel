@@ -13,30 +13,16 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
-use App\Jobs\OrderFinishedJob;
-use App\Jobs\OrderPaidJob;
-use App\Modules\Goods\Goods;
-use App\Modules\Dishes\DishesItem;
-use App\Modules\Dishes\DishesGoods;
 use App\Modules\Log\LogDbService;
 use App\Modules\Log\LogOrderNotifyReapal;
 use App\Modules\Oper\OperMiniprogramService;
 use App\Modules\Order\Order;
-use App\Modules\Order\OrderItem;
-use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderService;
-use App\Modules\Settlement\SettlementPlatformService;
-use App\Modules\Sms\SmsService;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
-use App\Support\Reapal\ReapalAgentPay;
-use App\Support\Reapal\ReapalPay;
 use Exception;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class PayController extends Controller
 {
@@ -155,33 +141,4 @@ class PayController extends Controller
         $reapal = request()->getContent();
         LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_REFUND, $reapal);
     }
-
-    /**
-     * 融宝代付异步通知接口
-     */
-    public function notifyAgentRealpay()
-    {
-        $reapalAgentPay = new ReapalAgentPay();
-        $resultArr = $reapalAgentPay->agentNotify();
-
-        //"data":"交易日期，批次号,序号,银行账户,开户名,分行,支行,开户行,公/私,金额,币种,备注,商户订单号,交易反馈,失败原因"
-        $arraykey = [
-            'trade_date', 'batch_no', 'serial_num', 'bank_account', 'bank_name', 'bank_branch', 'bank_sub_branch', 'opening_bank', 'bank_public_or_private', 'amount', 'currency', 'remark', 'merchant_num', 'return_msg', 'error_message'
-        ];
-        $res = array_combine($arraykey, $resultArr);
-
-        $settlement = SettlementPlatformService::getAmountByPayBatchNo($res['serial_num'],$res['batch_no']);
-        if($settlement){
-            if($res['return_msg'] == '成功'){
-                $settlement->status = 3;
-            }elseif ($res['return_msg'] == '失败'){
-                $settlement->status = 5;
-                $settlement->reason = $res['return_msg'];
-            }
-            $settlement->save();
-        }
-        return 'success';
-    }
-
-
 }

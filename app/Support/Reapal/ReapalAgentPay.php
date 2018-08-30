@@ -9,11 +9,9 @@
 namespace App\Support\Reapal;
 
 
-use App\Exceptions\BaseResponseException;
 use App\Modules\Log\LogDbService;
 use App\Modules\Log\LogOrderNotifyReapal;
 use App\Modules\Settlement\SettlementPayBatch;
-use App\Modules\Settlement\SettlementPlatformService;
 
 class ReapalAgentPay
 {
@@ -32,7 +30,7 @@ class ReapalAgentPay
     public function __construct()
     {
 
-        /*//正式商户ID
+        //正式商户ID
         $this->merchantId = config('reapal.merchant_id');
         //正式商户邮箱
         $this->sellerEmail = config('reapal.seller_email');
@@ -46,10 +44,10 @@ class ReapalAgentPay
         $this->dsfUrl = config('reapal.dsfUrl');
         $this->charset = config('reapal.charset');
         $this->dsf_sign_type = config('reapal.dsf_sign_type');
-        $this->dsfVersion = config('reapal.dsf_version');*/
+        $this->dsfVersion = config('reapal.dsf_version');
 
 
-        //测试商户ID
+        /*//测试商户ID
         $this->merchantId = '100000000000147';
         //商户邮箱
         $this->sellerEmail = config('reapal.seller_email');
@@ -61,7 +59,7 @@ class ReapalAgentPay
         $this->dsfUrl = config('reapal.dsfUrl');
         $this->charset = config('reapal.charset');
         $this->dsf_sign_type = config('reapal.dsf_sign_type');
-        $this->dsfVersion = config('reapal.dsf_version');
+        $this->dsfVersion = config('reapal.dsf_version');*/
 
     }
 
