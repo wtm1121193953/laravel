@@ -93,7 +93,7 @@ class ReapalPay
         $response = json_decode($result, true);
         $encryptkey = $reapalMap->decryptKey($response['encryptkey'], $this->merchantPrivateKey);
         $result = $reapalMap->decrypt($response['data'], $encryptkey);
-        $result = json_decode($result, 1);
+        $result = json_decode($result, true);
         return $result;
     }
 

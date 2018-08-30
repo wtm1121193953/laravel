@@ -311,6 +311,7 @@ class OrderController extends Controller
         $reapal = new ReapalPay();
         $result = $reapal->prepay($param);
 
+        print_r($result);exit;
         if (empty($result['wxjsapi_str'])) {
             throw new BaseResponseException('微信支付失败');
         }
