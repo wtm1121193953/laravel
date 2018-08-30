@@ -81,8 +81,8 @@ class MyOperBizer extends BaseModel
 
     public static function updateActiveMerchantNumberByCode($code)
     {
-        $operBizMember = self::where('code', $code)->first();
-        Cache::forget('oper_bizer_active_merchant_number_' . $operBizMember->id);
+        //$operBizMember = self::where('code', $code)->first();
+        Cache::forget('oper_bizer_active_merchant_number_' . $code);
     }
 
      /**
@@ -117,7 +117,7 @@ class MyOperBizer extends BaseModel
      */
     public static function updateAuditMerchantNumberByCode($code)
     {
-        $operBizMember = self::where('code', $code)->first();
-        Cache::forget('oper_bizzer_audit_merchant_number_' . $operBizMember->id);
+        //$operBizMember = self::where('code', $code)->first();
+        Cache::forget('oper_bizzer_audit_merchant_number_' . $code);
     }
 }

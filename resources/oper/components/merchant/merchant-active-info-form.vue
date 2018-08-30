@@ -6,9 +6,9 @@
         </el-col>
         <!-- 商户激活信息左侧块 -->
         <el-col :span="11">
-            <el-form-item prop="oper_biz_member_code" label="业务员">
+            <el-form-item prop="bizer_id" label="业务员">
                 <el-select
-                        v-model="form.oper_biz_member_code"
+                        v-model="form.bizer_id"
                         filterable
                         clearable
                         placeholder="请输入业务员姓名或手机号码"
@@ -166,7 +166,7 @@
 
     let defaultForm = {
         /////// 商户激活信息
-        oper_biz_member_code: '',
+        bizer_id: '',
         brand: '',
         status: 1,
         // business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],

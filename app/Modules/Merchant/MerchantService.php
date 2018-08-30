@@ -21,6 +21,8 @@ use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Area\Area;
 use Illuminate\Support\Collection;
+use App\Modules\Oper\MyOperBizer;
+
 
 class MerchantService extends BaseService
 {
@@ -301,15 +303,16 @@ class MerchantService extends BaseService
             throw new BaseResponseException('该商户不存在');
         }
 
-        if (!empty($merchant->oper_biz_member_code)) {
+        if (!empty($merchant->bizer_id)) {
             // 记录原业务员ID
-            $originOperBizMemberCode = $merchant->oper_biz_member_code;
+            $originOperBizMemberCode = $merchant->bizer_id;
         }
 
         $merchant->fillMerchantPoolInfoFromRequest();
         $merchant->fillMerchantActiveInfoFromRequest();
 
         // 商户名不能重复
+
         $exists = Merchant::where('name', $merchant->name)
             ->where('id', '<>', $merchant->id)->first();
         $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
@@ -350,15 +353,21 @@ class MerchantService extends BaseService
         $merchant->save();
 
         // 更新业务员已激活商户数量
-        if ($merchant->oper_biz_member_code) {
-            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
-            OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
+        if ($merchant->bizer_id) {
+
+            MyOperBizer::updateActiveMerchantNumberByCode($originOperBizMemberCode);
+            MyOperBizer::updateAuditMerchantNumberByCode($originOperBizMemberCode);
+
+            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+            //OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
         }
 
         // 如果存在原有的业务员, 并且不等于现有的业务员, 更新原有业务员邀请用户数量
-        if (isset($originOperBizMemberCode) && $originOperBizMemberCode != $merchant->oper_biz_member_code) {
-            OperBizMember::updateActiveMerchantNumberByCode($originOperBizMemberCode);
-            OperBizMember::updateAuditMerchantNumberByCode($originOperBizMemberCode);
+        if (isset($originOperBizMemberCode) && $originOperBizMemberCode != $merchant->bizer_id) {
+            MyOperBizer::updateActiveMerchantNumberByCode($originOperBizMemberCode);
+            MyOperBizer::updateAuditMerchantNumberByCode($originOperBizMemberCode);
+            //OperBizMember::updateActiveMerchantNumberByCode($originOperBizMemberCode);
+            //OperBizMember::updateAuditMerchantNumberByCode($originOperBizMemberCode);
         }
 
         return $merchant;
