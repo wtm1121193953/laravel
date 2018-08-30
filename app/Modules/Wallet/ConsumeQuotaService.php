@@ -4,11 +4,11 @@ namespace App\Modules\Wallet;
 
 
 use App\BaseService;
+use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
 use App\Modules\User\UserService;
-use App\Modules\UserCredit\UserCreditSettingService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -27,10 +27,10 @@ class ConsumeQuotaService extends BaseService
      */
     public static function addFreezeConsumeQuota(Order $order)
     {
-        // 1. 添加自己的消费额
+        // 1. 添加上级的消费额 因为上级要使用用户添加消费额之前的累计消费额
+        self::addFreezeConsumeQuotaToParent($order);
+        // 2. 添加自己的消费额
         self::addFreezeConsumeQuotaToSelf($order);
-        // 2. 添加上级的消费额
-//        self::addFreezeConsumeQuotaToParent($order);
     }
 
     /**
@@ -40,15 +40,18 @@ class ConsumeQuotaService extends BaseService
      */
     public static function addFreezeConsumeQuotaToSelf(Order $order)
     {
-        // 1. 添加冻结中的消费额
+        // 1. 获取用户自己的钱包
         $user = UserService::getUserById($order->user_id);
         $wallet = WalletService::getWalletInfo($user);
         DB::beginTransaction();
         try {
-            $wallet->freeze_consume_quota = $wallet->freeze_consume_quota + $order->pay_price;
+            // 2. 获取用户自己的消费额
+            $consumeQuota = $order->pay_price;
+            $wallet->freeze_consume_quota += $consumeQuota;  // 当月冻结
+            $wallet->total_consume_quota += $consumeQuota;   // 个人累计
             $wallet->save();
-            // 2. 添加消费额记录
-            self::createWalletConsumeQuotaRecord($order, $wallet, WalletConsumeQuotaRecord::TYPE_SELF);
+            // 3. 添加消费额记录
+            self::createWalletConsumeQuotaRecord($order, $wallet, WalletConsumeQuotaRecord::TYPE_SELF, $consumeQuota);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -63,17 +66,23 @@ class ConsumeQuotaService extends BaseService
      */
     public static function addFreezeConsumeQuotaToParent(Order $order)
     {
-        // 1. 添加冻结中的消费额
+        // 1. 找到用户和用户的上级
+        $user = UserService::getUserById($order->user_id);
         $parent = InviteUserService::getParent($order->user_id);
         if ($parent == null) {
             return;
         }
-        $consumeQuotaToParentRatio = UserCreditSettingService::getConsumeQuotaToParentRatio();
-        $wallet = WalletService::getWalletInfo($parent);
-        $wallet->freeze_consume_quota = $wallet->freeze_consume_quota + ($order->pay_price * $consumeQuotaToParentRatio / 100);
-        $wallet->save();
-        // 2. 添加消费额记录
-        self::createWalletConsumeQuotaRecord($order, $wallet, WalletConsumeQuotaRecord::TYPE_SUBORDINATE);
+        // 2. 获取用户 和 用户上级 的 钱包
+        $userWallet = WalletService::getWalletInfo($user);
+        $parentWallet = WalletService::getWalletInfo($parent);
+        // 3. 计算返给上级的消费额
+        $consumeQuota = floor((($userWallet->total_consume_quota % 100) + $order->pay_price) / 100) * 50;
+        // 4. 添加当月冻结中的消费额 和 累计分享消费额
+        $parentWallet->freeze_consume_quota += $consumeQuota;         // 上级添加冻结消费额
+        $parentWallet->total_share_consume_quota += $consumeQuota;    // 上级添加 下级消费返的累计消费额
+        $parentWallet->save();
+        // 5. 添加消费额记录
+        self::createWalletConsumeQuotaRecord($order, $parentWallet, WalletConsumeQuotaRecord::TYPE_SUBORDINATE, $consumeQuota);
     }
 
     /**
@@ -94,9 +103,8 @@ class ConsumeQuotaService extends BaseService
             // 2.添加消费额解冻记录
             self::createWalletConsumeQuotaUnfreezeRecord($walletConsumeQuotaRecord, $wallet);
             // 3.更新钱包信息
-            $wallet->consume_quota = $wallet->consume_quota + $walletConsumeQuotaRecord->consume_quota;
-            $wallet->freeze_consume_quota = $wallet->freeze_consume_quota - $walletConsumeQuotaRecord->consume_quota;
-            $wallet->total_consume_quota = $wallet->total_consume_quota + $walletConsumeQuotaRecord->consume_quota;
+            $wallet->consume_quota += $walletConsumeQuotaRecord->consume_quota;            // 添加当月消费额（不包含冻结）
+            $wallet->freeze_consume_quota -= $walletConsumeQuotaRecord->consume_quota;     // 减去当月冻结的消费额
             $wallet->save();
             // 4.更新消费额记录
             $walletConsumeQuotaRecord->status = WalletConsumeQuotaRecord::STATUS_UNFREEZE;
@@ -141,16 +149,12 @@ class ConsumeQuotaService extends BaseService
      * @param Order $order
      * @param Wallet $wallet
      * @param $type
+     * @param $consumeQuota
      * @return WalletConsumeQuotaRecord
      */
-    private static function createWalletConsumeQuotaRecord(Order $order, Wallet $wallet, $type)
+    private static function createWalletConsumeQuotaRecord(Order $order, Wallet $wallet, $type, $consumeQuota)
     {
-        if ($type == WalletConsumeQuotaRecord::TYPE_SUBORDINATE) {
-            $consumeQuotaToParentRatio = UserCreditSettingService::getConsumeQuotaToParentRatio();
-            $consumeQuota = $order->pay_price * $consumeQuotaToParentRatio / 100;
-        } else {
-            $consumeQuota = $order->pay_price;
-        }
+        $totalFeeSplittingAmount = FeeSplittingService::getOrderFeeSplittingAmountByOrderId($order->id);
 
         $consumeQuotaRecord = new WalletConsumeQuotaRecord();
         $consumeQuotaRecord->wallet_id = $wallet->id;
@@ -161,10 +165,10 @@ class ConsumeQuotaService extends BaseService
         $consumeQuotaRecord->order_id = $order->id;
         $consumeQuotaRecord->order_no = $order->order_no;
         $consumeQuotaRecord->pay_price = $order->pay_price;
-        $consumeQuotaRecord->order_profit_amount = OrderService::getProfitAmount($order);
-        $consumeQuotaRecord->consume_quota = $consumeQuota;
-        $consumeQuotaRecord->consume_quota_profit = $consumeQuotaRecord->order_profit_amount / 2;
-        $consumeQuotaRecord->tps_credit = $consumeQuota / 6 / 6.5;
+        $consumeQuotaRecord->order_profit_amount = OrderService::getProfitAmount($order);           // 订单利润
+        $consumeQuotaRecord->consume_quota = $consumeQuota;                                         // 消费额
+        $consumeQuotaRecord->consume_quota_profit = $consumeQuotaRecord->order_profit_amount - $totalFeeSplittingAmount;   // 消费额利润 = 订单利润 - 总分润总金额
+        $consumeQuotaRecord->tps_credit = $consumeQuota / 6 / 6.5;                                  // 消费额转化的tps积分值
         $consumeQuotaRecord->consume_user_mobile = $order->notify_mobile;
         $consumeQuotaRecord->status = WalletConsumeQuotaRecord::STATUS_FREEZE;
         $consumeQuotaRecord->save();
