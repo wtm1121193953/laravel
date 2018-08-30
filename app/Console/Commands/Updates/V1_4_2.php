@@ -79,7 +79,7 @@ class V1_4_2 extends Command
 
         // 历史订单分润
         $this->info('历史订单分润 Start');
-        $bar = $this->output->createProgressBar(Order::where('splitting_status', 1)->count('id'));
+        $bar = $this->output->createProgressBar(Order::where('splitting_status', Order::SETTLEMENT_STATUS_NO)->count('id'));
         Order::chunk(1000, function ($list) use ($bar) {
             $list->each(function (Order $item) use ($bar) {
                 if($item->splitting_status == 1){
