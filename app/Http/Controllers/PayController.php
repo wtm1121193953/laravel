@@ -156,46 +156,19 @@ class PayController extends Controller
         return $resultArr;*/
 
         $reapal = request()->getContent();
+        //$reapal = 'data=%7B%22notify_id%22%3A%223bf4cce100a94544ab65bcbd80fa5613%22%2C%22open_id%22%3A%22oA7-Z5blKW1JGt2Cf7c8LRvmpe9s%22%2C%22order_no%22%3A%22O20180830203036729649%22%2C%22order_time%22%3A%222018-08-30+20%3A30%3A37%22%2C%22sign%22%3A%22ff61f3abc45c9b3a7533a20b59292d79%22%2C%22status%22%3A%22TRADE_FINISHED%22%2C%22store_name%22%3A%22%E7%A8%8B%E7%A8%8B%E5%AE%B6%22%2C%22store_phone%22%3A%2215989438364%22%2C%22total_fee%22%3A%221%22%2C%22trade_no%22%3A%2210180830003914450%22%7D&merchant_id=100000001304038&encryptkey=';
         LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_PAY,$reapal);
-        $request = simplexml_load_string($reapal);
+        parse_str($reapal,$url_params_arr);
+        $data = json_decode($url_params_arr['data'],true);
 
-        var_dump(1111111111);die();
-
-
-        $merchant_id = array_get($request,'merchant_id');
-        $result_code = array_get($request,'result_code');
-        $result_msg = array_get($request,'result_msg');
-        $order_no = array_get($request,'order_no');
-
-        //0000表示成功
-        if($result_code == 0000){
-            $wxjsapi_str = array_get($request,'wxjsapi_str');
-
-            $appid = array_get($wxjsapi_str,'appId');
-
-            // 获取appid对应的运营中心小程序
-            $miniprogram = OperMiniprogramService::getByAppid($appid);
-
-            $app = WechatService::getWechatPayAppForOper($miniprogram);
-            $response = $app->handlePaidNotify(function ($message, $fail) {
-                if($message['return_code'] === 'SUCCESS' && array_get($message, 'result_code') === 'SUCCESS'){
-                    $orderNo = $message['out_trade_no'];
-                    $totalFee = $message['total_fee'];
-                    OrderService::paySuccess($orderNo, $message['transaction_id'], $totalFee / 100);
-                } else {
-                    return $fail('通信失败，请稍后再通知我');
-                }
-
-                // 其他未知情况
-                return false;
-            });
-            return $response;
-        }else{
-            throw new BaseResponseException($result_code.':'.$result_msg);
+        if (!empty($data['trade_no']) && $data['status'] == 'TRADE_FINISHED') {
+            OrderService::paySuccess($data['order_no'], $data['trade_no'], $data['total_fee'] / 100,Order::PAY_TYPE_REAPAL);
+            echo 'success';
+        } else {
+            echo 'fail';
         }
 
-
-
+        exit;
 
     }
 }
