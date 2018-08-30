@@ -407,8 +407,9 @@ class MerchantService extends BaseService
         MerchantAuditService::addAudit($merchant->id, $currentOperId);
 
         // 更新业务员已激活商户数量
-        if ($merchant->oper_biz_member_code) {
-            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        if ($merchant->bizer_id) {
+            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
         }
 
         return $merchant;
@@ -445,8 +446,9 @@ class MerchantService extends BaseService
         MerchantAuditService::addAudit($merchant->id, $operId);
 
         // 更新业务员已激活商户数量
-        if($merchant->oper_biz_member_code){
-            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        if($merchant->bizer_id){
+            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
         }
 
         return $merchant;
