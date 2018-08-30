@@ -64,7 +64,8 @@ class V1_4_2 extends Command
         Order::chunk(1000, function ($list) use ($bar) {
                 $list->each(function (Order $item) use ($bar) {
                     if($item->settlement_rate == 0){
-                        $item->settlement_rate = MerchantService::getById($item->merchant_id, ['id', 'settlement_rate'])->settlement_rate;
+                        $merchant = MerchantService::getById($item->merchant_id, ['id', 'settlement_rate']);
+                        $item->settlement_rate = !empty($merchant) ? $merchant->settlement_rate : 0;
                         $item->save();
 
                         $bar->advance();
