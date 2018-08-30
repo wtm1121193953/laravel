@@ -74,9 +74,7 @@ class ReapalPay
             'terminal_info' => 'null_MAC/' . Utils::create_uuid() . '_SIM',
             'member_ip' => request()->ip(),
             'seller_email' => $this->sellerEmail,
-
-            //'notify_url' => url('/api/pay/reapalPayNotify'),
-
+            'notify_url' => url('/api/pay/reapalPayNotify'),
             'version' => $this->apiVersion,
 
         ];
@@ -93,7 +91,7 @@ class ReapalPay
         $response = json_decode($result, true);
         $encryptkey = $reapalMap->decryptKey($response['encryptkey'], $this->merchantPrivateKey);
         $result = $reapalMap->decrypt($response['data'], $encryptkey);
-        $result = json_decode($result, 1);
+        $result = json_decode($result, true);
         return $result;
     }
 

@@ -158,10 +158,12 @@ class OrderController extends Controller
             $currentOperId = 0;
             if ($currentOperId == 0) { // 在平台小程序下
                 // 调平台支付, 走融宝支付接口
-                $isOperSelf = 2;
+                $isOperSelf = 1;
                 $sdkConfig = null; // todo 走融宝支付接口
 
                 $result = $this->reapalPrepay($order);
+                $sdkConfig = json_decode($result['wxjsapi_str'],true);
+                $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
 
             } else {
                 $isOperSelf = 0;
@@ -309,6 +311,10 @@ class OrderController extends Controller
         ];
         $reapal = new ReapalPay();
         $result = $reapal->prepay($param);
+
+        if (empty($result['wxjsapi_str'])) {
+            throw new BaseResponseException('微信支付失败');
+        }
         return $result;
     }
 
