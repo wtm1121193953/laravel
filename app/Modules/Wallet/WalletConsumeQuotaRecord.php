@@ -19,7 +19,9 @@ use App\Modules\Order\Order;
  * @property float order_profit_amount
  * @property float consume_quota
  * @property float consume_quota_profit
+ * @property float tps_consume_quota
  * @property float tps_credit
+ * @property integer sync_tps_credit
  * @property string consume_user_mobile
  * @property integer status
  */
@@ -35,7 +37,7 @@ class WalletConsumeQuotaRecord extends BaseModel
     const ORIGIN_TYPE_OPER = 3; // 运营中心
 
     /**
-     * 来源类型 1-消费自返 2-直接下级消费返
+     * 来源类型 1-消费自返 2-直接下级消费返[下级返时只有积分 其他全部为0]
      */
     const TYPE_SELF = 1;
     const TYPE_SUBORDINATE = 2;

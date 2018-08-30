@@ -1,5 +1,5 @@
 <template>
-    <page title="批次明细">
+    <page title="批次明细" :breadcrumbs="{提现批次管理: '/withdraw/batch'}">
         <el-col style="margin-bottom: 10px">
             <span class="span-top">第{{batchData.batch_no}}批</span>
             <span class="span-top" v-if="batchData.status == 1">结算中</span>
