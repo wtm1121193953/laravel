@@ -158,7 +158,7 @@ class OrderController extends Controller
             $currentOperId = 0;
             if ($currentOperId == 0) { // 在平台小程序下
                 // 调平台支付, 走融宝支付接口
-                $isOperSelf = 2;
+                $isOperSelf = 1;
                 $sdkConfig = null; // todo 走融宝支付接口
 
                 $result = $this->reapalPrepay($order);
