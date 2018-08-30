@@ -46,17 +46,17 @@ class OrderController extends Controller
 
         $currentOperId = request()->get('current_oper_id');
         $data = Order::where('user_id', $user->id)
-            ->where(function (Builder $query){
+            ->where(function (Builder $query) {
                 $query->where('type', Order::TYPE_GROUP_BUY)
-                    ->orWhere(function(Builder $query){
+                    ->orWhere(function (Builder $query) {
                         $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
                             ->whereIn('status', [4, 6, 7]);
                     })->orWhere('type', Order::TYPE_DISHES);
             })
-            ->when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
+            ->when($merchantShareInMiniprogram != 1, function (Builder $query) use ($currentOperId) {
                 $query->where('oper_id', $currentOperId);
             })
-            ->when($status, function (Builder $query) use ($status){
+            ->when($status, function (Builder $query) use ($status) {
                 $query->where('status', $status);
             })
             ->orderByDesc('id')
@@ -68,7 +68,7 @@ class OrderController extends Controller
             $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
             $item->merchant_logo = Merchant::where('id', $item->merchant_id)->value('logo');
             $item->signboard_name = Merchant::where('id', $item->merchant_id)->value('signboard_name');
-            if ($item->type == Order::TYPE_DISHES){
+            if ($item->type == Order::TYPE_DISHES) {
                 $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
             }
         });
@@ -78,7 +78,8 @@ class OrderController extends Controller
         ]);
     }
 
-    public function detail(){
+    public function detail()
+    {
         $this->validate(request(), [
             'order_no' => 'required'
         ]);
@@ -93,12 +94,12 @@ class OrderController extends Controller
         $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
             ->where('type', 1)
             ->first();
-        if (!empty($creditRecord)){
+        if (!empty($creditRecord)) {
             $detail->user_level = $creditRecord->user_level;
             $detail->user_level_text = User::getLevelText($creditRecord->user_level);
             $detail->credit = $creditRecord->credit;
         }
-        if ($detail->type == Order::TYPE_DISHES){
+        if ($detail->type == Order::TYPE_DISHES) {
             $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
         }
         return Result::success($detail);
@@ -120,7 +121,7 @@ class OrderController extends Controller
         $goodsId = request('goods_id');
         $number = request('number', 1);
         $goods = Goods::findOrFail($goodsId);
-        if ($goods->status == Goods::STATUS_OFF){
+        if ($goods->status == Goods::STATUS_OFF) {
             throw new BaseResponseException('此商品已下架，请您选择其他商品');
         }
 
@@ -153,35 +154,24 @@ class OrderController extends Controller
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->save();
 
-        if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
+        if ($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM) { // 如果是支付到平台
             $currentOperId = 0;
-            if($currentOperId == 0){ // 在平台小程序下
+            if ($currentOperId == 0) { // 在平台小程序下
                 // 调平台支付, 走融宝支付接口
                 $isOperSelf = 2;
                 $sdkConfig = null; // todo 走融宝支付接口
-                //OrderService::paySuccess($orderNo, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
-                $param = [
-                    'title' => $order->goods_name,
-                    'body' => $order->goods_id,
-                    'order_no' => $order->order_no,
-                    'total_fee' => $order->pay_price,
-                    'merchantId' => $order->merchant_id,
-                    'store_name' => $order->merchant_name,
-                    'store_phone' => $merchant->contacter_phone ?? '',
-                    'open_id' => request()->get('current_open_id'),
-                ];
-                $reapal = new ReapalPay();
-                $result = $reapal->prepay($param);
-                //print_r($result);
-            }else {
+
+                $result = $this->reapalPrepay($order);
+
+            } else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
             }
-        }else {
+        } else {
             $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
-            if($isOperSelf == 1) {
+            if ($isOperSelf == 1) {
                 $sdkConfig = $this->_wechatUnifyPay($order);
-            }else {
+            } else {
                 $sdkConfig = null;
             }
 
@@ -212,20 +202,20 @@ class OrderController extends Controller
         $merchant = Merchant::findOrFail($dishes->merchant_id);
         $currentOperId = request()->get('current_oper_id');
 
-        if($userIdByDish!=$user->id){
+        if ($userIdByDish != $user->id) {
             throw new ParamInvalidException('参数错误');
         }
         $result = MerchantSettingService::getValueByKey($dishes->merchant_id, 'dishes_enabled');
-        if (!$result){
+        if (!$result) {
             throw new BaseResponseException('单品购买功能尚未开启！');
         }
         //判断商品上下架状态
         $dishesItems = DishesItem::where('dishes_id', $dishesId)
             ->where('user_id', $dishes->user_id)
             ->get();
-        foreach ($dishesItems as $item){
+        foreach ($dishesItems as $item) {
             $dishesGoods = DishesGoods::findOrFail($item->dishes_goods_id);
-            if ($dishesGoods->status == DishesGoods::STATUS_OFF){
+            if ($dishesGoods->status == DishesGoods::STATUS_OFF) {
                 throw new BaseResponseException('菜单已变更, 请刷新页面');
             }
         }
@@ -252,37 +242,25 @@ class OrderController extends Controller
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->save();
 
-        if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
-            if($currentOperId == 0){ // 在平台小程序下
+        if ($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM) { // 如果是支付到平台
+            if ($currentOperId == 0) { // 在平台小程序下
                 // 调平台支付, 走融宝支付接口
                 $isOperSelf = 2;
                 $sdkConfig = null; // todo 走融宝支付接口
-//                OrderService::paySuccess($orderNo, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
-                $param = [
-                    'title' => $order->goods_name,
-                    'body' => $order->goods_name,
-                    'order_no' => $order->order_no,
-                    'total_fee' => $order->pay_price,
-                    'store_name' => $order->merchant_name,
-                    'store_phone' => $merchant->contacter_phone ?? '',
-                ];
-                $reapal = new ReapalPay();
-                $result = $reapal->prepay($param);
-                dd($result);
-            }else {
+                $result = $this->reapalPrepay($order);
+            } else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
             }
-        }else {
+        } else {
             $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
-            if($isOperSelf == 1) {
+            if ($isOperSelf == 1) {
                 $sdkConfig = $this->_wechatUnifyPay($order);
-            }else {
+            } else {
                 $sdkConfig = null;
             }
 
         }
-
 
 
         return Result::success([
@@ -294,22 +272,45 @@ class OrderController extends Controller
     }
 
 
-
     /**
      * 获取总价格
      */
-    public function getTotalPrice(){
+    public function getTotalPrice()
+    {
         $dishesId = request('dishes_id');
-        $list = DishesItem::where('dishes_id',$dishesId)->get();
+        $list = DishesItem::where('dishes_id', $dishesId)->get();
         $totalPrice = 0;
-        foreach ($list as  $v){
-                $totalPrice += ($v->dishes_goods_sale_price)*($v->number);
+        foreach ($list as $v) {
+            $totalPrice += ($v->dishes_goods_sale_price) * ($v->number);
         }
 
-       return  $totalPrice;
+        return $totalPrice;
 
     }
 
+
+    /**
+     * @param $order
+     * @return mixed|string
+     * @throws \Exception
+     */
+    public function reapalPrepay($order)
+    {
+        OrderService::paySuccess($order->order_no, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
+        $param = [
+            'title' => $order->goods_name,
+            'body' => $order->goods_id,
+            'order_no' => $order->order_no,
+            'total_fee' => $order->pay_price,
+            'merchantId' => $order->merchant_id,
+            'store_name' => $order->merchant_name,
+            'store_phone' => $merchant->contacter_phone ?? '',
+            'open_id' => request()->get('current_open_id'),
+        ];
+        $reapal = new ReapalPay();
+        $result = $reapal->prepay($param);
+        return $result;
+    }
 
 
 
@@ -360,7 +361,7 @@ class OrderController extends Controller
                 // 调平台支付, 走融宝支付接口
                 $isOperSelf = 2;
                 $sdkConfig = null; // todo 走融宝支付接口
-                OrderService::paySuccess($orderNo, 'mock reapal trans id', $order->pay_price, Order::PAY_TYPE_REAPAL);
+                $result = $this->reapalPrepay($order);
             }else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
