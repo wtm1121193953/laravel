@@ -304,7 +304,7 @@ class OrderController extends Controller
             'total_fee' => $order->pay_price,
             'merchantId' => $order->merchant_id,
             'store_name' => $order->merchant_name,
-            'store_phone' => $merchant->contacter_phone ?? '',
+            'store_phone' => $merchant->contacter_phone ?? '15989438364',
             'open_id' => request()->get('current_open_id'),
         ];
         $reapal = new ReapalPay();
