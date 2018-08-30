@@ -10,8 +10,8 @@ namespace App\Http\Controllers;
 
 use App\Modules\Settlement\SettlementPlatform;
 use App\Modules\Settlement\SettlementPlatformService;
-use App\Result;
 use App\Support\Reapal\ReapalAgentPay;
+use Illuminate\Support\Facades\App;
 
 /**
  * 代付相关控制器
@@ -23,12 +23,12 @@ class AgentPayController extends Controller
     /**
      * 融宝代付异步通知接口
      */
-    public function notifyAgentRealpay()
+    public function reapalNotify()
     {
         $reapalAgentPay = new ReapalAgentPay();
         $res = $reapalAgentPay->agentNotify();
 
-        $settlement = SettlementPlatformService::getListByMerchantNo($res['merchant_num'],$res['batch_no']);
+        $settlement = SettlementPlatformService::getBySettlementNo($res['settlement_no']);
         if($settlement){
             if($res['return_msg'] == '成功'){
                 $settlement->status = SettlementPlatform::STATUS_PAID;
@@ -39,6 +39,31 @@ class AgentPayController extends Controller
             $settlement->save();
         }
         return 'success';
+    }
+
+    /**
+     * 模拟代付通知
+     */
+    public function mockAgentPayNotify()
+    {
+        if (App::environment('production')){
+            abort(404);
+            return;
+        }
+        $settlement_no = request('settlement_no');
+        $type = request('type'); // 1-成功  2-失败
+        $settlement = SettlementPlatformService::getBySettlementNo($settlement_no);
+        if($settlement){
+            if($type == 1){
+                $settlement->status = SettlementPlatform::STATUS_PAID;
+                $settlement->reason = '模拟代付成功';
+            }elseif ($type == 2){
+                $settlement->status = SettlementPlatform::STATUS_FAIL;
+                $settlement->reason = '模拟代付失败';
+            }
+            $settlement->save();
+        }
+        dd('模拟代付通知完成', $settlement);
     }
 
     /**

@@ -90,7 +90,7 @@ class ReapalAgentPay
 
         $paramArr = array(
             'charset' => $this->charset,
-            'notify_url' => url('/api/pay/AgentNotify'),
+            'notify_url' => url('/api/agentPay/reapalNotify'),
             'trans_time' => $nowTime,
             'batch_no' => $batch_no,
             'batch_count' => $batch_count,
@@ -188,7 +188,7 @@ class ReapalAgentPay
         //"data":"交易日期，批次号,序号,银行账户,开户名,分行,支行,开户行,公/私,金额,币种,备注,商户订单号,交易反馈,失败原因"
 
         $arraykey = [
-            'trade_date', 'batch_no', 'serial_num', 'bank_account', 'bank_name', 'bank_branch', 'bank_sub_branch', 'opening_bank', 'bank_public_or_private', 'amount', 'currency', 'remark', 'merchant_num', 'return_msg', 'error_message'
+            'trade_date', 'batch_no', 'serial_num', 'bank_account', 'bank_name', 'bank_branch', 'bank_sub_branch', 'opening_bank', 'bank_public_or_private', 'amount', 'currency', 'remark', 'settlement_no', 'return_msg', 'error_message'
         ];
         $res = array_combine($arraykey, $result);
         return $res;

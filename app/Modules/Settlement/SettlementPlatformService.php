@@ -46,13 +46,12 @@ class SettlementPlatformService extends BaseService
 
     /**
      * 通过结算单号获取列表
-     * @param $num
-     * @param $batchNO
+     * @param $settlementNo
      * @return SettlementPlatform
      */
-    public static function getListByMerchantNo($num,$batchNO)
+    public static function getBySettlementNo($settlementNo)
     {
-        $data = SettlementPlatform::where('settlement_no', $num)->where('pay_batch_no',$batchNO)->first();
+        $data = SettlementPlatform::where('settlement_no', $settlementNo)->first();
         return $data;
     }
 
