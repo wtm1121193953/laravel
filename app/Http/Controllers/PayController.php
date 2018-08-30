@@ -29,7 +29,8 @@ use App\Modules\Sms\SmsService;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\WechatService;
 use App\Result;
-use App\Support\ReapalPay;
+use App\Support\Reapal\ReapalAgentPay;
+use App\Support\Reapal\ReapalPay;
 use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
@@ -155,60 +156,26 @@ class PayController extends Controller
     }
 
     /**
-     * 融宝支付通知接口, 用于接收微信支付的通知
+     * 融宝代付异步通知接口
      */
-    public function notifyRealpay()
+    public function notifyAgentRealpay()
     {
-        /*$reapal = new ReapalPay();
+        $reapalAgentPay = new ReapalAgentPay();
+        $resultArr = $reapalAgentPay->agentNotify();
 
-        $request =  $reapal->payNotify();
-        var_dump($request);die();*/
-        //获取参数
-        /*$resultArr = json_decode(request(),true);
-        return $resultArr;*/
+        //"data":"交易日期，批次号,序号,银行账户,开户名,分行,支行,开户行,公/私,金额,币种,备注,商户订单号,交易反馈,失败原因"
+        $arraykey = [
+            'trade_date', 'batch_no', 'serial_num', 'bank_account', 'bank_name', 'bank_branch', 'bank_sub_branch', 'opening_bank', 'bank_public_or_private', 'amount', 'currency', 'remark', 'merchant_num', 'return_msg', 'error_message'
+        ];
+        $res = array_combine($arraykey, $resultArr);
 
-        $reapal = request()->getContent();
-        LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_PAY,$reapal);
-        $request = simplexml_load_string($reapal);
+        $settlement = SettlementPlatformService::getAmountByPayBatchNo($res['batch_no']);
+        foreach ($settlement as $item => $val) {
+            if ($item['id'] == $res['serial_num']) {
 
-        var_dump(1111111111);die();
-
-
-        $merchant_id = array_get($request,'merchant_id');
-        $result_code = array_get($request,'result_code');
-        $result_msg = array_get($request,'result_msg');
-        $order_no = array_get($request,'order_no');
-
-        //0000表示成功
-        if($result_code == 0000){
-            $wxjsapi_str = array_get($request,'wxjsapi_str');
-
-            $appid = array_get($wxjsapi_str,'appId');
-
-            // 获取appid对应的运营中心小程序
-            $miniprogram = OperMiniprogramService::getByAppid($appid);
-
-            $app = WechatService::getWechatPayAppForOper($miniprogram);
-            $response = $app->handlePaidNotify(function ($message, $fail) {
-                if($message['return_code'] === 'SUCCESS' && array_get($message, 'result_code') === 'SUCCESS'){
-                    $orderNo = $message['out_trade_no'];
-                    $totalFee = $message['total_fee'];
-                    OrderService::paySuccess($orderNo, $message['transaction_id'], $totalFee / 100);
-                } else {
-                    return $fail('通信失败，请稍后再通知我');
-                }
-
-                // 其他未知情况
-                return false;
-            });
-            return $response;
-        }else{
-            throw new BaseResponseException($result_code.':'.$result_msg);
+            }
         }
-
-
-
-
     }
+
 
 }

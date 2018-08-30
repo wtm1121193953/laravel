@@ -90,7 +90,7 @@ class ReapalAgentPay
 
         $paramArr = array(
             'charset' => $this->charset,
-            'notify_url' => url('/pay/reapalPayNotify'),
+            'notify_url' => url('/api/pay/AgentNotify'),
             'trans_time' => $nowTime,
             'batch_no' => $batch_no,
             'batch_count' => $batch_count,
@@ -98,6 +98,7 @@ class ReapalAgentPay
             'pay_type' => 1,
             'content' => $content,
         );
+        dd($paramArr);
 
         $url = $this->dsfUrl . 'agentpay/pay';
         $result = $this->apiPost($url, $paramArr);
@@ -177,32 +178,11 @@ class ReapalAgentPay
     {
         //获取参数
         $resultArr = request()->all();
-
-        if($resultArr['merchant_id'] == $this->merchantId){
-            $reapalMap = new ReapalUtils();
-            $encryptkey = $reapalMap->decryptKey($resultArr['encryptkey'], $this->merchantPrivateKey);
-            $result = $reapalMap->decrypt($resultArr['data'], $encryptkey);
-            $result = json_decode($result, 1);
-
-            //"data":"交易日期，批次号,序号,银行账户,开户名,分行,支行,开户行,公/私,金额,币种,备注,商户订单号,交易反馈,失败原因"
-            $arraykey = [
-                'trade_date','batch_no','serial_num','bank_account','bank_name','bank_branch','bank_sub_branch','opening_bank','bank_public_or_private','amount','currency','remark','merchant_num','return_msg','error_message'
-            ];
-            $res = array_combine($arraykey,$result);
-
-            $settlement = SettlementPlatformService::getAmountByPayBatchNo($res['batch_no']);
-            foreach($settlement as $item => $val){
-                if($item['id'] == $res['serial_num']){
-
-                }
-            }
-
-        }else{
-            throw new BaseResponseException('异常的数据');
-        }
-
-
-
+        $reapalMap = new ReapalUtils();
+        $encryptkey = $reapalMap->decryptKey($resultArr['encryptkey'], $this->merchantPrivateKey);
+        $result = $reapalMap->decrypt($resultArr['data'], $encryptkey);
+        $result = json_decode($result, 1);
+        return $result;
     }
 }
 

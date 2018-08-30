@@ -63,7 +63,7 @@ class SettlementPlatformService extends BaseService
      * @param $ids
      * @return int
      */
-    public static function getAmountById($ids)
+    public static function getRealAmountByIds($ids)
     {
         $data = SettlementPlatform::whereIn('id', $ids)->sum('real_amount');
         return $data;
