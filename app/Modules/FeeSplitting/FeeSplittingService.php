@@ -144,8 +144,10 @@ class FeeSplittingService extends BaseService
             throw new BaseResponseException('用户类型错误');
         }
         if ($type == FeeSplittingRecord::TYPE_TO_SELF) {
+            // 1 自反比例
             $feeRatio = UserCreditSettingService::getFeeSplittingRatioToSelfSetting(); // 自反的分润比例
         } elseif ($type == FeeSplittingRecord::TYPE_TO_PARENT) {
+            // 2 返上级比例
             if($originType == FeeSplittingRecord::ORIGIN_TYPE_USER){
                 $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfUserSetting();
             }else if($originType == FeeSplittingRecord::ORIGIN_TYPE_MERCHANT){
@@ -157,6 +159,7 @@ class FeeSplittingService extends BaseService
                 throw new BaseResponseException();
             }
         } elseif ($type == FeeSplittingRecord::TYPE_TO_OPER) {
+            // 3 运营中心分润比例
             $feeRatio = UserCreditSettingService::getFeeSplittingRatioToOper();
         } else {
             throw new ParamInvalidException('分润类型错误');
@@ -186,5 +189,17 @@ class FeeSplittingService extends BaseService
     {
         $feeSplittingRecord = FeeSplittingRecord::find($id);
         return $feeSplittingRecord;
+    }
+
+    /**
+     * 通过订单id 获取 该订单的 总分润金额
+     * @param $orderId
+     * @return mixed
+     */
+    public static function getOrderFeeSplittingAmountByOrderId($orderId)
+    {
+        $amount = FeeSplittingRecord::where('order_id', $orderId)
+            ->sum('amount');
+        return $amount;
     }
 }

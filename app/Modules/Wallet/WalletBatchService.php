@@ -85,7 +85,7 @@ class WalletBatchService extends BaseService
         $batch->status = 1;
         $batch->save();
 
-        $batch->batch_no = str_pad($batch->id, 8, "0", STR_PAD_LEFT);
+        $batch->batch_no = 'WB'. str_pad($batch->id, 8, "0", STR_PAD_LEFT);
         $batch->save();
 
         return $batch;
