@@ -108,7 +108,8 @@ class OrderService extends BaseService
                 $query->where('status', $status);
             }
         }
-        if($type== 1 && $goodsName){
+        //if($type== 1 && $goodsName)
+        if($goodsName){
             $query->where('goods_name', 'like', "%$goodsName%");
         }
         if($keyword){
