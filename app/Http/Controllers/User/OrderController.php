@@ -163,7 +163,7 @@ class OrderController extends Controller
 
                 $result = $this->reapalPrepay($order);
                 $sdkConfig = json_decode($result['wxjsapi_str'],true);
-                $sdkConfig['timeStamp'] = $sdkConfig['timestamp'];
+                $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
 
             } else {
                 $isOperSelf = 0;
