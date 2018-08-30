@@ -2,15 +2,15 @@
     <page title="订单列表" v-loading="isLoading">
         <el-form class="fl" inline size="small">
             <el-form-item prop="createdAt" label="创建时间">
-                <el-date-picker
+                <!-- <el-date-picker
                         v-model="query.createdAt"
                         type="daterange"
                         range-separator="至"
                         start-placeholder="开始日期"
                         end-placeholder="结束日期"
                         value-format="yyyy-MM-dd">
-                </el-date-picker>
-                <!-- <el-date-picker
+                </el-date-picker> -->
+                <el-date-picker
                         class="w-150"
                         v-model="query.startTime"
                         type="date"
@@ -25,7 +25,7 @@
                         type="date"
                         placeholder="结束日期"
                         value-format="yyyy-MM-dd 23:59:59"
-                /> -->
+                />
             </el-form-item>
             <el-form-item prop="orderId" label="订单号">
                 <el-input v-model="query.orderId" placeholder="请输入订单号" clearable @keyup.enter.native="search"/>
@@ -159,9 +159,9 @@
             return {
                 isLoading: false,
                 query: {
-                    createdAt: '',
-                    // startTime: '',
-                    // endTime :'',
+                    // createdAt: '',
+                    startTime: '',
+                    endTime :'',
                     orderId: '',
                     order_type: '',
                     goodsName: '',
@@ -191,13 +191,13 @@
                 let _self = this;
                 _self.isLoading = true;
                 let params = {};
-                if (_self.query.createdAt && _self.query.createdAt.length > 0 ) {
-                    params.startTime = _self.query.createdAt[0];
-                    params.endTime = _self.query.createdAt[1];
-                }else{
-                    params.startTime = '';
-                    params.endTime = '';
-                }
+                // if (_self.query.createdAt && _self.query.createdAt.length > 0 ) {
+                //     params.startTime = _self.query.createdAt[0];
+                //     params.endTime = _self.query.createdAt[1];
+                // }else{
+                //     params.startTime = '';
+                //     params.endTime = '';
+                // }
                 Object.assign(params, _self.query);
                 api.get('/orders', params).then(data => {
                     _self.query.page = params.page;
