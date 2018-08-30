@@ -9,6 +9,7 @@ use App\Modules\Invite\InviteUserService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
 use App\Modules\User\UserService;
+use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -178,9 +179,9 @@ class ConsumeQuotaService extends BaseService
 
         if ($type != WalletConsumeQuotaRecord::TYPE_SUBORDINATE) {
             $consumeQuotaRecord->consume_quota = $order->pay_price;
-            $consumeQuotaRecord->consume_quota_profit = $consumeQuotaRecord->order_profit_amount / 2;
-            $consumeQuotaRecord->tps_consume_quota = $order->pay_price / 6 / 6.5;
-            $consumeQuotaRecord->tps_credit = $consumeQuotaRecord->tps_consume_quota / 4;
+            $consumeQuotaRecord->consume_quota_profit = Utils::getDecimalByNotRounding($consumeQuotaRecord->order_profit_amount / 2, 2);
+            $consumeQuotaRecord->tps_consume_quota = Utils::getDecimalByNotRounding($order->pay_price / 6 / 6.5, 2);
+            $consumeQuotaRecord->tps_credit = Utils::getDecimalByNotRounding($order->pay_price / 6 / 6.5 / 4, 8);
         }
 
         $consumeQuotaRecord->sync_tps_credit = $syncTpsCredit;
