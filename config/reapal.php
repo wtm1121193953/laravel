@@ -21,5 +21,5 @@ return [
 
     'api_url' => env('REAPAL_APIURL'),
     'api_version' => '3.1.3',
-    'api_sign_type' => 'RSA',
+    'api_sign_type' => 'MD5',
 ];
