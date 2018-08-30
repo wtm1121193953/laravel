@@ -60,7 +60,7 @@
                 },
                 divideRules: {
                     divide: [
-                        {validator: validateDivided, trigger: 'blur'}
+                        {required: true, validator: validateDivided, trigger: 'blur'}
                     ]
                 },
                 detailOption:{
@@ -79,18 +79,24 @@
                 router.push({
                     path: '/bizers/BizerMerchants',
                     query: {
-                        id: _self.scope.row.id
+                        bizer_id: _self.scope.row.bizer_id
                     }
                 })
             },
             changeStatus(){
-                let status = this.scope.row.status === 1 ? 2 : 1;
-                this.$emit('before-request')
-                api.post('/operBizMember/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
-                    this.scope.row.status = status;
-                    this.$emit('change', this.scope.$index, data)
+                let _self = this;
+                let status = _self.scope.row.status === 1 ? 2 : 1;
+                api.post('/operBizMember/changeStatus', {id: _self.scope.row.id, status: status}).then((data) => {
+                    _self.scope.row.status = status;
+                    _self.$message({
+                        message: status === 1 ? '解冻成功' : '冻结成功',
+                        type: 'success'
+                    });
+                    _self.$emit('change', this.scope.$index, data)
+                }).catch(() => {
+                    _self.$message.warning('操作失败');
                 }).finally(() => {
-                    this.$emit('after-request')
+                    
                 })
             },
             remarks() {
@@ -101,12 +107,20 @@
                 let _self = this;
                 if (_self.formRemarks.remark) {
                     //提交
-                    _self.$emit('refresh');
-                }else{
-                    _self.$message({
-                          message: '请填写备注',
+                    api.post('/operBizMember/changeStatus', {id: _self.scope.row.id, remark: _self.formRemarks.remark}).then((data) => {
+                        _self.dialogRemarksFormVisible = false
+                        _self.$emit('refresh');
+                    }).catch(() => {
+                        _self.$message({
+                          message: '修改失败',
                           type: 'warning'
-                    });
+                        });
+                    }).finally(() => {
+
+                    })
+                    
+                }else{
+                    _self.$message.warning('请填写备注');
                 }
             },
             submitSettingsdivide(){
@@ -114,10 +128,10 @@
                 let _self = this;
                 _self.$refs.formDivided.validate(valid => {
                     if (valid) {
-                        _self.formDividedIntoSettings.id = this.detailOption.id;
-                        _self.formDividedIntoSettings.divide = parseInt(_self.formDividedIntoSettings.divide);
+                        _self.formDividedIntoSettings.id = _self.scope.row.id;
+                        _self.formDividedIntoSettings.divide = parseFloat(_self.formDividedIntoSettings.divide);
                         let params = _self.formDividedIntoSettings;
-                        api.get('', params).then(data => {
+                        api.get('/operBizer/changeDetail', params).then(data => {
                             _self.dialogDividedIntoSettingsFormVisible = _self.dialogRemarksFormVisible = false;
                             _self.$message({
                                 message: '修改成功',

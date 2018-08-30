@@ -303,7 +303,7 @@
                         window.clearInterval(interval);
                     }
                 }, 1000);
-                api.get('/sms/getVerifyCode', {'mobile':_self.dialogForgetPasswordForm.account}).then(data => {
+                api.get('/sms/getVerifyCode', {'mobile':_self.dialogForgetPasswordForm.mobile}).then(data => {
                     _self.$message({
                       message: '发送验证码成功',
                       type: 'success'
