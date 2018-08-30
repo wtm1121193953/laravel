@@ -176,16 +176,19 @@
         methods: {
             search(){
                 var _self = this;
-                this.query.page = 1;
-                this.getList();
+                _self.query.page = 1;
+                _self.getList();
             },
             getList(){
                 let _self = this;
                 _self.isLoading = true;
                 let params = {};
-                if (_self.query.createdAt.length > 0 ) {
+                if (_self.query.createdAt && _self.query.createdAt.length > 0 ) {
                     params.startTime = _self.query.createdAt[0];
                     params.endTime = _self.query.createdAt[1];
+                }else{
+                    params.startTime = '';
+                    params.endTime = '';
                 }
                 Object.assign(params, _self.query);
                 api.get('/api/bizer/opers', params).then(data => {
@@ -196,7 +199,7 @@
                         _self.dialogTips = data.tips;
                         _self.dialogPromptVisible = true;
                     }
-                    console.log(data)
+                    // console.log(data)
                 }).catch(() =>{
                     _self.$message({
                       message: '请求失败',
