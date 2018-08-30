@@ -190,6 +190,8 @@ class ReapalUtils
         //加密数据
         $request['data'] = $this->encrypt(json_encode($paramArr), $generateAESKey);
         $request['version'] = $version;
+
+        print_r($request);exit;
         return $this->sendHttpRequest($request, $url);
     }
 
