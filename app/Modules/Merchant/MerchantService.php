@@ -355,8 +355,8 @@ class MerchantService extends BaseService
         // 更新业务员已激活商户数量
         if ($merchant->bizer_id) {
 
-            MyOperBizer::updateActiveMerchantNumberByCode($originOperBizMemberCode);
-            MyOperBizer::updateAuditMerchantNumberByCode($originOperBizMemberCode);
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
+            MyOperBizer::updateAuditMerchantNumberByCode($merchant->bizer_id);
 
             //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
             //OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
