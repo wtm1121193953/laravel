@@ -249,7 +249,10 @@ class OrderController extends Controller
                 // 调平台支付, 走融宝支付接口
                 $isOperSelf = 2;
                 $sdkConfig = null; // todo 走融宝支付接口
+
                 $result = $this->reapalPrepay($order);
+                $sdkConfig = json_decode($result['wxjsapi_str'],true);
+                $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
             } else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
@@ -366,7 +369,11 @@ class OrderController extends Controller
                 // 调平台支付, 走融宝支付接口
                 $isOperSelf = 2;
                 $sdkConfig = null; // todo 走融宝支付接口
+
                 $result = $this->reapalPrepay($order);
+                $sdkConfig = json_decode($result['wxjsapi_str'],true);
+                $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
+
             }else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
