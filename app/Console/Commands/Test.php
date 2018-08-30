@@ -75,6 +75,17 @@ class Test extends Command
         dd(123);
         $order = OrderService::getById(174);
         OrderFinishedJob::dispatch($order);
+        $settlementRate = 20; //分利比例
+        // 分利比例要从订单中获取  $order->settlement_rate
+        $pay_price = 188;
+        // 计算盈利金额
+        $grossProfit = $pay_price * $settlementRate / 100;
+        $taxAmount = $grossProfit * 0.06 * 1.12 / 1.06 + $grossProfit * 0.1 * 0.25 + 0.0068 * $pay_price;
+
+        $a = max(floor(($grossProfit - $taxAmount) * 100) / 100, 0);
+        dd($a);
+
+
         $orders = Order::whereIn('user_id', [20,31,36])->get();
         foreach ($orders as $order) {
 //            $order->splitting_status = 1;

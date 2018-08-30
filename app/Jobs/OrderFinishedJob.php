@@ -75,6 +75,7 @@ class OrderFinishedJob implements ShouldQueue
 
     /**
      * 处理消费额
+     * @throws \Exception
      */
     private function consumeQuota()
     {
