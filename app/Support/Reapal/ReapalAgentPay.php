@@ -105,7 +105,7 @@ class ReapalAgentPay
         $url = $this->dsfUrl . 'agentpay/pay';
         $result = $this->apiPost($url, $paramArr);
 
-        Log::info('融宝代付提交接口返回结果： ', $result);
+        Log::info('融宝代付提交接口返回结果： ', ['result' => $result]);
 
         $batch = SettlementPayBatch::where('batch_no', $batch_no)->first();
         if ($result['result_code'] == 0000) {
