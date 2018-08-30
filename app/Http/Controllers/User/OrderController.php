@@ -162,6 +162,7 @@ class OrderController extends Controller
                 $sdkConfig = null; // todo 走融宝支付接口
 
                 $result = $this->reapalPrepay($order);
+                $sdkConfig = $result['wxjsapi_str'];
 
             } else {
                 $isOperSelf = 0;
@@ -309,6 +310,10 @@ class OrderController extends Controller
         ];
         $reapal = new ReapalPay();
         $result = $reapal->prepay($param);
+
+        if (empty($result[''])) {
+            throw new BaseResponseException('微信支付失败');
+        }
         return $result;
     }
 
