@@ -12,6 +12,7 @@ namespace App\Support\Reapal;
 use App\Modules\Log\LogDbService;
 use App\Modules\Log\LogOrderNotifyReapal;
 use App\Modules\Settlement\SettlementPayBatch;
+use Illuminate\Support\Facades\Log;
 
 class ReapalAgentPay
 {
@@ -102,15 +103,18 @@ class ReapalAgentPay
         $url = $this->dsfUrl . 'agentpay/pay';
         $result = $this->apiPost($url, $paramArr);
 
-        $settlement = SettlementPayBatch::where('batch_no', $batch_no)->firstOr();
-        if ($result['result_code'] == 0000) {
-            $settlement->status = SettlementPayBatch::STATUS_IS_SUBMIT;
-        } else {
-            $settlement->error_code = $result['result_code'];
-            $settlement->error_msg = $result['result_msg'];
-        }
-        $settlement->save();
+        Log::info('融宝代付提交接口返回结果： ', $result);
 
+        $batch = SettlementPayBatch::where('batch_no', $batch_no)->first();
+        if ($result['result_code'] == 0000) {
+            $batch->status = SettlementPayBatch::STATUS_IS_SUBMIT;
+        } else {
+            $batch->error_code = $result['result_code'];
+            $batch->error_msg = $result['result_msg'];
+        }
+        $batch->save();
+
+        return $batch;
     }
 
     /**
