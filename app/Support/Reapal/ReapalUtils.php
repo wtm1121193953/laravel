@@ -189,6 +189,7 @@ class ReapalUtils
         $request['encryptkey'] = $this->encryptKey($generateAESKey, $reapalPublicKey);
         //加密数据
         $request['data'] = $this->encrypt(json_encode($paramArr), $generateAESKey);
+        $request['version'] = $version;
         return $this->sendHttpRequest($request, $url);
     }
 
