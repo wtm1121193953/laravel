@@ -110,7 +110,7 @@
         <div id="loginThree"></div>
 
         <el-dialog title="忘记密码" :visible.sync="dialogForgetPassword" width="434px">
-            <el-form :model="dialogForgetPasswordForm" ref="dialogForgetPasswordForm" :rules="dialogForgetPasswordFormRules" label-width="70px">
+            <el-form class="form-label-noBefore" :model="dialogForgetPasswordForm" ref="dialogForgetPasswordForm" :rules="dialogForgetPasswordFormRules" label-width="70px">
                 <el-form-item label="帐号" prop="mobile">
                     <el-input type="text" v-model="dialogForgetPasswordForm.mobile" auto-complete="off" placeholder="请输入手机号"/>
                 </el-form-item>
@@ -125,7 +125,7 @@
         </el-dialog>
 
         <el-dialog title="设置密码" :visible.sync="dialogSetPassword" width="454px">
-            <el-form :model="dialogSetPasswordForm" ref="dialogSetPasswordForm" :rules="dialogSetPasswordFormRules" label-width="108px">
+            <el-form class="form-label-noBefore" :model="dialogSetPasswordForm" ref="dialogSetPasswordForm" :rules="dialogSetPasswordFormRules" label-width="108px">
                 <el-form-item label="设置密码" prop="password">
                     <el-input type="password" v-model="dialogSetPasswordForm.password" auto-complete="off" placeholder="请设置6-12位密码，不区分大小写"/>
                 </el-form-item>
@@ -439,34 +439,8 @@
     }
 </script>
 
-<style scoped>
-    .verify-pos {
-        position: absolute;
-        right: 100px;
-        top: 0;
-    }
-
-    .card-box {
-        padding: 20px;
-        /*box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02);*/
-        -webkit-border-radius: 5px;
-        border-radius: 5px;
-        -moz-border-radius: 5px;
-        background-clip: padding-box;
-        background-color: #F9FAFC;
-        margin: 120px auto;
-        width: 400px;
-        border: 2px solid #8492A6;
-    }
-
-    .title {
-        margin: 0 auto 40px auto;
-        text-align: center;
-        color: #505458;
-    }
-
-    .loginform {
-        width: 350px;
-        padding: 35px 35px 15px 35px;
+<style>
+    .form-label-noBefore .el-form-item.is-required .el-form-item__label::before {
+        content: none;
     }
 </style>
