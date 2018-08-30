@@ -102,6 +102,7 @@ class ReapalAgentPay
         $url = $this->dsfUrl . 'agentpay/pay';
         $result = $this->apiPost($url, $paramArr);
 
+        dd($url);
         $settlement = SettlementPayBatch::where('batch_no', $batch_no)->firstOr();
         if ($result['result_code'] == 0000) {
             $settlement->status = SettlementPayBatch::STATUS_IS_SUBMIT;
