@@ -82,7 +82,6 @@ class ReapalPay
         ];
 
         $url = $this->apiUrl . '/qrcode/scan/encryptline';
-        echo $url;exit;
         $result = $this->apiPost($url, $paramArr);
         LogDbService::reapalPayRequest(1,$paramArr['order_no'],$paramArr,$result);
         return $result;
