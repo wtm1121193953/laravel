@@ -107,7 +107,7 @@
                 let _self = this;
                 if (_self.formRemarks.remark) {
                     //提交
-                    api.post('/operBizMember/changeStatus', {id: _self.scope.row.id, remark: _self.formRemarks.remark}).then((data) => {
+                    api.get('/operBizer/changeDetail', {id: _self.scope.row.id, remark: _self.formRemarks.remark}).then((data) => {
                         _self.dialogRemarksFormVisible = false
                         _self.$emit('refresh');
                     }).catch(() => {
