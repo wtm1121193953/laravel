@@ -32,9 +32,10 @@ class AgentPayController extends Controller
         if($settlement){
             if($res['return_msg'] == '成功'){
                 $settlement->status = SettlementPlatform::STATUS_PAID;
+                $settlement->reason = $res['return_msg'];
             }elseif ($res['return_msg'] == '失败'){
                 $settlement->status = SettlementPlatform::STATUS_FAIL;
-                $settlement->reason = $res['return_msg'];
+                $settlement->reason = $res['error_message'];
             }
             $settlement->save();
         }
