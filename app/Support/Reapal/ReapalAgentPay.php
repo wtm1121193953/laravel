@@ -106,17 +106,7 @@ class ReapalAgentPay
         $result = $this->apiPost($url, $paramArr);
 
         Log::info('融宝代付提交接口返回结果： ', ['result' => $result]);
-
-        $batch = SettlementPayBatch::where('batch_no', $batch_no)->first();
-        if ($result['result_code'] == 0000) {
-            $batch->status = SettlementPayBatch::STATUS_IS_SUBMIT;
-        } else {
-            $batch->error_code = $result['result_code'];
-            $batch->error_msg = $result['result_msg'];
-        }
-        $batch->save();
-
-        return $batch;
+        return $result;
     }
 
     /**
