@@ -177,7 +177,7 @@ class ReapalAgentPay
         $encryptkey = $reapalMap->decryptKey($resultArr['encryptkey'], $this->merchantPrivateKey);
         $result = $reapalMap->decrypt($resultArr['data'], $encryptkey);
 
-        LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_AGENT_PAY, $result);
+        LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_AGENT_PAY_REFUND, $result);
 
         $result = json_decode($result, 1);
 
