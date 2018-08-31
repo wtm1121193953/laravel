@@ -39,7 +39,7 @@ class SettlementAgentPay implements ShouldQueue
     public function handle()
     {
         //打款批次号
-        Log::info('开始执行自动打款任务， 执行结算单ID：', $this->settlementIds);
+        Log::info('开始执行自动打款任务， 执行结算单ID：', ['settlementIds' => $this->settlementIds]);
         $batch_no = SettlementPlatformService::genSettlementNo();
 
         $list = SettlementPlatform::whereIn('id', $this->settlementIds)->get();
@@ -91,7 +91,16 @@ class SettlementAgentPay implements ShouldQueue
             }
             $content = implode('|',$contArr);
             $reapal =  new ReapalAgentPay();
-            $reapal->agentpay($batch_no,$batch_count,$batch_amount,$content);
+            $result = $reapal->agentpay($batch_no,$batch_count,$batch_amount,$content);
+
+            $batch = SettlementPayBatch::where('id', $payBatch->id)->first();
+            if ($result['result_code'] == '0000') {
+                $batch->status = SettlementPayBatch::STATUS_IS_SUBMIT;
+            } else {
+                $batch->error_code = $result['result_code'];
+                $batch->error_msg = $result['result_msg'];
+            }
+            $batch->save();
 
             DB::commit();
         }catch (\Exception $e){

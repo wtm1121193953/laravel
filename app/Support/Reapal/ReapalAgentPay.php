@@ -105,18 +105,10 @@ class ReapalAgentPay
         $url = $this->dsfUrl . 'agentpay/pay';
         $result = $this->apiPost($url, $paramArr);
 
+        LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_AGENT_PAY, ['result' => $result]);
+
         Log::info('融宝代付提交接口返回结果： ', ['result' => $result]);
-
-        $batch = SettlementPayBatch::where('batch_no', $batch_no)->first();
-        if ($result['result_code'] == 0000) {
-            $batch->status = SettlementPayBatch::STATUS_IS_SUBMIT;
-        } else {
-            $batch->error_code = $result['result_code'];
-            $batch->error_msg = $result['result_msg'];
-        }
-        $batch->save();
-
-        return $batch;
+        return $result;
     }
 
     /**
@@ -187,7 +179,7 @@ class ReapalAgentPay
         $encryptkey = $reapalMap->decryptKey($resultArr['encryptkey'], $this->merchantPrivateKey);
         $result = $reapalMap->decrypt($resultArr['data'], $encryptkey);
 
-        LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_AGENT_PAY, $result);
+        LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_AGENT_PAY_REFUND, $result);
 
         $result = json_decode($result, 1);
 
