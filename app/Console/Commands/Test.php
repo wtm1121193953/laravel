@@ -81,7 +81,7 @@ class Test extends Command
         dd('hi');*/
         //SettlementDaily::dispatch('2018-04-28');
         //dd(12);
-        SettlementAgentPay::dispatch([1]);
+        SettlementAgentPay::dispatch([11]);
         dd(123);
         $order = OrderService::getById(174);
         OrderFinishedJob::dispatch($order);
