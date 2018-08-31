@@ -32,10 +32,6 @@ use App\BaseModel;
  */
 class Oper extends BaseModel
 {
-    // 运营中心下的商家是否支付到平台 0-支付给运营中心自己 1-支付到平台(平台不参与分成) 2-支付到平台(平台参与分成)
-    const PAY_TO_PLATFORM_NO = 0;
-    const PAY_TO_PLATFORM_YES = 1;
-    const PAY_TO_PLATFORM_YES2 = 2;
     /**
      * 运营中心下的商家是否支付到平台 0-支付给运营中心自己 1-支付到平台(平台不参与分成) 2-支付到平台(平台参与分成)
      */

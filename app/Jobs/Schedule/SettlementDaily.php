@@ -51,7 +51,7 @@ class SettlementDaily implements ShouldQueue
         $date   = $this->date;
         // 获取运营中心支付到平台(平台参与分成) 商家
         Merchant::whereHas('oper', function($query){
-            $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_YES, Oper::PAY_TO_PLATFORM_YES2 ]);
+            $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
         })
             ->select('id')
             ->chunk(100, function( $merchants ) use ( $date ) {
