@@ -130,6 +130,37 @@ class UserService extends BaseService
 
         return $users;
     }
+
+    /**
+     * 获取会员列表
+     * @param $params
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function userList($params){
+
+        $mobile = array_get($params, 'mobile');
+
+        $users  = User::select('id','name','mobile','email','created_at','status')
+            ->when($mobile, function (Builder $query) use ($mobile){
+                $query->where('mobile','like','%'.$mobile.'%');
+            })
+            ->with('identityAuditRecord:user_id,status')
+            ->orderByDesc('created_at')
+            ->paginate();
+
+        $users->each(function ($item){
+            $parentName = InviteUserService::getParentName($item->id);
+            if($parentName){
+                $item->isBind = 1;
+                $item->parent = $parentName;
+            }else {
+                $item->parent = '未绑定';
+                $item->isBind = 0;
+            }
+        });
+
+        return $users;
+    }
     /**
      * 通过电话号码查询用户详情
      * @param $mobile

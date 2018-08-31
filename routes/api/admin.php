@@ -35,6 +35,7 @@ Route::prefix('admin')
         Route::post('rule/changeStatus', 'Auth\RuleController@changeStatus');
 
         Route::get('members','UsersController@getList');
+        Route::get('member/userlist','UsersController@userList');
         Route::post('users/unBind','UsersController@unBind');
         Route::get('users/getChangeBindList', 'UsersController@getChangeBindList');
         Route::get('users/getInviteUsersList', 'UsersController@getInviteUsersList');

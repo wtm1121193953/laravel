@@ -1,6 +1,7 @@
 
 import Home from '../components/home'
 import MemberList from '../components/members/list.vue'
+import MemberUserList from '../components/members/user-list.vue'
 
 // 换绑
 import ChangeBindTab from '../components/members/change-bind/tab'
@@ -22,6 +23,7 @@ export default [
             {path: 'member/inviteUsersList', component: InviteUsersList, name: 'InviteUsersList'},
             {path: 'member/changeBindList', component: ChangeBindList, name: 'ChangeBindList'},
             {path: 'member/changeBindRecordList', component: ChangeBindRecordList, name: 'ChangeBindRecordList'},
+            {path: 'member/list', component: MemberUserList, name: 'MemberUserList'},
         ]
     },
 ];
