@@ -54,8 +54,8 @@ class OrderFinishedJob implements ShouldQueue
             // 2. 处理消费额 消费额逻辑暂时去掉, 需要修改
             $this->consumeQuota();
             // 延迟24小时分发解冻积分以及消费额操作
-            FeeSplittingUnfreezeJob::dispatch($this->order)->delay(Carbon::now()->addDay(1));
-            ConsumeQuotaUnfreezeJob::dispatch($this->order)->delay(Carbon::now()->addDay(1));
+            FeeSplittingUnfreezeJob::dispatch($this->order)/*->delay(Carbon::now()->addDay(1))*/;
+            ConsumeQuotaUnfreezeJob::dispatch($this->order)/*->delay(Carbon::now()->addDay(1))*/;
 
             DB::commit();
         }catch (\Exception $e){
