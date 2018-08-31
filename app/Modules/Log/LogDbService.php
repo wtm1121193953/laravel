@@ -38,6 +38,9 @@ class LogDbService
     public static function reapalNotify($type, $content)
     {
 
+        if (is_array($content)) {
+            $content = json_encode($content,JSON_UNESCAPED_UNICODE);
+        }
         $log = new LogOrderNotifyReapal();
         $log->type = $type;
         $log->content = $content;
