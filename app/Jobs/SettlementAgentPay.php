@@ -93,7 +93,7 @@ class SettlementAgentPay implements ShouldQueue
             $reapal =  new ReapalAgentPay();
             $result = $reapal->agentpay($batch_no,$batch_count,$batch_amount,$content);
 
-            $batch = SettlementPayBatch::where('batch_no', $batch_no)->first();
+            $batch = SettlementPayBatch::where('id', $payBatch->id)->first();
             if ($result['result_code'] == '0000') {
                 $batch->status = SettlementPayBatch::STATUS_IS_SUBMIT;
             } else {
