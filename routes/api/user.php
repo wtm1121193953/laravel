@@ -74,4 +74,13 @@ Route::prefix('user')
         Route::get('wallet/consumeQuotas', 'WalletController@getConsumeQuotas')->middleware(UserLoginFilter::class);
         Route::get('wallet/consumeQuota/detail', 'WalletController@getConsumeQuotaDetail')->middleware(UserLoginFilter::class);
         Route::get('wallet/userFeeSplitting/ratio', 'WalletController@getUserFeeSplittingRatioToSelf')->middleware(UserLoginFilter::class);
+
+        Route::post('bank/cards/addCard', 'BankCardsController@addCard');   // Author:Jerry Date:180830
+        Route::post('bank/cards/changDefault', 'BankCardsController@changDefault');   // Author:Jerry Date:180831
+        Route::post('bank/cards/delCard', 'BankCardsController@delCard');   // Author:Jerry Date:180831
+
+        Route::post('identity/record/addRecord', 'UserIdentityAuditRecordController@addRecord');   // Author:Jerry Date:180831
+        Route::post('bank/getList', 'BankController@getList');   // Author:Jerry Date:180831
+
+
     });
