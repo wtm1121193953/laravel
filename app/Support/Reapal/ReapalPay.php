@@ -101,20 +101,20 @@ class ReapalPay
     /**
      * 支付结果查询接口
      */
-    public function paySearch()
+    public function paySearch($order_no)
     {
 
         //参数数组
         $paramArr = array(
             'merchant_id' => $this->merchantId,
-            'order_no' => request('order_no'),
+            'order_no' => $order_no,
         );
         $reapalMap = new ReapalUtils();
 
         $url = $this->apiUrl . '/qrcode/scan/encryptSearch';
 
         $result = $this->apiPost($url, $paramArr);
-        LogDbService::reapalPayRequest(1,$paramArr['order_no'],$paramArr,$result);
+
 
         dd($result);
     }
@@ -200,7 +200,11 @@ class ReapalPay
     {
         $reapal = request()->getContent();
         //$reapal = 'data=%7B%22notify_id%22%3A%223bf4cce100a94544ab65bcbd80fa5613%22%2C%22open_id%22%3A%22oA7-Z5blKW1JGt2Cf7c8LRvmpe9s%22%2C%22order_no%22%3A%22O20180830203036729649%22%2C%22order_time%22%3A%222018-08-30+20%3A30%3A37%22%2C%22sign%22%3A%22ff61f3abc45c9b3a7533a20b59292d79%22%2C%22status%22%3A%22TRADE_FINISHED%22%2C%22store_name%22%3A%22%E7%A8%8B%E7%A8%8B%E5%AE%B6%22%2C%22store_phone%22%3A%2215989438364%22%2C%22total_fee%22%3A%221%22%2C%22trade_no%22%3A%2210180830003914450%22%7D&merchant_id=100000001304038&encryptkey=';
+        if (empty($reapal)) {
+            return '';
+        }
         LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_PAY,$reapal);
+
         parse_str($reapal,$url_params_arr);
         $data = json_decode($url_params_arr['data'],true);
 

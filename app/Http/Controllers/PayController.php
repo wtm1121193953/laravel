@@ -94,7 +94,7 @@ class PayController extends Controller
     {
         $str = request()->getContent();
         $xml = simplexml_load_string($str);
-        // 获取appid
+        // 获取aphid
         foreach ($xml->children() as $child) {
             if(strtolower($child->getName()) == 'appid'){
                 $appid = $child . '';
