@@ -15,7 +15,7 @@ class AlertOrdersTableAddSplittingStatusColumn extends Migration
     {
         //
         Schema::table('orders', function (Blueprint $table) {
-            $table->tinyInteger('splitting_status')->index()->default(0)->comment('是否已分润 1-未分润 2-已分润');
+            $table->tinyInteger('splitting_status')->index()->default(1)->comment('是否已分润 1-未分润 2-已分润');
             $table->dateTime('splitting_time')->default(null)->nullable()->comment('分润时间');
         });
     }
