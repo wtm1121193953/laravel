@@ -201,7 +201,7 @@ class WalletService extends BaseService
             $query->where('origin_type', $originType);
         }
         if ($billNo) {
-            $query->where('bill_no', $billNo);
+            $query->where('bill_no', 'like', "%$billNo%");
         }
         if ($walletId) {
             $query->where('wallet_id', $walletId);
