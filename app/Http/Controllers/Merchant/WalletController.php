@@ -186,14 +186,12 @@ class WalletController extends Controller
         $consumeQuotaRecord = ConsumeQuotaService::getConsumeQuotaRecordById($id);
         if (empty($consumeQuotaRecord)) throw new BaseResponseException('该消费额记录不存在');
 
-        if ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_FREEZE) {
-            $consumeQuotaRecord->time = $consumeQuotaRecord->created_at->addDays(1);
-        } elseif ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_REPLACEMENT) {
+        if ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_REPLACEMENT || $consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_UNFREEZE) {
             $consumeQuotaUnfreezeRecord = ConsumeQuotaService::getConsumeQuotaUnfreezeRecordById($consumeQuotaRecord->id);
-            $consumeQuotaRecord->time = $consumeQuotaUnfreezeRecord->created_at;
+            $consumeQuotaRecord->time = $consumeQuotaUnfreezeRecord->created_at->format('Y-m-d H:i:s');
         } elseif ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_REFUND) {
             $order = OrderService::getById($consumeQuotaRecord->order_id);
-            $consumeQuotaRecord->time = $order->refund_time;
+            $consumeQuotaRecord->time = $order->refund_time->format('Y-m-d H:i:s');
         } else {
             $consumeQuotaRecord->time = null;
         }
@@ -259,6 +257,16 @@ class WalletController extends Controller
         $id = request('id');
         $tpsCredit = ConsumeQuotaService::getConsumeQuotaRecordById($id);
         if (empty($tpsCredit)) throw new BaseResponseException('该消费额记录不存在');
+
+        if ($tpsCredit->status == WalletConsumeQuotaRecord::STATUS_REPLACEMENT || $tpsCredit->status == WalletConsumeQuotaRecord::STATUS_UNFREEZE) {
+            $consumeQuotaUnfreezeRecord = ConsumeQuotaService::getConsumeQuotaUnfreezeRecordById($tpsCredit->id);
+            $tpsCredit->time = $consumeQuotaUnfreezeRecord->created_at->format('Y-m-d H:i:s');
+        } elseif ($tpsCredit->status == WalletConsumeQuotaRecord::STATUS_REFUND) {
+            $order = OrderService::getById($tpsCredit->order_id);
+            $tpsCredit->time = $order->refund_time->format('Y-m-d H:i:s');
+        } else {
+            $tpsCredit->time = null;
+        }
 
         return Result::success($tpsCredit);
     }

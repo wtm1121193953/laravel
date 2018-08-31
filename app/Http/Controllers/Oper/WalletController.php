@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Oper;
 use App\Exceptions\BaseResponseException;
 use App\Exports\WalletBillExport;
 use App\Exports\WalletConsumeQuotaRecordExport;
+use App\Exports\WalletTpsCreditExport;
 use App\Http\Controllers\Controller;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Oper\OperService;
@@ -193,18 +194,88 @@ class WalletController extends Controller
         $consumeQuotaRecord = ConsumeQuotaService::getConsumeQuotaRecordById($id);
         if (empty($consumeQuotaRecord)) throw new BaseResponseException('该消费额记录不存在');
 
-        if ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_FREEZE) {
-            $consumeQuotaRecord->time = $consumeQuotaRecord->created_at->addDays(1);
-        } elseif ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_REPLACEMENT) {
+        if ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_REPLACEMENT || $consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_UNFREEZE) {
             $consumeQuotaUnfreezeRecord = ConsumeQuotaService::getConsumeQuotaUnfreezeRecordById($consumeQuotaRecord->id);
-            $consumeQuotaRecord->time = $consumeQuotaUnfreezeRecord->created_at;
+            $consumeQuotaRecord->time = $consumeQuotaUnfreezeRecord->created_at->format('Y-m-d H:i:s');
         } elseif ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_REFUND) {
             $order = OrderService::getById($consumeQuotaRecord->order_id);
-            $consumeQuotaRecord->time = $order->refund_time;
+            $consumeQuotaRecord->time = $order->refund_time->format('Y-m-d H:i:s');
         } else {
             $consumeQuotaRecord->time = null;
         }
 
         return Result::success($consumeQuotaRecord);
+    }
+
+    /**
+     * 获取运营中心 tps积分列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getTpsCreditList()
+    {
+        $consumeQuotaNo = request('consumeQuotaNo', '');
+        $startDate = request('startDate', '');
+        $endDate = request('endDate', '');
+        $status = request('status', 0);
+        $pageSize = request('pageSize', 15);
+
+        $originId = request()->get('current_user')->oper_id;
+        $originType = WalletBill::ORIGIN_TYPE_OPER;
+        $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
+        $data = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
+        // 获取钱包信息
+        $wallet = WalletService::getWalletInfoByOriginInfo($originId, $originType);
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+            'totalShareTpsCredit' => $wallet->total_share_tps_credit,
+        ]);
+    }
+
+    /**
+     * 运营中心导出TPS积分记录
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportTpsCreditExcel()
+    {
+        $consumeQuotaNo = request('consumeQuotaNo', '');
+        $startDate = request('startDate', '');
+        $endDate = request('endDate', '');
+        $status = request('status', 0);
+        $pageSize = request('pageSize', 15);
+
+        $originId = request()->get('current_user')->oper_id;
+        $originType = WalletBill::ORIGIN_TYPE_OPER;
+        $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
+        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
+
+        return (new WalletTpsCreditExport($query))->download('我的TPS积分记录表.xlsx');
+    }
+
+    /**
+     * 获取 运营中心积分明细
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getTpsCreditDetail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $tpsCredit = ConsumeQuotaService::getConsumeQuotaRecordById($id);
+        if (empty($tpsCredit)) throw new BaseResponseException('该消费额记录不存在');
+
+        if ($tpsCredit->status == WalletConsumeQuotaRecord::STATUS_REPLACEMENT || $tpsCredit->status == WalletConsumeQuotaRecord::STATUS_UNFREEZE) {
+            $consumeQuotaUnfreezeRecord = ConsumeQuotaService::getConsumeQuotaUnfreezeRecordById($tpsCredit->id);
+            $tpsCredit->time = $consumeQuotaUnfreezeRecord->created_at->format('Y-m-d H:i:s');
+        } elseif ($tpsCredit->status == WalletConsumeQuotaRecord::STATUS_REFUND) {
+            $order = OrderService::getById($tpsCredit->order_id);
+            $tpsCredit->time = $order->refund_time->format('Y-m-d H:i:s');
+        } else {
+            $tpsCredit->time = null;
+        }
+
+        return Result::success($tpsCredit);
     }
 }

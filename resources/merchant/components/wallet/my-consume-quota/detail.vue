@@ -36,6 +36,9 @@
                     <el-form-item v-if="data.status == 1" label="解冻时间">
                         {{data.time}}
                     </el-form-item>
+                    <el-form-item v-if="data.status == 2" label="解冻时间">
+                        {{data.time}}
+                    </el-form-item>
                     <el-form-item v-if="data.status == 3" label="置换时间">
                         {{data.time}}
                     </el-form-item>
