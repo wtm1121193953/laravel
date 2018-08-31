@@ -105,6 +105,8 @@ class ReapalAgentPay
         $url = $this->dsfUrl . 'agentpay/pay';
         $result = $this->apiPost($url, $paramArr);
 
+        LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_AGENT_PAY, ['result' => $result]);
+
         Log::info('融宝代付提交接口返回结果： ', ['result' => $result]);
         return $result;
     }
