@@ -4,6 +4,7 @@ namespace App\Modules\UserCredit;
 
 
 use App\Modules\Merchant\Merchant;
+use App\Modules\Oper\Oper;
 use App\Modules\Setting\SettingService;
 
 
@@ -154,12 +155,18 @@ class UserCreditSettingService extends SettingService
 
     /**
      * 获取运营中心的分润比例
+     * @param Oper $oper
      * @return int
      */
-    public static function getFeeSplittingRatioToOper()
+    public static function getFeeSplittingRatioToOper(Oper $oper)
     {
-        // todo noting
-        return 100;
+        if ($oper->pay_to_platform == Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING) {
+            return 100;
+        } elseif ($oper->pay_to_platform == Oper::PAY_TO_PLATFORM_WITH_SPLITTING) {
+            return 50;
+        } else {
+            return null;
+        }
     }
 
     /**

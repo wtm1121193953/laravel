@@ -9,6 +9,10 @@ Route::get('/wallet/consume/list', 'WalletController@getConsumeQuotaList');
 Route::get('/wallet/consume/detail', 'WalletController@getConsumeQuotaDetail');
 Route::get('/wallet/consume/exportExcel', 'WalletController@exportConsumeQuotaRecordExcel');
 
+Route::get('/wallet/tpsCredit/list', 'WalletController@getTpsCreditList');
+Route::get('/wallet/tpsCredit/exportExcel', 'WalletController@exportTpsCreditExcel');
+Route::get('/wallet/tpsCredit/detail', 'WalletController@getTpsCreditDetail');
+
 Route::get('/wallet/withdraw/getPasswordInfo', 'WalletWithdrawController@getWalletPasswordInfo');
 Route::post('/wallet/withdraw/setWalletPassword', 'WalletWithdrawController@setWalletPassword');
 Route::get('/wallet/withdraw/getWithdrawInfo', 'WalletWithdrawController@getWithdrawInfoAndBankInfo');

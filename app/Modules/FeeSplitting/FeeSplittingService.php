@@ -8,7 +8,9 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
 use App\Modules\User\User;
@@ -36,7 +38,7 @@ class FeeSplittingService extends BaseService
             // 2 分给上级 25%
             self::feeSplittingToParent($order, $profitAmount);
             // 3 分给运营中心  50% || 100% , 暂时不做
-
+            self::feeSplittingToOper($order, $profitAmount);
             // 4 修改订单中的分润状态
             OrderService::updateSplittingStatus($order);
 
@@ -102,6 +104,39 @@ class FeeSplittingService extends BaseService
     }
 
     /**
+     * 返利给运营中心
+     * @param Order $order
+     * @param $profitAmount
+     * @throws \Exception
+     */
+    private static function feeSplittingToOper(Order $order, $profitAmount)
+    {
+        // 通过订单中的merchant_id查找该商户的运营中心（准确点）
+        $merchant = MerchantService::getById($order->merchant_id);
+        $oper = OperService::getById($merchant->oper_id);
+        if (empty($oper)) {
+            return;
+        }
+        if ($oper->pay_to_platform == Oper::PAY_TO_OPER) {
+            return;
+        }
+        DB::beginTransaction();
+        try {
+            $feeSplittingRecord = self::createFeeSplittingRecord($order, $oper, FeeSplittingRecord::TYPE_TO_OPER, $profitAmount);
+
+            // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
+            $wallet = WalletService::getWalletInfo($oper);
+            if (!empty($feeSplittingRecord)) {
+                WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
      * 根据订单解冻分润金额
      * @param Order $order
      */
@@ -127,8 +162,8 @@ class FeeSplittingService extends BaseService
      * 创建分润记录
      * @param Order $order
      * @param User|Merchant|Oper $originInfo
-     * @param float $profitAmount
      * @param $type
+     * @param float $profitAmount
      * @return FeeSplittingRecord
      */
     private static function createFeeSplittingRecord(Order $order, $originInfo, $type, float $profitAmount)
@@ -160,7 +195,10 @@ class FeeSplittingService extends BaseService
             }
         } elseif ($type == FeeSplittingRecord::TYPE_TO_OPER) {
             // 3 运营中心分润比例
-            $feeRatio = UserCreditSettingService::getFeeSplittingRatioToOper();
+            $feeRatio = UserCreditSettingService::getFeeSplittingRatioToOper($originInfo);
+            if ($feeRatio == null) {
+                return null;
+            }
         } else {
             throw new ParamInvalidException('分润类型错误');
         }

@@ -20,6 +20,11 @@ use Illuminate\Database\Eloquent\Builder;
 class OperService extends BaseService
 {
 
+    /**
+     * @param $id
+     * @param array $fields
+     * @return Oper
+     */
     public static function getById($id, $fields = ['*'])
     {
         if (is_string($fields)) {
