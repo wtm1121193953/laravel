@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @method static static orderBy($column, $direction = 'asc')
  * @method static static orderByDesc($column)
  * @method static static withTrashed()
+ * @method static int count($columns = '*')
  * @method static static has($relation, $operator = '>=', $count = 1, $boolean = 'and', Closure $callback = null)
  * @method static LengthAwarePaginator paginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null)
  * @method static number max($column)
