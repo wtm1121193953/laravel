@@ -49,4 +49,9 @@ class User extends BaseModel
         return ['','萌新', '粉丝', '铁杆', '骨灰'][$level];
     }
 
+    public function identityAuditRecord()
+    {
+        return $this->hasOne(UserIdentityAuditRecord::class);
+    }
+
 }

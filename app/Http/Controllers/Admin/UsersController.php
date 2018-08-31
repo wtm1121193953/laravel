@@ -35,6 +35,23 @@ class UsersController extends Controller
 
 
     /**
+     * 获取会员列表
+     */
+    public function userList()
+    {
+        $keyword = request('keyword');
+        $users = UserService::userList([
+            'mobile' => $keyword
+        ]);
+
+        return Result::success([
+            'list' => $users->items(),
+            'total' => $users->total(),
+        ]);
+    }
+
+
+    /**
      * 后台解绑用户推荐关系
      * @throws \Exception
      */
