@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Updates;
 
+use App\Jobs\OrderFinishedJob;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderRefund;
@@ -50,8 +51,6 @@ class V1_4_2 extends Command
         UserCreditSettingService::set('fee_splitting_ratio_to_parent_of_merchant_level_2', 25);
         UserCreditSettingService::set('fee_splitting_ratio_to_parent_of_merchant_level_3', 30);
         UserCreditSettingService::set('fee_splitting_ratio_to_parent_of_oper', 20);
-        // 历史订单分润
-        // 历史订单消费额转换
         // 补充退款中的退款单号
         OrderRefund::chunk(1000, function(Collection $list){
             $list->each(function (OrderRefund $item){
@@ -74,5 +73,22 @@ class V1_4_2 extends Command
             });
         $bar->finish();
         $this->info("\n更新现有订单数据中的费率字段 Finished");
+
+        // 历史订单分润
+        $this->info('历史订单分润 Start');
+        $bar = $this->output->createProgressBar(Order::where('splitting_status', 1)->count('id'));
+        Order::chunk(1000, function ($list) use ($bar) {
+            $list->each(function (Order $item) use ($bar) {
+                if($item->splitting_status == 1){
+                    OrderFinishedJob::dispatch($item);
+                    $bar->advance();
+                }
+            });
+        });
+        $bar->finish();
+        $this->info("\n历史订单分润 Finished: 已发放全部任务到队列");
+
+
+        // 历史订单消费额转换
     }
 }
