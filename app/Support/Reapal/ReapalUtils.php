@@ -187,7 +187,7 @@ class ReapalUtils
         $request = array();
         $request['merchant_id'] = $merchant_id;
         //加密key
-        $request['encryptkey'] = $this->encryptKey($generateAESKey, $reapalPublicKey);
+        $request['encrypted'] = $this->encryptKey($generateAESKey, $reapalPublicKey);
         //加密数据
         //print_r($paramArr);exit;
         $request['data'] = $this->encrypt(json_encode($paramArr), $generateAESKey);

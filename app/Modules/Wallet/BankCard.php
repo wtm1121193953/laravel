@@ -14,6 +14,7 @@ use App\BaseModel;
  * @property string bank_card_no
  * @property string bank_name
  * @property string sub_bank_name
+ * @property integer default
  */
 
 class BankCard extends BaseModel
@@ -31,4 +32,12 @@ class BankCard extends BaseModel
      */
     const BANK_CARD_TYPE_COMPANY = 1;
     const BANK_CARD_TYPE_PEOPLE = 2;
+
+    /**
+     * Author:  Jerry
+     * Date :   180830
+     * 银行卡是否为默认
+     */
+    const DEFAULT_SELECTED = 1;
+    const DEFAULT_UNSELECTED = 0;
 }
