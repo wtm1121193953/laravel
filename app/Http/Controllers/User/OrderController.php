@@ -247,7 +247,7 @@ class OrderController extends Controller
         if ($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM) { // 如果是支付到平台
             if ($currentOperId == 0) { // 在平台小程序下
                 // 调平台支付, 走融宝支付接口
-                $isOperSelf = 2;
+                $isOperSelf = 1;
                 $sdkConfig = null; // todo 走融宝支付接口
 
                 $result = $this->reapalPrepay($order);
