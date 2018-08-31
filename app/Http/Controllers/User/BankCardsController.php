@@ -80,7 +80,7 @@ class BankCardsController extends Controller
         $list = $bankCard::where('origin_id', $currentUser->id)
                             ->where('origin_type', $currentUser->status)
                             ->orderBy('default', 'desc')
-                            ->select();
-        return Result::success('', $list);
+                            ->get();
+        return Result::success( $list );
     }
 }
