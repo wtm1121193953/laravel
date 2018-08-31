@@ -311,6 +311,9 @@ class OrderController extends Controller
             'store_phone' => $merchant->contacter_phone ?? '15989438364',
             'open_id' => request()->get('current_open_id'),
         ];
+        if (empty($param['body'])) {
+            $param['body'] = $param['title'];
+        }
         $reapal = new ReapalPay();
         $result = $reapal->prepay($param);
 
