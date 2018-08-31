@@ -39,9 +39,17 @@ class UsersController extends Controller
      */
     public function userList()
     {
-        $keyword = request('keyword');
+        $mobile = request('mobile');
+        $name = request('name');
+        $id = request('id');
+        $startDate = request('startDate');
+        $endDate = request('endDate');
         $users = UserService::userList([
-            'mobile' => $keyword
+            'mobile' => $mobile,
+            'id' => $id,
+            'name' => $name,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ]);
 
         return Result::success([

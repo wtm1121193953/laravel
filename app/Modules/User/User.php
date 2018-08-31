@@ -26,6 +26,8 @@ class User extends BaseModel
 {
     use Notifiable, GenPassword;
 
+    const STATUS_NORMAL = 1;
+    const STATUS_FORBIDDEN = 2;
     /**
      * The attributes that are mass assignable.
      *
@@ -52,6 +54,12 @@ class User extends BaseModel
     public function identityAuditRecord()
     {
         return $this->hasOne(UserIdentityAuditRecord::class);
+    }
+
+    public static function getStatusText($status)
+    {
+        $status_arr = [self::STATUS_NORMAL=>'正常',self::STATUS_FORBIDDEN=>'禁用'];
+        return !empty($status_arr[$status])?$status_arr[$status]:'未知状态';
     }
 
 }
