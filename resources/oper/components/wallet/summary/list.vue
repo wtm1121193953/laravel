@@ -159,7 +159,7 @@
             },
             download() {
                 let query = this.query;
-                location.href = '/api/merchant/wallet/bill/exportExcel?billNo=' + query.billNo + '&startDate=' + query.startDate + '&endDate=' + query.endDate +'&type=' + query.type;
+                location.href = '/api/oper/wallet/bill/exportExcel?billNo=' + query.billNo + '&startDate=' + query.startDate + '&endDate=' + query.endDate +'&type=' + query.type;
             },
             detail(row) {
                 router.push({

@@ -137,7 +137,7 @@
             },
             download() {
                 let query = this.query;
-                location.href = '/api/merchant/wallet/tpsCredit/exportExcel?consumeQuotaNo=' + query.consumeQuotaNo + '&startDate=' + query.startDate + '&endDate=' + query.endDate +'&status=' + query.status;
+                location.href = '/api/oper/wallet/tpsCredit/exportExcel?consumeQuotaNo=' + query.consumeQuotaNo + '&startDate=' + query.startDate + '&endDate=' + query.endDate +'&status=' + query.status;
             },
             detail(row) {
                 router.push({
