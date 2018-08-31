@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Merchant;
 use App\Exceptions\BaseResponseException;
 use App\Exports\WalletBillExport;
 use App\Exports\WalletConsumeQuotaRecordExport;
+use App\Exports\WalletTpsCreditExport;
 use App\Http\Controllers\Controller;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Merchant\MerchantService;
@@ -198,5 +199,67 @@ class WalletController extends Controller
         }
 
         return Result::success($consumeQuotaRecord);
+    }
+
+    /**
+     * 获取商户 tps积分列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getTpsCreditList()
+    {
+        $consumeQuotaNo = request('consumeQuotaNo', '');
+        $startDate = request('startDate', '');
+        $endDate = request('endDate', '');
+        $status = request('status', 0);
+        $pageSize = request('pageSize', 15);
+
+        $originId = request()->get('current_user')->merchant_id;
+        $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
+        $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
+        $data = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
+        // 获取钱包信息
+        $wallet = WalletService::getWalletInfoByOriginInfo($originId, $originType);
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+            'totalShareTpsCredit' => $wallet->total_share_tps_credit,
+        ]);
+    }
+
+    /**
+     * 商户导出TPS积分记录
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportTpsCreditExcel()
+    {
+        $consumeQuotaNo = request('consumeQuotaNo', '');
+        $startDate = request('startDate', '');
+        $endDate = request('endDate', '');
+        $status = request('status', 0);
+        $pageSize = request('pageSize', 15);
+
+        $originId = request()->get('current_user')->merchant_id;
+        $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
+        $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
+        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
+
+        return (new WalletTpsCreditExport($query))->download('我的TPS积分记录表.xlsx');
+    }
+
+    /**
+     * 获取 商户积分明细
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getTpsCreditDetail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $tpsCredit = ConsumeQuotaService::getConsumeQuotaRecordById($id);
+        if (empty($tpsCredit)) throw new BaseResponseException('该消费额记录不存在');
+
+        return Result::success($tpsCredit);
     }
 }
