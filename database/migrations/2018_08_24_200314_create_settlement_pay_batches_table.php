@@ -23,7 +23,7 @@ class CreateSettlementPayBatchesTable extends Migration
             $table->tinyInteger('type')->index()->default(1)->comment('状态 1-融宝打款批次 ');
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-未提交 2-已提交');
             $table->string('error_code')->default('')->comment('错误代码');
-            $table->text('error_msg')->comment('错误信息');
+            $table->text('error_msg')->default('')->comment('错误信息');
             $table->timestamps();
 
             $table->comment = '结算自动打款批次表';
