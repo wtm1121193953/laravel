@@ -56,6 +56,7 @@ Route::prefix('app/user')
         Route::get('merchant/dishesCategory', 'MerchantDishesController@getDishesCategory');
         Route::get('merchant/dishesGoods', 'MerchantDishesController@getDishesGoods');
 
-        //钱包接口
+        //app钱包接口
         Route::get('wallet/getWalletInfo','WalletController@getWallet');
+        Route::get('wallet/getBills','WalletController@getBills');
     });
