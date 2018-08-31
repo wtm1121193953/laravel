@@ -321,11 +321,12 @@ class WalletWithdrawService extends BaseService
      * @param $batchId
      * @param string $remark
      * @return WalletWithdraw
+     * @throws \Exception
      */
     public static function auditSuccess(WalletWithdraw $walletWithdraw, $batchId, $remark = '')
     {
+        DB::beginTransaction();
         try{
-            DB::beginTransaction();
             // 1.更新提现批次表的总金额和总笔数
             $walletBatch = WalletBatchService::getById($batchId);
             if (empty($walletBatch)) throw new \Exception('该提现批次不存在');
@@ -356,11 +357,12 @@ class WalletWithdrawService extends BaseService
      * @param WalletWithdraw $walletWithdraw
      * @param string $remark
      * @return WalletWithdraw
+     * @throws \Exception
      */
     public static function auditFailed(WalletWithdraw $walletWithdraw, $remark = '')
     {
+        DB::beginTransaction();
         try{
-            DB::beginTransaction();
             self::withdrawFail($walletWithdraw, WalletWithdraw::STATUS_AUDIT_FAILED, $remark);
 
             DB::commit();
@@ -411,6 +413,7 @@ class WalletWithdrawService extends BaseService
     /**
      * admin 打款成功操作 单独或者批量
      * @param $ids
+     * @throws \Exception
      */
     public static function paySuccess($ids)
     {
@@ -420,8 +423,9 @@ class WalletWithdrawService extends BaseService
         $amount = 0;
         $total = 0;
         $batchId = 0;
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
+
             foreach ($ids as $id) {
                 $walletWithdraw = self::getWalletWithdrawById($id);
                 if ($walletWithdraw->status == WalletWithdraw::STATUS_AUDIT) {
@@ -456,6 +460,7 @@ class WalletWithdrawService extends BaseService
      * 打款失败的操作 单个或者批量
      * @param $ids
      * @param string $remark
+     * @throws \Exception
      */
     public static function payFail($ids, $remark = '')
     {
@@ -465,8 +470,8 @@ class WalletWithdrawService extends BaseService
         $amount = 0;
         $total = 0;
         $batchId = 0;
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
             foreach ($ids as $id) {
                 $walletWithdraw = self::getWalletWithdrawById($id);
                 if ($walletWithdraw->status == WalletWithdraw::STATUS_AUDIT) {
