@@ -120,7 +120,7 @@ class MerchantService extends BaseService
         $merchantCategory = array_get($data,'merchantCategory');
         $isPilot = array_get($data,'isPilot');
         $startCreatedAt = array_get($data,'startCreatedAt');
-        $endCreatedAt = array_get($data,'$endCreatedAt');
+        $endCreatedAt = array_get($data,'endCreatedAt');
 
         // 全局限制条件
         $query = Merchant::where('audit_oper_id', '>', 0)->orderByDesc('id');
