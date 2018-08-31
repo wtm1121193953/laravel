@@ -58,4 +58,26 @@ class WalletController extends Controller{
             'total' => $bills->total(),
         ]);
     }
+
+    /**
+     * 获取账单详情
+     * @return WalletBill|null
+     */
+    public function getBillDetail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $userId = request()->get('current_user')->id;
+        $billInfo = WalletService::getBillDetailById($id);
+        if(empty($billInfo)){
+            throw new NoPermissionException('账单信息不存在');
+        }
+        if($billInfo->origin_id != $userId && $billInfo->origin_type != WalletBill::ORIGIN_TYPE_USER){
+            throw new NoPermissionException('账单信息不存在');
+        }
+
+        return Result::success($billInfo);
+    }
 }

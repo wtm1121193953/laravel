@@ -59,4 +59,5 @@ Route::prefix('app/user')
         //app钱包接口
         Route::get('wallet/getWalletInfo','WalletController@getWallet');
         Route::get('wallet/getBills','WalletController@getBills');
+        Route::get('wallet/getBillDetail','WalletController@getBillDetail');
     });
