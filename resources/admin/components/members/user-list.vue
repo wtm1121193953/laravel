@@ -33,11 +33,15 @@
             </el-form-item>
             <el-form-item label="用户状态" prop="status">
                 <el-select v-model="query.status" size="small"  multiple placeholder="请选择" class="w-150">
-
+                    <el-option label="正常" value="1"/>
+                    <el-option label="禁用" value="2"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search">搜索</el-button>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="success" size="small" @click="downloadExcel">导出Excel</el-button>
             </el-form-item>
         </el-form>
         <el-table :data="list" stripe>
@@ -47,7 +51,7 @@
             <el-table-column prop="name" label="会员名称"/>
             <el-table-column prop="parent" label="推荐人"/>
             <el-table-column prop="stauts_val" label="用户状态"/>
-            <el-table-column prop="identity_audit_record.status" label="认证身份状态"/>
+            <el-table-column prop="identity_status_text" label="认证身份状态"/>
 
         </el-table>
         <el-pagination
@@ -102,6 +106,20 @@
                 this.list.splice(index, 1, data)
                 this.getList();
             },
+            downloadExcel() {
+                let message = '确定要导出当前筛选的用户列表么？'
+                this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
+                this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
+                this.$confirm(message).then(() => {
+                    window.location.href = window.location.origin + '/api/admin/member/download?'
+                        + 'mobile=' + this.query.mobile
+                        + '&startDate=' + this.query.startDate
+                        + '&endDate=' + this.query.endDate
+                        + '&id=' + this.query.id
+                        + '&name='+ this.query.name
+                        + '&status=' + this.query.status ;
+                })
+            }
         },
         created(){
             this.getList();
