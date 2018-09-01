@@ -175,6 +175,11 @@ class OrderService extends BaseService
             $order->status = Order::STATUS_FINISHED;
             $order->finish_time = Carbon::now();
             $order->save();
+            // 核销完订单之后 进行分润操作
+            if($order->status == Order::STATUS_FINISHED){
+                OrderFinishedJob::dispatch($order);
+            }
+
             return $order;
         } else {
             throw new BaseResponseException('该订单已退款，不能核销');
