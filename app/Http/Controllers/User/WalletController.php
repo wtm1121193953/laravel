@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 57458
- * Date: 2018/8/23
- * Time: 18:01
- */
 
 namespace App\Http\Controllers\User;
 
@@ -12,7 +6,11 @@ namespace App\Http\Controllers\User;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\NoPermissionException;
 use App\Http\Controllers\Controller;
+use App\Modules\Invite\InviteUserService;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\Oper;
+use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\ConsumeQuotaService;
 use App\Modules\Wallet\Wallet;
@@ -21,6 +19,7 @@ use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use App\Modules\Wallet\WalletService;
 use App\Result;
 use App\ResultCode;
+use App\Support\Utils;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use App\Modules\Sms\SmsService;
@@ -28,6 +27,7 @@ use App\Modules\Sms\SmsService;
 class WalletController extends Controller
 {
     use \App\Modules\User\GenPassword;          // Author:Jerry Date:180830
+
     /**
      * 获取用户钱包信息
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
@@ -88,9 +88,42 @@ class WalletController extends Controller
     }
 
     /**
-     * 获取消费额记录
+     * 通过消费额 获取 tps消费额
+     * @param $consume
+     * @return float|int
      */
-    public function getConsumeQuotas()
+    private static function getTpsConsumeByConsume($consume)
+    {
+        $tpsConsume = Utils::getDecimalByNotRounding($consume / 6 / 6.5 / 4 , 2);
+        return $tpsConsume;
+    }
+
+    /**
+     * 我的tps 消费额统计
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getTpsConsumeStatistics()
+    {
+        $user = request()->get('current_user');
+
+        $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
+        $totalTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
+            'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+            'originId' => $user->id,
+            'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+        ], 15, true)->sum('tps_consume_quota');
+        $theMonthTpsConsume = self::getTpsConsumeByConsume($wallet->consume_quota);
+
+        return Result::success([
+            'totalTpsConsume' => $totalTpsConsume,
+            'theMonthTpsConsume' => $theMonthTpsConsume,
+        ]);
+    }
+
+    /**
+     * 获取tps消费额记录
+     */
+    public function getTpsConsumeQuotas()
     {
         $month = request('month');
         if(empty($month)){
@@ -109,7 +142,7 @@ class WalletController extends Controller
         ], $pageSize, true);
         $data = $query->paginate($pageSize);
         // 当月总消费额
-        $amount = $query->sum('consume_quota');
+        $amount = $query->sum('tps_consume_quota');
 
         return Result::success([
             'list' => $data->items(),
@@ -119,9 +152,9 @@ class WalletController extends Controller
     }
 
     /**
-     * 获取消费额详情
+     * 获取tps消费额详情
      */
-    public function getConsumeQuotaDetail()
+    public function getTpsConsumeQuotaDetail()
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
@@ -152,6 +185,90 @@ class WalletController extends Controller
         // 返回的是系数 直接乘以金额就好了
         return Result::success([
             'ratio' => $ratio,
+        ]);
+    }
+
+    /**
+     * TPS积分 统计
+     */
+    public function getTpsCreditStatistics()
+    {
+        $user = request()->get('current_user');
+
+        $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
+        $totalSyncTpsCredit = ConsumeQuotaService::getConsumeQuotaRecordList([
+            'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+            'originId' => $user->id,
+            'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+        ], 15, true)->sum('sync_tps_credit');
+
+        $contributeToParent = 0;
+        $parent = InviteUserService::getParent($user->id);
+        if ($parent) {
+            if ($parent instanceof User) {
+                $originType = WalletConsumeQuotaRecord::ORIGIN_TYPE_USER;
+            } elseif ($parent instanceof Merchant) {
+                $originType = WalletConsumeQuotaRecord::ORIGIN_TYPE_MERCHANT;
+            } elseif ($parent instanceof Oper) {
+                $originType = WalletConsumeQuotaRecord::ORIGIN_TYPE_OPER;
+            } else {
+                throw new BaseResponseException('改状态不存在');
+            }
+            $contributeToParent = ConsumeQuotaService::getConsumeQuotaRecordList([
+                'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+                'originId' => $user->id,
+                'originType' => $originType,
+            ], 15, true)->sum('sync_tps_credit');
+        }
+
+        return Result::success([
+            'totalTpsCredit' => $wallet->total_tps_credit, // 个人消费获得TPS积分
+            'totalShareTpsCredit' => $wallet->total_share_tps_credit, // 下级累计贡献TPS积分
+            'tpsCreditSum' => $wallet->total_share_tps_credit + $wallet->total_tps_credit, // 总累计TPS积分
+            'totalSyncTpsCredit' => $totalSyncTpsCredit, // 已置换
+            'contributeToParent' => $contributeToParent, // 累计贡献上级TPS积分
+        ]);
+    }
+
+    /**
+     * 获取tps积分列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getTpsCreditList()
+    {
+        $month = request('month');
+        if(empty($month)){
+            $month = date('Y-m');
+        }
+        $type = request('type', '');
+        $pageSize = request('pageSize', 15);
+        $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
+        $query = ConsumeQuotaService::getConsumeQuotaRecordList([
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'type' => $type,
+            'originId' => request()->get('current_user')->id,
+            'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+            'syncTpsCredit' => true,
+        ], $pageSize, true);
+        $data = $query->paginate($pageSize);
+        $totalTpsCredit = $query->sum('sync_tps_credit');
+        $hasSyncTpsCredit = ConsumeQuotaService::getConsumeQuotaRecordList([
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'type' => $type,
+            'originId' => request()->get('current_user')->id,
+            'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+            'syncTpsCredit' => true,
+            'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+        ], $pageSize, true)->sum('sync_tps_credit');
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+            'totalTpsCredit' => $totalTpsCredit, // 获得TPS积分
+            'hasSyncTpsCredit' => $hasSyncTpsCredit // 置换TPS积分
         ]);
     }
 

@@ -71,9 +71,12 @@ Route::prefix('user')
         Route::get('wallet/info', 'WalletController@getWallet')->middleware(UserLoginFilter::class);
         Route::get('wallet/bills', 'WalletController@getBills')->middleware(UserLoginFilter::class);
         Route::get('wallet/bill/detail', 'WalletController@getBillDetail')->middleware(UserLoginFilter::class);
-        Route::get('wallet/consumeQuotas', 'WalletController@getConsumeQuotas')->middleware(UserLoginFilter::class);
-        Route::get('wallet/consumeQuota/detail', 'WalletController@getConsumeQuotaDetail')->middleware(UserLoginFilter::class);
+        Route::get('wallet/consumeQuotas', 'WalletController@getTpsConsumeQuotas')->middleware(UserLoginFilter::class);
+        Route::get('wallet/consumeQuota/detail', 'WalletController@getTpsConsumeQuotaDetail')->middleware(UserLoginFilter::class);
         Route::get('wallet/userFeeSplitting/ratio', 'WalletController@getUserFeeSplittingRatioToSelf')->middleware(UserLoginFilter::class);
+        Route::get('wallet/tpsConsume/statistics', 'WalletController@getTpsConsumeStatistics')->middleware(UserLoginFilter::class);
+        Route::get('wallet/tpsCredit/statistics', 'WalletController@getTpsCreditStatistics')->middleware(UserLoginFilter::class);
+        Route::get('wallet/tpsCredit/list', 'WalletController@getTpsCreditList')->middleware(UserLoginFilter::class);
 
         Route::post('wallet/confirmPassword', 'WalletController@confirmPassword')->middleware(UserLoginFilter::class);  // Author:Jerry Date:180831
         Route::post('wallet/changePassword', 'WalletController@changePassword')->middleware(UserLoginFilter::class);  // Author:Jerry Date:180831
