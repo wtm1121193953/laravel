@@ -8,7 +8,7 @@
         <el-button v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改帐户密码</el-button>
         <el-button type="text" @click="editMiniprogramDialog = true">{{!scope.row.miniprogram ? '配置小程序' : '修改小程序配置'}}</el-button>
         <el-button v-if="scope.row.miniprogram" type="text" @click="uploadCert">上传支付证书</el-button>
-        <el-button type="text" @click="showModifyPayToPlatformDialog = true">支付到平台</el-button>
+        <el-button type="text" @click="showModifyPayToPlatformDialog = true">支付到平台设置</el-button>
 
         <el-dialog title="编辑小程序配置信息" :visible.sync="editMiniprogramDialog">
             <miniprogram-form
@@ -79,24 +79,25 @@
             </el-form>
         </el-dialog>
 
-        <el-dialog title="小程序支付对象设置" width="40%" :visible.sync="showModifyPayToPlatformDialog">
-            <el-row>
+        <el-dialog title="确定支付到平台" width="30%" :visible.sync="showModifyPayToPlatformDialog">
+            <el-row >
                 <el-col :span="16">
                     <el-form size="mini" :model="payToPlatformForm" ref="modifyPayToPlatformForm" >
                         <el-form-item>
                             <div>
-                                <el-radio v-model="payToPlatformForm.pay_to_platform" :label="0" :disabled="scope.row.pay_to_platform > 0">支付给运营中心自己</el-radio>
+                                <el-radio v-model="payToPlatformForm.pay_to_platform" :label="0" :disabled="scope.row.pay_to_platform > 0">支付到运营中心</el-radio>
                             </div>
                             <div>
-                                <el-radio v-model="payToPlatformForm.pay_to_platform" :label="1" :disabled="scope.row.pay_to_platform > 1">支付到平台(平台不参与分成)</el-radio>
+                                <el-radio v-model="payToPlatformForm.pay_to_platform" :label="1" :disabled="scope.row.pay_to_platform > 1">先切换到平台，平台不参与分成</el-radio>
                             </div>
                             <div>
-                                <el-radio v-model="payToPlatformForm.pay_to_platform" :label="2">支付到平台(平台参与分成)</el-radio>
+                                <el-radio v-model="payToPlatformForm.pay_to_platform" :label="2">切换到平台，平台按照合约参与分成（此模式不支持修改）</el-radio>
                             </div>
                         </el-form-item>
 
 
                         <el-form-item>
+                            <el-button @click="cancel">取消</el-button>
                             <el-button type="primary" @click="modifyPayToPlatform">确定</el-button>
                         </el-form-item>
                     </el-form>
@@ -244,6 +245,9 @@
                         this.$emit('after-request')
                     })
                 })
+            },
+            cancel(){
+                this.showModifyPayToPlatformDialog = false;
             },
             doEditMiniprogram(data){
                 this.isLoading = true;

@@ -11,6 +11,7 @@ namespace App\Modules\User;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Admin\AdminUser;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserUnbindRecord;
@@ -257,8 +258,11 @@ class UserService extends BaseService
         if ($reason) {
             $info->reason = $reason;
         }
+        /** @var AdminUser $user */
         $user = session(config('admin.user_session'));
-        $info->update_user = $user->id;
+        if (!empty($user->id)) {
+            $info->update_user = $user->id;
+        }
         $rs = $info->save();
         return $rs;
     }
