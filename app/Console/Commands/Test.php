@@ -65,6 +65,9 @@ class Test extends Command
      */
     public function handle()
     {
+
+//        SettlementAgentPay::dispatch([1]);
+//        dd(1234);
         $orders = Order::all();
         foreach ($orders as $order) {
 //            $order->splitting_status = 1;

@@ -15,9 +15,6 @@ class GoodsController extends Controller
      */
     public function getList()
     {
-        var_dump(request()->get('current_user'));
-        var_dump(request()->get('current_user')->merchant_id);
-        exit();
         $status = request('status');
         $data = GoodsService::getList(request()->get('current_user')->merchant_id, $status);
 

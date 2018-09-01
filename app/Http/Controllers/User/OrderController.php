@@ -24,6 +24,7 @@ use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
 
+use App\Modules\Order\OrderService;
 use App\Modules\Setting\SettingService;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
@@ -157,7 +158,11 @@ class OrderController extends Controller
         if ($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM) { // 如果是支付到平台
             $currentOperId = 0;
             if ($currentOperId == 0) { // 在平台小程序下
+                $isOperSelf = 2;
+                $sdkConfig = null;
+                OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
                 // 调平台支付, 走融宝支付接口
+                /*
                 $isOperSelf = 1;
                 $sdkConfig = null; // todo 走融宝支付接口
 
@@ -165,6 +170,7 @@ class OrderController extends Controller
                 $sdkConfig = json_decode($result['wxjsapi_str'],true);
                 $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
 
+                */
             } else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
@@ -247,12 +253,16 @@ class OrderController extends Controller
         if ($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM) { // 如果是支付到平台
             if ($currentOperId == 0) { // 在平台小程序下
                 // 调平台支付, 走融宝支付接口
-                $isOperSelf = 1;
+                $isOperSelf = 2;
+                $sdkConfig = null;
+                OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
+
+                /*$isOperSelf = 1;
                 $sdkConfig = null; // todo 走融宝支付接口
 
                 $result = $this->reapalPrepay($order);
                 $sdkConfig = json_decode($result['wxjsapi_str'],true);
-                $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
+                $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];*/
             } else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
@@ -369,13 +379,19 @@ class OrderController extends Controller
 
         if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
             if($currentOperId == 0){ // 在平台小程序下
+                $isOperSelf = 2;
+                $sdkConfig = null;
+                OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
+
                 // 调平台支付, 走融宝支付接口
+                /*
                 $isOperSelf = 1;
                 $sdkConfig = null; // todo 走融宝支付接口
 
                 $result = $this->reapalPrepay($order);
                 $sdkConfig = json_decode($result['wxjsapi_str'],true);
                 $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
+                */
 
             }else {
                 $isOperSelf = 0;

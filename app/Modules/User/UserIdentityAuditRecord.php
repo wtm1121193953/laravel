@@ -33,4 +33,9 @@ class UserIdentityAuditRecord extends BaseModel
     const STATUS_SUCCESS    = 2;
     const STATUS_FAIL       = 3;
 
+    public static function getStatusText($status)
+    {
+        $status_arr = [self::STATUS_TO_AUDIT=>'待审核',self::STATUS_SUCCESS=>'审核通过',self::STATUS_FAIL=>'审核失败'];
+        return !empty($status_arr[$status])?$status_arr[$status]:'未知状态';
+    }
 }

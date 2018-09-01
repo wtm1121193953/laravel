@@ -20,11 +20,14 @@ use App\Modules\Wallet\WalletBill;
 use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use App\Modules\Wallet\WalletService;
 use App\Result;
+use App\ResultCode;
 use Illuminate\Support\Carbon;
+use Illuminate\Http\Request;
+use App\Modules\Sms\SmsService;
 
 class WalletController extends Controller
 {
-
+    use \App\Modules\User\GenPassword;          // Author:Jerry Date:180830
     /**
      * 获取用户钱包信息
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
@@ -151,4 +154,123 @@ class WalletController extends Controller
             'ratio' => $ratio,
         ]);
     }
+
+    /**
+     * 校验旧密码
+     * Author:  Jerry
+     * Date:    180831
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function confirmPassword( Request $request )
+    {
+        $wallet = WalletService::getWalletInfoByOriginInfo($request->get('current_user')->id, Wallet::ORIGIN_TYPE_USER);
+        // 通过新提交的明文密码生成密文密码
+        $putPassword = self::genPassword(  $request->input('password'), $wallet['salt']);
+        if( $putPassword != $wallet['withdraw_password'] )
+        {
+            // 记录确认密码时间
+
+            return Result::error(ResultCode::PARAMS_INVALID, '原交易密码确认错误');
+        }
+        session(['confirm_password'=>time()]);
+        return Result::success('确认成功');
+    }
+
+    /**
+     * 重置密码
+     * Author:  Jerry
+     * Date:    180831
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function changePassword( Request $request )
+    {
+        $wallet = WalletService::getWalletInfoByOriginInfo($request->get('current_user')->id, Wallet::ORIGIN_TYPE_USER);
+        if( !empty($wallet['withdraw_password']) )
+        {
+            // 如果已设置过密码，则走以下逻辑
+            $confirmTime = session('confirm_password');
+            if( $confirmTime==0 )
+            {
+                return Result::error(ResultCode::NO_PERMISSION,'无权操作,请先验证旧密码');
+            }
+            // 3分钟有效期
+            $confirmTime+= 3*60;
+            if( $confirmTime < time() )
+            {
+                return Result::error(ResultCode::NO_PERMISSION,'超过有效期请重新验证旧密码' );
+            }
+        }
+        $this->validate($request, [
+            'password'  =>  'required|numeric'
+        ]);
+        // 重置密码入库
+        $res = WalletService::updateWalletWithdrawPassword( $wallet, $request->input('password'));
+        if( $res )
+        {
+            // 删除有效时间，避免重复提交
+            session(['confirm_password'=>null]);
+            return Result::success('重置密码成功');
+        }
+        return Result::error(ResultCode::DB_UPDATE_FAIL, '重置密码失败');
+    }
+
+    /**
+     * 发送短信验证码
+     * Author:  Jerry
+     * Date:    180831
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function sendVerifyCode(Request $request)
+    {
+        $sendTime  = session('verify_code_time');
+        $minute     = 1;
+        $addTime   = $sendTime+60*$minute;
+        if( $sendTime!=0 && $addTime>time() )
+        {
+            return Result::error(ResultCode::NO_PERMISSION, $minute.'分钟内不可重复发送');
+        }
+        $currentUser = $request->get('current_user');
+        $code   = rand(100000,999999);
+        SmsService::sendVerifyCode( $currentUser->mobile, $code);
+        // 记录发送时间
+        session(['verify_code'=> $code]);
+        session(['verify_code_time'=>time()]);
+        return Result::success(['verify_code'=>$code]);
+    }
+
+    /**
+     * 校验短信验证码
+     * Author:  Jerry
+     * Date:    180831
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function checkVerifyCode( Request $request )
+    {
+        $sendTime  = $request->session()->get('verify_code_time', 0);
+        if( $sendTime==0 )
+        {
+            return Result::error(ResultCode::NO_PERMISSION, '无权操作');
+        }
+        $minute    = 3;
+        $addTime   = $sendTime+60*$minute;
+        // 设置有效时间为3分钟
+        if( $addTime < time() )
+        {
+            return Result::error(ResultCode::NO_PERMISSION, '验证码已过期');
+        }
+        $code = session('verify_code');
+        if( $code!= $request->input('verify_code') )
+        {
+            return Result::error(ResultCode::NO_PERMISSION, '验证码错误');
+        }
+        // 记录确认密码时间
+        session( ['confirm_password'=>time()] );
+        return Result::success('确认成功');
+    }
+
+
 }

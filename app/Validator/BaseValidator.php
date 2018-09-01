@@ -89,7 +89,13 @@ class BaseValidator
         {
             $sceneRule = [];
             foreach ( $this->scene[$scene] as $k=>$v ){
-                $sceneRule[$v] = $this->rule[$v];
+                // 解决不同的场景值验证方式也不同
+                if( is_integer( $k ) )
+                {
+                    $sceneRule[$v] = $this->rule[$v];
+                }else{
+                    $sceneRule[$k] = $v;
+                }
             }
             $rules = $sceneRule;
         }
