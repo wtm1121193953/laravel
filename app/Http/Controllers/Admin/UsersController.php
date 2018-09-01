@@ -153,6 +153,7 @@ class UsersController extends Controller
         $id = request('id');
         $status = request('status');
         $reason = request('reason');
+
         $rs = UserService::identityDo($id, $status, $reason);
         return Result::success($rs);
 

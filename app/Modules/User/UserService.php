@@ -257,7 +257,8 @@ class UserService extends BaseService
         if ($reason) {
             $info->reason = $reason;
         }
-
+        $user = session(config('admin.user_session'));
+        $info->update_user = $user->id;
         $rs = $info->save();
         return $rs;
     }
