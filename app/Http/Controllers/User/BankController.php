@@ -21,6 +21,6 @@ class BankController extends Controller
         $list = $bank::where('status',Bank::STATUS_USABLE)
                 ->select('id','name')
                 ->get();
-        return Result::success( $list );
+        return Result::success( ['list' => $list] );
     }
 }
