@@ -46,6 +46,9 @@
             <el-form-item label="备注：">
                 {{order.remark}}
             </el-form-item>
+            <el-form-item label="下级消费返利：">
+                {{order.fee_splitting_amount}}
+            </el-form-item>
             <el-form-item label="订单创建时间：">
                 {{order.created_at}}
             </el-form-item>

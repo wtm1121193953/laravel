@@ -240,4 +240,30 @@ class FeeSplittingService extends BaseService
             ->sum('amount');
         return $amount;
     }
+
+    /**
+     * 通过参数 获取 分润记录详情
+     * @param $params
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null|object
+     */
+    public static function getFeeSplittingDetailByParams($params)
+    {
+        $orderId = array_get($params, 'orderId', '');
+        $status = array_get($params, 'status', '');
+        $type = array_get($params, 'type', '');
+
+        $query = FeeSplittingRecord::query();
+        if ($orderId) {
+            $query->where('order_id', $orderId);
+        }
+        if ($status) {
+            $query->where('status', $status);
+        }
+        if ($type) {
+            $query->where('type', $type);
+        }
+        $feeSplittingRecord = $query->first();
+
+        return $feeSplittingRecord;
+    }
 }
