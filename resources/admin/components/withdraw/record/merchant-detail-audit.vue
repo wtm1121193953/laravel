@@ -42,7 +42,7 @@
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                    <el-form-item label="订单编号">
+                    <el-form-item label="提现编号">
                         {{data.withdraw_no}}
                     </el-form-item>
                     <el-form-item label="手续费">

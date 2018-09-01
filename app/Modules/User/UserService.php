@@ -182,6 +182,80 @@ class UserService extends BaseService
 
         return $users;
     }
+
+    /**
+     * 获取会员审核列表
+     * @param $params
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function identity($params,bool $return_query = false){
+
+
+        $query  = UserIdentityAuditRecord::select('*')
+            ->when($params['mobile'], function (Builder $query) use ($params){
+                $query->whereHas('user',function($q) use ($params) {
+                    $q->where('mobile', 'like', "%{$params['mobile']}%");
+                });
+            })
+            ->when($params['name'], function (Builder $query) use ($params){
+                $query->where('name','like','%'.$params['name'].'%');
+            })
+            ->when($params['id'], function (Builder $query) use ($params){
+                $query->where('user_id', '=', $params['id']);
+            })
+            ->when($params['startDate'] && $params['endDate'], function (Builder $query) use ($params){
+                $query->where('created_at', '>=', $params['startDate']);
+                $query->where('created_at', '<=', $params['endDate']);
+            })
+            ->with('user')
+            ->orderByDesc('created_at');
+
+        if ($return_query) {
+            return $query;
+        }
+
+        $users = $query->paginate();
+
+        $users->each(function ($item){
+
+            $item->status_val = UserIdentityAuditRecord::getStatusText($item->status);
+            $item->user->status_val = User::getStatusText($item->user->status);
+        });
+
+        return $users;
+    }
+
+    /**
+     * 用户认证信息详情
+     * @param $id
+     */
+    public static function identityDetail($id)
+    {
+        return UserIdentityAuditRecord::with('user')->findOrFail($id);
+    }
+
+    /**
+     * 审核
+     * @param $id
+     * @param $status
+     * @param string $reason
+     * @return UserIdentityAuditRecord
+     */
+    public static function identityDo($id,$status,$reason='')
+    {
+
+        $info = UserIdentityAuditRecord::findOrFail($id);
+
+        $info->status = $status;
+
+        if ($reason) {
+            $info->reason = $reason;
+        }
+
+        $rs = $info->save();
+        return $rs;
+    }
+
     /**
      * 通过电话号码查询用户详情
      * @param $mobile

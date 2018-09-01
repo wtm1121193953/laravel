@@ -27,13 +27,14 @@ class BankCardsController extends Controller
      * Author:  Jerry
      * Date:    180831
      * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Illuminate\Validation\ValidationException
      */
     public function  addCard( Request $request)
     {
         $this->validator->scene('add')->check( $request->all() );
-        BankCardService::addCard( $request );
-        Result::success('添加银行卡成功');
+        BankCardService::addCard( $request->all(), $request->get('current_user') );
+        return Result::success('添加银行卡成功');
     }
 
     /**
@@ -47,7 +48,7 @@ class BankCardsController extends Controller
     public function changDefault( Request $request )
     {
         $this->validator->scene('default')->check( $request->all() );
-        BankCardService::changeDefault( $request );
+        BankCardService::changeDefault( $request->all(), $request->get('current_user') );
         return Result::success('修改默认银行卡成功');
     }
 
@@ -62,7 +63,7 @@ class BankCardsController extends Controller
     public function delCard( Request $request )
     {
         $this->validator->scene('default')->check( $request->all() );
-        BankCardService::delCard( $request );
+        BankCardService::delCard( $request->all(), $request->get('current_user') );
         return Result::success('删除银行卡成功');
     }
 

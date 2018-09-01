@@ -18,9 +18,9 @@
                     <el-form-item label="交易时间">
                         {{billData.created_at}}
                     </el-form-item>
-                    <el-form-item label="解冻时间">
+                    <!--<el-form-item label="解冻时间">
                         {{billData.balance_unfreeze_time}}
-                    </el-form-item>
+                    </el-form-item>-->
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="交易编号">

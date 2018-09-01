@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Result;
+use App\ResultCode;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\User\UserIdentityAuditRecordService;
@@ -35,7 +36,7 @@ class UserIdentityAuditRecordController extends Controller
         $data = $request->all();
         $data['user_id'] = $request->get('current_user')->id;
         $this->validator->scene('add')->check( $data );
-        UserIdentityAuditRecordService::addRecord( $request );
+        UserIdentityAuditRecordService::addRecord( $request->all(), $request->get('current_user') );
         return Result::success('提交成功');
     }
 
@@ -50,7 +51,20 @@ class UserIdentityAuditRecordController extends Controller
     public function modRecord( Request $request )
     {
         $this->validator->scene('mod')->check( $request->all() );
-        UserIdentityAuditRecordService::modRecord( $request );
+        UserIdentityAuditRecordService::modRecord( $request->all(), $request->get('current_user') );
         return Result::success('修改成功');
+    }
+
+    /**
+     * 获取用户验证记录
+     * Author：  Jerry
+     * Date:    180901
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
+    public function getRecord( Request $request )
+    {
+        $record = UserIdentityAuditRecordService::getRecordByUser( $request->get('current_user'));
+        return Result::success($record);
     }
 }
