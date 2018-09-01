@@ -242,7 +242,7 @@ class WalletController extends Controller
         $originId = request()->get('current_user')->merchant_id;
         $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
         $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
-        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
+        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize, true);
 
         return (new WalletTpsCreditExport($query))->download('我的TPS积分记录表.xlsx');
     }
