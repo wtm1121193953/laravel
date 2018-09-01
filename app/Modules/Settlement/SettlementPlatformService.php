@@ -133,14 +133,25 @@ class SettlementPlatformService extends BaseService
      */
     public static function settlement( $merchant, $date )
     {
+        $order = Order::where('merchant_id', $merchant->id)
+            ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
+            ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
+            ->where('status', Order::STATUS_FINISHED );
+        // 统计所有需结算金额
+        $sum = $order->sum('pay_price');
+        if( $sum<100 ){
+            Log::info('该商家每日结算错误，错误原因：订单金额小于100，结算失败');
+            return true;
+        }
         // 生成结算单，方便之后结算订单中保存结算信息
         $settlementNum = self::genSettlementNo(10);
-        if( !$settlementNum ) return false;
+        if( !$settlementNum ) {
+            return false;
+        }
 
         // 开启事务
         DB::beginTransaction();
         try{
-
             $settlementPlatform = new SettlementPlatform();
             $settlementPlatform->oper_id = $merchant->oper_id;
             $settlementPlatform->merchant_id = $merchant->id;
@@ -160,12 +171,8 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform->save();
 
             // 统计订单总金额与改变每笔订单状态
-            Order::where('merchant_id', $merchant->id)
-                ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
-                ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
-                ->where('status', Order::STATUS_FINISHED )
-                ->whereDate('finish_time', $date->format('Y-m-d'))
-                ->chunk(1000, function( Collection $orders ) use( $merchant, $settlementPlatform ){
+//                ->whereDate('finish_time', $date->format('Y-m-d'))
+                 $order->chunk(1000, function( Collection $orders ) use( $merchant, $settlementPlatform ){
                     $orders->each( function( $item ) use ( $merchant, $settlementPlatform ){
                         $item->settlement_charge_amount = $item->pay_price * $item->settlement_rate / 100;  // 手续费
                         $item->settlement_real_amount = $item->pay_price - $item->settlement_charge_amount;   // 货款
@@ -184,8 +191,7 @@ class SettlementPlatformService extends BaseService
             return true;
         }catch (\Exception $e) {
             DB::rollBack();
-//            var_dump($e);
-            Log::info('该商家每日结算错误，错误原因：'.$e->getMessage());
+            Log::error('该商家每日结算错误，错误原因：'.$e->getMessage(), compact('merchant', 'date'));
             return false;
         }
     }
