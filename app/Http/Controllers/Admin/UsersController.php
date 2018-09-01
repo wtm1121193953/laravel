@@ -46,12 +46,14 @@ class UsersController extends Controller
         $id = request('id');
         $startDate = request('startDate');
         $endDate = request('endDate');
+        $status = request('status');
         $users = UserService::userList([
             'mobile' => $mobile,
             'id' => $id,
             'name' => $name,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'status' => $status
         ]);
 
         return Result::success([
@@ -71,6 +73,7 @@ class UsersController extends Controller
         $id = request('id');
         $startDate = request('startDate');
         $endDate = request('endDate');
+        $status = request('status');
 
         $query = UserService::userList([
             'mobile' => $mobile,
@@ -78,6 +81,7 @@ class UsersController extends Controller
             'name' => $name,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'status' => $status
         ],true);
 
         return (new UserExport($query))->download('用户列表.xlsx');
@@ -94,12 +98,14 @@ class UsersController extends Controller
         $id = request('id');
         $startDate = request('startDate');
         $endDate = request('endDate');
+        $status = request('status');
         $users = UserService::identity([
             'mobile' => $mobile,
             'id' => $id,
             'name' => $name,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'status' => $status
         ]);
 
         return Result::success([
@@ -119,6 +125,7 @@ class UsersController extends Controller
         $id = request('id');
         $startDate = request('startDate');
         $endDate = request('endDate');
+        $status = request('status');
 
         $query = UserService::identity([
             'mobile' => $mobile,
@@ -126,6 +133,7 @@ class UsersController extends Controller
             'name' => $name,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'status' => $status
         ],true);
 
         return (new UserIdentityExport($query))->download('用户审核列表.xlsx');
