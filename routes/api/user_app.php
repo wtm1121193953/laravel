@@ -60,4 +60,14 @@ Route::prefix('app/user')
         Route::get('wallet/getWalletInfo','WalletController@getWallet');
         Route::get('wallet/getBills','WalletController@getBills');
         Route::get('wallet/getBillDetail','WalletController@getBillDetail');
+        Route::get('wallet/getConsumeQuotas','WalletController@getConsumeQuotas');
+        Route::get('wallet/getConsumeQuotaDetail','WalletController@getConsumeQuotaDetail');
+
+        //app银行卡接口
+        Route::post('bankcard/addCard','BankCardsController@addCard');
+        Route::post('bankcard/changDefault','BankCardsController@changDefault');
+        Route::post('bankcard/deleteCard','BankCardsController@delCard');
+        Route::post('bankcard/getCardsList','BankCardsController@getCardsList');
+
+
     });
