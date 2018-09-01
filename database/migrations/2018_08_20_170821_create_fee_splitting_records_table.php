@@ -21,7 +21,7 @@ class CreateFeeSplittingRecordsTable extends Migration
             $table->integer('order_id')->index()->default(0)->comment('分润的订单ID');
             $table->string('order_no')->index()->default('')->comment('分润的订单号');
             $table->decimal('order_profit_amount', 8, 2)->default(0)->comment('订单利润');
-            $table->decimal('ratio', 4, 2)->default(0)->comment('返利时的分润比例');
+            $table->decimal('ratio', 5, 2)->default(0)->comment('返利时的分润比例');
             $table->decimal('amount', 8, 2)->default(0)->comment('分润金额, 单位: 元');
             $table->tinyInteger('type')->index()->default(1)->comment('分润类型 1-自返, 2-返上级 3-运营中心交易分润');
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-冻结中 2-已解冻 3-已退款退回');

@@ -66,6 +66,6 @@ class SettlementForMerchantDaily implements ShouldQueue
             return ;
         }
         $res = SettlementPlatformService::settlement( $merchant, $this->date );
-        if( !$res )  Log::info('该商家每日结算错误，商家id：'.$this->merchantId);
+        if( !$res )  Log::error('该商家每日结算错误，商家id：'.$this->merchantId);
     }
 }
