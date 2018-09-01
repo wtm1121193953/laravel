@@ -6,7 +6,7 @@
                     {{initForm.balance}}
                 </el-form-item>
                 <el-form-item prop="amount" label="提现金额">
-                    <el-input-number v-model="form.amount" :min="0" :max="parseInt(initForm.balance)"/>
+                    <el-input-number v-model="form.amount" :precision="2" :min="0" :max="parseFloat(initForm.balance)"/>
                     <div>手续费{{chargeAmount}}</div>
                 </el-form-item>
                 <el-form-item prop="withdrawPassword" label="提现密码">
