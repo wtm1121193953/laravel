@@ -114,7 +114,7 @@ class V1_4_2 extends Command
         foreach ($banks as $item){
             $bank = new Bank();
             $bank->name = $item;
-            $banks->save();
+            $bank->save();
         }
         $this->info("\n初始化银行列表 End");
     }
