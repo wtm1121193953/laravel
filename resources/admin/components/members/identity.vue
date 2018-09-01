@@ -33,8 +33,9 @@
             </el-form-item>
             <el-form-item label="认证状态" prop="status">
                 <el-select v-model="query.status" size="small"  multiple placeholder="请选择" class="w-150">
-                    <el-option label="正常" value="1"/>
-                    <el-option label="禁用" value="2"/>
+                    <el-option label="待审核" value="1"/>
+                    <el-option label="审核通过" value="2"/>
+                    <el-option label="审核失败" value="3"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -54,19 +55,21 @@
             <el-table-column
                     prop="front_pic"
                     label="身份证正面"
-                    sortable
-                    width="180">
+                    width="150">
                 <template slot-scope="scope">
-                    <img  :src="scope.row.front_pic" alt="" style="width: 50px;height: 50px">
+                    <div v-viewer>
+                        <img v-if="scope.row.front_pic" :src="scope.row.front_pic" width="50" height="50" alt="营业执照">
+                    </div>
                 </template>
             </el-table-column>
             <el-table-column
                     prop="opposite_pic"
                     label="身份证反面"
-                    sortable
-                    width="180">
+                    width="150">
                 <template slot-scope="scope">
-                    <img  :src="scope.row.opposite_pic" alt="" style="width: 50px;height: 50px">
+                    <div v-viewer>
+                        <img v-if="scope.row.opposite_pic" :src="scope.row.opposite_pic" width="50" height="50" alt="营业执照">
+                    </div>
                 </template>
             </el-table-column>
             <el-table-column prop="user.status_val" label="用户状态"/>

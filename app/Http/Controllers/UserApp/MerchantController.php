@@ -27,10 +27,10 @@ class MerchantController extends Controller
             'lat' => request('lat'),
             'radius' => request('radius')
         ]);
-        $list = $data->items();
-        $total = $data->total();
+//        $list = $data['list'];
+//        $total = $data['total'];
 
-        return Result::success(['list' => $list, 'total' => $total]);
+        return $data;
     }
 
     /**
