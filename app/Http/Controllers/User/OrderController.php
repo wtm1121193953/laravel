@@ -17,6 +17,7 @@ use App\Modules\Goods\Goods;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
@@ -159,18 +160,7 @@ class OrderController extends Controller
             $currentOperId = 0;
             if ($currentOperId == 0) { // 在平台小程序下
                 $isOperSelf = 2;
-                $sdkConfig = null;
-                OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
-                // 调平台支付, 走融宝支付接口
-                /*
-                $isOperSelf = 1;
-                $sdkConfig = null; // todo 走融宝支付接口
-
-                $result = $this->reapalPrepay($order);
-                $sdkConfig = json_decode($result['wxjsapi_str'],true);
-                $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
-
-                */
+                $sdkConfig = $this->_payToPlatform($order);
             } else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
@@ -178,7 +168,7 @@ class OrderController extends Controller
         } else {
             $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
             if ($isOperSelf == 1) {
-                $sdkConfig = $this->_wechatUnifyPay($order);
+                $sdkConfig = $this->_wechatUnifyPayToOper($order);
             } else {
                 $sdkConfig = null;
             }
@@ -197,6 +187,7 @@ class OrderController extends Controller
      * 点菜订单创建
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \Exception
      */
     public function dishesBuy()
     {
@@ -254,15 +245,7 @@ class OrderController extends Controller
             if ($currentOperId == 0) { // 在平台小程序下
                 // 调平台支付, 走融宝支付接口
                 $isOperSelf = 2;
-                $sdkConfig = null;
-                OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
-
-                /*$isOperSelf = 1;
-                $sdkConfig = null; // todo 走融宝支付接口
-
-                $result = $this->reapalPrepay($order);
-                $sdkConfig = json_decode($result['wxjsapi_str'],true);
-                $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];*/
+                $sdkConfig = $this->_payToPlatform($order);
             } else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
@@ -270,7 +253,7 @@ class OrderController extends Controller
         } else {
             $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
             if ($isOperSelf == 1) {
-                $sdkConfig = $this->_wechatUnifyPay($order);
+                $sdkConfig = $this->_wechatUnifyPayToOper($order);
             } else {
                 $sdkConfig = null;
             }
@@ -305,6 +288,7 @@ class OrderController extends Controller
 
 
     /**
+     * 融宝支付参数获取
      * @param $order
      * @return mixed|string
      * @throws \Exception
@@ -334,11 +318,10 @@ class OrderController extends Controller
     }
 
 
-
-
     /**
      * 扫码付款
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \Exception
      */
     public function scanQrcodePay()
     {
@@ -380,19 +363,7 @@ class OrderController extends Controller
         if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
             if($currentOperId == 0){ // 在平台小程序下
                 $isOperSelf = 2;
-                $sdkConfig = null;
-                OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
-
-                // 调平台支付, 走融宝支付接口
-                /*
-                $isOperSelf = 1;
-                $sdkConfig = null; // todo 走融宝支付接口
-
-                $result = $this->reapalPrepay($order);
-                $sdkConfig = json_decode($result['wxjsapi_str'],true);
-                $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
-                */
-
+                $sdkConfig = $this->_payToPlatform($order);
             }else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
@@ -400,7 +371,7 @@ class OrderController extends Controller
         }else {
             $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
             if($isOperSelf == 1) {
-                $sdkConfig = $this->_wechatUnifyPay($order);
+                $sdkConfig = $this->_wechatUnifyPayToOper($order);
             }else {
                 $sdkConfig = null;
             }
@@ -418,6 +389,7 @@ class OrderController extends Controller
     /**
      * 立即付款
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \Exception
      */
     public function pay()
     {
@@ -441,7 +413,28 @@ class OrderController extends Controller
         // 检查订单中商品的状态，状态异常则关闭订单
         $this->_checkOrder($order);
 
-        $sdkConfig = $this->_wechatUnifyPay($order);
+        $currentOperId = request()->get('current_oper_id');
+        if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
+            if($currentOperId == 0){ // 在平台小程序下
+                $isOperSelf = 2;
+                $sdkConfig = $this->_payToPlatform($order);
+            }else {
+                $isOperSelf = 0;
+                $sdkConfig = null;
+            }
+        }else {
+            $merchant = MerchantService::getById($order->merchant_id);
+            $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
+            if($isOperSelf == 1) {
+                $sdkConfig = $this->_wechatUnifyPayToOper($order);
+            }else {
+                $sdkConfig = null;
+            }
+
+        }
+        if($order)
+
+        $sdkConfig = $this->_wechatUnifyPayToOper($order);
 
         return Result::success([
             'order_no' => $orderNo,
@@ -515,12 +508,12 @@ class OrderController extends Controller
     }
 
     /**
-     * 微信下单并获取支付参数
+     * 微信下单并获取支付参数, 支付到运营中心
      * @param $order
      * @return array
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    private function _wechatUnifyPay(Order $order)
+    private function _wechatUnifyPayToOper(Order $order)
     {
         $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
         $data = [
@@ -543,6 +536,32 @@ class OrderController extends Controller
         }
         $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
         return $sdkConfig;
+    }
+
+    /**
+     * 订单支付到平台, 返回微信支付参数
+     * @param $order
+     * @return null|array
+     * @throws \Exception
+     */
+    private function _payToPlatform($order)
+    {
+        $isOperSelf = 2;
+        $sdkConfig = null;
+        OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
+
+        // 调平台支付, 走融宝支付接口
+        /*
+        $isOperSelf = 1;
+        $sdkConfig = null; // todo 走融宝支付接口
+
+        $result = $this->reapalPrepay($order);
+        $sdkConfig = json_decode($result['wxjsapi_str'],true);
+        $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
+        */
+
+        return $sdkConfig;
+
     }
 
     /**
