@@ -555,13 +555,11 @@ class OrderController extends Controller
      */
     private function _payToPlatform($order)
     {
-        $isOperSelf = 2;
         $sdkConfig = null;
         OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
 
         // 调平台支付, 走融宝支付接口
         /*
-        $isOperSelf = 1;
         $sdkConfig = null; // todo 走融宝支付接口
 
         $result = $this->reapalPrepay($order);
