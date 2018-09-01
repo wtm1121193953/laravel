@@ -91,7 +91,16 @@ class OrderController extends Controller
         $detail->items = !empty($orderItem) ? [$orderItem] : [];
         $currentOperId = request()->get('current_oper_id');
         // 判断商户是否是当前小程序关联运营中心下的商户
-        $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        if(!$currentOperId){ // 如果是在平台小程序下
+            if($detail->pay_target_type == Order::PAY_TARGET_TYPE_OPER){
+                $detail->isOperSelf = 0;
+            }else {
+                $detail->isOperSelf = 1;
+            }
+        }else {
+            $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        }
+
         $detail->signboard_name = Merchant::where('id', $detail->merchant_id)->value('signboard_name');
         $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
             ->where('type', 1)
