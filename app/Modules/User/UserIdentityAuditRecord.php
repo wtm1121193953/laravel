@@ -25,6 +25,8 @@ use App\BaseModel;
  * @property string     reason
  * @property integer    update_user
  *
+ * @property User user
+ *
  */
 class UserIdentityAuditRecord extends BaseModel
 {
@@ -37,5 +39,10 @@ class UserIdentityAuditRecord extends BaseModel
     {
         $status_arr = [self::STATUS_TO_AUDIT=>'待审核',self::STATUS_SUCCESS=>'审核通过',self::STATUS_FAIL=>'审核失败'];
         return !empty($status_arr[$status])?$status_arr[$status]:'未知状态';
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

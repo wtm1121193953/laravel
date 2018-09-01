@@ -91,7 +91,16 @@ class OrderController extends Controller
         $detail->items = !empty($orderItem) ? [$orderItem] : [];
         $currentOperId = request()->get('current_oper_id');
         // 判断商户是否是当前小程序关联运营中心下的商户
-        $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        if(!$currentOperId){ // 如果是在平台小程序下
+            if($detail->pay_target_type == Order::PAY_TARGET_TYPE_OPER){
+                $detail->isOperSelf = 0;
+            }else {
+                $detail->isOperSelf = 1;
+            }
+        }else {
+            $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        }
+
         $detail->signboard_name = Merchant::where('id', $detail->merchant_id)->value('signboard_name');
         $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
             ->where('type', 1)
@@ -406,7 +415,8 @@ class OrderController extends Controller
             throw new BaseResponseException('订单状态异常');
         }
 
-        if($order->oper_id !== request()->get('current_oper_id')){
+        $currentOperId = request()->get('current_oper_id');
+        if($currentOperId > 0 && $order->oper_id !== request()->get('current_oper_id')){
             throw new BaseResponseException('该订单不是当前运营中心的订单');
         }
 
@@ -432,12 +442,10 @@ class OrderController extends Controller
             }
 
         }
-        if($order)
-
-        $sdkConfig = $this->_wechatUnifyPayToOper($order);
 
         return Result::success([
             'order_no' => $orderNo,
+            'isOperSelf' => $isOperSelf,
             'sdk_config' => $sdkConfig
         ]);
     }
@@ -546,13 +554,11 @@ class OrderController extends Controller
      */
     private function _payToPlatform($order)
     {
-        $isOperSelf = 2;
         $sdkConfig = null;
         OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
 
         // 调平台支付, 走融宝支付接口
         /*
-        $isOperSelf = 1;
         $sdkConfig = null; // todo 走融宝支付接口
 
         $result = $this->reapalPrepay($order);

@@ -35,7 +35,7 @@ class WalletWithdrawExport implements FromQuery, WithMapping, WithHeadings
         if ($this->originType == WalletWithdraw::ORIGIN_TYPE_MERCHANT){
             $array = [
                 '提现时间',
-                '订单编号',
+                '提现编号',
                 '提现金额',
                 '手续费',
                 '到账金额',
@@ -49,7 +49,7 @@ class WalletWithdrawExport implements FromQuery, WithMapping, WithHeadings
         } elseif ($this->originType == WalletWithdraw::ORIGIN_TYPE_USER) {
             $array = [
                 '提现时间',
-                '订单编号',
+                '提现编号',
                 '提现金额',
                 '手续费',
                 '到账金额',
@@ -63,7 +63,7 @@ class WalletWithdrawExport implements FromQuery, WithMapping, WithHeadings
         } elseif ($this->originType == WalletWithdraw::ORIGIN_TYPE_OPER) {
             $array = [
                 '提现时间',
-                '订单编号',
+                '提现编号',
                 '提现金额',
                 '手续费',
                 '到账金额',
@@ -77,7 +77,7 @@ class WalletWithdrawExport implements FromQuery, WithMapping, WithHeadings
             // 批次明细 导出
             $array = [
                 '提现时间',
-                '订单编号',
+                '提现编号',
                 '批次编号',
                 '批次类型',
                 '提现类型',

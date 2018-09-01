@@ -1,7 +1,7 @@
 <template>
     <el-col>
         <el-form v-model="form" inline size="small">
-            <el-form-item prop="withdrawNo" label="订单编号">
+            <el-form-item prop="withdrawNo" label="提现编号">
                 <el-input v-model="form.withdrawNo" clearable class="w-200"/>
             </el-form-item>
             <el-form-item prop="merchantName" label="商户名称">
@@ -55,7 +55,7 @@
         </el-form>
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="created_at" label="提现时间"></el-table-column>
-            <el-table-column prop="withdraw_no" label="订单编号"></el-table-column>
+            <el-table-column prop="withdraw_no" label="提现编号"></el-table-column>
             <el-table-column prop="amount" label="提现金额"></el-table-column>
             <el-table-column prop="charge_amount" label="手续费"></el-table-column>
             <el-table-column prop="remit_amount" label="到账金额"></el-table-column>
