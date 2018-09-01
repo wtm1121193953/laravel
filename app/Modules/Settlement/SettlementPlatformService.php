@@ -126,9 +126,10 @@ class SettlementPlatformService extends BaseService
      * 处理每日结算细节入库
      * @Author   Jerry
      * @DateTime 2018-08-24
-     * @param    [obj]  $merchant
-     * @param    [obj]  $date
-     * @return   [bool]
+     * @param $merchant
+     * @param $date
+     * @return bool [bool]
+     * @throws \Exception
      */
     public static function settlement( $merchant, $date )
     {
@@ -136,29 +137,28 @@ class SettlementPlatformService extends BaseService
         $settlementNum = self::genSettlementNo(10);
         if( !$settlementNum ) return false;
 
-        $settlementPlatform = new SettlementPlatform();
-        $settlementPlatform->oper_id = $merchant->oper_id;
-        $settlementPlatform->merchant_id = $merchant->id;
-        $settlementPlatform->date = Carbon::now();
-        $settlementPlatform->settlement_no = $settlementNum;
-        $settlementPlatform->settlement_rate = $merchant->settlement_rate;
-        $settlementPlatform->bank_open_name = $merchant->bank_open_name;
-        $settlementPlatform->bank_card_no = $merchant->bank_card_no;
-        $settlementPlatform->bank_card_type = $merchant->bank_card_type;
-        $settlementPlatform->sub_bank_name = $merchant->sub_bank_name;
-        $settlementPlatform->bank_open_address = $merchant->bank_open_address;
-        $settlementPlatform->invoice_title = $merchant->invoice_title;
-        $settlementPlatform->invoice_no = $merchant->invoice_no;
-        $settlementPlatform->amount = 0;
-        $settlementPlatform->charge_amount = 0;
-        $settlementPlatform->real_amount = 0;
-        $settlementPlatform->save();
-
-
         // 开启事务
         DB::beginTransaction();
         try{
+
+            $settlementPlatform = new SettlementPlatform();
+            $settlementPlatform->oper_id = $merchant->oper_id;
+            $settlementPlatform->merchant_id = $merchant->id;
+            $settlementPlatform->date = Carbon::now();
+            $settlementPlatform->settlement_no = $settlementNum;
+            $settlementPlatform->settlement_rate = $merchant->settlement_rate;
+            $settlementPlatform->bank_open_name = $merchant->bank_open_name;
+            $settlementPlatform->bank_card_no = $merchant->bank_card_no;
+            $settlementPlatform->bank_card_type = $merchant->bank_card_type;
+            $settlementPlatform->sub_bank_name = $merchant->sub_bank_name;
+            $settlementPlatform->bank_open_address = $merchant->bank_open_address;
+            $settlementPlatform->invoice_title = $merchant->invoice_title;
+            $settlementPlatform->invoice_no = $merchant->invoice_no;
+            $settlementPlatform->amount = 0;
+            $settlementPlatform->charge_amount = 0;
+            $settlementPlatform->real_amount = 0;
             $settlementPlatform->save();
+
             // 统计订单总金额与改变每笔订单状态
             Order::where('merchant_id', $merchant->id)
                 ->where('settlement_status', Order::SETTLEMENT_STATUS_FINISHED )
@@ -177,10 +177,9 @@ class SettlementPlatformService extends BaseService
                         $settlementPlatform->amount += $item->pay_price;
                         $settlementPlatform->charge_amount += $item->settlement_charge_amount;
                         $settlementPlatform->real_amount += $item->settlement_real_amount;
+                        $settlementPlatform->save();
                     });
                 });
-
-            $settlementPlatform->save();
             DB::commit();
             return true;
         }catch (\Exception $e) {
@@ -195,7 +194,7 @@ class SettlementPlatformService extends BaseService
      * 根据商户ID及结算单获取结算单信息
      * @param $settlementId
      * @param $merchantId
-     * @return Settlement
+     * @return SettlementPlatform
      */
     public static function getByIdAndMerchantId($settlementId, $merchantId)
     {
