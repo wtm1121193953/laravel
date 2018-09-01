@@ -77,20 +77,21 @@ Route::prefix('user')
 
         Route::post('wallet/confirmPassword', 'WalletController@confirmPassword')->middleware(UserLoginFilter::class);
         Route::post('wallet/changePassword', 'WalletController@changePassword')->middleware(UserLoginFilter::class);
-        Route::post('wallet/sendVerifyCode', 'WalletController@sendVerifyCode')->middleware(UserLoginFilter::class);
+        Route::get('wallet/sendVerifyCode', 'WalletController@sendVerifyCode')->middleware(UserLoginFilter::class);
         Route::post('wallet/checkVerifyCode', 'WalletController@checkVerifyCode')->middleware(UserLoginFilter::class);
 
         Route::post('wallet/withdraw/withdraw', 'WalletWithdrawController@withdraw')->middleware(UserLoginFilter::class);
+        Route::get('wallet/withdraw/canWithdraw', 'WalletWithdrawController@canWithdraw')->middleware(UserLoginFilter::class);
 
         Route::post('bank/cards/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);
-        Route::post('bank/cards/changDefault', 'BankCardsController@changDefault')->middleware(UserLoginFilter::class); 
-        Route::post('bank/cards/delCard', 'BankCardsController@delCard')->middleware(UserLoginFilter::class); 
+        Route::post('bank/cards/changDefault', 'BankCardsController@changDefault')->middleware(UserLoginFilter::class);
+        Route::post('bank/cards/delCard', 'BankCardsController@delCard')->middleware(UserLoginFilter::class);
         Route::get('bank/cards/getCardsList', 'BankCardsController@getCardsList')->middleware(UserLoginFilter::class);
 
-        Route::post('identity/record/addRecord', 'UserIdentityAuditRecordController@addRecord')->middleware(UserLoginFilter::class); 
-        Route::post('identity/record/modRecord', 'UserIdentityAuditRecordController@modRecord')->middleware(UserLoginFilter::class); 
+        Route::post('identity/record/addRecord', 'UserIdentityAuditRecordController@addRecord')->middleware(UserLoginFilter::class);
+        Route::post('identity/record/modRecord', 'UserIdentityAuditRecordController@modRecord')->middleware(UserLoginFilter::class);
         Route::get('identity/record/getRecord','UserIdentityAuditRecordController@getRecord')->middleware(UserLoginFilter::class);
-        Route::get('bank/getList', 'BankController@getList')->middleware(UserLoginFilter::class); 
+        Route::get('bank/getList', 'BankController@getList')->middleware(UserLoginFilter::class);
 
 
     });
