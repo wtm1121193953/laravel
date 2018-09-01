@@ -92,7 +92,8 @@ class WalletWithdrawService extends BaseService
         }
 
         if ($obj instanceof User) {
-            throw new BaseResponseException('暂不支持提现');
+//            throw new BaseResponseException('暂不支持提现');
+            $ratio = UserCreditSettingService::getUserWithdraw();
         } elseif ($obj instanceof Merchant) {
             $ratio = UserCreditSettingService::getMerchantWithdrawChargeRatioByBankCardType($obj->bank_card_type);
         } elseif ($obj instanceof Oper) {
@@ -242,7 +243,7 @@ class WalletWithdrawService extends BaseService
             $originIds = UserService::getUserColumnArrayByMobile($userMobile, 'id');
         }
         if($originType == WalletWithdraw::ORIGIN_TYPE_MERCHANT && $merchantName){
-            $originIds = MerchantService::getMerchantColumnArrayByMerchantName($merchantName, 'id');
+            $originIds = MerchantService::$merchantName(compact('merchantName'), 'id');
         }
         if ($originType == WalletWithdraw::ORIGIN_TYPE_OPER && $operName) {
             $originIds = OperService::getOperColumnArrayByOperName($operName, 'id');

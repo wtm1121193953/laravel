@@ -15,7 +15,7 @@
         </div>
 
         <el-form v-model="form" inline size="small">
-            <el-form-item prop="withdrawNo" label="订单编号">
+            <el-form-item prop="withdrawNo" label="提现编号">
                 <el-input v-model="form.withdrawNo" clearable class="w-200"/>
             </el-form-item>
             <el-form-item prop="originType" label="提现类型">
@@ -69,7 +69,7 @@
                     :selectable="selectable">
             </el-table-column>
             <el-table-column prop="created_at" label="提现时间"></el-table-column>
-            <el-table-column prop="withdraw_no" label="订单编号"></el-table-column>
+            <el-table-column prop="withdraw_no" label="提现编号"></el-table-column>
             <el-table-column prop="batch_no" label="批次编号"></el-table-column>
             <el-table-column prop="bank_card_type" label="批次类型">
                 <template slot-scope="scope">

@@ -273,6 +273,7 @@ class OperService extends BaseService
     public static function getOperColumnArrayByOperName($operName, $field)
     {
         $arr = Oper::where('name', 'like', "%$operName%")
+            ->select($field)
             ->get()
             ->pluck($field);
         return $arr;
