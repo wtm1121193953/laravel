@@ -161,7 +161,7 @@ class SettlementPlatformService extends BaseService
 
             // 统计订单总金额与改变每笔订单状态
             Order::where('merchant_id', $merchant->id)
-                ->where('settlement_status', Order::SETTLEMENT_STATUS_FINISHED )
+                ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
                 ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
                 ->where('status', Order::STATUS_FINISHED )
                 ->whereDate('finish_time', $date->format('Y-m-d'))
