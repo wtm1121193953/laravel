@@ -52,7 +52,7 @@ class UserIdentityAuditRecordService extends BaseService
     {
         // 判断用户数据是否存在
         $record = UserIdentityAuditRecord::where('user_id', $user->id )
-                                        ->where('id', $data['id'] )
+                                        ->where('status',UserIdentityAuditRecord::STATUS_FAIL)
                                         ->first();
         if( !$record )
         {
