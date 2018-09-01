@@ -63,13 +63,13 @@
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="merchant.name" label="结算商户"  width="160px" />
             <el-table-column prop="oper.name" size="mini"	 label="运营中心"/>
-            <el-table-column prop="created_at" label="结算时间"/>
+            <!--<el-table-column prop="created_at" label="结算时间"/>-->
             <el-table-column prop="date" label="结算订单日期"/>
             <el-table-column prop="amount" size="mini" label="订单金额"/>
-            <el-table-column prop="settlement_rate" label="利率"/>
+            <!--<el-table-column prop="settlement_rate" label="利率"/>-->
             <el-table-column prop="real_amount" label="结算金额" />
             <el-table-column prop="status_val" label="状态" />
-            <el-table-column prop="" label="备注" />
+            <!--<el-table-column prop="" label="备注" />-->
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="showOrders(scope)">查看</el-button>

@@ -22,47 +22,48 @@ class UserIdentityAuditRecordService extends BaseService
      * 新增
      * Author:  Jerry
      * Date:    180831
-     * @param Request $request
+     * @param array $data
+     * @param \App\Modules\User\User $user
      */
-    public static function addRecord( Request $request )
+    public static function addRecord( $data, $user )
     {
         $userIdentityAuditRecord = new UserIdentityAuditRecord;
-        $currentUser = $request->get('current_user');
-        $userIdentityAuditRecord->name      = $request->input('name');
-        $userIdentityAuditRecord->number    = $request->input('number');
-        $userIdentityAuditRecord->front_pic = $request->input('front_pic');
-        $userIdentityAuditRecord->opposite_pic= $request->input('opposite_pic');
+        $userIdentityAuditRecord->name      = $data['name'];
+        $userIdentityAuditRecord->number    = $data['number'];
+        $userIdentityAuditRecord->front_pic = $data['front_pic'];
+        $userIdentityAuditRecord->opposite_pic= $data['opposite_pic'];
         $userIdentityAuditRecord->status    = UserIdentityAuditRecord::STATUS_TO_AUDIT;
-        $userIdentityAuditRecord->user_id   = $currentUser->id;
+        $userIdentityAuditRecord->user_id   = $user->id;
         if( !$userIdentityAuditRecord->save() )
         {
             throw new BaseResponseException(ResultCode::DB_INSERT_FAIL, '新增失败');
         }
     }
 
+
     /**
      * 修改
      * Author:  Jerry
      * Date:    180831
-     * @param Request $request
+     * @param array $data
+     * @param \App\Modules\User\User $user
      */
-    public static function modRecord( Request $request )
+    public static function modRecord( $data, $user )
     {
-        $currentUser = $request->get('current_user');
         // 判断用户数据是否存在
-        $record = UserIdentityAuditRecord::where('user_id', $currentUser->id )
-                                        ->where('id', $request->input('id') )
+        $record = UserIdentityAuditRecord::where('user_id', $user->id )
+                                        ->where('status',UserIdentityAuditRecord::STATUS_FAIL)
                                         ->first();
         if( !$record )
         {
             throw new DataNotFoundException( '找不到用户验证信息' );
         }
         // 判断是否有新修改内容
-        if( count( $request->all() )<=1 )
+        if( count( $data )<=1 )
         {
             throw new BaseResponseException(ResultCode::DB_UPDATE_FAIL, '不可无修改内容');
         }
-        foreach ( $request->all() as $k=>$v ){
+        foreach ( $data as $k=>$v ){
             $record->$k = $v;
         }
         $record->status    = UserIdentityAuditRecord::STATUS_TO_AUDIT;
@@ -70,6 +71,16 @@ class UserIdentityAuditRecordService extends BaseService
         {
             throw new BaseResponseException(ResultCode::DB_UPDATE_FAIL, '修改失败');
         }
+    }
+
+    public static function getRecordByUser( $userId )
+    {
+        $record = UserIdentityAuditRecord::where('user_id', $userId)->first();
+        if( !$record )
+        {
+            throw new DataNotFoundException( '尚未验证身份' );
+        }
+        return $record;
     }
 
 }

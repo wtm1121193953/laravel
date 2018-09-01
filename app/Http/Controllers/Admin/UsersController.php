@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
 use App\Exports\UserExport;
+use App\Exports\UserIdentityExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
@@ -45,12 +46,14 @@ class UsersController extends Controller
         $id = request('id');
         $startDate = request('startDate');
         $endDate = request('endDate');
+        $status = request('status');
         $users = UserService::userList([
             'mobile' => $mobile,
             'id' => $id,
             'name' => $name,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'status' => $status
         ]);
 
         return Result::success([
@@ -70,6 +73,7 @@ class UsersController extends Controller
         $id = request('id');
         $startDate = request('startDate');
         $endDate = request('endDate');
+        $status = request('status');
 
         $query = UserService::userList([
             'mobile' => $mobile,
@@ -77,9 +81,82 @@ class UsersController extends Controller
             'name' => $name,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'status' => $status
         ],true);
 
         return (new UserExport($query))->download('用户列表.xlsx');
+    }
+
+
+    /**
+     * 获取会员审核列表
+     */
+    public function identity()
+    {
+        $mobile = request('mobile');
+        $name = request('name');
+        $id = request('id');
+        $startDate = request('startDate');
+        $endDate = request('endDate');
+        $status = request('status');
+        $users = UserService::identity([
+            'mobile' => $mobile,
+            'id' => $id,
+            'name' => $name,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'status' => $status
+        ]);
+
+        return Result::success([
+            'list' => $users->items(),
+            'total' => $users->total(),
+        ]);
+    }
+
+    /**
+     * 下载Excel
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function identityDownload()
+    {
+        $mobile = request('mobile');
+        $name = request('name');
+        $id = request('id');
+        $startDate = request('startDate');
+        $endDate = request('endDate');
+        $status = request('status');
+
+        $query = UserService::identity([
+            'mobile' => $mobile,
+            'id' => $id,
+            'name' => $name,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'status' => $status
+        ],true);
+
+        return (new UserIdentityExport($query))->download('用户审核列表.xlsx');
+    }
+
+    public function identityDetail()
+    {
+        $id = request('id');
+
+        $info = UserService::identityDetail($id);
+
+        return Result::success($info);
+    }
+
+    public function identityDo()
+    {
+        $id = request('id');
+        $status = request('status');
+        $reason = request('reason');
+
+        $rs = UserService::identityDo($id, $status, $reason);
+        return Result::success($rs);
+
     }
 
 

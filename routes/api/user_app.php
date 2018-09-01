@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('app/user')
     ->namespace('UserApp')
-    ->middleware('user_app')->group(function (){
+    ->middleware('user_app')->group(function () {
 
         Route::get('version/last', 'VersionController@last');
         Route::get('versions', 'VersionController@getList');
@@ -55,4 +55,22 @@ Route::prefix('app/user')
 
         Route::get('merchant/dishesCategory', 'MerchantDishesController@getDishesCategory');
         Route::get('merchant/dishesGoods', 'MerchantDishesController@getDishesGoods');
+
+        //app钱包接口
+        Route::get('wallet/getWalletInfo', 'WalletController@getWallet');
+        Route::get('wallet/getBills', 'WalletController@getBills');
+        Route::get('wallet/getBillDetail', 'WalletController@getBillDetail');
+        Route::get('wallet/getConsumeQuotas', 'WalletController@getConsumeQuotas');
+        Route::get('wallet/getConsumeQuotaDetail', 'WalletController@getConsumeQuotaDetail');
+
+        //app银行卡接口
+        Route::post('bankcard/addCard', 'BankCardsController@addCard');
+        Route::post('bankcard/changDefault', 'BankCardsController@changDefault');
+        Route::post('bankcard/deleteCard', 'BankCardsController@delCard');
+        Route::post('bankcard/getCardsList', 'BankCardsController@getCardsList');
+
+        //Tps绑定接口
+        Route::get('tps/getBindInfo','TpsBindController@getBindInfo');
+        Route::post('tps/bindAccount','TpsBindController@bindAccount');
+
     });

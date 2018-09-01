@@ -16,6 +16,8 @@ use App\Modules\User\User;
 use App\Modules\User\UserService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use App\Exceptions\BaseResponseException;       // Author:Jerry Date:180901
+use App\ResultCode;                             // Author:Jerry Date:180901
 
 class WalletService extends BaseService
 {
@@ -457,5 +459,23 @@ class WalletService extends BaseService
         $balanceUnfreezeRecord = WalletBalanceUnfreezeRecord::where('fee_splitting_record_id', $feeSplittingRecordId)
             ->first();
         return $balanceUnfreezeRecord;
+    }
+
+    /**
+     * 校验旧密码
+     * Author：  Jerry
+     * Date：    180901
+     * @param   string  $password
+     * @param   integer $userId
+     */
+    public static function confirmPassword( $password, $userId )
+    {
+        $wallet = WalletService::getWalletInfoByOriginInfo($userId, Wallet::ORIGIN_TYPE_USER);
+        // 通过新提交的明文密码生成密文密码
+        $putPassword = Wallet::genPassword(  $password, $wallet['salt']);
+        if( $putPassword != $wallet['withdraw_password'] )
+        {
+            throw new BaseResponseException(ResultCode::PARAMS_INVALID, '原交易密码确认错误');
+        }
     }
 }

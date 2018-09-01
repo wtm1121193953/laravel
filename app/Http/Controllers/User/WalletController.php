@@ -164,15 +164,11 @@ class WalletController extends Controller
      */
     public function confirmPassword( Request $request )
     {
-        $wallet = WalletService::getWalletInfoByOriginInfo($request->get('current_user')->id, Wallet::ORIGIN_TYPE_USER);
-        // 通过新提交的明文密码生成密文密码
-        $putPassword = self::genPassword(  $request->input('password'), $wallet['salt']);
-        if( $putPassword != $wallet['withdraw_password'] )
-        {
-            // 记录确认密码时间
-
-            return Result::error(ResultCode::PARAMS_INVALID, '原交易密码确认错误');
-        }
+        $this->validate($request, [
+            'password'  =>  'required|numeric'
+        ]);
+        WalletService::confirmPassword( $request->input('password'), $request->get('current_user')->id);
+        // 记录确认密码时间
         session(['confirm_password'=>time()]);
         return Result::success('确认成功');
     }
@@ -238,7 +234,7 @@ class WalletController extends Controller
         // 记录发送时间
         session(['verify_code'=> $code]);
         session(['verify_code_time'=>time()]);
-        return Result::success(['verify_code'=>$code]);
+        return Result::success(/*['verify_code'=>$code]*/);
     }
 
     /**

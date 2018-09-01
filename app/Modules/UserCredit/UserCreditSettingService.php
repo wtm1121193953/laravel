@@ -203,4 +203,15 @@ class UserCreditSettingService extends SettingService
         return 0.2;
     }
 
+    /**
+     * 获取用户提现手续费百分比
+     * Author：  Jerry
+     * Date：    180901
+     * @return float
+     */
+    public static function getUserWithdraw()
+    {
+        return 0.7;
+    }
+
 }

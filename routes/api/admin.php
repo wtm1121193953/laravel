@@ -37,6 +37,10 @@ Route::prefix('admin')
         Route::get('members','UsersController@getList');
         Route::get('member/userlist','UsersController@userList');
         Route::get('member/download','UsersController@download');
+        Route::get('member/identity','UsersController@identity');
+        Route::get('member/identity_download','UsersController@identityDownload');
+        Route::get('member/identity_detail','UsersController@identityDetail');
+        Route::post('member/identity_do','UsersController@identityDo');
         Route::post('users/unBind','UsersController@unBind');
         Route::get('users/getChangeBindList', 'UsersController@getChangeBindList');
         Route::get('users/getInviteUsersList', 'UsersController@getInviteUsersList');
@@ -80,7 +84,6 @@ Route::prefix('admin')
         Route::group([], base_path('routes/api/admin/setting.php'));
         Route::group([], base_path('routes/api/admin/wallet.php'));
 
-        Route::get('settlements', 'SettlementController@getList');
         Route::get('settlement/platforms', 'SettlementPlatformController@getList');
         Route::get('settlement/download', 'SettlementPlatformController@downloadExcel');
 
