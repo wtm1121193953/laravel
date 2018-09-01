@@ -17,7 +17,6 @@ import setting from './setting'
 import withdraw from './withdraw'
 import wallet from './wallet'
 
-import SettlementList from '../components/settlement/list.vue'
 import SettlementPlatfroms from '../components/settlement/platform.vue'
 
 /**
@@ -53,7 +52,6 @@ const routes = [
         path: '/',
         component: Home,
         children: [
-            {path: '/settlements', component: SettlementList, name: 'SettlementList'},
             {path: '/settlement/platforms', component: SettlementPlatfroms, name: 'SettlementPlatfroms'},
         ]
     },
