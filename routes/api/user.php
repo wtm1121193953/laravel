@@ -85,7 +85,7 @@ Route::prefix('user')
         Route::post('bank/cards/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180830
         Route::post('bank/cards/changDefault', 'BankCardsController@changDefault')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
         Route::post('bank/cards/delCard', 'BankCardsController@delCard')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
-        Route::post('bank/cards/getCardsList', 'BankCardsController@getCardsList')->middleware(UserLoginFilter::class); // Author:Jerry Date:180831
+        Route::get('bank/cards/getCardsList', 'BankCardsController@getCardsList')->middleware(UserLoginFilter::class); // Author:Jerry Date:180831
 
         Route::post('identity/record/addRecord', 'UserIdentityAuditRecordController@addRecord')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
         Route::post('identity/record/modRecord', 'UserIdentityAuditRecordController@modRecord')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
