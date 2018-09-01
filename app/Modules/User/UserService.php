@@ -136,19 +136,40 @@ class UserService extends BaseService
      * @param $params
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function userList($params){
+    public static function userList($params,bool $return_query = false){
 
-        $mobile = array_get($params, 'mobile');
 
-        $users  = User::select('id','name','mobile','email','created_at','status')
-            ->when($mobile, function (Builder $query) use ($mobile){
-                $query->where('mobile','like','%'.$mobile.'%');
+        $query  = User::select('id','name','mobile','email','created_at','status')
+            ->when($params['mobile'], function (Builder $query) use ($params){
+                $query->where('mobile','like','%'.$params['mobile'].'%');
+            })
+            ->when($params['name'], function (Builder $query) use ($params){
+                $query->where('name','like','%'.$params['name'].'%');
+            })
+            ->when($params['id'], function (Builder $query) use ($params){
+                $query->where('id','=',$params['id']);
+            })
+            ->when($params['startDate'] && $params['endDate'], function (Builder $query) use ($params){
+                $query->where('created_at', '>=', $params['startDate']);
+                $query->where('created_at', '<=', $params['endDate']);
             })
             ->with('identityAuditRecord:user_id,status')
-            ->orderByDesc('created_at')
-            ->paginate();
+            ->orderByDesc('created_at');
+
+        if ($return_query) {
+            return $query;
+        }
+
+        $users = $query->paginate();
 
         $users->each(function ($item){
+            $item->stauts_val = User::getStatusText($item['status']);
+            if (!empty($item->identityAuditRecord->status)) {
+                $item->identity_status_text = UserIdentityAuditRecord::getStatusText($item->identityAuditRecord->status);
+            } else {
+                $item->identity_status_text = '未提交';
+            }
+
             $parentName = InviteUserService::getParentName($item->id);
             if($parentName){
                 $item->isBind = 1;

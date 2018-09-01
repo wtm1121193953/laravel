@@ -45,6 +45,7 @@ return [
             'between' => '请输入 :min 到 :max 位的密码',
             'min' => '密码不能少于 :min 位',
             'max' => '密码不能多于 :max 位',
+            'numeric' => '密码必须为数字'
         ],
 
         'newPassword' => [

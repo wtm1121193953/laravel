@@ -110,6 +110,7 @@
                         });
                     }
                 })
+                router.go(-1);
             },
             cancel() {
                 router.go(-1);

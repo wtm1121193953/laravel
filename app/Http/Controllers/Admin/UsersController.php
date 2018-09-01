@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
+use App\Exports\UserExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
@@ -39,15 +40,46 @@ class UsersController extends Controller
      */
     public function userList()
     {
-        $keyword = request('keyword');
+        $mobile = request('mobile');
+        $name = request('name');
+        $id = request('id');
+        $startDate = request('startDate');
+        $endDate = request('endDate');
         $users = UserService::userList([
-            'mobile' => $keyword
+            'mobile' => $mobile,
+            'id' => $id,
+            'name' => $name,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ]);
 
         return Result::success([
             'list' => $users->items(),
             'total' => $users->total(),
         ]);
+    }
+
+    /**
+     * 下载Excel
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function download()
+    {
+        $mobile = request('mobile');
+        $name = request('name');
+        $id = request('id');
+        $startDate = request('startDate');
+        $endDate = request('endDate');
+
+        $query = UserService::userList([
+            'mobile' => $mobile,
+            'id' => $id,
+            'name' => $name,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ],true);
+
+        return (new UserExport($query))->download('用户列表.xlsx');
     }
 
 

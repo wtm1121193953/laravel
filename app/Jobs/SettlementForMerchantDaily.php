@@ -49,6 +49,7 @@ class SettlementForMerchantDaily implements ShouldQueue
      * @Author   Jerry
      * @DateTime 2018-08-23
      * @return   void
+     * @throws \Exception
      */
     public function handle()
     {

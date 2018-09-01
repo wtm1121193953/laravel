@@ -75,12 +75,20 @@ Route::prefix('user')
         Route::get('wallet/consumeQuota/detail', 'WalletController@getConsumeQuotaDetail')->middleware(UserLoginFilter::class);
         Route::get('wallet/userFeeSplitting/ratio', 'WalletController@getUserFeeSplittingRatioToSelf')->middleware(UserLoginFilter::class);
 
-        Route::post('bank/cards/addCard', 'BankCardsController@addCard');   // Author:Jerry Date:180830
-        Route::post('bank/cards/changDefault', 'BankCardsController@changDefault');   // Author:Jerry Date:180831
-        Route::post('bank/cards/delCard', 'BankCardsController@delCard');   // Author:Jerry Date:180831
+        Route::post('wallet/confirmPassword', 'WalletController@confirmPassword')->middleware(UserLoginFilter::class);  // Author:Jerry Date:180831
+        Route::post('wallet/changePassword', 'WalletController@changePassword')->middleware(UserLoginFilter::class);  // Author:Jerry Date:180831
+        Route::post('wallet/sendVerifyCode', 'WalletController@sendVerifyCode')->middleware(UserLoginFilter::class);  // Author:Jerry Date:180831
+        Route::post('wallet/checkVerifyCode', 'WalletController@checkVerifyCode')->middleware(UserLoginFilter::class);  // Author:Jerry Date:180831
 
-        Route::post('identity/record/addRecord', 'UserIdentityAuditRecordController@addRecord');   // Author:Jerry Date:180831
-        Route::post('bank/getList', 'BankController@getList');   // Author:Jerry Date:180831
+
+        Route::post('bank/cards/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180830
+        Route::post('bank/cards/changDefault', 'BankCardsController@changDefault')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
+        Route::post('bank/cards/delCard', 'BankCardsController@delCard')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
+        Route::post('bank/cards/getCardsList', 'BankCardsController@getCardsList')->middleware(UserLoginFilter::class); // Author:Jerry Date:180831
+
+        Route::post('identity/record/addRecord', 'UserIdentityAuditRecordController@addRecord')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
+        Route::post('identity/record/modRecord', 'UserIdentityAuditRecordController@modRecord')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
+        Route::post('bank/getList', 'BankController@getList')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
 
 
     });
