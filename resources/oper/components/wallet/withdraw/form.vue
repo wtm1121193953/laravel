@@ -10,7 +10,7 @@
                     <div>手续费{{chargeAmount}}</div>
                 </el-form-item>
                 <el-form-item prop="withdrawPassword" label="提现密码">
-                    <el-input v-model="form.withdrawPassword" type="password" :maxlength="6" placeholder="6位存数字密码"/>
+                    <el-input v-model="form.withdrawPassword" type="password" :maxlength="6" placeholder="6位纯数字密码"/>
                 </el-form-item>
                 <el-form-item prop="invoiceExpressCompany" label="发票快递公司">
                     <el-input v-model="form.invoiceExpressCompany"/>
