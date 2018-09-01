@@ -80,6 +80,7 @@ Route::prefix('user')
         Route::post('wallet/sendVerifyCode', 'WalletController@sendVerifyCode')->middleware(UserLoginFilter::class);  // Author:Jerry Date:180831
         Route::post('wallet/checkVerifyCode', 'WalletController@checkVerifyCode')->middleware(UserLoginFilter::class);  // Author:Jerry Date:180831
 
+        Route::post('wallet/withdraw/withdraw', 'WalletWithdrawController@withdraw')->middleware(UserLoginFilter::class);  // Author:Jerry Date:180831
 
         Route::post('bank/cards/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180830
         Route::post('bank/cards/changDefault', 'BankCardsController@changDefault')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
@@ -88,6 +89,7 @@ Route::prefix('user')
 
         Route::post('identity/record/addRecord', 'UserIdentityAuditRecordController@addRecord')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
         Route::post('identity/record/modRecord', 'UserIdentityAuditRecordController@modRecord')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
+        Route::post('identity/record/getRecord','UserIdentityAuditRecordController@getRecord')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180901
         Route::post('bank/getList', 'BankController@getList')->middleware(UserLoginFilter::class);   // Author:Jerry Date:180831
 
 
