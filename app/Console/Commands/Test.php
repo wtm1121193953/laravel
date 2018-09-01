@@ -66,6 +66,8 @@ class Test extends Command
     public function handle()
     {
 
+        SettlementDaily::dispatch();
+        dd('hi');
 //        SettlementAgentPay::dispatch([1]);
 //        dd(1234);
         $orders = Order::all();

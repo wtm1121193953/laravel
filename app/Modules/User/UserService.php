@@ -153,6 +153,9 @@ class UserService extends BaseService
                 $query->where('created_at', '>=', $params['startDate']);
                 $query->where('created_at', '<=', $params['endDate']);
             })
+            ->when($params['status'], function (Builder $query) use ($params){
+                $query->whereIn('status', $params['status']);
+            })
             ->with('identityAuditRecord:user_id,status')
             ->orderByDesc('created_at');
 
@@ -207,6 +210,9 @@ class UserService extends BaseService
                 $query->where('created_at', '>=', $params['startDate']);
                 $query->where('created_at', '<=', $params['endDate']);
             })
+            ->when($params['status'], function (Builder $query) use ($params){
+                $query->whereIn('status', $params['status']);
+            })
             ->with('user')
             ->orderByDesc('created_at');
 
@@ -251,7 +257,8 @@ class UserService extends BaseService
         if ($reason) {
             $info->reason = $reason;
         }
-
+        $user = session(config('admin.user_session'));
+        $info->update_user = $user->id;
         $rs = $info->save();
         return $rs;
     }
