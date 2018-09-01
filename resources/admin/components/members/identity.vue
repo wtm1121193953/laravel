@@ -54,19 +54,21 @@
             <el-table-column
                     prop="front_pic"
                     label="身份证正面"
-                    sortable
-                    width="180">
+                    width="150">
                 <template slot-scope="scope">
-                    <img  :src="scope.row.front_pic" alt="" style="width: 50px;height: 50px">
+                    <div v-viewer>
+                        <img v-if="scope.row.front_pic" :src="scope.row.front_pic" width="50" height="50" alt="营业执照">
+                    </div>
                 </template>
             </el-table-column>
             <el-table-column
                     prop="opposite_pic"
                     label="身份证反面"
-                    sortable
-                    width="180">
+                    width="150">
                 <template slot-scope="scope">
-                    <img  :src="scope.row.opposite_pic" alt="" style="width: 50px;height: 50px">
+                    <div v-viewer>
+                        <img v-if="scope.row.opposite_pic" :src="scope.row.opposite_pic" width="50" height="50" alt="营业执照">
+                    </div>
                 </template>
             </el-table-column>
             <el-table-column prop="user.status_val" label="用户状态"/>
