@@ -225,7 +225,7 @@ class WalletService extends BaseService
             $endDate = date('Y-m-d 23:59:59', strtotime($endDate));
             $query->where('created_at', '<', $endDate);
         }
-        $query->orderBy('created_at', 'desc');
+        $query->orderBy('id', 'desc');
         if ($withQuery) {
             return $query;
         } else {
