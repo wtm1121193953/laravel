@@ -7,6 +7,7 @@ use App\Modules\Merchant\MerchantService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderRefund;
 use App\Modules\UserCredit\UserCreditSettingService;
+use App\Modules\Wallet\Bank;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -93,5 +94,28 @@ class V1_4_2 extends Command
 
 
         // 历史订单消费额转换
+        $this->info("\n初始化银行列表 Start");
+        $banks = [
+            '中国工商银行',
+            '招商银行',
+            '中国农业银行',
+            '中国建设银行',
+            '中国银行',
+            '中国民生银行',
+            '中国光大银行',
+            '中信银行',
+            '交通银行',
+            '兴业银行',
+            '交通银行',
+            '中国人民银行',
+            '华夏银行',
+            '中国邮政储蓄银行'
+        ];
+        foreach ($banks as $item){
+            $bank = new Bank();
+            $bank->name = $item;
+            $bank->save();
+        }
+        $this->info("\n初始化银行列表 End");
     }
 }

@@ -2,13 +2,13 @@
     <page title="商户账户管理">
         <el-form v-model="form" inline size="small">
             <el-form-item prop="merchantName" label="商户名称">
-                <el-input v-model="form.merchantName" clearable/>
+                <el-input v-model="form.merchantName" clearable placeholder="请输入商户名称"/>
             </el-form-item>
             <el-form-item prop="merchantId" label="商户ID">
-                <el-input v-model="form.merchantId" clearable class="w-100"/>
+                <el-input v-model="form.merchantId" clearable placeholder="商户ID" class="w-100"/>
             </el-form-item>
             <el-form-item prop="operName" label="运营中心名称">
-                <el-input v-model="form.operName" clearable/>
+                <el-input v-model="form.operName" clearable placeholder="请输入运营中心名称"/>
             </el-form-item>
             <el-form-item label="账户状态">
                 <el-select v-model="form.status" clearable class="w-100">

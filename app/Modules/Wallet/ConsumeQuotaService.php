@@ -267,15 +267,20 @@ class ConsumeQuotaService extends BaseService
         $status = array_get($param, 'status', 0);
         $originId = array_get($param, 'originId', 0);
         $originType = array_get($param, 'originType', 0);
+        $type = array_get($param, 'type', '');
+        $syncTpsCredit = array_get($param, 'syncTpsCredit', false);
 
         $query = WalletConsumeQuotaRecord::when($originId, function (Builder $query) use ($originId) {
-            $query->where('origin_id', $originId);
-        })
+                $query->where('origin_id', $originId);
+            })
             ->when($originType, function (Builder $query) use ($originType) {
                 $query->where('origin_type', $originType);
             })
             ->when($consumeQuotaNo, function (Builder $query) use ($consumeQuotaNo) {
                 $query->where('consume_quota_no', $consumeQuotaNo);
+            })
+            ->when($type, function (Builder $query) use ($type) {
+                $query->where('type', $type);
             })
             ->when($startDate, function (Builder $query) use ($startDate) {
                 $query->whereDate('created_at', '>', $startDate);
@@ -285,6 +290,9 @@ class ConsumeQuotaService extends BaseService
             })
             ->when($status, function (Builder $query) use ($status) {
                 $query->where('status', $status);
+            })
+            ->when($syncTpsCredit, function (Builder $query) {
+                $query->where('syncTpsCredit', '>', 0);
             })
             ->orderBy('created_at', 'desc');
         if ($withQuery) {

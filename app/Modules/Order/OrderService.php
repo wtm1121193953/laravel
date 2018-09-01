@@ -15,7 +15,11 @@ use App\Jobs\OrderPaidJob;
 use App\Modules\Dishes\DishesGoods;
 use App\Jobs\OrderFinishedJob;
 use App\Modules\Dishes\DishesItem;
+use App\Modules\FeeSplitting\FeeSplittingRecord;
+use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Goods\Goods;
+use App\Modules\Invite\InviteUserRecord;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Sms\SmsService;
 use App\Modules\User\User;
@@ -132,6 +136,10 @@ class OrderService extends BaseService
 
         $merchantIds = $data->pluck('merchant_id');
         $merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
+        $subordinateUserIds = [];
+        if ($merchantId) {
+            $subordinateUserIds = InviteUserService::getInviteRecordsByOriginInfo($merchantId, InviteUserRecord::ORIGIN_TYPE_MERCHANT)->pluck('user_id')->toArray();
+        }
         foreach ($data as $key => $item) {
             $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
             if ($item->type == 3) {
@@ -140,6 +148,14 @@ class OrderService extends BaseService
             }
             $item->items = OrderItem::where('order_id', $item->id)->get();
             $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
+            if (in_array($item->user_id, $subordinateUserIds)) {
+                $item->fee_splitting_amount = FeeSplittingService::getFeeSplittingDetailByParams([
+                    'orderId' => $item->id,
+                    'type' => FeeSplittingRecord::TYPE_TO_PARENT
+                ])->amount;
+            } else {
+                $item->fee_splitting_amount = 0;
+            }
         }
 
         return $data;

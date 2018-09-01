@@ -98,4 +98,14 @@ class BankCardService extends BaseService
             ->first();
         return  $card;
     }
+
+    public static function getList( $obj, $originType=BankCard::ORIGIN_TYPE_USER  )
+    {
+        $bankCard = new \App\Modules\Wallet\BankCard;
+        $list = $bankCard::where('origin_id', $obj->id)
+            ->where('origin_type', $originType)
+            ->orderBy('default', 'desc')
+            ->get();
+        return $list;
+    }
 }

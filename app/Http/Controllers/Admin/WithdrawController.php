@@ -176,6 +176,7 @@ class WithdrawController extends Controller
 
     /**
      * admin提现审核
+     * @throws \Exception
      */
     public function audit()
     {
@@ -206,6 +207,7 @@ class WithdrawController extends Controller
     /**
      * 打款成功操作 或者 批量打款成功操作
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function paySuccess()
     {
@@ -226,6 +228,7 @@ class WithdrawController extends Controller
     /**
      * 打款失败操作 或者 批量打款失败操作
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function payFail()
     {

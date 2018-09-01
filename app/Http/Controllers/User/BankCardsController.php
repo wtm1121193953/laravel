@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\ResultCode;
 use Illuminate\Http\Request;
 use App\Modules\Wallet\BankCardService;
 use App\Http\Controllers\Controller;
@@ -82,6 +83,13 @@ class BankCardsController extends Controller
                             ->where('origin_type', $currentUser->status)
                             ->orderBy('default', 'desc')
                             ->get();
-        return Result::success( $list );
+        $res = BankCardService::getList( $request->get('current_user') );
+        if( $res )
+        {
+            return Result::success( ['list'=>$list] );
+        }else{
+            return Result::error(ResultCode::DB_QUERY_FAIL,'无银行卡信息');
+        }
+
     }
 }
