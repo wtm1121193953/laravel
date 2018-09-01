@@ -587,13 +587,23 @@ class MerchantService extends BaseService
 
     /**
      * 根据商户名称获取商户某个字段的数组
-     * @param $merchantName
+     * @param $params
      * @param $field
      * @return Collection
      */
-    public static function getMerchantColumnArrayByMerchantName($merchantName, $field)
+    public static function getMerchantColumnArrayByParams($params, $field)
     {
-        $arr = Merchant::where('name', 'like', "%$merchantName%")
+        $merchantName = array_get($params, 'merchantName', '');
+        $operIds = array_get($params, 'operIds', []);
+
+        $query = Merchant::query();
+        if ($merchantName) {
+            $query->where('name', 'like', "%$merchantName%");
+        }
+        if (!empty($operIds)) {
+            $query->whereIn('oper_id', $operIds);
+        }
+        $arr = $query->select($field)
             ->get()
             ->pluck($field);
         return $arr;

@@ -362,8 +362,16 @@ class WalletService extends BaseService
         if($originType == Wallet::ORIGIN_TYPE_USER && $userMobile){
             $originIds = UserService::getUserColumnArrayByMobile($userMobile, 'id');
         }
-        if($originType == Wallet::ORIGIN_TYPE_MERCHANT && $merchantName){
-            $originIds = MerchantService::getMerchantColumnArrayByMerchantName($merchantName, 'id');
+        if($originType == Wallet::ORIGIN_TYPE_MERCHANT){
+            if ($merchantName && $operName) {
+                $operIds = OperService::getOperColumnArrayByOperName($operName, 'id');
+                $originIds = MerchantService::getMerchantColumnArrayByParams(compact('operIds', 'merchantName'), 'id');
+            } elseif ($merchantName) {
+                $originIds = MerchantService::getMerchantColumnArrayByParams(compact('merchantName'), 'id');
+            } elseif ($operName) {
+                $operIds = OperService::getOperColumnArrayByOperName($operName, 'id');
+                $originIds = MerchantService::getMerchantColumnArrayByParams(compact('operIds'), 'id');
+            }
         }
         if ($originType == Wallet::ORIGIN_TYPE_OPER && $operName) {
             $originIds = OperService::getOperColumnArrayByOperName($operName, 'id');
