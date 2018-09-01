@@ -2,10 +2,10 @@
     <page title="用户账户管理">
         <el-form v-model="form" inline size="small">
             <el-form-item prop="mobile" label="手机号码">
-                <el-input v-model="form.mobile" clearable/>
+                <el-input v-model="form.mobile" clearable placeholder="请输入手机号码"/>
             </el-form-item>
             <el-form-item prop="userId" label="用户ID">
-                <el-input v-model="form.userId" clearable class="w-100"/>
+                <el-input v-model="form.userId" clearable placeholder="用户ID" class="w-100"/>
             </el-form-item>
             <el-form-item label="账户状态">
                 <el-select v-model="form.status" clearable class="w-100">

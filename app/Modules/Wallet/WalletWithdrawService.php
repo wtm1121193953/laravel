@@ -224,7 +224,7 @@ class WalletWithdrawService extends BaseService
         $query = WalletWithdraw::query();
 
         if($withdrawNo){
-            $query->where('withdraw_no', $withdrawNo);
+            $query->where('withdraw_no', 'like', "%$withdrawNo%");
         }
 
         if($originType){

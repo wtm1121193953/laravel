@@ -14,7 +14,7 @@
             </el-form-item>
 
             <el-form-item prop="tel" label="手机号码">
-                <el-input v-model="query.tel"   clearable @keyup.enter.native="search" />
+                <el-input v-model="query.tel" clearable @keyup.enter.native="search" placeholder="请输入手机号码"/>
             </el-form-item>
 
             <el-form-item>
