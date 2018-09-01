@@ -476,9 +476,18 @@ class OrderController extends Controller
 
         if ($order->pay_target_type == $order::PAY_TARGET_TYPE_PLATFORM) {
             //支付到平台的用融宝支付退款
-            $reapal = new ReapalPay();
-            $result = $reapal->refund($order,$orderPay);
-            exit;
+            $result = $this->_refundFromPlatform($order, $orderPay, $orderRefund);
+            // 平台支付退款成功
+            $orderRefund->refund_id = $result['refund_id'];
+            $orderRefund->status = 2;
+            $orderRefund->save();
+
+            $order->status = Order::STATUS_REFUNDED;
+            $order->refund_price = $orderPay->amount;
+            $order->refund_time = Carbon::now();
+            $order->save();
+            $this->decSellNumber($order);
+            return Result::success($orderRefund);
 
         } else {
             // 发起微信支付退款
@@ -571,6 +580,18 @@ class OrderController extends Controller
     }
 
     /**
+     * 平台支付退款
+     */
+    private function _refundFromPlatform($order,$orderPay, $orderRefund)
+    {
+
+        /*$reapal = new ReapalPay();
+        $result = $reapal->refund($order,$orderPay);*/
+
+        return ['refund_id' => 'mock refund id'];
+    }
+
+    /**
      * 退款返还商品数量
      * @param $order
      */
@@ -620,4 +641,5 @@ class OrderController extends Controller
             }
         }
     }
+
 }
