@@ -468,7 +468,7 @@ class WalletService extends BaseService
      * @param   string  $password
      * @param   integer $userId
      */
-    public static function confirmPassword( $password, $userId )
+    public static function checkPayPassword($password, $userId )
     {
         $wallet = WalletService::getWalletInfoByOriginInfo($userId, Wallet::ORIGIN_TYPE_USER);
         // 通过新提交的明文密码生成密文密码
