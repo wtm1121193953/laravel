@@ -149,10 +149,15 @@ class OrderService extends BaseService
             $item->items = OrderItem::where('order_id', $item->id)->get();
             $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
             if (in_array($item->user_id, $subordinateUserIds)) {
-                $item->fee_splitting_amount = FeeSplittingService::getFeeSplittingDetailByParams([
+                $feeSplittingRecord = FeeSplittingService::getFeeSplittingDetailByParams([
                     'orderId' => $item->id,
                     'type' => FeeSplittingRecord::TYPE_TO_PARENT
-                ])->amount;
+                ]);
+                if (!empty($feeSplittingRecord)) {
+                    $item->fee_splitting_amount = $feeSplittingRecord->amount;
+                } else {
+                    $item->fee_splitting_amount = 0;
+                }
             } else {
                 $item->fee_splitting_amount = 0;
             }
