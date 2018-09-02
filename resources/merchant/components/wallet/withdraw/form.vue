@@ -148,10 +148,12 @@
         computed: {
             //手续费
             chargeAmount() {
+                if (this.form.amount == undefined) this.form.amount = 0;
                 return (this.form.amount * this.initForm.ratio / 100).toFixed(2);
             },
             //到账金额
             remitAmount() {
+                if (this.form.amount == undefined) this.form.amount = 0;
                 return (this.form.amount * (1 - this.initForm.ratio / 100)).toFixed(2);
             }
         },
