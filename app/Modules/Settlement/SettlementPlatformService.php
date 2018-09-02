@@ -219,4 +219,17 @@ class SettlementPlatformService extends BaseService
         return $data;
     }
 
+    /**
+     * 通过id获取结算单更新状态
+     * @param $id
+     * @return bool
+     */
+    public static function getByIdModifyStatus($id)
+    {
+        $data = SettlementPlatform::where('id', $id)->update(
+            ['status' => SettlementPlatform::STATUS_PAID]
+        );
+        return $data;
+    }
+
 }

@@ -48,7 +48,7 @@ class Kernel extends ConsoleKernel
         // T+1结算统计 Author：Jerry Date：180824
         $schedule->job( new SettlementDaily() )->daily();
         // T+1结算分账任务， 生成的结算单每天8点自动打款
-        $schedule->job(new SettlementAgentPayDaily())->dailyAt('08:00');
+//        $schedule->job(new SettlementAgentPayDaily())->dailyAt('08:00');
         /**团购商品过期自动下架*/
         $schedule->job(AutoDownGoodsJob::class)->daily();
     }

@@ -88,6 +88,13 @@ class SettlementPlatformController extends Controller
         return (new SettlementPlatformExport($query))->download('结算报表.xlsx');
     }
 
+    public function modifyStatus()
+    {
+        $id = request()->get('id');
+        $settlement = SettlementPlatformService::getByIdModifyStatus($id);
+        return $settlement;
+    }
+
     public function getSettlementOrders()
     {
         $settlementId   = request()->get('settlement_id');
