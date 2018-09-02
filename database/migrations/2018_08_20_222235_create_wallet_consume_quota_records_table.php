@@ -29,6 +29,7 @@ class CreateWalletConsumeQuotaRecordsTable extends Migration
             $table->decimal('tps_consume_quota', 14, 8)->default(0)->comment('TPS消费额 (订单金额/6/汇率[6.5])  单位: 美金');
             $table->decimal('tps_credit', 14, 8)->default(0)->comment('消费额转化的tps积分值 (TPS消费额/4)');
             $table->integer('sync_tps_credit')->default(0)->comment('要同步给tps的积分值, 累计积分每满1积分才同步');
+            $table->dateTime('sync_time')->nullable()->comment('同步到TPS的时间, 即置换时间');
             $table->string('consume_user_mobile', 11)->default('')->comment('消费用户手机号');
             $table->tinyInteger('status')->index()->default(1)->comment('状态 1-冻结中 2-已解冻待置换 3-已置换 4-已退款');
             $table->timestamps();
