@@ -73,6 +73,8 @@
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="showOrders(scope)">查看</el-button>
+                    <el-button type="text"
+                               v-if="parseInt(scope.row.status) === 1 || parseInt(scope.row.status) === 5" @click="modifyPlatformStatus(scope)">确认打款</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -157,13 +159,23 @@
                         + '&status='+ this.query.status
                         + '&show_zero=' + this.query.show_zero ;
                 })
-            }
+            },
+            modifyPlatformStatus(scope){
+
+                let message = '确认此单已完成打款了吗，请再次确认?';
+                let platform_status = scope.row.status;
+                if(platform_status ==5) message = '确认重新发起打款指令吗';
+
+                this.$confirm(message).then(() => {
+                    api.get('/settlement/modifyStatus', {id: scope.row.id});
+                    this.getList();
+                })
+            },
         },
         created(){
 
             Object.assign(this.query, this.$route.params);
             this.getList();
-
 
         },
         components: {

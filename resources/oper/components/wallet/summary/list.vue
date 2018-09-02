@@ -41,9 +41,9 @@
                     <el-option label="全部" :value="0"></el-option>
                     <el-option label="提现" :value="1"></el-option>
                     <el-option label="下级消费返利" :value="2"></el-option>
-                    <el-option label="下级消费返利退款" :value="3"></el-option>
+                    <!--<el-option label="下级消费返利退款" :value="3"></el-option>-->
                     <el-option label="交易分润入账" :value="4"></el-option>
-                    <el-option label="交易分润退款" :value="5"></el-option>
+                    <!--<el-option label="交易分润退款" :value="5"></el-option>-->
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -127,7 +127,7 @@
             wallet() {
                 return [
                     {
-                        label: '账号余额',
+                        label: '账户余额',
                         val: this.amount_balance
                     },
                     {

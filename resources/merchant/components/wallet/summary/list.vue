@@ -121,7 +121,7 @@
             wallet() {
                 return [
                     {
-                        label: '账号余额',
+                        label: '账户余额',
                         val: this.amount_balance
                     },
                     {

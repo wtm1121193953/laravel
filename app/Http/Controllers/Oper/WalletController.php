@@ -225,11 +225,13 @@ class WalletController extends Controller
         $data = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
         // 获取钱包信息
         $wallet = WalletService::getWalletInfoByOriginInfo($originId, $originType);
+        $theMonthShareTpsCredit = ConsumeQuotaService::getConsumeQuotaRecordList(compact('originType', 'originId'), $pageSize, true)->sum('sync_tps_credit');
 
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
             'totalShareTpsCredit' => $wallet->total_share_tps_credit,
+            'theMonthShareTpsCredit' => $theMonthShareTpsCredit,
         ]);
     }
 
@@ -248,7 +250,7 @@ class WalletController extends Controller
         $originId = request()->get('current_user')->oper_id;
         $originType = WalletBill::ORIGIN_TYPE_OPER;
         $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
-        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
+        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize, true);
 
         return (new WalletTpsCreditExport($query))->download('我的TPS积分记录表.xlsx');
     }

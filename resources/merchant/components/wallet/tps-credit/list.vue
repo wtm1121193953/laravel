@@ -111,11 +111,11 @@
                 return [
                     {
                         label: '累计获得下级贡献TPS积分',
-                        val: this.totalShareTpsCredit
+                        val: parseFloat(this.totalShareTpsCredit).toFixed(2),
                     },
                     {
                         label: '本月累计获得下级贡献TPS积分',
-                        val: this.theMonthShareTpsCredit,
+                        val: parseFloat(this.theMonthShareTpsCredit).toFixed(2),
                     },
                 ];
             }
@@ -127,7 +127,7 @@
                     this.list = data.list;
                     this.total = data.total;
                     this.totalShareTpsCredit = data.totalShareTpsCredit;
-                    // this.theMonthShareTpsCredit = data.theMonthShareTpsCredit;
+                    this.theMonthShareTpsCredit = data.theMonthShareTpsCredit;
                     this.tableLoading = false;
                 })
             },

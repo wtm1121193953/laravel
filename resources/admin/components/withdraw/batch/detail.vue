@@ -54,12 +54,17 @@
             <el-form-item>
                 <el-button type="primary" @click="search">查 询</el-button>
                 <el-button type="success" @click="exportExcel">导出Excel</el-button>
-                <el-select v-model="checkBatch" class="w-100" placeholder="批量打款">
-                    <el-option @click.native="batchPaySuccess(1)" :value="1" label="打款成功"></el-option>
-                    <el-option @click.native="batchPayFail(1)" :value="2" label="打款失败"></el-option>
-                    <el-option @click.native="batchPaySuccess(2)" :value="3" label="全部打款成功"></el-option>
-                    <el-option @click.native="batchPayFail(2)" :value="4" label="全部打款失败"></el-option>
-                </el-select>
+                <el-dropdown>
+                    <el-button type="primary">
+                        批量打款<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item @click.native="batchPaySuccess(1)">打款成功</el-dropdown-item>
+                        <el-dropdown-item @click.native="batchPayFail(1)">打款失败</el-dropdown-item>
+                        <el-dropdown-item @click.native="batchPaySuccess(2)">全部打款成功</el-dropdown-item>
+                        <el-dropdown-item @click.native="batchPayFail(2)">全部打款失败</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
             </el-form-item>
         </el-form>
         <el-table :data="list" v-loading="tableLoading" stripe @selection-change="handleSelectionChange">
@@ -173,8 +178,6 @@
 
                 list: [],
                 tableLoading: false,
-
-                checkBatch: '',
             }
         },
         computed: {
@@ -304,7 +307,6 @@
                 })
             },
             batchPaySuccess(type) {
-                this.checkBatch = '';
                 let length = 0;
                 let param = {};
                 if (type == 1) {
@@ -337,7 +339,6 @@
                 })
             },
             batchPayFail(type) {
-                this.checkBatch = '';
                 let length = 0;
                 let param = {};
                 if (type == 1) {
