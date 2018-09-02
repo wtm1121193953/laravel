@@ -84,10 +84,6 @@ class SettlementPlatformService extends BaseService
             $query->whereIn('status', $params['status']);
         }
 
-        if ($params['show_zero'] == 'false') {
-            $query->where('real_amount','>', 0);
-        }
-
         $query->with('merchant:id,name')
             ->with('oper:id,name')
             ->orderBy('id', 'desc');
