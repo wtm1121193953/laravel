@@ -14,6 +14,7 @@ use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Support\TpsApi;
 use App\Support\Utils;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -179,6 +180,7 @@ class ConsumeQuotaService extends BaseService
         // 发起请求
         $res = TpsApi::quotaRecords( $data );
         $saveData['status'] = ( $res['code']=='101' ) ? WalletConsumeQuotaRecord::STATUS_FAILED : WalletConsumeQuotaRecord::STATUS_REPLACEMENT;
+        $saveData['sync_time'] = Carbon::now();
 
         if( !WalletConsumeQuotaRecord::whereIn('id', $tpsId)->update( $saveData ) )
         {
