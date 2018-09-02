@@ -136,10 +136,12 @@
         computed: {
             //手续费
             chargeAmount() {
+                if (this.form.amount == undefined) this.form.amount = 0;
                 return (this.form.amount * this.initForm.ratio / 100).toFixed(2);
             },
             //到账金额
             remitAmount() {
+                if (this.form.amount == undefined) this.form.amount = 0;
                 return (this.form.amount * (1 - this.initForm.ratio / 100)).toFixed(2);
             }
         },
@@ -148,7 +150,7 @@
                 this.formLoading = true;
                 api.get('/wallet/withdraw/getWithdrawInfo').then(data => {
                     if (!data.isSetPassword) {
-                        router.push('/wallet/withdraw/password');
+                        router.push({path: '/wallet/withdraw/password', query: {redirect: this.$route.path}});
                     }
                     this.initForm = data;
                     this.formLoading = false;

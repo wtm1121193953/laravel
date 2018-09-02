@@ -92,7 +92,7 @@ class SettlementPlatformController extends Controller
     {
         $id = request()->get('id');
         $settlement = SettlementPlatformService::getByIdModifyStatus($id);
-        return $settlement;
+        return Result::success($settlement);
     }
 
     public function getSettlementOrders()
