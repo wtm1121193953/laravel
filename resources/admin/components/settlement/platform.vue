@@ -1,8 +1,13 @@
 <template>
 
     <page title="结算列表【新】" v-loading="isLoading">
-
-
+        <el-col style="margin-bottom: 10px;">
+            <el-alert
+                    title="温馨提示：单日订单金额小于100元，不生成结算单，总订单金额累计到100元后再生成结算单"
+                    type="success"
+                    close-text="知道了">
+            </el-alert>
+        </el-col>
         <el-col>
             <el-form v-model="query" inline>
                 <el-form-item prop="merchantId" label="商户名称" >
