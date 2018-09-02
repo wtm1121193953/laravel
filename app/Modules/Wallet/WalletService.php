@@ -16,8 +16,9 @@ use App\Modules\User\User;
 use App\Modules\User\UserService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use App\Exceptions\BaseResponseException;       // Author:Jerry Date:180901
-use App\ResultCode;                             // Author:Jerry Date:180901
+use App\Exceptions\BaseResponseException;
+use App\ResultCode;
+use Illuminate\Support\Facades\DB;
 
 class WalletService extends BaseService
 {
@@ -72,8 +73,7 @@ class WalletService extends BaseService
     {
         // 1.添加冻结金额
         // 2.添加钱包流水
-        $wallet->freeze_balance = $wallet->freeze_balance + $feeSplittingRecord->amount;  // 更新钱包的冻结金额
-        $wallet->save();
+        $wallet->increment('freeze_balance', $feeSplittingRecord->amount);  // 更新钱包的冻结金额
 
         // 钱包流水表 添加钱包流水记录
         if ($feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_SELF) {
@@ -111,8 +111,8 @@ class WalletService extends BaseService
         // 2.添加钱包金额解冻记录
         self::createWalletBalanceUnfreezeRecord($feeSplittingRecord, $wallet);
         // 3.更新钱包
-        $wallet->freeze_balance = $wallet->freeze_balance - $feeSplittingRecord->amount;
-        $wallet->balance = $wallet->balance + $feeSplittingRecord->amount;
+        $wallet->freeze_balance = DB::raw('freeze_balance - ' . $feeSplittingRecord->amount);
+        $wallet->balance = DB::raw('balance + ' . $feeSplittingRecord->amount);
         $wallet->save();
         // 4.更新分润记录
         $feeSplittingRecord->status = FeeSplittingRecord::STATUS_UNFREEZE;

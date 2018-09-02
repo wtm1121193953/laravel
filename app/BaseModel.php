@@ -34,6 +34,7 @@ use Illuminate\Support\Carbon;
  * @method static LengthAwarePaginator paginate($perPage = 15, $columns = ['*'], $pageName = 'page', $page = null)
  * @method static number max($column)
  * @method int increment($column, $amount = 1, array $extra = [])
+ * @method int decrement($column, $amount = 1, array $extra = [])
  * @method
  * @mixin SoftDeletes
  *

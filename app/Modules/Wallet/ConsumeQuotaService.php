@@ -115,8 +115,8 @@ class ConsumeQuotaService extends BaseService
             // 2.添加消费额解冻记录
             self::createWalletConsumeQuotaUnfreezeRecord($walletConsumeQuotaRecord, $wallet);
             // 3.更新钱包信息
-            $wallet->consume_quota += $walletConsumeQuotaRecord->consume_quota;            // 添加当月消费额（不包含冻结）
-            $wallet->freeze_consume_quota -= $walletConsumeQuotaRecord->consume_quota;     // 减去当月冻结的消费额
+            $wallet->consume_quota = DB::raw('consume_quota + ' . $walletConsumeQuotaRecord->consume_quota);            // 添加当月消费额（不包含冻结）
+            $wallet->freeze_consume_quota = DB::raw('freeze_consume_quota - ' . $walletConsumeQuotaRecord->consume_quota);     // 减去当月冻结的消费额
             $wallet->save();
             // 4.更新消费额记录
             $walletConsumeQuotaRecord->status = WalletConsumeQuotaRecord::STATUS_UNFREEZE;
