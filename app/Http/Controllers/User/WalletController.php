@@ -141,7 +141,7 @@ class WalletController extends Controller
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
         ], $pageSize, true);
         $data = $query->paginate($pageSize);
-        // 当月总消费额
+        // 当月总tps消费额
         $amount = $query->sum('tps_consume_quota');
 
         return Result::success([
@@ -244,11 +244,13 @@ class WalletController extends Controller
         $pageSize = request('pageSize', 15);
         $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
         $endDate = $startDate->copy()->endOfMonth();
+        $originId = request()->get('current_user')->id;
+        $originId = 30;
         $query = ConsumeQuotaService::getConsumeQuotaRecordList([
             'startDate' => $startDate,
             'endDate' => $endDate,
             'type' => $type,
-            'originId' => request()->get('current_user')->id,
+            'originId' => $originId,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
             'syncTpsCredit' => true,
         ], $pageSize, true);
@@ -258,7 +260,7 @@ class WalletController extends Controller
             'startDate' => $startDate,
             'endDate' => $endDate,
             'type' => $type,
-            'originId' => request()->get('current_user')->id,
+            'originId' => $originId,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
             'syncTpsCredit' => true,
             'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,

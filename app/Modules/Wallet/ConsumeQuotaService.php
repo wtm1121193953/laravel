@@ -292,7 +292,7 @@ class ConsumeQuotaService extends BaseService
                 $query->where('status', $status);
             })
             ->when($syncTpsCredit, function (Builder $query) {
-                $query->where('syncTpsCredit', '>', 0);
+                $query->where('sync_tps_credit', '>', 0);
             })
             ->orderBy('created_at', 'desc');
         if ($withQuery) {
