@@ -348,9 +348,6 @@ class OrderService extends BaseService
                 $orderPay->amount = $totalFee;
                 $orderPay->save();
                 OrderPaidJob::dispatch($order);
-                if($order->status == Order::STATUS_FINISHED){
-                    OrderFinishedJob::dispatch($order);
-                }
                 DB::commit();
             }catch (\Exception $e){
                 DB::rollBack();
