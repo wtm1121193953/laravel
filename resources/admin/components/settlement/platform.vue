@@ -43,10 +43,6 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <!-- `checked` 为 true 或 false -->
-                    <el-checkbox v-model="query.show_zero" prop="show_zero">显示结算金额为0 的数据</el-checkbox>
-                </el-form-item>
-                <el-form-item>
                     <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                 </el-form-item>
                 <el-form-item>
@@ -62,9 +58,9 @@
 
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="merchant.name" label="结算商户"  width="160px" />
+            <el-table-column prop="settlement_date" label="结算时间"/>
             <el-table-column prop="oper.name" size="mini"	 label="运营中心"/>
             <!--<el-table-column prop="created_at" label="结算时间"/>-->
-            <el-table-column prop="date" label="结算订单日期"/>
             <el-table-column prop="amount" size="mini" label="订单金额"/>
             <!--<el-table-column prop="settlement_rate" label="利率"/>-->
             <el-table-column prop="real_amount" label="结算金额" />
