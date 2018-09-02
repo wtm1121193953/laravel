@@ -209,7 +209,7 @@ class UserCreditSettingService extends SettingService
      * Date：    180901
      * @return float
      */
-    public static function getUserWithdraw()
+    public static function getUserWithdrawChargeRatio()
     {
         return 0.7;
     }

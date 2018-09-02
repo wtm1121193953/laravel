@@ -83,8 +83,9 @@ Route::prefix('user')
         Route::get('wallet/sendVerifyCode', 'WalletController@sendVerifyCode')->middleware(UserLoginFilter::class);
         Route::post('wallet/checkVerifyCode', 'WalletController@checkVerifyCode')->middleware(UserLoginFilter::class);
 
+        // 提现相关
+        Route::post('wallet/withdraw/config', 'WalletWithdrawController@getWithdrawConfig')->middleware(UserLoginFilter::class);
         Route::post('wallet/withdraw/withdraw', 'WalletWithdrawController@withdraw')->middleware(UserLoginFilter::class);
-        Route::get('wallet/withdraw/canWithdraw', 'WalletWithdrawController@canWithdraw')->middleware(UserLoginFilter::class);
 
         Route::post('bank/cards/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);
         Route::post('bank/cards/changDefault', 'BankCardsController@changDefault')->middleware(UserLoginFilter::class);

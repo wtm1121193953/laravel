@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Modules\UserCredit\UserCreditSettingService;
+use App\Modules\Wallet\Wallet;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\Wallet\WalletWithdrawService;
@@ -57,18 +59,21 @@ class WalletWithdrawController extends Controller
         return Result::success('提现成功');
     }
 
-    // 判断用户是否能提现
-    public function canWithdraw( Request $request )
+    /**
+     * 获取提现配置, 提现费率以及最低提现金额
+     */
+    public function getWithdrawConfig()
     {
-        //
-        $user = $request->get('current_user');
+        $user = request()->get('current_user');
         $cards = BankCardService::getList( $user );
-        if( !$cards )
-        {
-            return Result::error(ResultCode::DB_QUERY_FAIL, '无银行卡信息');
-        }
         // 是否有提款密码
-        WalletWithdrawService::checkWithdrawPasswordByOriginInfo( '', $user->id, 1 );
-        return Result::success('可提现');
+        $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
+
+        return Result::success([
+            'withdrawRatio' => UserCreditSettingService::getUserWithdrawChargeRatio(),
+            'minAmount' => 100,
+            'isSetWithdrawPassword' => empty($wallet->withdraw_password) ? 0 : 1,
+            'hasBankCard' => empty($cards) ? 0 : 1,
+        ]);
     }
 }

@@ -93,7 +93,7 @@ class WalletWithdrawService extends BaseService
 
         if ($obj instanceof User) {
 //            throw new BaseResponseException('暂不支持提现');
-            $ratio = UserCreditSettingService::getUserWithdraw();
+            $ratio = UserCreditSettingService::getUserWithdrawChargeRatio();
         } elseif ($obj instanceof Merchant) {
             $ratio = UserCreditSettingService::getMerchantWithdrawChargeRatioByBankCardType($obj->bank_card_type);
         } elseif ($obj instanceof Oper) {
