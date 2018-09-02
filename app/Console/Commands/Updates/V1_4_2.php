@@ -92,7 +92,6 @@ class V1_4_2 extends Command
         $bar->finish();
         $this->info("\n历史订单分润 Finished: 已发放全部任务到队列");
 
-
         // 历史订单消费额转换
         $this->info("\n初始化银行列表 Start");
         $banks = [
@@ -117,5 +116,7 @@ class V1_4_2 extends Command
             $bank->save();
         }
         $this->info("\n初始化银行列表 End");
+
+        // todo 更新旧的tps绑定数据中的tps_uid字段, 需要tps开放接口
     }
 }
