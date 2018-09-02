@@ -148,7 +148,7 @@
                 this.formLoading = true;
                 api.get('/wallet/withdraw/getWithdrawInfo').then(data => {
                     if (!data.isSetPassword) {
-                        router.push('/wallet/withdraw/password');
+                        router.push({path: '/wallet/withdraw/password', query: {redirect: this.$route.path}});
                     }
                     this.initForm = data;
                     this.formLoading = false;

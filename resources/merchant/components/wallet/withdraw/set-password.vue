@@ -115,7 +115,10 @@
                 })
             },
             cancel() {
-                router.go(-1);
+                if(this.$route.query.redirect){
+                    router.replace(this.$route.query.redirect)
+                }
+                this.editPassword = true;
             },
             getVerifyCode() {
                 let self = this;
