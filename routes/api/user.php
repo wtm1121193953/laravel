@@ -79,9 +79,8 @@ Route::prefix('user')
         Route::get('wallet/tpsCredit/list', 'WalletController@getTpsCreditList')->middleware(UserLoginFilter::class);
 
         Route::post('wallet/confirmPassword', 'WalletController@confirmPassword')->middleware(UserLoginFilter::class);
-        Route::post('wallet/changePassword', 'WalletController@changePassword')->middleware(UserLoginFilter::class);
-        Route::get('wallet/sendVerifyCode', 'WalletController@sendVerifyCode')->middleware(UserLoginFilter::class);
         Route::post('wallet/checkVerifyCode', 'WalletController@checkVerifyCode')->middleware(UserLoginFilter::class);
+        Route::post('wallet/changePassword', 'WalletController@changePassword')->middleware(UserLoginFilter::class);
 
         // 提现相关
         Route::post('wallet/withdraw/config', 'WalletWithdrawController@getWithdrawConfig')->middleware(UserLoginFilter::class);
