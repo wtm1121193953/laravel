@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Http\Controllers\User;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Modules\Wallet\WalletWithdrawService;
+use App\Modules\Wallet\WalletService;
+use App\Modules\Wallet\BankCardService;
+use App\Result;
+use App\ResultCode;
+
+class WalletWithdrawController extends Controller
+{
+
+    /**
+     * 提现操作
+     * Author：  Jerry
+     * Date：    180901
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @throws \Exception
+     */
+    public function withdraw( Request $request )
+    {
+        $this->validate( $request, [
+            'card_id'   =>  'required',
+            'amount'    =>  'required|numeric|min:100',
+            'password'  =>  'required'
+        ],[
+            'card_id.required'  =>  '银行卡信息有误',
+            'amount.min'        =>  '最低提现金额为100',
+            'amount.required'   =>  '提现金额不可为空'
+        ]);
+        // 获取当前对象信息
+        $obj   = $request->get('current_user');
+        // 获取钱包信息
+        $wallet = WalletService::getWalletInfo( $obj );
+        // 获取银行卡信息
+        $card   = BankCardService::getCardById( $request->input('card_id'), $obj );
+        $isOk   = WalletWithdrawService::checkWithdrawPasswordByOriginInfo( $request->input('password'), $obj->id, $wallet->origin_type);
+        if( !$isOk )
+        {
+            return Result::error(ResultCode::NO_PERMISSION, '提现密码错误');
+        }
+        if( !$card )
+        {
+            return Result::error(ResultCode::DB_QUERY_FAIL, '无银行卡信息');
+        }
+
+        // 注入银行卡信息
+        $obj->bank_card_type        = $card->bank_card_type;
+        $obj->bank_open_name        = $card->bank_card_open_name;
+        $obj->bank_card_no          = $card->bank_card_no;
+        $obj->sub_bank_name         = $card->bank_name;
+        WalletWithdrawService::createWalletWithdrawAndUpdateWallet( $wallet, $obj, $request->input('amount'), []);
+        return Result::success('提现成功');
+    }
+
+    // 判断用户是否能提现
+    public function canWithdraw( Request $request )
+    {
+        //
+        $user = $request->get('current_user');
+        $cards = BankCardService::getList( $user );
+        if( !$cards )
+        {
+            return Result::error(ResultCode::DB_QUERY_FAIL, '无银行卡信息');
+        }
+        // 是否有提款密码
+        WalletWithdrawService::checkWithdrawPasswordByOriginInfo( '', $user->id, 1 );
+        return Result::success('可提现');
+    }
+}
