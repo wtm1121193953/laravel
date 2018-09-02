@@ -8,6 +8,8 @@ use App\Exceptions\PasswordErrorException;
 use App\Exceptions\AccountNotFoundException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
+use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Modules\Tps\TpsBind;
 use App\Modules\Tps\TpsBindService;
 use Illuminate\Support\Facades\Session;
@@ -66,13 +68,21 @@ class MerchantAccountService extends BaseService
 
         $menus =  (new self())->menus();
 
+        // 查询运营中心是否绑定tps账号
         $operBindInfo = TpsBindService::getTpsBindInfoByOriginInfo($operId, TpsBind::ORIGIN_TYPE_OPER);
-        if(empty($operBindInfo)){
-            // 如果商户所属运营中心没有绑定tps帐号, 则去掉商户的绑定tps帐号菜单
+        $operUnbindTps = empty($operBindInfo);
+        // 查询运营中心信息是否绑定到平台
+        $oper = OperService::getById($operId, 'pay_to_platform');
+        $isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
+        if($operUnbindTps || $isPayToPlatform){
             foreach ($menus as $key => &$second) {
                 if(isset($second['sub'])){
                     foreach ($second['sub'] as $key2 => $sub) {
-                        if($sub['name'] == 'TPS会员账号管理'){
+                        // 如果商户所属运营中心没有绑定tps帐号, 则去掉商户的绑定tps帐号菜单
+                        if($operUnbindTps && $sub['name'] == 'TPS会员账号管理'){
+                            unset($menus[$key]['sub'][$key2]);
+                        }
+                        if($isPayToPlatform && $sub['name'] == 'T+1结算管理'){
                             unset($menus[$key]['sub'][$key2]);
                         }
                     }
