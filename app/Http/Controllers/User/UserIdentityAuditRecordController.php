@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Exceptions\DataNotFoundException;
 use App\Result;
-use App\ResultCode;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\User\UserIdentityAuditRecordService;
@@ -65,6 +65,10 @@ class UserIdentityAuditRecordController extends Controller
     public function getRecord( Request $request )
     {
         $record = UserIdentityAuditRecordService::getRecordByUser( $request->get('current_user')->id);
+        if( !$record )
+        {
+            throw new DataNotFoundException( '用户身份审核信息不存在' );
+        }
         return Result::success($record);
     }
 }
