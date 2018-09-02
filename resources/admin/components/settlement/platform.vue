@@ -74,7 +74,7 @@
                 <template slot-scope="scope">
                     <el-button type="text" @click="showOrders(scope)">查看</el-button>
                     <el-button type="text"
-                               v-if="parseInt(scope.row.status) === 1 || parseInt(scope.row.status) === 5" @click="modifyPlatformStatus(scope)">确认打款</el-button>
+                               v-if="parseInt(scope.row.status) === 1" @click="modifyPlatformStatus(scope)">确认打款</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -162,11 +162,7 @@
             },
             modifyPlatformStatus(scope){
 
-                let message = '确认此单已完成打款了吗，请再次确认?';
-                let platform_status = scope.row.status;
-                if(platform_status ==5) message = '确认重新发起打款指令吗';
-
-                this.$confirm(message).then(() => {
+                this.$confirm('确认此单已完成打款了吗，请再次确认?').then(() => {
                     api.get('/settlement/modifyStatus', {id: scope.row.id});
                     this.getList();
                 })
