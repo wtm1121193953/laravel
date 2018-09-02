@@ -136,10 +136,6 @@ class OrderService extends BaseService
 
         $merchantIds = $data->pluck('merchant_id');
         $merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
-        $subordinateUserIds = [];
-        if ($merchantId) {
-            $subordinateUserIds = InviteUserService::getInviteRecordsByOriginInfo($merchantId, InviteUserRecord::ORIGIN_TYPE_MERCHANT)->pluck('user_id')->toArray();
-        }
         foreach ($data as $key => $item) {
             $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
             if ($item->type == 3) {
@@ -148,19 +144,6 @@ class OrderService extends BaseService
             }
             $item->items = OrderItem::where('order_id', $item->id)->get();
             $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
-            if (in_array($item->user_id, $subordinateUserIds)) {
-                $feeSplittingRecord = FeeSplittingService::getFeeSplittingDetailByParams([
-                    'orderId' => $item->id,
-                    'type' => FeeSplittingRecord::TYPE_TO_PARENT
-                ]);
-                if (!empty($feeSplittingRecord)) {
-                    $item->fee_splitting_amount = $feeSplittingRecord->amount;
-                } else {
-                    $item->fee_splitting_amount = 0;
-                }
-            } else {
-                $item->fee_splitting_amount = 0;
-            }
         }
 
         return $data;
