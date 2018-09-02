@@ -60,7 +60,7 @@ class TpsApi
      * @param $data array 存储数据
      * @return mixed|string
      */
-    public static function quotaRecords( $data )
+    public static function syncQuotaRecords($data )
     {
         $url = config('tpsapi.quota_url');
         $result = self::postMiddleground($url, $data);

@@ -150,41 +150,50 @@ class ConsumeQuotaService extends BaseService
     {
         // 同步消费额到TPS
         $records = $order->consumeQuotaRecords()->whereIn('status', [
-            WalletConsumeQuotaRecord::STATUS_FAILED ,
-            WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+            WalletConsumeQuotaRecord::STATUS_UNFREEZE ,
             WalletConsumeQuotaRecord::STATUS_FAILED]
         )->get();
         // 拼装要发送的数据
         $data = [];
-        $tpsId= [];
+        $recordIds= [];
         foreach ($records as $record) {
             $tpsBind = TpsBindService::getTpsBindInfoByOriginInfo( $record->origin_id, $record->origin_type );
+            if(empty($tpsBind)){
+                // 用户没有绑定tps账号, 不再置换
+                Log::warning('用户没有绑定tps账号, 不置换积分以及消费额', ['origin_id' => $record->origin_id, 'origin_type' => $record->origin_type, 'quotaRecord' => $record]);
+                continue;
+            }
             $data[] = [
                 'orderId'       => $order->order_no,
                 'orderPayTime'  => $order->pay_time,
                 'createTime'    => $order->created_at->toDateTimeString(),
                 'customerId'    => $tpsBind->tps_uid,
                 'shopkeeperId'  => $tpsBind->tps_uid,
-                'orderAmountUsd'=> $record->consume_quota/6.5,
-                'orderProfitUsd'=> $record->consume_quota_profit/6.5,
-                'score'         => $record->tps_credit*100,
+                'orderAmountUsd'=> $record->tps_consume_quota,
+                'orderProfitUsd'=> $record->consume_quota_profit,
+                'score'         => $record->sync_tps_credit,
                 'status'        => $record->status,
-//                'scoreYearMonth'=> '',
             ];
-            $tpsId[] = $record->id;
+            $recordIds[] = $record->id;
         }
         if( empty($data) )
         {
             return false;
         }
         // 发起请求
-        $res = TpsApi::quotaRecords( $data );
-        $saveData['status'] = ( $res['code']=='101' ) ? WalletConsumeQuotaRecord::STATUS_FAILED : WalletConsumeQuotaRecord::STATUS_REPLACEMENT;
-        $saveData['sync_time'] = Carbon::now();
+        $res = TpsApi::syncQuotaRecords( $data );
+        $status = ( $res['code']=='101' ) ? WalletConsumeQuotaRecord::STATUS_FAILED : WalletConsumeQuotaRecord::STATUS_REPLACEMENT;
 
-        if( !WalletConsumeQuotaRecord::whereIn('id', $tpsId)->update( $saveData ) )
+        $saveData = [
+            'status' => $status,
+            'sync_time' => Carbon::now(),
+        ];
+        if( !WalletConsumeQuotaRecord::whereIn('id', $recordIds)->update( $saveData ) )
         {
-            Log::info('消费记录提交成功，但入库修改失败');
+            Log::error('消费记录提交成功，但入库修改失败', [
+                'WalletConsumeQuotaRecord ids' => $recordIds,
+                'saveData' => $saveData
+            ]);
         }
     }
 
