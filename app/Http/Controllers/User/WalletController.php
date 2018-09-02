@@ -245,7 +245,6 @@ class WalletController extends Controller
         $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
         $endDate = $startDate->copy()->endOfMonth();
         $originId = request()->get('current_user')->id;
-        $originId = 30;
         $query = ConsumeQuotaService::getConsumeQuotaRecordList([
             'startDate' => $startDate,
             'endDate' => $endDate,
