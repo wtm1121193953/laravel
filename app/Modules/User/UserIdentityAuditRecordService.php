@@ -76,10 +76,6 @@ class UserIdentityAuditRecordService extends BaseService
     public static function getRecordByUser( $userId )
     {
         $record = UserIdentityAuditRecord::where('user_id', $userId)->first();
-        if( !$record )
-        {
-            throw new DataNotFoundException( '尚未验证身份' );
-        }
         return $record;
     }
 

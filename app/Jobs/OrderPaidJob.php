@@ -56,6 +56,11 @@ class OrderPaidJob implements ShouldQueue
 
         // 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
         $this->handleMerchantInvite();
+
+        // 如果订单是已完成的状态, 分发一个订单完成的任务
+        if($this->order->status == Order::STATUS_FINISHED){
+            OrderFinishedJob::dispatch($this->order);
+        }
     }
 
     /**

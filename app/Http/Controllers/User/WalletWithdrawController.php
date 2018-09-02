@@ -68,12 +68,14 @@ class WalletWithdrawController extends Controller
         $cards = BankCardService::getList( $user );
         // 是否有提款密码
         $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
+        // 获取用户可提现金额
 
         return Result::success([
             'withdrawRatio' => UserCreditSettingService::getUserWithdrawChargeRatio(),
             'minAmount' => 100,
             'isSetWithdrawPassword' => empty($wallet->withdraw_password) ? 0 : 1,
-            'hasBankCard' => empty($cards) ? 0 : 1,
+            'hasBankCard' => $cards->count() <= 0 ? 0 : 1,
+            'balance' => $wallet->balance,
         ]);
     }
 }
