@@ -54,7 +54,7 @@ class WalletController extends Controller
             'originType' => WalletBill::ORIGIN_TYPE_USER,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'typeArr' => [$type],
+            'typeArr' => $type,
         ], 20);
 
         return Result::success([

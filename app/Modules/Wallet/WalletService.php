@@ -189,8 +189,7 @@ class WalletService extends BaseService
         $billNo = array_get($param, 'billNo', '');
         $startDate = array_get($param, 'startDate', '');
         $endDate = array_get($param, 'endDate', '');
-        $typeArr = array_get($param, 'typeArr', []);
-        $type = array_get($param, 'type', '');
+        $type = array_get($param, 'type');
         $originId = array_get($param, 'originId', 0);
         $originType = array_get($param, 'originType', 0);
         $walletId = array_get($param, 'walletId', 0);
@@ -209,10 +208,11 @@ class WalletService extends BaseService
             $query->where('wallet_id', $walletId);
         }
         if ($type) {
-            $query->where('type', $type);
-        }
-        if (!empty($typeArr)) {
-            $query->whereIn('type', $typeArr);
+            if(is_array($type) || $type instanceof Collection){
+                $query->whereIn('type', $type);
+            }else {
+                $query->where('type', $type);
+            }
         }
         if ($startDate && $endDate) {
             $startDate = date('Y-m-d 00:00:00', strtotime($startDate));

@@ -32,22 +32,21 @@ class WalletController extends Controller
         $type = request('type', 0);
         $pageSize = request('pageSize', 15);
 
-        $typeArr = [];
         if ($type) {
             if ($type == 1) {
-                $typeArr = [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED];
+                $type = [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED];
             } elseif ($type == 2) {
-                $typeArr = [WalletBill::TYPE_SELF, WalletBill::TYPE_SUBORDINATE, WalletBill::TYPE_OPER];
+                $type = [WalletBill::TYPE_SELF, WalletBill::TYPE_SUBORDINATE, WalletBill::TYPE_OPER];
             } elseif ($type == 3) {
-                $typeArr = [WalletBill::TYPE_SELF_CONSUME_REFUND, WalletBill::TYPE_SUBORDINATE_REFUND, WalletBill::TYPE_OPER_REFUND];
+                $type = [WalletBill::TYPE_SELF_CONSUME_REFUND, WalletBill::TYPE_SUBORDINATE_REFUND, WalletBill::TYPE_OPER_REFUND];
             } else {
-                $typeArr = [];
+                $type = [];
             }
         }
 
         $originId = request()->get('current_user')->merchant_id;
         $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
-        $param = compact('billNo', 'startDate', 'endDate', 'typeArr', 'originId', 'originType');
+        $param = compact('billNo', 'startDate', 'endDate', 'type', 'originId', 'originType');
         $data = WalletService::getBillList($param, $pageSize);
         // 获取钱包信息
         $wallet = WalletService::getWalletInfoByOriginInfo($originId, $originType);
@@ -73,22 +72,21 @@ class WalletController extends Controller
         $type = request('type', 0);
         $pageSize = request('pageSize', 15);
 
-        $typeArr = [];
         if ($type) {
             if ($type == 1) {
-                $typeArr = [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED];
+                $type = [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED];
             } elseif ($type == 2) {
-                $typeArr = [WalletBill::TYPE_SELF, WalletBill::TYPE_SUBORDINATE, WalletBill::TYPE_OPER];
+                $type = [WalletBill::TYPE_SELF, WalletBill::TYPE_SUBORDINATE, WalletBill::TYPE_OPER];
             } elseif ($type == 3) {
-                $typeArr = [WalletBill::TYPE_SELF_CONSUME_REFUND, WalletBill::TYPE_SUBORDINATE_REFUND, WalletBill::TYPE_OPER_REFUND];
+                $type = [WalletBill::TYPE_SELF_CONSUME_REFUND, WalletBill::TYPE_SUBORDINATE_REFUND, WalletBill::TYPE_OPER_REFUND];
             } else {
-                $typeArr = [];
+                $type = [];
             }
         }
 
         $originId = request()->get('current_user')->merchant_id;
         $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
-        $param = compact('billNo', 'startDate', 'endDate', 'typeArr', 'originId', 'originType');
+        $param = compact('billNo', 'startDate', 'endDate', 'type', 'originId', 'originType');
         $query = WalletService::getBillList($param, $pageSize, true);
 
         return (new WalletBillExport($query, $originType))->download('商户交易流水.xlsx');
