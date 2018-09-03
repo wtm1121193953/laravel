@@ -38,7 +38,7 @@
                 <el-tab-pane label="上个月" name="lastMonth"></el-tab-pane>
                 <el-tab-pane label="其他时间" name="other"></el-tab-pane>
             </el-tabs>-->
-            <div class="fr" v-if="originType == 'oper'">
+            <!--<div class="fr" v-if="originType == 'oper'">
                 运营中心
                 <el-select size="small" v-model="operId" placeholder="全部">
                     <el-option value="">全部</el-option>
@@ -51,7 +51,7 @@
                     <el-option value="">全部</el-option>
                     <el-option v-for="merchant in merchants" :key="merchant.id" :value="merchant.id">{{merchant.name}}</el-option>
                 </el-select>
-            </div>
+            </div>-->
         </el-col>
         <el-col>
             <span class="search-type-name">
