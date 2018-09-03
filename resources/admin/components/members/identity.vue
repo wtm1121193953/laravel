@@ -93,7 +93,6 @@
                     <span v-if="parseInt(scope.row.status) === 3" class="c-danger">
                          <el-popover
                              placement="right-start"
-                             width="150"
                              trigger="hover"
                              :content="scope.row.reason">
                             <el-text slot="reference">审核失败</el-text>
@@ -213,9 +212,9 @@
                     type: 'warning',
                     center: true,
                     dangerouslyUseHTMLString: true,
-                    inputType: 'textarea',
-                    inputPlaceholder: '请填写失败原因，必填，最多150字',
-                    inputValidator: (val) => {if(val && val.length > 150) return '备注不能超过150个字'}
+                    inputType: 'text',
+                    inputPlaceholder: '请填写失败原因，必填，最多50字',
+                    inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
                 }).then(({value}) => {
                     param.reason = value ? value : '';
                     api.post('/member/batch_identity', param).then(data => {
@@ -252,12 +251,5 @@
 </script>
 
 <style scoped>
-    .message {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        width: 120px;
-        font-size: 12px;
-        color: gray;
-    }
+
 </style>

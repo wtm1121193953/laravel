@@ -33,7 +33,7 @@
                             </el-form-item>
                             <el-form-item label="审核意见" prop="reason">
                                 <el-input
-                                        type="textarea"
+                                        type="text"
                                         :rows="2"
                                         placeholder="最多输入50字汉字，可不填"
                                         maxlength="50"
