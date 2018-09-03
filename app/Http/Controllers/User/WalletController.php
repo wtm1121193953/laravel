@@ -108,13 +108,18 @@ class WalletController extends Controller
     {
         $user = request()->get('current_user');
 
-        $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
         $totalTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
             'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
             'originId' => $user->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
         ], 15, true)->sum('tps_consume_quota');
-        $theMonthTpsConsume = self::getTpsConsumeByConsume($wallet->consume_quota);
+        $theMonthTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
+            'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+            'originId' => $user->id,
+            'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+            'startDate' => Carbon::now()->startOfMonth(),
+            'endDate' => Carbon::now()->endOfMonth(),
+        ], 15, true)->sum('tps_consume_quota');
 
         return Result::success([
             'totalTpsConsume' => $totalTpsConsume,
