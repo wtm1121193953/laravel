@@ -62,6 +62,7 @@
         </el-dialog>
 
         <el-table :data="list" v-loading="tableLoading" stripe>
+            <el-table-column prop="merchant.id" label="商户ID"  width="100px" />
             <el-table-column prop="merchant.name" label="结算商户"  width="160px" />
             <el-table-column prop="date" label="结算时间"/>
             <el-table-column prop="date" label="结算周期">
