@@ -30,6 +30,7 @@ class WalletController extends Controller
 {
     use \App\Modules\User\GenPassword;          // Author:Jerry Date:180830
 
+    protected $reminder = '因系统升级维护，置换TPS的消费额与积分将会在2018.09.11之后进行置换，不便之处，敬请谅解';
     /**
      * 获取用户钱包信息
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
@@ -96,7 +97,7 @@ class WalletController extends Controller
      */
     private static function getTpsConsumeByConsume($consume)
     {
-        $tpsConsume = Utils::getDecimalByNotRounding($consume / 6 / 6.5 / 4 , 2);
+        $tpsConsume = Utils::getDecimalByNotRounding($consume / 6 / 6.5 , 2);
         return $tpsConsume;
     }
 
@@ -108,18 +109,23 @@ class WalletController extends Controller
     {
         $user = request()->get('current_user');
 
-        $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
         $totalTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
             'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
             'originId' => $user->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
         ], 15, true)->sum('tps_consume_quota');
-        $theMonthTpsConsume = self::getTpsConsumeByConsume($wallet->consume_quota);
+        $theMonthTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
+            'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+            'originId' => $user->id,
+            'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+            'startDate' => Carbon::now()->startOfMonth(),
+            'endDate' => Carbon::now()->endOfMonth(),
+        ], 15, true)->sum('tps_consume_quota');
 
         return Result::success([
             'totalTpsConsume' => $totalTpsConsume,
             'theMonthTpsConsume' => $theMonthTpsConsume,
-            'showReminder' => 1, // 是否显示提示语 0-不显示 1-显示
+            'showReminder' => $this->reminder, // 是否显示提示语 有则显示，没有则不显示
         ]);
     }
 
@@ -231,7 +237,7 @@ class WalletController extends Controller
             'tpsCreditSum' => $wallet->total_share_tps_credit + $wallet->total_tps_credit, // 总累计TPS积分
             'totalSyncTpsCredit' => $totalSyncTpsCredit, // 已置换
             'contributeToParent' => $contributeToParent, // 累计贡献上级TPS积分
-            'showReminder' => 1, // 是否显示提示语 0-不显示 1-显示
+            'showReminder' => $this->reminder, // 是否显示提示语 有则显示，没有则不显示
         ]);
     }
 

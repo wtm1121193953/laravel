@@ -27,6 +27,7 @@ class BankCardService extends BaseService
         $bankCard->bank_name            = $data['bank_name'];
         $bankCard->origin_id            = $user->id;
         $bankCard->origin_type          = $originType;
+        $bankCard->bank_card_type       = BankCard::BANK_CARD_TYPE_PEOPLE;
         $bankCard->default              = BankCard::DEFAULT_UNSELECTED;
         if( !($bankCard->save()) ){
             throw new BaseResponseException(ResultCode::DB_INSERT_FAIL, '新增失败');

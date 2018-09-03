@@ -1521,7 +1521,7 @@ order_no 订单号
       "data": {
           "totalTpsConsume": 累计置换TPS消费额,
           "theMonthTpsConsume": 本月已置换TPS消费额,
-          'showReminder': 1, // 是否显示提示语 0-不显示 1-显示
+          'showReminder': '', // 是否显示提示语 有则显示，没有则不显示
       },
       "timestamp": 1535870137
   }
@@ -1572,7 +1572,7 @@ order_no 订单号
           "tpsCreditSum": 总累计TPS积分,
           "totalSyncTpsCredit": 已置换的TPS积分,
           "contributeToParent": 累计贡献上级TPS积分,
-          'showReminder': 1, // 是否显示提示语 0-不显示 1-显示
+          'showReminder': '', // 是否显示提示语 有则显示，没有则不显示
       },
       "timestamp": 1535870518
   }

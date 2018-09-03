@@ -21,8 +21,9 @@
             <el-form-item prop="originType" label="提现类型">
                 <el-select v-model="form.originType" placeholder="请选择" clearable class="w-100">
                     <el-option label="全部" :value="0"></el-option>
+                    <el-option v-if="batchData.type == 2" label="用户提现" :value="1"></el-option>
                     <el-option label="商户提现" :value="2"></el-option>
-                    <el-option label="运营中心提现" :value="3"></el-option>
+                    <el-option v-if="batchData.type == 1" label="运营中心提现" :value="3"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="提现状态">
@@ -263,7 +264,7 @@
                 });
             },
             success(row) {
-                this.$confirm('<div class="tips">提现金额：'+row.amount+'</div><div>确定将这笔订单标记为打款成功！</div><div class="tips">请确认您已打过款</div>','打款成功提示', {
+                this.$confirm('<div class="tips">提现金额：'+row.amount+'</div><div>确定将这笔订单标记为打款成功！请确认您已打过款</div>','打款成功提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
