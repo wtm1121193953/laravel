@@ -36,6 +36,7 @@
                                         type="textarea"
                                         :rows="2"
                                         placeholder="拒绝理由"
+                                        maxlength="50"
                                         v-model="info.reason">
                                 </el-input>
                             </el-form-item>
