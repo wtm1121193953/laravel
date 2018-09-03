@@ -2,8 +2,8 @@
     <!-- 会员管理操作页面 -->
     <div>
         <el-button type="text" @click="detail">查看</el-button>
-        <el-button type="text" @click="edit">审核</el-button>&nbsp;&nbsp;
-        <el-dropdown @command="quickAudit">
+        <el-button type="text" @click="edit">审核</el-button>
+        <el-dropdown @command="quickAudit" class="m-l-10">
             <span class="el-dropdown-link">
                 <el-button type="text">快捷审核<i class="el-icon-arrow-down el-icon--right"></i></el-button>
             </span>
@@ -54,7 +54,16 @@
                         })
                     })
                 }else {
-                    this.$prompt('确认审核不通过吗').then((val) => {
+                    this.$prompt(`<div>确认审核不通过吗</div>`,'', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                        center: true,
+                        dangerouslyUseHTMLString: true,
+                        inputType: 'text',
+                        inputPlaceholder: '请填写失败原因，必填，最多50字',
+                        inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
+                    }).then((val) => {
                         this.loading = true;
                         let data = {id:this.scope.row.id,status:3,reason:val.value}
                         api.post('/member/identity_do', data).then((data) => {
