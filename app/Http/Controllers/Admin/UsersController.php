@@ -12,6 +12,7 @@ use App\Modules\Invite\InviteUserService;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Oper\OperService;
+use App\Modules\User\UserIdentityAuditRecord;
 use App\Modules\User\UserService;
 use App\Result;
 use Illuminate\Support\Facades\App;
@@ -112,6 +113,30 @@ class UsersController extends Controller
             'list' => $users->items(),
             'total' => $users->total(),
         ]);
+    }
+
+    public function batchIdentity()
+    {
+        $ids = request('ids');
+        $type = request('type');
+        $resson = request('reason');
+        if ($type == 1) {
+            if ($ids) {
+                foreach ($ids as $id) {
+                    $rs = UserService::identityDo($id, UserIdentityAuditRecord::STATUS_SUCCESS);
+                }
+            }
+            return Result::success($rs);
+        } elseif ($type==2) {
+            if ($ids) {
+                foreach ($ids as $id) {
+                    $rs = UserService::identityDo($id, UserIdentityAuditRecord::STATUS_FAIL,$resson);
+                }
+            }
+            return Result::success($rs);
+        }
+
+
     }
 
     /**

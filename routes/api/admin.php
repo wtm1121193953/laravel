@@ -38,6 +38,7 @@ Route::prefix('admin')
         Route::get('member/userlist','UsersController@userList');
         Route::get('member/download','UsersController@download');
         Route::get('member/identity','UsersController@identity');
+        Route::any('member/batch_identity','UsersController@batchIdentity');
         Route::get('member/identity_download','UsersController@identityDownload');
         Route::get('member/identity_detail','UsersController@identityDetail');
         Route::post('member/identity_do','UsersController@identityDo');
