@@ -10,7 +10,7 @@
                         {{data.created_at}}
                     </el-form-item>
                     <el-form-item label="贡献TPS积分">
-                        {{data.sync_tps_credit}}
+                        {{parseFloat(data.sync_tps_credit).toFixed(2)}}
                     </el-form-item>
                     <el-form-item v-if="data.status == 1" label="解冻时间">
                         {{data.time}}

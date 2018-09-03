@@ -56,7 +56,11 @@
                 </template>
             </el-table-column>
             <el-table-column prop="consume_user_mobile" label="用户手机号"></el-table-column>
-            <el-table-column prop="sync_tps_credit" label="贡献积分"></el-table-column>
+            <el-table-column prop="sync_tps_credit" label="贡献积分">
+                <template slot-scope="scope">
+                    {{parseFloat(scope.row.sync_tps_credit).toFixed(2)}}
+                </template>
+            </el-table-column>
             <el-table-column prop="status" label="积分状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1">冻结中</span>
