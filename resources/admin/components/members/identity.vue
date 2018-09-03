@@ -61,7 +61,7 @@
             </el-table-column>
             <el-table-column prop="created_at" label="提交认证时间"/>
             <el-table-column prop="user.mobile" label="手机号"/>
-            <<el-table-column prop="user.id" label="用户ID"/>
+            <el-table-column prop="user.id" label="用户ID"/>
             <el-table-column prop="user.created_at" label="注册时间"/>
             <el-table-column prop="name" label="姓名"/>
             <el-table-column prop="number" label="身份证号码"/>
@@ -86,7 +86,21 @@
                 </template>
             </el-table-column>
             <el-table-column prop="user.status_val" label="用户状态"/>
-            <el-table-column prop="status_val" label="认证身份状态"/>
+            <el-table-column prop="status" label="认证身份状态">
+                <template slot-scope="scope">
+                    <span v-if="parseInt(scope.row.status) === 1" class="c-warning">待审核</span>
+                    <span v-if="parseInt(scope.row.status) === 2" class="c-green">审核通过</span>
+                    <span v-if="parseInt(scope.row.status) === 3" class="c-danger">
+                         <el-popover
+                             placement="right-start"
+                             width="150"
+                             trigger="hover"
+                             :content="scope.row.reason">
+                            <el-text slot="reference">审核失败</el-text>
+                         </el-popover>
+                    </span>
+                </template>
+            </el-table-column>
 
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
@@ -238,5 +252,12 @@
 </script>
 
 <style scoped>
-
+    .message {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 120px;
+        font-size: 12px;
+        color: gray;
+    }
 </style>

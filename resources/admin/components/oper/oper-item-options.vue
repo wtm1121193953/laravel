@@ -312,8 +312,16 @@
                 })
             }
         },
-        created(){
+        mounted(){
             this.payToPlatformForm.pay_to_platform = this.scope.row.pay_to_platform
+        },
+        watch: {
+            'scope.row': {
+                deep: true,
+                handler(){
+                    this.payToPlatformForm.pay_to_platform = this.scope.row.pay_to_platform
+                }
+            }
         },
         components: {
             OperForm,
