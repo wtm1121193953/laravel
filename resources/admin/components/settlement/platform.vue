@@ -162,6 +162,9 @@
                         + 'merchant_name=' + this.query.merchant_name
                         + '&startDate=' + this.query.startDate
                         + '&endDate=' + this.query.endDate
+                        + '&bank_card_no=' + this.query.bank_card_no
+                        + '&sub_bank_name=' + this.query.sub_bank_name
+                        + '&bank_open_name=' + this.query.bank_open_name
                         + '&merchant_id=' + this.query.merchant_id
                         + '&status='+ this.query.status
                         + '&show_zero=' + this.query.show_zero ;
