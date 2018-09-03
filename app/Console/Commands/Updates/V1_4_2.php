@@ -6,6 +6,7 @@ use App\Jobs\OrderFinishedJob;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderRefund;
+use App\Modules\Tps\TpsBind;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\Bank;
 use Illuminate\Console\Command;
@@ -118,5 +119,19 @@ class V1_4_2 extends Command
         $this->info("\n初始化银行列表 End");
 
         // todo 更新旧的tps绑定数据中的tps_uid字段, 需要tps开放接口
+
+        // 更新旧的tps绑定数据中的tps_uid字段
+        $this->info('更新旧的tps绑定数据中的tps_uid字段 Start');
+        TpsBind::chunk(1000, function ($list) {
+            $list->each(function ($item) {
+                $result = TpsApi::getUserInfo($item->tps_account);
+                if (!empty($result['data']['uid'])) {
+                    $item->tps_uid = $result['data']['uid'];
+                    $item->save();
+                }
+
+            });
+        });
+        $this->info("\n更新旧的tps绑定数据中的tps_uid字段 Finished");
     }
 }
