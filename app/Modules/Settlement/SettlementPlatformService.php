@@ -26,7 +26,7 @@ class SettlementPlatformService extends BaseService
     public static $status_vals = [
         1 => '未打款',
         2 => '打款中',
-        3 => '已到账',
+        3 => '已打款',
         4 => '已到账',
         5 => '打款失败',            // changed by Jerry 新增状态
     ];
@@ -76,8 +76,8 @@ class SettlementPlatformService extends BaseService
         }
 
         if (!empty($params['startDate']) && !empty($params['endDate'])) {
-            $query->where('date', '>=', $params['startDate']);
-            $query->where('date', '<=', $params['endDate']);
+            $query->where('date', '>=', Carbon::createFromFormat('Y-m-d',$params['startDate'])->startOfDay());
+            $query->where('date', '<=', Carbon::createFromFormat('Y-m-d',$params['endDate'])->endOfDay());
         }
 
         if (is_array($params['status']) || $params['status'] instanceof Collection) {
@@ -132,9 +132,14 @@ class SettlementPlatformService extends BaseService
         $order = Order::where('merchant_id', $merchant->id)
             ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
             ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
-            ->where('status', Order::STATUS_FINISHED );
+            ->where('status', Order::STATUS_FINISHED )
+            ->where('pay_time','<=', Carbon::now()->subDay()->endOfDay());
         // 统计所有需结算金额
         $sum = $order->sum('pay_price');
+
+        //获得结算周期时间
+        $start_date = $order->min('pay_time');
+        $end_date = $order->max('pay_time');
         if( $sum<100 ){
             Log::info('该商家每日结算错误，错误原因：订单金额小于100，结算失败');
             return true;
@@ -151,7 +156,9 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform = new SettlementPlatform();
             $settlementPlatform->oper_id = $merchant->oper_id;
             $settlementPlatform->merchant_id = $merchant->id;
-            $settlementPlatform->date = Carbon::now();
+            $settlementPlatform->date = Carbon::now()->subDay();
+            $settlementPlatform->start_date = $start_date;
+            $settlementPlatform->end_date = $end_date;
             $settlementPlatform->settlement_no = $settlementNum;
             $settlementPlatform->settlement_rate = $merchant->settlement_rate;
             $settlementPlatform->bank_open_name = $merchant->bank_open_name;

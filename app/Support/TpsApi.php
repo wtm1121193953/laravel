@@ -54,20 +54,6 @@ class TpsApi
     }
 
     /**
-     * 消费记录对接
-     * Author：Jerry
-     * Date:180828
-     * @param $data array 存储数据
-     * @return mixed|string
-     */
-    public static function syncQuotaRecords($data )
-    {
-        $url = config('tpsapi.quota_url');
-        $result = self::postMiddleground($url, $data);
-        return $result;
-    }
-
-    /**
      * 创建账号
      * @param $account string 账号
      * @param $password string 密码
@@ -90,6 +76,20 @@ class TpsApi
     }
 
     /**
+     * 消费记录对接
+     * Author：Jerry
+     * Date:180828
+     * @param $data array 存储数据
+     * @return mixed|string
+     */
+    public static function syncQuotaRecords($data )
+    {
+        $url = config('tpsapi.quota_url');
+        $result = self::postMiddleground($url, $data);
+        return $result;
+    }
+
+    /**
      * 中台接口post请求
      * @param $url
      * @param $data
@@ -109,15 +109,15 @@ class TpsApi
             'body' => $postData,
             'headers' => $headers
         ]);
-        if ($response->getStatusCode() !== 200) {
-            $responseCode = $response->getStatusCode();
-            $responseContent = $response->getBody()->getContents();
+        $responseCode = $response->getStatusCode();
+        $responseContent = $response->getBody()->getContents();
+        Log::debug('请求中台接口:', compact('url', 'data', 'responseCode', 'responseContent'));
+        if ($responseCode !== 200) {
             Log::error('请求中台接口失败', compact('url', 'data', 'responseCode', 'responseContent'));
             throw new BaseResponseException("网络请求失败");
         }
-        $result = $response->getBody()->getContents();
-        $array = is_string($result) ? json_decode($result, 1) : $result;
-        return $array;
+        $result = is_string($responseContent) ? json_decode($responseContent, 1) : $responseContent;
+        return $result;
     }
 
     /**
@@ -139,14 +139,14 @@ class TpsApi
         $response = $client->post($url, [
             'form_params' => $postData
         ]);
-        if ($response->getStatusCode() !== 200) {
-            $responseCode = $response->getStatusCode();
-            $responseContent = $response->getBody()->getContents();
+        $responseCode = $response->getStatusCode();
+        $responseContent = $response->getBody()->getContents();
+        Log::debug('请求TPS接口:', compact('url', 'data', 'responseCode', 'responseContent'));
+        if ($responseCode !== 200) {
             Log::error('请求TPS接口失败', compact('url', 'data', 'responseCode', 'responseContent'));
             throw new BaseResponseException("网络请求失败");
         }
-        $result = $response->getBody()->getContents();
-        $array = is_string($result) ? json_decode($result, 1) : $result;
+        $array = is_string($responseContent) ? json_decode($responseContent, 1) : $responseContent;
         return $array;
     }
 
