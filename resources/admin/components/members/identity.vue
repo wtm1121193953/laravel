@@ -56,8 +56,7 @@
         <el-table :data="list" stripe @selection-change="handleSelectionChange">
             <el-table-column
                     type="selection"
-                    width="55"
-                    :selectable="selectable">
+                    width="55">
             </el-table-column>
             <el-table-column prop="created_at" label="提交认证时间"/>
             <el-table-column prop="user.mobile" label="手机号"/>
@@ -95,7 +94,7 @@
                              placement="right-start"
                              trigger="hover"
                              :content="scope.row.reason">
-                            <el-text slot="reference">审核失败</el-text>
+                            <span slot="reference">审核失败</span>
                          </el-popover>
                     </span>
                 </template>

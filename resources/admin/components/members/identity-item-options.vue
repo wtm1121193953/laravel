@@ -8,8 +8,8 @@
                 <el-button type="text">快捷审核<i class="el-icon-arrow-down el-icon--right"></i></el-button>
             </span>
             <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="1">审核通过</el-dropdown-item>
-                <el-dropdown-item command="2">审核不通过</el-dropdown-item>
+                <el-dropdown-item v-if="scope.row.status !== 2" command="1">审核通过</el-dropdown-item>
+                <el-dropdown-item v-if="scope.row.status !== 3" command="2">审核不通过</el-dropdown-item>
             </el-dropdown-menu>
         </el-dropdown>
     </div>
@@ -52,14 +52,9 @@
                         }).finally(() => {
                             this.loading = false;
                         })
-                    })
+                    }).catch(() => { })
                 }else {
-                    this.$prompt(`<div>确认审核不通过吗</div>`,'', {
-                        confirmButtonText: '确定',
-                        cancelButtonText: '取消',
-                        type: 'warning',
-                        center: true,
-                        dangerouslyUseHTMLString: true,
+                    this.$prompt('确认审核不通过吗', {
                         inputType: 'text',
                         inputPlaceholder: '请填写失败原因，必填，最多50字',
                         inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
@@ -71,7 +66,7 @@
                         }).finally(() => {
                             this.loading = false;
                         })
-                    })
+                    }).catch(() => { })
                 }
             }
         },
