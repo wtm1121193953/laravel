@@ -126,14 +126,14 @@ class UsersController extends Controller
                     $rs = UserService::identityDo($id, UserIdentityAuditRecord::STATUS_SUCCESS);
                 }
             }
-            return Result::success($rs);
+            return Result::success('操作成功');
         } elseif ($type==2) {
             if ($ids) {
                 foreach ($ids as $id) {
                     $rs = UserService::identityDo($id, UserIdentityAuditRecord::STATUS_FAIL,$resson);
                 }
             }
-            return Result::success($rs);
+            return Result::success('操作成功');
         }
 
 
@@ -180,7 +180,7 @@ class UsersController extends Controller
         $reason = request('reason');
 
         $rs = UserService::identityDo($id, $status, $reason);
-        return Result::success($rs);
+        return Result::success('操作成功',['rs'=>$rs]);
 
     }
 
