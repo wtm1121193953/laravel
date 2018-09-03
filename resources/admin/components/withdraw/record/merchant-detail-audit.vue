@@ -38,7 +38,7 @@
                         {{data.after_amount}}元
                     </el-form-item>
                     <el-form-item label="审核意见" v-if="audit">
-                        <el-input type="textarea" :rows="3" v-model="remark"></el-input>
+                        <el-input type="textarea" :rows="3" v-model="remark" placeholder="最多输入50个汉字"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
@@ -147,6 +147,10 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
+                    if (this.remark.length > 50) {
+                        this.$message.error('备注不能超过50个字');
+                        return;
+                    }
                     let param = {
                         id: this.id,
                         status: 5,   //审核不通过状态 WalletWithdraw::STATUS_AUDIT_FAILED
@@ -164,6 +168,10 @@
                 if (!this.batchId) {
                     this.$message.error('请先选择批次');
                     return false;
+                }
+                if (this.remark.length > 50) {
+                    this.$message.error('备注不能超过50个字');
+                    return;
                 }
                 let param = {
                     id: this.id,
