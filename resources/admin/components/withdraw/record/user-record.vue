@@ -116,6 +116,12 @@
 
     export default {
         name: "withdraw-merchant-record",
+        props: {
+            status: {
+                type: Number,
+                default: 0,
+            },
+        },
         data() {
             return {
                 form: {
@@ -225,6 +231,7 @@
             }
         },
         created() {
+            this.form.status = this.status;
             this.getList();
         }
     }
