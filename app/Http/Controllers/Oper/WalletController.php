@@ -266,16 +266,6 @@ class WalletController extends Controller
         $tpsCredit = ConsumeQuotaService::getConsumeQuotaRecordById($id);
         if (empty($tpsCredit)) throw new BaseResponseException('该消费额记录不存在');
 
-        if ($tpsCredit->status == WalletConsumeQuotaRecord::STATUS_REPLACEMENT || $tpsCredit->status == WalletConsumeQuotaRecord::STATUS_UNFREEZE) {
-            $consumeQuotaUnfreezeRecord = ConsumeQuotaService::getConsumeQuotaUnfreezeRecordById($tpsCredit->id);
-            $tpsCredit->time = $consumeQuotaUnfreezeRecord->created_at->format('Y-m-d H:i:s');
-        } elseif ($tpsCredit->status == WalletConsumeQuotaRecord::STATUS_REFUND) {
-            $order = OrderService::getById($tpsCredit->order_id);
-            $tpsCredit->time = $order->refund_time->format('Y-m-d H:i:s');
-        } else {
-            $tpsCredit->time = null;
-        }
-
         return Result::success($tpsCredit);
     }
 }
