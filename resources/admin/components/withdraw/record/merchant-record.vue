@@ -18,7 +18,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item prop="operName" label="运营中心名称">
-                <el-input v-model="form.operName" clearable/>
+                <el-input v-model="form.operName" clearable placeholder="请输入运营中心名称"/>
             </el-form-item>
             <el-form-item label="提现时间">
                 <el-date-picker
