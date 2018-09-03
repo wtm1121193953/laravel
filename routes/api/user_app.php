@@ -62,6 +62,10 @@ Route::prefix('app/user')
         Route::get('wallet/getBillDetail', 'WalletController@getBillDetail')->middleware(UserLoginFilter::class);;
         Route::get('wallet/getConsumeQuotas', 'WalletController@getConsumeQuotas')->middleware(UserLoginFilter::class);;
         Route::get('wallet/getConsumeQuotaDetail', 'WalletController@getConsumeQuotaDetail')->middleware(UserLoginFilter::class);;
+        Route::post('app/wallet/confirmPassword', 'WalletController@confirmPassword')->middleware(UserLoginFilter::class);
+        Route::post('app/wallet/checkVerifyCode', 'WalletController@checkVerifyCode')->middleware(UserLoginFilter::class);
+        Route::post('app/wallet/changePassword', 'WalletController@changePassword')->middleware(UserLoginFilter::class);
+
 
         //app银行卡接口
         Route::post('bankcard/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);;
