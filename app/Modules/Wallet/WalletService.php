@@ -16,8 +16,9 @@ use App\Modules\User\User;
 use App\Modules\User\UserService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use App\Exceptions\BaseResponseException;       // Author:Jerry Date:180901
-use App\ResultCode;                             // Author:Jerry Date:180901
+use App\Exceptions\BaseResponseException;
+use App\ResultCode;
+use Illuminate\Support\Facades\DB;
 
 class WalletService extends BaseService
 {
@@ -72,8 +73,7 @@ class WalletService extends BaseService
     {
         // 1.添加冻结金额
         // 2.添加钱包流水
-        $wallet->freeze_balance = $wallet->freeze_balance + $feeSplittingRecord->amount;  // 更新钱包的冻结金额
-        $wallet->save();
+        $wallet->increment('freeze_balance', $feeSplittingRecord->amount);  // 更新钱包的冻结金额
 
         // 钱包流水表 添加钱包流水记录
         if ($feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_SELF) {
@@ -111,8 +111,8 @@ class WalletService extends BaseService
         // 2.添加钱包金额解冻记录
         self::createWalletBalanceUnfreezeRecord($feeSplittingRecord, $wallet);
         // 3.更新钱包
-        $wallet->freeze_balance = $wallet->freeze_balance - $feeSplittingRecord->amount;
-        $wallet->balance = $wallet->balance + $feeSplittingRecord->amount;
+        $wallet->freeze_balance = DB::raw('freeze_balance - ' . $feeSplittingRecord->amount);
+        $wallet->balance = DB::raw('balance + ' . $feeSplittingRecord->amount);
         $wallet->save();
         // 4.更新分润记录
         $feeSplittingRecord->status = FeeSplittingRecord::STATUS_UNFREEZE;
@@ -189,8 +189,7 @@ class WalletService extends BaseService
         $billNo = array_get($param, 'billNo', '');
         $startDate = array_get($param, 'startDate', '');
         $endDate = array_get($param, 'endDate', '');
-        $typeArr = array_get($param, 'typeArr', []);
-        $type = array_get($param, 'type', '');
+        $type = array_get($param, 'type');
         $originId = array_get($param, 'originId', 0);
         $originType = array_get($param, 'originType', 0);
         $walletId = array_get($param, 'walletId', 0);
@@ -209,11 +208,12 @@ class WalletService extends BaseService
             $query->where('wallet_id', $walletId);
         }
         if ($type) {
-            $query->where('type', $type);
+            if(is_array($type) || $type instanceof Collection){
+                $query->whereIn('type', $type);
+            }else {
+                $query->where('type', $type);
+            }
         }
-//        if (!empty($typeArr)) {
-//            $query->whereIn('type', $typeArr);
-//        }
         if ($startDate && $endDate) {
             $startDate = date('Y-m-d 00:00:00', strtotime($startDate));
             $endDate = date('Y-m-d 23:59:59', strtotime($endDate));
@@ -225,7 +225,7 @@ class WalletService extends BaseService
             $endDate = date('Y-m-d 23:59:59', strtotime($endDate));
             $query->where('created_at', '<', $endDate);
         }
-        $query->orderBy('created_at', 'desc');
+        $query->orderBy('id', 'desc');
         if ($withQuery) {
             return $query;
         } else {
@@ -468,14 +468,14 @@ class WalletService extends BaseService
      * @param   string  $password
      * @param   integer $userId
      */
-    public static function confirmPassword( $password, $userId )
+    public static function checkPayPassword($password, $userId )
     {
         $wallet = WalletService::getWalletInfoByOriginInfo($userId, Wallet::ORIGIN_TYPE_USER);
         // 通过新提交的明文密码生成密文密码
         $putPassword = Wallet::genPassword(  $password, $wallet['salt']);
         if( $putPassword != $wallet['withdraw_password'] )
         {
-            throw new BaseResponseException(ResultCode::PARAMS_INVALID, '原交易密码确认错误');
+            throw new BaseResponseException('原交易密码确认错误', ResultCode::PARAMS_INVALID);
         }
     }
 }

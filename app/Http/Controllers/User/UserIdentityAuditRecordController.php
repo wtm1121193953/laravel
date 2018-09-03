@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Exceptions\DataNotFoundException;
 use App\Result;
-use App\ResultCode;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\User\UserIdentityAuditRecordService;
@@ -17,11 +17,6 @@ use App\Modules\User\UserIdentityAuditRecordService;
  */
 class UserIdentityAuditRecordController extends Controller
 {
-    public $validator;
-    public function __construct()
-    {
-        $this->validator = new \App\Validator\User\UserIdentityAuditRecord;
-    }
 
     /**
      * Author:  Jerry
@@ -29,14 +24,25 @@ class UserIdentityAuditRecordController extends Controller
      * 新增身份验证记录
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function addRecord( Request $request )
     {
-        $data = $request->all();
-        $data['user_id'] = $request->get('current_user')->id;
-        $this->validator->scene('add')->check( $data );
-        UserIdentityAuditRecordService::addRecord( $request->all(), $request->get('current_user') );
+        // 注入user_id
+        $request->offsetSet('user_id',$request->get('current_user')->id);
+        $request->validate([
+            'name'          => 'required',
+            'number'        => 'bail|required|identitycards|unique:user_identity_audit_records',
+            'front_pic'     => 'required',
+            'opposite_pic'  => 'required',
+            'user_id'       => 'unique:user_identity_audit_records'
+        ]);
+        $saveData = [
+            'name'          => $request->all()['name'],
+            'number'        => $request->all()['number'],
+            'front_pic'     => $request->all()['front_pic'],
+            'opposite_pic'  => $request->all()['opposite_pic'],
+        ];
+        UserIdentityAuditRecordService::addRecord( $saveData , $request->get('current_user') );
         return Result::success('提交成功');
     }
 
@@ -46,12 +52,22 @@ class UserIdentityAuditRecordController extends Controller
      * 修改身份验证记录
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function modRecord( Request $request )
     {
-        $this->validator->scene('mod')->check( $request->all() );
-        UserIdentityAuditRecordService::modRecord( $request->all(), $request->get('current_user') );
+        $request->validate([
+            'name'          => 'required',
+            'number'        => 'bail|required|identitycards|unique:user_identity_audit_records',
+            'front_pic'     => 'required',
+            'opposite_pic'  => 'required',
+        ]);
+        $saveData = [
+            'name'          => $request->all()['name'],
+            'number'        => $request->all()['number'],
+            'front_pic'     => $request->all()['front_pic'],
+            'opposite_pic'  => $request->all()['opposite_pic'],
+        ];
+        UserIdentityAuditRecordService::modRecord( $saveData, $request->get('current_user') );
         return Result::success('修改成功');
     }
 
@@ -64,7 +80,7 @@ class UserIdentityAuditRecordController extends Controller
      */
     public function getRecord( Request $request )
     {
-        $record = UserIdentityAuditRecordService::getRecordByUser( $request->get('current_user'));
+        $record = UserIdentityAuditRecordService::getRecordByUser( $request->get('current_user')->id);
         return Result::success($record);
     }
 }

@@ -6,7 +6,9 @@ use App\Jobs\OrderFinishedJob;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderRefund;
+use App\Modules\Tps\TpsBind;
 use App\Modules\UserCredit\UserCreditSettingService;
+use App\Modules\Wallet\Bank;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -91,7 +93,45 @@ class V1_4_2 extends Command
         $bar->finish();
         $this->info("\n历史订单分润 Finished: 已发放全部任务到队列");
 
-
         // 历史订单消费额转换
+        $this->info("\n初始化银行列表 Start");
+        $banks = [
+            '中国工商银行',
+            '招商银行',
+            '中国农业银行',
+            '中国建设银行',
+            '中国银行',
+            '中国民生银行',
+            '中国光大银行',
+            '中信银行',
+            '交通银行',
+            '兴业银行',
+            '交通银行',
+            '中国人民银行',
+            '华夏银行',
+            '中国邮政储蓄银行'
+        ];
+        foreach ($banks as $item){
+            $bank = new Bank();
+            $bank->name = $item;
+            $bank->save();
+        }
+        $this->info("\n初始化银行列表 End");
+
+        // todo 更新旧的tps绑定数据中的tps_uid字段, 需要tps开放接口
+
+        // 更新旧的tps绑定数据中的tps_uid字段
+        $this->info('更新旧的tps绑定数据中的tps_uid字段 Start');
+        TpsBind::chunk(1000, function ($list) {
+            $list->each(function ($item) {
+                $result = TpsApi::getUserInfo($item->tps_account);
+                if (!empty($result['data']['uid'])) {
+                    $item->tps_uid = $result['data']['uid'];
+                    $item->save();
+                }
+
+            });
+        });
+        $this->info("\n更新旧的tps绑定数据中的tps_uid字段 Finished");
     }
 }

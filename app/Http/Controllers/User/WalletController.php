@@ -1,18 +1,17 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 57458
- * Date: 2018/8/23
- * Time: 18:01
- */
 
 namespace App\Http\Controllers\User;
 
 
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\NoPermissionException;
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Invite\InviteUserService;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\Oper;
+use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\ConsumeQuotaService;
 use App\Modules\Wallet\Wallet;
@@ -21,13 +20,16 @@ use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use App\Modules\Wallet\WalletService;
 use App\Result;
 use App\ResultCode;
+use App\Support\Utils;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use App\Modules\Sms\SmsService;
+use Illuminate\Support\Facades\Cache;
 
 class WalletController extends Controller
 {
     use \App\Modules\User\GenPassword;          // Author:Jerry Date:180830
+
     /**
      * 获取用户钱包信息
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
@@ -56,7 +58,7 @@ class WalletController extends Controller
             'originType' => WalletBill::ORIGIN_TYPE_USER,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'typeArr' => [$type],
+            'type' => $type,
         ], 20);
 
         return Result::success([
@@ -88,9 +90,43 @@ class WalletController extends Controller
     }
 
     /**
-     * 获取消费额记录
+     * 通过消费额 获取 tps消费额
+     * @param $consume
+     * @return float|int
      */
-    public function getConsumeQuotas()
+    private static function getTpsConsumeByConsume($consume)
+    {
+        $tpsConsume = Utils::getDecimalByNotRounding($consume / 6 / 6.5 / 4 , 2);
+        return $tpsConsume;
+    }
+
+    /**
+     * 我的tps 消费额统计
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getTpsConsumeStatistics()
+    {
+        $user = request()->get('current_user');
+
+        $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
+        $totalTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
+            'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+            'originId' => $user->id,
+            'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+        ], 15, true)->sum('tps_consume_quota');
+        $theMonthTpsConsume = self::getTpsConsumeByConsume($wallet->consume_quota);
+
+        return Result::success([
+            'totalTpsConsume' => $totalTpsConsume,
+            'theMonthTpsConsume' => $theMonthTpsConsume,
+            'showReminder' => 1, // 是否显示提示语 0-不显示 1-显示
+        ]);
+    }
+
+    /**
+     * 获取tps消费额记录
+     */
+    public function getTpsConsumeQuotas()
     {
         $month = request('month');
         if(empty($month)){
@@ -107,9 +143,10 @@ class WalletController extends Controller
             'originId' => request()->get('current_user')->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
         ], $pageSize, true);
+        // 当月总tps消费额
+        $amount = $query->sum('tps_consume_quota');
+
         $data = $query->paginate($pageSize);
-        // 当月总消费额
-        $amount = $query->sum('consume_quota');
 
         return Result::success([
             'list' => $data->items(),
@@ -119,9 +156,9 @@ class WalletController extends Controller
     }
 
     /**
-     * 获取消费额详情
+     * 获取tps消费额详情
      */
-    public function getConsumeQuotaDetail()
+    public function getTpsConsumeQuotaDetail()
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
@@ -156,6 +193,94 @@ class WalletController extends Controller
     }
 
     /**
+     * TPS积分 统计
+     */
+    public function getTpsCreditStatistics()
+    {
+        $user = request()->get('current_user');
+
+        $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
+        $totalSyncTpsCredit = ConsumeQuotaService::getConsumeQuotaRecordList([
+            'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+            'originId' => $user->id,
+            'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+        ], 15, true)->sum('sync_tps_credit');
+
+        $contributeToParent = 0;
+        $parent = InviteUserService::getParent($user->id);
+        if ($parent) {
+            if ($parent instanceof User) {
+                $originType = WalletConsumeQuotaRecord::ORIGIN_TYPE_USER;
+            } elseif ($parent instanceof Merchant) {
+                $originType = WalletConsumeQuotaRecord::ORIGIN_TYPE_MERCHANT;
+            } elseif ($parent instanceof Oper) {
+                $originType = WalletConsumeQuotaRecord::ORIGIN_TYPE_OPER;
+            } else {
+                throw new BaseResponseException('改状态不存在');
+            }
+            $contributeToParent = ConsumeQuotaService::getConsumeQuotaRecordList([
+                'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+                'originId' => $user->id,
+                'originType' => $originType,
+            ], 15, true)->sum('sync_tps_credit');
+        }
+
+        return Result::success([
+            'totalTpsCredit' => $wallet->total_tps_credit, // 个人消费获得TPS积分
+            'totalShareTpsCredit' => $wallet->total_share_tps_credit, // 下级累计贡献TPS积分
+            'tpsCreditSum' => $wallet->total_share_tps_credit + $wallet->total_tps_credit, // 总累计TPS积分
+            'totalSyncTpsCredit' => $totalSyncTpsCredit, // 已置换
+            'contributeToParent' => $contributeToParent, // 累计贡献上级TPS积分
+            'showReminder' => 1, // 是否显示提示语 0-不显示 1-显示
+        ]);
+    }
+
+    /**
+     * 获取tps积分列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getTpsCreditList()
+    {
+        $month = request('month');
+        if(empty($month)){
+            $month = date('Y-m');
+        }
+        $type = request('type', '');
+        $pageSize = request('pageSize', 15);
+        $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        $endDate = $startDate->copy()->endOfMonth();
+        $originId = request()->get('current_user')->id;
+        $query = ConsumeQuotaService::getConsumeQuotaRecordList([
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'type' => $type,
+            'originId' => $originId,
+            'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+            'syncTpsCredit' => true,
+        ], $pageSize, true);
+        // 先计算总数在分页
+        $totalTpsCredit = $query->sum('sync_tps_credit');
+        $data = $query->paginate($pageSize);
+
+        $hasSyncTpsCredit = ConsumeQuotaService::getConsumeQuotaRecordList([
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'type' => $type,
+            'originId' => $originId,
+            'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+            'syncTpsCredit' => true,
+            'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+        ], $pageSize, true)->sum('sync_tps_credit');
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+            'totalTpsCredit' => $totalTpsCredit, // 获得TPS积分
+            'hasSyncTpsCredit' => $hasSyncTpsCredit // 置换TPS积分
+        ]);
+    }
+
+    /**
      * 校验旧密码
      * Author:  Jerry
      * Date:    180831
@@ -167,10 +292,14 @@ class WalletController extends Controller
         $this->validate($request, [
             'password'  =>  'required|numeric'
         ]);
-        WalletService::confirmPassword( $request->input('password'), $request->get('current_user')->id);
+        $user = $request->get('current_user');
+        WalletService::checkPayPassword( $request->input('password'), $user->id);
         // 记录确认密码时间
-        session(['confirm_password'=>time()]);
-        return Result::success('确认成功');
+        $token = str_random();
+        Cache::put('user_pay_password_modify_temp_token_' . $user->id, $token, 3);
+        return Result::success([
+            'temp_token' => $token
+        ]);
     }
 
     /**
@@ -186,17 +315,20 @@ class WalletController extends Controller
         if( !empty($wallet['withdraw_password']) )
         {
             // 如果已设置过密码，则走以下逻辑
-            $confirmTime = session('confirm_password');
-            if( $confirmTime==0 )
-            {
-                return Result::error(ResultCode::NO_PERMISSION,'无权操作,请先验证旧密码');
+            $this->validate($request, [
+                'temp_token' => 'required'
+            ]);
+            $inputToken = $request->get('temp_token');
+            $user = $request->get('current_user');
+            $tempToken = Cache::get('user_pay_password_modify_temp_token_' . $user->id);
+            if(empty($tempToken)){
+                throw new NoPermissionException('您的验证信息已超时, 请返回重新验证');
             }
-            // 3分钟有效期
-            $confirmTime+= 3*60;
-            if( $confirmTime < time() )
-            {
-                return Result::error(ResultCode::NO_PERMISSION,'超过有效期请重新验证旧密码' );
+            if($tempToken != $inputToken){
+                throw new NoPermissionException('验证信息无效');
             }
+            // 删除有效时间，避免重复提交
+            Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
         }
         $this->validate($request, [
             'password'  =>  'required|numeric'
@@ -205,36 +337,9 @@ class WalletController extends Controller
         $res = WalletService::updateWalletWithdrawPassword( $wallet, $request->input('password'));
         if( $res )
         {
-            // 删除有效时间，避免重复提交
-            session(['confirm_password'=>null]);
             return Result::success('重置密码成功');
         }
-        return Result::error(ResultCode::DB_UPDATE_FAIL, '重置密码失败');
-    }
-
-    /**
-     * 发送短信验证码
-     * Author:  Jerry
-     * Date:    180831
-     * @param Request $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
-    public function sendVerifyCode(Request $request)
-    {
-        $sendTime  = session('verify_code_time');
-        $minute     = 1;
-        $addTime   = $sendTime+60*$minute;
-        if( $sendTime!=0 && $addTime>time() )
-        {
-            return Result::error(ResultCode::NO_PERMISSION, $minute.'分钟内不可重复发送');
-        }
-        $currentUser = $request->get('current_user');
-        $code   = rand(100000,999999);
-        SmsService::sendVerifyCode( $currentUser->mobile, $code);
-        // 记录发送时间
-        session(['verify_code'=> $code]);
-        session(['verify_code_time'=>time()]);
-        return Result::success(/*['verify_code'=>$code]*/);
+        throw new BaseResponseException('重置密码失败', ResultCode::DB_UPDATE_FAIL);
     }
 
     /**
@@ -246,26 +351,20 @@ class WalletController extends Controller
      */
     public function checkVerifyCode( Request $request )
     {
-        $sendTime  = $request->session()->get('verify_code_time', 0);
-        if( $sendTime==0 )
-        {
-            return Result::error(ResultCode::NO_PERMISSION, '无权操作');
+        $this->validate($request, [
+            'verify_code' => 'required|min:4'
+        ]);
+        $verifyCode = $request->get('verify_code');
+        $user = $request->get('current_user');
+        $result = SmsService::checkVerifyCode($user->mobile, $verifyCode);
+        if($result) {
+            $token = str_random();
+            Cache::put('user_pay_password_modify_temp_token_' . $user->id, $token, 3);
+            return Result::success([
+                'temp_token' => $token
+            ]);
         }
-        $minute    = 3;
-        $addTime   = $sendTime+60*$minute;
-        // 设置有效时间为3分钟
-        if( $addTime < time() )
-        {
-            return Result::error(ResultCode::NO_PERMISSION, '验证码已过期');
-        }
-        $code = session('verify_code');
-        if( $code!= $request->input('verify_code') )
-        {
-            return Result::error(ResultCode::NO_PERMISSION, '验证码错误');
-        }
-        // 记录确认密码时间
-        session( ['confirm_password'=>time()] );
-        return Result::success('确认成功');
+        throw new ParamInvalidException('验证码错误');
     }
 
 

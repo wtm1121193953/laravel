@@ -108,6 +108,32 @@ class WechatService
     }
 
     /**
+     * 获取平台微信支付的 EasyWechat App
+     * @param $operId
+     * @return \EasyWeChat\Payment\Application
+     */
+    public static function getWechatPayAppForPlatform()
+    {
+
+        $platform = config('platform');
+
+        $config = [
+            // 必要配置
+            'app_id' => $platform['miniprogram']['app_id'],
+            'mch_id'             => $platform['wechat_pay']['mch_id'],
+            'key'                => $platform['wechat_pay']['key'],   // API 密钥
+
+            // 如需使用敏感接口（如退款、发送红包等）需要配置 API 证书路径(登录商户平台下载 API 证书)
+            'cert_path'          => $platform['wechat_pay']['cert_path'], // XXX: 绝对路径！！！！
+            'key_path'           => $platform['wechat_pay']['key_path'],      // XXX: 绝对路径！！！！
+
+            'notify_url' => request()->getSchemeAndHttpHost() . '/api/pay/notify',     // 你也可以在下单时单独设置来想覆盖它
+        ];
+
+        return Factory::payment($config);
+    }
+
+    /**
      * 生成小程序码
      * @param $operId
      * @param $sceneId

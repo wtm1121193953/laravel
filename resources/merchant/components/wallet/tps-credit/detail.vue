@@ -1,5 +1,5 @@
 <template>
-    <page title="积分明细" :breadcrumbs="{我的TPS积分: '/wallet/credit/list'}">
+    <page title="积分明细" v-loading="formLoading" :breadcrumbs="{我的TPS积分: '/wallet/credit/list'}">
         <el-row :gutter="20">
             <el-form label-width="120px" label-position="left" size="small">
                 <el-col :span="12">
@@ -10,19 +10,10 @@
                         {{data.created_at}}
                     </el-form-item>
                     <el-form-item label="贡献TPS积分">
-                        {{data.sync_tps_credit}}
+                        {{parseFloat(data.sync_tps_credit).toFixed(2)}}
                     </el-form-item>
-                    <el-form-item v-if="data.status == 1" label="解冻时间">
-                        {{data.time}}
-                    </el-form-item>
-                    <el-form-item v-if="data.status == 2" label="解冻时间">
-                        {{data.time}}
-                    </el-form-item>
-                    <el-form-item v-if="data.status == 3" label="置换时间">
-                        {{data.time}}
-                    </el-form-item>
-                    <el-form-item v-if="data.status == 4" label="退款时间">
-                        {{data.time}}
+                    <el-form-item label="置换时间">
+                        {{data.sync_time}}
                     </el-form-item>
                 </el-col>
                 <el-col :span="12">
@@ -54,12 +45,15 @@
         data() {
             return {
                 data: {},
+                formLoading: false,
             }
         },
         methods: {
             getDetail(id) {
+                this.formLoading = true;
                 api.get('/wallet/tpsCredit/detail', {id: id}).then(data => {
                     this.data = data;
+                    this.formLoading = false;
                 })
             },
             goBack() {

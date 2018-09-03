@@ -1,8 +1,13 @@
 <template>
 
-    <page title="结算列表【新】" v-loading="isLoading">
-
-
+    <page title="商户货款结算管理" v-loading="isLoading">
+        <el-col style="margin-bottom: 10px;">
+            <el-alert
+                    title="温馨提示：单日订单金额小于100元，不生成结算单，总订单金额累计到100元后再生成结算单"
+                    type="success"
+                    close-text="知道了">
+            </el-alert>
+        </el-col>
         <el-col>
             <el-form v-model="query" inline>
                 <el-form-item prop="merchantId" label="商户名称" >
@@ -38,13 +43,9 @@
                         <el-option label="未打款" value="1"/>
                         <el-option label="打款中" value="2"/>
                         <el-option label="已打款" value="3"/>
-                        <el-option label="已到账" value="4"/>
-                        <el-option label="打款失败" value="5"/>
+                        <!--<el-option label="已到账" value="4"/>
+                        <el-option label="打款失败" value="5"/>-->
                     </el-select>
-                </el-form-item>
-                <el-form-item>
-                    <!-- `checked` 为 true 或 false -->
-                    <el-checkbox v-model="query.show_zero" prop="show_zero">显示结算金额为0 的数据</el-checkbox>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
@@ -61,10 +62,16 @@
         </el-dialog>
 
         <el-table :data="list" v-loading="tableLoading" stripe>
+            <el-table-column prop="merchant.id" label="商户ID"  width="100px" />
             <el-table-column prop="merchant.name" label="结算商户"  width="160px" />
+            <el-table-column prop="date" label="结算时间"/>
+            <el-table-column prop="date" label="结算周期">
+                <template slot-scope="scope">
+                    {{scope.row.start_date}} 至 {{scope.row.end_date}}
+                </template>
+            </el-table-column>
             <el-table-column prop="oper.name" size="mini"	 label="运营中心"/>
             <!--<el-table-column prop="created_at" label="结算时间"/>-->
-            <el-table-column prop="date" label="结算订单日期"/>
             <el-table-column prop="amount" size="mini" label="订单金额"/>
             <!--<el-table-column prop="settlement_rate" label="利率"/>-->
             <el-table-column prop="real_amount" label="结算金额" />
@@ -73,6 +80,8 @@
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="showOrders(scope)">查看</el-button>
+                    <el-button type="text"
+                               v-if="parseInt(scope.row.status) === 1" @click="modifyPlatformStatus(scope)">确认打款</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -157,13 +166,19 @@
                         + '&status='+ this.query.status
                         + '&show_zero=' + this.query.show_zero ;
                 })
-            }
+            },
+            modifyPlatformStatus(scope){
+
+                this.$confirm('确认此单已完成打款了吗，请再次确认?').then(() => {
+                    api.get('/settlement/modifyStatus', {id: scope.row.id});
+                    this.getList();
+                })
+            },
         },
         created(){
 
             Object.assign(this.query, this.$route.params);
             this.getList();
-
 
         },
         components: {

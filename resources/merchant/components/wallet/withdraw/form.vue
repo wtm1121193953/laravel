@@ -6,11 +6,11 @@
                     {{initForm.balance}}
                 </el-form-item>
                 <el-form-item prop="amount" label="提现金额">
-                    <el-input-number v-model="form.amount" :min="0" :max="initForm.balance"/>
+                    <el-input-number v-model="form.amount" :precision="2" :min="0" :max="parseFloat(initForm.balance)"/>
                     <div>手续费{{chargeAmount}}</div>
                 </el-form-item>
                 <el-form-item prop="withdrawPassword" label="提现密码">
-                    <el-input v-model="form.withdrawPassword" type="password" :maxlength="6" placeholder="6位存数字密码"/>
+                    <el-input v-model="form.withdrawPassword" type="password" :maxlength="6" placeholder="6位纯数字密码"/>
                 </el-form-item>
                 <el-form-item v-if="initForm.bankCardType == 1" prop="invoiceExpressCompany" label="发票快递公司">
                     <el-input v-model="form.invoiceExpressCompany"/>
@@ -148,10 +148,12 @@
         computed: {
             //手续费
             chargeAmount() {
+                if (this.form.amount == undefined) this.form.amount = 0;
                 return (this.form.amount * this.initForm.ratio / 100).toFixed(2);
             },
             //到账金额
             remitAmount() {
+                if (this.form.amount == undefined) this.form.amount = 0;
                 return (this.form.amount * (1 - this.initForm.ratio / 100)).toFixed(2);
             }
         },

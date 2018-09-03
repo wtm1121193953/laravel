@@ -64,11 +64,22 @@ class SettlementService extends BaseService
      * 根据商户ID及结算单获取结算单信息
      * @param $settlementId
      * @param $merchantId
-     * @return Settlement
+     * @return \Illuminate\Support\Collection
      */
     public static function getByIdAndMerchantId($settlementId, $merchantId)
     {
-        return Settlement::where('id', $settlementId)->where('merchant_id', $merchantId)->first();
+        return Settlement::where('id', $settlementId)->where('merchant_id', $merchantId)->pluck('settlement_date');
+    }
+
+    /**
+     * 根据所属运营中心ID及商家ID获取结时间
+     * @param $operId
+     * @param $merchantId
+     * @return Settlement
+     */
+    public static function getByOperIdAndMerchantId($operId, $merchantId)
+    {
+        return Settlement::where('oper_id', $operId)->where('merchant_id', $merchantId)->first();
     }
 
     /**

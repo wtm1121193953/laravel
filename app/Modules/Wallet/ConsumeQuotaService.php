@@ -14,6 +14,7 @@ use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Support\TpsApi;
 use App\Support\Utils;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -115,8 +116,8 @@ class ConsumeQuotaService extends BaseService
             // 2.添加消费额解冻记录
             self::createWalletConsumeQuotaUnfreezeRecord($walletConsumeQuotaRecord, $wallet);
             // 3.更新钱包信息
-            $wallet->consume_quota += $walletConsumeQuotaRecord->consume_quota;            // 添加当月消费额（不包含冻结）
-            $wallet->freeze_consume_quota -= $walletConsumeQuotaRecord->consume_quota;     // 减去当月冻结的消费额
+            $wallet->consume_quota = DB::raw('consume_quota + ' . $walletConsumeQuotaRecord->consume_quota);            // 添加当月消费额（不包含冻结）
+            $wallet->freeze_consume_quota = DB::raw('freeze_consume_quota - ' . $walletConsumeQuotaRecord->consume_quota);     // 减去当月冻结的消费额
             $wallet->save();
             // 4.更新消费额记录
             $walletConsumeQuotaRecord->status = WalletConsumeQuotaRecord::STATUS_UNFREEZE;
@@ -149,40 +150,50 @@ class ConsumeQuotaService extends BaseService
     {
         // 同步消费额到TPS
         $records = $order->consumeQuotaRecords()->whereIn('status', [
-            WalletConsumeQuotaRecord::STATUS_FAILED ,
-            WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
+            WalletConsumeQuotaRecord::STATUS_UNFREEZE ,
             WalletConsumeQuotaRecord::STATUS_FAILED]
         )->get();
         // 拼装要发送的数据
         $data = [];
-        $tpsId= [];
+        $recordIds= [];
         foreach ($records as $record) {
             $tpsBind = TpsBindService::getTpsBindInfoByOriginInfo( $record->origin_id, $record->origin_type );
+            if(empty($tpsBind)){
+                // 用户没有绑定tps账号, 不再置换
+                Log::warning('用户没有绑定tps账号, 不置换积分以及消费额', ['origin_id' => $record->origin_id, 'origin_type' => $record->origin_type, 'quotaRecord' => $record]);
+                continue;
+            }
             $data[] = [
                 'orderId'       => $order->order_no,
                 'orderPayTime'  => $order->pay_time,
                 'createTime'    => $order->created_at->toDateTimeString(),
                 'customerId'    => $tpsBind->tps_uid,
                 'shopkeeperId'  => $tpsBind->tps_uid,
-                'orderAmountUsd'=> $record->consume_quota/6.5,
-                'orderProfitUsd'=> $record->consume_quota_profit/6.5,
-                'score'         => $record->tps_credit*100,
+                'orderAmountUsd'=> $record->tps_consume_quota,
+                'orderProfitUsd'=> $record->consume_quota_profit,
+                'score'         => $record->sync_tps_credit,
                 'status'        => $record->status,
-//                'scoreYearMonth'=> '',
             ];
-            $tpsId[] = $record->id;
+            $recordIds[] = $record->id;
         }
         if( empty($data) )
         {
             return false;
         }
         // 发起请求
-        $res = TpsApi::quotaRecords( $data );
-        $saveData['status'] = ( $res['code']=='101' ) ? WalletConsumeQuotaRecord::STATUS_FAILED : WalletConsumeQuotaRecord::STATUS_REPLACEMENT;
+        $res = TpsApi::syncQuotaRecords( $data );
+        $status = ( $res['code']=='101' ) ? WalletConsumeQuotaRecord::STATUS_FAILED : WalletConsumeQuotaRecord::STATUS_REPLACEMENT;
 
-        if( !WalletConsumeQuotaRecord::whereIn('id', $tpsId)->update( $saveData ) )
+        $saveData = [
+            'status' => $status,
+            'sync_time' => Carbon::now(),
+        ];
+        if( !WalletConsumeQuotaRecord::whereIn('id', $recordIds)->update( $saveData ) )
         {
-            Log::info('消费记录提交成功，但入库修改失败');
+            Log::error('消费记录提交成功，但入库修改失败', [
+                'WalletConsumeQuotaRecord ids' => $recordIds,
+                'saveData' => $saveData
+            ]);
         }
     }
 
@@ -267,15 +278,20 @@ class ConsumeQuotaService extends BaseService
         $status = array_get($param, 'status', 0);
         $originId = array_get($param, 'originId', 0);
         $originType = array_get($param, 'originType', 0);
+        $type = array_get($param, 'type', '');
+        $syncTpsCredit = array_get($param, 'syncTpsCredit', false);
 
         $query = WalletConsumeQuotaRecord::when($originId, function (Builder $query) use ($originId) {
-            $query->where('origin_id', $originId);
-        })
+                $query->where('origin_id', $originId);
+            })
             ->when($originType, function (Builder $query) use ($originType) {
                 $query->where('origin_type', $originType);
             })
             ->when($consumeQuotaNo, function (Builder $query) use ($consumeQuotaNo) {
-                $query->where('consume_quota_no', $consumeQuotaNo);
+                $query->where('consume_quota_no', 'like', "%$consumeQuotaNo%");
+            })
+            ->when($type, function (Builder $query) use ($type) {
+                $query->where('type', $type);
             })
             ->when($startDate, function (Builder $query) use ($startDate) {
                 $query->whereDate('created_at', '>', $startDate);
@@ -285,6 +301,9 @@ class ConsumeQuotaService extends BaseService
             })
             ->when($status, function (Builder $query) use ($status) {
                 $query->where('status', $status);
+            })
+            ->when($syncTpsCredit, function (Builder $query) {
+                $query->where('sync_tps_credit', '>', 0);
             })
             ->orderBy('created_at', 'desc');
         if ($withQuery) {

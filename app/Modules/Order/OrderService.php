@@ -15,7 +15,11 @@ use App\Jobs\OrderPaidJob;
 use App\Modules\Dishes\DishesGoods;
 use App\Jobs\OrderFinishedJob;
 use App\Modules\Dishes\DishesItem;
+use App\Modules\FeeSplitting\FeeSplittingRecord;
+use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Goods\Goods;
+use App\Modules\Invite\InviteUserRecord;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Sms\SmsService;
 use App\Modules\User\User;
@@ -344,9 +348,6 @@ class OrderService extends BaseService
                 $orderPay->amount = $totalFee;
                 $orderPay->save();
                 OrderPaidJob::dispatch($order);
-                if($order->status == Order::STATUS_FINISHED){
-                    OrderFinishedJob::dispatch($order);
-                }
                 DB::commit();
             }catch (\Exception $e){
                 DB::rollBack();

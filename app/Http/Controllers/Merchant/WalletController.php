@@ -32,22 +32,21 @@ class WalletController extends Controller
         $type = request('type', 0);
         $pageSize = request('pageSize', 15);
 
-        $typeArr = [];
         if ($type) {
             if ($type == 1) {
-                $typeArr = [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED];
+                $type = [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED];
             } elseif ($type == 2) {
-                $typeArr = [WalletBill::TYPE_SELF, WalletBill::TYPE_SUBORDINATE, WalletBill::TYPE_OPER];
+                $type = [WalletBill::TYPE_SELF, WalletBill::TYPE_SUBORDINATE, WalletBill::TYPE_OPER];
             } elseif ($type == 3) {
-                $typeArr = [WalletBill::TYPE_SELF_CONSUME_REFUND, WalletBill::TYPE_SUBORDINATE_REFUND, WalletBill::TYPE_OPER_REFUND];
+                $type = [WalletBill::TYPE_SELF_CONSUME_REFUND, WalletBill::TYPE_SUBORDINATE_REFUND, WalletBill::TYPE_OPER_REFUND];
             } else {
-                $typeArr = [];
+                $type = [];
             }
         }
 
         $originId = request()->get('current_user')->merchant_id;
         $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
-        $param = compact('billNo', 'startDate', 'endDate', 'typeArr', 'originId', 'originType');
+        $param = compact('billNo', 'startDate', 'endDate', 'type', 'originId', 'originType');
         $data = WalletService::getBillList($param, $pageSize);
         // 获取钱包信息
         $wallet = WalletService::getWalletInfoByOriginInfo($originId, $originType);
@@ -73,22 +72,21 @@ class WalletController extends Controller
         $type = request('type', 0);
         $pageSize = request('pageSize', 15);
 
-        $typeArr = [];
         if ($type) {
             if ($type == 1) {
-                $typeArr = [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED];
+                $type = [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED];
             } elseif ($type == 2) {
-                $typeArr = [WalletBill::TYPE_SELF, WalletBill::TYPE_SUBORDINATE, WalletBill::TYPE_OPER];
+                $type = [WalletBill::TYPE_SELF, WalletBill::TYPE_SUBORDINATE, WalletBill::TYPE_OPER];
             } elseif ($type == 3) {
-                $typeArr = [WalletBill::TYPE_SELF_CONSUME_REFUND, WalletBill::TYPE_SUBORDINATE_REFUND, WalletBill::TYPE_OPER_REFUND];
+                $type = [WalletBill::TYPE_SELF_CONSUME_REFUND, WalletBill::TYPE_SUBORDINATE_REFUND, WalletBill::TYPE_OPER_REFUND];
             } else {
-                $typeArr = [];
+                $type = [];
             }
         }
 
         $originId = request()->get('current_user')->merchant_id;
         $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
-        $param = compact('billNo', 'startDate', 'endDate', 'typeArr', 'originId', 'originType');
+        $param = compact('billNo', 'startDate', 'endDate', 'type', 'originId', 'originType');
         $query = WalletService::getBillList($param, $pageSize, true);
 
         return (new WalletBillExport($query, $originType))->download('商户交易流水.xlsx');
@@ -217,11 +215,13 @@ class WalletController extends Controller
         $data = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
         // 获取钱包信息
         $wallet = WalletService::getWalletInfoByOriginInfo($originId, $originType);
+        $theMonthShareTpsCredit = ConsumeQuotaService::getConsumeQuotaRecordList(compact('originType', 'originId'), $pageSize, true)->sum('sync_tps_credit');
 
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
             'totalShareTpsCredit' => $wallet->total_share_tps_credit,
+            'theMonthShareTpsCredit' => $theMonthShareTpsCredit,
         ]);
     }
 
@@ -240,7 +240,7 @@ class WalletController extends Controller
         $originId = request()->get('current_user')->merchant_id;
         $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
         $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
-        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
+        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize, true);
 
         return (new WalletTpsCreditExport($query))->download('我的TPS积分记录表.xlsx');
     }
@@ -257,16 +257,6 @@ class WalletController extends Controller
         $id = request('id');
         $tpsCredit = ConsumeQuotaService::getConsumeQuotaRecordById($id);
         if (empty($tpsCredit)) throw new BaseResponseException('该消费额记录不存在');
-
-        if ($tpsCredit->status == WalletConsumeQuotaRecord::STATUS_REPLACEMENT || $tpsCredit->status == WalletConsumeQuotaRecord::STATUS_UNFREEZE) {
-            $consumeQuotaUnfreezeRecord = ConsumeQuotaService::getConsumeQuotaUnfreezeRecordById($tpsCredit->id);
-            $tpsCredit->time = $consumeQuotaUnfreezeRecord->created_at->format('Y-m-d H:i:s');
-        } elseif ($tpsCredit->status == WalletConsumeQuotaRecord::STATUS_REFUND) {
-            $order = OrderService::getById($tpsCredit->order_id);
-            $tpsCredit->time = $order->refund_time->format('Y-m-d H:i:s');
-        } else {
-            $tpsCredit->time = null;
-        }
 
         return Result::success($tpsCredit);
     }

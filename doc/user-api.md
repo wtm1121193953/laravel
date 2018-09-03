@@ -1412,7 +1412,7 @@ order_no 订单号
   }
   ```
 
-- [ ] 获取消费额列表
+- [ ] 获取TPS消费额列表
 
   地址: GET `wallet/consumeQuotas`
 
@@ -1452,7 +1452,7 @@ order_no 订单号
   }
   ```
 
-- [ ] 获取消费额详情
+- [ ] 获取TPS消费额详情
 
   地址: GET `wallet/consumeQuota/detail`
 
@@ -1500,6 +1500,29 @@ order_no 订单号
   }
   ```
 
+- [ ] 获取TPS消费额统计
+
+  地址：GET `wallet/tpsConsume/statistics`
+
+  参数： 无
+
+  返回： 
+
+  ```
+  {
+      "code": 0,
+      "message": "请求成功",
+      "data": {
+          "totalTpsConsume": 累计置换TPS消费额,
+          "theMonthTpsConsume": 本月已置换TPS消费额,
+          'showReminder': 1, // 是否显示提示语 0-不显示 1-显示
+      },
+      "timestamp": 1535870137
+  }
+  ```
+
+  
+
 - [ ] 根据商户ID获取该商户订单下 分润给用户自己的分润系数
 
   地址：GET `wallet/userFeeSplitting/ratio`
@@ -1520,6 +1543,84 @@ order_no 订单号
           "ratio": 分润给用户自己的系数 （直接乘以订单金额就好了）
       },
       "timestamp": 1535528467
+  }
+  ```
+
+  
+
+- [ ] 获取TPS积分统计
+
+  地址：GET `wallet/tpsCredit/statistics`
+
+  参数：无
+
+  返回：
+
+  ```
+  {
+      "code": 0,
+      "message": "请求成功",
+      "data": {
+          "totalTpsCredit": 个人消费获得TPS积分,
+          "totalShareTpsCredit": 下级累计贡献TPS积分,
+          "tpsCreditSum": 总累计TPS积分,
+          "totalSyncTpsCredit": 已置换的TPS积分,
+          "contributeToParent": 累计贡献上级TPS积分,
+          'showReminder': 1, // 是否显示提示语 0-不显示 1-显示
+      },
+      "timestamp": 1535870518
+  }
+  ```
+
+- [ ] 获取TPS积分列表
+
+  地址： `wallet/tpsCredit/list`
+
+  参数：
+
+  ```
+  month: 月份 yyyy-MM （不传默认当月）
+  type: 来源类型 1-自己消费 2-下级贡献 （不传默认全部）
+  pageSize: 分页大小 （默认15）
+  page: 当前页数 （默认为1）
+  ```
+
+  返回： 
+
+  ```
+  {
+      "code": 0,
+      "message": "请求成功",
+      "data": {
+          "list": [ 积分列表数据
+              {
+                  "id": 消费额记录ID
+                  "wallet_id": 钱包ID,
+                  "consume_quota_no": 消费额交易号,
+                  "origin_id": 用户ID,
+                  "origin_type": 用户类型 1-用户 2-商户 3-运营中心,
+                  "type": 来源类型 1-消费自返 2-直接下级消费返[下级返时只有积分 其他全部为0],
+                  "order_id": 分润的订单ID,
+                  "order_no": 分润的订单号,
+                  "pay_price": 支付金额,
+                  "order_profit_amount": 订单利润 (订单毛利润-税-分润金额),
+                  "consume_quota": 消费额 [ =订单金额 ],
+                  "consume_quota_profit": TPS消费额对应的利润金额 (订单利润/2),
+                  "tps_consume_quota": TPS消费额 (订单金额/6/汇率[6.5])  单位: 美金,
+                  "tps_credit": 消费额转化的tps积分值 (TPS消费额/4),
+                  "sync_tps_credit": 要同步给tps的积分值, 累计积分每满1积分才同步,
+                  "consume_user_mobile": 消费用户手机号,
+                  "status": 状态 1-冻结中 2-已解冻待置换 3-已置换 4-已退款,
+                  "created_at": "2018-08-31 15:00:32",
+                  "updated_at": "2018-08-31 15:00:32"
+              },
+              ......
+          ],
+          "total": 总条数
+          "totalTpsCredit": 当月获得的TPS积分
+          "hasSyncTpsCredit": 当月置换的TPS积分
+      },
+      "timestamp": 1535871197
   }
   ```
 

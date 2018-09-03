@@ -33,8 +33,9 @@
             </el-form-item>
             <el-form-item label="认证状态" prop="status">
                 <el-select v-model="query.status" size="small"  multiple placeholder="请选择" class="w-150">
-                    <el-option label="正常" value="1"/>
-                    <el-option label="禁用" value="2"/>
+                    <el-option label="待审核" value="1"/>
+                    <el-option label="审核通过" value="2"/>
+                    <el-option label="审核失败" value="3"/>
                 </el-select>
             </el-form-item>
             <el-form-item>

@@ -29,7 +29,7 @@ class WalletBatchService extends BaseService
         $query = WalletBatch::query();
 
         if ($batchNo) {
-            $query->where('batch_no', $batchNo);
+            $query->where('batch_no', 'like', "%$batchNo%");
         }
         if ($type) {
             $query->where('type', $type);

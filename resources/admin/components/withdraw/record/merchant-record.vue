@@ -2,13 +2,13 @@
     <el-col>
         <el-form v-model="form" inline size="small">
             <el-form-item prop="withdrawNo" label="提现编号">
-                <el-input v-model="form.withdrawNo" clearable class="w-200"/>
+                <el-input v-model="form.withdrawNo" clearable placeholder="请输入提现编号" class="w-200"/>
             </el-form-item>
             <el-form-item prop="merchantName" label="商户名称">
-                <el-input v-model="form.merchantName" clearable/>
+                <el-input v-model="form.merchantName" clearable placeholder="请输入商户名称"/>
             </el-form-item>
             <el-form-item prop="merchantId" label="商户ID">
-                <el-input v-model="form.merchantId" clearable class="w-100"/>
+                <el-input v-model="form.merchantId" clearable placeholder="商户ID" class="w-100"/>
             </el-form-item>
             <el-form-item prop="bankCardType" label="账户类型">
                 <el-select v-model="form.bankCardType" placeholder="请选择" clearable class="w-100">
@@ -18,7 +18,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item prop="operName" label="运营中心名称">
-                <el-input v-model="form.operName" clearable/>
+                <el-input v-model="form.operName" clearable placeholder="请输入运营中心名称"/>
             </el-form-item>
             <el-form-item label="提现时间">
                 <el-date-picker

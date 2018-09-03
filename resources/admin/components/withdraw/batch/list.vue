@@ -2,7 +2,7 @@
     <page title="提现批次管理">
         <el-form v-model="form" inline size="small">
             <el-form-item prop="batchNo" label="批次编号">
-                <el-input v-model="form.batchNo" clearable class="w-200"/>
+                <el-input v-model="form.batchNo" clearable placeholder="请输入批次编号" class="w-200"/>
             </el-form-item>
             <el-form-item prop="type" label="批次类型">
                 <el-select v-model="form.type" placeholder="请选择" clearable class="w-100">

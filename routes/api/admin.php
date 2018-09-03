@@ -84,9 +84,9 @@ Route::prefix('admin')
         Route::group([], base_path('routes/api/admin/setting.php'));
         Route::group([], base_path('routes/api/admin/wallet.php'));
 
-        Route::get('settlements', 'SettlementController@getList');
         Route::get('settlement/platforms', 'SettlementPlatformController@getList');
         Route::get('settlement/download', 'SettlementPlatformController@downloadExcel');
+        Route::get('settlement/modifyStatus', 'SettlementPlatformController@modifyStatus');
 
         Route::get('getPlatformOrders', 'SettlementPlatformController@getSettlementOrders');
     });

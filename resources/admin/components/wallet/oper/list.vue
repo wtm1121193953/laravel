@@ -2,10 +2,10 @@
     <page title="运营中心账户管理">
         <el-form v-model="form" inline size="small">
             <el-form-item prop="operName" label="运营中心名称">
-                <el-input v-model="form.operName" clearable/>
+                <el-input v-model="form.operName" clearable placeholder="请输入运营中心名称"/>
             </el-form-item>
             <el-form-item prop="operId" label="运营中心ID">
-                <el-input v-model="form.operId" clearable class="w-100"/>
+                <el-input v-model="form.operId" clearable placeholder="运营中心ID" class="w-100"/>
             </el-form-item>
             <el-form-item label="账户状态">
                 <el-select v-model="form.status" clearable class="w-100">

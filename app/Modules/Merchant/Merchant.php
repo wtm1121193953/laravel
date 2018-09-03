@@ -50,7 +50,14 @@ use Carbon\Carbon;
  * @property int bank_card_type
  * @property string bank_open_name
  * @property string bank_card_no
+ * @property string bank_name
  * @property string sub_bank_name
+ * @property string bank_province
+ * @property integer bank_province_id
+ * @property string bank_city
+ * @property integer bank_city_id
+ * @property string bank_area
+ * @property integer bank_area_id
  * @property string bank_open_address
  * @property int audit_status
  * @property string audit_suggestion
@@ -187,8 +194,18 @@ class Merchant extends BaseModel
         $this->settlement_rate = request('settlement_rate', 0.00);
         // 银行卡信息
         $this->bank_card_type = request('bank_card_type', 1);
+        $this->bank_name = request('bank_name','');
         $this->bank_open_name = request('bank_open_name','');
         $this->bank_card_no = request('bank_card_no','');
+        $bankProvinceId = request('bank_province_id', 0);
+        $bankCityId = request('bank_city_id', 0);
+        $bankAreaId = request('bank_area_id', 0);
+        $this->bank_province = $bankProvinceId ? Area::getNameByAreaId($bankProvinceId) : '';
+        $this->bank_province_id = $bankProvinceId;
+        $this->bank_city = $bankCityId ? Area::getNameByAreaId($bankCityId) : '';
+        $this->bank_city_id = $bankCityId;
+        $this->bank_area = $bankAreaId ? Area::getNameByAreaId($bankAreaId) : '';
+        $this->bank_area_id = $bankAreaId;
         $this->sub_bank_name = request('sub_bank_name','');
         $this->bank_open_address = request('bank_open_address','');
         $bankCardPicA = request('bank_card_pic_a','');

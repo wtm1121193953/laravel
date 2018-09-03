@@ -98,22 +98,27 @@
             commit() {
                 this.$refs.form.validate(valid => {
                     if (valid) {
-                        if (!(/^1[3,4,5,6,7,8,9]\d{9}$/.test(this.mobile))) {
+                        if (!(/^1[3456789]\d{9}$/.test(this.mobile))) {
                             this.$message.error('手机号码格式错误');
                             return false;
                         }
                         this.form.mobile = this.mobile;
+                        console.log(111,this.form);
                         api.post('/wallet/withdraw/setWalletPassword', this.form).then(data => {
+                            console.log('222')
                             this.$message.success('提现密码设置成功');
                             this.$refs.form.resetFields();
                             this.initForm();
+                            this.cancel()
                         });
                     }
                 })
-                router.go(-1);
             },
             cancel() {
-                router.go(-1);
+                if(this.$route.query.redirect){
+                    router.replace(this.$route.query.redirect)
+                }
+                this.editPassword = true
             },
             getVerifyCode() {
                 let self = this;
