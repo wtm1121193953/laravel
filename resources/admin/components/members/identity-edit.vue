@@ -35,7 +35,7 @@
                                 <el-input
                                         type="textarea"
                                         :rows="2"
-                                        placeholder="拒绝理由"
+                                        placeholder="最多输入50字汉字，可不填"
                                         maxlength="50"
                                         v-model="info.reason">
                                 </el-input>
