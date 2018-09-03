@@ -97,11 +97,32 @@
             <el-form-item prop="bank_card_no" label="银行账号">
                 <el-input v-model="form.bank_card_no"/>
             </el-form-item>
-            <el-form-item prop="sub_bank_name" label="开户支行名称">
-                <el-input v-model="form.sub_bank_name"/>
+            <el-form-item prop="bank_name" label="开户行">
+                <el-select v-model="form.bank_name">
+                    <el-option
+                            v-for="item in bankList"
+                            :value="item.name"
+                            :label="item.name"
+                            :key="item.id"
+                    ></el-option>
+                </el-select>
             </el-form-item>
-            <el-form-item prop="bank_open_address" label="开户支行地址">
-                <el-input v-model="form.bank_open_address"/>
+            <el-form-item prop="sub_bank_name" label="开户行网点名称">
+                <el-input v-model="form.sub_bank_name" placeholder="填写银行网点具体名称，如北京市××分行××支行"/>
+            </el-form-item>
+            <el-form-item prop="area" label="开户行网点地址">
+                <el-cascader
+                        :options="areaOptions"
+                        :props="{
+                            value: 'area_id',
+                            label: 'name',
+                            children: 'sub',
+                        }"
+                        v-model="form.bank_area">
+                </el-cascader>
+            </el-form-item>
+            <el-form-item prop="bank_open_address">
+                <el-input v-model="form.bank_open_address" placeholder="银行网点详细地址"/>
             </el-form-item>
             <el-form-item v-if="form.bank_card_type == 1" required prop="licence_pic_url" label="开户许可证">
                 <image-upload v-model="form.licence_pic_url" :limit="1"/>
@@ -181,7 +202,9 @@
         bank_card_type: 1,
         bank_open_name: '',
         bank_card_no: '',
+        bank_name: '',
         sub_bank_name: '',
+        bank_area: [],
         bank_open_address: '',
         bank_card_pic_a: '',
         licence_pic_url: '',
@@ -217,6 +240,7 @@
         props: {
             data: Object,
             readonly: {type: Boolean, default: false}, // 商户激活信息是否只读
+            areaOptions: Array,
         },
         computed:{
 
@@ -296,16 +320,25 @@
                     ],
                     // 银行卡信息
                     bank_open_name: [
-                        {required: true, message: '开户名 不能为空'},
+                        {required: true, message: '银行开户名 不能为空'},
+                        {max: 100, message: '银行开户名 不能超过100个字符'}
                     ],
                     bank_card_no: [
                         {required: true, message: '银行账号 不能为空'},
+                        {min: 15, max: 20, message: '银行账号 要15-20个数字内'}
+                    ],
+                    bank_name: [
+                        {required: true, message: '开户行不能为空'}
                     ],
                     sub_bank_name: [
-                        {required: true, message: '开户支行名称 不能为空'},
+                        {required: true, message: '开户行网点名称 不能为空'},
+                        {max: 100, message: '开户行网点名称 不能超过100个字'},
+                    ],
+                    bank_area: [
+                        {type: 'array', required: true, message: '开户行网点地址不能为空'}
                     ],
                     bank_open_address: [
-                        {required: true, message: '开户支行地址 不能为空'},
+                        {max: 100, message: '银行网点详细地址 不能超过100个字'},
                     ],
                     licence_pic_url: [
                         {validator: validateLicencePicUrl},
@@ -362,6 +395,7 @@
                 },
                 searchOperBizMemberLoading: false,
                 operBizMembers: [],
+                bankList: [],
             }
         },
         methods: {
@@ -379,6 +413,11 @@
                     let business_time = data.business_time;
                     this.form.business_start_time = data.business_time ? new Date('1970-01-01 '+business_time[0]) : new Date('1970-01-01 00:00:00');
                     this.form.business_end_time = data.business_time ? new Date('1970-01-01 '+business_time[1]) : new Date('1970-01-01 23:59:59');
+                    if (parseInt(data.bank_province_id) == 0 && parseInt(data.bank_city_id) == 0 && parseInt(data.bank_area_id) == 0) {
+                        this.form.bank_area = [];
+                    }else {
+                        this.form.bank_area = [parseInt(data.bank_province_id), parseInt(data.bank_city_id), parseInt(data.bank_area_id)];
+                    }
                     this.form.region = parseInt(data.region);
                     this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                     this.form.status = parseInt(data.status);
@@ -399,6 +438,9 @@
                     data.id = this.data.id;
                 }
                 data.business_time = JSON.stringify([new Date(data.business_start_time).format('hh:mm:ss'), new Date(data.business_end_time).format('hh:mm:ss')]);
+                data.bank_province_id = data.bank_area[0];
+                data.bank_city_id = data.bank_area[1];
+                data.bank_area_id = data.bank_area[2];
                 return data;
             },
             validate(callback){
@@ -412,10 +454,16 @@
                     })
                 }
             },
+            getBankList() {
+                api.get('/wallet/bank/list').then(data => {
+                    this.bankList = data;
+                })
+            },
         },
         created(){
             this.initForm();
             this.getOperBizMember();
+            this.getBankList();
         },
         watch: {
             data(){
