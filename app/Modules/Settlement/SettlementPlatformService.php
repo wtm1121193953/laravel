@@ -135,6 +135,10 @@ class SettlementPlatformService extends BaseService
             ->where('status', Order::STATUS_FINISHED );
         // 统计所有需结算金额
         $sum = $order->sum('pay_price');
+
+        //获得结算周期时间
+        $start_date = $order->min('pay_time');
+        $end_date = $order->max('pay_time');
         if( $sum<100 ){
             Log::info('该商家每日结算错误，错误原因：订单金额小于100，结算失败');
             return true;
@@ -151,7 +155,9 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform = new SettlementPlatform();
             $settlementPlatform->oper_id = $merchant->oper_id;
             $settlementPlatform->merchant_id = $merchant->id;
-            $settlementPlatform->date = Carbon::now();
+            $settlementPlatform->date = Carbon::now()->subDay();
+            $settlementPlatform->start_date = $start_date;
+            $settlementPlatform->end_date = $end_date;
             $settlementPlatform->settlement_no = $settlementNum;
             $settlementPlatform->settlement_rate = $merchant->settlement_rate;
             $settlementPlatform->bank_open_name = $merchant->bank_open_name;

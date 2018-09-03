@@ -63,7 +63,12 @@
 
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="merchant.name" label="结算商户"  width="160px" />
-            <el-table-column prop="settlement_date" label="结算时间"/>
+            <el-table-column prop="date" label="结算时间"/>
+            <el-table-column prop="date" label="结算周期">
+                <template slot-scope="scope">
+                    {{scope.row.start_date}} 至 {{scope.row.end_date}}
+                </template>
+            </el-table-column>
             <el-table-column prop="oper.name" size="mini"	 label="运营中心"/>
             <!--<el-table-column prop="created_at" label="结算时间"/>-->
             <el-table-column prop="amount" size="mini" label="订单金额"/>
