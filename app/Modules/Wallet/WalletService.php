@@ -398,10 +398,10 @@ class WalletService extends BaseService
                     $user = UserService::getUserById($item->origin_id);
                     $bankCard = self::getBankCardByOriginInfo($item->origin_id, $item->origin_type);
                     $item->user_mobile = $user->mobile;
-                    $item->bank_open_name = isset($bankCard->bank_card_open_name) ? $bankCard->bank_card_open_name : '';
-                    $item->bank_card_no = isset($bankCard->bank_card_no) ?$bankCard->bank_card_no: '';
-                    $item->sub_bank_name = isset($bankCard->bank_name) ?$bankCard->bank_card_no: '';
-                    $item->bank_card_type = isset($bankCard->bank_card_type) ?$bankCard->bank_card_no: '';
+                    $item->bank_open_name = $bankCard->bank_card_open_name??'';
+                    $item->bank_card_no = $bankCard->bank_card_no?? '';
+                    $item->sub_bank_name = $bankCard->bank_card_no?? '';
+                    $item->bank_card_type = $bankCard->bank_card_no?? '';
                 } elseif ($item->origin_type == Wallet::ORIGIN_TYPE_MERCHANT) {
                     $merchant = MerchantService::getById($item->origin_id);
                     $item->merchant_name = $merchant->name;
