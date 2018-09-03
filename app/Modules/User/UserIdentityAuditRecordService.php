@@ -27,7 +27,7 @@ class UserIdentityAuditRecordService extends BaseService
     {
         $userIdentityAuditRecord = new UserIdentityAuditRecord;
         $userIdentityAuditRecord->name = $data['name'];
-        $userIdentityAuditRecord->number = $data['number'];
+        $userIdentityAuditRecord->number = $data['id_card_no'];
         $userIdentityAuditRecord->front_pic = $data['front_pic'];
         $userIdentityAuditRecord->opposite_pic = $data['opposite_pic'];
         $userIdentityAuditRecord->status = UserIdentityAuditRecord::STATUS_UN_AUDIT;
@@ -59,7 +59,7 @@ class UserIdentityAuditRecordService extends BaseService
             throw new BaseResponseException(ResultCode::DB_UPDATE_FAIL, '不可无修改内容');
         }
         $record->name = $data['name'];
-        $record->number = $data['number'];
+        $record->number = $data['id_card_no'];
         $record->front_pic = $data['front_pic'];
         $record->opposite_pic = $data['opposite_pic'];
         $record->status = UserIdentityAuditRecord::STATUS_UN_AUDIT;
