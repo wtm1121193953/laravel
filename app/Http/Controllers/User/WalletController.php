@@ -96,7 +96,7 @@ class WalletController extends Controller
      */
     private static function getTpsConsumeByConsume($consume)
     {
-        $tpsConsume = Utils::getDecimalByNotRounding($consume / 6 / 6.5 / 4 , 2);
+        $tpsConsume = Utils::getDecimalByNotRounding($consume / 6 / 6.5 , 2);
         return $tpsConsume;
     }
 
