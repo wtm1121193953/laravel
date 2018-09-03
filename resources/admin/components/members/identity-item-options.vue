@@ -2,8 +2,8 @@
     <!-- 会员管理操作页面 -->
     <div>
         <el-button type="text" @click="detail">查看</el-button>
-        <el-button type="text" @click="edit">审核</el-button>&nbsp;&nbsp;
-        <el-dropdown @command="quickAudit">
+        <el-button type="text" @click="edit">审核</el-button>
+        <el-dropdown @command="quickAudit" class="m-l-10">
             <span class="el-dropdown-link">
                 <el-button type="text">快捷审核<i class="el-icon-arrow-down el-icon--right"></i></el-button>
             </span>
