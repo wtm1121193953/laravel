@@ -53,6 +53,16 @@ class TpsApi
 
     }
 
+    public static function getUserInfo($account)
+    {
+        $data = array(
+            'account' => $account
+        );
+        $url = config('tpsapi.get_user_info');
+        $result = self::postTps($url, $data);
+        return $result;
+    }
+
     /**
      * 创建账号
      * @param $account string 账号
