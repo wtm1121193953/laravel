@@ -27,6 +27,7 @@ class BankCardService extends BaseService
         $bankCard->bank_name            = $data['bank_name'];
         $bankCard->origin_id            = $user->id;
         $bankCard->origin_type          = $originType;
+        $bankCard->bank_card_type       = BankCard::BANK_CARD_TYPE_PEOPLE;
         $bankCard->default              = BankCard::DEFAULT_UNSELECTED;
         if( !($bankCard->save()) ){
             throw new BaseResponseException(ResultCode::DB_INSERT_FAIL, '新增失败');
@@ -109,6 +110,23 @@ class BankCardService extends BaseService
             ->get();
         return $list;
     }
+
+    /**
+     * 通过银行卡号获取银行卡
+     * Author: zwg
+     * Date: 180903
+     * @param String $bankCardNo
+     * @param   int $originType
+     * @return \App\Modules\Wallet\BankCard
+     */
+    public static function getCardByBankCardNo($bankCardNo, $originType=BankCard::ORIGIN_TYPE_USER ){
+        $bankCard = new BankCard;
+        $card   = $bankCard::where('bank_card_no', $bankCardNo)
+            ->where("origin_type",$originType)
+            ->first();
+        return  $card;
+    }
+
 
     /**
      * 获取银行列表

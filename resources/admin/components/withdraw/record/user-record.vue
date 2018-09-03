@@ -55,9 +55,9 @@
                 </template>
             </el-table-column>
             <el-table-column prop="bank_card_no" label="提现账号">
-                <tempalte slot-scope="scope">
+                <template slot-scope="scope">
                     {{scope.row.bank_card_no.substr(0,5) + '****' + scope.row.bank_card_no.substr(-1,4)}}
-                </tempalte>
+                </template>
             </el-table-column>
             <el-table-column prop="bank_card_open_name" label="账户名"></el-table-column>
             <el-table-column prop="oper_name" label="开户行"></el-table-column>
@@ -115,7 +115,13 @@
     import api from '../../../../assets/js/api'
 
     export default {
-        name: "withdraw-merchant-record",
+        name: "withdraw-user-record",
+        props: {
+            status: {
+                type: Number,
+                default: 0,
+            },
+        },
         data() {
             return {
                 form: {
@@ -185,7 +191,7 @@
                 });
             },
             success(row) {
-                this.$confirm('<div class="tips">提现金额：'+row.amount+'</div><div>确定将这笔订单标记为打款成功！</div><div class="tips">请确认您已打过款</div>','打款成功提示', {
+                this.$confirm('<div class="tips">提现金额：'+row.amount+'</div><div>确定将这笔订单标记为打款成功！请确认您已打过款</div>','打款成功提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
@@ -225,6 +231,7 @@
             }
         },
         created() {
+            this.form.status = this.status;
             this.getList();
         }
     }

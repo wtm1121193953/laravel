@@ -31,16 +31,16 @@ class UserIdentityAuditRecordController extends Controller
         $request->offsetSet('user_id',$request->get('current_user')->id);
         $request->validate([
             'name'          => 'required',
-            'number'        => 'bail|required|identitycards|unique:user_identity_audit_records',
+            'id_card_no'    => 'bail|required|identitycards|unique:user_identity_audit_records',
             'front_pic'     => 'required',
             'opposite_pic'  => 'required',
             'user_id'       => 'unique:user_identity_audit_records'
         ]);
         $saveData = [
-            'name'          => $request->all()['name'],
-            'number'        => $request->all()['number'],
-            'front_pic'     => $request->all()['front_pic'],
-            'opposite_pic'  => $request->all()['opposite_pic'],
+            'name'          => $request->get('name'),
+            'number'        => $request->get('number'),
+            'front_pic'     => $request->get('front_pic'),
+            'opposite_pic'  => $request->get('opposite_pic'),
         ];
         UserIdentityAuditRecordService::addRecord( $saveData , $request->get('current_user') );
         return Result::success('提交成功');
@@ -57,15 +57,15 @@ class UserIdentityAuditRecordController extends Controller
     {
         $request->validate([
             'name'          => 'required',
-            'number'        => 'bail|required|identitycards|unique:user_identity_audit_records',
+            'id_card_no'    => 'bail|required|identitycards|unique:user_identity_audit_records',
             'front_pic'     => 'required',
             'opposite_pic'  => 'required',
         ]);
         $saveData = [
-            'name'          => $request->all()['name'],
-            'number'        => $request->all()['number'],
-            'front_pic'     => $request->all()['front_pic'],
-            'opposite_pic'  => $request->all()['opposite_pic'],
+            'name'          => $request->get('name'),
+            'number'        => $request->get('number'),
+            'front_pic'     => $request->get('front_pic'),
+            'opposite_pic'  => $request->get('opposite_pic')
         ];
         UserIdentityAuditRecordService::modRecord( $saveData, $request->get('current_user') );
         return Result::success('修改成功');

@@ -76,8 +76,8 @@ class SettlementPlatformService extends BaseService
         }
 
         if (!empty($params['startDate']) && !empty($params['endDate'])) {
-            $query->where('date', '>=', Carbon::createFromFormat('Y-m-d',$params['startDate'])->startOfDay());
-            $query->where('date', '<=', Carbon::createFromFormat('Y-m-d',$params['endDate'])->endOfDay());
+            $query->where('created_at', '>=', Carbon::createFromFormat('Y-m-d',$params['startDate'])->startOfDay());
+            $query->where('created_at', '<=', Carbon::createFromFormat('Y-m-d',$params['endDate'])->endOfDay());
         }
 
         if (is_array($params['status']) || $params['status'] instanceof Collection) {

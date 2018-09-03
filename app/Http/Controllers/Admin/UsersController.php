@@ -12,6 +12,7 @@ use App\Modules\Invite\InviteUserService;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Oper\OperService;
+use App\Modules\User\UserIdentityAuditRecord;
 use App\Modules\User\UserService;
 use App\Result;
 use Illuminate\Support\Facades\App;
@@ -114,6 +115,30 @@ class UsersController extends Controller
         ]);
     }
 
+    public function batchIdentity()
+    {
+        $ids = request('ids');
+        $type = request('type');
+        $resson = request('reason');
+        if ($type == 1) {
+            if ($ids) {
+                foreach ($ids as $id) {
+                    $rs = UserService::identityDo($id, UserIdentityAuditRecord::STATUS_SUCCESS);
+                }
+            }
+            return Result::success('操作成功');
+        } elseif ($type==2) {
+            if ($ids) {
+                foreach ($ids as $id) {
+                    $rs = UserService::identityDo($id, UserIdentityAuditRecord::STATUS_FAIL,$resson);
+                }
+            }
+            return Result::success('操作成功');
+        }
+
+
+    }
+
     /**
      * 下载Excel
      * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
@@ -155,7 +180,7 @@ class UsersController extends Controller
         $reason = request('reason');
 
         $rs = UserService::identityDo($id, $status, $reason);
-        return Result::success($rs);
+        return Result::success('操作成功',['rs'=>$rs]);
 
     }
 

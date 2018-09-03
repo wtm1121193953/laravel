@@ -40,12 +40,25 @@
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search">搜索</el-button>
-            </el-form-item>
-            <el-form-item>
                 <el-button type="success" size="small" @click="downloadExcel">导出Excel</el-button>
+                <el-dropdown>
+                    <el-button type="primary">
+                        批量审核<i class="el-icon-arrow-down el-icon--right"></i>
+                    </el-button>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item @click.native="batchIdentitySuccess()">审核通过</el-dropdown-item>
+                        <el-dropdown-item @click.native="batchIdentityFail()">审核不通过</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
             </el-form-item>
+
         </el-form>
-        <el-table :data="list" stripe>
+        <el-table :data="list" stripe @selection-change="handleSelectionChange">
+            <el-table-column
+                    type="selection"
+                    width="55"
+                    :selectable="selectable">
+            </el-table-column>
             <el-table-column prop="created_at" label="提交认证时间"/>
             <el-table-column prop="user.mobile" label="手机号"/>
             <el-table-column prop="user.id" label="用户ID"/>
@@ -130,11 +143,18 @@
                 },
                 list: [],
                 total: 0,
+                selection: [],
                 currentMerchant: null,
             }
         },
         computed: {
-
+            seletcionIds() {
+                let ids = [];
+                this.selection.forEach(function (item) {
+                    ids.push(item.id);
+                });
+                return ids;
+            }
         },
         methods: {
             search(){
@@ -147,7 +167,65 @@
                     this.total = data.total;
                 })
             },
+            handleSelectionChange(val) {
+                this.selection = val;
+            },
+            batchIdentitySuccess() {
+                let length = 0;
+                let param = {};
 
+                length = this.seletcionIds.length;
+                param = {ids: this.seletcionIds,type:1};
+
+                if (length <= 0) {
+                    this.$message.error('请选择审核数据');
+                    return;
+                }
+                this.$confirm(`<div>确定将这${length}条数据审核通过</div>`,'批量审核提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true,
+                    dangerouslyUseHTMLString: true,
+                }).then(() => {
+                    api.post('/member/batch_identity', param).then(data => {
+                        this.$alert('操作成功');
+                        this.getList();
+                    })
+                }).catch(() => {
+
+                })
+            },
+            batchIdentityFail() {
+                let length = 0;
+                let param = {};
+
+                length = this.seletcionIds.length;
+                param = {ids: this.seletcionIds,type:2};
+
+                if (length <= 0) {
+                    this.$message.error('请选择审核数据');
+                    return;
+                }
+                this.$prompt(`<div>确定将这${length}条数据审核不通过</div>`,'批量审核提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true,
+                    dangerouslyUseHTMLString: true,
+                    inputType: 'textarea',
+                    inputPlaceholder: '请填写失败原因，必填，最多150字',
+                    inputValidator: (val) => {if(val && val.length > 150) return '备注不能超过150个字'}
+                }).then(({value}) => {
+                    param.reason = value ? value : '';
+                    api.post('/member/batch_identity', param).then(data => {
+                        this.$alert('操作成功');
+                        this.getList();
+                    })
+                }).catch(() => {
+
+                })
+            },
             downloadExcel() {
                 let message = '确定要导出当前筛选的用户列表么？'
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;

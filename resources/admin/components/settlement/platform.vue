@@ -17,7 +17,7 @@
                     <el-input v-model="query.merchant_id" size="small"  placeholder="商户ID"  class="w-100" clearable></el-input>
                 </el-form-item>
 
-                <el-form-item prop="startDate" label="结算开始时间">
+                <el-form-item prop="startDate" label="结算单生成时间：开始时间">
                     <el-date-picker
                             v-model="query.startDate"
                             type="date"
@@ -64,7 +64,7 @@
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="merchant.id" label="商户ID"  width="100px" />
             <el-table-column prop="merchant.name" label="结算商户"  width="160px" />
-            <el-table-column prop="date" label="结算时间"/>
+            <el-table-column prop="created_at" label="结算单生成时间"/>
             <el-table-column prop="date" label="结算周期">
                 <template slot-scope="scope">
                     {{scope.row.start_date}} 至 {{scope.row.end_date}}
@@ -162,6 +162,9 @@
                         + 'merchant_name=' + this.query.merchant_name
                         + '&startDate=' + this.query.startDate
                         + '&endDate=' + this.query.endDate
+                        + '&bank_card_no=' + this.query.bank_card_no
+                        + '&sub_bank_name=' + this.query.sub_bank_name
+                        + '&bank_open_name=' + this.query.bank_open_name
                         + '&merchant_id=' + this.query.merchant_id
                         + '&status='+ this.query.status
                         + '&show_zero=' + this.query.show_zero ;

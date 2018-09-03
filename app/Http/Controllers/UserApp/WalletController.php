@@ -44,13 +44,15 @@ class WalletController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $type = request('type');
-        $user = request()->get('current_user');
+    if ($type == '0'){
+        $type = '';
+    }
         $bills = WalletService::getBillList([
             'originId' => $value,
             'originType' => WalletBill::ORIGIN_TYPE_USER,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'typeArr' => $type,
+            'type' => $type,
         ], 20);
 
         return Result::success([

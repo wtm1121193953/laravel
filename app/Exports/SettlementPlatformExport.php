@@ -39,6 +39,9 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
         return [
             '结算商户',
             '运营中心',
+            '银行账号',
+            '开户行',
+            '账户名',
             '结算时间',
             '结算订单日期',
             '订单金额',
@@ -58,6 +61,9 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
         return [
             $row->merchant->name,
             $row->oper->name,
+            $row->bank_card_no,
+            $row->sub_bank_name,
+            $row->bank_open_name,
             $row->created_at,
             $row->date,
             $row->amount,

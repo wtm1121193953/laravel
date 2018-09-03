@@ -123,6 +123,12 @@
 
     export default {
         name: "withdraw-oper-record",
+        props: {
+            status: {
+                type: Number,
+                default: 0,
+            },
+        },
         data() {
             return {
                 form: {
@@ -193,7 +199,7 @@
                 });
             },
             success(row) {
-                this.$confirm('<div class="tips">提现金额：'+row.amount+'</div><div>确定将这笔订单标记为打款成功！</div><div class="tips">请确认您已打过款</div>','打款成功提示', {
+                this.$confirm('<div class="tips">提现金额：'+row.amount+'</div><div>确定将这笔订单标记为打款成功！请确认您已打过款</div>','打款成功提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
@@ -233,6 +239,7 @@
             }
         },
         created() {
+            this.form.status = this.status;
             this.getList();
         }
     }

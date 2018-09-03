@@ -638,6 +638,7 @@ order_no 订单号
          user_level: 获取积分时的用户等级（该订单有自反积分时存在）,
          user_level_text: 获取积分时的用户等级文字版（该订单有自反积分时存在）,
          credit: 该订单获取的自反积分（该订单有自反积分时存在）,
+         fee_splitting_amount: 该订单用户的分润金额 （该订单进行了分润时存在）
          dishes_items:[   订单为点菜订单时存在
              {
                  id: 列表id, 
@@ -1520,7 +1521,7 @@ order_no 订单号
       "data": {
           "totalTpsConsume": 累计置换TPS消费额,
           "theMonthTpsConsume": 本月已置换TPS消费额,
-          'showReminder': 1, // 是否显示提示语 0-不显示 1-显示
+          'showReminder': '', // 是否显示提示语 有则显示，没有则不显示
       },
       "timestamp": 1535870137
   }
@@ -1571,7 +1572,7 @@ order_no 订单号
           "tpsCreditSum": 总累计TPS积分,
           "totalSyncTpsCredit": 已置换的TPS积分,
           "contributeToParent": 累计贡献上级TPS积分,
-          'showReminder': 1, // 是否显示提示语 0-不显示 1-显示
+          'showReminder': '', // 是否显示提示语 有则显示，没有则不显示
       },
       "timestamp": 1535870518
   }
