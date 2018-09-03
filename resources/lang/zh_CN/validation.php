@@ -146,7 +146,21 @@ return [
             'required' => '结算费率不能为空',
             'numeric' => '结算费率只能是数字',
             'min' => '结算费率不能低于百分之 :min'
-        ]
+        ],
+        'user_id'   =>  [
+            'unique'    =>  '不可重复提交'
+        ],
+        'number'    =>  [
+            'unique'        =>  '身份证号码已验证过',
+            'identitycards' =>  '身份证号码格式错误',
+            'required'      =>  '身份证不可为空'
+        ],
+        'front_pic'   =>  [
+            'required'    =>  '身份证正面照不可缺'
+        ],
+        'opposite_pic'   =>  [
+            'required'    =>  '身份证反面不可缺'
+        ],
     ],
 
     /*
