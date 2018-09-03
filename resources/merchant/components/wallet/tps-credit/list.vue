@@ -9,7 +9,7 @@
 
         <el-form :model="query" inline size="small">
             <el-form-item prop="consumeQuotaNo" label="流水号">
-                <el-input v-model="query.consumeQuotaNo" clearable/>
+                <el-input v-model="query.consumeQuotaNo" clearable placeholder="请输入流水号"/>
             </el-form-item>
             <el-form-item label="交易时间">
                 <el-date-picker

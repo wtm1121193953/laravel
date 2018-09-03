@@ -288,7 +288,7 @@ class ConsumeQuotaService extends BaseService
                 $query->where('origin_type', $originType);
             })
             ->when($consumeQuotaNo, function (Builder $query) use ($consumeQuotaNo) {
-                $query->where('consume_quota_no', $consumeQuotaNo);
+                $query->where('consume_quota_no', 'like', "%$consumeQuotaNo%");
             })
             ->when($type, function (Builder $query) use ($type) {
                 $query->where('type', $type);
