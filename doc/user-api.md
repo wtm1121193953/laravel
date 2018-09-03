@@ -1477,9 +1477,14 @@ order_no 订单号
       	order_id: 分润的订单ID
       	order_no: 分润的订单号
       	pay_price: 支付金额
-      	order_profit_amount: 订单利润
-      	consume_quota: 消费额
+      	order_profit_amount: 订单利润 (订单毛利润-税-分润金额)
+      	consume_quota: 消费额 [ =订单金额 ]
+        consume_quota_profit: TPS消费额对应的利润金额 (订单利润/2)
+        tps_consume_quota: TPS消费额 (订单金额/6/汇率[6.5])  单位: 美金
+        tps_credit: 消费额转化的tps积分值 (TPS消费额/4)
+        sync_tps_credit: 要同步给tps的积分值, 累计积分每满1积分才同步
       	consume_user_mobile: 消费用户手机号
+        sync_time: 同步到TPS的时间, 即置换时间
       	status: 状态 1-冻结中 2-已解冻待置换 3-已置换 4-已退款
       	order: 消费额对应的订单信息 {
               "id": 174,
