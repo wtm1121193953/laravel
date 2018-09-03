@@ -1,9 +1,18 @@
 <template>
     <el-form size="small" label-width="120px">
         <!-- 商户录入表单 -->
-        <merchant-pool-info-form :data="poolInfoData || data" :readonly="poolInfoReadonly" ref="poolForm"/>
+        <merchant-pool-info-form
+                :data="poolInfoData || data"
+                :readonly="poolInfoReadonly"
+                :areaOptions="areaOptions"
+                ref="poolForm"
+        />
         <!-- 商户激活表单 -->
-        <merchant-active-info-form :data="activeInfoData || data" ref="activeForm"/>
+        <merchant-active-info-form
+                :data="activeInfoData || data"
+                :areaOptions="areaOptions"
+                ref="activeForm"
+        />
         <!-- 按钮区域 -->
         <el-col>
             <el-form-item>
@@ -33,6 +42,7 @@
         },
         data(){
             return {
+                areaOptions: [],
             }
         },
         methods: {
@@ -63,6 +73,9 @@
             }
         },
         created(){
+            api.get('area/tree').then(data => {
+                this.areaOptions = data.list;
+            });
         },
         watch: {
         },

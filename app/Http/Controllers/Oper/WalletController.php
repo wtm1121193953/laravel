@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Oper\OperService;
 use App\Modules\Order\OrderService;
+use App\Modules\Wallet\BankCardService;
 use App\Modules\Wallet\ConsumeQuotaService;
 use App\Modules\Wallet\WalletBill;
 use App\Modules\Wallet\WalletConsumeQuotaRecord;
@@ -267,5 +268,15 @@ class WalletController extends Controller
         if (empty($tpsCredit)) throw new BaseResponseException('该消费额记录不存在');
 
         return Result::success($tpsCredit);
+    }
+
+    /**
+     * 获取银行列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getBankList()
+    {
+        $list = BankCardService::getBankList(true);
+        return Result::success($list);
     }
 }

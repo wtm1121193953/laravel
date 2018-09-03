@@ -31,7 +31,9 @@ class AlertBankCardsAddDefault extends Migration
     public function down()
     {
         Schema::table('bank_cards', function (Blueprint $table) {
-            //
+            $table->dropColumn([
+                'default'
+            ]);
         });
     }
 }

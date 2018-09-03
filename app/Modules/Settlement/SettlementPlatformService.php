@@ -26,7 +26,7 @@ class SettlementPlatformService extends BaseService
     public static $status_vals = [
         1 => '未打款',
         2 => '打款中',
-        3 => '已到账',
+        3 => '已打款',
         4 => '已到账',
         5 => '打款失败',            // changed by Jerry 新增状态
     ];

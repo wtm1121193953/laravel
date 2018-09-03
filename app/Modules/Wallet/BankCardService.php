@@ -4,6 +4,7 @@ namespace App\Modules\Wallet;
 
 use App\BaseService;
 use App\Modules\Wallet\BankCard;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\BaseResponseException;
 use App\ResultCode;
@@ -106,6 +107,19 @@ class BankCardService extends BaseService
             ->where('origin_type', $originType)
             ->orderBy('default', 'desc')
             ->get();
+        return $list;
+    }
+
+    /**
+     * 获取银行列表
+     * @param bool $onlyStatusUsable
+     * @return Bank[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getBankList($onlyStatusUsable = false)
+    {
+        $list = Bank::when($onlyStatusUsable, function (Builder $query) {
+            $query->where('status', Bank::STATUS_USABLE);
+        })->get();
         return $list;
     }
 }
