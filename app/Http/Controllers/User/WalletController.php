@@ -142,9 +142,10 @@ class WalletController extends Controller
             'originId' => request()->get('current_user')->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
         ], $pageSize, true);
-        $data = $query->paginate($pageSize);
         // 当月总tps消费额
         $amount = $query->sum('tps_consume_quota');
+
+        $data = $query->paginate($pageSize);
 
         return Result::success([
             'list' => $data->items(),
@@ -255,8 +256,10 @@ class WalletController extends Controller
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
             'syncTpsCredit' => true,
         ], $pageSize, true);
-        $data = $query->paginate($pageSize);
+        // 先计算总数在分页
         $totalTpsCredit = $query->sum('sync_tps_credit');
+        $data = $query->paginate($pageSize);
+
         $hasSyncTpsCredit = ConsumeQuotaService::getConsumeQuotaRecordList([
             'startDate' => $startDate,
             'endDate' => $endDate,
