@@ -251,8 +251,16 @@ class FeeSplittingService extends BaseService
         $orderId = array_get($params, 'orderId', '');
         $status = array_get($params, 'status', '');
         $type = array_get($params, 'type', '');
+        $originId = array_get($params, 'originId', '');
+        $originType = array_get($params, 'originType', '');
 
         $query = FeeSplittingRecord::query();
+        if ($originId) {
+            $query->where('origin_id', $originId);
+        }
+        if ($originType) {
+            $query->where('origin_type', $originType);
+        }
         if ($orderId) {
             $query->where('order_id', $orderId);
         }
