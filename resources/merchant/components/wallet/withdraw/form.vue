@@ -159,9 +159,9 @@
             canWithdraw() {
                 let day = (new Date()).getDate();
                 if (day == 10 || day == 20 || day == 30) {
-                    return true;
-                } else {
                     return false;
+                } else {
+                    return true;
                 }
             },
         },
