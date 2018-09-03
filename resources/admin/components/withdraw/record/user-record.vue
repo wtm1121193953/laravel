@@ -55,9 +55,9 @@
                 </template>
             </el-table-column>
             <el-table-column prop="bank_card_no" label="提现账号">
-                <tempalte slot-scope="scope">
+                <template slot-scope="scope">
                     {{scope.row.bank_card_no.substr(0,5) + '****' + scope.row.bank_card_no.substr(-1,4)}}
-                </tempalte>
+                </template>
             </el-table-column>
             <el-table-column prop="bank_card_open_name" label="账户名"></el-table-column>
             <el-table-column prop="oper_name" label="开户行"></el-table-column>
@@ -115,7 +115,7 @@
     import api from '../../../../assets/js/api'
 
     export default {
-        name: "withdraw-merchant-record",
+        name: "withdraw-user-record",
         props: {
             status: {
                 type: Number,
