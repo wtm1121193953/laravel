@@ -16,7 +16,7 @@
 
         <el-form v-model="form" inline size="small">
             <el-form-item prop="withdrawNo" label="提现编号">
-                <el-input v-model="form.withdrawNo" clearable class="w-200"/>
+                <el-input v-model="form.withdrawNo" clearable class="w-200" placeholder="请输入提现编号"/>
             </el-form-item>
             <el-form-item prop="originType" label="提现类型">
                 <el-select v-model="form.originType" placeholder="请选择" clearable class="w-100">
