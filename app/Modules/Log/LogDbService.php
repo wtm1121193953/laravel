@@ -44,6 +44,22 @@ class LogDbService
         $log = new LogOrderNotifyReapal();
         $log->type = $type;
         $log->content = $content;
-        $log->save();
+        return $log->save();
+    }
+
+    /**
+     * 微信异步回调日志
+     * @param $content
+     * @return bool
+     */
+    public static function wechatNotify($content)
+    {
+        if (is_array($content)) {
+            $content = json_encode($content,JSON_UNESCAPED_UNICODE);
+        }
+
+        $log = new LogOrderNotifyWechat();
+        $log->content = $content;
+        return $log->save();
     }
 }

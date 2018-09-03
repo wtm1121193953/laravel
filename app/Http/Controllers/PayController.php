@@ -93,6 +93,7 @@ class PayController extends Controller
     public function notify()
     {
         $str = request()->getContent();
+        LogDbService::wechatNotify($str);
         $xml = simplexml_load_string($str);
         // 获取aphid
         foreach ($xml->children() as $child) {
@@ -101,9 +102,15 @@ class PayController extends Controller
             }
         }
         // 获取appid对应的运营中心小程序
-        $miniprogram = OperMiniprogramService::getByAppid($appid);
+        $config_platfrom = config('platform');
+        if ($appid == $config_platfrom['miniprogram']['app_id']) {
+            $app = WechatService::getWechatPayAppForPlatform();
+        } else {
+            $miniprogram = OperMiniprogramService::getByAppid($appid);
 
-        $app = WechatService::getWechatPayAppForOper($miniprogram);
+            $app = WechatService::getWechatPayAppForOper($miniprogram);
+        }
+
         $response = $app->handlePaidNotify(function ($message, $fail){
             if($message['return_code'] === 'SUCCESS' && array_get($message, 'result_code') === 'SUCCESS'){
                 $orderNo = $message['out_trade_no'];

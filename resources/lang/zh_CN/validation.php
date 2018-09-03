@@ -146,6 +146,33 @@ return [
             'required' => '结算费率不能为空',
             'numeric' => '结算费率只能是数字',
             'min' => '结算费率不能低于百分之 :min'
+        ],
+        'user_id'   =>  [
+            'unique'    =>  '不可重复提交'
+        ],
+        'number'    =>  [
+            'unique'        =>  '身份证号码已验证过',
+            'identitycards' =>  '身份证号码格式错误',
+            'required'      =>  '身份证不可为空'
+        ],
+        'front_pic'   =>  [
+            'required'    =>  '身份证正面照不可缺'
+        ],
+        'opposite_pic'   =>  [
+            'required'    =>  '身份证反面不可缺'
+        ],
+        'bank_card_open_name'   =>  [
+            'required'      =>  '持卡人不可为空',
+//            ''
+        ],
+        'bank_card_no'      =>  [
+            'required'  =>  '银行卡号不可为空',
+            'numeric'   =>  '银行卡号只能是数字',
+            'size'      =>  '银行卡只能为19位数',
+            'unique'    =>  '银行卡号已存在，不可重复'
+        ],
+        'bank_name'     =>  [
+            'required'  =>  '银行不可为空'
         ]
     ],
 

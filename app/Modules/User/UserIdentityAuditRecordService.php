@@ -58,11 +58,12 @@ class UserIdentityAuditRecordService extends BaseService
         if (count($data) <= 1) {
             throw new BaseResponseException(ResultCode::DB_UPDATE_FAIL, '不可无修改内容');
         }
-        // todo  @jerry 这种用法不可以  要传什么值直接写下来
-        foreach ($data as $k => $v) {
-            $record->$k = $v;
-        }
+        $record->name = $data['name'];
+        $record->number = $data['number'];
+        $record->front_pic = $data['front_pic'];
+        $record->opposite_pic = $data['opposite_pic'];
         $record->status = UserIdentityAuditRecord::STATUS_UN_AUDIT;
+
         if (!$record->save()) {
             throw new BaseResponseException(ResultCode::DB_UPDATE_FAIL, '修改失败');
         }
