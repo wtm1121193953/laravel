@@ -119,6 +119,7 @@ class WalletController extends Controller
         return Result::success([
             'totalTpsConsume' => $totalTpsConsume,
             'theMonthTpsConsume' => $theMonthTpsConsume,
+            'showReminder' => 1, // 是否显示提示语 0-不显示 1-显示
         ]);
     }
 
@@ -230,6 +231,7 @@ class WalletController extends Controller
             'tpsCreditSum' => $wallet->total_share_tps_credit + $wallet->total_tps_credit, // 总累计TPS积分
             'totalSyncTpsCredit' => $totalSyncTpsCredit, // 已置换
             'contributeToParent' => $contributeToParent, // 累计贡献上级TPS积分
+            'showReminder' => 1, // 是否显示提示语 0-不显示 1-显示
         ]);
     }
 
