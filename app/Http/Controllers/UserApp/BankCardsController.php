@@ -15,8 +15,10 @@ use Illuminate\Http\Request;
 use App\Modules\Wallet\BankCardService;
 use App\ResultCode;
 
-class BankCardsController extends Controller{
+class BankCardsController extends Controller
+{
     public $validator;
+
     public function __construct()
     {
         $this->validator = new BankCard;
@@ -30,14 +32,16 @@ class BankCardsController extends Controller{
      * @throws \Illuminate\Validation\ValidationException
      * @return 添加成功失败信息
      */
-    public function  addCard(Request $request)
+    public function addCard(Request $request)
     {
-        $value = $this->getUserId();
-        if (strlen($value) <= 0){
-            return Result::error(ResultCode::UNLOGIN,'用户未登录');
+        $data = ['bank_card_open_name' => request('bank_card_open_name'), 'bank_card_no' => request('bank_card_no'), 'bank_name' => request('bank_name')];
+        $bankCardNo = $data['bank_card_no'];
+        $bankCardInfo = BankCardService::getCardByBankCardNo($bankCardNo);
+        if ($bankCardInfo) {
+            return Result::error(ResultCode::DB_INSERT_FAIL, '已添加该银行卡号');
         }
-        $this->validator->scene('add')->check( $request->all() );
-        BankCardService::addCard( $request );
+        BankCardService::addCard($data, request()->get('current_user'));
+
         return Result::success('添加银行卡成功');
     }
 
@@ -45,18 +49,11 @@ class BankCardsController extends Controller{
      * 设置默认银行卡
      * Author:  zwg
      * Date:    180831
-     * @param Request $request
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     * @throws \Illuminate\Validation\ValidationException
      */
-    public function changDefault( Request $request )
+    public function changDefault()
     {
-        $value = $this->getUserId();
-        if (strlen($value) <= 0){
-            return Result::error(ResultCode::UNLOGIN,'用户未登录');
-        }
-        $this->validator->scene('default')->check( $request->all() );
-        BankCardService::changeDefault( $request );
+        $data = ['id' => request('id')];
+        BankCardService::changeDefault($data,request()->get('current_user'));
         return Result::success('修改默认银行卡成功');
     }
 
@@ -64,18 +61,14 @@ class BankCardsController extends Controller{
      * 删除银行卡
      * Author:  zwg
      * Date:    180831
-     * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function delCard( Request $request )
+    public function delCard()
     {
-        $value = $this->getUserId();
-        if (strlen($value) <= 0){
-            return Result::error(ResultCode::UNLOGIN,'用户未登录');
-        }
-        $this->validator->scene('default')->check( $request->all() );
-        BankCardService::delCard( $request );
+        $data = ['id' => request('id')];
+
+        BankCardService::delCard($data,request()->get('current_user'));
         return Result::success('删除银行卡成功');
     }
 
@@ -86,19 +79,15 @@ class BankCardsController extends Controller{
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function getCardsList( Request $request )
+    public function getCardsList(Request $request)
     {
-        $value = $this->getUserId();
-        if (strlen($value) <= 0){
-            return Result::error(ResultCode::UNLOGIN,'用户未登录');
-        }
         $bankCard = new \App\Modules\Wallet\BankCard;
         $currentUser = $request->get('current_user');
         $list = $bankCard::where('origin_id', $currentUser->id)
             ->where('origin_type', $currentUser->status)
             ->orderBy('default', 'desc')
             ->get();
-        return Result::success( $list );
+        return Result::success($list);
     }
 
     /**

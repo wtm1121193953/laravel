@@ -246,7 +246,7 @@ class UserService extends BaseService
      * @param $id
      * @param $status
      * @param string $reason
-     * @return UserIdentityAuditRecord
+     * @return bool
      */
     public static function identityDo($id,$status,$reason='')
     {
@@ -254,10 +254,8 @@ class UserService extends BaseService
         $info = UserIdentityAuditRecord::findOrFail($id);
 
         $info->status = $status;
+        $info->reason = $reason;
 
-        if ($reason) {
-            $info->reason = $reason;
-        }
         /** @var AdminUser $user */
         $user = session(config('admin.user_session'));
         if (!empty($user->id)) {

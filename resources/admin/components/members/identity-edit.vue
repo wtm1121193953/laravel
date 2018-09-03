@@ -31,11 +31,12 @@
                                     <img v-if="info.opposite_pic" :src="info.opposite_pic" width="200px" height="100px" alt="营业执照">
                                 </div>
                             </el-form-item>
-                            <el-form-item label="拒绝理由" prop="reason">
+                            <el-form-item label="审核意见" prop="reason">
                                 <el-input
                                         type="textarea"
                                         :rows="2"
-                                        placeholder="拒绝理由"
+                                        placeholder="最多输入50字汉字，可不填"
+                                        maxlength="50"
                                         v-model="info.reason">
                                 </el-input>
                             </el-form-item>
