@@ -57,20 +57,21 @@ Route::prefix('app/user')
         Route::get('merchant/dishesGoods', 'MerchantDishesController@getDishesGoods');
 
         //app钱包接口
-        Route::get('wallet/getWalletInfo', 'WalletController@getWallet');
-        Route::get('wallet/getBills', 'WalletController@getBills');
-        Route::get('wallet/getBillDetail', 'WalletController@getBillDetail');
-        Route::get('wallet/getConsumeQuotas', 'WalletController@getConsumeQuotas');
-        Route::get('wallet/getConsumeQuotaDetail', 'WalletController@getConsumeQuotaDetail');
+        Route::get('wallet/getWalletInfo', 'WalletController@getWallet')->middleware(UserLoginFilter::class);;
+        Route::get('wallet/getBills', 'WalletController@getBills')->middleware(UserLoginFilter::class);;
+        Route::get('wallet/getBillDetail', 'WalletController@getBillDetail')->middleware(UserLoginFilter::class);;
+        Route::get('wallet/getConsumeQuotas', 'WalletController@getConsumeQuotas')->middleware(UserLoginFilter::class);;
+        Route::get('wallet/getConsumeQuotaDetail', 'WalletController@getConsumeQuotaDetail')->middleware(UserLoginFilter::class);;
 
         //app银行卡接口
-        Route::post('bankcard/addCard', 'BankCardsController@addCard');
-        Route::post('bankcard/changDefault', 'BankCardsController@changDefault');
-        Route::post('bankcard/deleteCard', 'BankCardsController@delCard');
-        Route::post('bankcard/getCardsList', 'BankCardsController@getCardsList');
+        Route::post('bankcard/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);;
+        Route::post('bankcard/changDefault', 'BankCardsController@changDefault')->middleware(UserLoginFilter::class);;
+        Route::post('bankcard/deleteCard', 'BankCardsController@delCard')->middleware(UserLoginFilter::class);;
+        Route::post('bankcard/getCardsList', 'BankCardsController@getCardsList')->middleware(UserLoginFilter::class);;
 
         //Tps绑定接口
-        Route::get('tps/getBindInfo','TpsBindController@getBindInfo');
-        Route::post('tps/bindAccount','TpsBindController@bindAccount');
+        Route::get('tps/getBindInfo','TpsBindController@getBindInfo')->middleware(UserLoginFilter::class);;
+        Route::post('tps/bindAccount','TpsBindController@bindAccount')->middleware(UserLoginFilter::class);
+        ;
 
     });

@@ -28,9 +28,6 @@ class WalletController extends Controller
     public function getWallet()
     {
         $value = $this->getUserId();
-        if (strlen($value) <= 0) {
-            return Result::error(ResultCode::UNLOGIN, '用户未登录');
-        }
         $wallet = WalletService::getWalletInfoByOriginInfo($value, Wallet::ORIGIN_TYPE_USER);
         return Result::success($wallet);
     }
@@ -42,15 +39,12 @@ class WalletController extends Controller
     public function getBills()
     {
         $value = $this->getUserId();
-        if (strlen($value) <= 0) {
-            return Result::error(ResultCode::UNLOGIN, '用户未登录');
-        }
         $startDate = request('startDate');
         $endDate = request('endDate');
         $type = request('type');
         $user = request()->get('current_user');
         $bills = WalletService::getBillList([
-            'originId' => $user->id,
+            'originId' => $value,
             'originType' => WalletBill::ORIGIN_TYPE_USER,
             'startDate' => $startDate,
             'endDate' => $endDate,
@@ -69,10 +63,6 @@ class WalletController extends Controller
      */
     public function getBillDetail()
     {
-        $value = $this->getUserId();
-        if (strlen($value) <= 0) {
-            return Result::error(ResultCode::UNLOGIN, '用户未登录');
-        }
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
@@ -95,9 +85,6 @@ class WalletController extends Controller
     public function getConsumeQuotas()
     {
         $value = $this->getUserId();
-        if (strlen($value) <= 0) {
-            return Result::error(ResultCode::UNLOGIN, '用户未登录');
-        }
         $month = request('month');
         if (empty($month)) {
             $month = date('Y-m');
@@ -110,7 +97,7 @@ class WalletController extends Controller
             'startDate' => $startDate,
             'endDate' => $endDate,
             'status' => $status,
-            'originId' => request()->get('current_user')->id,
+            'originId' => $value,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
         ], $pageSize, true);
         $data = $query->paginate($pageSize);

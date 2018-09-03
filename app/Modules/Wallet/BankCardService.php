@@ -7,6 +7,8 @@ use App\Modules\Wallet\BankCard;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\BaseResponseException;
 use App\ResultCode;
+use PhpParser\Node\Scalar\String_;
+
 /**
  * Class BankCardService
  * @package App\Modules\Wallet
@@ -95,6 +97,21 @@ class BankCardService extends BaseService
         $card   = $bankCard::where('origin_id', $obj->id )
             ->where("origin_type",$originType)
             ->where('id', $id )
+            ->first();
+        return  $card;
+    }
+    /**
+     * 通过银行卡号获取银行卡
+     * Author: zwg
+     * Date: 180903
+     * @param String $bankCardNo
+     * @param   int $originType
+     * @return \App\Modules\Wallet\BankCard
+     */
+    public static function getCardByBankCardNo($bankCardNo, $originType=BankCard::ORIGIN_TYPE_USER ){
+        $bankCard = new BankCard;
+        $card   = $bankCard::where('bank_card_no', $bankCardNo)
+            ->where("origin_type",$originType)
             ->first();
         return  $card;
     }

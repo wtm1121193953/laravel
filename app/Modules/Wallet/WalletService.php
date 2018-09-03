@@ -211,9 +211,9 @@ class WalletService extends BaseService
         if ($type) {
             $query->where('type', $type);
         }
-        if (!empty($typeArr)) {
-            $query->whereIn('type', $typeArr);
-        }
+//        if (!empty($typeArr)) {
+//            $query->whereIn('type', $typeArr);
+//        }
         if ($startDate && $endDate) {
             $startDate = date('Y-m-d 00:00:00', strtotime($startDate));
             $endDate = date('Y-m-d 23:59:59', strtotime($endDate));
