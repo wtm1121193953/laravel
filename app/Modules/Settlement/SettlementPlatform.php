@@ -15,6 +15,8 @@ use Illuminate\Support\Carbon;
  * @property int    oper_id
  * @property int    merchant_id
  * @property Carbon date
+ * @property Carbon start_date
+ * @property Carbon end_date
  * @property number settlement_rate
  * @property number amount
  * @property number charge_amount
