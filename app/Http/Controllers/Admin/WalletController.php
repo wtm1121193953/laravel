@@ -98,13 +98,11 @@ class WalletController extends Controller
         $walletId = request('walletId', 0);
         $pageSize = request('pageSize', 15);
 
-        $typeArr = [];
         if ($type && $type == 7) {
-            $type = 0;
-            $typeArr = [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED];
+            $type = [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED];
         }
 
-        $param = compact('billNo', 'startDate', 'endDate', 'type', 'typeArr', 'walletId');
+        $param = compact('billNo', 'startDate', 'endDate', 'type', 'walletId');
         $data = WalletService::getBillList($param, $pageSize);
 
         return Result::success([
@@ -127,13 +125,11 @@ class WalletController extends Controller
         $originType = request('originType', 0);
         $pageSize = request('pageSize', 15);
 
-        $typeArr = [];
         if ($type && $type == 7) {
-            $type = 0;
-            $typeArr = [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED];
+            $type = [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED];
         }
 
-        $param = compact('billNo', 'startDate', 'endDate', 'type', 'typeArr', 'walletId');
+        $param = compact('billNo', 'startDate', 'endDate', 'type', 'walletId');
         $query = WalletService::getBillList($param, $pageSize, true);
 
         return (new WalletBillExport($query, $originType))->download('交易流水.xlsx');

@@ -1,3 +1,4 @@
 *
 !public/
+!wxPayCert/platform/
 !.gitignore

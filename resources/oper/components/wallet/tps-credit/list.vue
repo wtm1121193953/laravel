@@ -9,7 +9,7 @@
 
         <el-form :model="query" inline size="small">
             <el-form-item prop="consumeQuotaNo" label="流水号">
-                <el-input v-model="query.consumeQuotaNo" clearable/>
+                <el-input v-model="query.consumeQuotaNo" clearable placeholder="请输入流水号"/>
             </el-form-item>
             <el-form-item label="交易时间">
                 <el-date-picker
@@ -56,7 +56,11 @@
                 </template>
             </el-table-column>
             <el-table-column prop="consume_user_mobile" label="用户手机号"></el-table-column>
-            <el-table-column prop="sync_tps_credit" label="贡献积分"></el-table-column>
+            <el-table-column prop="sync_tps_credit" label="贡献积分">
+                <template slot-scope="scope">
+                    {{parseFloat(scope.row.sync_tps_credit).toFixed(2)}}
+                </template>
+            </el-table-column>
             <el-table-column prop="status" label="积分状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1">冻结中</span>

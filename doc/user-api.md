@@ -1514,7 +1514,8 @@ order_no 订单号
       "message": "请求成功",
       "data": {
           "totalTpsConsume": 累计置换TPS消费额,
-          "theMonthTpsConsume": 本月已置换TPS消费额
+          "theMonthTpsConsume": 本月已置换TPS消费额,
+          'showReminder': 1, // 是否显示提示语 0-不显示 1-显示
       },
       "timestamp": 1535870137
   }
@@ -1564,7 +1565,8 @@ order_no 订单号
           "totalShareTpsCredit": 下级累计贡献TPS积分,
           "tpsCreditSum": 总累计TPS积分,
           "totalSyncTpsCredit": 已置换的TPS积分,
-          "contributeToParent": 累计贡献上级TPS积分
+          "contributeToParent": 累计贡献上级TPS积分,
+          'showReminder': 1, // 是否显示提示语 0-不显示 1-显示
       },
       "timestamp": 1535870518
   }
@@ -1580,6 +1582,7 @@ order_no 订单号
   month: 月份 yyyy-MM （不传默认当月）
   type: 来源类型 1-自己消费 2-下级贡献 （不传默认全部）
   pageSize: 分页大小 （默认15）
+  page: 当前页数 （默认为1）
   ```
 
   返回： 
