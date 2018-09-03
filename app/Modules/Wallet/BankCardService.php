@@ -111,6 +111,23 @@ class BankCardService extends BaseService
     }
 
     /**
+     * 通过银行卡号获取银行卡
+     * Author: zwg
+     * Date: 180903
+     * @param String $bankCardNo
+     * @param   int $originType
+     * @return \App\Modules\Wallet\BankCard
+     */
+    public static function getCardByBankCardNo($bankCardNo, $originType=BankCard::ORIGIN_TYPE_USER ){
+        $bankCard = new BankCard;
+        $card   = $bankCard::where('bank_card_no', $bankCardNo)
+            ->where("origin_type",$originType)
+            ->first();
+        return  $card;
+    }
+
+
+    /**
      * 获取银行列表
      * @param bool $onlyStatusUsable
      * @return Bank[]|\Illuminate\Database\Eloquent\Collection

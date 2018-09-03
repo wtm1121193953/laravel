@@ -19,11 +19,6 @@ class BankCardsController extends Controller
 {
     public $validator;
 
-    public function __construct()
-    {
-        $this->validator = new BankCard;
-    }
-
     /**
      * 添加银行卡
      * Author:  zwg
@@ -32,8 +27,9 @@ class BankCardsController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      * @return 添加成功失败信息
      */
-    public function addCard(Request $request)
+    public function addCard()
     {
+
         $data = ['bank_card_open_name' => request('bank_card_open_name'), 'bank_card_no' => request('bank_card_no'), 'bank_name' => request('bank_name')];
         $bankCardNo = $data['bank_card_no'];
         $bankCardInfo = BankCardService::getCardByBankCardNo($bankCardNo);
@@ -41,7 +37,6 @@ class BankCardsController extends Controller
             return Result::error(ResultCode::DB_INSERT_FAIL, '已添加该银行卡号');
         }
         BankCardService::addCard($data, request()->get('current_user'));
-
         return Result::success('添加银行卡成功');
     }
 
@@ -53,7 +48,7 @@ class BankCardsController extends Controller
     public function changDefault()
     {
         $data = ['id' => request('id')];
-        BankCardService::changeDefault($data,request()->get('current_user'));
+        BankCardService::changeDefault($data, request()->get('current_user'));
         return Result::success('修改默认银行卡成功');
     }
 
@@ -68,7 +63,7 @@ class BankCardsController extends Controller
     {
         $data = ['id' => request('id')];
 
-        BankCardService::delCard($data,request()->get('current_user'));
+        BankCardService::delCard($data, request()->get('current_user'));
         return Result::success('删除银行卡成功');
     }
 
