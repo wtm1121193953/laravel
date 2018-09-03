@@ -54,20 +54,6 @@ class TpsApi
     }
 
     /**
-     * 消费记录对接
-     * Author：Jerry
-     * Date:180828
-     * @param $data array 存储数据
-     * @return mixed|string
-     */
-    public static function syncQuotaRecords($data )
-    {
-        $url = config('tpsapi.quota_url');
-        $result = self::postMiddleground($url, $data);
-        return $result;
-    }
-
-    /**
      * 创建账号
      * @param $account string 账号
      * @param $password string 密码
@@ -87,6 +73,20 @@ class TpsApi
         $result = self::postTps($url, $data);
         return $result;
 
+    }
+
+    /**
+     * 消费记录对接
+     * Author：Jerry
+     * Date:180828
+     * @param $data array 存储数据
+     * @return mixed|string
+     */
+    public static function syncQuotaRecords($data )
+    {
+        $url = config('tpsapi.quota_url');
+        $result = self::postMiddleground($url, $data);
+        return $result;
     }
 
     /**
