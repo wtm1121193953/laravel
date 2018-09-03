@@ -8,5 +8,7 @@ return [
     'wechat_pay' => [
         'mch_id' => '',
         'key' => '',
+        'cert_path' => '',
+        'key_path' => '',
     ]
 ];
