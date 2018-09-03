@@ -21,6 +21,7 @@ use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderService;
 use App\Modules\Settlement\Settlement;
 use App\Modules\Sms\SmsService;
+use App\Modules\Tps\TpsBind;
 use App\Modules\User\User;
 use App\Modules\Wechat\WechatService;
 use Illuminate\Console\Command;
@@ -65,7 +66,22 @@ class Test extends Command
      */
     public function handle()
     {
-
+        $orders = Order::all();
+        foreach ($orders as $order) {
+//            $order->splitting_status = 1;
+//            $order->settlement_rate = 20;
+//            $order->save();
+            $this->info($order->id);
+            ConsumeQuotaSyncToTpsJob::dispatch($order);
+        }
+        dd('hi');
+        $TpsBind = new TpsBind();
+        $TpsBind->origin_type = 1;
+        $TpsBind->origin_id = 128;
+        $TpsBind->tps_uid = 1;
+        $TpsBind->tps_account = 'test_data_';
+        $TpsBind->save();
+        dd('saved');
         SettlementDaily::dispatch();
         dd('hi');
 //        SettlementAgentPay::dispatch([1]);

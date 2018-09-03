@@ -3,6 +3,7 @@
 namespace App\Modules\Tps;
 
 use App\BaseModel;
+use App\Events\TpsBindSave;
 
 /**
  * Class TpsBind
@@ -19,4 +20,10 @@ class TpsBind extends BaseModel
     const ORIGIN_TYPE_USER = 1;
     const ORIGIN_TYPE_MERCHANT = 2;
     const ORIGIN_TYPE_OPER = 3;
+
+    // °ó¶¨ÊÂ¼þ Jerry 180903
+    protected $dispatchesEvents = [
+        'created' => TpsBindSave::class,
+    ];
+
 }

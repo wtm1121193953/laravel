@@ -148,6 +148,7 @@ class ConsumeQuotaService extends BaseService
      */
     public static function syncConsumeQuotaToTps(Order $order)
     {
+        Log::info('Jerrt_test');
         // 同步消费额到TPS
         $records = $order->consumeQuotaRecords()->whereIn('status', [
             WalletConsumeQuotaRecord::STATUS_UNFREEZE ,
