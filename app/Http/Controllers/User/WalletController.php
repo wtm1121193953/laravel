@@ -30,6 +30,7 @@ class WalletController extends Controller
 {
     use \App\Modules\User\GenPassword;          // Author:Jerry Date:180830
 
+    protected $reminder = '因系统升级维护，置换TPS的消费额与积分将会在2018.09.11之后进行置换，不便之处，敬请谅解';
     /**
      * 获取用户钱包信息
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
@@ -124,7 +125,7 @@ class WalletController extends Controller
         return Result::success([
             'totalTpsConsume' => $totalTpsConsume,
             'theMonthTpsConsume' => $theMonthTpsConsume,
-            'showReminder' => 1, // 是否显示提示语 0-不显示 1-显示
+            'showReminder' => $this->reminder, // 是否显示提示语 有则显示，没有则不显示
         ]);
     }
 
@@ -236,7 +237,7 @@ class WalletController extends Controller
             'tpsCreditSum' => $wallet->total_share_tps_credit + $wallet->total_tps_credit, // 总累计TPS积分
             'totalSyncTpsCredit' => $totalSyncTpsCredit, // 已置换
             'contributeToParent' => $contributeToParent, // 累计贡献上级TPS积分
-            'showReminder' => 1, // 是否显示提示语 0-不显示 1-显示
+            'showReminder' => $this->reminder, // 是否显示提示语 有则显示，没有则不显示
         ]);
     }
 
