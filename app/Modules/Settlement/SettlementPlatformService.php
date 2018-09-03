@@ -76,8 +76,8 @@ class SettlementPlatformService extends BaseService
         }
 
         if (!empty($params['startDate']) && !empty($params['endDate'])) {
-            $query->where('date', '>=', $params['startDate']);
-            $query->where('date', '<=', $params['endDate']);
+            $query->where('date', '>=', Carbon::createFromFormat('Y-m-d',$params['startDate'])->startOfDay());
+            $query->where('date', '<=', Carbon::createFromFormat('Y-m-d',$params['endDate'])->endOfDay());
         }
 
         if (is_array($params['status']) || $params['status'] instanceof Collection) {
@@ -132,7 +132,8 @@ class SettlementPlatformService extends BaseService
         $order = Order::where('merchant_id', $merchant->id)
             ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
             ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
-            ->where('status', Order::STATUS_FINISHED );
+            ->where('status', Order::STATUS_FINISHED )
+            ->where('pay_time','<=', Carbon::now()->subDay()->endOfDay());
         // 统计所有需结算金额
         $sum = $order->sum('pay_price');
 
