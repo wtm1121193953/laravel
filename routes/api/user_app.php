@@ -65,6 +65,9 @@ Route::prefix('app/user')
         Route::post('app/wallet/confirmPassword', 'WalletController@confirmPassword')->middleware(UserLoginFilter::class);
         Route::post('app/wallet/checkVerifyCode', 'WalletController@checkVerifyCode')->middleware(UserLoginFilter::class);
         Route::post('app/wallet/changePassword', 'WalletController@changePassword')->middleware(UserLoginFilter::class);
+        Route::post('wallet/withDraw', 'WalletWithdrawController@withdraw')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getWithDrawConfig', 'WalletWithdrawController@getWithdrawConfig')->middleware(UserLoginFilter::class);
+
 
 
         //app银行卡接口
@@ -74,8 +77,7 @@ Route::prefix('app/user')
         Route::post('bankcard/getCardsList', 'BankCardsController@getCardsList')->middleware(UserLoginFilter::class);;
 
         //Tps绑定接口
-        Route::get('tps/getBindInfo','TpsBindController@getBindInfo')->middleware(UserLoginFilter::class);;
-        Route::post('tps/bindAccount','TpsBindController@bindAccount')->middleware(UserLoginFilter::class);
-        ;
+        Route::get('tps/getBindInfo', 'TpsBindController@getBindInfo')->middleware(UserLoginFilter::class);;
+        Route::post('tps/bindAccount', 'TpsBindController@bindAccount')->middleware(UserLoginFilter::class);;
 
     });
