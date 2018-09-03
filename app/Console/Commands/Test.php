@@ -66,6 +66,8 @@ class Test extends Command
      */
     public function handle()
     {
+        SettlementDaily::dispatch();
+        dd('hi');
         $orders = Order::all();
         foreach ($orders as $order) {
 //            $order->splitting_status = 1;
@@ -82,8 +84,7 @@ class Test extends Command
         $TpsBind->tps_account = 'test_data_';
         $TpsBind->save();
         dd('saved');
-        SettlementDaily::dispatch();
-        dd('hi');
+
 //        SettlementAgentPay::dispatch([1]);
 //        dd(1234);
         $orders = Order::all();
