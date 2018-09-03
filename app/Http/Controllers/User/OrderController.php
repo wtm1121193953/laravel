@@ -563,7 +563,27 @@ class OrderController extends Controller
     private function _payToPlatform($order)
     {
         $sdkConfig = null;
-        OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
+        //OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
+
+        $payApp = WechatService::getWechatPayAppForPlatform();
+        $data = [
+            'body' => $order->goods_name,
+            'out_trade_no' => $order->order_no,
+            'total_fee' => $order->pay_price * 100,
+            'trade_type' => 'JSAPI',
+            'openid' => request()->get('current_open_id'),
+        ];
+        $unifyResult = $payApp->order->unify($data);
+        if(!($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS')){
+            Log::error('微信统一下单失败', [
+                'payConfig' => $payApp->getConfig(),
+                'data' => $data,
+                'result' => $unifyResult,
+            ]);
+            throw new BaseResponseException('微信统一下单失败');
+        }
+        $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+        return $sdkConfig;
 
         // 调平台支付, 走融宝支付接口
         /*
