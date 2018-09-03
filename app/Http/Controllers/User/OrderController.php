@@ -13,6 +13,8 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
+use App\Modules\FeeSplitting\FeeSplittingRecord;
+use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Goods\Goods;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Dishes\DishesItem;
@@ -102,6 +104,7 @@ class OrderController extends Controller
         }
 
         $detail->signboard_name = Merchant::where('id', $detail->merchant_id)->value('signboard_name');
+        // 积分记录
         $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
             ->where('type', 1)
             ->first();
@@ -110,8 +113,18 @@ class OrderController extends Controller
             $detail->user_level_text = User::getLevelText($creditRecord->user_level);
             $detail->credit = $creditRecord->credit;
         }
+        // 单品订单
         if ($detail->type == Order::TYPE_DISHES) {
             $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
+        }
+        // 查看分润详情
+        if ($detail->splitting_status == Order::SPLITTING_STATUS_YES) {
+            $feeSplittingRecord = FeeSplittingService::getFeeSplittingDetailByParams([
+                'originId' => $detail->user_id,
+                'originType' => FeeSplittingRecord::ORIGIN_TYPE_USER,
+                'orderId' => $detail->id,
+            ]);
+            $detail->fee_splitting_amount = !empty($feeSplittingRecord) ? $feeSplittingRecord->amount : 0;
         }
         return Result::success($detail);
     }
