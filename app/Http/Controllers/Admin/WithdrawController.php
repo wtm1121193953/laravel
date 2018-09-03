@@ -69,7 +69,7 @@ class WithdrawController extends Controller
                 break;
             default:
                 $start = Carbon::createFromFormat('Y-m-d', $startDate)->startOfDay();
-                $end = Carbon::createFromFormat('Y-m-d', $endDate)->endOfMonth();
+                $end = Carbon::createFromFormat('Y-m-d', $endDate)->endOfDay();
                 break;
         }
 
