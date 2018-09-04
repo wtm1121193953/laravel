@@ -38,7 +38,7 @@ class UserIdentityAuditRecordController extends Controller
         ]);
         $saveData = [
             'name'          => $request->get('name'),
-            'number'        => $request->get('number'),
+            'id_card_no'    => $request->get('id_card_no'),
             'front_pic'     => $request->get('front_pic'),
             'opposite_pic'  => $request->get('opposite_pic'),
         ];
@@ -63,7 +63,7 @@ class UserIdentityAuditRecordController extends Controller
         ]);
         $saveData = [
             'name'          => $request->get('name'),
-            'number'        => $request->get('number'),
+            'id_card_no'    => $request->get('id_card_no'),
             'front_pic'     => $request->get('front_pic'),
             'opposite_pic'  => $request->get('opposite_pic')
         ];

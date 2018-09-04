@@ -20,14 +20,14 @@ class UserIdentityAuditRecordService extends BaseService
      * 新增
      * Author:  Jerry
      * Date:    180831
-     * @param array $data
+     * @param array                  $data
      * @param \App\Modules\User\User $user
      */
     public static function addRecord($data, $user)
     {
         $userIdentityAuditRecord = new UserIdentityAuditRecord;
         $userIdentityAuditRecord->name = $data['name'];
-        $userIdentityAuditRecord->number = $data['id_card_no'];
+        $userIdentityAuditRecord->id_card_no = $data['id_card_no'];
         $userIdentityAuditRecord->front_pic = $data['front_pic'];
         $userIdentityAuditRecord->opposite_pic = $data['opposite_pic'];
         $userIdentityAuditRecord->status = UserIdentityAuditRecord::STATUS_UN_AUDIT;
@@ -42,7 +42,7 @@ class UserIdentityAuditRecordService extends BaseService
      * 修改
      * Author:  Jerry
      * Date:    180831
-     * @param array $data
+     * @param array                  $data
      * @param \App\Modules\User\User $user
      */
     public static function modRecord($data, $user)
@@ -59,7 +59,7 @@ class UserIdentityAuditRecordService extends BaseService
             throw new BaseResponseException(ResultCode::DB_UPDATE_FAIL, '不可无修改内容');
         }
         $record->name = $data['name'];
-        $record->number = $data['id_card_no'];
+        $record->id_card_no = $data['id_card_no'];
         $record->front_pic = $data['front_pic'];
         $record->opposite_pic = $data['opposite_pic'];
         $record->status = UserIdentityAuditRecord::STATUS_UN_AUDIT;
