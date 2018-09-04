@@ -2,14 +2,14 @@
     <!-- 会员管理操作页面 -->
     <div>
         <el-button type="text" @click="detail">查看</el-button>
-        <el-button type="text" @click="edit">审核</el-button>&nbsp;&nbsp;
-        <el-dropdown @command="quickAudit">
+        <el-button type="text" @click="edit">审核</el-button>
+        <el-dropdown @command="quickAudit" class="m-l-10">
             <span class="el-dropdown-link">
                 <el-button type="text">快捷审核<i class="el-icon-arrow-down el-icon--right"></i></el-button>
             </span>
             <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="1">审核通过</el-dropdown-item>
-                <el-dropdown-item command="2">审核不通过</el-dropdown-item>
+                <el-dropdown-item v-if="scope.row.status !== 2" command="1">审核通过</el-dropdown-item>
+                <el-dropdown-item v-if="scope.row.status !== 3" command="2">审核不通过</el-dropdown-item>
             </el-dropdown-menu>
         </el-dropdown>
     </div>
@@ -52,9 +52,13 @@
                         }).finally(() => {
                             this.loading = false;
                         })
-                    })
+                    }).catch(() => { })
                 }else {
-                    this.$prompt('确认审核不通过吗').then((val) => {
+                    this.$prompt('确认审核不通过吗', {
+                        inputType: 'text',
+                        inputPlaceholder: '请填写失败原因，必填，最多50字',
+                        inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
+                    }).then((val) => {
                         this.loading = true;
                         let data = {id:this.scope.row.id,status:3,reason:val.value}
                         api.post('/member/identity_do', data).then((data) => {
@@ -62,7 +66,7 @@
                         }).finally(() => {
                             this.loading = false;
                         })
-                    })
+                    }).catch(() => { })
                 }
             }
         },

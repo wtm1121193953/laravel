@@ -67,8 +67,12 @@ Route::prefix('app/user')
         Route::post('app/wallet/changePassword', 'WalletController@changePassword')->middleware(UserLoginFilter::class);
         Route::post('wallet/withDraw', 'WalletWithdrawController@withdraw')->middleware(UserLoginFilter::class);
         Route::get('wallet/getWithDrawConfig', 'WalletWithdrawController@getWithdrawConfig')->middleware(UserLoginFilter::class);
-
-
+        Route::get('wallet/getTpsConsume', 'WalletController@getTpsConsume')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getTpsConsumeQuotasList','WalletController@getTpsConsumeQuotasList')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getTpsConsumeQuotaDetail','WalletController@getTpsConsumeQuotaDetail')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getUserFeeSplittingRatioToSelf','WalletController@getUserFeeSplittingRatioToSelf')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getTpsCreditStatistics','WalletController@getTpsCreditStatistics')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getTpsCreditList','WalletController@getTpsCreditList')->middleware(UserLoginFilter::class);
 
         //app银行卡接口
         Route::post('bankcard/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);;

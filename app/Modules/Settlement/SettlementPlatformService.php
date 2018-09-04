@@ -76,8 +76,8 @@ class SettlementPlatformService extends BaseService
         }
 
         if (!empty($params['startDate']) && !empty($params['endDate'])) {
-            $query->where('date', '>=', Carbon::createFromFormat('Y-m-d',$params['startDate'])->startOfDay());
-            $query->where('date', '<=', Carbon::createFromFormat('Y-m-d',$params['endDate'])->endOfDay());
+            $query->where('created_at', '>=', Carbon::createFromFormat('Y-m-d',$params['startDate'])->startOfDay());
+            $query->where('created_at', '<=', Carbon::createFromFormat('Y-m-d',$params['endDate'])->endOfDay());
         }
 
         if (is_array($params['status']) || $params['status'] instanceof Collection) {
@@ -123,27 +123,28 @@ class SettlementPlatformService extends BaseService
      * @Author   Jerry
      * @DateTime 2018-08-24
      * @param $merchant
-     * @param $date
+     * @param Carbon $date
      * @return bool [bool]
      * @throws \Exception
      */
     public static function settlement( $merchant, $date )
     {
-        $order = Order::where('merchant_id', $merchant->id)
+        $query = Order::where('merchant_id', $merchant->id)
             ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
             ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
             ->where('status', Order::STATUS_FINISHED )
-            ->where('pay_time','<=', Carbon::now()->subDay()->endOfDay());
+            ->where('finish_time','<=', $date->endOfDay());
         // 统计所有需结算金额
-        $sum = $order->sum('pay_price');
+        $sum = $query->where('settlement_status', Order::SETTLEMENT_STATUS_NO )->sum('pay_price');
 
-        //获得结算周期时间
-        $start_date = $order->min('pay_time');
-        $end_date = $order->max('pay_time');
         if( $sum<100 ){
             Log::info('该商家每日结算错误，错误原因：订单金额小于100，跳过结算');
             return true;
         }
+        //获得结算周期时间
+        $start_date = $query->min('pay_time');
+        $end_date = $query->max('pay_time');
+
         // 生成结算单，方便之后结算订单中保存结算信息
         $settlementNum = self::genSettlementNo(10);
         if( !$settlementNum ) {
@@ -174,22 +175,20 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform->save();
 
             // 统计订单总金额与改变每笔订单状态
-//                ->whereDate('finish_time', $date->format('Y-m-d'))
-                 $order->chunk(1000, function( Collection $orders ) use( $merchant, $settlementPlatform ){
-                    $orders->each( function( $item ) use ( $merchant, $settlementPlatform ){
-                        $item->settlement_charge_amount = $item->pay_price * $item->settlement_rate / 100;  // 手续费
-                        $item->settlement_real_amount = $item->pay_price - $item->settlement_charge_amount;   // 货款
-                        $item->settlement_status = Order::SETTLEMENT_STATUS_FINISHED;
-                        $item->settlement_id = $settlementPlatform->id;
-                        $item->save();
+            $list = $query->select('settlement_charge_amount', 'settlement_real_amount', 'settlement_status', 'settlement_id', 'pay_price','settlement_rate')->get();
+            $list->each( function(Order $item ) use ( $merchant, $settlementPlatform ){
+                $item->settlement_charge_amount = $item->pay_price * $item->settlement_rate / 100;  // 手续费
+                $item->settlement_real_amount = $item->pay_price - $item->settlement_charge_amount;   // 货款
+                $item->settlement_status = Order::SETTLEMENT_STATUS_FINISHED;
+                $item->settlement_id = $settlementPlatform->id;
+                $item->save();
 
-                        // 结算实收金额
-                        $settlementPlatform->amount += $item->pay_price;
-                        $settlementPlatform->charge_amount += $item->settlement_charge_amount;
-                        $settlementPlatform->real_amount += $item->settlement_real_amount;
-                        $settlementPlatform->save();
-                    });
-                });
+                // 结算实收金额
+                $settlementPlatform->amount += $item->pay_price;
+                $settlementPlatform->charge_amount += $item->settlement_charge_amount;
+                $settlementPlatform->real_amount += $item->settlement_real_amount;
+                $settlementPlatform->save();
+            });
             DB::commit();
             return true;
         }catch (\Exception $e) {

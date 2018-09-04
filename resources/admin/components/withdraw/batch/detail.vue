@@ -21,8 +21,9 @@
             <el-form-item prop="originType" label="提现类型">
                 <el-select v-model="form.originType" placeholder="请选择" clearable class="w-100">
                     <el-option label="全部" :value="0"></el-option>
+                    <el-option v-if="batchData.type == 2" label="用户提现" :value="1"></el-option>
                     <el-option label="商户提现" :value="2"></el-option>
-                    <el-option label="运营中心提现" :value="3"></el-option>
+                    <el-option v-if="batchData.type == 1" label="运营中心提现" :value="3"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="提现状态">
