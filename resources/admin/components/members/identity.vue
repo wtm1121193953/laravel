@@ -90,12 +90,16 @@
                     <span v-if="parseInt(scope.row.status) === 1" class="c-warning">待审核</span>
                     <span v-if="parseInt(scope.row.status) === 2" class="c-green">审核通过</span>
                     <span v-if="parseInt(scope.row.status) === 3" class="c-danger">
-                         <el-popover
-                             placement="right-start"
-                             trigger="hover"
-                             :content="scope.row.reason">
+                        <span v-if="scope.row.reason">
+                            <el-popover
+                                    placement="right-start"
+                                    trigger="hover"
+                                    :content="scope.row.reason">
                             <span slot="reference">审核失败</span>
-                         </el-popover>
+                            </el-popover>
+                        </span>
+                        <span v-else>审核失败</span>
+
                     </span>
                 </template>
             </el-table-column>

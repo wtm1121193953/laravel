@@ -1,5 +1,12 @@
 <template>
     <page title="财务管理" v-loading="isLoading">
+        <el-col style="margin-bottom: 10px;">
+            <el-alert
+                    title="温馨提示：单日订单金额小于100元，不生成结算单，总订单金额累计到100元后再生成结算单"
+                    type="success"
+                    close-text="知道了">
+            </el-alert>
+        </el-col>
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="结算时间" align="center"/>
             <el-table-column min-width="125%" prop="settlement_cycle" label="结算周期" align="center">
