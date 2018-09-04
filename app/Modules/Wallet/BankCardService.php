@@ -27,7 +27,7 @@ class BankCardService extends BaseService
         // 判断同一用户是否绑定相同的银行卡号
         $exist= BankCard::where('origin_id', $user->id)
                         ->where('origin_type', $originType)
-                        ->where('bank_card_no', $data['bank_card_open_name'])
+                        ->where('bank_card_no', $data['bank_card_no'])
                         ->exists();
         if( $exist )
         {
