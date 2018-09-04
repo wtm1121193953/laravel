@@ -19,6 +19,7 @@
                         placeholder="选择开始日期"
                         format="yyyy 年 MM 月 dd 日"
                         value-format="yyyy-MM-dd"
+                        :picker-options="{disabledDate: (time) => {return time.getTime() > new Date(query.endDate) - 8.64e7}}"
                     ></el-date-picker>
                 </el-form-item>
                 <el-form-item prop="startDate" label="结束时间">
