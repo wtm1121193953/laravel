@@ -46,7 +46,7 @@ class BankCardService extends BaseService
     {
         $record = UserIdentityAuditRecordService::getRecordByUser($userId);
         if( $record['name']!=$checkName ){
-            throw new BaseResponseException(ResultCode::PARAMS_INVALID, '开户人必须与实名验证信息一致');
+            throw new BaseResponseException('开户人必须与实名验证信息一致',ResultCode::PARAMS_INVALID );
         }
     }
 
