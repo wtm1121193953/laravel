@@ -29,8 +29,7 @@
                 ></el-date-picker>
             </el-form-item>
             <el-form-item label="提现状态">
-                <el-select v-model="form.status" clearable class="w-100">
-                    <el-option label="全部" :value="0"></el-option>
+                <el-select v-model="form.status" multiple clearable class="w-200">
                     <el-option label="审核中" :value="1"></el-option>
                     <el-option label="审核通过" :value="2"></el-option>
                     <el-option label="已打款" :value="3"></el-option>
@@ -124,9 +123,13 @@
     export default {
         name: "withdraw-oper-record",
         props: {
+            type: {
+                type: String,
+                default: '',
+            },
             status: {
-                type: Number,
-                default: 0,
+                type: Array,
+                default: [],
             },
             queryStartDate: {
                 type: String,
@@ -145,7 +148,7 @@
                     operName: '',
                     startDate: '',
                     endDate: '',
-                    status: 0,
+                    status: [],
 
                     // 商户提现记录
                     originType: 3,
@@ -247,9 +250,11 @@
             }
         },
         created() {
-            this.form.status = this.status;
-            this.form.startDate = this.queryStartDate;
-            this.form.endDate = this.queryEndDate;
+            if (this.type == 'oper') {
+                this.form.status = this.status;
+                this.form.startDate = this.queryStartDate;
+                this.form.endDate = this.queryEndDate;
+            }
             this.getList();
         }
     }
