@@ -475,7 +475,7 @@ class WalletService extends BaseService
         $putPassword = Wallet::genPassword(  $password, $wallet['salt']);
         if( $putPassword != $wallet['withdraw_password'] )
         {
-            throw new BaseResponseException('原交易密码确认错误', ResultCode::PARAMS_INVALID);
+            throw new BaseResponseException('交易密码不正确', ResultCode::PARAMS_INVALID);
         }
     }
 }
