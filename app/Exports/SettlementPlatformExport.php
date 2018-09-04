@@ -37,15 +37,15 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
+            '商户ID',
             '结算商户',
+            '结算单生成时间',
+            '结算周期',
             '运营中心',
             '银行账号',
             '开户行',
             '账户名',
-            '结算时间',
-            '结算订单日期',
             '订单金额',
-            '利率',
             '结算金额',
             '状态'
         ];
@@ -59,15 +59,15 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
     {
 
         return [
+            $row->merchant->id,
             $row->merchant->name,
+            $row->created_at,
+            $row->start_date.'至'.$row->end_date,
             $row->oper->name,
             $row->bank_card_no,
             $row->sub_bank_name,
             $row->bank_open_name,
-            $row->created_at,
-            $row->date,
             $row->amount,
-            $row->settlement_rate,
             $row->real_amount,
             SettlementPlatformService::$status_vals[$row->status]
         ];
