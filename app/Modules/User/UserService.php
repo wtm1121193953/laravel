@@ -158,6 +158,9 @@ class UserService extends BaseService
                 $query->whereIn('status', $params['status']);
             })
             ->with('identityAuditRecord:user_id,status')
+            ->when($params['identityStatus'], function (Builder $query) use ($params){
+                $query->whereIn('identityAuditRecord.status', $params['identityStatus']);
+            })
             ->orderByDesc('created_at');
 
         if ($return_query) {
@@ -190,6 +193,7 @@ class UserService extends BaseService
     /**
      * 获取会员审核列表
      * @param $params
+     * @param bool $return_query
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public static function identity($params,bool $return_query = false){
@@ -212,7 +216,7 @@ class UserService extends BaseService
                 $query->where('created_at', '<=', $params['endDate']. ' 23:59:59');
             })
             ->when($params['status'], function (Builder $query) use ($params){
-                $query->whereIn('status', $params['status']);
+                $query->whereIn('status', array($params['status']));
             })
             ->with('user')
             ->orderByDesc('created_at');
