@@ -64,7 +64,7 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
             $row->created_at,
             $row->start_date.'至'.$row->end_date,
             $row->oper->name,
-            $row->bank_card_no,
+            '`' . $row->bank_card_no,
             $row->sub_bank_name,
             $row->bank_open_name,
             $row->amount,
