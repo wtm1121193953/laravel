@@ -11,6 +11,7 @@ namespace App\Modules\Tps;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
+use App\Exceptions\PasswordErrorException;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\MerchantService;
@@ -167,6 +168,7 @@ class TpsBindService extends BaseService
         if($result['code'] !== 0 || empty($result['data']['uid']) ){
             if($result['code'] == 1301 || $result['code'] == 1302){
                 $message = '很遗憾！绑定失败，请输入正确的TPS账号密码！';
+                throw new PasswordErrorException($message);
             }else {
                 $message = $result['msg'];
             }
