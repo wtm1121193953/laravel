@@ -34,6 +34,7 @@ use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use App\Support\Reapal\ReapalPay;
+use App\Support\Utils;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Log;
@@ -126,6 +127,8 @@ class OrderController extends Controller
             ]);
             $detail->fee_splitting_amount = !empty($feeSplittingRecord) ? $feeSplittingRecord->amount : 0;
         }
+        // tps 消费额
+        $detail->tps_consume_quota = Utils::getDecimalByNotRounding($detail->pay_price / 6 / 6.5, 2);
         return Result::success($detail);
     }
 
