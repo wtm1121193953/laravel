@@ -36,9 +36,25 @@ class ConsumeQuotaService extends BaseService
     public static function addFreezeConsumeQuota(Order $order)
     {
         // 1. 添加上级的消费额 因为上级要使用用户添加消费额之前的累计消费额
-        self::addFreezeConsumeQuotaToParent($order);
+//        self::addFreezeConsumeQuotaToParent($order);
         // 2. 添加自己的消费额
-        self::addFreezeConsumeQuotaToSelf($order);
+//        self::addFreezeConsumeQuotaToSelf($order);
+
+        // 1. 获取用户自己的钱包
+        $user = UserService::getUserById($order->user_id);
+        $wallet = WalletService::getWalletInfo($user);
+        DB::beginTransaction();
+        try {
+            // 2 更新上级的钱包 并 添加消费额记录 因为上级要使用用户添加消费额之前的累计消费额
+            self::createWalletConsumeQuotaRecord($order, $wallet, WalletConsumeQuotaRecord::TYPE_SUBORDINATE);
+            // 3. 更新自己的钱包 并 添加消费额记录
+            self::createWalletConsumeQuotaRecord($order, $wallet, WalletConsumeQuotaRecord::TYPE_SELF);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     /**
@@ -70,7 +86,7 @@ class ConsumeQuotaService extends BaseService
      */
     public static function addFreezeConsumeQuotaToParent(Order $order)
     {
-        // 1. 找到用户和用户的上级
+        // 1. 找到用户
         $user = UserService::getUserById($order->user_id);
         // 2. 获取用户 的 钱包
         $userWallet = WalletService::getWalletInfo($user);
@@ -84,7 +100,6 @@ class ConsumeQuotaService extends BaseService
             DB::rollBack();
             throw $e;
         }
-
     }
 
     /**
@@ -198,7 +213,7 @@ class ConsumeQuotaService extends BaseService
      * @param Order $order
      * @param Wallet $wallet
      * @param $type
-     * @return WalletConsumeQuotaRecord|void
+     * @return WalletConsumeQuotaRecord
      */
     private static function createWalletConsumeQuotaRecord(Order $order, Wallet $wallet, $type)
     {
