@@ -2,8 +2,8 @@
     <page title="提现密码设置">
         <el-col :span="6">
             <el-button v-if="editPassword" @click="editPassword = false">修改提现密码</el-button>
-            <el-form :model="form" status-icon :rules="formRules" ref="form" v-if="!editPassword" label-width="100px">
-                <el-form-item label="商户手机号码">
+            <el-form :model="form" status-icon :rules="formRules" ref="form" v-if="!editPassword" label-width="150px">
+                <el-form-item label="运营中心手机号码">
                     {{mobile}}
                     <el-button type="success" @click="getVerifyCode" :disabled="isDisabled" size="small" style="margin-left: 10px">{{buttonName}}</el-button>
                 </el-form-item>
