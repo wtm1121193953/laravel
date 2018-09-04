@@ -161,7 +161,7 @@
                     operId: this.operId,
                     merchantId: this.merchantId,
                 };
-                console.log(query)
+
                 this.dataLoading = true;
                 api.get('/withdraw/dashboard', query).then(data => {
                     this.totalAmount = data.totalAmount;
@@ -212,7 +212,6 @@
                     startDate: startDate,
                     endDate: endDate,
                 };
-                console.log(this.searchDate);
             },
         },
         created(){

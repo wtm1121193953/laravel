@@ -139,6 +139,14 @@
                 type: Number,
                 default: 0,
             },
+            queryStartDate: {
+                type: String,
+                default: '',
+            },
+            queryEndDate: {
+                type: String,
+                default: '',
+            }
         },
         data() {
             return {
@@ -253,6 +261,8 @@
         },
         created() {
             this.form.status = this.status;
+            this.form.startDate = this.queryStartDate;
+            this.form.endDate = this.queryEndDate;
             this.getList();
         }
     }

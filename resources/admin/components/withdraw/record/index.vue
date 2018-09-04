@@ -2,13 +2,13 @@
     <page title="提现记录">
         <el-tabs type="card" v-model="activeTab">
             <el-tab-pane label="商户提现记录" name="merchant">
-                <merchant-record :status="status"></merchant-record>
+                <merchant-record :status="status" :queryStartDate="startDate" :queryEndDate="endDate"></merchant-record>
             </el-tab-pane>
             <el-tab-pane label="用户提现记录" name="user">
-                <user-record :status="status"></user-record>
+                <user-record :status="status" :queryStartDate="startDate" :queryEndDate="endDate"></user-record>
             </el-tab-pane>
             <el-tab-pane label="运营中心提现记录" name="oper">
-                <oper-record :status="status"></oper-record>
+                <oper-record :status="status" :queryStartDate="startDate" :queryEndDate="endDate"></oper-record>
             </el-tab-pane>
         </el-tabs>
     </page>
@@ -25,6 +25,8 @@
             return {
                 activeTab: 'merchant',
                 status: 0,
+                startDate: '',
+                endDate: '',
             }
         },
         created() {
@@ -35,6 +37,12 @@
                 this.status = 3;
             } else if (this.$route.query.status === 'fail') {
                 this.status = 4;
+            }
+            if (this.$route.query.startDate) {
+                this.startDate = this.$route.query.startDate;
+            }
+            if (this.$route.query.endDate) {
+                this.endDate = this.$route.query.endDate;
             }
         },
         components: {
