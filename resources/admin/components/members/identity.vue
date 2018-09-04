@@ -92,7 +92,17 @@
             <el-table-column prop="status" label="认证身份状态">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.status) === 1" class="c-warning">待审核</span>
-                    <span v-if="parseInt(scope.row.status) === 2" class="c-green">审核通过</span>
+                    <span v-if="parseInt(scope.row.status) === 2" class="c-green">
+                        <span v-if="scope.row.reason">
+                            <el-popover
+                                    placement="right-start"
+                                    trigger="hover"
+                                    :content="scope.row.reason">
+                            <span slot="reference">审核通过</span>
+                            </el-popover>
+                        </span>
+                        <span v-else>审核通过</span>
+                    </span>
                     <span v-if="parseInt(scope.row.status) === 3" class="c-danger">
                         <span v-if="scope.row.reason">
                             <el-popover
@@ -103,7 +113,6 @@
                             </el-popover>
                         </span>
                         <span v-else>审核失败</span>
-
                     </span>
                 </template>
             </el-table-column>
