@@ -9,6 +9,7 @@ use App\Modules\Order\OrderRefund;
 use App\Modules\Tps\TpsBind;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\Bank;
+use App\Support\TpsApi;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 
