@@ -15,20 +15,20 @@
             <el-form-item prop="startDate" label="提交认证时间：开始时间">
                 <el-date-picker
                         v-model="query.startDate"
-                        type="datetime"
+                        type="date"
                         size="small"
                         placeholder="选择开始日期"
-                        value-format="yyyy-MM-dd HH:mm:ss"
+                        value-format="yyyy-MM-dd"
                 ></el-date-picker>
 
             </el-form-item>
             <el-form-item prop="startDate" label="结束时间">
                 <el-date-picker
                         v-model="query.endDate"
-                        type="datetime"
+                        type="date"
                         size="small"
                         placeholder="选择结束日期"
-                        value-format="yyyy-MM-dd HH:mm:ss"
+                        value-format="yyyy-MM-dd"
                 ></el-date-picker>
             </el-form-item>
             <el-form-item label="认证状态" prop="status">
@@ -90,12 +90,16 @@
                     <span v-if="parseInt(scope.row.status) === 1" class="c-warning">待审核</span>
                     <span v-if="parseInt(scope.row.status) === 2" class="c-green">审核通过</span>
                     <span v-if="parseInt(scope.row.status) === 3" class="c-danger">
-                         <el-popover
-                             placement="right-start"
-                             trigger="hover"
-                             :content="scope.row.reason">
+                        <span v-if="scope.row.reason">
+                            <el-popover
+                                    placement="right-start"
+                                    trigger="hover"
+                                    :content="scope.row.reason">
                             <span slot="reference">审核失败</span>
-                         </el-popover>
+                            </el-popover>
+                        </span>
+                        <span v-else>审核失败</span>
+
                     </span>
                 </template>
             </el-table-column>
