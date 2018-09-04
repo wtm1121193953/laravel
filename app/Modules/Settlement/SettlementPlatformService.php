@@ -132,8 +132,7 @@ class SettlementPlatformService extends BaseService
         $query = Order::where('merchant_id', $merchant->id)
             ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
             ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
-            ->where('status', Order::STATUS_FINISHED )
-            ->where('finish_time','<=', $date->endOfDay());
+            ->where('status', Order::STATUS_FINISHED );
         // 统计所有需结算金额
         $sum = $query->where('settlement_status', Order::SETTLEMENT_STATUS_NO )->sum('pay_price');
 

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Settlement\SettlementPlatform;
 use App\Modules\Settlement\SettlementPlatformService;
+
 /**
  * Author: Jerry
  * Date:    180823
@@ -32,10 +33,10 @@ class SettlementForMerchantDaily implements ShouldQueue
      * @param    int $merchantId
      * @param Carbon $date
      */
-    public function __construct($merchantId, Carbon $date )
+    public function __construct($merchantId, Carbon $date)
     {
-        $this->merchantId   = $merchantId;
-        $this->date         = $date;
+        $this->merchantId = $merchantId;
+        $this->date = $date;
     }
 
 
@@ -53,20 +54,23 @@ class SettlementForMerchantDaily implements ShouldQueue
      */
     public function handle()
     {
-        $merchant   = Merchant::findOrFail( $this->merchantId );
+        $merchant = Merchant::findOrFail($this->merchantId);
         // 判断该店是否已结算
-        $exist      = SettlementPlatform::where('merchant_id', $this->merchantId )
-                            ->where('date', $this->date)->first();
-        if( $exist )
-        {
+        $exist = SettlementPlatform::where('merchant_id', $this->merchantId)
+            ->where('date', $this->date)->first();
+        if ($exist) {
             Log::info('该每日结算已结算,跳过结算', [
                 'merchantId' => $this->merchantId,
-                'date' => Carbon::now()->format('Y-m-d')
+                'date' => $this->date
             ]);
-            return ;
+            return;
         }
-        $res = SettlementPlatformService::settlement( $merchant, $this->date );
-        if( !$res )  Log::error('该商家每日结算错误，商家id：'.$this->merchantId, ['date'=>$this->date]
-        );
+        $res = SettlementPlatformService::settlement($merchant, $this->date);
+        if (!$res) {
+            Log::error('该商家每日结算错误', [
+                'merchantId' => $this->merchantId,
+                'date' => $this->date
+            ]);
+        }
     }
 }
