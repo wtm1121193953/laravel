@@ -274,4 +274,21 @@ class FeeSplittingService extends BaseService
 
         return $feeSplittingRecord;
     }
+
+    /**
+     * 通过商户id获取商户的分利比例 再获取用户自己的分润比例
+     * @param $merchantId
+     * @return float|int
+     */
+    public static function getUserFeeSplittingRatioToSelfByMerchantId($merchantId)
+    {
+        $feeRatio = UserCreditSettingService::getFeeSplittingRatioToSelfSetting(); // 自反的分润比例
+        $merchant = MerchantService::getById($merchantId);
+        if (empty($merchant)) {
+            throw new BaseResponseException('该商户不存在');
+        }
+        $settlementRate = $merchant->settlement_rate;
+        $ratio = $feeRatio / 100 * ($settlementRate / 100 - ($settlementRate / 100 * 0.06 * 1.12 / 1.06 + $settlementRate / 100 * 0.1 * 0.25 + 0.0068));
+        return $ratio;
+    }
 }
