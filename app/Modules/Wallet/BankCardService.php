@@ -4,6 +4,7 @@ namespace App\Modules\Wallet;
 
 use App\BaseService;
 use App\Modules\Wallet\BankCard;
+use App\Modules\User\UserIdentityAuditRecordService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\BaseResponseException;
@@ -21,6 +22,8 @@ class BankCardService extends BaseService
 {
     public static function addCard( $data, $user, $originType=BankCard::ORIGIN_TYPE_USER )
     {
+        // 检查开户名是否与实名验证信息一致
+        self::checkIdentityAuditName($user->id,$data['bank_card_open_name']);
         $bankCard = new BankCard;
         $bankCard->bank_card_open_name  = $data['bank_card_open_name'];
         $bankCard->bank_card_no         = $data['bank_card_no'];
@@ -35,26 +38,36 @@ class BankCardService extends BaseService
     }
 
     /**
+     * 检查开户名是否与实名验证信息一致
+     * @param $userId
+     * @param $checkName
+     */
+    public static function checkIdentityAuditName( $userId, $checkName )
+    {
+        $record = UserIdentityAuditRecordService::getRecordByUser($userId);
+        if( $record['name']!=$checkName ){
+            throw new BaseResponseException('开户人必须与实名验证信息一致',ResultCode::PARAMS_INVALID );
+        }
+    }
+
+    /**
      * 修改默认卡
-     * @param   array   $data
+     * @param   int   $cardId
      * @param   \App\Modules\User\User $user
      * @param   integer $originType
      * @throws \Exception
      */
-    public static function changeDefault( $data, $user, $originType=BankCard::ORIGIN_TYPE_USER )
+    public static function changeDefault( $cardId, $user, $originType=BankCard::ORIGIN_TYPE_USER )
     {
-        $bankCard = new BankCard;
+        $query  = BankCard::where('origin_id', $user->id )
+                        ->where("origin_type", $originType);
         // 开启事务
         DB::beginTransaction();
         try{
             // 全部改为未选
-            $bankCard::where('origin_id', $user->id )
-                ->where("origin_type", $originType)
-                ->update(['default'=>BankCard::DEFAULT_UNSELECTED]);
+            $query->update(['default'=>BankCard::DEFAULT_UNSELECTED]);
             // 指定的为默认
-            $bankCard::where('origin_id', $user->id )
-                ->where("origin_type",$originType)
-                ->where('id', $data['id'] )
+            $query->where('id', $cardId )
                 ->update(['default'=>BankCard::DEFAULT_SELECTED]);
             DB::commit();
         }catch ( \Exception $e ){
@@ -64,17 +77,16 @@ class BankCardService extends BaseService
     }
 
     /**
-     * @param   array    $data
+     * @param   int    $cardId
      * @param   \App\Modules\User\User $user
      * @param   int $originType
      * @throws \Exception
      */
-    public static function delCard( $data, $user, $originType=BankCard::ORIGIN_TYPE_USER )
+    public static function delCard( $cardId, $user, $originType=BankCard::ORIGIN_TYPE_USER )
     {
-        $bankCard = new BankCard;
-        $res = $bankCard::where('origin_id', $user->id )
+        $res = BankCard::where('origin_id', $user->id)
             ->where("origin_type",$originType)
-            ->where('id', $data['id'] )
+            ->where('id', $cardId)
             ->delete();
         if(!$res)
         {
@@ -93,22 +105,18 @@ class BankCardService extends BaseService
      */
     public static function getCardById( $id, $obj, $originType=BankCard::ORIGIN_TYPE_USER )
     {
-        $bankCard = new BankCard;
-        $card   = $bankCard::where('origin_id', $obj->id )
+        return BankCard::where('origin_id', $obj->id )
             ->where("origin_type",$originType)
             ->where('id', $id )
             ->first();
-        return  $card;
     }
 
     public static function getList( $obj, $originType=BankCard::ORIGIN_TYPE_USER  )
     {
-        $bankCard = new \App\Modules\Wallet\BankCard;
-        $list = $bankCard::where('origin_id', $obj->id)
+        return BankCard::where('origin_id', $obj->id)
             ->where('origin_type', $originType)
             ->orderBy('default', 'desc')
             ->get();
-        return $list;
     }
 
     /**
@@ -120,11 +128,9 @@ class BankCardService extends BaseService
      * @return \App\Modules\Wallet\BankCard
      */
     public static function getCardByBankCardNo($bankCardNo, $originType=BankCard::ORIGIN_TYPE_USER ){
-        $bankCard = new BankCard;
-        $card   = $bankCard::where('bank_card_no', $bankCardNo)
+        return BankCard::where('bank_card_no', $bankCardNo)
             ->where("origin_type",$originType)
             ->first();
-        return  $card;
     }
 
 
@@ -135,9 +141,8 @@ class BankCardService extends BaseService
      */
     public static function getBankList($onlyStatusUsable = false)
     {
-        $list = Bank::when($onlyStatusUsable, function (Builder $query) {
+        return  Bank::when($onlyStatusUsable, function (Builder $query) {
             $query->where('status', Bank::STATUS_USABLE);
         })->get();
-        return $list;
     }
 }

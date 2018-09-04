@@ -268,7 +268,7 @@ class ConsumeQuotaService extends BaseService
      * @param $param
      * @param int $pageSize
      * @param $withQuery
-     * @return WalletConsumeQuotaRecord|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|Builder
      */
     public static function getConsumeQuotaRecordList($param, $pageSize = 15, $withQuery = false)
     {
@@ -280,32 +280,42 @@ class ConsumeQuotaService extends BaseService
         $originType = array_get($param, 'originType', 0);
         $type = array_get($param, 'type', '');
         $syncTpsCredit = array_get($param, 'syncTpsCredit', false);
+        $tpsConsumeQuota = array_get($param, 'tpsConsumeQuota', false);
 
-        $query = WalletConsumeQuotaRecord::when($originId, function (Builder $query) use ($originId) {
-                $query->where('origin_id', $originId);
-            })
-            ->when($originType, function (Builder $query) use ($originType) {
-                $query->where('origin_type', $originType);
-            })
-            ->when($consumeQuotaNo, function (Builder $query) use ($consumeQuotaNo) {
-                $query->where('consume_quota_no', 'like', "%$consumeQuotaNo%");
-            })
-            ->when($type, function (Builder $query) use ($type) {
-                $query->where('type', $type);
-            })
-            ->when($startDate, function (Builder $query) use ($startDate) {
-                $query->whereDate('created_at', '>', $startDate);
-            })
-            ->when($endDate, function (Builder $query) use ($endDate) {
-                $query->whereDate('created_at', '<', $endDate);
-            })
-            ->when($status, function (Builder $query) use ($status) {
-                $query->where('status', $status);
-            })
-            ->when($syncTpsCredit, function (Builder $query) {
-                $query->where('sync_tps_credit', '>', 0);
-            })
-            ->orderBy('created_at', 'desc');
+        $query = WalletConsumeQuotaRecord::query();
+        if ($originId) {
+            $query->where('origin_id', $originId);
+        }
+        if ($originType) {
+            $query->where('origin_type', $originType);
+        }
+        if ($consumeQuotaNo) {
+            $query->where('consume_quota_no', 'like', "%$consumeQuotaNo%");
+        }
+        if ($type) {
+            $query->where('type', $type);
+        }
+        if ($status) {
+            $query->where('status', $status);
+        }
+        if ($syncTpsCredit) {
+            $query->where('sync_tps_credit', '>', 0);
+        }
+        if ($tpsConsumeQuota) {
+            $query->where('tps_consume_quota', '>', 0);
+        }
+
+        if ($startDate) $startDate = date('Y-m-d 00:00:00', strtotime($startDate));
+        if ($endDate) $endDate = date('Y-m-d 23:59:59', strtotime($endDate));
+        if($startDate && $endDate){
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        }else if($startDate){
+            $query->where('created_at', '>', $startDate);
+        }else if($endDate){
+            $query->where('created_at', '<', $endDate);
+        }
+
+        $query->orderBy('created_at', 'desc');
         if ($withQuery) {
             return $query;
         } else {

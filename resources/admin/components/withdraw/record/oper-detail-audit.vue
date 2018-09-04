@@ -129,8 +129,12 @@
                 })
             },
             goBack() {
-                // router.push('/withdraw/records');
-                router.go(-1);
+                router.push({
+                    path: '/withdraw/records',
+                    query: {
+                        type: 'oper',
+                    }
+                });
             },
             auditSuccess() {
                 this.showDialog = true;

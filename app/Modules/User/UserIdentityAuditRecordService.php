@@ -6,6 +6,7 @@ use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\ResultCode;
+use function foo\func;
 
 /**
  * 身份验证记录
@@ -52,8 +53,10 @@ class UserIdentityAuditRecordService extends BaseService
             ->where('status', UserIdentityAuditRecord::STATUS_FAIL)
             ->first();
         if (!$record) {
-            throw new DataNotFoundException('找不到用户验证信息');
+            throw new DataNotFoundException('找不到可修改的用户验证信息');
         }
+        // 判断身份证是否被他人使用
+        self::checkRecordCardNoUsed($user->id, $data['id_card_no']);
         // 判断是否有新修改内容
         if (count($data) <= 1) {
             throw new BaseResponseException(ResultCode::DB_UPDATE_FAIL, '不可无修改内容');
@@ -73,6 +76,25 @@ class UserIdentityAuditRecordService extends BaseService
     {
         $record = UserIdentityAuditRecord::where('user_id', $userId)->first();
         return $record;
+    }
+
+
+    /**
+     * Author:  Jerry
+     * Date:    180904
+     * 判断是别的用户是否已绑定改身份证
+     * @param $userId
+     * @param $cardNo
+     */
+    public static function checkRecordCardNoUsed( $userId, $cardNo)
+    {
+        $exist=  UserIdentityAuditRecord::where('id_card_no', $cardNo)
+                    ->where('user_id', '!=', $userId)->exists();
+        if( $exist )
+        {
+            throw new BaseResponseException( '该身份证号已被他人使用!',ResultCode::PARAMS_INVALID);
+        }
+
     }
 
 }

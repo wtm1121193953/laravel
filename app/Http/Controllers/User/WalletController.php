@@ -7,6 +7,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
@@ -148,6 +149,7 @@ class WalletController extends Controller
             'status' => $status,
             'originId' => request()->get('current_user')->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+            'tpsConsumeQuota' => true,
         ], $pageSize, true);
         // 当月总tps消费额
         $amount = $query->sum('tps_consume_quota');
@@ -184,14 +186,9 @@ class WalletController extends Controller
         $this->validate(request(), [
             'merchantId' => 'required|integer|min:1'
         ]);
+
         $merchantId = request('merchantId');
-        $feeRatio = UserCreditSettingService::getFeeSplittingRatioToSelfSetting(); // 自反的分润比例
-        $merchant = MerchantService::getById($merchantId);
-        if (empty($merchant)) {
-            throw new BaseResponseException('该商户不存在');
-        }
-        $settlementRate = $merchant->settlement_rate;
-        $ratio = $feeRatio / 100 * ($settlementRate / 100 - ($settlementRate / 100 * 0.06 * 1.12 / 1.06 + $settlementRate / 100 * 0.1 * 0.25 + 0.0068));
+        $ratio = FeeSplittingService::getUserFeeSplittingRatioToSelfByMerchantId($merchantId);
         // 返回的是系数 直接乘以金额就好了
         return Result::success([
             'ratio' => $ratio,

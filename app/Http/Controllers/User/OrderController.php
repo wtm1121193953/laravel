@@ -119,14 +119,9 @@ class OrderController extends Controller
             $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
         }
         // 查看分润详情
-        if ($detail->splitting_status == Order::SPLITTING_STATUS_YES) {
-            $feeSplittingRecord = FeeSplittingService::getFeeSplittingDetailByParams([
-                'originId' => $detail->user_id,
-                'originType' => FeeSplittingRecord::ORIGIN_TYPE_USER,
-                'orderId' => $detail->id,
-            ]);
-            $detail->fee_splitting_amount = !empty($feeSplittingRecord) ? $feeSplittingRecord->amount : 0;
-        }
+        $userFeeSplittingRatioToSelf = FeeSplittingService::getUserFeeSplittingRatioToSelfByMerchantId($detail->merchant_id);
+        $detail->fee_splitting_amount = Utils::getDecimalByNotRounding($detail->pay_price * $userFeeSplittingRatioToSelf, 2);
+
         // tps 消费额
         $detail->tps_consume_quota = Utils::getDecimalByNotRounding($detail->pay_price / 6 / 6.5, 2);
         return Result::success($detail);

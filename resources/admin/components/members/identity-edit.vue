@@ -19,7 +19,7 @@
                                 {{info.name}}
                             </el-form-item>
                             <el-form-item prop="legal_name" label="身份证号码">
-                                {{info.number}}
+                                {{info.id_card_no}}
                             </el-form-item>
                             <el-form-item label="身份证正面" prop="front_pic">
                                 <div v-viewer>
