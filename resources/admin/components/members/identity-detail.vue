@@ -31,7 +31,14 @@
                 </div>
             </el-form-item>
 
-
+            <el-form-item prop="status" label="审核状态">
+                <span v-if="parseInt(info.status) === 1">待审核</span>
+                <span v-else-if="parseInt(info.status) === 2">审核通过</span>
+                <span v-else-if="parseInt(info.status) === 3">审核失败</span>
+            </el-form-item>
+            <el-form-item v-if="parseInt(info.status) === 3" prop="email" label="审核意见">
+                {{info.reason}}
+            </el-form-item>
             <el-form-item>
                 <el-button @click="cancel" type="primary">返 回</el-button>
             </el-form-item>

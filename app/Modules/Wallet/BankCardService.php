@@ -24,6 +24,15 @@ class BankCardService extends BaseService
     {
         // 检查开户名是否与实名验证信息一致
         self::checkIdentityAuditName($user->id,$data['bank_card_open_name']);
+        // 判断同一用户是否绑定相同的银行卡号
+        $exist= BankCard::where('origin_id', $user->id)
+                        ->where('origin_type', $originType)
+                        ->where('bank_card_no', $data['bank_card_open_name'])
+                        ->exists();
+        if( $exist )
+        {
+            throw new BaseResponseException('同一用户不可绑定相同银行卡', ResultCode::PARAMS_INVALID);
+        }
         $bankCard = new BankCard;
         $bankCard->bank_card_open_name  = $data['bank_card_open_name'];
         $bankCard->bank_card_no         = $data['bank_card_no'];
@@ -33,7 +42,7 @@ class BankCardService extends BaseService
         $bankCard->bank_card_type       = BankCard::BANK_CARD_TYPE_PEOPLE;
         $bankCard->default              = BankCard::DEFAULT_UNSELECTED;
         if( !($bankCard->save()) ){
-            throw new BaseResponseException(ResultCode::DB_INSERT_FAIL, '新增失败');
+            throw new BaseResponseException('新增失败', ResultCode::DB_INSERT_FAIL);
         }
     }
 
@@ -46,7 +55,7 @@ class BankCardService extends BaseService
     {
         $record = UserIdentityAuditRecordService::getRecordByUser($userId);
         if( $record['name']!=$checkName ){
-            throw new BaseResponseException('开户人必须与实名验证信息一致',ResultCode::PARAMS_INVALID );
+            throw new BaseResponseException('持卡人姓名必须和当前认证用户一致',ResultCode::PARAMS_INVALID );
         }
     }
 

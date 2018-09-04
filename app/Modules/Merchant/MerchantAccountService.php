@@ -82,7 +82,7 @@ class MerchantAccountService extends BaseService
                         if($operUnbindTps && $sub['name'] == 'TPS会员账号管理'){
                             unset($menus[$key]['sub'][$key2]);
                         }
-                        if($isPayToPlatform && $sub['name'] == 'T+1结算管理'){
+                        if(!$isPayToPlatform && $sub['name'] == 'T+1结算管理'){
                             unset($menus[$key]['sub'][$key2]);
                         }
                     }
