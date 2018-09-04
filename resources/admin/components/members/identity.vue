@@ -68,26 +68,21 @@
             <el-table-column prop="user.created_at" label="注册时间"/>
             <el-table-column prop="name" label="姓名"/>
             <el-table-column prop="id_card_no" label="身份证号码" width="200"/>
-            <el-table-column
-                    prop="front_pic"
-                    label="身份证正面"
-                    width="150">
+            <el-table-column prop="front_pic" label="身份证正面">
                 <template slot-scope="scope">
-                    <div v-viewer>
-                        <img v-if="scope.row.front_pic" :src="scope.row.front_pic" width="50" height="50" alt="营业执照">
+                    <div class="detail_image" style="height: 50px; width: 50px" v-viewer @click="previewImage($event)">
+                        <img class="img" :src="scope.row.front_pic" width="100%" height="100%" />
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column
-                    prop="opposite_pic"
-                    label="身份证反面"
-                    width="150">
+            <el-table-column prop="opposite_pic" label="身份证反面">
                 <template slot-scope="scope">
-                    <div v-viewer>
-                        <img v-if="scope.row.opposite_pic" :src="scope.row.opposite_pic" width="50" height="50" alt="营业执照">
+                    <div class="detail_image" style="height: 50px; width: 50px" v-viewer @click="previewImage($event)">
+                        <img class="img" :src="scope.row.opposite_pic" width="100%" height="100%" />
                     </div>
                 </template>
             </el-table-column>
+
             <el-table-column prop="user.status_val" label="用户状态"/>
             <el-table-column prop="status" label="认证身份状态">
                 <template slot-scope="scope">
@@ -231,6 +226,13 @@
                 }).catch(() => {
 
                 })
+            },
+            previewImage(event){
+                event.stopPropagation()
+                //预览商品图片
+                const viewer = event.currentTarget.$viewer
+                viewer.show()
+                return
             },
             downloadExcel() {
                 let message = '确定要导出当前筛选的用户列表么？'
