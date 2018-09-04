@@ -199,7 +199,6 @@ class UserService extends BaseService
     public static function identity($params,bool $return_query = false){
 
 
-        //dd(explode(',',$params['status']));die();
         $query  = UserIdentityAuditRecord::select('*')
             ->when($params['mobile'], function (Builder $query) use ($params){
                 $query->whereHas('user',function($q) use ($params) {
@@ -217,7 +216,7 @@ class UserService extends BaseService
                 $query->where('created_at', '<=', $params['endDate']. ' 23:59:59');
             })
             ->when($params['status'], function (Builder $query) use ($params){
-                $query->whereIn('status', explode(',',$params['status']));
+                $query->whereIn('status', array($params['status']));
             })
             ->with('user')
             ->orderByDesc('created_at');
