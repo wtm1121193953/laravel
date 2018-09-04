@@ -363,7 +363,8 @@
                         {required: true, message: '营业执照不能为空'},
                     ],
                     organization_code: [
-                        {required: true, message: '营业执照代码不能为空'},
+                        {required: true, message: '营业执照代码 不能为空'},
+                        {max: 100, message: '营业执照代码 不能超过100个字'},
                     ],
                     contract_pic_url: [
                         {required: true, message: '合同照片 不能为空'},
@@ -372,6 +373,7 @@
                     // 商户负责人
                     contacter: [
                         {required: true, message: '商户负责人姓名 不能为空'},
+                        {max: 50, message: '商户负责人姓名 不能超过50个字'}
                     ],
                     contacter_phone: [
                         {required: true, message: '商户负责人手机号码 不能为空'},
@@ -386,10 +388,12 @@
                     ],
                     site_acreage: [
                         {required: true, message: '商户面积 不能为空'},
+                        {max: 50, message: '商户面积 不能超过50个字'},
                         {validator: validateNumber}
                     ],
                     employees_number: [
                         {required: true, message: '商户员工人数 不能为空'},
+                        {max: 50, message: '商户员工人数 不能超过50个字'},
                         {validator: validateNumber}
                     ],
                 },
