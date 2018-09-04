@@ -65,6 +65,10 @@ class SettlementPlatformController extends Controller
      */
     public function downloadExcel()
     {
+
+        $bank_open_name = request('bank_open_name');
+        $sub_bank_name = request('sub_bank_name');
+        $bank_card_no = request('bank_card_no');
         $merchant_name = request('merchant_name');
         $merchant_id = request('merchant_id');
         $startDate = request('startDate');
@@ -72,8 +76,10 @@ class SettlementPlatformController extends Controller
         $status = request('status');
 
 
-
         $query = SettlementPlatformService::getListForSaas([
+            'bank_open_name' => $bank_open_name,
+            'sub_bank_name' => $sub_bank_name,
+            'bank_card_no' => $bank_card_no,
             'merchant_name' => $merchant_name,
             'merchant_id' => $merchant_id,
             'startDate' => $startDate,

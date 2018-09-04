@@ -56,12 +56,11 @@
         <el-table :data="list" stripe @selection-change="handleSelectionChange">
             <el-table-column
                     type="selection"
-                    width="55"
-                    :selectable="selectable">
+                    width="55">
             </el-table-column>
             <el-table-column prop="created_at" label="提交认证时间"/>
             <el-table-column prop="user.mobile" label="手机号"/>
-            <<el-table-column prop="user.id" label="用户ID"/>
+            <el-table-column prop="user.id" label="用户ID"/>
             <el-table-column prop="user.created_at" label="注册时间"/>
             <el-table-column prop="name" label="姓名"/>
             <el-table-column prop="number" label="身份证号码"/>
@@ -86,7 +85,20 @@
                 </template>
             </el-table-column>
             <el-table-column prop="user.status_val" label="用户状态"/>
-            <el-table-column prop="status_val" label="认证身份状态"/>
+            <el-table-column prop="status" label="认证身份状态">
+                <template slot-scope="scope">
+                    <span v-if="parseInt(scope.row.status) === 1" class="c-warning">待审核</span>
+                    <span v-if="parseInt(scope.row.status) === 2" class="c-green">审核通过</span>
+                    <span v-if="parseInt(scope.row.status) === 3" class="c-danger">
+                         <el-popover
+                             placement="right-start"
+                             trigger="hover"
+                             :content="scope.row.reason">
+                            <span slot="reference">审核失败</span>
+                         </el-popover>
+                    </span>
+                </template>
+            </el-table-column>
 
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
@@ -199,9 +211,9 @@
                     type: 'warning',
                     center: true,
                     dangerouslyUseHTMLString: true,
-                    inputType: 'textarea',
-                    inputPlaceholder: '请填写失败原因，必填，最多150字',
-                    inputValidator: (val) => {if(val && val.length > 150) return '备注不能超过150个字'}
+                    inputType: 'text',
+                    inputPlaceholder: '请填写失败原因，必填，最多50字',
+                    inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
                 }).then(({value}) => {
                     param.reason = value ? value : '';
                     api.post('/member/batch_identity', param).then(data => {

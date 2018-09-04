@@ -33,7 +33,7 @@
                             </el-form-item>
                             <el-form-item label="审核意见" prop="reason">
                                 <el-input
-                                        type="textarea"
+                                        type="text"
                                         :rows="2"
                                         placeholder="最多输入50字汉字，可不填"
                                         maxlength="50"
@@ -44,8 +44,8 @@
 
                             <el-form-item>
                                 <el-button @click="cancel">取消</el-button>
-                                <el-button type="primary" @click="doEdit">审核通过</el-button>
-                                <el-button type="primary" @click="doReject">审核不通过</el-button>
+                                <el-button v-if="info.status !== 2" type="primary" @click="doEdit">审核通过</el-button>
+                                <el-button v-if="info.status !== 3" type="primary" @click="doReject">审核不通过</el-button>
                             </el-form-item>
                         </el-form>
             </template>
