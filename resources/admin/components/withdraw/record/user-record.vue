@@ -56,7 +56,7 @@
             </el-table-column>
             <el-table-column prop="bank_card_no" label="提现账号">
                 <template slot-scope="scope">
-                    {{scope.row.bank_card_no.substr(0,5) + '****' + scope.row.bank_card_no.substr(-1,4)}}
+                    {{scope.row.bank_card_no.substr(0,5) + '****' + scope.row.bank_card_no.substr(-4,4)}}
                 </template>
             </el-table-column>
             <el-table-column prop="bank_card_open_name" label="账户名"></el-table-column>
