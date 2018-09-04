@@ -170,6 +170,9 @@ class UsersController extends Controller
 
         $info = UserService::identityDetail($id);
 
+        if (empty($info->user)) {
+            throw new BaseResponseException("用户数据异常", ResultCode::UNKNOWN);
+        }
         return Result::success($info);
     }
 
