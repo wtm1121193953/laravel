@@ -289,7 +289,7 @@ class WalletService extends BaseService
             WalletBill::TYPE_OPER_REFUND,
         ])){
             $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordById($bill->obj_id);
-            $bill->order = OrderService::getById($feeSplittingRecords->order_id, ['id', 'order_no', 'status', 'created_at', 'pay_time']);
+            $bill->order = OrderService::getById($feeSplittingRecords->order_id, ['id', 'order_no', 'status', 'created_at', 'pay_time', 'notify_mobile']);
 
             // 如果是退款相关, 补充退款信息
             if(in_array($bill->type, [
@@ -475,7 +475,7 @@ class WalletService extends BaseService
         $putPassword = Wallet::genPassword(  $password, $wallet['salt']);
         if( $putPassword != $wallet['withdraw_password'] )
         {
-            throw new BaseResponseException('原交易密码确认错误', ResultCode::PARAMS_INVALID);
+            throw new BaseResponseException('交易密码不正确', ResultCode::PARAMS_INVALID);
         }
     }
 }

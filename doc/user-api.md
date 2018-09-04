@@ -1387,7 +1387,8 @@ order_no 订单号
               order_no: 订单号,
               status: 订单状态,
               created_at: 订单创建时间,
-              pay_time: 支付时间(交易时间)
+              pay_time: 支付时间(交易时间),
+              notify_mobile: 用户手机号码
       	},
       	refund: 退款信息, 当类型为返利退款时存在(3,4,6) {
               id: 退款ID,

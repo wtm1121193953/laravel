@@ -212,24 +212,8 @@ class WalletController extends Controller
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
         ], 15, true)->sum('sync_tps_credit');
 
-        $contributeToParent = 0;
-        $parent = InviteUserService::getParent($user->id);
-        if ($parent) {
-            if ($parent instanceof User) {
-                $originType = WalletConsumeQuotaRecord::ORIGIN_TYPE_USER;
-            } elseif ($parent instanceof Merchant) {
-                $originType = WalletConsumeQuotaRecord::ORIGIN_TYPE_MERCHANT;
-            } elseif ($parent instanceof Oper) {
-                $originType = WalletConsumeQuotaRecord::ORIGIN_TYPE_OPER;
-            } else {
-                throw new BaseResponseException('改状态不存在');
-            }
-            $contributeToParent = ConsumeQuotaService::getConsumeQuotaRecordList([
-                'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
-                'originId' => $user->id,
-                'originType' => $originType,
-            ], 15, true)->sum('sync_tps_credit');
-        }
+        // 贡献给上级的积分 就用自己个人的消费积分满100 返 50 来计算
+        $contributeToParent = floor($wallet->total_tps_credit / 100) * 50;
 
         return Result::success([
             'totalTpsCredit' => $wallet->total_tps_credit, // 个人消费获得TPS积分

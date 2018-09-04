@@ -3,12 +3,14 @@
 namespace App\Console\Commands\Updates;
 
 use App\Jobs\OrderFinishedJob;
+use App\Jobs\TpsBindsUpdateTpsUidJob;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderRefund;
 use App\Modules\Tps\TpsBind;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\Bank;
+use App\Support\TpsApi;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -81,8 +83,8 @@ class V1_4_2 extends Command
 
         // 历史订单分润
         $this->info('历史订单分润 Start');
-        $bar = $this->output->createProgressBar(Order::where('splitting_status', Order::SETTLEMENT_STATUS_NO)->count('id'));
-        Order::chunk(1000, function ($list) use ($bar) {
+        $bar = $this->output->createProgressBar(Order::where('status', Order::STATUS_FINISHED)->where('splitting_status', Order::SETTLEMENT_STATUS_NO)->count('id'));
+        Order::where('status', Order::STATUS_FINISHED)->chunk(1000, function ($list) use ($bar) {
             $list->each(function (Order $item) use ($bar) {
                 if($item->splitting_status == 1){
                     OrderFinishedJob::dispatch($item);
@@ -111,6 +113,8 @@ class V1_4_2 extends Command
             '华夏银行',
             '中国邮政储蓄银行'
         ];
+        // 清空银行信息
+        Bank::where('id', '>', 0)->delete();
         foreach ($banks as $item){
             $bank = new Bank();
             $bank->name = $item;
@@ -124,12 +128,8 @@ class V1_4_2 extends Command
         TpsBind::chunk(1000, function ($list) use ($bar) {
             $list->each(function ($item) use ($bar) {
                 if ($item->tps_uid == 0 ) {
-                    $result = TpsApi::getUserInfo($item->tps_account);
-                    if (!empty($result['data']['uid'])) {
-                        $item->tps_uid = $result['data']['uid'];
-                        $item->save();
-                        $bar->advance();
-                    }
+                    TpsBindsUpdateTpsUidJob::dispatch($item);
+                    $bar->advance();
                 }
 
             });
