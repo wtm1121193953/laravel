@@ -116,6 +116,8 @@
                 successCount: 0,
                 failAmount: 0.00,
                 failCount: 0,
+
+                searchDate: {},
             }
         },
         computed: {
@@ -173,22 +175,56 @@
                 })
             },
             goWithdrawRecords(status){
-                this.$menu.change('/withdraw/records?type=' + this.originType + '&status=' + status)
+                let date = this.searchDate;
+                this.$menu.change('/withdraw/records?type=' + this.originType + '&status=' + status + '&startDate=' + date.startDate + '&endDate=' + date.endDate);
                 store.commit('setCurrentMenu', '/withdraw/records');
             },
             originTypeChange(){
                 this.timeType = 'today';
                 this.getData();
-            }
+            },
+            getSearchDate() {
+                let startDate = '';
+                let endDate = '';
+
+                let now = new Date(); //当前日期
+                let nowMonth = now.getMonth(); //当前月
+                let nowYear = now.getFullYear(); //当前年
+
+                if (this.timeType == 'today') {
+                    startDate = endDate = new Date(new Date()).format('yyyy-MM-dd');
+                } else if (this.timeType == 'yesterday') {
+                    startDate = endDate = new Date(new Date().setDate(new Date().getDate() - 1)).format('yyyy-MM-dd');
+                } else if (this.timeType == 'month') {
+                    startDate = new Date(nowYear, nowMonth, 1).format('yyyy-MM-dd');
+                    endDate = new Date(new Date(new Date().setMonth(nowMonth + 1)).setDate(0)).format('yyyy-MM-dd');
+                } else if (this.timeType == 'lastMonth') {
+                    startDate = new Date(new Date(new Date().setMonth(nowMonth - 1)).setDate(1)).format('yyyy-MM-dd');
+                    endDate = new Date(new Date().setDate(0)).format('yyyy-MM-dd');
+                } else if (this.timeType == 'other') {
+                    startDate = this.dateRange[0] || '';
+                    endDate = this.dateRange[1] || '';
+                } else {
+                    startDate = '';
+                    endDate = '';
+                }
+                this.searchDate = {
+                    startDate: startDate,
+                    endDate: endDate,
+                };
+                console.log(this.searchDate);
+            },
         },
         created(){
             this.getData();
+            this.getSearchDate();
         },
         watch: {
             timeType(val){
                 if(val != 'other'){
                     this.getData();
                 }
+                this.getSearchDate();
             },
             operId(){
                 if(this.originType == 'oper'){
