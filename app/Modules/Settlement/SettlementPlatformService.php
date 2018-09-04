@@ -138,7 +138,7 @@ class SettlementPlatformService extends BaseService
         $sum = $query->where('settlement_status', Order::SETTLEMENT_STATUS_NO )->sum('pay_price');
 
         if( $sum<100 ){
-            Log::info('该商家每日结算错误，错误原因：订单金额小于100，结算失败');
+            Log::info('该商家每日结算错误，错误原因：订单金额小于100，跳过结算');
             return true;
         }
         //获得结算周期时间
