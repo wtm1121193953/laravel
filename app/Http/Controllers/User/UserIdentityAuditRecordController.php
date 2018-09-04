@@ -7,6 +7,7 @@ use App\Result;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\User\UserIdentityAuditRecordService;
+use App\Exceptions\BaseResponseException;
 
 /**
  * 验证记录
@@ -57,10 +58,11 @@ class UserIdentityAuditRecordController extends Controller
     {
         $request->validate([
             'name'          => 'required',
-            'id_card_no'    => 'bail|required|identitycards|unique:user_identity_audit_records',
+            'id_card_no'    => 'bail|required|identitycards',
             'front_pic'     => 'required',
             'opposite_pic'  => 'required',
         ]);
+
         $saveData = [
             'name'          => $request->get('name'),
             'id_card_no'    => $request->get('id_card_no'),

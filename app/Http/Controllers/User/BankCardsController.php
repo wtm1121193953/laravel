@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\User;
 
-use App\ResultCode;
 use Illuminate\Http\Request;
 use App\Modules\Wallet\BankCardService;
 use App\Http\Controllers\Controller;
@@ -31,7 +30,12 @@ class BankCardsController extends Controller
             'bank_card_open_name'   =>  'required',
             'bank_name'             =>  'required',
             ]);
-        BankCardService::addCard( $request->all(), $request->get('current_user') );
+        $saveData = [
+            'bank_card_no'          =>  $request->get('bank_card_no'),
+            'bank_card_open_name'   =>  $request->get('bank_card_open_name'),
+            'bank_name'             =>  $request->get('bank_name'),
+        ];
+        BankCardService::addCard( $saveData, $request->get('current_user') );
         return Result::success('添加银行卡成功');
     }
 
@@ -49,7 +53,7 @@ class BankCardsController extends Controller
         $request->validate([
             'id'                    =>  'required|exists:bank_cards,id',
         ]);
-        BankCardService::changeDefault( $request->all(), $request->get('current_user') );
+        BankCardService::changeDefault( $request->get('id'), $request->get('current_user') );
         return Result::success('修改默认银行卡成功');
     }
 
@@ -67,7 +71,7 @@ class BankCardsController extends Controller
         $request->validate([
             'id'                    =>  'required|exists:bank_cards,id',
         ]);
-        BankCardService::delCard( $request->all(), $request->get('current_user') );
+        BankCardService::delCard( $request->get('id'), $request->get('current_user') );
         return Result::success('删除银行卡成功');
     }
 
@@ -80,19 +84,7 @@ class BankCardsController extends Controller
      */
     public function getCardsList( Request $request )
     {
-        $bankCard = new \App\Modules\Wallet\BankCard;
-        $currentUser = $request->get('current_user');
-        $list = $bankCard::where('origin_id', $currentUser->id)
-                            ->where('origin_type', $currentUser->status)
-                            ->orderBy('default', 'desc')
-                            ->get();
         $res = BankCardService::getList( $request->get('current_user') );
-        if( $res )
-        {
-            return Result::success( ['list'=>$list] );
-        }else{
-            return Result::error(ResultCode::DB_QUERY_FAIL,'无银行卡信息');
-        }
-
+        return Result::success( ['list'=>$res] );
     }
 }
