@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class RequestLog
 {
@@ -22,8 +23,7 @@ class RequestLog
     public function handle($request, Closure $next)
     {
         /** @var \Symfony\Component\HttpFoundation\Response|\Illuminate\Contracts\Routing\ResponseFactory $response */
-        $response = $next($request);
-        $responseData = json_decode($response->getContent(), 1);
+        $response = $next($request);;
 
         // 如果非生产环境, 记录请求日志
         if(!App::environment('production')){
@@ -37,22 +37,24 @@ class RequestLog
                 'request' => Utils::getRequestContext($request),
                 'response' => [
                     'statusCode' => $response->getStatusCode(),
-                    'content' => $responseData ?? $response->getContent(),
+                    'content' => json_decode($response->getContent(), 1) ?? $response->getContent(),
                 ],
             ];
-            Log::info('request listen ', $logData);
+            Log::debug('request listen ', $logData);
         }
 
         // 如果是错误请求, 记录错误日志
-        if(
-            !(
-                $request->is('api/oper/inviteChannel/downloadInviteQrcode')
-                || $request->is('api/merchant/inviteChannel/downloadInviteQrcode')
-                || $request->is('api/pay/notify')
-                || $request->is('api/pay/reapalPayNotify')
-                || $request->is('api/download')
-            )
-            && !(
+        if($response instanceof JsonResponse){
+            $responseData = json_decode($response->getContent(), 1);
+            if(
+                /*!(
+                    $request->is('api/oper/inviteChannel/downloadInviteQrcode')
+                    || $request->is('api/merchant/inviteChannel/downloadInviteQrcode')
+                    || $request->is('api/pay/notify')
+                    || $request->is('api/pay/reapalPayNotify')
+                    || $request->is('api/download')
+                )
+                &&*/ !(
                 isset($responseData['code']) &&
                 in_array($responseData['code'], [
                     ResultCode::SUCCESS,
@@ -64,22 +66,23 @@ class RequestLog
                     ResultCode::ACCOUNT_PASSWORD_ERROR,
                 ])
             )
-        ){
-            $attributes = $request->attributes->all();
-            foreach ($attributes as $key => $attribute) {
-                if($attribute instanceof Model){
-                    $attributes[$key] = $attribute->toArray();
+            ){
+                $attributes = $request->attributes->all();
+                foreach ($attributes as $key => $attribute) {
+                    if($attribute instanceof Model){
+                        $attributes[$key] = $attribute->toArray();
+                    }
                 }
+                $logData = [
+                    'request' => Utils::getRequestContext($request),
+                    'response' => [
+                        'statusCode' => $response->getStatusCode(),
+                        'content' => $responseData ?? $response->getContent(),
+                    ],
+                    'sql_log' => DB::getQueryLog(),
+                ];
+                Log::error('request listen ', $logData);
             }
-            $logData = [
-                'request' => Utils::getRequestContext($request),
-                'response' => [
-                    'statusCode' => $response->getStatusCode(),
-                    'content' => $responseData ?? $response->getContent(),
-                ],
-                'sql_log' => DB::getQueryLog(),
-            ];
-            Log::error('request listen ', $logData);
         }
 
         return $response;
