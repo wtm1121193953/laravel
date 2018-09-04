@@ -226,7 +226,10 @@ class UserService extends BaseService
         $users->each(function ($item){
 
             $item->status_val = UserIdentityAuditRecord::getStatusText($item->status);
-            $item->user->status_val = User::getStatusText($item->user->status);
+            if (!empty($item->user)) {
+                $item->user->status_val = User::getStatusText($item->user->status);
+            }
+
         });
 
         return $users;
