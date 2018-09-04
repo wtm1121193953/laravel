@@ -141,7 +141,7 @@ class SettlementPlatformService extends BaseService
         $start_date = $order->min('pay_time');
         $end_date = $order->max('pay_time');
         if( $sum<100 ){
-            Log::info('该商家每日结算错误，错误原因：订单金额小于100，结算失败');
+            Log::info('该商家每日结算错误，错误原因：订单金额小于100，跳过结算');
             return true;
         }
         // 生成结算单，方便之后结算订单中保存结算信息
