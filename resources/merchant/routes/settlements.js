@@ -11,7 +11,7 @@ export default [
         component: Home,
         children: [
             {path: '/settlements', component: SettlementsList, name: 'SettlementsList'},
-            {path: '/settlements/platform', component: SettlementsPlatform, name: 'SettlementsPlatform'},
+            {path: '/settlement/platform/list', component: SettlementsPlatform, name: 'SettlementsPlatform'},
         ]
     },
 ];

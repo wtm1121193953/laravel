@@ -60,10 +60,10 @@
                         批量打款<i class="el-icon-arrow-down el-icon--right"></i>
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item @click.native="batchPaySuccess(1)">打款成功</el-dropdown-item>
-                        <el-dropdown-item @click.native="batchPayFail(1)">打款失败</el-dropdown-item>
-                        <el-dropdown-item @click.native="batchPaySuccess(2)">全部打款成功</el-dropdown-item>
-                        <el-dropdown-item @click.native="batchPayFail(2)">全部打款失败</el-dropdown-item>
+                        <el-dropdown-item v-if="hasRule('/api/admin/withdraw/record/paySuccess')" @click.native="batchPaySuccess(1)">打款成功</el-dropdown-item>
+                        <el-dropdown-item v-if="hasRule('/api/admin/withdraw/record/payFail')" @click.native="batchPayFail(1)">打款失败</el-dropdown-item>
+                        <el-dropdown-item v-if="hasRule('/api/admin/withdraw/record/paySuccess')" @click.native="batchPaySuccess(2)">全部打款成功</el-dropdown-item>
+                        <el-dropdown-item v-if="hasRule('/api/admin/withdraw/record/payFail')" @click.native="batchPayFail(2)">全部打款失败</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </el-form-item>
@@ -130,8 +130,8 @@
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope.row)">查看明细</el-button>
-                    <el-button type="text" v-if="scope.row.status == 2" @click="success(scope.row)">打款成功</el-button>
-                    <el-button type="text" v-if="scope.row.status == 2" @click="failed(scope.row)">打款失败</el-button>
+                    <el-button type="text" v-if="hasRule('/api/admin/withdraw/record/paySuccess') && scope.row.status == 2" @click="success(scope.row)">打款成功</el-button>
+                    <el-button type="text" v-if="hasRule('/api/admin/withdraw/record/payFail') && scope.row.status == 2" @click="failed(scope.row)">打款失败</el-button>
                 </template>
             </el-table-column>
         </el-table>

@@ -106,7 +106,7 @@
         methods: {
             getList() {
                 this.isLoading = true;
-                api.get('/settlement/platform', this.query).then(data => {
+                api.get('/settlement/platform/list', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                     this.isLoading = false;
