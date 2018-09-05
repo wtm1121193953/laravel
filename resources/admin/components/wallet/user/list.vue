@@ -39,7 +39,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="bank_open_name" label="账户名"></el-table-column>
-            <el-table-column prop="sub_bank_name" label="开户行"></el-table-column>
+            <el-table-column prop="bank_name" label="开户行"></el-table-column>
             <el-table-column prop="status" label="账户状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1">正常</span>

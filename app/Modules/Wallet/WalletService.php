@@ -400,8 +400,9 @@ class WalletService extends BaseService
                     $item->user_mobile = $user->mobile;
                     $item->bank_open_name = $bankCard->bank_card_open_name??'';
                     $item->bank_card_no = $bankCard->bank_card_no?? '';
-                    $item->sub_bank_name = $bankCard->bank_card_no?? '';
-                    $item->bank_card_type = $bankCard->bank_card_no?? '';
+                    $item->bank_name = $bankCard->bank_name?? '';
+                    $item->sub_bank_name = $bankCard->sub_bank_name?? '';
+                    $item->bank_card_type = $bankCard->bank_card_type?? '';
                 } elseif ($item->origin_type == Wallet::ORIGIN_TYPE_MERCHANT) {
                     $merchant = MerchantService::getById($item->origin_id);
                     $item->merchant_name = $merchant->name;
