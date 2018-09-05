@@ -7,7 +7,7 @@
                 </el-form-item>
                 <el-form-item prop="pid" label="所属父权限">
                     <el-select v-model="form.pid" placeholder="顶级权限">
-                        <el-option :value="0" label="顶级权限"/>
+                        <el-option :value="0" v-if="ppid <= 0" label="顶级权限"/>
                         <el-option v-for="item in parentRules" :key="item.id" :value="item.id" :label="item.name"/>
                     </el-select>
                 </el-form-item>
@@ -40,12 +40,14 @@
         name: 'rule-form',
         props: {
             rule: Object,
-            pid: {type: Number, default: 0}
+            pid: {type: Number, default: 0},
+            ppid: {type: Number, default: 0},
         },
         computed:{
             parentRules(){
                 return store.state.auth.rules.filter(item => {
-                    return parseInt(item.pid) === 0
+                    // return parseInt(item.pid) === 0;
+                    return item.pid == this.ppid;
                 })
             }
         },
