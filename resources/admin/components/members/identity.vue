@@ -9,8 +9,8 @@
                 <el-input v-model="query.id" size="small"  placeholder="用户ID"  class="w-200" clearable></el-input>
             </el-form-item>
 
-            <el-form-item prop="name" label="用户姓名" >
-                <el-input v-model="query.name" size="small"  placeholder="用户姓名"  class="w-200" clearable></el-input>
+            <el-form-item prop="name" label="真实姓名" >
+                <el-input v-model="query.name" size="small"  placeholder="真实姓名"  class="w-200" clearable></el-input>
             </el-form-item>
             <el-form-item prop="startDate" label="提交认证时间：开始时间">
                 <el-date-picker
@@ -66,7 +66,7 @@
             <el-table-column prop="user.mobile" label="手机号"/>
             <el-table-column prop="user.id" label="用户ID"/>
             <el-table-column prop="user.created_at" label="注册时间"/>
-            <el-table-column prop="name" label="姓名"/>
+            <el-table-column prop="name" label="真实姓名"/>
             <el-table-column prop="id_card_no" label="身份证号码" width="200"/>
             <el-table-column prop="front_pic" label="身份证正面">
                 <template slot-scope="scope">

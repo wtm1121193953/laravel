@@ -9,35 +9,37 @@
                 <el-input v-model="query.id" size="small"  placeholder="用户ID"  class="w-200" clearable></el-input>
             </el-form-item>
 
-            <el-form-item prop="name" label="用户姓名" >
-                <el-input v-model="query.name" size="small"  placeholder="用户姓名"  class="w-200" clearable></el-input>
+            <el-form-item prop="name" label="会员名称" >
+                <el-input v-model="query.name" size="small"  placeholder="会员名称"  class="w-200" clearable></el-input>
             </el-form-item>
             <el-form-item prop="startDate" label="注册时间：开始时间">
                 <el-date-picker
                         v-model="query.startDate"
-                        type="datetime"
+                        type="date"
                         size="small"
                         placeholder="选择开始日期"
-                        value-format="yyyy-MM-dd HH:mm:ss"
+                        value-format="yyyy-MM-dd"
                 ></el-date-picker>
 
             </el-form-item>
             <el-form-item prop="startDate" label="结束时间">
                 <el-date-picker
                         v-model="query.endDate"
-                        type="datetime"
+                        type="date"
                         size="small"
                         placeholder="选择结束日期"
-                        value-format="yyyy-MM-dd HH:mm:ss"
+                        value-format="yyyy-MM-dd"
                 ></el-date-picker>
             </el-form-item>
+            <!--
             <el-form-item label="用户状态" prop="status">
                 <el-select v-model="query.status" size="small"  multiple placeholder="请选择" class="w-150">
                     <el-option label="正常" value="1"/>
                     <el-option label="禁用" value="2"/>
                 </el-select>
             </el-form-item>
-            <el-form-item label="用户身份证状态" prop="identity_status">
+            -->
+            <el-form-item label="用户认证状态" prop="identity_status">
                 <el-select v-model="query.identityStatus" size="small"  multiple placeholder="请选择" class="w-150">
                     <el-option label="待审核" value="1"/>
                     <el-option label="审核通过" value="2"/>

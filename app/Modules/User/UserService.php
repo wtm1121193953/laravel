@@ -174,8 +174,8 @@ class UserService extends BaseService
                 $query->where('id','=',$params['id']);
             })
             ->when($params['startDate'] && $params['endDate'], function (Builder $query) use ($params){
-                $query->where('created_at', '>=', $params['startDate']);
-                $query->where('created_at', '<=', $params['endDate']);
+                $query->where('created_at', '>=', $params['startDate'] . ' 00:00:00');
+                $query->where('created_at', '<=', $params['endDate']. ' 23:59:59');
             })
             ->when($statusArr, function (Builder $query) use ($statusArr){
                 $query->whereIn('status', $statusArr);
