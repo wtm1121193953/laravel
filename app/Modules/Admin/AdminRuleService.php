@@ -215,9 +215,9 @@ class AdminRuleService extends BaseService
         if(empty($rule)){
             throw new DataNotFoundException('权限信息不存在');
         }
+
         $rule->name = request('name', '');
         $rule->pid = request('pid', 0);
-        $rule->level = $rule->pid == 0 ? 1 : 2;
         $rule->url = request('url', '');
         $rule->url_all = request('url_all', '');
         $rule->status = request('status', 1);
