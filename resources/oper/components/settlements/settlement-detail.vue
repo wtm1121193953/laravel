@@ -57,7 +57,7 @@
         },
         methods: {
             getSettlementOrders() {
-                api.get('/getSettlementOrders', this.query).then(data => {
+                api.get('/settlement/orders', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                 })
