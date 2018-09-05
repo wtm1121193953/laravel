@@ -1403,11 +1403,12 @@ order_no 订单号
               withdraw_no: 提现编号,
               amount: 提现金额,
               charge_amount: 手续费,
-              status: 状态 1-提现中 2-提现成功 3-提现失败,
+              status: 状态 1-审核中 2-审核通过 3-已打款 4-打款失败 5-审核不通过,
               bank_card_type: 账户类型 1-公司 2-个人,
               bank_card_open_name: 银行卡开户名,
               bank_card_no: 银行卡号,
               bank_name: 开户行,
+              remark: 备注,
               created_at: 提现时间,
       	}
       	
