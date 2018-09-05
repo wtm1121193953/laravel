@@ -4,6 +4,7 @@
  */
 
 use App\Http\Middleware\User\UserLoginFilter;
+use App\Http\Middleware\AllowWithdrawDate;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('user')
@@ -84,7 +85,7 @@ Route::prefix('user')
 
         // 提现相关
         Route::post('wallet/withdraw/config', 'WalletWithdrawController@getWithdrawConfig')->middleware(UserLoginFilter::class);
-        Route::post('wallet/withdraw/withdraw', 'WalletWithdrawController@withdraw')->middleware(UserLoginFilter::class);
+        Route::post('wallet/withdraw/withdraw', 'WalletWithdrawController@withdraw')->middleware(UserLoginFilter::class,AllowWithdrawDate::class);
 
         Route::post('bank/cards/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);
         Route::post('bank/cards/changDefault', 'BankCardsController@changDefault')->middleware(UserLoginFilter::class);

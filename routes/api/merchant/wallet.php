@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\AllowWithdrawDate;
 
 Route::get('/wallet/bill/list', 'WalletController@getBillList');
 Route::get('/wallet/bill/exportExcel', 'WalletController@exportBillExcel');
@@ -16,5 +17,5 @@ Route::get('/wallet/tpsCredit/detail', 'WalletController@getTpsCreditDetail');
 Route::get('/wallet/withdraw/getPasswordInfo', 'WalletWithdrawController@getWalletPasswordInfo');
 Route::post('/wallet/withdraw/setWalletPassword', 'WalletWithdrawController@setWalletPassword');
 Route::get('/wallet/withdraw/getWithdrawInfo', 'WalletWithdrawController@getWithdrawInfoAndBankInfo');
-Route::post('/wallet/withdraw/withdrawApplication', 'WalletWithdrawController@withdrawApplication');
+Route::post('/wallet/withdraw/withdrawApplication', 'WalletWithdrawController@withdrawApplication')->middleware(AllowWithdrawDate::class);
 Route::get('/wallet/withdraw/getWithdrawDetail', 'WalletWithdrawController@getWithdrawDetail');
