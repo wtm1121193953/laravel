@@ -242,7 +242,7 @@
             getHasRuleFunction(){
                 return (url) => {
                     for (let i = 0; i < this.rules.length; i ++) {
-                        if(item.url_all.split(',').indexOf(url) >= 0){
+                        if(this.rules[i].url_all.split(',').indexOf(url) >= 0){
                             return true;
                         }
                     }
