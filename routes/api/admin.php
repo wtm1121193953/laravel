@@ -89,5 +89,5 @@ Route::prefix('admin')
         Route::get('settlement/download', 'SettlementPlatformController@downloadExcel');
         Route::get('settlement/modifyStatus', 'SettlementPlatformController@modifyStatus');
 
-        Route::get('getPlatformOrders', 'SettlementPlatformController@getSettlementOrders');
+        Route::get('settlement/getPlatformOrders', 'SettlementPlatformController@getSettlementOrders');
     });

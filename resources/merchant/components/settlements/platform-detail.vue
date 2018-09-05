@@ -52,7 +52,7 @@
         },
         methods: {
             getSettlementOrders() {
-                api.get('/getPlatformOrders', this.query).then(data => {
+                api.get('/settlement/getPlatformOrders', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                 })
