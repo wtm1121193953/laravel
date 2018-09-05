@@ -91,10 +91,10 @@ class AdminUserService extends BaseService
         if (empty($user)) {
             throw new DataNotFoundException('用户信息不存在');
         }
-        $user = AdminUser::where('username', $username)
+        $exist = AdminUser::where('username', $username)
             ->where('id', '<>', $id)
             ->first();
-        if ($user) {
+        if ($exist) {
             throw new BaseResponseException('帐号名重复', ResultCode::ACCOUNT_EXISTS);
         }
         $user->username = $username;
