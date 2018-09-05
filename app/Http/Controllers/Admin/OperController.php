@@ -20,11 +20,13 @@ class OperController extends Controller
         $name = request('name');
         $status = request('status');
         $tel = request('tel');
+        $payToPlatform = request('payToPlatform');
 
         $data = OperService::getList([
             'name' => $name,
             'status' => $status,
             'tel' => $tel,
+            'payToPlatform' => $payToPlatform,
         ]);
 
         return Result::success([
