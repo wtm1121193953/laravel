@@ -175,7 +175,7 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform->save();
 
             // 统计订单总金额与改变每笔订单状态
-            $list = $query->select('settlement_charge_amount', 'settlement_real_amount', 'settlement_status', 'settlement_id', 'pay_price','settlement_rate')->get();
+            $list = $query->select('id', 'settlement_charge_amount', 'settlement_real_amount', 'settlement_status', 'settlement_id', 'pay_price','settlement_rate')->get();
             $list->each( function(Order $item ) use ( $merchant, $settlementPlatform ){
                 $item->settlement_charge_amount = $item->pay_price * $item->settlement_rate / 100;  // 手续费
                 $item->settlement_real_amount = $item->pay_price - $item->settlement_charge_amount;   // 货款
