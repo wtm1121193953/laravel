@@ -74,8 +74,8 @@
             </el-form>
             <el-col>
                 <el-button size="small" type="primary" @click="goBack">返 回</el-button>
-                <el-button v-if="audit" size="small" type="primary" @click="auditSuccess">审核通过</el-button>
-                <el-button v-if="audit" size="small" type="warning" @click="auditFailed">审核不通过</el-button>
+                <el-button v-if="hasRule('/api/admin/withdraw/record/audit') && audit" size="small" type="primary" @click="auditSuccess">审核通过</el-button>
+                <el-button v-if="hasRule('/api/admin/withdraw/record/audit') && audit" size="small" type="warning" @click="auditFailed">审核不通过</el-button>
             </el-col>
         </el-row>
 

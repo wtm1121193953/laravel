@@ -42,7 +42,7 @@ class AdminGroupService extends BaseService
             $ruleIds = explode(',',$ruleIds);
             $rules = AdminAuthRule::whereIn('id',$ruleIds)->get()->toArray();
             foreach ($rules as $r) {
-                if (!in_array($r['pid'], $ruleIds)) {
+                if ($r['pid'] != 0 && !in_array($r['pid'], $ruleIds)) {
                     $ruleIds[] = $r['pid'];
                 }
             }
@@ -78,7 +78,7 @@ class AdminGroupService extends BaseService
             $ruleIds = explode(',',$ruleIds);
             $rules = AdminAuthRule::whereIn('id',$ruleIds)->get()->toArray();
             foreach ($rules as $r) {
-                if (!in_array($r['pid'], $ruleIds)) {
+                if ($r['pid'] != 0 && !in_array($r['pid'], $ruleIds)) {
                     $ruleIds[] = $r['pid'];
                 }
             }
