@@ -73,6 +73,9 @@
                     <el-form-item label="可提现金额">
                         {{data.after_balance}}元
                     </el-form-item>
+                    <el-form-item label="备注">
+                        {{data.remark}}
+                    </el-form-item>
                 </el-col>
             </el-form>
             <el-col>
