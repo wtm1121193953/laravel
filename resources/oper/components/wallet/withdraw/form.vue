@@ -54,7 +54,7 @@
         </el-col>
         <el-col>
             <el-button @click="cancel">取 消</el-button>
-            <el-button type="primary" :disabled="canWithdraw" @click="commit">确 定</el-button>
+            <el-button type="primary" :disabled="noWithdraw" @click="commit">确 定</el-button>
         </el-col>
     </page>
 </template>
@@ -115,6 +115,7 @@
                     ratio: 0,  // 手续费百分比
                 },
                 formLoading: false,
+                noWithdraw: true,
 
 
                 formRules: {
@@ -143,14 +144,6 @@
             remitAmount() {
                 if (this.form.amount == undefined) this.form.amount = 0;
                 return (this.form.amount * (1 - this.initForm.ratio / 100)).toFixed(2);
-            },
-            canWithdraw() {
-                let day = (new Date()).getDate();
-                if (day == 5 || day == 20 || day == 30) {
-                    return false;
-                } else {
-                    return true;
-                }
             },
         },
         methods: {
@@ -182,10 +175,19 @@
                         })
                     }
                 })
-            }
+            },
+            canWithdraw() {
+                let day = (new Date()).getDate();
+                if (day == 5 || day == 10 || day == 20 || day == 30) {
+                    this.noWithdraw = false;
+                } else {
+                    this.noWithdraw = true;
+                }
+            },
         },
         created() {
             this.init();
+            this.canWithdraw();
         }
     }
 </script>

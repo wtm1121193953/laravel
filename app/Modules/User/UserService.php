@@ -140,7 +140,26 @@ class UserService extends BaseService
      */
     public static function userList($params,bool $return_query = false){
 
+        if($params['status']){
+            if(!is_array($params['status'])){
+                $statusArr = explode(',',$params['status']);
+            }else{
+                $statusArr = $params['status'];
+            }
+        }else{
+            $statusArr = [];
+        }
+
         $identityStatus = array_get($params,'identityStatus');
+        if($identityStatus){
+            if(!is_array($identityStatus)){
+                $identityStatusArr = explode(',',$params['status']);
+            }else{
+                $identityStatusArr = $params['status'];
+            }
+        }else{
+            $identityStatusArr = [];
+        }
 
         $query  = User::select('id','name','mobile','email','created_at','status')
             ->when($params['mobile'], function (Builder $query) use ($params){
@@ -156,12 +175,12 @@ class UserService extends BaseService
                 $query->where('created_at', '>=', $params['startDate']);
                 $query->where('created_at', '<=', $params['endDate']);
             })
-            ->when($params['status'], function (Builder $query) use ($params){
-                $query->whereIn('status', $params['status']);
+            ->when($statusArr, function (Builder $query) use ($statusArr){
+                $query->whereIn('status', $statusArr);
             })
-            ->whereHas('identityAuditRecord', function (Builder $query) use ($identityStatus) {
-                $query->when($identityStatus, function (Builder $query) use ($identityStatus) {
-                    $query->whereIn('status', $identityStatus);
+            ->whereHas('identityAuditRecord', function (Builder $query) use ($identityStatusArr) {
+                $query->when($identityStatusArr, function (Builder $query) use ($identityStatusArr) {
+                    $query->whereIn('status', $identityStatusArr);
                 });
             })
             ->with('identityAuditRecord:user_id,status')
