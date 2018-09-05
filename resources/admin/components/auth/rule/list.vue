@@ -43,7 +43,7 @@
             <rule-form :pid="addPid" :ppid="addPpid" @cancel="isAdd = false" @save="doAdd"/>
         </el-dialog>
         <el-dialog title="编辑权限" :visible.sync="isEdit">
-            <rule-form :rule="currentEditRule" @cancel="isEdit = false" @save="doEdit"/>
+            <rule-form :rule="currentEditRule" :ppid="editPpid" @cancel="isEdit = false" @save="doEdit"/>
         </el-dialog>
     </page>
 </template>
@@ -60,6 +60,7 @@
                 currentEditRule: null,
                 addPid: null,
                 addPpid: null,
+                editPpid: null,
                 addLevel:1,
             }
         },
@@ -90,6 +91,7 @@
             },
             edit(scope){
                 this.isEdit = true;
+                this.editPpid = scope.row.ppid;
                 this.currentEditRule = scope.row;
             },
             doEdit(rule){
