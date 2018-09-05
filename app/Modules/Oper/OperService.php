@@ -50,6 +50,10 @@ class OperService extends BaseService
         $name = array_get($params, 'name');
         $status = array_get($params, 'status');
         $tel = array_get($params, 'tel');
+        $payToPlatform = array_get($params, 'payToPlatform');
+        if($payToPlatform ==3){$payToPlatform1 = true;} else{$payToPlatform1 = NULL;}
+        if($payToPlatform ==1){$payToPlatform2 = true;} else{$payToPlatform2 = NULL;}
+        if($payToPlatform ==2){$payToPlatform3 = true;} else{$payToPlatform3 = NULL;}
 
         $data = Oper::when($status, function (Builder $query) use ($status) {
             $query->where('status', $status);
@@ -59,6 +63,15 @@ class OperService extends BaseService
             })
             ->when($tel, function (Builder $query) use ($tel) {
                 $query->where('tel', 'like', "%$tel%");
+            })
+            ->when($payToPlatform1, function (Builder $query) {
+                $query->where('pay_to_platform', 0);
+            })
+            ->when($payToPlatform2, function (Builder $query){
+                $query->where('pay_to_platform', 1);
+            })
+            ->when($payToPlatform3, function (Builder $query){
+                $query->where('pay_to_platform', 2);
             })
             ->orderBy('id', 'desc')
             ->paginate();
