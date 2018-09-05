@@ -8,6 +8,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exports\SettlementPlatformExport;
 use App\Http\Controllers\Controller;
+use App\Modules\Order\OrderService;
 use App\Result;
 use Illuminate\Support\Facades\Log;
 use App\Modules\Settlement\SettlementPlatformService;
@@ -39,7 +40,7 @@ class SettlementPlatformController extends Controller
         ]);
         $endTime = microtime(true);
 
-        Log::info('耗时: ', ['start time' => $startTime, 'end time' => $endTime, '耗时: ' => $endTime - $startTime]);
+        Log::debug('耗时: ', ['start time' => $startTime, 'end time' => $endTime, '耗时: ' => $endTime - $startTime]);
 
         return Result::success([
             'list' => $data->items(),
@@ -92,14 +93,16 @@ class SettlementPlatformController extends Controller
 
     public function getSettlementOrders()
     {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+
         $settlementId   = request()->get('settlement_id');
-        $merchantId     = request()->get('merchant_id');
-        $settlement = SettlementPlatformService::getByIdAndMerchantId($settlementId, $merchantId);
-        if(empty($settlement)){
-            throw new DataNotFoundException('结算单不存在');
-        }
-        $MerchantController = new \App\Http\Controllers\Merchant\SettlementPlatformController();
-        return $MerchantController->getOrdersByService( $settlementId );
+        $data = OrderService::getListByPlatformSettlementId($settlementId);
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
     }
 
 
