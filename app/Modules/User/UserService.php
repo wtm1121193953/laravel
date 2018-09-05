@@ -150,16 +150,17 @@ class UserService extends BaseService
             $statusArr = [];
         }
 
-        $identityStatus = array_get($params,'identityStatus');
-        if($identityStatus){
-            if(!is_array($identityStatus)){
-                $identityStatusArr = explode(',',$params['status']);
+
+        if($params['identityStatus']){
+            if(!is_array($params['identityStatus'])){
+                $identityStatusArr = explode(',',$params['identityStatus']);
             }else{
-                $identityStatusArr = $params['status'];
+                $identityStatusArr = $params['identityStatus'];
             }
         }else{
             $identityStatusArr = [];
         }
+
 
         $query  = User::select('id','name','mobile','email','created_at','status')
             ->when($params['mobile'], function (Builder $query) use ($params){
