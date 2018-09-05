@@ -30,6 +30,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UserService extends BaseService
 {
@@ -139,6 +140,7 @@ class UserService extends BaseService
      */
     public static function userList($params,bool $return_query = false){
 
+        $identityStatus = array_get($params,'identityStatus');
 
         $query  = User::select('id','name','mobile','email','created_at','status')
             ->when($params['mobile'], function (Builder $query) use ($params){
@@ -157,10 +159,12 @@ class UserService extends BaseService
             ->when($params['status'], function (Builder $query) use ($params){
                 $query->whereIn('status', $params['status']);
             })
-            ->with('identityAuditRecord:user_id,status')
-            ->when($params['identityStatus'], function (Builder $query) use ($params){
-                $query->whereIn('identityAuditRecord.status', $params['identityStatus']);
+            ->whereHas('identityAuditRecord', function (Builder $query) use ($identityStatus) {
+                $query->when($identityStatus, function (Builder $query) use ($identityStatus) {
+                    $query->whereIn('status', $identityStatus);
+                });
             })
+            ->with('identityAuditRecord:user_id,status')
             ->orderByDesc('created_at');
 
         if ($return_query) {
@@ -199,7 +203,6 @@ class UserService extends BaseService
     public static function identity($params,bool $return_query = false){
 
 
-        //dd($params['status']);die();
         if($params['status']){
             if(!is_array($params['status'])){
                 $statusArr = explode(',',$params['status']);

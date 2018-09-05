@@ -48,7 +48,7 @@ class UsersController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $status = request('status');
-        $identityStatus = request('identity_status');
+        $identityStatus = request('identityStatus');
         $users = UserService::userList([
             'mobile' => $mobile,
             'id' => $id,
@@ -77,6 +77,7 @@ class UsersController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $status = request('status');
+        $identityStatus = request('identityStatus');
 
         $query = UserService::userList([
             'mobile' => $mobile,
@@ -84,7 +85,8 @@ class UsersController extends Controller
             'name' => $name,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'status' => $status
+            'status' => $status,
+            'identityStatus' => $identityStatus
         ],true);
 
         return (new UserExport($query))->download('用户列表.xlsx');
