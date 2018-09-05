@@ -38,7 +38,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="用户身份证状态" prop="identity_status">
-                <el-select v-model="query.identity_status" size="small"  multiple placeholder="请选择" class="w-150">
+                <el-select v-model="query.identityStatus" size="small"  multiple placeholder="请选择" class="w-150">
                     <el-option label="待审核" value="1"/>
                     <el-option label="审核通过" value="2"/>
                     <el-option label="审核失败" value="3"/>
@@ -89,6 +89,7 @@
                     startDate: '',
                     endDate: '',
                     status: '',
+                    identityStatus: '',
                 },
                 list: [],
                 total: 0,
@@ -124,7 +125,8 @@
                         + '&endDate=' + this.query.endDate
                         + '&id=' + this.query.id
                         + '&name='+ this.query.name
-                        + '&status=' + this.query.status ;
+                        + '&status=' + this.query.status
+                        + '&identityStatus=' + this.query.identity_status ;
                 })
             }
         },

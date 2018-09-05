@@ -24,6 +24,7 @@ use App\Modules\Sms\SmsService;
 use App\Modules\Tps\TpsBind;
 use App\Modules\User\User;
 use App\Modules\Wechat\WechatService;
+use App\Support\Utils;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
@@ -66,6 +67,12 @@ class Test extends Command
      */
     public function handle()
     {
+        $a = 230;
+        $b = 180;
+        $val = floor(($a + $b - floor($a / 100) * 100) / 100);
+        dd($val);
+
+
         SettlementDaily::dispatch();
         dd('hi');
         $orders = Order::all();
