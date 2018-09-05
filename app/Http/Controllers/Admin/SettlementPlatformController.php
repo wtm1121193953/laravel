@@ -94,7 +94,7 @@ class SettlementPlatformController extends Controller
     public function getSettlementOrders()
     {
         $this->validate(request(), [
-            'id' => 'required|integer|min:1'
+            'settlement_id' => 'required|integer|min:1'
         ]);
 
         $settlementId   = request()->get('settlement_id');
