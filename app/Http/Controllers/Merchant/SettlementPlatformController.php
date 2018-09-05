@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\Merchant;
 
-use Illuminate\Http\Request;
+use App\Modules\Order\OrderService;
 use App\Http\Controllers\Controller;
 
 use App\Exceptions\DataNotFoundException;
-use App\Exceptions\ParamInvalidException;
 use App\Result;
-use Illuminate\Support\Facades\Storage;
 use App\Modules\Settlement\SettlementPlatformService;
 
 /**
@@ -36,6 +34,10 @@ class SettlementPlatformController extends Controller
         ]);
     }
 
+    /**
+     * 获取结算单的订单列表
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getSettlementOrders()
     {
         $settlementId = request('settlement_id');
@@ -44,22 +46,11 @@ class SettlementPlatformController extends Controller
         if(empty($settlement)){
             throw new DataNotFoundException('结算单不存在');
         }
-        return $this->getOrdersByService( $settlementId );
-    }
-
-    /**
-     * 获取结算单的订单列表
-     * Author: Jerry
-     * Date:    180826
-     * @param $settlementId
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
-    public function getOrdersByService( $settlementId ){
-
-        $data = SettlementPlatformService::getSettlementOrders($settlementId);
+        $data = OrderService::getListByOperSettlementId($settlementId);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
     }
+
 }
