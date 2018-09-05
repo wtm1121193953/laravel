@@ -82,6 +82,10 @@ class BankCardsController extends Controller
             ->where('origin_type', $currentUser->status)
             ->orderBy('default', 'desc')
             ->get();
+        foreach ($list as $value){
+            $value['logo'] = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1536140435369&di=517ac459dff601b83c717f7e4f937a37&imgtype=0&src=http%3A%2F%2Fawb.img.xmtbang.com%2Fimg%2Fuploadnew%2F201510%2F24%2F624b9b78514f46d7bd7f7626fc2d3d4c.jpg';
+        }
+        
         return Result::success($list);
     }
 
