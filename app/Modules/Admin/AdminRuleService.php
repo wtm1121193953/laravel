@@ -99,6 +99,47 @@ class AdminRuleService extends BaseService
         return $tree;
     }
 
+    /**
+     * 递归获取无限极菜单栏
+     * Author：  Jerry
+     * Date：    180905
+     * @param $rules
+     * @return array
+     */
+    public static function convertRulesToTreeByRecursion( $rules )
+    {
+        foreach ($rules as $k=> $rule) {
+            $rules[$k] = $rule->toArray();
+        }
+        return self::recursion( $rules);
+    }
+
+    /**
+     * 执行递归
+     * Author：  Jerry
+     * Date：    180905
+     * @param array  $rules
+     * @param int $parentId
+     * @return array
+     */
+    public static function recursion( &$rules, $parentId=0 )
+    {
+        $tree = [];
+        foreach ($rules as $k=>$v){
+            if($v['pid']==$parentId) {
+                unset($rules[$k]);
+                $temp = self::recursion($rules, $v['id']);
+                if (!empty($temp))
+                {
+                    $v['sub'] = $temp;
+                }
+                unset($temp);
+                $tree[] = $v;
+            }
+        }
+        return $tree;
+    }
+
     public static function getById($id)
     {
         return AdminAuthRule::find($id);
