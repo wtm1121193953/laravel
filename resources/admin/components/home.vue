@@ -209,17 +209,21 @@
                         this.showThemeSetting = true;
                         break;
                     case 'refresh-rules':
-                        store.dispatch('openGlobalLoading');
-                        api.get('/self/rules').then(data => {
-                            store.dispatch('storeUserInfo', data);
-                            store.dispatch('closeGlobalLoading')
-                        });
+                        this.refreshRules();
                         break;
                     case 'modify-password':
                         this.showModifyPasswordForm = true;
                         break;
 
                 }
+            },
+
+            refreshRules(){
+                store.dispatch('openGlobalLoading');
+                api.get('/self/rules').then(data => {
+                    store.dispatch('storeUserInfo', data);
+                    store.dispatch('closeGlobalLoading')
+                });
             },
 
             modifyPassword(){
@@ -258,6 +262,9 @@
             this.themeSettingForm = deepCopy(store.state.theme);
             // 全局挂载权限验证方法, 使用方法 : hasRule('url')
             Vue.prototype.hasRule = this.getHasRuleFunction();
+
+            // home组件挂载(即页面刷新)时, 更新用户权限
+            this.refreshRules();
         },
         components: {
             leftMenu,

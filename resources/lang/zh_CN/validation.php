@@ -153,7 +153,8 @@ return [
         'id_card_no'    =>  [
             'unique'        =>  '身份证号码已验证过',
             'identitycards' =>  '身份证号码格式错误',
-            'required'      =>  '身份证不可为空'
+            'required'      =>  '身份证不可为空',
+            'min'           =>  '身份证号码长度不正确',
         ],
         'front_pic'   =>  [
             'required'    =>  '身份证正面照不可缺'

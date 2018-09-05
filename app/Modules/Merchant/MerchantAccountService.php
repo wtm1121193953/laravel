@@ -74,7 +74,7 @@ class MerchantAccountService extends BaseService
         // 查询运营中心信息是否绑定到平台
         $oper = OperService::getById($operId, 'pay_to_platform');
         $isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
-        if($operUnbindTps || $isPayToPlatform){
+        if($operUnbindTps || !$isPayToPlatform){
             foreach ($menus as $key => &$second) {
                 if(isset($second['sub'])){
                     foreach ($second['sub'] as $key2 => $sub) {
