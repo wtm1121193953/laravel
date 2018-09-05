@@ -124,8 +124,8 @@ class WalletController extends Controller
         ], 15, true)->sum('tps_consume_quota');
 
         return Result::success([
-            'totalTpsConsume' => $totalTpsConsume,
-            'theMonthTpsConsume' => $theMonthTpsConsume,
+            'totalTpsConsume' => Utils::getDecimalByNotRounding($totalTpsConsume, 2),
+            'theMonthTpsConsume' => Utils::getDecimalByNotRounding($theMonthTpsConsume, 2),
             'showReminder' => $this->reminder, // 是否显示提示语 有则显示，没有则不显示
         ]);
     }

@@ -77,9 +77,9 @@ class UserExport implements FromQuery, WithHeadings, WithMapping
             $row->id,
             $row->created_at,
             $row->name,
-            $row->identity_status_text,
+            $row->parent,
             $row->stauts_val,
-            $row->parent
+            $row->identity_status_text
         ];
 
         return $rt;
