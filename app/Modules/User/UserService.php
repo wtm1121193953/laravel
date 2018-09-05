@@ -136,6 +136,7 @@ class UserService extends BaseService
     /**
      * 获取会员列表
      * @param $params
+     * @param bool $return_query
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public static function userList($params,bool $return_query = false){
