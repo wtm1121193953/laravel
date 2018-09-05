@@ -8,7 +8,7 @@
         <el-button v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改帐户密码</el-button>
         <el-button type="text" @click="editMiniprogramDialog = true">{{!scope.row.miniprogram ? '配置小程序' : '修改小程序配置'}}</el-button>
         <el-button v-if="scope.row.miniprogram" type="text" @click="uploadCert">上传支付证书</el-button>
-        <el-button type="text" @click="showModifyPayToPlatformDialog = true">支付到平台设置</el-button>
+        <el-button type="text" v-if="hasRule('/api/admin/oper/changePayToPlatform')" @click="showModifyPayToPlatformDialog = true">支付到平台设置</el-button>
 
         <el-dialog title="编辑小程序配置信息" :visible.sync="editMiniprogramDialog">
             <miniprogram-form
