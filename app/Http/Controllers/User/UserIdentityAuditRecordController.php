@@ -32,7 +32,7 @@ class UserIdentityAuditRecordController extends Controller
         $request->offsetSet('user_id',$request->get('current_user')->id);
         $request->validate([
             'name'          => 'required',
-            'id_card_no'    => 'bail|required|identitycards|unique:user_identity_audit_records',
+            'id_card_no'    => 'bail|required|min:18|identitycards|unique:user_identity_audit_records',
             'front_pic'     => 'required',
             'opposite_pic'  => 'required',
             'user_id'       => 'unique:user_identity_audit_records'
@@ -58,7 +58,7 @@ class UserIdentityAuditRecordController extends Controller
     {
         $request->validate([
             'name'          => 'required',
-            'id_card_no'    => 'bail|required|identitycards',
+            'id_card_no'    => 'bail|required|min:18|identitycards',
             'front_pic'     => 'required',
             'opposite_pic'  => 'required',
         ]);
