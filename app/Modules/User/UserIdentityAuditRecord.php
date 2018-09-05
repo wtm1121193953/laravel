@@ -38,7 +38,7 @@ class UserIdentityAuditRecord extends BaseModel
     public static function getStatusText($status)
     {
         $status_arr = [self::STATUS_UN_AUDIT=>'待审核',self::STATUS_SUCCESS=>'审核通过',self::STATUS_FAIL=>'审核不通过'];
-        return !empty($status_arr[$status])?$status_arr[$status]:'未知状态';
+        return !empty($status_arr[$status])?$status_arr[$status]:'未提交';
     }
 
     public function user()
