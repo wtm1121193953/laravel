@@ -28,6 +28,11 @@ Route::prefix('app/user')
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
         Route::get('merchants', 'MerchantController@getList');
         Route::get('merchant/detail', 'MerchantController@detail');
+        Route::get('merchant/getDishesCategoryAndGoods','DishesController@getDishesCategory');
+        Route::get('merchant/getHotDishesGoods','DishesController@getHotDishesGoods');
+        Route::post('merchant/dishesOrder','DishesController@add')->middleware(UserLoginFilter::class);
+        Route::get('merchant/dishesDetail','DishesController@detail')->middleware(UserLoginFilter::class);
+
 
         Route::get('goods', 'GoodsController@getList');
         Route::get('goods/detail', 'GoodsController@detail');
@@ -42,6 +47,8 @@ Route::prefix('app/user')
         Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
         Route::get('invite/getInviterByInviteChannelId', 'InviteChannelController@getInviterByChannelId');
         Route::post('invite/bindInviter', 'InviteChannelController@bindInviter')->middleware(UserLoginFilter::class);
+        Route::get('invite/getInviteUserStatistics', 'InviteChannelController@getInviteUserStatistics')->middleware(UserLoginFilter::class);
+
 
         Route::get('invite/getInviterInfo', 'UnbindInviterController@getBindInfo')->middleware(UserLoginFilter::class);
         Route::post('invite/unbind', 'UnbindInviterController@unbind')->middleware(UserLoginFilter::class);
@@ -78,7 +85,7 @@ Route::prefix('app/user')
         Route::post('bankcard/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);;
         Route::post('bankcard/changDefault', 'BankCardsController@changDefault')->middleware(UserLoginFilter::class);;
         Route::post('bankcard/deleteCard', 'BankCardsController@delCard')->middleware(UserLoginFilter::class);;
-        Route::post('bankcard/getCardsList', 'BankCardsController@getCardsList')->middleware(UserLoginFilter::class);;
+        Route::get('bankcard/getCardsList', 'BankCardsController@getCardsList')->middleware(UserLoginFilter::class);;
 
         //Tps绑定接口
         Route::get('tps/getBindInfo', 'TpsBindController@getBindInfo')->middleware(UserLoginFilter::class);;

@@ -71,7 +71,7 @@ class WalletWithdrawController extends Controller
         // 获取用户可提现金额
 
         return Result::success([
-            'withdrawRatio' => UserCreditSettingService::getUserWithdrawChargeRatio(),
+            'withdrawRatio' => UserCreditSettingService::getUserWithdrawChargeRatio()/100,
             'minAmount' => 100,
             'isSetWithdrawPassword' => empty($wallet->withdraw_password) ? 0 : 1,
             'hasBankCard' => $cards->count() <= 0 ? 0 : 1,

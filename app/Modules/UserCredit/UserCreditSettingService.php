@@ -211,7 +211,7 @@ class UserCreditSettingService extends SettingService
      */
     public static function getUserWithdrawChargeRatio()
     {
-        return 0.07;
+        return 7;
     }
 
 }
