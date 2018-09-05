@@ -304,7 +304,7 @@ class FeeSplittingService extends BaseService
         $feeSplittingAmountOfUserAndMerchant = FeeSplittingRecord::where('order_id', $order->id)
             ->whereIn('origin_type', [FeeSplittingRecord::ORIGIN_TYPE_USER, FeeSplittingRecord::ORIGIN_TYPE_MERCHANT])
             ->sum('amount');
-        $feeSplittingAmountOfOper = $order * 0.5;
+        $feeSplittingAmountOfOper = $orderProfit * 0.5;
         $orderPureProfit = $orderProfit - $feeSplittingAmountOfUserAndMerchant - $feeSplittingAmountOfOper;
 
         return $orderPureProfit;
