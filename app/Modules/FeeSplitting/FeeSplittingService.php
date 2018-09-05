@@ -291,4 +291,22 @@ class FeeSplittingService extends BaseService
         $ratio = $feeRatio / 100 * ($settlementRate / 100 - ($settlementRate / 100 * 0.06 * 1.12 / 1.06 + $settlementRate / 100 * 0.1 * 0.25 + 0.0068));
         return $ratio;
     }
+
+    /**
+     * 获取订单纯利润 (订单毛利润-税-分润金额)
+     * 分润金额 = 分给用户和商户的金额 + 分给运营中心的订单利润的50%
+     * @param Order $order
+     * @return float|mixed
+     */
+    public static function getOrderPureProfitAmountByOrder(Order $order)
+    {
+        $orderProfit = OrderService::getProfitAmount($order);
+        $feeSplittingAmountOfUserAndMerchant = FeeSplittingRecord::where('order_id', $order->id)
+            ->whereIn('origin_type', [FeeSplittingRecord::ORIGIN_TYPE_USER, FeeSplittingRecord::ORIGIN_TYPE_MERCHANT])
+            ->sum('amount');
+        $feeSplittingAmountOfOper = $order * 0.5;
+        $orderPureProfit = $orderProfit - $feeSplittingAmountOfUserAndMerchant - $feeSplittingAmountOfOper;
+
+        return $orderPureProfit;
+    }
 }

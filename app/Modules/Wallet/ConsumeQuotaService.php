@@ -45,7 +45,7 @@ class ConsumeQuotaService extends BaseService
             // 计算tps积分
             $tpsCredit = Utils::getDecimalByNotRounding($tpsConsumeQuota / 4, 8);
             // 计算订单纯利润
-            $orderProfitAmount = OrderService::getProfitAmount($order) -  FeeSplittingService::getOrderFeeSplittingAmountByOrderId($order->id);
+            $orderProfitAmount = FeeSplittingService::getOrderPureProfitAmountByOrder($order);
             // 计算要分给tps消费额对应的盈利
             $consumeQuotaProfit = Utils::getDecimalByNotRounding($orderProfitAmount / 2, 2);
 
@@ -75,7 +75,6 @@ class ConsumeQuotaService extends BaseService
                 self::addConsumeQuotaRecord([
                     'wallet' => $parentWallet,
                     'order' => $order,
-                    'order_profit_amount' => $orderProfitAmount,
                     'type' => WalletConsumeQuotaRecord::TYPE_SUBORDINATE,
                     'sync_tps_credit' => $parentSyncTpsCredit,
                 ]);
@@ -225,9 +224,9 @@ class ConsumeQuotaService extends BaseService
         $consumeQuotaRecord->order_id = $order->id;
         $consumeQuotaRecord->order_no = $order->order_no;
         $consumeQuotaRecord->pay_price = $order->pay_price;
-        $consumeQuotaRecord->order_profit_amount = $data['order_profit_amount'];
 
         if ($type == WalletConsumeQuotaRecord::TYPE_SELF) {
+            $consumeQuotaRecord->order_profit_amount = $data['order_profit_amount'];
             $consumeQuotaRecord->consume_quota = $data['consume_quota'];
             $consumeQuotaRecord->consume_quota_profit = $data['consume_quota_profit'];
             $consumeQuotaRecord->tps_consume_quota = $data['tps_consume_quota'];
