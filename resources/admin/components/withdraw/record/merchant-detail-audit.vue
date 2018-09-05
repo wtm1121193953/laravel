@@ -37,6 +37,9 @@
                     <el-form-item label="账户余额">
                         {{data.after_amount}}元
                     </el-form-item>
+                    <el-form-item label="备注">
+                        {{data.remark}}
+                    </el-form-item>
                     <el-form-item label="审核意见" v-if="audit">
                         <el-input type="textarea" :rows="3" v-model="remark" placeholder="最多输入50个汉字"></el-input>
                     </el-form-item>
@@ -73,13 +76,10 @@
                     <el-form-item label="可提现金额">
                         {{data.after_balance}}元
                     </el-form-item>
-                    <el-form-item label="备注">
-                        {{data.remark}}
-                    </el-form-item>
                 </el-col>
             </el-form>
             <el-col>
-                <el-button size="small" @click="goBack">返 回</el-button>
+                <el-button size="small" type="primary" @click="goBack">返 回</el-button>
                 <el-button v-if="audit" size="small" type="primary" @click="auditSuccess">审核通过</el-button>
                 <el-button v-if="audit" size="small" type="warning" @click="auditFailed">审核不通过</el-button>
             </el-col>
