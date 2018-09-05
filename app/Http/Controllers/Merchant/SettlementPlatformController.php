@@ -55,6 +55,7 @@ class SettlementPlatformController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function getOrdersByService( $settlementId ){
+
         $data = SettlementPlatformService::getSettlementOrders($settlementId);
         return Result::success([
             'list' => $data->items(),
