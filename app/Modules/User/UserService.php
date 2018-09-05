@@ -178,8 +178,8 @@ class UserService extends BaseService
             ->when($statusArr, function (Builder $query) use ($statusArr){
                 $query->whereIn('status', $statusArr);
             })
-            ->whereHas('identityAuditRecord', function (Builder $query) use ($identityStatusArr) {
-                $query->when($identityStatusArr, function (Builder $query) use ($identityStatusArr) {
+            ->when($identityStatusArr, function (Builder $query) use ($identityStatusArr) {
+                $query->whereHas('identityAuditRecord', function (Builder $query) use ($identityStatusArr) {
                     $query->whereIn('status', $identityStatusArr);
                 });
             })
