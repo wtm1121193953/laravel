@@ -185,16 +185,16 @@ class TpsBindService extends BaseService
             throw new BaseResponseException('很遗憾！绑定失败，该TPS帐号已被绑定！');
         }
         // 判断用户上级是否已绑定
-        $inviteRecord = InviteUserService::getInviteRecordByUserId($userId);
+        /*$inviteRecord = InviteUserService::getInviteRecordByUserId($userId);
         if(!empty($inviteRecord) && $inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_USER){
             $parentUserId = $inviteRecord->origin_id;
             $bindInfo = self::getTpsBindInfoByOriginInfo($parentUserId, TpsBind::ORIGIN_TYPE_USER);
             if(!empty($bindInfo)){
                 throw new BaseResponseException('绑定失败，该帐号直属上级已绑定TPS会员，上下级不能同时绑定TPS');
             }
-        }
+        }*/
         // 判断用户下级是否存在绑定过的帐号
-        $inviteRecords = InviteUserService::getInviteRecordsByOriginInfo($userId, InviteUserRecord::ORIGIN_TYPE_USER);
+        /*$inviteRecords = InviteUserService::getInviteRecordsByOriginInfo($userId, InviteUserRecord::ORIGIN_TYPE_USER);
         $subUserIds = $inviteRecords->pluck('user_id');
         if(count($subUserIds) > 0 &&
             !empty(
@@ -204,7 +204,7 @@ class TpsBindService extends BaseService
             )
         ){
             throw new BaseResponseException('绑定失败，该帐号直属下级已绑定TPS会员，上下级不能同时绑定TPS');
-        }
+        }*/
 
         // 添加关联关系
         $record = new TpsBind();
