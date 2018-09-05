@@ -126,7 +126,7 @@
                         + '&id=' + this.query.id
                         + '&name='+ this.query.name
                         + '&status=' + this.query.status
-                        + '&identityStatus=' + this.query.identity_status ;
+                        + '&identityStatus=' + this.query.identityStatus ;
                 })
             }
         },
