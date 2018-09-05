@@ -111,7 +111,7 @@
                 let params = [];
                 Object.keys(data).forEach((key) => {
                     let value =  data[key];
-                    if (typeof value === 'undefined') {
+                    if (typeof value === 'undefined' || value == null) {
                         value = '';
                     }
                     params.push([key, encodeURIComponent(value)].join('='))

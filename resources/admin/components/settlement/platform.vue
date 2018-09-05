@@ -80,8 +80,7 @@
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="showOrders(scope)">查看</el-button>
-                    <el-button type="text"
-                               v-if="parseInt(scope.row.status) === 1" @click="modifyPlatformStatus(scope)">确认打款</el-button>
+                    <el-button type="text" v-if="hasRule('/api/admin/settlement/modifyStatus') && parseInt(scope.row.status) === 1" @click="modifyPlatformStatus(scope)">确认打款</el-button>
                 </template>
             </el-table-column>
         </el-table>
