@@ -82,13 +82,14 @@ Route::prefix('app/user')
         Route::get('wallet/getTpsCreditList','WalletController@getTpsCreditList')->middleware(UserLoginFilter::class);
 
         //app银行卡接口
-        Route::post('bankcard/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);;
-        Route::post('bankcard/changDefault', 'BankCardsController@changDefault')->middleware(UserLoginFilter::class);;
-        Route::post('bankcard/deleteCard', 'BankCardsController@delCard')->middleware(UserLoginFilter::class);;
-        Route::get('bankcard/getCardsList', 'BankCardsController@getCardsList')->middleware(UserLoginFilter::class);;
+        Route::post('bankcard/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);
+        Route::post('bankcard/changDefault', 'BankCardsController@changDefault')->middleware(UserLoginFilter::class);
+        Route::post('bankcard/deleteCard', 'BankCardsController@delCard')->middleware(UserLoginFilter::class);
+        Route::get('bankcard/getCardsList', 'BankCardsController@getCardsList')->middleware(UserLoginFilter::class);
+        Route::get('bankcard/getSupportBankList','BankController@getList');
 
         //Tps绑定接口
-        Route::get('tps/getBindInfo', 'TpsBindController@getBindInfo')->middleware(UserLoginFilter::class);;
-        Route::post('tps/bindAccount', 'TpsBindController@bindAccount')->middleware(UserLoginFilter::class);;
+        Route::get('tps/getBindInfo', 'TpsBindController@getBindInfo')->middleware(UserLoginFilter::class);
+        Route::post('tps/bindAccount', 'TpsBindController@bindAccount')->middleware(UserLoginFilter::class);
 
     });
