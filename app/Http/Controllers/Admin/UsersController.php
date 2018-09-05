@@ -48,13 +48,15 @@ class UsersController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $status = request('status');
+        $identityStatus = request('identity_status');
         $users = UserService::userList([
             'mobile' => $mobile,
             'id' => $id,
             'name' => $name,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'status' => $status
+            'status' => $status,
+            'identityStatus' => $identityStatus
         ]);
 
         return Result::success([

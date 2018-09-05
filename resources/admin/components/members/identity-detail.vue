@@ -36,7 +36,7 @@
                 <span v-else-if="parseInt(info.status) === 2">审核通过</span>
                 <span v-else-if="parseInt(info.status) === 3">审核失败</span>
             </el-form-item>
-            <el-form-item v-if="parseInt(info.status) === 3" prop="email" label="审核意见">
+            <el-form-item prop="email" label="审核意见">
                 {{info.reason}}
             </el-form-item>
             <el-form-item>

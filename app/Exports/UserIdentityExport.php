@@ -63,7 +63,7 @@ class UserIdentityExport implements FromQuery, WithHeadings, WithMapping
             $row->user_id,
             $row->user->created_at,
             $row->name,
-            $row->number,
+            ' ' . $row->id_card_no,
             $row->user->status_val,
             $row->status_val,
         ];

@@ -160,6 +160,7 @@
                 'globalLoading',
                 'user',
                 'menus',
+                'rules',
             ]),
             username(){
                 return this.user ? this.user.username : '';
@@ -231,18 +232,32 @@
                         })
                     }
                 })
-
             },
+
+            // 获取权限验证方法
+            getHasRuleFunction(){
+                return (url) => {
+                    for (let i = 0; i < this.rules.length; i ++) {
+                        if(item.url_all.split(',').indexOf(url) >= 0){
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
 
         },
         created() {
             this.getTitleAndLogo();
+            // 登陆验证
             if(!this.user){
                 this.$message.warning('您尚未登录');
                 router.replace('/login');
                 return ;
             }
             this.themeSettingForm = deepCopy(store.state.theme);
+            // 全局挂载权限验证方法
+            Vue.prototype.hasRule = this.getHasRuleFunction();
         },
         components: {
             leftMenu,
