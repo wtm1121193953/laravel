@@ -150,6 +150,40 @@ class OrderService extends BaseService
     }
 
     /**
+     * 获取支付到运营中心的结算单的订单列表
+     * @param $settlementId
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getListByOperSettlementId($settlementId)
+    {
+        return self::getListBySettlementId($settlementId, Order::PAY_TARGET_TYPE_OPER);
+    }
+
+    /**
+     * 获取支付到平台的结算单的订单列表
+     * @param $settlementId
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getListByPlatformSettlementId($settlementId)
+    {
+        return self::getListBySettlementId($settlementId, Order::PAY_TARGET_TYPE_PLATFORM);
+    }
+
+    /**
+     * 根据结算ID与支付目标类型获取订单列表
+     * @param $settlementId int 结算ID
+     * @param $payTargetType int 支付目标类型 1-支付给运营中心 2-支付给平台
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getListBySettlementId($settlementId, $payTargetType)
+    {
+        $data = Order::where('settlement_id', $settlementId)
+            ->where('pay_target_type', $payTargetType)
+            ->orderBy('id', 'desc')->paginate();
+        return $data;
+    }
+
+    /**
      * 核销订单
      * @param $merchantId
      * @param $verifyCode
