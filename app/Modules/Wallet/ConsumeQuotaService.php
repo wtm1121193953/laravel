@@ -101,24 +101,34 @@ class ConsumeQuotaService extends BaseService
     /**
      * 解冻消费额
      * @param Order $order
+     * @throws \Exception
      */
     public static function unfreezeConsumeQuota(Order $order)
     {
-        // 1. 解冻自己的消费额
-        // 2. 解冻上级的消费额
-        $walletConsumeQuotaRecords = WalletConsumeQuotaRecord::where('order_id', $order->id)->get();
-        foreach ($walletConsumeQuotaRecords as $walletConsumeQuotaRecord) {
-            // 1.找到钱包
-            $wallet = WalletService::getWalletInfoByOriginInfo($walletConsumeQuotaRecord->origin_id, $walletConsumeQuotaRecord->origin_type);
-            // 2.添加消费额解冻记录
-            self::addConsumeQuotaUnfreezeRecord($walletConsumeQuotaRecord, $wallet);
-            // 3.更新钱包信息
-            $wallet->consume_quota = DB::raw('consume_quota + ' . $walletConsumeQuotaRecord->consume_quota);            // 添加当月消费额（不包含冻结）
-            $wallet->freeze_consume_quota = DB::raw('freeze_consume_quota - ' . $walletConsumeQuotaRecord->consume_quota);     // 减去当月冻结的消费额
-            $wallet->save();
-            // 4.更新消费额记录
-            $walletConsumeQuotaRecord->status = WalletConsumeQuotaRecord::STATUS_UNFREEZE;
-            $walletConsumeQuotaRecord->save();
+        DB::beginTransaction();
+        try {
+            // 1. 解冻自己的消费额
+            // 2. 解冻上级的消费额
+            $walletConsumeQuotaRecords = WalletConsumeQuotaRecord::where('order_id', $order->id)->get();
+            foreach ($walletConsumeQuotaRecords as $walletConsumeQuotaRecord) {
+                // 如果消费额不是冻结状态 则结束本次循环 进入下一次循环
+                if ($walletConsumeQuotaRecord->status != WalletConsumeQuotaRecord::STATUS_FREEZE) continue;
+                // 1.找到钱包
+                $wallet = WalletService::getWalletInfoByOriginInfo($walletConsumeQuotaRecord->origin_id, $walletConsumeQuotaRecord->origin_type);
+                // 2.添加消费额解冻记录
+                self::addConsumeQuotaUnfreezeRecord($walletConsumeQuotaRecord, $wallet);
+                // 3.更新钱包信息
+                $wallet->consume_quota = DB::raw('consume_quota + ' . $walletConsumeQuotaRecord->consume_quota);            // 添加当月消费额（不包含冻结）
+                $wallet->freeze_consume_quota = DB::raw('freeze_consume_quota - ' . $walletConsumeQuotaRecord->consume_quota);     // 减去当月冻结的消费额
+                $wallet->save();
+                // 4.更新消费额记录
+                $walletConsumeQuotaRecord->status = WalletConsumeQuotaRecord::STATUS_UNFREEZE;
+                $walletConsumeQuotaRecord->save();
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
 
         // 3. 发送同步消费额到tps的队列

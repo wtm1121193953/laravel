@@ -139,12 +139,23 @@ class FeeSplittingService extends BaseService
     /**
      * 根据订单解冻分润金额
      * @param Order $order
+     * @throws \Exception
      */
     public static function unfreezeSplittingByOrder(Order $order)
     {
-        $feeSplittingRecords = FeeSplittingRecord::where('order_id', $order->id)->get();
-        foreach ($feeSplittingRecords as $feeSplittingRecord) {
-            WalletService::unfreezeBalance($feeSplittingRecord);
+        DB::beginTransaction();
+        try {
+            $feeSplittingRecords = FeeSplittingRecord::where('order_id', $order->id)->get();
+            foreach ($feeSplittingRecords as $feeSplittingRecord) {
+                // 如果不是冻结状态 则退出
+                if ($feeSplittingRecord->status != FeeSplittingRecord::STATUS_FREEZE) continue;
+
+                WalletService::unfreezeBalance($feeSplittingRecord);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
         }
     }
 
