@@ -140,6 +140,16 @@ class UserService extends BaseService
      */
     public static function userList($params,bool $return_query = false){
 
+        if($params['status']){
+            if(!is_array($params['status'])){
+                $statusArr = explode(',',$params['status']);
+            }else{
+                $statusArr = $params['status'];
+            }
+        }else{
+            $statusArr = [];
+        }
+
         $identityStatus = array_get($params,'identityStatus');
         if($identityStatus){
             if(!is_array($identityStatus)){
@@ -165,8 +175,8 @@ class UserService extends BaseService
                 $query->where('created_at', '>=', $params['startDate']);
                 $query->where('created_at', '<=', $params['endDate']);
             })
-            ->when($params['status'], function (Builder $query) use ($params){
-                $query->whereIn('status', $params['status']);
+            ->when($statusArr, function (Builder $query) use ($statusArr){
+                $query->whereIn('status', $statusArr);
             })
             ->whereHas('identityAuditRecord', function (Builder $query) use ($identityStatusArr) {
                 $query->when($identityStatusArr, function (Builder $query) use ($identityStatusArr) {
