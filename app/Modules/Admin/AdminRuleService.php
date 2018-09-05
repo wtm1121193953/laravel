@@ -67,17 +67,20 @@ class AdminRuleService extends BaseService
 
         if ($level3) {
             foreach ($level3 as $l) {
+                $l['ppid'] = $level2[$l['pid']]['pid'];
                 $level2[$l['pid']]['sub'][] = $l;
             }
         }
 
         if ($level2) {
             foreach ($level2 as $l) {
+                $l['ppid'] = $level1[$l['pid']]['pid'];
                 $level1[$l['pid']]['sub'][] = $l;
             }
         }
 
         foreach ($level1 as $l) {
+            $l['ppid'] = 0;
             $tree[] = $l;
         }
         return $tree;
@@ -215,9 +218,17 @@ class AdminRuleService extends BaseService
         if(empty($rule)){
             throw new DataNotFoundException('权限信息不存在');
         }
+
+        $pid = request('pid', 0);
+        if ($pid !=0 ) {
+            $parent = AdminAuthRule::findOrFail($pid);
+            if ($parent->level > 2) {
+                throw new BaseResponseException('权限最多增加到3级');
+            }
+        }
+
         $rule->name = request('name', '');
-        $rule->pid = request('pid', 0);
-        $rule->level = $rule->pid == 0 ? 1 : 2;
+        $rule->pid = $pid;
         $rule->url = request('url', '');
         $rule->url_all = request('url_all', '');
         $rule->status = request('status', 1);
