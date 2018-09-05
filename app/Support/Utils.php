@@ -91,6 +91,7 @@ class Utils
         if ($decimalQuantity < 0) $decimalQuantity = 2;
         $pow = pow(10, $decimalQuantity);
         $decimal = floor($number * $pow) / $pow;
+        $decimal = number_format($decimal, $decimalQuantity, '.', '');
         return $decimal;
     }
 }
