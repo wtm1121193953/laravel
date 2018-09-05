@@ -12,7 +12,7 @@ Route::prefix('oper')
         Route::post('login', 'SelfController@login');
         Route::post('logout', 'SelfController@logout');
         Route::post('self/modifyPassword', 'SelfController@modifyPassword');
-        Route::post('self/menus', 'SelfController@getMenus');
+        Route::get('self/menus', 'SelfController@getMenus');
 
         Route::get('area/tree', 'AreaController@getTree');
 
