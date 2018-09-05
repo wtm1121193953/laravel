@@ -256,7 +256,7 @@
                 return ;
             }
             this.themeSettingForm = deepCopy(store.state.theme);
-            // 全局挂载权限验证方法
+            // 全局挂载权限验证方法, 使用方法 : hasRule('url')
             Vue.prototype.hasRule = this.getHasRuleFunction();
         },
         components: {
