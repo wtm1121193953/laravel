@@ -39,7 +39,7 @@
                 <el-select v-model="query.status" size="small"  multiple placeholder="请选择" class="w-150">
                     <el-option label="待审核" value="1"/>
                     <el-option label="审核通过" value="2"/>
-                    <el-option label="审核失败" value="3"/>
+                    <el-option label="审核不通过" value="3"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -104,10 +104,10 @@
                                     placement="right-start"
                                     trigger="hover"
                                     :content="scope.row.reason">
-                            <span slot="reference">审核失败</span>
+                            <span slot="reference">审核不通过</span>
                             </el-popover>
                         </span>
-                        <span v-else>审核失败</span>
+                        <span v-else>审核不通过</span>
                     </span>
                 </template>
             </el-table-column>
@@ -224,7 +224,7 @@
                     center: true,
                     dangerouslyUseHTMLString: true,
                     inputType: 'text',
-                    inputPlaceholder: '请填写失败原因，必填，最多50字',
+                    inputPlaceholder: '请填写不通过原因，必填，最多50字',
                     inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
                 }).then(({value}) => {
                     param.reason = value ? value : '';
