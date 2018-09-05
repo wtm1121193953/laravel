@@ -59,7 +59,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="bank_card_open_name" label="账户名"></el-table-column>
-            <el-table-column prop="oper_name" label="开户行"></el-table-column>
+            <el-table-column prop="bank_name" label="开户行"></el-table-column>
             <el-table-column prop="bank_name" label="提现状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1">审核中</span>
