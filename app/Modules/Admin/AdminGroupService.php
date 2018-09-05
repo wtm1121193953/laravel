@@ -38,9 +38,19 @@ class AdminGroupService extends BaseService
      */
     public static function add($name, $ruleIds = '', $status = 1)
     {
-        if(is_array($ruleIds)){
-            $ruleIds = implode(',', $ruleIds);
+        if (is_string($ruleIds) && !empty($ruleIds)) {
+            $ruleIds = explode(',',$ruleIds);
+            $rules = AdminAuthRule::whereIn('id',$ruleIds)->get()->toArray();
+            foreach ($rules as $r) {
+                if (!in_array($r['pid'], $ruleIds)) {
+                    $ruleIds[] = $r['pid'];
+                }
+            }
+
         }
+
+        $ruleIds = implode(',', $ruleIds);
+
         $group = new AdminAuthGroup();
         $group->name = $name;
         $group->status = $status;
@@ -63,9 +73,20 @@ class AdminGroupService extends BaseService
         if(empty($group)){
             throw new DataNotFoundException('角色信息不存在');
         }
-        if(is_array($ruleIds)){
-            $ruleIds = implode(',', $ruleIds);
+
+        if (is_string($ruleIds) && !empty($ruleIds)) {
+            $ruleIds = explode(',',$ruleIds);
+            $rules = AdminAuthRule::whereIn('id',$ruleIds)->get()->toArray();
+            foreach ($rules as $r) {
+                if (!in_array($r['pid'], $ruleIds)) {
+                    $ruleIds[] = $r['pid'];
+                }
+            }
+
         }
+
+        $ruleIds = implode(',', $ruleIds);
+
         $group->name = $name;
         $group->status = $status;
         $group->rule_ids = $ruleIds;
