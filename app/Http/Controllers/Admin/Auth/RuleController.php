@@ -29,8 +29,8 @@ class RuleController extends Controller
     {
         $rules = AdminRuleService::getAll();
         // 封装权限列表, 子权限要在父权限的后面
-//        $tree = AdminRuleService::convertRulesToTree($rules);
-        $tree = AdminRuleService::convertRulesToTreeByRecursion($rules);
+        $tree = AdminRuleService::convertRulesToTree($rules);
+        //$tree = AdminRuleService::convertRulesToTreeByRecursion($rules);
 
         return Result::success([
             'tree' => $tree,
