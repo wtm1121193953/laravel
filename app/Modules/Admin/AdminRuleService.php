@@ -10,6 +10,7 @@ namespace App\Modules\Admin;
 
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
 use Illuminate\Contracts\Support\Arrayable;
@@ -44,6 +45,43 @@ class AdminRuleService extends BaseService
             $rules[$k] = $rule->toArray();
         }
         $tree = [];
+        $level1 = [];
+        $level2 = [];
+        $level3 = [];
+        foreach ($rules as $r) {
+
+            switch ($r['level']) {
+                case 1:
+                    $level1[$r['id']] = $r;
+                    break;
+                case 2:
+                    $level2[$r['id']] = $r;
+                    break;
+                case 3:
+                    $level3[$r['id']] = $r;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if ($level3) {
+            foreach ($level3 as $l) {
+                $level2[$l['pid']]['sub'][] = $l;
+            }
+        }
+
+        if ($level2) {
+            foreach ($level2 as $l) {
+                $level1[$l['pid']]['sub'][] = $l;
+            }
+        }
+
+        foreach ($level1 as $l) {
+            $tree[] = $l;
+        }
+        return $tree;
+
         foreach ($rules as &$parent){
             if($parent['pid'] == 0){
                 $tree[] =& $parent;
@@ -57,6 +95,47 @@ class AdminRuleService extends BaseService
                 }
             }
 
+        }
+        return $tree;
+    }
+
+    /**
+     * 递归获取无限极菜单栏
+     * Author：  Jerry
+     * Date：    180905
+     * @param $rules
+     * @return array
+     */
+    public static function convertRulesToTreeByRecursion( $rules )
+    {
+        foreach ($rules as $k=> $rule) {
+            $rules[$k] = $rule->toArray();
+        }
+        return self::recursion( $rules);
+    }
+
+    /**
+     * 执行递归
+     * Author：  Jerry
+     * Date：    180905
+     * @param array  $rules
+     * @param int $parentId
+     * @return array
+     */
+    public static function recursion( &$rules, $parentId=0 )
+    {
+        $tree = [];
+        foreach ($rules as $k=>$v){
+            if($v['pid']==$parentId) {
+                unset($rules[$k]);
+                $temp = self::recursion($rules, $v['id']);
+                if (!empty($temp))
+                {
+                    $v['sub'] = $temp;
+                }
+                unset($temp);
+                $tree[] = $v;
+            }
         }
         return $tree;
     }
@@ -106,10 +185,17 @@ class AdminRuleService extends BaseService
     public static function addFromRequest()
     {
         $rule = new AdminAuthRule();
+        $pid = request('pid', 0);
+        if ($pid !=0 ) {
+            $parent = AdminAuthRule::findOrFail($pid);
+            if ($parent->level > 2) {
+                throw new BaseResponseException('权限最多增加到3级');
+            }
+        }
 
         $rule->name = request('name', '');
-        $rule->pid = request('pid', 0);
-        $rule->level = $rule->pid == 0 ? 1 : 2;
+        $rule->pid = $pid;
+        $rule->level = $rule->pid == 0 ? 1 : $parent->level + 1;
         $rule->url = request('url', '');
         $rule->url_all = request('url_all', '');
         $rule->status = request('status', 1);
