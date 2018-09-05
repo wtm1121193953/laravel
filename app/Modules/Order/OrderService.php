@@ -169,7 +169,6 @@ class OrderService extends BaseService
         return self::getListBySettlementId($settlementId, Order::PAY_TARGET_TYPE_PLATFORM);
     }
 
-
     /**
      * 根据结算ID与支付目标类型获取订单列表
      * @param $settlementId int 结算ID
