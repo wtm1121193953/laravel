@@ -22,7 +22,7 @@
                     {{remitAmount}}
                 </el-form-item>
                 <el-form-item label="账户类型">
-                    {{initForm.bankCardType == 1 ? '公账' : '私账'}}
+                    {{initForm.bankCardType == 1 ? '公司' : '个人'}}
                 </el-form-item>
                 <el-form-item label="提现账户名">
                     {{initForm.bankOpenName}}
