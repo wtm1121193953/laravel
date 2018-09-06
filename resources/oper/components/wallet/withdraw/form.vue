@@ -54,7 +54,8 @@
         </el-col>
         <el-col>
             <el-button @click="cancel">取 消</el-button>
-            <el-button type="primary" :disabled="noWithdraw" @click="commit">确 定</el-button>
+            <!--<el-button type="primary" :disabled="noWithdraw" @click="commit">确 定</el-button>-->
+            <el-button type="primary" @click="commit">确 定</el-button>
         </el-col>
     </page>
 </template>
