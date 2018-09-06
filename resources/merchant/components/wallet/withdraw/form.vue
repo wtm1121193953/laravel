@@ -45,7 +45,12 @@
                     <ol>
                         <li><p>提现手续费{{initForm.ratio}}%</p></li>
                         <li v-if="initForm.bankCardType == 1">
-                            <p>提现需要邮寄发票，发票总面额至少要大于提现额度，否则可能造成提现不成功</p>
+                            <p>
+                                提现需要邮寄发票，发票总面额至少要大于提现额度，否则可能造成提现不成功，
+                                <span>
+                                    发票模板<el-button type="text" @click="downloadDoc">点击此处</el-button>下载
+                                </span>
+                            </p>
                             <p>发票邮寄地址：深圳市福田区安化工业区4栋3楼 华翎科技有限公司  联系人：华翎财务部  电话 ：0755- 82563639</p>
                         </li>
                         <li><p>提现成功发起后，7个工作日左右到账。</p></li>
@@ -57,8 +62,7 @@
         </el-col>
         <el-col>
             <el-button @click="cancel">取 消</el-button>
-            <!--<el-button type="primary" :disabled="noWithdraw" @click="commit">确 定</el-button>-->
-            <el-button type="primary" @click="commit">确 定</el-button>
+            <el-button type="primary" :disabled="noWithdraw" @click="commit">确 定</el-button>
         </el-col>
     </page>
 </template>
@@ -202,6 +206,11 @@
                     this.noWithdraw = true;
                 }
             },
+            downloadDoc() {
+                api.get('/wallet/withdraw/getInvoiceTemplatePath').then(data => {
+                    location.href = `/api/download?path=${data.url}&as=商户开票规则.doc&code=doc`;
+                })
+            }
         },
         created() {
             this.init();

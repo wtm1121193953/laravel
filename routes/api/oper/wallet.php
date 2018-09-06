@@ -19,5 +19,6 @@ Route::post('/wallet/withdraw/setWalletPassword', 'WalletWithdrawController@setW
 Route::get('/wallet/withdraw/getWithdrawInfo', 'WalletWithdrawController@getWithdrawInfoAndBankInfo');
 Route::post('/wallet/withdraw/withdrawApplication', 'WalletWithdrawController@withdrawApplication')->middleware(AllowWithdrawDate::class);
 Route::get('/wallet/withdraw/getWithdrawDetail', 'WalletWithdrawController@getWithdrawDetail');
+Route::get('/wallet/withdraw/getInvoiceTemplatePath', 'WalletWithdrawController@getInvoiceTemplatePath');
 
 Route::get('/wallet/bank/list', 'WalletController@getBankList');

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 57458
- * Date: 2018/8/5
- * Time: 20:02
- */
 
 namespace App\Http\Controllers;
 
@@ -29,6 +23,8 @@ class DownloadController extends Controller
                 return $this->normalDownload();
             case 'merchant_pay_app_code':
                 return $this->downloadMerchantPayAppCode();
+            case 'doc':
+                return $this->downloadDoc();
             default:
                 abort(404);
         }
@@ -98,5 +94,28 @@ class DownloadController extends Controller
         WechatService::addNameToAppCode($filePath, $signboardName);
 
         return response()->download($filePath, '支付小程序码_' . ['', '小', '中', '大'][$type] . '.jpg');
+    }
+
+    /**
+     * doc 文件下载
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    private function downloadDoc()
+    {
+        $path = request('path') ?? request('url');
+        $as = request('as');
+        if(empty($path)){
+            throw new ParamInvalidException();
+        }
+        if(empty($as)){
+            $as = basename($path);
+        }
+
+        if (!Storage::exists($path)) {
+            throw new BaseResponseException('要下载的文件不存在');
+        }
+        $response = response(file_get_contents($path));
+        $response->headers->set('Content-Disposition', 'attachment; filename="'. $as .'"');
+        return $response;
     }
 }

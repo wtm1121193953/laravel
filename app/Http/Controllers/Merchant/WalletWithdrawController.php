@@ -132,4 +132,14 @@ class WalletWithdrawController extends Controller
 
         return Result::success($withdraw);
     }
+
+    /**
+     * 获取商户开票规则doc路径 doc下载
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function getInvoiceTemplatePath()
+    {
+        $path = storage_path('app\help-doc\merchant_invoice_template.doc');
+        return Result::success(['url' => $path]);
+    }
 }
