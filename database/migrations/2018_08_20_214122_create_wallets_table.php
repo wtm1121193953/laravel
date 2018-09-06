@@ -21,9 +21,8 @@ class CreateWalletsTable extends Migration
             $table->decimal('freeze_balance', 11, 2)->default(0)->comment('冻结金额');
             $table->decimal('consume_quota', 11, 2)->default(0)->comment('当月消费额(不包含冻结消费额)');
             $table->decimal('freeze_consume_quota', 11, 2)->default(0)->comment('当月冻结中的消费额');
-            $table->decimal('total_consume_quota', 11, 2)->default(0)->comment('累计消费额(个人消费累计, 包含冻结金额)');
-            $table->decimal('total_tps_credit', 16, 8)->default(0)->comment('个人消费累计tps积分');
-            $table->decimal('total_share_tps_credit', 16, 8)->default(0)->comment('下级累计贡献的tps积分');
+            $table->decimal('share_consume_quota', 11, 2)->default(0)->comment('下级贡献的消费额（不包含冻结的）');
+            $table->decimal('share_freeze_consume_quota', 11, 2)->default(0)->comment('下级贡献冻结中的消费额');
             $table->string('withdraw_password')->default('')->comment('提现密码');
             $table->string('salt')->default('')->comment('盐值');
             $table->tinyInteger('status')->default(1)->comment('状态 1-正常 2-冻结');
