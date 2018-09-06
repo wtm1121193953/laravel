@@ -268,11 +268,31 @@
 
             },
             downloadExcel() {
-                let message = '确定要导出当前筛选的商户列表么？'
+                let message = '确定要导出当前筛选的商户列表么？';
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
+                let day = 0;
+                if (this.query.startDate && this.query.endDate) {
+                    day = (new Date(this.query.endDate) - new Date(this.query.startDate)) / 24 / 3600 / 1000;
+                }
+                if (!this.query.startDate || !this.query.endDate || day > 31) {
+                    this.$message.warning('您导出的数据量太大，请按月导出');
+                    return;
+                }
+
                 this.$confirm(message).then(() => {
-                    window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&signboardName='+ this.query.signboardName+ '&auditStatus=' + this.query.auditStatus + '&operName=' + this.query.operName + '&operId=' + this.query.operId + '&creatorOperName=' + this.query.creatorOperName + '&creatorOperId=' + this.query.creatorOperId;
+                    let data = this.query;
+                    let params = [];
+                    Object.keys(data).forEach((key) => {
+                        let value =  data[key];
+                        if (typeof value === 'undefined' || value == null) {
+                            value = '';
+                        }
+                        params.push([key, encodeURIComponent(value)].join('='))
+                    }) ;
+                    let uri = params.join('&');
+
+                    location.href = `/api/admin/merchant/download?${uri}`;
                 })
             },
             changeStatus(row) {
