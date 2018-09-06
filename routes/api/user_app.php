@@ -69,9 +69,9 @@ Route::prefix('app/user')
         Route::get('wallet/getBillDetail', 'WalletController@getBillDetail')->middleware(UserLoginFilter::class);;
         Route::get('wallet/getConsumeQuotas', 'WalletController@getConsumeQuotas')->middleware(UserLoginFilter::class);;
         Route::get('wallet/getConsumeQuotaDetail', 'WalletController@getConsumeQuotaDetail')->middleware(UserLoginFilter::class);;
-        Route::post('app/wallet/confirmPassword', 'WalletController@confirmPassword')->middleware(UserLoginFilter::class);
-        Route::post('app/wallet/checkVerifyCode', 'WalletController@checkVerifyCode')->middleware(UserLoginFilter::class);
-        Route::post('app/wallet/changePassword', 'WalletController@changePassword')->middleware(UserLoginFilter::class);
+        Route::post('wallet/confirmPassword', 'WalletController@confirmPassword')->middleware(UserLoginFilter::class);
+        Route::post('wallet/checkVerifyCode', 'WalletController@checkVerifyCode')->middleware(UserLoginFilter::class);
+        Route::post('wallet/changePassword', 'WalletController@changePassword')->middleware(UserLoginFilter::class);
         Route::post('wallet/withDraw', 'WalletWithdrawController@withdraw')->middleware(UserLoginFilter::class);
         Route::get('wallet/getWithDrawConfig', 'WalletWithdrawController@getWithdrawConfig')->middleware(UserLoginFilter::class);
         Route::get('wallet/getTpsConsume', 'WalletController@getTpsConsume')->middleware(UserLoginFilter::class);
@@ -91,5 +91,10 @@ Route::prefix('app/user')
         //Tps绑定接口
         Route::get('tps/getBindInfo', 'TpsBindController@getBindInfo')->middleware(UserLoginFilter::class);
         Route::post('tps/bindAccount', 'TpsBindController@bindAccount')->middleware(UserLoginFilter::class);
+
+
+        Route::post('identity/record/addRecord', 'UserIdentityAuditRecordController@addRecord')->middleware(UserLoginFilter::class);
+        Route::post('identity/record/modRecord', 'UserIdentityAuditRecordController@modRecord')->middleware(UserLoginFilter::class);
+        Route::get('identity/record/getRecord','UserIdentityAuditRecordController@getRecord')->middleware(UserLoginFilter::class);
 
     });

@@ -31,11 +31,6 @@ class BankCardsController extends Controller
     {
 
         $data = ['bank_card_open_name' => request('bank_card_open_name'), 'bank_card_no' => request('bank_card_no'), 'bank_name' => request('bank_name')];
-        $bankCardNo = $data['bank_card_no'];
-        $bankCardInfo = BankCardService::getCardByBankCardNo($bankCardNo);
-        if ($bankCardInfo) {
-            return Result::error(ResultCode::DB_INSERT_FAIL, '已添加该银行卡号');
-        }
         BankCardService::addCard($data, request()->get('current_user'));
         return Result::success('添加银行卡成功');
     }
@@ -85,7 +80,7 @@ class BankCardsController extends Controller
         foreach ($list as $value){
             $value['logo'] = 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1536140435369&di=517ac459dff601b83c717f7e4f937a37&imgtype=0&src=http%3A%2F%2Fawb.img.xmtbang.com%2Fimg%2Fuploadnew%2F201510%2F24%2F624b9b78514f46d7bd7f7626fc2d3d4c.jpg';
         }
-        
+
         return Result::success($list);
     }
 

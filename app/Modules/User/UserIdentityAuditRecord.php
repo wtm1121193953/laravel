@@ -17,8 +17,8 @@ use App\BaseModel;
  * Class UserIdentityAuditRecord
  * @package App\Modules\User
  * @property integer    user_id
- * @property integer    name
- * @property integer    id_card_no
+ * @property string    name
+ * @property string    id_card_no
  * @property string     front_pic
  * @property string     opposite_pic
  * @property integer    status
