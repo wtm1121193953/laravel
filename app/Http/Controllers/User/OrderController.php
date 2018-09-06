@@ -177,7 +177,6 @@ class OrderController extends Controller
         $order->save();
 
         if ($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM) { // 如果是支付到平台
-            $currentOperId = 0;
             if ($currentOperId == 0) { // 在平台小程序下
                 $isOperSelf = 1;
                 $sdkConfig = $this->_payToPlatform($order);
