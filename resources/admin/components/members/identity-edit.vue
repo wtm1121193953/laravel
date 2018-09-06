@@ -69,6 +69,7 @@
                     number:'',
                     front_pic:'',
                     opposite_pic:'',
+                    reason:'',
                     user:{},
                 },
                 id: null,
@@ -88,7 +89,7 @@
             },
             doEdit(){
                 this.loading = true;
-                let data = {id:this.id,status:2}
+                let data = {id:this.id,status:2,reason:this.info.reason}
                 api.post('/member/identity_do', data).then((data) => {
                     router.push('/member/identity');
                 }).finally(() => {

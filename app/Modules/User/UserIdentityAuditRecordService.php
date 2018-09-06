@@ -33,6 +33,7 @@ class UserIdentityAuditRecordService extends BaseService
         $userIdentityAuditRecord->opposite_pic = $data['opposite_pic'];
         $userIdentityAuditRecord->status = UserIdentityAuditRecord::STATUS_UN_AUDIT;
         $userIdentityAuditRecord->user_id = $user->id;
+        $userIdentityAuditRecord ->reason = '';
         if (!$userIdentityAuditRecord->save()) {
             throw new BaseResponseException(ResultCode::DB_INSERT_FAIL, '新增失败');
         }

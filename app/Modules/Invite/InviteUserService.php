@@ -91,12 +91,12 @@ class InviteUserService
                 throw new ParamInvalidException('不能扫描自己的邀请码');
             }
             // 判断用户及上级用户是否都绑定了tps账号
-            /*if (
+            if (
                 TpsBindService::getTpsBindInfoByOriginInfo($userId, TpsBind::ORIGIN_TYPE_USER)
                 && TpsBindService::getTpsBindInfoByOriginInfo($inviteChannel->origin_id, TpsBind::ORIGIN_TYPE_USER)
             ) {
                 throw new BaseResponseException('您和您的邀请人都已绑定TPS账号, 请尝试其他邀请人');
-            }*/
+            }
         }
         $inviteChannelParent = self::getParent($inviteChannel->origin_id);
         if ($inviteChannelParent && $inviteChannelParent instanceof User && $inviteChannelParent->id == $userId) {
@@ -239,12 +239,12 @@ class InviteUserService
                 throw new ParamInvalidException('不能自己绑定自己哦');
             }
             // 判断用户及上级用户是否都绑定了tps账号
-            /*if (
+            if (
                 TpsBindService::getTpsBindInfoByOriginInfo($userId, TpsBind::ORIGIN_TYPE_USER)
                 && TpsBindService::getTpsBindInfoByOriginInfo($inviteChannel->origin_id, TpsBind::ORIGIN_TYPE_USER)
             ) {
                 throw new BaseResponseException('您和您的邀请人都已绑定TPS账号, 请尝试其他邀请人');
-            }*/
+            }
         }
 
         DB::beginTransaction();
@@ -444,7 +444,6 @@ class InviteUserService
         $inviteUserRecords->each(function(InviteUserRecord $item){
             $item->user_mobile = $item->user->mobile;
         });
-
         return $inviteUserRecords;
     }
 

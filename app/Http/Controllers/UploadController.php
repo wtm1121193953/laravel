@@ -21,12 +21,12 @@ class UploadController
         $path = $file->store('/image/item', 'public');
         $url = asset('storage/' . $path);
 
-        $image = Image::make($url);
+//        $image = Image::make($url);
 
         return Result::success([
             'url' => $url,
-            'width' => $image->getWidth(),
-            'height' => $image->getHeight(),
+//            'width' => $image->getWidth(),
+//            'height' => $image->getHeight(),
             'size' => $file->getSize(),
         ]);
     }
