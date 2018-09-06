@@ -18,10 +18,6 @@ use App\Modules\Order\Order;
  * @property float pay_price
  * @property float order_profit_amount
  * @property float consume_quota
- * @property float consume_quota_profit
- * @property float tps_consume_quota
- * @property float tps_credit
- * @property integer sync_tps_credit
  * @property string consume_user_mobile
  * @property integer status
  */

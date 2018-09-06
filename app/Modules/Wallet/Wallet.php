@@ -14,9 +14,8 @@ use App\Modules\User\GenPassword;
  * @property float freeze_balance
  * @property float consume_quota
  * @property float freeze_consume_quota
- * @property float total_consume_quota
- * @property float total_tps_credit
- * @property float total_share_tps_credit
+ * @property float share_consume_quota
+ * @property float share_freeze_consume_quota
  * @property string withdraw_password
  * @property string salt
  * @property integer status
