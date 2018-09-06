@@ -2,7 +2,7 @@
     <page title="用户账户交易记录" :breadcrumbs="{用户账户管理: '/wallet/user'}">
         <el-form :model="query" inline size="small">
             <el-form-item prop="billNo" label="交易号">
-                <el-input v-model="query.billNo" clearable/>
+                <el-input v-model="query.billNo" clearable placeholder="请输入交易号"/>
             </el-form-item>
             <el-form-item label="交易时间">
                 <el-date-picker
@@ -32,8 +32,8 @@
                     <el-option label="提现" :value="7"></el-option>
                     <el-option label="自己消费返利" :value="1"></el-option>
                     <el-option label="下级消费返利" :value="2"></el-option>
-                    <el-option label="自己消费返利退款" :value="3"></el-option>
-                    <el-option label="下级消费返利退款" :value="4"></el-option>
+                    <!--<el-option label="自己消费返利退款" :value="3"></el-option>-->
+                    <!--<el-option label="下级消费返利退款" :value="4"></el-option>-->
                 </el-select>
             </el-form-item>
             <el-form-item>

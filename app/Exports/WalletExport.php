@@ -40,9 +40,9 @@ class WalletExport implements FromQuery, WithMapping, WithHeadings
                 '账户余额',
                 '可提现金额',
                 '冻结金额',
-                '银行账号',
-                '账户名',
-                '开户行',
+//                '银行账号',
+//                '账户名',
+//                '开户行',
                 '账户状态',
             ];
         } elseif ($this->originType == Wallet::ORIGIN_TYPE_MERCHANT) {
@@ -109,9 +109,9 @@ class WalletExport implements FromQuery, WithMapping, WithHeadings
                 $row->balance + $row->freeze_balance,
                 $row->balance,
                 $row->freeze_balance,
-                $row->bank_card_no ? substr($row->bank_card_no, 0, 5).'****'.substr($row->bank_card_no, -4).'('.['','企业','个人'][$row->bank_card_type].')' : '',
-                $row->bank_open_name,
-                $row->sub_bank_name,
+//                $row->bank_card_no ? substr($row->bank_card_no, 0, 5).'****'.substr($row->bank_card_no, -4).'('.['','企业','个人'][$row->bank_card_type].')' : '',
+//                $row->bank_open_name,
+//                $row->bank_name,
                 ['', '正常', '已冻结'][$row->status]
             ];
         } elseif ($this->originType == Wallet::ORIGIN_TYPE_MERCHANT) {

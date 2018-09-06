@@ -292,6 +292,9 @@ class UserService extends BaseService
     public static function identityDo($id,$status,$reason='')
     {
 
+        if (empty($reason)) {
+            $reason = '';
+        }
         $info = UserIdentityAuditRecord::findOrFail($id);
 
         $info->status = $status;
