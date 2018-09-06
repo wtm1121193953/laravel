@@ -34,9 +34,6 @@
                     <el-form-item label="账户余额">
                         {{data.after_amount}}元
                     </el-form-item>
-                    <el-form-item label="备注">
-                        {{data.remark}}
-                    </el-form-item>
                     <el-form-item label="审核意见" v-if="audit">
                         <el-input type="textarea" :rows="3" v-model="remark" placeholder="最多输入50个汉字"></el-input>
                     </el-form-item>
