@@ -114,11 +114,7 @@ class WalletController extends Controller
             'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
             'originId' => $user->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
-        ], 15, true);
-
-        ;
-        var_dump($totalTpsConsume->toSql());
-        exit;
+        ], 15, true)->sum('tps_consume_quota');
         $theMonthTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
             'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
             'originId' => $user->id,
