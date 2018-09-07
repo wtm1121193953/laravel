@@ -80,11 +80,15 @@ class UserController extends Controller
     {
         $user = request()->get('current_user');
         $avatarUrl = request('avatar_url');
+        $name = request('name');
         $userInfo = User::find($user->id);
         if (empty($userInfo)) {
             throw new BaseResponseException('该用户不存在');
         }
         $userInfo->avatar_url = $avatarUrl;
+        if ($name){
+            $userInfo->name = $name;
+        }
         $userInfo->save();
 
         return Result::success();
