@@ -96,8 +96,7 @@ class ConsumeQuotaService extends BaseService
     {
         DB::beginTransaction();
         try {
-            // 1. 解冻自己的消费额
-            // 2. 解冻上级的消费额
+            //  根据订单ID查询消费额记录表,并解冻消费额记录
             $walletConsumeQuotaRecords = WalletConsumeQuotaRecord::where('order_id', $order->id)->get();
             foreach ($walletConsumeQuotaRecords as $walletConsumeQuotaRecord) {
                 // 如果消费额不是冻结状态 则结束本次循环 进入下一次循环
@@ -106,11 +105,18 @@ class ConsumeQuotaService extends BaseService
                 $wallet = WalletService::getWalletInfoByOriginInfo($walletConsumeQuotaRecord->origin_id, $walletConsumeQuotaRecord->origin_type);
                 // 2.添加消费额解冻记录
                 self::addConsumeQuotaUnfreezeRecord($walletConsumeQuotaRecord, $wallet);
-                // 3.更新钱包信息
-                $wallet->consume_quota = DB::raw('consume_quota + ' . $walletConsumeQuotaRecord->consume_quota);            // 添加当月消费额（不包含冻结）
-                $wallet->freeze_consume_quota = DB::raw('freeze_consume_quota - ' . $walletConsumeQuotaRecord->consume_quota);     // 减去当月冻结的消费额
+                // 3.判断消费额记录类型,是 自反 还是 下级消费返 ,并更新钱包信息
+                if ($walletConsumeQuotaRecord->type == WalletConsumeQuotaRecord::TYPE_SELF) {
+                    $wallet->consume_quota = DB::raw('consume_quota + ' . $walletConsumeQuotaRecord->consume_quota);
+                    $wallet->freeze_consume_quota = DB::raw('freeze_consume_quota - ' . $walletConsumeQuotaRecord->consume_quota);
+                } elseif ($walletConsumeQuotaRecord->type == WalletConsumeQuotaRecord::TYPE_SUBORDINATE) {
+                    $wallet->share_consume_quota = DB::raw('share_consume_quota + ' . $walletConsumeQuotaRecord->consume_quota);
+                    $wallet->share_freeze_consume_quota = DB::raw('share_freeze_consume_quota - ' . $walletConsumeQuotaRecord->consume_quota);
+                } else {
+                    throw new \Exception('该消费额状态不存在,不能解冻');
+                }
                 $wallet->save();
-                // 4.更新消费额记录
+                // 4.更新消费额记录状态
                 $walletConsumeQuotaRecord->status = WalletConsumeQuotaRecord::STATUS_UNFREEZE;
                 $walletConsumeQuotaRecord->save();
             }
@@ -121,7 +127,7 @@ class ConsumeQuotaService extends BaseService
         }
 
         // 3. 发送同步消费额到tps的队列
-        ConsumeQuotaSyncToTpsJob::dispatch($order);
+//        ConsumeQuotaSyncToTpsJob::dispatch($order);
     }
 
     /**
@@ -241,6 +247,7 @@ class ConsumeQuotaService extends BaseService
     {
         $walletConsumeQuotaUnfreezeRecord = new WalletConsumeQuotaUnfreezeRecord();
         $walletConsumeQuotaUnfreezeRecord->wallet_id = $wallet->id;
+        $walletConsumeQuotaUnfreezeRecord->consume_quota_record_id = $walletConsumeQuotaRecord->id;
         $walletConsumeQuotaUnfreezeRecord->origin_id = $walletConsumeQuotaRecord->origin_id;
         $walletConsumeQuotaUnfreezeRecord->origin_type = $walletConsumeQuotaRecord->origin_type;
         $walletConsumeQuotaUnfreezeRecord->unfreeze_consume_quota = $walletConsumeQuotaRecord->consume_quota;
