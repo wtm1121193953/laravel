@@ -28,7 +28,7 @@ class WalletConsumeQuotaRecordExport implements FromQuery, WithMapping, WithHead
 
     public function map($row) : array
     {
-        if ($row->status == WalletConsumeQuotaRecord::STATUS_FREEZE) {
+        /*if ($row->status == WalletConsumeQuotaRecord::STATUS_FREEZE) {
             $status = '冻结中';
         } elseif ($row->status == WalletConsumeQuotaRecord::STATUS_UNFREEZE) {
             $status = '已解冻待置换';
@@ -38,17 +38,17 @@ class WalletConsumeQuotaRecordExport implements FromQuery, WithMapping, WithHead
             $status = '已退款';
         } else {
             $status = '未知（'. $row->status .'）';
-        }
+        }*/
 
         return [
             $row->created_at,
             $row->consume_quota_no,
-            '下级用户消费',
+            '下级贡献',
             $row->order_no,
             $row->consume_user_mobile,
             $row->pay_price,
             $row->consume_quota,
-            $status,
+//            $status,
         ];
     }
 
@@ -61,8 +61,8 @@ class WalletConsumeQuotaRecordExport implements FromQuery, WithMapping, WithHead
             '原订单号',
             '用户手机号',
             '交易金额',
-            '贡献消费额',
-            '消费额状态',
+            '贡献值',
+//            '消费额状态',
         ];
     }
 }
