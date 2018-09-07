@@ -152,7 +152,22 @@ class WalletController extends Controller
             'endDate'       =>  date('Y-m-t 23:59:59'),
             'type'          =>  WalletConsumeQuotaRecord::TYPE_SUBORDINATE,
         ];
-        $thisMonthQuotaSum = ConsumeQuotaService::getConsumeQuotaRecordList($thisMonthParams, 1, false)->sum('consume_quota');
+//        $thisMonthQuotaSum = ConsumeQuotaService::getConsumeQuotaRecordList($thisMonthParams, 1, false)->sum('consume_quota');
+
+        $thisMonthQuotaSum = ConsumeQuotaService::getConsumeQuotaSumByTime(
+            [
+                'origin_id'     => $wallet['origin_id'],
+                'origin_type'   => $wallet['origin_type'],
+                'type'          => WalletConsumeQuotaRecord::TYPE_SUBORDINATE,
+            ],[
+            strtotime(date('Y-m-01 00:00:00')),
+            strtotime(date('Y-m-t 23:59:59'))
+        ],
+            [
+                'consume_quota' =>  'consume_quota_sum'
+            ]
+        );
+
 
         return Result::success([
             'list' => $data->items(),
