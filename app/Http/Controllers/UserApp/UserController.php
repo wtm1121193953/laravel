@@ -48,8 +48,11 @@ class UserController extends Controller
 
         $user->level_text = User::getLevelText($user->level);
         $bindInfo = TpsBindService::getTpsBindInfoByOriginInfo($user->id, TpsBind::ORIGIN_TYPE_USER);
-
-        $user['tpsBindInfo'] = $bindInfo;
+        if ($bindInfo) {
+            $user['tpsBindInfo'] = $bindInfo;
+        } else {
+            $user['tpsBindInfo'] = '';
+        }
 
 
         $record = UserIdentityAuditRecordService::getRecordByUser($user->id);
@@ -59,8 +62,12 @@ class UserController extends Controller
             $user['identityInfoStatus'] = 4;
         }
         //查询我的上级
-       $user['superior'] = InviteUserService::getParentName($user->id);
-
+        $superior = InviteUserService::getParentName($user->id);
+        if ($superior) {
+            $user['superior'] = $superior;
+        } else {
+            $user['superior'] = '';
+        }
         return Result::success([
             'userInfo' => $user
         ]);
@@ -69,9 +76,10 @@ class UserController extends Controller
     /**
      * 设置个人头像接口
      */
-    public function setAvatar(){
+    public function setAvatar()
+    {
         $user = request()->get('current_user');
-       $avatarUrl = request('avatar_url');
+        $avatarUrl = request('avatar_url');
         $userInfo = User::find($user->id);
         if (empty($userInfo)) {
             throw new BaseResponseException('该用户不存在');

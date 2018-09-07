@@ -35,6 +35,7 @@ class ConsumeQuotaSyncToTpsJob implements ShouldQueue
     public function handle()
     {
         //
-        ConsumeQuotaService::syncConsumeQuotaToTps($this->order);
+        return;
+//        ConsumeQuotaService::syncConsumeQuotaToTps($this->order);
     }
 }
