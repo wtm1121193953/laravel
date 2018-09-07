@@ -145,19 +145,7 @@ class WalletController extends Controller
         // 获取钱包信息
         $wallet = WalletService::getWalletInfoByOriginInfo($originId, $originType);
 
-        $thisMonthQuotaSum = ConsumeQuotaService::getConsumeQuotaSumByTime(
-            [
-                'origin_id'     => $wallet['origin_id'],
-                'origin_type'   => $wallet['origin_type'],
-                'type'          => WalletConsumeQuotaRecord::TYPE_SUBORDINATE,
-            ],[
-                date('Y-m-01 00:00:00'),
-                date('Y-m-t 23:59:59')
-            ],
-            [
-                'consume_quota' =>  'consume_quota_sum'
-            ]
-        );
+        $thisMonthQuotaSum = ConsumeQuotaService::getConsumeQuotaRecordList($param, 1, false)->sum('consume_quota');
 
         return Result::success([
             'list' => $data->items(),
@@ -165,7 +153,7 @@ class WalletController extends Controller
             // 累计获得下级贡献值
             'shareConsumeQuotaSum' => $wallet->share_consume_quota+$wallet->share_freeze_consume_quota,
             // 本月累计获得下级贡献值
-            'thisMonthQuotaSum'   => (float)$thisMonthQuotaSum->consume_quota_sum
+            'thisMonthQuotaSum'   => (float)$thisMonthQuotaSum
         ]);
     }
 
@@ -184,9 +172,9 @@ class WalletController extends Controller
         $originId = request()->get('current_user')->merchant_id;
         $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
         $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
-        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize, true);
+        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
 
-        return (new WalletConsumeQuotaRecordExport($query))->download('我的贡献值记录表.xlsx');
+        return (new WalletConsumeQuotaRecordExport($query))->download('消费额记录表.xlsx');
     }
 
     /**
