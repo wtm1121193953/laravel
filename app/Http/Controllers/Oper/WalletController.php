@@ -154,14 +154,19 @@ class WalletController extends Controller
         // 获取钱包信息
         $wallet = WalletService::getWalletInfoByOriginInfo($originId, $originType);
 
-        $thisMonthParams = [
-            'originId'      =>  $originId,
-            'originType'    =>  $originType,
-            'startDate'     =>  date('Y-m-01 00:00:00'),
-            'endDate'       =>  date('Y-m-t 23:59:59'),
-            'type'          =>  WalletConsumeQuotaRecord::TYPE_SUBORDINATE,
-        ];
-        $thisMonthQuotaSum = ConsumeQuotaService::getConsumeQuotaRecordList($thisMonthParams, 1, false)->sum('consume_quota');
+        $thisMonthQuotaSum = ConsumeQuotaService::getConsumeQuotaSumByTime(
+            [
+                'origin_id'     => $wallet['origin_id'],
+                'origin_type'   => $wallet['origin_type'],
+                'type'          => WalletConsumeQuotaRecord::TYPE_SUBORDINATE,
+            ],[
+            date('Y-m-01 00:00:00'),
+            date('Y-m-t 23:59:59')
+        ],
+            [
+                'consume_quota' =>  'consume_quota_sum'
+            ]
+        );
 
         return Result::success([
             'list' => $data->items(),
@@ -169,7 +174,7 @@ class WalletController extends Controller
             // 累计获得下级贡献值
             'shareConsumeQuotaSum' => $wallet->share_consume_quota+$wallet->share_freeze_consume_quota,
             // 本月累计获得下级贡献值
-            'thisMonthQuotaSum'   => (float)$thisMonthQuotaSum,
+            'thisMonthQuotaSum'   => (float)$thisMonthQuotaSum->consume_quota_sum,
         ]);
     }
 
