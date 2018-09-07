@@ -255,7 +255,7 @@ class WalletWithdrawService extends BaseService
             if(is_array($status) || $status instanceof Collection){
                 $query->whereIn('status', $status);
             }else {
-                $query->where('status', $status);
+                $query->whereIn('status', explode(',',$status));
             }
         }
         if($start && $start instanceof Carbon){
