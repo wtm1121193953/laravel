@@ -93,19 +93,19 @@ class InviteChannelController extends Controller
          */
         if ($month) {
             $result = InviteUserService::getInviteUsersByMonthAndUserId($userId, $month);
-            $data = [
+            $monthDetail = [
                 'month' => $month,
                 'count' => $result->total(),
                 'sub' => $result->items(),
             ];
         } else {
-            $data = InviteUserService::getInviteUsersGroupByMonthForUser($userId);
+            $monthDetail = InviteUserService::getInviteUsersGroupByMonthForUser($userId);
             $result = array();
-            foreach ($data as $key => $value){
+            foreach ($monthDetail as $key => $value){
                 $value['month'] = $key;
                 $result[] = $value;
             }
-            $data = $result;
+            $monthDetail = $result;
         }
 //        $data = InviteStatisticsService::getInviteStatListByDateForUser($userId, $month, $page);
 
@@ -113,7 +113,7 @@ class InviteChannelController extends Controller
         $todayInviteCount = InviteStatisticsService::getTodayInviteCountByUserId($userId);
 
         return Result::success([
-            'data' => $data,
+            'monthDetail' => $monthDetail,
             'totalCount' => $totalCount,
             'todayInviteCount' => $todayInviteCount,
         ]);
