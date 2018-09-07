@@ -9,7 +9,7 @@
 
         <el-form :model="query" inline size="small">
             <el-form-item prop="consumeQuotaNo" label="交易号">
-                <el-input v-model="query.consumeQuotaNo" clearable/>
+                <el-input v-model="query.consumeQuotaNo" clearable placeholder="请输入交易号"/>
             </el-form-item>
             <el-form-item label="交易时间">
                 <el-date-picker
@@ -50,7 +50,7 @@
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="created_at" label="交易时间"></el-table-column>
             <el-table-column prop="consume_quota_no" label="交易号"></el-table-column>
-            <el-table-column prop="type" label="交易类型">
+            <el-table-column prop="type" label="交易类型" width="100px">
                 <template slot-scope="scope">
                     <span>下级贡献</span>
                 </template>
