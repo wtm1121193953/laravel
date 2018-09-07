@@ -111,7 +111,7 @@ class WalletController extends Controller
         $user = request()->get('current_user');
 
         $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
-        dd($wallet);
+        dd($user);
 
         $totalTpsConsume = !empty($wallet)?($wallet->consume_quota + $wallet->freeze_consume_quota + $wallet->share_consume_quota + $wallet->share_freeze_consume_quota):0;
 
