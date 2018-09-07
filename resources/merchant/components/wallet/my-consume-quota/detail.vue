@@ -33,7 +33,7 @@
                     <el-form-item label="获得贡献值">
                         {{data.consume_quota}}
                     </el-form-item>
-                    <el-form-item v-if="data.status == 1" label="解冻时间">
+                    <!--<el-form-item v-if="data.status == 1" label="解冻时间">
                         {{data.time}}
                     </el-form-item>
                     <el-form-item v-if="data.status == 2" label="解冻时间">
@@ -44,7 +44,7 @@
                     </el-form-item>
                     <el-form-item v-if="data.status == 4" label="退款时间">
                         {{data.time}}
-                    </el-form-item>
+                    </el-form-item>-->
                 </el-col>
             </el-form>
         </el-row>
