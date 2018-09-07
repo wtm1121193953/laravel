@@ -44,13 +44,13 @@ class UserController extends Controller
             }
         }
 
+        $user->avatar_url = UserService::getUserAvatarUrlWith($user->id);
+
         $user->level_text = User::getLevelText($user->level);
         $bindInfo = TpsBindService::getTpsBindInfoByOriginInfo($user->id, TpsBind::ORIGIN_TYPE_USER);
-        if ($bindInfo) {
-            $user['tpsBindInfo'] = $bindInfo;
-        } else {
-            $user['tpsBindInfo'] = array();
-        }
+
+        $user['tpsBindInfo'] = $bindInfo;
+
 
         $record = UserIdentityAuditRecordService::getRecordByUser($user->id);
         if ($record) {
@@ -59,10 +59,27 @@ class UserController extends Controller
             $user['identityInfoStatus'] = 4;
         }
         //查询我的上级
-       $user['superior'] = InviteUserService::getParentName();
+       $user['superior'] = InviteUserService::getParentName($user->id);
 
         return Result::success([
             'userInfo' => $user
         ]);
     }
+
+    /**
+     * 设置个人头像接口
+     */
+    public function setAvatar(){
+        $user = request()->get('current_user');
+       $avatarUrl = request('avatar_url');
+        $userInfo = User::find($user->id);
+        if (empty($userInfo)) {
+            throw new BaseResponseException('该用户不存在');
+        }
+        $userInfo->avatar_url = $avatarUrl;
+        $userInfo->save();
+
+        return Result::success();
+    }
+
 }

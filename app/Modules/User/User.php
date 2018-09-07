@@ -15,6 +15,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string mobile
  * @property string email
  * @property string account
+ * @property string avatar_url
  * @property string password
  * @property string salt
  * @property string wx_nick_name
