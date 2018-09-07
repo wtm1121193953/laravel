@@ -19,6 +19,7 @@ Route::prefix('app/user')
         Route::any('logout', 'LoginController@logout');
 
         Route::any('user/info', 'UserController@getInfo')->middleware(UserLoginFilter::class);
+        Route::post('user/setAvatar', 'UserController@setAvatar')->middleware(UserLoginFilter::class);
 
         Route::get('area/tree', 'AreaController@getTree');
         Route::get('area/cities/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
@@ -28,10 +29,10 @@ Route::prefix('app/user')
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
         Route::get('merchants', 'MerchantController@getList');
         Route::get('merchant/detail', 'MerchantController@detail');
-        Route::get('merchant/getDishesCategoryAndGoods','DishesController@getDishesCategory');
-        Route::get('merchant/getHotDishesGoods','DishesController@getHotDishesGoods');
-        Route::post('merchant/dishesOrder','DishesController@add')->middleware(UserLoginFilter::class);
-        Route::get('merchant/dishesDetail','DishesController@detail')->middleware(UserLoginFilter::class);
+        Route::get('merchant/getDishesCategoryAndGoods', 'DishesController@getDishesCategory');
+        Route::get('merchant/getHotDishesGoods', 'DishesController@getHotDishesGoods');
+        Route::post('merchant/dishesOrder', 'DishesController@add')->middleware(UserLoginFilter::class);
+        Route::get('merchant/dishesDetail', 'DishesController@detail')->middleware(UserLoginFilter::class);
 
 
         Route::get('goods', 'GoodsController@getList');
@@ -75,18 +76,18 @@ Route::prefix('app/user')
         Route::post('wallet/withDraw', 'WalletWithdrawController@withdraw')->middleware(UserLoginFilter::class);
         Route::get('wallet/getWithDrawConfig', 'WalletWithdrawController@getWithdrawConfig')->middleware(UserLoginFilter::class);
         Route::get('wallet/getTpsConsume', 'WalletController@getTpsConsume')->middleware(UserLoginFilter::class);
-        Route::get('wallet/getTpsConsumeQuotasList','WalletController@getTpsConsumeQuotasList')->middleware(UserLoginFilter::class);
-        Route::get('wallet/getTpsConsumeQuotaDetail','WalletController@getTpsConsumeQuotaDetail')->middleware(UserLoginFilter::class);
-        Route::get('wallet/getUserFeeSplittingRatioToSelf','WalletController@getUserFeeSplittingRatioToSelf')->middleware(UserLoginFilter::class);
-        Route::get('wallet/getTpsCreditStatistics','WalletController@getTpsCreditStatistics')->middleware(UserLoginFilter::class);
-        Route::get('wallet/getTpsCreditList','WalletController@getTpsCreditList')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getTpsConsumeQuotasList', 'WalletController@getTpsConsumeQuotasList')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getTpsConsumeQuotaDetail', 'WalletController@getTpsConsumeQuotaDetail')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getUserFeeSplittingRatioToSelf', 'WalletController@getUserFeeSplittingRatioToSelf')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getTpsCreditStatistics', 'WalletController@getTpsCreditStatistics')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getTpsCreditList', 'WalletController@getTpsCreditList')->middleware(UserLoginFilter::class);
 
         //app银行卡接口
         Route::post('bankcard/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);
         Route::post('bankcard/changDefault', 'BankCardsController@changDefault')->middleware(UserLoginFilter::class);
         Route::post('bankcard/deleteCard', 'BankCardsController@delCard')->middleware(UserLoginFilter::class);
         Route::get('bankcard/getCardsList', 'BankCardsController@getCardsList')->middleware(UserLoginFilter::class);
-        Route::get('bankcard/getSupportBankList','BankController@getList');
+        Route::get('bankcard/getSupportBankList', 'BankController@getList');
 
         //Tps绑定接口
         Route::get('tps/getBindInfo', 'TpsBindController@getBindInfo')->middleware(UserLoginFilter::class);
@@ -95,6 +96,6 @@ Route::prefix('app/user')
 
         Route::post('identity/record/addRecord', 'UserIdentityAuditRecordController@addRecord')->middleware(UserLoginFilter::class);
         Route::post('identity/record/modRecord', 'UserIdentityAuditRecordController@modRecord')->middleware(UserLoginFilter::class);
-        Route::get('identity/record/getRecord','UserIdentityAuditRecordController@getRecord')->middleware(UserLoginFilter::class);
+        Route::get('identity/record/getRecord', 'UserIdentityAuditRecordController@getRecord')->middleware(UserLoginFilter::class);
 
     });
