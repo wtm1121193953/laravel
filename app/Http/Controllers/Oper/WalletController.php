@@ -154,7 +154,9 @@ class WalletController extends Controller
         // 获取钱包信息
         $wallet = WalletService::getWalletInfoByOriginInfo($originId, $originType);
 
-        $thisMonthQuotaSum = ConsumeQuotaService::getConsumeQuotaRecordList($param, 1, false)->sum('consume_quota');
+        $param['startDate'] = date('Y-m-01 00:00:00');
+        $param['endDate'] = date('Y-m-t 23:59:59');
+        $thisMonthQuotaSum = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize, true)->sum('consume_quota');
 
         return Result::success([
             'list' => $data->items(),
