@@ -171,8 +171,6 @@ class WalletController extends Controller
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
-            'consumeQuota' => $wallet->consume_quota,
-            'freezeConsumeQuota' => $wallet->freeze_consume_quota,
             // 累计获得下级贡献值
             'shareConsumeQuotaSum' => $wallet->share_consume_quota+$wallet->share_freeze_consume_quota,
             // 本月累计获得下级贡献值
@@ -195,9 +193,9 @@ class WalletController extends Controller
         $originId = request()->get('current_user')->oper_id;
         $originType = WalletBill::ORIGIN_TYPE_OPER;
         $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
-        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
+        $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize, true);
 
-        return (new WalletConsumeQuotaRecordExport($query))->download('消费额记录表.xlsx');
+        return (new WalletConsumeQuotaRecordExport($query))->download('我的贡献值记录表.xlsx');
     }
 
     /**
