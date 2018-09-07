@@ -197,16 +197,6 @@ class WalletController extends Controller
         $consumeQuotaRecord = ConsumeQuotaService::getConsumeQuotaRecordById($id);
         if (empty($consumeQuotaRecord)) throw new BaseResponseException('该消费额记录不存在');
 
-        if ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_REPLACEMENT || $consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_UNFREEZE) {
-            $consumeQuotaUnfreezeRecord = ConsumeQuotaService::getConsumeQuotaUnfreezeRecordById($consumeQuotaRecord->id);
-            $consumeQuotaRecord->time = $consumeQuotaUnfreezeRecord->created_at->format('Y-m-d H:i:s');
-        } elseif ($consumeQuotaRecord->status == WalletConsumeQuotaRecord::STATUS_REFUND) {
-            $order = OrderService::getById($consumeQuotaRecord->order_id);
-            $consumeQuotaRecord->time = $order->refund_time->format('Y-m-d H:i:s');
-        } else {
-            $consumeQuotaRecord->time = null;
-        }
-
         return Result::success($consumeQuotaRecord);
     }
 
