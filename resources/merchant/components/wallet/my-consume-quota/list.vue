@@ -33,7 +33,7 @@
                 >
                 </el-date-picker>
             </el-form-item>
-            <el-form-item label="交易类型">
+            <!--<el-form-item label="交易类型">
                 <el-select v-model="query.status" placeholder="请选择" clearable class="w-150">
                     <el-option label="全部" :value="0"></el-option>
                     <el-option label="冻结中" :value="1"></el-option>
@@ -41,7 +41,7 @@
                     <el-option label="已置换" :value="3"></el-option>
                     <el-option label="已退款" :value="4"></el-option>
                 </el-select>
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item>
                 <el-button type="primary" @click="search">查 询</el-button>
                 <el-button type="success" @click="download">导出Excel</el-button>
