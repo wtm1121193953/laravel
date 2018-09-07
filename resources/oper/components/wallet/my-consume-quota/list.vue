@@ -59,7 +59,7 @@
             <el-table-column prop="consume_user_mobile" label="用户手机号"></el-table-column>
             <el-table-column prop="pay_price" label="交易金额"></el-table-column>
             <el-table-column prop="consume_quota" label="贡献值"></el-table-column>
-            <el-table-column prop="status" label="贡献值状态">
+            <!--<el-table-column prop="status" label="贡献值状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1">冻结中</span>
                     <span v-else-if="scope.row.status == 2">已解冻待置换</span>
@@ -67,7 +67,7 @@
                     <span v-else-if="scope.row.status == 3">已退款</span>
                     <span v-else>未知（{{scope.row.status}}）</span>
                 </template>
-            </el-table-column>
+            </el-table-column>-->
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope.row)">查 看</el-button>
