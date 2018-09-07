@@ -111,6 +111,7 @@ class WalletController extends Controller
         $user = request()->get('current_user');
 
         $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
+        dd($wallet);
 
         $totalTpsConsume = !empty($wallet)?($wallet->consume_quota + $wallet->freeze_consume_quota + $wallet->share_consume_quota + $wallet->share_freeze_consume_quota):0;
 
@@ -148,10 +149,9 @@ class WalletController extends Controller
             'status' => $status,
             'originId' => request()->get('current_user')->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
-            'tpsConsumeQuota' => true,
         ], $pageSize, true);
         // 当月总tps消费额
-        $amount = $query->sum('tps_consume_quota');
+        $amount = $query->sum('consume_quota');
 
         $data = $query->paginate($pageSize);
 
