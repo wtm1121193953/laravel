@@ -360,11 +360,12 @@ class ConsumeQuotaService extends BaseService
      * Author：  Jerry
      * Date：    180907
      * @param array $wheres
-     * @param array $time
+     * @param array $whereBetween
      * @param array $param
+     * @param bool $isQuery
      * @return Builder|\Illuminate\Database\Eloquent\Model|null|object
      */
-    public static function getConsumeQuotaSumByTime(array $wheres, array $time, array $param)
+    public static function getConsumeQuotaSumByTime(array $wheres, array $whereBetween, array $param, bool $isQuery=false)
     {
         // 获取表字段
         $tableColumn = Schema::getColumnListing('wallet_consume_quota_records');
@@ -384,17 +385,29 @@ class ConsumeQuotaService extends BaseService
                 $query->where($k, $v);
             }
         }
-        $query->whereBetween('created_at', $time);
 
-        $column=[];
-        foreach( $param as $k=>$v){
-            if(!in_array($k,$tableColumn))
+        foreach ( $whereBetween as $k=>$v){
+            if(!in_array($k,$tableColumn) || !is_array($v))
             {
                 continue;
             }
-            $column[] = \DB::raw('SUM('.$k.') as '.$v);
+            $query->whereBetween($k, $v);
         }
-        return $query->first($column);
+
+        if($isQuery)
+        {
+            return $query;
+        }else{
+            $column=[];
+            foreach( $param as $k=>$v){
+                if(!in_array($k,$tableColumn))
+                {
+                    continue;
+                }
+                $column[] = \DB::raw('SUM('.$k.') as '.$v);
+            }
+            return $query->first($column);
+        }
     }
 
 }

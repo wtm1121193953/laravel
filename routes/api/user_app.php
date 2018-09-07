@@ -33,7 +33,7 @@ Route::prefix('app/user')
         Route::get('merchant/getHotDishesGoods', 'DishesController@getHotDishesGoods');
         Route::post('merchant/dishesOrder', 'DishesController@add')->middleware(UserLoginFilter::class);
         Route::get('merchant/dishesDetail', 'DishesController@detail')->middleware(UserLoginFilter::class);
-
+        Route::post('order/dishesBuy','OrderController@dishesBuy')->middleware(UserLoginFilter::class);
 
         Route::get('goods', 'GoodsController@getList');
         Route::get('goods/detail', 'GoodsController@detail');

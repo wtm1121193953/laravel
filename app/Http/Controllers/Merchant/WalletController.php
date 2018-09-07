@@ -155,7 +155,7 @@ class WalletController extends Controller
             // 累计获得下级贡献值
             'shareConsumeQuotaSum' => $wallet->share_consume_quota+$wallet->share_freeze_consume_quota,
             // 本月累计获得下级贡献值
-            'thisMonthQuotaSum'   => (float)$thisMonthQuotaSum
+            'thisMonthQuotaSum'   => (float)$thisMonthQuotaSum,
         ]);
     }
 
