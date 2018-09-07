@@ -29,6 +29,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 use App\Jobs\ConsumeQuotaSyncToTpsJob;
 
@@ -67,6 +68,9 @@ class Test extends Command
      */
     public function handle()
     {
+
+        $columns = Schema::getColumnListing('wallet_consume_quota_records');
+        dd($columns);
         $a = 230;
         $b = 180;
         $val = floor(($a + $b - floor($a / 100) * 100) / 100);

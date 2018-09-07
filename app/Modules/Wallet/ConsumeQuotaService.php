@@ -17,6 +17,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+
 
 /**
  * 消费额相关service
@@ -352,4 +354,47 @@ class ConsumeQuotaService extends BaseService
         $unfreezeRecord = WalletConsumeQuotaUnfreezeRecord::find($id);
         return $unfreezeRecord;
     }
+
+    /**
+     * 按时间查询字段和
+     * Author：  Jerry
+     * Date：    180907
+     * @param array $wheres
+     * @param array $time
+     * @param array $param
+     * @return Builder|\Illuminate\Database\Eloquent\Model|null|object
+     */
+    public static function getConsumeQuotaSumByTime(array $wheres, array $time, array $param)
+    {
+        // 获取表字段
+        $tableColumn = Schema::getColumnListing('wallet_consume_quota_records');
+        $query = WalletConsumeQuotaRecord::query();
+        // 拼装where
+        foreach ($wheres as $k=>$v)
+        {
+            // 验证字段合法性
+            if(!in_array($k,$tableColumn))
+            {
+                continue;
+            }
+            if(is_array($v))
+            {
+                $query->where($k, $v[0], $v[1]);
+            }else{
+                $query->where($k, $v);
+            }
+        }
+        $query->whereBetween('created_at', $time);
+
+        $column=[];
+        foreach( $param as $k=>$v){
+            if(!in_array($k,$tableColumn))
+            {
+                continue;
+            }
+            $column[] = \DB::raw('SUM('.$k.') as '.$v);
+        }
+        return $query->first($column);
+    }
+
 }

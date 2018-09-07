@@ -1,5 +1,5 @@
 <template>
-    <page title="我的消费额">
+    <page title="我的贡献值">
         <div class="group">
             <div class="item" v-for="item in consume">
                 <p class="label">{{item.label}}</p >
@@ -58,8 +58,8 @@
             <el-table-column prop="order_no" label="原订单号"></el-table-column>
             <el-table-column prop="consume_user_mobile" label="用户手机号"></el-table-column>
             <el-table-column prop="pay_price" label="交易金额"></el-table-column>
-            <el-table-column prop="consume_quota" label="贡献消费额"></el-table-column>
-            <el-table-column prop="status" label="消费额状态">
+            <el-table-column prop="consume_quota" label="贡献消费值"></el-table-column>
+            <!--<el-table-column prop="status" label="消费额状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1">冻结中</span>
                     <span v-else-if="scope.row.status == 2">已解冻待置换</span>
@@ -67,7 +67,7 @@
                     <span v-else-if="scope.row.status == 3">已退款</span>
                     <span v-else>未知（{{scope.row.status}}）</span>
                 </template>
-            </el-table-column>
+            </el-table-column>-->
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope.row)">查 看</el-button>
@@ -104,20 +104,20 @@
                 list: [],
                 tableLoading: false,
 
-                consumeQuota: 0,
-                freezeConsumeQuota: 0,
+                shareConsumeQuotaSum: 0,
+                thisMonthQuotaSum: 0,
             }
         },
         computed: {
             consume() {
                 return [
                     {
-                        label: '本月已使用消费额',
-                        val: this.consumeQuota
+                        label: '累计获得下级贡献值',
+                        val: this.shareConsumeQuotaSum
                     },
                     {
-                        label: '本月已冻结消费额',
-                        val: this.freezeConsumeQuota,
+                        label: '本月累计获得下级贡献值',
+                        val: this.thisMonthQuotaSum,
                     },
                 ];
             }
@@ -128,8 +128,8 @@
                 api.get('/wallet/consume/list', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
-                    this.consumeQuota = data.consumeQuota;
-                    this.freezeConsumeQuota = data.freezeConsumeQuota;
+                    this.shareConsumeQuotaSum = data.shareConsumeQuotaSum;
+                    this.thisMonthQuotaSum = data.thisMonthQuotaSum;
                     this.tableLoading = false;
                 })
             },

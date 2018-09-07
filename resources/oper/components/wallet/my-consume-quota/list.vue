@@ -1,5 +1,5 @@
 <template>
-    <page title="我的消费额">
+    <page title="我的贡献值">
         <div class="group">
             <div class="item" v-for="item in consume">
                 <p class="label">{{item.label}}</p >
@@ -33,7 +33,7 @@
                 >
                 </el-date-picker>
             </el-form-item>
-            <el-form-item label="交易类型">
+            <!--<el-form-item label="交易类型">
                 <el-select v-model="query.status" placeholder="请选择" clearable class="w-150">
                     <el-option label="全部" :value="0"></el-option>
                     <el-option label="冻结中" :value="1"></el-option>
@@ -41,7 +41,7 @@
                     <el-option label="已置换" :value="3"></el-option>
                     <el-option label="已退款" :value="4"></el-option>
                 </el-select>
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item>
                 <el-button type="primary" @click="search">查 询</el-button>
                 <el-button type="success" @click="download">导出Excel</el-button>
@@ -52,14 +52,14 @@
             <el-table-column prop="consume_quota_no" label="交易号"></el-table-column>
             <el-table-column prop="type" label="交易类型">
                 <template slot-scope="scope">
-                    <span>下级用户消费</span>
+                    <span>下级贡献</span>
                 </template>
             </el-table-column>
             <el-table-column prop="order_no" label="原订单号"></el-table-column>
             <el-table-column prop="consume_user_mobile" label="用户手机号"></el-table-column>
             <el-table-column prop="pay_price" label="交易金额"></el-table-column>
-            <el-table-column prop="consume_quota" label="贡献消费额"></el-table-column>
-            <el-table-column prop="status" label="消费额状态">
+            <el-table-column prop="consume_quota" label="贡献值"></el-table-column>
+            <el-table-column prop="status" label="贡献值状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1">冻结中</span>
                     <span v-else-if="scope.row.status == 2">已解冻待置换</span>
@@ -104,20 +104,20 @@
                 list: [],
                 tableLoading: false,
 
-                consumeQuota: 0,
-                freezeConsumeQuota: 0,
+                shareConsumeQuotaSum: 0,
+                thisMonthQuotaSum: 0,
             }
         },
         computed: {
             consume() {
                 return [
                     {
-                        label: '本月已使用消费额',
-                        val: this.consumeQuota
+                        label: '累计获得下级贡献值',
+                        val: this.shareConsumeQuotaSum
                     },
                     {
-                        label: '本月已冻结消费额',
-                        val: this.freezeConsumeQuota,
+                        label: '本月累计获得下级贡献值',
+                        val: this.thisMonthQuotaSum,
                     },
                 ];
             }
@@ -128,8 +128,8 @@
                 api.get('/wallet/consume/list', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
-                    this.consumeQuota = data.consumeQuota;
-                    this.freezeConsumeQuota = data.freezeConsumeQuota;
+                    this.shareConsumeQuotaSum = data.shareConsumeQuotaSum;
+                    this.thisMonthQuotaSum = data.thisMonthQuotaSum;
                     this.tableLoading = false;
                 })
             },
