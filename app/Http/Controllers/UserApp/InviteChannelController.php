@@ -26,12 +26,12 @@ class InviteChannelController extends Controller
         $userId = request()->get('current_user')->id;
         $inviteChannel = InviteChannelService::getByOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER);
         $dir = storage_path('app/public/inviteChannel/qrcode');
-        if(!is_dir($dir)){
+        if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
         $filename = "{$inviteChannel->id}_375.png";
         $path = $dir . "/{$filename}";
-        if(!is_file($path)){
+        if (!is_file($path)) {
             QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(json_encode([
                 'type' => 'inviteChannel',
                 'value' => ['id' => $inviteChannel->id],
@@ -49,11 +49,11 @@ class InviteChannelController extends Controller
     public function getInviterByChannelId()
     {
         $inviteChannelId = request('inviteChannelId');
-        if(empty($inviteChannelId)){
+        if (empty($inviteChannelId)) {
             throw new ParamInvalidException('邀请渠道ID不能为空');
         }
         $inviteChannel = InviteChannelService::getById($inviteChannelId);
-        if(empty($inviteChannel)){
+        if (empty($inviteChannel)) {
             throw new ParamInvalidException('渠道不存在');
         }
 
@@ -68,7 +68,7 @@ class InviteChannelController extends Controller
     {
         $inviteChannelId = request('inviteChannelId');
         $inviteChannel = InviteChannelService::getById($inviteChannelId);
-        if(empty($inviteChannel)){
+        if (empty($inviteChannel)) {
             throw new ParamInvalidException('邀请渠道不存在');
         }
         InviteUserService::bindInviter(request()->get('current_user')->id, $inviteChannel);
@@ -91,16 +91,21 @@ class InviteChannelController extends Controller
          *      'Y-m': {count: xx, sub: []}
          * }
          */
-        if($month){
+        if ($month) {
             $result = InviteUserService::getInviteUsersByMonthAndUserId($userId, $month);
             $data = [
-                $month => [
-                    'count' => $result->total(),
-                    'sub' => $result->items(),
-                ]
+                'month' => $month,
+                'count' => $result->total(),
+                'sub' => $result->items(),
             ];
-        }else {
+        } else {
             $data = InviteUserService::getInviteUsersGroupByMonthForUser($userId);
+            $result = array();
+            foreach ($data as $key => $value){
+                $value['month'] = $key;
+                $result[] = $value;
+            }
+            $data = $result;
         }
 //        $data = InviteStatisticsService::getInviteStatListByDateForUser($userId, $month, $page);
 
