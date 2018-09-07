@@ -58,7 +58,7 @@
             <el-table-column prop="order_no" label="原订单号"></el-table-column>
             <el-table-column prop="consume_user_mobile" label="用户手机号"></el-table-column>
             <el-table-column prop="pay_price" label="交易金额"></el-table-column>
-            <el-table-column prop="consume_quota" label="贡献消费值"></el-table-column>
+            <el-table-column prop="consume_quota" label="获得贡献值"></el-table-column>
             <!--<el-table-column prop="status" label="消费额状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1">冻结中</span>
