@@ -274,8 +274,8 @@ class ConsumeQuotaService extends BaseService
         $originId = array_get($param, 'originId', 0);
         $originType = array_get($param, 'originType', 0);
         $type = array_get($param, 'type', '');
-        $syncTpsCredit = array_get($param, 'syncTpsCredit', false);
-        $tpsConsumeQuota = array_get($param, 'tpsConsumeQuota', false);
+        /*$syncTpsCredit = array_get($param, 'syncTpsCredit', false);
+        $tpsConsumeQuota = array_get($param, 'tpsConsumeQuota', false);*/
 
         $query = WalletConsumeQuotaRecord::query();
         if ($originId) {
@@ -293,12 +293,12 @@ class ConsumeQuotaService extends BaseService
         if ($status) {
             $query->where('status', $status);
         }
-        if ($syncTpsCredit) {
+        /*if ($syncTpsCredit) {
             $query->where('sync_tps_credit', '>', 0);
         }
         if ($tpsConsumeQuota) {
             $query->where('tps_consume_quota', '>', 0);
-        }
+        }*/
 
         if ($startDate) $startDate = date('Y-m-d 00:00:00', strtotime($startDate));
         if ($endDate) $endDate = date('Y-m-d 23:59:59', strtotime($endDate));
@@ -353,48 +353,6 @@ class ConsumeQuotaService extends BaseService
     {
         $unfreezeRecord = WalletConsumeQuotaUnfreezeRecord::find($id);
         return $unfreezeRecord;
-    }
-
-    /**
-     * 按时间查询字段和
-     * Author：  Jerry
-     * Date：    180907
-     * @param array $wheres
-     * @param array $time
-     * @param array $param
-     * @return Builder|\Illuminate\Database\Eloquent\Model|null|object
-     */
-    public static function getConsumeQuotaSumByTime(array $wheres, array $time, array $param)
-    {
-        // 获取表字段
-        $tableColumn = Schema::getColumnListing('wallet_consume_quota_records');
-        $query = WalletConsumeQuotaRecord::query();
-        // 拼装where
-        foreach ($wheres as $k=>$v)
-        {
-            // 验证字段合法性
-            if(!in_array($k,$tableColumn))
-            {
-                continue;
-            }
-            if(is_array($v))
-            {
-                $query->where($k, $v[0], $v[1]);
-            }else{
-                $query->where($k, $v);
-            }
-        }
-        $query->whereBetween('created_at', $time);
-
-        $column=[];
-        foreach( $param as $k=>$v){
-            if(!in_array($k,$tableColumn))
-            {
-                continue;
-            }
-            $column[] = \DB::raw('SUM('.$k.') as '.$v);
-        }
-        return $query->first($column);
     }
 
 }
