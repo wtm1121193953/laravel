@@ -90,6 +90,7 @@
                     <el-radio :label="1">公司</el-radio>
                     <el-radio :label="2">个人</el-radio>
                 </el-radio-group>
+                <div class="tips">请按实际账户勾选，所提供的银行账户信息须与合同一致，因勾选、输入错误等原因造成的款项结算失败所产生的错误或纠纷，由运营中心或商户各自承担</div>
             </el-form-item>
             <el-form-item prop="bank_open_name" label="银行开户名">
                 <el-input v-model="form.bank_open_name"/>
