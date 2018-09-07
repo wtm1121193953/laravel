@@ -94,11 +94,12 @@ class OrderController extends Controller
         $detail->items = !empty($orderItem) ? [$orderItem] : [];
         $currentOperId = request()->get('current_oper_id');
         // 判断商户是否是当前小程序关联运营中心下的商户
-        if(!$currentOperId){ // 如果是在平台小程序下
-            if($detail->pay_target_type == Order::PAY_TARGET_TYPE_OPER){
-                $detail->isOperSelf = 0;
-            }else {
+        if($detail->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){
+            // 如果是需要支付到平台的订单
+            if(!$currentOperId){ // 如果当前operId是0, 表示是在平台的小程序内
                 $detail->isOperSelf = 1;
+            }else {
+                $detail->isOperSelf = 0;
             }
         }else {
             $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
