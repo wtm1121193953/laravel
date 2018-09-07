@@ -110,18 +110,17 @@ class WalletController extends Controller
     {
         $user = request()->get('current_user');
 
-        $totalTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
-            'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
-            'originId' => $user->id,
-            'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
-        ], 15, true)->sum('tps_consume_quota');
+        $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
+
+        $totalTpsConsume = !empty($wallet)?($wallet->consume_quota + $wallet->freeze_consume_quota + $wallet->share_consume_quota + $wallet->share_freeze_consume_quota):0;
+
         $theMonthTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
             'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
             'originId' => $user->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
             'startDate' => Carbon::now()->startOfMonth(),
             'endDate' => Carbon::now()->endOfMonth(),
-        ], 15, true)->sum('tps_consume_quota');
+        ], 15, true)->sum('consume_quota');
 
         return Result::success([
             'totalTpsConsume' => Utils::getDecimalByNotRounding($totalTpsConsume, 2),
@@ -149,10 +148,9 @@ class WalletController extends Controller
             'status' => $status,
             'originId' => request()->get('current_user')->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
-            'tpsConsumeQuota' => true,
         ], $pageSize, true);
         // 当月总tps消费额
-        $amount = $query->sum('tps_consume_quota');
+        $amount = $query->sum('consume_quota');
 
         $data = $query->paginate($pageSize);
 
