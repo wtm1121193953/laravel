@@ -85,7 +85,10 @@ class UserController extends Controller
         if (empty($userInfo)) {
             throw new BaseResponseException('该用户不存在');
         }
-        $userInfo->avatar_url = $avatarUrl;
+        if ($avatarUrl){
+            $userInfo->avatar_url = $avatarUrl;
+        }
+
         if ($name){
             $userInfo->name = $name;
         }
