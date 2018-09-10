@@ -10,6 +10,7 @@ namespace App\Http\Controllers\UserApp;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
@@ -232,7 +233,10 @@ class OrderController extends Controller
             throw new ParamInvalidException('价格不合法');
         }
         $user = request()->get('current_user');
-        $merchant = Merchant::findOrFail(request('merchant_id'));
+        $merchant = Merchant::first(request('merchant_id'));
+        if(empty($merchant)){
+            throw new DataNotFoundException('商户信息不存在！');
+        }
 
         // 查询该用户在该商家下是否有未支付的直接付款订单, 若有直接修改原订单信息
         $order = Order::where('type', Order::TYPE_SCAN_QRCODE_PAY)
