@@ -108,7 +108,7 @@ class WalletWithdrawController extends Controller
         $wallet = WalletService::getWalletInfo($oper);
 
         if ($oper->status != Oper::STATUS_NORMAL) {
-            throw new BaseResponseException('账户状态异常');
+            throw new BaseResponseException('运营中心状态异常，请联系客服');
         }
 
         $checkPass = WalletWithdrawService::checkWithdrawPasswordByOriginInfo($withdrawPassword, $operId, Wallet::ORIGIN_TYPE_OPER);

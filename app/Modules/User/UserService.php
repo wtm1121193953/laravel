@@ -416,7 +416,7 @@ class UserService extends BaseService
     {
         $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
         if(empty($inviteRecord)){
-            return Result::success();
+            return null;
         }
         $mappingUser = null; // 上级商户或运营中心关联的用户
         $merchant = null; // 关联的上级商户
@@ -441,14 +441,13 @@ class UserService extends BaseService
         }else {
             $user = User::find($inviteRecord->origin_id);
         }
-
-        return Result::success([
+        return [
             'origin_type' => $inviteRecord->origin_type,
             'user' => $user,
             'merchant' => $merchant,
             'oper' => $oper,
             'mappingUser' => $mappingUser,
-        ]);
+        ];
     }
 
     public static function getUserConsumeQuotaRecordList($userId,$year,$month)
@@ -497,7 +496,7 @@ class UserService extends BaseService
                 $unbindInviteRecord->user_id = $userId;
                 $unbindInviteRecord->status = 2;
                 $unbindInviteRecord->save();
-                return Result::success();
+                return true;
             }
         }
     }
