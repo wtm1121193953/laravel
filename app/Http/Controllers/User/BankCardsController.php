@@ -26,7 +26,7 @@ class BankCardsController extends Controller
     public function  addCard( Request $request)
     {
         $request->validate([
-            'bank_card_no'          =>  'bail|required|numeric',
+            'bank_card_no'          =>  'bail|required|max:9999999999999999999|numeric',
             'bank_card_open_name'   =>  'required|max:20',
             'bank_name'             =>  'required',
             ]);
