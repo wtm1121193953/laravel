@@ -46,7 +46,6 @@ class DishesController extends Controller
         $list = DishesService::getDishesCategory($merchantId);
 
         foreach ($list as $category) {
-            $merchantId = $merchantId;
             $categoryId = $category['id'];
             if ($categoryId) {
                 //获取菜品列表
