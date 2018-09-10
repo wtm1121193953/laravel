@@ -144,8 +144,8 @@ class DishesController extends Controller
         ]);
 
         $dishesId = request('dishes_id');
-        $detailDishes = DishesService::detailDishes($dishesId);
+        $list = DishesService::detailDishes($dishesId);
 
-        return Result::success($detailDishes);
+        return Result::success(['list' => $list]);
     }
 }
