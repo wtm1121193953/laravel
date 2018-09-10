@@ -19,7 +19,6 @@ class CreateSettlementPlatformsTable extends Migration
 
             $table->integer('oper_id')->index()->comment('所属运营中心ID');
             $table->integer('merchant_id')->index()->comment('商家ID');
-            $table->date('date')->index()->comment('结算的订单日期');
             $table->date('start_date')->comment('结算订单开始日期');
             $table->date('end_date')->comment('结算订单结束日期');
             $table->decimal('settlement_rate', 4, 2)->default(0)->comment('结算费率');

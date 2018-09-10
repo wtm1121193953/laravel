@@ -157,7 +157,6 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform = new SettlementPlatform();
             $settlementPlatform->oper_id = $merchant->oper_id;
             $settlementPlatform->merchant_id = $merchant->id;
-            $settlementPlatform->date = Carbon::now()->subDay();
             $settlementPlatform->start_date = $start_date;
             $settlementPlatform->end_date = $end_date;
             $settlementPlatform->settlement_no = $settlementNum;
