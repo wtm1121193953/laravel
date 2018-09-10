@@ -163,17 +163,19 @@ return [
             'required'    =>  '身份证反面不可缺'
         ],
         'bank_card_open_name'   =>  [
-            'required'      =>  '持卡人不可为空',
+            'required'  =>  '持卡人不可为空',
+            'max'       =>  '银行名不可超过 :max个字'
 //            ''
         ],
         'bank_card_no'      =>  [
             'required'  =>  '银行卡号不可为空',
             'numeric'   =>  '银行卡号只能是数字',
-            'size'      =>  '银行卡只能为19位数',
+            'max'       =>  '银行卡只能为19位数',
             'unique'    =>  '银行卡号已存在，不可重复'
         ],
         'bank_name'     =>  [
-            'required'  =>  '银行不可为空'
+            'required'  =>  '银行不可为空',
+            'max'       =>  '银行名不可超过 :max个字'
         ]
     ],
 
