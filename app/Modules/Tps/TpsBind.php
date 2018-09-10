@@ -21,9 +21,9 @@ class TpsBind extends BaseModel
     const ORIGIN_TYPE_MERCHANT = 2;
     const ORIGIN_TYPE_OPER = 3;
 
-    // 绑定事件 Jerry 180903
-    protected $dispatchesEvents = [
+    // 绑定事件 Jerry 180903  弃用
+    /*protected $dispatchesEvents = [
         'created' => TpsBindSave::class,
-    ];
+    ];*/
 
 }
