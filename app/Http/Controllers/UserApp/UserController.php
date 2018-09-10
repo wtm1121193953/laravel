@@ -51,7 +51,7 @@ class UserController extends Controller
         if ($bindInfo) {
             $user['tpsBindInfo'] = $bindInfo;
         } else {
-            $user['tpsBindInfo'] = '';
+            $user['tpsBindInfo'] = null;
         }
 
 
