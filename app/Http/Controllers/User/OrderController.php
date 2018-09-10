@@ -10,6 +10,7 @@ namespace App\Http\Controllers\User;
 
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
@@ -355,8 +356,14 @@ class OrderController extends Controller
         }
         $user = request()->get('current_user');
         $currentOperId = request()->get('current_oper_id');
-        $merchant = Merchant::findOrFail(request('merchant_id'));
-        $merchant_oper = Oper::findOrFail($merchant->oper_id);
+        $merchant = Merchant::first(request('merchant_id'));
+        if(empty($merchant)){
+            throw new DataNotFoundException('商户信息不存在！');
+        }
+        $merchant_oper = Oper::first($merchant->oper_id);
+        if(empty($merchant_oper)){
+            throw new DataNotFoundException('运营中心信息不存在！');
+        }
 
         $order = new Order();
         $orderNo = Order::genOrderNo();
