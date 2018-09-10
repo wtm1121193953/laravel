@@ -73,6 +73,11 @@ class UserIdentityAuditRecordService extends BaseService
         }
     }
 
+    /**
+     * 获取用户的身份审核记录
+     * @param $userId
+     * @return UserIdentityAuditRecord
+     */
     public static function getRecordByUser($userId)
     {
         $record = UserIdentityAuditRecord::where('user_id', $userId)->first();
