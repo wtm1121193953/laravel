@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\UserApp;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
