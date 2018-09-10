@@ -283,7 +283,7 @@ class WalletController extends Controller
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
         ], $pageSize, true);
         // 当月总tps消费额
-        $amount = $query->sum('tps_consume_quota');
+        $amount = $query->sum('consume_quota');
 
         $data = $query->paginate($pageSize);
 
