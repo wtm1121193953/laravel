@@ -52,12 +52,12 @@ class AreaController extends Controller
         // 热门城市列表, 固定 : 北京 成都 重庆 广州 杭州 南京 上海 深圳 苏州 天津 武汉 西安
         $hotCityIds = [110100, 120100, 310100, 320100, 320500, 330100, 420100, 440100, 440300, 500100, 510100, 610100];
         $hotCities = Area::whereIn('area_id', $hotCityIds)->get()->toArray();
-        $data = [
+        $list = [
             ['tag' => '热门', 'list' => $hotCities]
         ];
         foreach ($cities as $firstLetter => $list) {
-            $data[] = ['tag' => $firstLetter, 'list' => $list];
+            $list[] = ['tag' => $firstLetter, 'list' => $list];
         }
-        return Result::success(['list' => $data]);
+        return Result::success(['list' => $list]);
     }
 }
