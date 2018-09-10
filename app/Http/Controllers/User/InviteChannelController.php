@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/5/9
- * Time: 23:36
- */
 
 namespace App\Http\Controllers\User;
 
@@ -61,6 +55,7 @@ class InviteChannelController extends Controller
 
     /**
      * 绑定推荐人
+     * @throws \Exception
      */
     public function bindInviter()
     {
