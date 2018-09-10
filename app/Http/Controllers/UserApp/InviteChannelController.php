@@ -93,11 +93,12 @@ class InviteChannelController extends Controller
          */
         if ($month) {
             $result = InviteUserService::getInviteUsersByMonthAndUserId($userId, $month);
-            $monthDetail = [
+            $data = [
                 'month' => $month,
                 'count' => $result->total(),
                 'sub' => $result->items(),
             ];
+            $monthDetail = array($data);
         } else {
             $monthDetail = InviteUserService::getInviteUsersGroupByMonthForUser($userId);
             $result = array();

@@ -31,7 +31,7 @@ class UserIdentityAuditRecordController extends Controller
         // 注入user_id
         $request->offsetSet('user_id',$request->get('current_user')->id);
         $request->validate([
-            'name'          => 'required',
+            'name'          => 'required|max:20',
             'id_card_no'    => 'bail|required|min:18|identitycards|unique:user_identity_audit_records',
             'front_pic'     => 'required',
             'opposite_pic'  => 'required',
@@ -57,7 +57,7 @@ class UserIdentityAuditRecordController extends Controller
     public function modRecord( Request $request )
     {
         $request->validate([
-            'name'          => 'required',
+            'name'          => 'required|max:20',
             'id_card_no'    => 'bail|required|min:18|identitycards',
             'front_pic'     => 'required',
             'opposite_pic'  => 'required',
