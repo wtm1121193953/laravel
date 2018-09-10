@@ -65,11 +65,14 @@ class SettlementForMerchantDaily implements ShouldQueue
             ]);
             return;
         }*/
-        $res = SettlementPlatformService::settlement($merchant, $this->date);
-        if (!$res) {
-            Log::error('该商家每日结算错误', [
+        try {
+            SettlementPlatformService::settlement($merchant, $this->date);
+        }catch (\Exception $e){
+            Log::error('该商家每日结算错误, 错误原因:' . $e->getMessage(), [
                 'merchantId' => $this->merchantId,
-                'date' => $this->date
+                'date' => $this->date,
+                'timestamp' => date('Y-m-d H:i:s'),
+                'exception' => $e,
             ]);
         }
     }
