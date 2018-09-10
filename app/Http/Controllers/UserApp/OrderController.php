@@ -238,20 +238,11 @@ class OrderController extends Controller
             throw new DataNotFoundException('商户信息不存在！');
         }
 
-        // 查询该用户在该商家下是否有未支付的直接付款订单, 若有直接修改原订单信息
-        $order = Order::where('type', Order::TYPE_SCAN_QRCODE_PAY)
-            ->where('merchant_id', $merchant->id)
-            ->where('user_id', $user->id)
-            ->where('status', Order::STATUS_UN_PAY)
-            ->first();
-        if(empty($order)){
-            $order = new Order();
-            $orderNo = Order::genOrderNo();
-            $order->order_no = $orderNo;
-        }else {
-            $orderNo = $order->order_no;
-        }
+        $merchant_oper = Oper::first($merchant->oper_id);
 
+        $order = new Order();
+        $orderNo = Order::genOrderNo();
+        $order->order_no = $orderNo;
         $order->oper_id = $merchant->oper_id;
         $order->user_id = $user->id;
         $order->user_name = $user->name ?? '';
@@ -268,6 +259,7 @@ class OrderController extends Controller
 
         $payType = request('pay_type', 1);
         $order->pay_type = $payType;
+        $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->save();
 
         if($payType == 1){
