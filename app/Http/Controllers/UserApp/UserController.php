@@ -99,7 +99,7 @@ class UserController extends Controller
         // 修改用户信息后更新缓存中的用户信息
         $token = request()->headers->get('token');
         $user = Cache::get('token_to_user_' . $token);
-        Cache::put('token_to_user_' . $token, $user, 60 * 24 * 30);
+        Cache::put('token_to_user_' . $token, $userInfo, 60 * 24 * 30);
 
         return Result::success();
     }
