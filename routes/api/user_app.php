@@ -34,7 +34,7 @@ Route::prefix('app/user')
         Route::post('merchant/dishesOrder', 'DishesController@add')->middleware(UserLoginFilter::class);
         Route::get('merchant/dishesDetail', 'DishesController@detail')->middleware(UserLoginFilter::class);
         Route::get('merchant/dishes/categoryAndGoods', 'DishesController@getDishesCategory');
-        Route::get('merchant/dishes/hotGoods', 'DishesController@getDishesCategory');
+        Route::get('merchant/dishes/hotGoods', 'DishesController@getHotDishesGoods');
         Route::post('merchant/dishes/add', 'DishesController@add')->middleware(UserLoginFilter::class);
         Route::get('merchant/dishes/detail', 'DishesController@detail')->middleware(UserLoginFilter::class);
 
