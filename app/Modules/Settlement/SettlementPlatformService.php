@@ -138,7 +138,11 @@ class SettlementPlatformService extends BaseService
         $sum = $query->where('settlement_status', Order::SETTLEMENT_STATUS_NO )->sum('pay_price');
 
         if( $sum<100 ){
-            Log::info('该商家每日结算错误，错误原因：订单金额小于100，跳过结算');
+            Log::info('商家每日结算时订单金额小于100，跳过结算', [
+                'merchantId' => $merchant->id,
+                'date' => $date,
+                'timestamp' => date('Y-m-d H:i:s')
+            ]);
             return true;
         }
         //获得结算周期时间
@@ -148,7 +152,7 @@ class SettlementPlatformService extends BaseService
         // 生成结算单，方便之后结算订单中保存结算信息
         $settlementNum = self::genSettlementNo(10);
         if( !$settlementNum ) {
-            return false;
+            throw new \Exception('结算单号生成失败');
         }
 
         // 开启事务
@@ -192,8 +196,7 @@ class SettlementPlatformService extends BaseService
             return true;
         }catch (\Exception $e) {
             DB::rollBack();
-            Log::error('该商家每日结算错误，错误原因：'.$e->getMessage(), compact('merchant', 'date'));
-            return false;
+            throw $e;
         }
     }
 

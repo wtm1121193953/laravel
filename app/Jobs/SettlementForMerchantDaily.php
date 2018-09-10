@@ -56,20 +56,23 @@ class SettlementForMerchantDaily implements ShouldQueue
     {
         $merchant = Merchant::findOrFail($this->merchantId);
         // 判断该店是否已结算
-        $exist = SettlementPlatform::where('merchant_id', $this->merchantId)
-            ->where('created_at', $this->date)->first();
+        /*$exist = SettlementPlatform::where('merchant_id', $this->merchantId)
+            ->where('date', $this->date)->first();
         if ($exist) {
             Log::info('该每日结算已结算,跳过结算', [
                 'merchantId' => $this->merchantId,
                 'date' => $this->date
             ]);
             return;
-        }
-        $res = SettlementPlatformService::settlement($merchant, $this->date);
-        if (!$res) {
-            Log::error('该商家每日结算错误', [
+        }*/
+        try {
+            SettlementPlatformService::settlement($merchant, $this->date);
+        }catch (\Exception $e){
+            Log::error('该商家每日结算错误, 错误原因:' . $e->getMessage(), [
                 'merchantId' => $this->merchantId,
-                'date' => $this->date
+                'date' => $this->date,
+                'timestamp' => date('Y-m-d H:i:s'),
+                'exception' => $e,
             ]);
         }
     }
