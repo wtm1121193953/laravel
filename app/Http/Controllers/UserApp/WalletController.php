@@ -50,9 +50,9 @@ class WalletController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $type = request('type');
-    if ($type == '0'){
-        $type = '';
-    }
+        if ($type == '0') {
+            $type = '';
+        }
         $bills = WalletService::getBillList([
             'originId' => $value,
             'originType' => WalletBill::ORIGIN_TYPE_USER,
@@ -129,9 +129,9 @@ class WalletController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-        $id = empty(request('id'))?'':request('id');
-        if (strlen($id) <= 0){
-            return Result::error(PARAMS_INVALID,'输入参数有误');
+        $id = empty(request('id')) ? '' : request('id');
+        if (strlen($id) <= 0) {
+            return Result::error(PARAMS_INVALID, '输入参数有误');
         }
         $consumeQuota = ConsumeQuotaService::getDetailById($id);
 
@@ -148,10 +148,10 @@ class WalletController extends Controller
     public function confirmPassword()
     {
         $this->validate(request(), [
-            'password'  =>  'required|numeric'
+            'password' => 'required|numeric'
         ]);
         $user = request()->get('current_user');
-        WalletService::checkPayPassword( request()->input('password'), $user->id);
+        WalletService::checkPayPassword(request()->input('password'), $user->id);
         // 记录确认密码时间
         $token = str_random();
         Cache::put('user_pay_password_modify_temp_token_' . $user->id, $token, 3);
@@ -170,12 +170,11 @@ class WalletController extends Controller
     public function changePassword()
     {
 
-        $currentUser =  request()->get('current_user');
+        $currentUser = request()->get('current_user');
 
         $wallet = WalletService::getWalletInfoByOriginInfo($currentUser->id, Wallet::ORIGIN_TYPE_USER);
 
-        if( !empty($wallet['withdraw_password']) )
-        {
+        if (!empty($wallet['withdraw_password'])) {
             // 如果已设置过密码，则走以下逻辑
             $this->validate(request(), [
                 'temp_token' => 'required'
@@ -183,10 +182,10 @@ class WalletController extends Controller
             $inputToken = request()->get('temp_token');
             $user = request()->get('current_user');
             $tempToken = Cache::get('user_pay_password_modify_temp_token_' . $user->id);
-            if(empty($tempToken)){
+            if (empty($tempToken)) {
                 throw new NoPermissionException('您的验证信息已超时, 请返回重新验证');
             }
-            if($tempToken != $inputToken){
+            if ($tempToken != $inputToken) {
                 throw new NoPermissionException('验证信息无效');
             }
             // 删除有效时间，避免重复提交
@@ -194,12 +193,11 @@ class WalletController extends Controller
         }
 
         $this->validate(request(), [
-            'password'  =>  'required|numeric'
+            'password' => 'required|numeric'
         ]);
         // 重置密码入库
-        $res = WalletService::updateWalletWithdrawPassword( $wallet, request()->input('password'));
-        if( $res )
-        {
+        $res = WalletService::updateWalletWithdrawPassword($wallet, request()->input('password'));
+        if ($res) {
             return Result::success('重置密码成功');
         }
         throw new BaseResponseException('重置密码失败', ResultCode::DB_UPDATE_FAIL);
@@ -220,7 +218,7 @@ class WalletController extends Controller
         $verifyCode = request()->get('verify_code');
         $user = request()->get('current_user');
         $result = SmsService::checkVerifyCode($user->mobile, $verifyCode);
-        if($result) {
+        if ($result) {
             $token = str_random();
             Cache::put('user_pay_password_modify_temp_token_' . $user->id, $token, 3);
             return Result::success([
@@ -237,7 +235,7 @@ class WalletController extends Controller
      */
     private static function getTpsConsumeByConsume($consume)
     {
-        $tpsConsume = Utils::getDecimalByNotRounding($consume / 6 / 6.5 / 4 , 2);
+        $tpsConsume = Utils::getDecimalByNotRounding($consume / 6 / 6.5 / 4, 2);
         return $tpsConsume;
     }
 
