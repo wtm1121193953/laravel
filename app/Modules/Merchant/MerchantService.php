@@ -474,19 +474,13 @@ class MerchantService extends BaseService
         }
     }
 
-    public static function getListForUserApp(array $data)
+    public static function getListForUserApp(array $params)
     {
-        $city_id = request('city_id');
-        $merchant_category_id = request('merchant_category_id');
-        $keyword = request('keyword');
-        $lng = request('lng');
-        $lat = request('lat');
-
-        $checkVersion = false;
-        if (isset($_SERVER['HTTP_X_VERSION'])) {
-            $miniprogramVersion = $_SERVER['HTTP_X_VERSION'];
-            $checkVersion = $miniprogramVersion < 'v1.4.0';
-        }
+        $city_id = array_get($params, 'city_id');
+        $merchant_category_id = array_get($params, 'merchant_category_id');
+        $keyword = array_get($params, 'keyword');
+        $lng = array_get($params,'lng');
+        $lat = array_get($params, 'lat');
 
         // 暂时去掉商户列表中的距离限制
         $radius = request('radius');
@@ -504,12 +498,8 @@ class MerchantService extends BaseService
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
         }
 
-        $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
-
-        $currentOperId = request()->get('current_oper_id');
-        $query = Merchant::when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
-            $query->where('oper_id', $currentOperId);
-        })
+        // todo 只获取切换到平台的运营中心下的商家信息
+        $query = Merchant::query()
             ->where('oper_id', '>', 0)
             ->where('status', 1)
             ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT])
@@ -581,9 +571,6 @@ class MerchantService extends BaseService
                             ->where('lowest_amount', '<', $highestPrice);
                     })
                     ->orderBy('lowest_amount');
-            })
-            ->when($checkVersion, function (Builder $query) {
-                $query->where('is_pilot', Merchant::NORMAL_MERCHANT);
             });
 
         if($lng && $lat){
@@ -610,15 +597,13 @@ class MerchantService extends BaseService
 
         // 补充商家其他信息
         $list = collect($list);
-        $list->each(function ($item) use ($currentOperId) {
+        $list->each(function ($item){
             $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
             if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
             $category = MerchantCategory::find($item->merchant_category_id);
             $item->merchantCategoryName = $category->name;
             // 最低消费
             $item->lowestAmount = MerchantService::getLowestPriceForMerchant($item->id);
-            // 判断商户是否是当前小程序关联运营中心下的商户
-            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
             // 兼容v1.0.0版客服电话字段
             $item->contacter_phone = $item->service_phone;
             // 商户评级字段，暂时全部默认为5星
