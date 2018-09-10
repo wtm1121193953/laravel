@@ -27,7 +27,7 @@ class BankCardsController extends Controller
     {
         $request->validate([
             'bank_card_no'          =>  'bail|required|numeric',
-            'bank_card_open_name'   =>  'required',
+            'bank_card_open_name'   =>  'required|max:20',
             'bank_name'             =>  'required',
             ]);
         $saveData = [
