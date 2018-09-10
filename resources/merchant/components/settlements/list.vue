@@ -1,5 +1,5 @@
 <template>
-    <page title="财务管理" v-loading="isLoading">
+    <page title="运营中心结算管理" v-loading="isLoading">
         <el-table :data="list" stripe>
             <el-table-column prop="settlement_date" label="结算时间" align="center"/>
             <el-table-column prop="settlement_cycle" label="结算周期" align="center">
