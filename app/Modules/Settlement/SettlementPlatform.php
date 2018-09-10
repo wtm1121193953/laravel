@@ -14,7 +14,6 @@ use Illuminate\Support\Carbon;
  * @property string settlement_no
  * @property int    oper_id
  * @property int    merchant_id
- * @property Carbon date
  * @property Carbon start_date
  * @property Carbon end_date
  * @property number settlement_rate
