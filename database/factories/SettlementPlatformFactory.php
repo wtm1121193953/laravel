@@ -10,7 +10,8 @@ $factory->define(SettlementPlatform::class, function (Faker $faker) {
         //
         'oper_id' => 3,
         'merchant_id' => 3,
-        'date' => $faker->date(),
+        'start_date' => $faker->date(),
+        'end_date' => $faker->date(),
         'settlement_rate' => $rate,
         'amount' => $amount,
         'charge_amount' => $amount * $rate / 100,
