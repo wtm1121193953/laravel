@@ -540,10 +540,9 @@ class UserService extends BaseService
      * 获取用户头像
      * @author zwg
      * @param $userId
-     * @return 用户头像地址
+     * @return string 用户头像地址
      */
-    public static function getUserAvatarUrlWith($userId){
-        $user = User::where('id',$userId)->first();
-        return $user->avatar_url;
+    public static function getUserAvatarUrlByUserId($userId){
+        return User::where('id',$userId)->value('avatar_url');
     }
 }

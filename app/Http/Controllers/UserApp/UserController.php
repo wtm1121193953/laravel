@@ -21,6 +21,7 @@ use App\Result;
 use App\Modules\Tps\TpsBindService;
 use App\Modules\Tps\TpsBind;
 use App\Modules\User\UserIdentityAuditRecordService;
+use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller
 {
@@ -45,7 +46,7 @@ class UserController extends Controller
             }
         }
 
-        $user->avatar_url = UserService::getUserAvatarUrlWith($user->id);
+        $user->avatar_url = UserService::getUserAvatarUrlByUserId($user->id);
 
         $user->level_text = User::getLevelText($user->level);
         $bindInfo = TpsBindService::getTpsBindInfoByOriginInfo($user->id, TpsBind::ORIGIN_TYPE_USER);
@@ -94,6 +95,11 @@ class UserController extends Controller
             $userInfo->name = $name;
         }
         $userInfo->save();
+
+        // 修改用户信息后更新缓存中的用户信息
+        $token = request()->headers->get('token');
+        $user = Cache::get('token_to_user_' . $token);
+        Cache::put('token_to_user_' . $token, $user, 60 * 24 * 30);
 
         return Result::success();
     }
