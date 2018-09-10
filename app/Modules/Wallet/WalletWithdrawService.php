@@ -243,7 +243,7 @@ class WalletWithdrawService extends BaseService
             $originIds = UserService::getUserColumnArrayByMobile($userMobile, 'id');
         }
         if($originType == WalletWithdraw::ORIGIN_TYPE_MERCHANT && $merchantName){
-            $originIds = MerchantService::$merchantName(compact('merchantName'), 'id');
+            $originIds = MerchantService::getMerchantColumnArrayByParams(compact('merchantName'), 'id');
         }
         if ($originType == WalletWithdraw::ORIGIN_TYPE_OPER && $operName) {
             $originIds = OperService::getOperColumnArrayByOperName($operName, 'id');

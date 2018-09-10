@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Oper;
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
 use App\Modules\Sms\SmsService;
 use App\Modules\UserCredit\UserCreditSettingService;
@@ -105,6 +106,11 @@ class WalletWithdrawController extends Controller
         $operId = request()->get('current_user')->oper_id;
         $oper = OperService::getById($operId);
         $wallet = WalletService::getWalletInfo($oper);
+
+        if ($oper->status != Oper::STATUS_NORMAL) {
+            throw new BaseResponseException('账户状态异常');
+        }
+
         $checkPass = WalletWithdrawService::checkWithdrawPasswordByOriginInfo($withdrawPassword, $operId, Wallet::ORIGIN_TYPE_OPER);
 
         if ($checkPass) {

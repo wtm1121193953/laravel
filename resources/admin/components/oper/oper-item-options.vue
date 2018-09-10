@@ -4,7 +4,7 @@
         <el-button type="text" @click="edit">编辑</el-button>
         <el-button type="text" @click="detail">查看</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '冻结' : '解冻'}}</el-button>
-        <el-button v-if="!scope.row.account" type="text" @click="showCreateAccountDialog = true">生成帐户</el-button>
+        <el-button v-if="!scope.row.account" type="text" @click="showCreateAccountDialog = true">生成帐号</el-button>
         <el-button v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改帐户密码</el-button>
         <el-button type="text" @click="editMiniprogramDialog = true">{{!scope.row.miniprogram ? '配置小程序' : '修改小程序配置'}}</el-button>
         <el-button v-if="scope.row.miniprogram" type="text" @click="uploadCert">上传支付证书</el-button>
