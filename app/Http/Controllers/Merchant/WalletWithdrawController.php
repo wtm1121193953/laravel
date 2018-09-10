@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Merchant;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Sms\SmsService;
 use App\Modules\UserCredit\UserCreditSettingService;
@@ -104,6 +105,10 @@ class WalletWithdrawController extends Controller
 
         $merchantId = request()->get('current_user')->merchant_id;
         $merchant = MerchantService::getById($merchantId);
+        if ($merchant->status != Merchant::STATUS_ON || $merchant->audit_status != Merchant::AUDIT_STATUS_SUCCESS) {
+            throw new BaseResponseException('账户状态异常');
+        }
+
         $wallet = WalletService::getWalletInfo($merchant);
         $checkPass = WalletWithdrawService::checkWithdrawPasswordByOriginInfo($withdrawPassword, $merchantId, Wallet::ORIGIN_TYPE_MERCHANT);
 
