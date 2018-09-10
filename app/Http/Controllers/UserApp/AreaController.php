@@ -31,7 +31,7 @@ class AreaController extends Controller
             'lat' => 'required|numeric',
         ]);
         $data = Lbs::getAreaByGps(request('lng'), request('lat'));
-        return Result::success($data);
+        return Result::success(['list' => $data]);
     }
 
     /**
