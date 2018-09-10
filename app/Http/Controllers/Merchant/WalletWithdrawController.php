@@ -106,7 +106,7 @@ class WalletWithdrawController extends Controller
         $merchantId = request()->get('current_user')->merchant_id;
         $merchant = MerchantService::getById($merchantId);
         if ($merchant->status != Merchant::STATUS_ON || $merchant->audit_status != Merchant::AUDIT_STATUS_SUCCESS) {
-            throw new BaseResponseException('账户状态异常');
+            throw new BaseResponseException('商户状态异常，请联系客服');
         }
 
         $wallet = WalletService::getWalletInfo($merchant);
