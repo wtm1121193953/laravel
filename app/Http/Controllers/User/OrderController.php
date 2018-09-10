@@ -361,9 +361,6 @@ class OrderController extends Controller
             throw new DataNotFoundException('商户信息不存在！');
         }
         $merchant_oper = Oper::first($merchant->oper_id);
-        if(empty($merchant_oper)){
-            throw new DataNotFoundException('运营中心信息不存在！');
-        }
 
         $order = new Order();
         $orderNo = Order::genOrderNo();
