@@ -12,6 +12,7 @@ Route::prefix('oper')
         Route::post('login', 'SelfController@login');
         Route::post('logout', 'SelfController@logout');
         Route::post('self/modifyPassword', 'SelfController@modifyPassword');
+        Route::get('self/menus', 'SelfController@getMenus');
 
         Route::get('area/tree', 'AreaController@getTree');
 
@@ -31,12 +32,12 @@ Route::prefix('oper')
 
         Route::get('orders', 'OrderController@getList');
         Route::get('order/export', 'OrderController@export');
+
+        Route::get('/tps/getBindInfo', 'TpsBindController@getBindInfo');
         
         Route::group([], base_path('routes/api/oper/merchant.php'));
         Route::group([], base_path('routes/api/oper/settlements.php'));
         Route::group([], base_path('routes/api/oper/operBizMember.php'));
         Route::group([], base_path('routes/api/oper/mapping_user.php'));
-
-
-        Route::get('/tps/getBindInfo', 'TpsBindController@getBindInfo');
+        Route::group([], base_path('routes/api/oper/wallet.php'));
     });

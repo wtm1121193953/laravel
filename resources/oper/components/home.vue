@@ -232,6 +232,12 @@
                     }
                 })
             },
+            getMenus(){
+                api.get('/self/menus').then(data => {
+                    store.dispatch('storeUserInfo', data);
+                });
+            },
+
         },
         created() {
             this.getTitleAndLogo();
@@ -241,6 +247,9 @@
                 return ;
             }
             this.themeSettingForm = deepCopy(store.state.theme);
+
+            // 刷新页面时重新获取一下权限
+            this.getMenus()
         },
         components: {
             leftMenu,

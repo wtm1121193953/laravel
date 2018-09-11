@@ -5,6 +5,11 @@
             <el-table-column prop="order_no" label="订单号" align="center"/>
             <el-table-column prop="goods_name" label="商品名称" align="center"/>
             <el-table-column prop="pay_price" label="总价" align="center"/>
+            <el-table-column prop="settlement_rate" label="费率" align="center">
+                <template slot-scope="scope">
+                    {{scope.row.settlement_rate}}%
+                </template>
+            </el-table-column>
             <el-table-column prop="status" label="订单状态" align="center">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.status) === 1">未支付</span>
@@ -51,7 +56,7 @@
         },
         methods: {
             getSettlementOrders() {
-                api.get('/getSettlementOrders', this.query).then(data => {
+                api.get('/settlement/orders', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                 })
