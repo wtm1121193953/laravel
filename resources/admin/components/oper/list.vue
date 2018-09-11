@@ -48,7 +48,6 @@
                     <span v-else-if="scope.row.pay_to_platform === 2" >切换到平台(平台按照合约参与分成)</span>
                 </template>
             </el-table-column>
-            <!--
             <el-table-column prop="bindInfo" label="绑定TPS帐号">
                 <template slot-scope="scope">
                     <span v-if="scope.row.bindInfo" class="title">{{scope.row.bindInfo.tps_account}}</span>
@@ -57,7 +56,6 @@
                     </span>
                 </template>
             </el-table-column>
-            -->
             <el-table-column label="操作" width="550px">
                 <template slot-scope="scope">
                     <oper-item-options
