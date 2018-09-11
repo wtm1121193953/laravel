@@ -46,6 +46,10 @@ class UserController extends Controller
             }
         }
 
+        $dbUser = UserService::getUserById($user->id);
+
+        $user->name = $dbUser->name;
+
         $user->avatar_url = UserService::getUserAvatarUrlByUserId($user->id);
 
         $user->level_text = User::getLevelText($user->level);

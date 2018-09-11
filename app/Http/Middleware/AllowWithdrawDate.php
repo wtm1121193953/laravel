@@ -19,13 +19,13 @@ class AllowWithdrawDate
      */
     public function handle($request, Closure $next)
     {
-        $date = date('d');
+        /*$date = date('d');
         // 非指定日期不可提现
         if(!in_array($date, $this->withdrawDay))
         {
             throw new BaseResponseException('每月：' . implode('号、 ',$this->withdrawDay).' 号 才能提现');
 
-        }
+        }*/
         return $next($request);
     }
 }

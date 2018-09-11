@@ -639,7 +639,7 @@ order_no 订单号
          user_level_text: 获取积分时的用户等级文字版（该订单有自反积分时存在）,
          credit: 该订单获取的自反积分（该订单有自反积分时存在）,
          fee_splitting_amount: 该订单用户的分润金额,
-         tps_consume_quota: Tps消费额,
+         consume_quota: 贡献值,
          dishes_items:[   订单为点菜订单时存在
              {
                  id: 列表id, 
