@@ -74,6 +74,7 @@ class MerchantDraftService extends BaseService
         $merchantDraft->categoryPath = $merchantDraft->merchant_category_id ? MerchantCategoryService::getCategoryPath($merchantDraft->merchant_category_id) : [];
         $merchantDraft->categoryPathOnlyEnable = $merchantDraft->merchant_category_id ? MerchantCategoryService::getCategoryPath($merchantDraft->merchant_category_id, true) : [];
         $merchantDraft->account = MerchantAccount::where('merchant_id', $merchantDraft->id)->first();
+        $merchantDraft->business_time = json_decode($merchantDraft->business_time);
 
         return $merchantDraft;
     }

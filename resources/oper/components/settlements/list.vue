@@ -58,11 +58,11 @@
                 </template>
             </el-table-column>
             <el-table-column prop="amount" label="订单金额 ¥" align="center"/>
-            <el-table-column prop="settlement_rate" label="费率" align="center">
+            <!-- <el-table-column prop="settlement_rate" label="费率" align="center">
                 <template slot-scope="scope">
                     {{scope.row.settlement_rate}} %
                 </template>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column prop="real_amount" label="结算金额 ¥" align="center"/>
             <el-table-column prop="status" label="结算状态" align="center">
                 <template slot-scope="scope">

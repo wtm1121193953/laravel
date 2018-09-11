@@ -90,14 +90,14 @@ class Handler extends ExceptionHandler
 
     /**
      * 渲染api的异常
-     * @param $request
+     * @param \Illuminate\Http\Request $request
      * @param Exception $exception
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     private function renderForApi($request, Exception $exception)
     {
         if($exception instanceof NotFoundHttpException){
-            return response(['code' => ResultCode::API_NOT_FOUND, 'message' => '接口不存在', 'timestamp' => time()]);
+            return Result::error(ResultCode::API_NOT_FOUND, '接口不存在');
         }else if($exception instanceof ModelNotFoundException){
             $message = '数据不存在: ' . $exception->getModel() . ' -> [ ' . implode(',', $exception->getIds()) . ']';
             $response = Result::error(ResultCode::DB_QUERY_FAIL, $message);
@@ -121,27 +121,6 @@ class Handler extends ExceptionHandler
         if(DB::transactionLevel() > 0){
             DB::rollBack(0);
         }
-//        $result = json_decode($response->getContent(), 1);
-        /*if(
-            // 错误日志记录, 放入RequestLog中
-            !isset($result['code']) ||
-            !in_array($result['code'], [
-                ResultCode::PARAMS_INVALID,
-                ResultCode::UNLOGIN,
-                ResultCode::TOKEN_INVALID,
-                ResultCode::USER_ALREADY_BEEN_INVITE,
-            ])
-        ){
-            Log::error('exception handler listen', [
-                'request' => Utils::getRequestContext($request),
-                'response' => [
-                    'statusCode' => $response->getStatusCode(),
-                    'headers' => $response->headers->all(),
-                    'content' => json_decode($response->getContent(), 1),
-                ],
-                'sql_log' => DB::getQueryLog(),
-            ]);
-        }*/
 
         return $response;
     }

@@ -4,6 +4,7 @@ namespace App\Modules\Order;
 
 use App\BaseModel;
 use App\Exceptions\BaseResponseException;
+use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use Carbon\Carbon;
 
 /**
@@ -31,6 +32,7 @@ use Carbon\Carbon;
  * @property number pay_price
  * @property Carbon pay_time
  * @property number pay_target_type
+ * @property float settlement_rate
  * @property number refund_price
  * @property Carbon refund_time
  * @property Carbon finish_time
@@ -38,6 +40,10 @@ use Carbon\Carbon;
  * @property number origin_app_type
  * @property string remark
  * @property number settlement_id
+ * @property number settlement_real_amount
+ * @property number settlement_charge_amount
+ * @property integer splitting_status
+ * @property Carbon splitting_time
  */
 
 class Order extends BaseModel
@@ -54,6 +60,7 @@ class Order extends BaseModel
      */
     const PAY_TYPE_WECHAT = 1; // 微信支付
     const PAY_TYPE_ALIPAY = 2; // 支付宝支付
+    const PAY_TYPE_REAPAL = 3; // 融宝支付
 
     /**
      * 支付目标类型
@@ -68,6 +75,14 @@ class Order extends BaseModel
     const ORIGIN_APP_TYPE_IOS = 2; // iOS
     const ORIGIN_APP_TYPE_MINIPROGRAM = 3; // 小程序
 
+     /**
+     * 结算状态
+     * Author:Jerry
+     * Date:180824
+     */
+    const SETTLEMENT_STATUS_NO = 1;         // 未结算
+    const SETTLEMENT_STATUS_FINISHED = 2;   // 已结算
+
     /**
      * 订单状态
      */
@@ -78,6 +93,12 @@ class Order extends BaseModel
     const STATUS_REFUNDING = 5; // 退款中
     const STATUS_REFUNDED = 6; // 已退款
     const STATUS_FINISHED = 7; // 已完成
+
+    /**
+     * 分润状态
+     */
+    const SPLITTING_STATUS_YES = 2; //已分润
+    const SPLITTING_STATUS_NO = 1; //未分润
 
     /**
      * 生成订单号, 订单号规则: O{年月日时分秒}{6位随机数}
@@ -121,4 +142,11 @@ class Order extends BaseModel
         return ['', '安卓', 'iOS', '小程序'][$originAppType];
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany|WalletConsumeQuotaRecord
+     */
+    public function consumeQuotaRecords()
+    {
+        return $this->hasMany(WalletConsumeQuotaRecord::class);
+    }
 }
