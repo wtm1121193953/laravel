@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Merchant;
 
-use App\Modules\Order\OrderService;
+//use App\Modules\Order\OrderService;
 use App\Http\Controllers\Controller;
 
 use App\Exceptions\DataNotFoundException;
@@ -46,7 +46,7 @@ class SettlementPlatformController extends Controller
         if(empty($settlement)){
             throw new DataNotFoundException('结算单不存在');
         }
-        $data = OrderService::getListByPlatformSettlementId($settlementId);
+        $data = SettlementPlatformService::getSettlementOrders($settlementId);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
