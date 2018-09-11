@@ -12,6 +12,7 @@ namespace App\Http\Controllers\Merchant;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Order\OrderService;
 use App\Modules\Settlement\SettlementService;
 use App\Result;
 use Illuminate\Support\Facades\Storage;
@@ -44,7 +45,7 @@ class SettlementController extends Controller
             throw new DataNotFoundException('结算单不存在');
         }
 
-        $data = SettlementService::getSettlementOrders($settlementId);
+        $data = OrderService::getListByOperSettlementId($settlementId);
 
         return Result::success([
             'list' => $data->items(),

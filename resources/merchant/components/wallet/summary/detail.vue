@@ -13,9 +13,6 @@
                         <span v-else>-</span>
                         {{billData.amount}}元
                     </el-form-item>
-                    <el-form-item label="解冻时间">
-                        {{billData.balance_unfreeze_time}}
-                    </el-form-item>
                     <el-form-item label="交易时间">
                         {{billData.created_at}}
                     </el-form-item>
@@ -33,7 +30,6 @@
                 </el-col>
             </el-form>
         </el-row>
-        <div v-if="billData.type == 2 || billData.type == 4" style="border: 1px solid #DCDFE6;"></div>
         <el-row :gutter="20" v-if="billData.type == 2 || billData.type == 4">
             <el-form label-width="120px" label-position="left" size="small">
                 <el-col :span="12">
@@ -94,7 +90,7 @@
                     <el-form-item label="开户行">
                         {{orderOrWithdrawData.bank_name}}
                     </el-form-item>
-                    <el-form-item label="交易状态">
+                    <el-form-item label="提现状态">
                         <span v-if="orderOrWithdrawData.status == 1">审核中</span>
                         <span v-else-if="orderOrWithdrawData.status == 2">审核通过</span>
                         <span v-else-if="orderOrWithdrawData.status == 3">已打款</span>
@@ -104,6 +100,9 @@
                     </el-form-item>
                     <el-form-item label="发票快递公司">
                         {{orderOrWithdrawData.invoice_express_company}}
+                    </el-form-item>
+                    <el-form-item label="提现编号">
+                        {{orderOrWithdrawData.withdraw_no}}
                     </el-form-item>
                     <el-form-item label="备注">
                         {{orderOrWithdrawData.remark}}
