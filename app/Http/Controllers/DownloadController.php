@@ -111,9 +111,6 @@ class DownloadController extends Controller
             $as = basename($path);
         }
 
-        if (!file_exists($path)) {
-            throw new BaseResponseException('要下载的文件不存在');
-        }
         $response = response(file_get_contents($path));
         $response->headers->set('Content-Disposition', 'attachment; filename="'. $as .'"');
         return $response;
