@@ -13,9 +13,6 @@
                         <span v-else>-</span>
                         {{billData.amount}}元
                     </el-form-item>
-                    <el-form-item label="解冻时间">
-                        {{billData.balance_unfreeze_time}}
-                    </el-form-item>
                     <el-form-item label="交易时间">
                         {{billData.created_at}}
                     </el-form-item>
