@@ -2,13 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\Schedule\SettlementAgentPayDaily;
-
-use App\Jobs\Schedule\SettlementDaily;
-use App\Jobs\Schedule\SettlementWeekly;
-
-use App\Jobs\OrderFinishedJob;
-use App\Jobs\SettlementAgentPay;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
@@ -18,20 +11,14 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
-use App\Modules\Order\OrderService;
 use App\Modules\Settlement\Settlement;
 use App\Modules\Sms\SmsService;
-use App\Modules\Tps\TpsBind;
 use App\Modules\User\User;
 use App\Modules\Wechat\WechatService;
-use App\Support\Utils;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
-
-use App\Jobs\ConsumeQuotaSyncToTpsJob;
 
 use App\Support\TpsApi;
 
@@ -68,46 +55,6 @@ class Test extends Command
      */
     public function handle()
     {
-
-        $columns = Schema::getColumnListing('wallet_consume_quota_records');
-        dd($columns);
-        $a = 230;
-        $b = 180;
-        $val = floor(($a + $b - floor($a / 100) * 100) / 100);
-        dd($val);
-
-
-        SettlementDaily::dispatch();
-        dd('hi');
-        $orders = Order::all();
-        foreach ($orders as $order) {
-//            $order->splitting_status = 1;
-//            $order->settlement_rate = 20;
-//            $order->save();
-            $this->info($order->id);
-            ConsumeQuotaSyncToTpsJob::dispatch($order);
-        }
-        dd('hi');
-        $TpsBind = new TpsBind();
-        $TpsBind->origin_type = 1;
-        $TpsBind->origin_id = 128;
-        $TpsBind->tps_uid = 1;
-        $TpsBind->tps_account = 'test_data_';
-        $TpsBind->save();
-        dd('saved');
-
-//        SettlementAgentPay::dispatch([1]);
-//        dd(1234);
-        $orders = Order::all();
-        foreach ($orders as $order) {
-//            $order->splitting_status = 1;
-//            $order->settlement_rate = 20;
-//            $order->save();
-            $this->info($order->id);
-            OrderFinishedJob::dispatch($order);
-        }
-        dd('ok');
-
         $url = 'http://yunjipin-o2o.com/storage/miniprogram/app_code/_123_375.jpg';
         WechatService::addNameToAppCode($url, '招牌名称哈哈哈哈哈哈哈哈哈哈');
         dd(pathinfo($url, PATHINFO_BASENAME));

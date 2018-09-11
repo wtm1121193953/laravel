@@ -48,37 +48,6 @@ class WechatService
     }
 
     /**
-     * 获取平台的小程序
-     * @return \EasyWeChat\MiniProgram\Application
-     */
-    public static function getWechatMiniAppForPlatform()
-    {
-        $miniProgram = config('platform.miniprogram');
-        $config = [
-            'app_id' => $miniProgram['app_id'],
-            'secret' => $miniProgram['app_secret'],
-
-            'response_type' => 'array',
-            'log' => [
-                'level' => 'debug',
-                'file' => storage_path().'/logs/wechat.log',
-            ],
-        ];
-
-        return Factory::miniProgram($config);
-    }
-
-    public static function getWechatMiniAppFromRequest()
-    {
-        $oper = request()->get('current_oper');
-        if(empty($oper)){
-            return self::getWechatMiniAppForPlatform();
-        }else {
-            return WechatService::getWechatMiniAppForOper(request()->get('current_oper')->id);
-        }
-    }
-
-    /**
      * 获取微信支付的 EasyWechat App
      * @param $operId
      * @return \EasyWeChat\Payment\Application
@@ -108,32 +77,6 @@ class WechatService
     }
 
     /**
-     * 获取平台微信支付的 EasyWechat App
-     * @param $operId
-     * @return \EasyWeChat\Payment\Application
-     */
-    public static function getWechatPayAppForPlatform()
-    {
-
-        $platform = config('platform');
-
-        $config = [
-            // 必要配置
-            'app_id' => $platform['miniprogram']['app_id'],
-            'mch_id'             => $platform['wechat_pay']['mch_id'],
-            'key'                => $platform['wechat_pay']['key'],   // API 密钥
-
-            // 如需使用敏感接口（如退款、发送红包等）需要配置 API 证书路径(登录商户平台下载 API 证书)
-            'cert_path'          => $platform['wechat_pay']['cert_path'], // XXX: 绝对路径！！！！
-            'key_path'           => $platform['wechat_pay']['key_path'],      // XXX: 绝对路径！！！！
-
-            'notify_url' => request()->getSchemeAndHttpHost() . '/api/pay/notify',     // 你也可以在下单时单独设置来想覆盖它
-        ];
-
-        return Factory::payment($config);
-    }
-
-    /**
      * 生成小程序码
      * @param $operId
      * @param $sceneId
@@ -145,12 +88,7 @@ class WechatService
      */
     public static function genMiniprogramAppCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false,$merchantId ='')
     {
-        if(!$operId){
-            $app = WechatService::getWechatMiniAppForPlatform();
-        }else {
-            $app = WechatService::getWechatMiniAppForOper($operId);
-        }
-
+        $app = WechatService::getWechatMiniAppForOper($operId);
         $response = $app->app_code->getUnlimit($sceneId, [
             'page' => $page,
             'width' => $width,

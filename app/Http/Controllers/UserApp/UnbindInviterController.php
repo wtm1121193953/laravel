@@ -10,7 +10,6 @@ namespace App\Http\Controllers\UserApp;
 
 use App\Http\Controllers\Controller;
 use App\Modules\User\UserService;
-use App\Result;
 
 /**
  * 解除绑定关系控制器
@@ -26,9 +25,7 @@ class UnbindInviterController extends Controller
     public function getBindInfo()
     {
         $userId = request()->get('current_user')->id;
-        $data = UserService::bindInfoForUserApp($userId);
-
-        return Result::success($data);
+        UserService::bindInfoForUserApp($userId);
 
     }
 
@@ -40,7 +37,7 @@ class UnbindInviterController extends Controller
     {
         $userId = request()->get('current_user')->id;
         UserService::unbindForUserApp($userId);
-        return Result::success();
+
     }
 
 

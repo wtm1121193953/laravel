@@ -16,14 +16,9 @@ use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizMember;
-use App\Result;
 use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use App\Modules\Setting\SettingService;
-use App\Modules\Area\Area;
-use App\Modules\Goods\GoodsService;
-
 
 class MerchantService extends BaseService
 {
@@ -125,7 +120,7 @@ class MerchantService extends BaseService
         $merchantCategory = array_get($data,'merchantCategory');
         $isPilot = array_get($data,'isPilot');
         $startCreatedAt = array_get($data,'startCreatedAt');
-        $endCreatedAt = array_get($data,'endCreatedAt');
+        $endCreatedAt = array_get($data,'$endCreatedAt');
 
         // 全局限制条件
         $query = Merchant::where('audit_oper_id', '>', 0)->orderByDesc('id');
@@ -474,23 +469,14 @@ class MerchantService extends BaseService
         }
     }
 
-    public static function getListForUserApp(array $params)
+    public static function getListForUserApp(array $data)
     {
-        $city_id = array_get($params, 'city_id');
-        $merchant_category_id = array_get($params, 'merchant_category_id');
-        $keyword = array_get($params, 'keyword');
-        $lng = array_get($params,'lng');
-        $lat = array_get($params, 'lat');
-
-        // 暂时去掉商户列表中的距离限制
-        $radius = request('radius');
-        $radius = $radius == 200000 ? 0 : $radius;
-        // 价格搜索
-        $lowestPrice = request('lowest_price', 0);
-        $highestPrice = request('highest_price', 0);
-        if ($lowestPrice && $highestPrice && $lowestPrice > $highestPrice){
-            throw new BaseResponseException('搜索条件的最低价格不能高于最高价格');
-        }
+        $city_id = array_get($data,'city_id');
+        $merchant_category_id = array_get($data,'merchant_category_id');
+        $keyword = array_get($data,'keyword');
+        $lng = array_get($data,'lng');
+        $lat = array_get($data,'lat');
+        $radius = array_get($data,'radius');
 
         $distances = null;
         if($lng && $lat && $radius){
@@ -498,106 +484,65 @@ class MerchantService extends BaseService
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
         }
 
-        // todo 只获取切换到平台的运营中心下的商家信息
-        $query = Merchant::query()
-            ->where('oper_id', '>', 0)
+        $query = Merchant::where('oper_id', '>', 0)
             ->where('status', 1)
             ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT])
             ->when($city_id, function(Builder $query) use ($city_id){
-                // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户
-                $areaInfo = Area::where('area_id', $city_id)->where('path', 1)->first();
-                if (empty($areaInfo)) {
-                    $query->where('city_id', $city_id);
-                } else {
-                    $cityIdArray = Area::where('parent_id', $city_id)
-                        ->where('path', 2)
-                        ->select('area_id')
-                        ->get()
-                        ->pluck('area_id');
-                    $query->whereIn('city_id', $cityIdArray);
-                }
+                $query->where('city_id', $city_id);
             })
             ->when(!$merchant_category_id && $keyword, function(Builder $query) use ($keyword){
                 // 不传商家类别id且关键字存在时, 若关键字等同于类别, 则搜索该类别以及携带该关键字的商家
                 $category = MerchantCategory::where('name', $keyword)->first();
                 if($category){
-                    $query->where(function(Builder $query) use ($keyword,$category) {
-                        $query->where('merchant_category_id', $category->id)
-                            ->orWhere('name', 'like', "%$keyword%")
-                            ->orWhere('signboard_name', 'like', "%$keyword%");
-                    });
+                    $query->where('merchant_category_id', $category->id)
+                        ->orWhere('name', 'like', "%$keyword%");
                 }else {
-                    $query->where(function (Builder $query) use ($keyword){
-                        $query->where('name', 'like', "%$keyword%")
-                            ->orWhere('signboard_name', 'like', "%$keyword%");
-                    });
+                    $query->where('name', 'like', "%$keyword%");
                 }
             })
             ->when($merchant_category_id && $keyword, function(Builder $query) use ($merchant_category_id, $keyword){
                 // 如果传了类别及关键字, 则类别和关键字都搜索
-                $merchantCategorySubArray = MerchantCategoryService::getSubCategoryIds($merchant_category_id);
-                $query->where(function (Builder $query) use ($keyword) {
-                    $query->where('name', 'like', "%$keyword%")
-                        ->orWhere('signboard_name', 'like', "%$keyword%");
-                })
-                    ->when($merchantCategorySubArray, function (Builder $query) use ($merchantCategorySubArray) {
-                        $query->whereIn('merchant_category_id', $merchantCategorySubArray);
-                    })
-                    ->when(!$merchantCategorySubArray, function (Builder $query) use ($merchant_category_id) {
-                        $query->where('merchant_category_id', $merchant_category_id);
-                    });
+                $query->where('merchant_category_id', $merchant_category_id)
+                    ->where('name', 'like', "%$keyword%");
             })
             ->when($merchant_category_id && empty($keyword), function(Builder $query) use ($merchant_category_id, $keyword){
                 // 如果只传了类别, 没有关键字
-                $merchantCategorySubArray = MerchantCategoryService::getSubCategoryIds($merchant_category_id);
-                $query->when($merchantCategorySubArray, function (Builder $query) use ($merchantCategorySubArray) {
-                    $query->whereIn('merchant_category_id', $merchantCategorySubArray);
-                })
-                    ->when(!$merchantCategorySubArray, function (Builder $query) use ($merchant_category_id) {
-                        $query->where('merchant_category_id', $merchant_category_id);
-                    });
+                $query->where('merchant_category_id', $merchant_category_id);
             })
             ->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
                 // 如果范围存在, 按距离搜索, 并按距离排序
                 $query->whereIn('id', array_keys($distances));
-            })
-            ->when($lowestPrice || $highestPrice, function (Builder $query) use ($lowestPrice, $highestPrice){
-                // 有价格限制时 按照价格区间筛选 并按照价格排序
-                $query->when($lowestPrice && !$highestPrice, function (Builder $query) use ($lowestPrice) {
-                    $query->where('lowest_amount', '>=', $lowestPrice);
-                })
-                    ->when($highestPrice, function (Builder $query) use ($lowestPrice, $highestPrice) {
-                        $query->where('lowest_amount', '>=', $lowestPrice)
-                            ->where('lowest_amount', '<', $highestPrice);
-                    })
-                    ->orderBy('lowest_amount');
             });
-
-        if($lng && $lat){
-            // 如果是按距离搜索, 需要在程序中按距离排序
+        if($lng && $lat && $radius){
+            // 如果是按距离搜索, 需要在程序中排序
             $allList = $query->get();
             $total = $query->count();
-            $list = $allList->map(function ($item) use ($lng, $lat) {
-                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
+            $list = $allList->map(function ($item) use ($distances) {
+                $distance = isset($distances[$item->id]) ? $distances[$item->id] : 10000;
+                // 格式化距离
+                $item->distance = self::_getFormativeDistance($distance);
                 return $item;
             })
-                ->sortBy('distance')
-                ->forPage(request('page', 1), 15)
-                ->values()
-                ->each(function($item) {
-                    // 格式化距离
-                    $item->distance = self::_getFormativeDistance($item->distance);
-                });
+                ->sortBy('distance')->values()
+                ->forPage(request('page', 1), 15)->values();
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
             $data = $query->paginate();
-            $list = $data->items();
-            $total = $data->total();
+            // 如果传递了经纬度信息, 需要计算用户与商家之间的距离
+            if($lng && $lat){
+                $tempToken = !empty(request()->get('current_user')) ? request()->get('current_user')->id : str_random();
+                $data->each(function ($item) use ($lng, $lat, $tempToken){
+                    $distance = Lbs::getDistanceOfMerchant($item->id, $tempToken, $lng, $lat);
+                    // 格式化距离
+                    $item->distance = self::_getFormativeDistance($distance);
+                });
+            }
+            return $data;
         }
 
         // 补充商家其他信息
         $list = collect($list);
-        $list->each(function ($item){
+        $list->each(function ($item) {
             $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
             if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
             $category = MerchantCategory::find($item->merchant_category_id);
@@ -606,13 +551,7 @@ class MerchantService extends BaseService
             $item->lowestAmount = MerchantService::getLowestPriceForMerchant($item->id);
             // 兼容v1.0.0版客服电话字段
             $item->contacter_phone = $item->service_phone;
-            // 商户评级字段，暂时全部默认为5星
-            $item->grade = 5;
-            // 首页商户列表，显示价格最低的n个团购商品
-            $item->lowestGoods = GoodsService::getLowestPriceGoodsForMerchant($item->id, 2);
         });
-
-        return Result::success(['list' => $list, 'total' => $total]);
     }
 
     public static function userAppMerchantDetial($data)
@@ -644,29 +583,5 @@ class MerchantService extends BaseService
     private static function _getFormativeDistance($distance)
     {
         return $distance >= 1000 ? (number_format($distance / 1000, 1) . '千米') : ($distance . '米');
-    }
-
-    /**
-     * 根据商户名称获取商户某个字段的数组
-     * @param $params
-     * @param $field
-     * @return Collection
-     */
-    public static function getMerchantColumnArrayByParams($params, $field)
-    {
-        $merchantName = array_get($params, 'merchantName', '');
-        $operIds = array_get($params, 'operIds', []);
-
-        $query = Merchant::query();
-        if ($merchantName) {
-            $query->where('name', 'like', "%$merchantName%");
-        }
-        if (!empty($operIds)) {
-            $query->whereIn('oper_id', $operIds);
-        }
-        $arr = $query->select($field)
-            ->get()
-            ->pluck($field);
-        return $arr;
     }
 }

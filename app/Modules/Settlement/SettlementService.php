@@ -11,7 +11,6 @@ namespace App\Modules\Settlement;
 
 use App\BaseService;
 use App\Modules\Order\Order;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class SettlementService extends BaseService
@@ -32,25 +31,6 @@ class SettlementService extends BaseService
     }
 
     /**
-     * SAAS获取结算单列表【旧】
-     * @param array $params {merchantId, operId}
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public static function getListForSaas(array $params = [])
-    {
-        //DB::enableQueryLog();
-        $data = Settlement::where('id', '>', 0)
-            ->whereHas('merchant', function( $query){
-                $query->where('name', 'like', '百事可乐');
-            })
-            ->with('merchant:id,name')
-            ->orderBy('id', 'desc')
-            ->paginate();
-        //dd(DB::getQueryLog());
-        return $data;
-    }
-
-    /**
      * 根据ID获取结算单
      * @param $settlementId
      * @return Settlement
@@ -64,22 +44,11 @@ class SettlementService extends BaseService
      * 根据商户ID及结算单获取结算单信息
      * @param $settlementId
      * @param $merchantId
-     * @return \Illuminate\Support\Collection
+     * @return Settlement
      */
     public static function getByIdAndMerchantId($settlementId, $merchantId)
     {
-        return Settlement::where('id', $settlementId)->where('merchant_id', $merchantId)->pluck('settlement_date');
-    }
-
-    /**
-     * 根据所属运营中心ID及商家ID获取结时间
-     * @param $operId
-     * @param $merchantId
-     * @return Settlement
-     */
-    public static function getByOperIdAndMerchantId($operId, $merchantId)
-    {
-        return Settlement::where('oper_id', $operId)->where('merchant_id', $merchantId)->first();
+        return Settlement::where('id', $settlementId)->where('merchant_id', $merchantId)->first();
     }
 
     /**

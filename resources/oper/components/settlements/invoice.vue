@@ -72,7 +72,7 @@
                         return false;
                     }
                 }
-                api.post('/settlements/updateInvoice', this.form).then(data => {
+                api.post('/updateInvoice', this.form).then(data => {
                     this.$message.success('上传发票成功');
                     this.$refs.form.resetFields();
                     this.form.invoice_pic_url = '';

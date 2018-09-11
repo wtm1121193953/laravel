@@ -17,7 +17,7 @@ class Result
             $data    = $message;
             $message = '请求成功';
         }
-        return response()->json([
+        return response([
             'code'    => ResultCode::SUCCESS,
             'message' => $message,
             'data'    => $data,
@@ -27,7 +27,7 @@ class Result
 
     public static function error($code, $message, $data = [])
     {
-        return response()->json([
+        return response([
             'code'    => $code,
             'message' => $message,
             'data'    => $data,

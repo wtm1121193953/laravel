@@ -58,6 +58,6 @@ class AreaController extends Controller
         foreach ($cities as $firstLetter => $list) {
             $data[] = ['tag' => $firstLetter, 'list' => $list];
         }
-        return Result::success(['list' => $data]);
+        return Result::success($data);
     }
 }

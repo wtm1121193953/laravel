@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
-use App\Exports\UserExport;
-use App\Exports\UserIdentityExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
@@ -12,7 +10,6 @@ use App\Modules\Invite\InviteUserService;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Oper\OperService;
-use App\Modules\User\UserIdentityAuditRecord;
 use App\Modules\User\UserService;
 use App\Result;
 use Illuminate\Support\Facades\App;
@@ -34,161 +31,6 @@ class UsersController extends Controller
             'list' => $users->items(),
             'total' => $users->total(),
         ]);
-    }
-
-
-    /**
-     * 获取会员列表
-     */
-    public function userList()
-    {
-        $mobile = request('mobile');
-        $name = request('name');
-        $id = request('id');
-        $startDate = request('startDate');
-        $endDate = request('endDate');
-        $status = request('status');
-        $identityStatus = request('identityStatus');
-        $users = UserService::userList([
-            'mobile' => $mobile,
-            'id' => $id,
-            'name' => $name,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'status' => $status,
-            'identityStatus' => $identityStatus
-        ]);
-
-        return Result::success([
-            'list' => $users->items(),
-            'total' => $users->total(),
-        ]);
-    }
-
-    /**
-     * 下载Excel
-     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
-    public function download()
-    {
-        $mobile = request('mobile');
-        $name = request('name');
-        $id = request('id');
-        $startDate = request('startDate');
-        $endDate = request('endDate');
-        $status = request('status');
-        $identityStatus = request('identityStatus');
-
-        $query = UserService::userList([
-            'mobile' => $mobile,
-            'id' => $id,
-            'name' => $name,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'status' => $status,
-            'identityStatus' => $identityStatus
-        ],true);
-
-        return (new UserExport($query))->download('用户列表.xlsx');
-    }
-
-
-    /**
-     * 获取会员审核列表
-     */
-    public function identity()
-    {
-        $mobile = request('mobile');
-        $name = request('name');
-        $id = request('id');
-        $startDate = request('startDate');
-        $endDate = request('endDate');
-        $status = request('status');
-        $users = UserService::identity([
-            'mobile' => $mobile,
-            'id' => $id,
-            'name' => $name,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'status' => $status
-        ]);
-
-        return Result::success([
-            'list' => $users->items(),
-            'total' => $users->total(),
-        ]);
-    }
-
-    public function batchIdentity()
-    {
-        $ids = request('ids');
-        $type = request('type');
-        $resson = request('reason');
-        if ($type == 1) {
-            if ($ids) {
-                foreach ($ids as $id) {
-                    $rs = UserService::identityDo($id, UserIdentityAuditRecord::STATUS_SUCCESS);
-                }
-            }
-            return Result::success('操作成功');
-        } elseif ($type==2) {
-            if ($ids) {
-                foreach ($ids as $id) {
-                    $rs = UserService::identityDo($id, UserIdentityAuditRecord::STATUS_FAIL,$resson);
-                }
-            }
-            return Result::success('操作成功');
-        }
-
-
-    }
-
-    /**
-     * 下载Excel
-     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
-     */
-    public function identityDownload()
-    {
-        $mobile = request('mobile');
-        $name = request('name');
-        $id = request('id');
-        $startDate = request('startDate');
-        $endDate = request('endDate');
-        $status = request('status');
-
-        $query = UserService::identity([
-            'mobile' => $mobile,
-            'id' => $id,
-            'name' => $name,
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'status' => $status
-        ],true);
-
-        return (new UserIdentityExport($query))->download('用户审核列表.xlsx');
-    }
-
-    public function identityDetail()
-    {
-        $id = request('id');
-
-        $info = UserService::identityDetail($id);
-
-        if (empty($info->user)) {
-            throw new BaseResponseException("用户数据异常", ResultCode::UNKNOWN);
-        }
-        return Result::success($info);
-    }
-
-    public function identityDo()
-    {
-        $id = request('id');
-        $status = request('status');
-        $reason = request('reason');
-
-        $rs = UserService::identityDo($id, $status, $reason);
-        return Result::success('操作成功',['rs'=>$rs]);
-
     }
 
 

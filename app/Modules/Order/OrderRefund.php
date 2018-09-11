@@ -8,7 +8,6 @@ use App\BaseModel;
  * Class OrderRefund
  * @package App\Modules\Order
  *
- * @property number refund_no
  * @property number order_id
  * @property string order_no
  * @property string refund_id
