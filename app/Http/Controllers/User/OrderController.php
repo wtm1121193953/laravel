@@ -124,8 +124,8 @@ class OrderController extends Controller
         $userFeeSplittingRatioToSelf = FeeSplittingService::getUserFeeSplittingRatioToSelfByMerchantId($detail->merchant_id);
         $detail->fee_splitting_amount = Utils::getDecimalByNotRounding($detail->pay_price * $userFeeSplittingRatioToSelf, 2);
 
-        // tps 消费额
-        $detail->tps_consume_quota = Utils::getDecimalByNotRounding($detail->pay_price / 6 / 6.5, 2);
+        // 贡献值
+        $detail->consume_quota = floor($detail->pay_price);
         return Result::success($detail);
     }
 
