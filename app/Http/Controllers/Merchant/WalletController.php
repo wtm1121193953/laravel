@@ -54,7 +54,7 @@ class WalletController extends Controller
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
-            'amountBalance' => number_format($wallet->balance + $wallet->freeze_balance, 2),
+            'amountBalance' => number_format($wallet->balance + $wallet->freeze_balance, 2, '.', ''),
             'balance' => $wallet->balance,
             'freezeBalance' => $wallet->freeze_balance,
         ]);
