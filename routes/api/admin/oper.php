@@ -9,4 +9,5 @@ Route::get('/oper/detail', 'OperController@detail');
 Route::post('/oper/add', 'OperController@add');
 Route::post('/oper/edit', 'OperController@edit');
 Route::post('/oper/changeStatus', 'OperController@changeStatus');
+Route::post('/oper/changePayToPlatform', 'OperController@changePayToPlatform');
 Route::post('/oper/setPayToPlatformStatus', 'OperController@setPayToPlatformStatus');

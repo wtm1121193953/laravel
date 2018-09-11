@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: admin
- * Date: 2018/4/15
- * Time: 13:18
- */
 
 namespace App\Http\Controllers\Merchant;
-
 
 use App\Exports\MerchantOrderExport;
 use App\Http\Controllers\Controller;

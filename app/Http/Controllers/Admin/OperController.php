@@ -20,11 +20,13 @@ class OperController extends Controller
         $name = request('name');
         $status = request('status');
         $tel = request('tel');
+        $payToPlatform = request('payToPlatform');
 
         $data = OperService::getList([
             'name' => $name,
             'status' => $status,
             'tel' => $tel,
+            'payToPlatform' => $payToPlatform,
         ]);
 
         return Result::success([
@@ -84,6 +86,20 @@ class OperController extends Controller
             'status' => 'required|integer',
         ]);
         $oper = OperService::changeStatus(request('id'), request('status'));
+
+        return Result::success($oper);
+    }
+
+    /**
+     * 修改小程序支付对象设置
+     */
+    public function changePayToPlatform()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'pay_to_platform' => 'required|integer',
+        ]);
+        $oper = OperService::changePayToPlatform(request('id'), request('pay_to_platform'));
 
         return Result::success($oper);
     }

@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Oper;
 
+use App\Exceptions\UnloginException;
 use App\Http\Controllers\Controller;
 use App\Modules\Oper\OperAccountService;
 use App\Result;
@@ -30,6 +31,21 @@ class SelfController extends Controller
         $password = request('password');
 
         $user = OperAccountService::login($username,$password);
+
+        $menus = OperAccountService::getMenus($user->oper_id);
+
+        return Result::success([
+            'user' => $user,
+            'menus' => $menus,
+        ]);
+    }
+
+    public function getMenus()
+    {
+        $user = request()->get('current_user');
+        if(empty($user)){
+            throw new UnloginException();
+        }
 
         $menus = OperAccountService::getMenus($user->oper_id);
 

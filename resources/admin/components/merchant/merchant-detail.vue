@@ -111,21 +111,27 @@
                             <span v-if="data.bank_card_type === 1" class="c-gray">公司</span>
                             <span v-if="data.bank_card_type === 2" class="c-green">个人</span>
                         </el-form-item>
-                        <el-form-item label="开户名">
+                        <el-form-item label="银行开户名">
                             {{data.bank_open_name}}
                         </el-form-item>
                         <el-form-item label="银行账号">
                             {{data.bank_card_no}}
                         </el-form-item>
-                        <el-form-item label="开户支行名称">
+                        <el-form-item label="开户行">
+                            {{data.bank_name}}
+                        </el-form-item>
+                        <el-form-item label="开户行网点名称">
                             {{data.sub_bank_name}}
                         </el-form-item>
-                        <el-form-item label="开户支行地址">
-                            {{data.bank_open_address}}
+                        <el-form-item label="开户行网点地址">
+                            <span>{{data.bank_province}}</span>
+                            <span>{{data.bank_city}}</span>
+                            <span>{{data.bank_area}}</span>
+                            <span>{{data.bank_open_address}}</span>
                         </el-form-item>
                         <el-form-item v-if="data.bank_card_type == 1" required prop="licence_pic_url" label="开户许可证">
                             <div v-viewer>
-                                <img v-if="data.licence_pic_url" :src="data.licence_pic_url" alt="开户许可证" width="50px" height="50px" />
+                                <img v-if="data.licence_pic_url" :src="data.licence_pic_url" alt="开户许可证" width="200px" height="100px" />
                             </div>
                             <!-- <preview-img :url="data.licence_pic_url" width="100px" height="100px"/> -->
                         </el-form-item>
