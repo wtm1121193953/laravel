@@ -91,7 +91,7 @@
                     <el-form-item label="开户行">
                         {{orderOrWithdrawData.bank_name}}
                     </el-form-item>
-                    <el-form-item label="交易状态">
+                    <el-form-item label="提现状态">
                         <span v-if="orderOrWithdrawData.status == 1">审核中</span>
                         <span v-else-if="orderOrWithdrawData.status == 2">审核通过</span>
                         <span v-else-if="orderOrWithdrawData.status == 3">已打款</span>
@@ -101,6 +101,9 @@
                     </el-form-item>
                     <el-form-item label="发票快递公司">
                         {{orderOrWithdrawData.invoice_express_company}}
+                    </el-form-item>
+                    <el-form-item label="提现编号">
+                        {{orderOrWithdrawData.withdraw_no}}
                     </el-form-item>
                     <el-form-item label="备注">
                         {{orderOrWithdrawData.remark}}
