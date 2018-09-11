@@ -33,6 +33,10 @@ Route::prefix('app/user')
         Route::get('merchant/getHotDishesGoods', 'DishesController@getHotDishesGoods'); // 废弃
         Route::post('merchant/dishesOrder', 'DishesController@add')->middleware(UserLoginFilter::class); // 废弃
         Route::get('merchant/dishesDetail', 'DishesController@detail')->middleware(UserLoginFilter::class); // 废弃
+        Route::get('merchant/dishes/categoryAndGoods', 'DishesController@getDishesCategory');
+        Route::get('merchant/dishes/hotGoods', 'DishesController@getHotDishesGoods');
+        Route::post('merchant/dishes/add', 'DishesController@add')->middleware(UserLoginFilter::class);
+        Route::get('merchant/dishes/detail', 'DishesController@detail')->middleware(UserLoginFilter::class);
 
         Route::get('goods', 'GoodsController@getList');
         Route::get('goods/detail', 'GoodsController@detail');

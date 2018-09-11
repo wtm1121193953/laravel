@@ -9,10 +9,8 @@
 namespace App\Http\Controllers\Oper;
 
 
-use App\Exceptions\NoPermissionException;
 use App\Exports\OperSettlementExport;
 use App\Http\Controllers\Controller;
-use App\Modules\Order\OrderService;
 use App\Modules\Settlement\SettlementService;
 use App\Result;
 
@@ -90,13 +88,10 @@ class SettlementController extends Controller
     public function getSettlementOrders()
     {
         $settlement_id = request('settlement_id');
+        $merchant_id = request('merchant_id');
         $operId = request()->get('current_user')->oper_id;
-        $settlement = SettlementService::getById($settlement_id);
-        if($settlement->oper_id != $operId){
-            throw new NoPermissionException('数据不存在');
-        }
 
-        $data = OrderService::getListByOperSettlementId($settlement_id);
+        $data = SettlementService::getBySettlementOrders($operId,$settlement_id,$merchant_id);
 
         return Result::success([
             'list' => $data->items(),

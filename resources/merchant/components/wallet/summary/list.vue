@@ -12,7 +12,7 @@
 
         <el-form :model="query" inline size="small">
             <el-form-item prop="billNo" label="交易号">
-                <el-input v-model="query.billNo" placeholder="请输入交易号" clearable/>
+                <el-input v-model="query.billNo" clearable/>
             </el-form-item>
             <el-form-item label="交易时间">
                 <el-date-picker

@@ -11,7 +11,6 @@ namespace App\Modules\Settlement;
 
 use App\BaseService;
 use App\Modules\Order\Order;
-use App\Modules\Order\OrderService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -84,6 +83,18 @@ class SettlementService extends BaseService
     }
 
     /**
+     * 获取结算单的订单列表
+     * @param $settlementId
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getSettlementOrders($settlementId)
+    {
+        $data = Order::where('settlement_id', $settlementId)
+            ->orderBy('id', 'desc')->paginate();
+        return $data;
+    }
+
+    /**
      * @param $operId
      * @param string $merchantId
      * @param string $status
@@ -129,6 +140,16 @@ class SettlementService extends BaseService
             $data = $query->paginate();
             return $data;
         }
+    }
+
+    public static function getBySettlementOrders($operId,$settlement_id,$merchant_id)
+    {
+        $data = Order::where('oper_id', $operId)
+            ->where('settlement_id', $settlement_id)
+            ->where('merchant_id', $merchant_id)
+            ->orderBy('id', 'desc')->paginate();
+
+        return $data;
     }
 
     public static function updateInvoice($id,$invoice_type,$invoice_pic_url,$logistics_name,$logistics_no)
