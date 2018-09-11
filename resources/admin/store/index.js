@@ -89,8 +89,7 @@ export default new Vuex.Store({
         globalLoading: false,
         theme: deepCopy(defaultThemes['深蓝']),
         user: null,
-        menus: [], // 用户的菜单列表(树型结构)
-        rules: [], // 用户的权限列表(列表结构)
+        menus: [],
         currentMenu: null,
         filterKeywordCategoryList: deepCopy(filterKeywordCategoryList),
         loginUsername: null,
@@ -112,9 +111,6 @@ export default new Vuex.Store({
         },
         setMenus(state, menus){
             state.menus = menus;
-        },
-        setRules(state, rules){
-            state.rules = rules;
         },
         setCurrentMenu(state, currentMenu){
             state.currentMenu = currentMenu;
@@ -142,15 +138,13 @@ export default new Vuex.Store({
             Lockr.rm('userInfo');
             context.commit('setUser', null);
             context.commit('setMenus', []);
-            context.commit('setRules', []);
         },
-        storeUserInfo(context, {user, menus, rules}){
+        storeUserInfo(context, {user, menus}){
             menus = trimMenuUrlPrefix(menus);
             Lockr.set('userMenuList', menus);
             Lockr.set('userInfo', user);
             context.commit('setUser', user);
             context.commit('setMenus', menus);
-            context.commit('setRules', rules);
         },
         setLoginUserName(context, username) {
             context.commit('setLoginUsername', username);

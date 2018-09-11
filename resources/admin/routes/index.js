@@ -14,10 +14,6 @@ import oper_accounts from './oper_account'
 import merchant from './merchant'
 import members from './members'
 import setting from './setting'
-import withdraw from './withdraw'
-import wallet from './wallet'
-
-import SettlementPlatfroms from '../components/settlement/platform.vue'
 
 /**
  *
@@ -44,17 +40,6 @@ const routes = [
     ...merchant,
     ...members,
     ...setting,
-    ...withdraw,
-    ...wallet,
-
-    // 财务模块
-    {
-        path: '/',
-        component: Home,
-        children: [
-            {path: '/settlement/platforms', component: SettlementPlatfroms, name: 'SettlementPlatfroms'},
-        ]
-    },
 
     {
         path: '/',

@@ -160,7 +160,6 @@
                 'globalLoading',
                 'user',
                 'menus',
-                'rules',
             ]),
             username(){
                 return this.user ? this.user.username : '';
@@ -209,21 +208,17 @@
                         this.showThemeSetting = true;
                         break;
                     case 'refresh-rules':
-                        this.refreshRules();
+                        store.dispatch('openGlobalLoading');
+                        api.get('/self/rules').then(data => {
+                            store.dispatch('storeUserInfo', data);
+                            store.dispatch('closeGlobalLoading')
+                        });
                         break;
                     case 'modify-password':
                         this.showModifyPasswordForm = true;
                         break;
 
                 }
-            },
-
-            refreshRules(){
-                store.dispatch('openGlobalLoading');
-                api.get('/self/rules').then(data => {
-                    store.dispatch('storeUserInfo', data);
-                    store.dispatch('closeGlobalLoading')
-                });
             },
 
             modifyPassword(){
@@ -236,35 +231,18 @@
                         })
                     }
                 })
-            },
 
-            // 获取权限验证方法
-            getHasRuleFunction(){
-                return (url) => {
-                    for (let i = 0; i < this.rules.length; i ++) {
-                        if(this.rules[i].url_all.split(',').indexOf(url) >= 0){
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-            }
+            },
 
         },
         created() {
             this.getTitleAndLogo();
-            // 登陆验证
             if(!this.user){
                 this.$message.warning('您尚未登录');
                 router.replace('/login');
                 return ;
             }
             this.themeSettingForm = deepCopy(store.state.theme);
-            // 全局挂载权限验证方法, 使用方法 : hasRule('url')
-            Vue.prototype.hasRule = this.getHasRuleFunction();
-
-            // home组件挂载(即页面刷新)时, 更新用户权限
-            this.refreshRules();
         },
         components: {
             leftMenu,

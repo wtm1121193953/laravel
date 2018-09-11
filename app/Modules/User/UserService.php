@@ -11,7 +11,6 @@ namespace App\Modules\User;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
-use App\Modules\Admin\AdminUser;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserUnbindRecord;
@@ -30,7 +29,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class UserService extends BaseService
 {
@@ -132,183 +130,6 @@ class UserService extends BaseService
 
         return $users;
     }
-
-    /**
-     * 获取会员列表
-     * @param $params
-     * @param bool $return_query
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public static function userList($params,bool $return_query = false){
-
-        if($params['status']){
-            if(!is_array($params['status'])){
-                $statusArr = explode(',',$params['status']);
-            }else{
-                $statusArr = $params['status'];
-            }
-        }else{
-            $statusArr = [];
-        }
-
-
-        if($params['identityStatus']){
-            if(!is_array($params['identityStatus'])){
-                $identityStatusArr = explode(',',$params['identityStatus']);
-            }else{
-                $identityStatusArr = $params['identityStatus'];
-            }
-        }else{
-            $identityStatusArr = [];
-        }
-
-
-        $query  = User::select('id','name','mobile','email','created_at','status')
-            ->when($params['mobile'], function (Builder $query) use ($params){
-                $query->where('mobile','like','%'.$params['mobile'].'%');
-            })
-            ->when($params['name'], function (Builder $query) use ($params){
-                $query->where('name','like','%'.$params['name'].'%');
-            })
-            ->when($params['id'], function (Builder $query) use ($params){
-                $query->where('id','=',$params['id']);
-            })
-            ->when($params['startDate'] && $params['endDate'], function (Builder $query) use ($params){
-                $query->where('created_at', '>=', $params['startDate'] . ' 00:00:00');
-                $query->where('created_at', '<=', $params['endDate']. ' 23:59:59');
-            })
-            ->when($statusArr, function (Builder $query) use ($statusArr){
-                $query->whereIn('status', $statusArr);
-            })
-            ->when($identityStatusArr, function (Builder $query) use ($identityStatusArr) {
-                $query->whereHas('identityAuditRecord', function (Builder $query) use ($identityStatusArr) {
-                    $query->whereIn('status', $identityStatusArr);
-                });
-            })
-            ->with('identityAuditRecord:user_id,status')
-            ->orderByDesc('created_at');
-
-        if ($return_query) {
-            return $query;
-        }
-
-        $users = $query->paginate();
-
-        $users->each(function ($item){
-            $item->stauts_val = User::getStatusText($item['status']);
-            if (!empty($item->identityAuditRecord->status)) {
-                $item->identity_status_text = UserIdentityAuditRecord::getStatusText($item->identityAuditRecord->status);
-            } else {
-                $item->identity_status_text = '未提交';
-            }
-
-            $parentName = InviteUserService::getParentName($item->id);
-            if($parentName){
-                $item->isBind = 1;
-                $item->parent = $parentName;
-            }else {
-                $item->parent = '未绑定';
-                $item->isBind = 0;
-            }
-        });
-
-        return $users;
-    }
-
-    /**
-     * 获取会员审核列表
-     * @param $params
-     * @param bool $return_query
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
-    public static function identity($params,bool $return_query = false){
-
-
-        if($params['status']){
-            if(!is_array($params['status'])){
-                $statusArr = explode(',',$params['status']);
-            }else{
-                $statusArr = $params['status'];
-            }
-        }else{
-            $statusArr = [];
-        }
-        $query  = UserIdentityAuditRecord::select('*')
-            ->when($params['mobile'], function (Builder $query) use ($params){
-                $query->whereHas('user',function($q) use ($params) {
-                    $q->where('mobile', 'like', "%{$params['mobile']}%");
-                });
-            })
-            ->when($params['name'], function (Builder $query) use ($params){
-                $query->where('name','like','%'.$params['name'].'%');
-            })
-            ->when($params['id'], function (Builder $query) use ($params){
-                $query->where('user_id', '=', $params['id']);
-            })
-            ->when($params['startDate'] && $params['endDate'], function (Builder $query) use ($params){
-                $query->where('created_at', '>=', $params['startDate'] . ' 00:00:00');
-                $query->where('created_at', '<=', $params['endDate']. ' 23:59:59');
-            })
-            ->when($params['status'], function (Builder $query) use ($statusArr){
-                $query->whereIn('status', $statusArr);
-            })
-            ->with('user')
-            ->orderByDesc('created_at');
-
-        if ($return_query) {
-            return $query;
-        }
-
-        $users = $query->paginate();
-
-        $users->each(function ($item){
-
-            $item->status_val = UserIdentityAuditRecord::getStatusText($item->status);
-            if (!empty($item->user)) {
-                $item->user->status_val = User::getStatusText($item->user->status);
-            }
-
-        });
-
-        return $users;
-    }
-
-    /**
-     * 用户认证信息详情
-     * @param $id
-     */
-    public static function identityDetail($id)
-    {
-        return UserIdentityAuditRecord::with('user')->findOrFail($id);
-    }
-
-    /**
-     * 审核
-     * @param $id
-     * @param $status
-     * @param string $reason
-     * @return bool
-     */
-    public static function identityDo($id,$status,$reason='')
-    {
-
-        if (empty($reason)) {
-            $reason = '';
-        }
-        $info = UserIdentityAuditRecord::findOrFail($id);
-
-        $info->status = $status;
-        $info->reason = $reason;
-
-        /** @var AdminUser $user */
-        $user = session(config('admin.user_session'));
-        if (!empty($user->id)) {
-            $info->update_user = $user->id;
-        }
-        $rs = $info->save();
-        return $rs;
-    }
-
     /**
      * 通过电话号码查询用户详情
      * @param $mobile
@@ -416,7 +237,7 @@ class UserService extends BaseService
     {
         $inviteRecord = InviteUserRecord::where('user_id', $userId)->first();
         if(empty($inviteRecord)){
-            return null;
+            return Result::success();
         }
         $mappingUser = null; // 上级商户或运营中心关联的用户
         $merchant = null; // 关联的上级商户
@@ -441,13 +262,14 @@ class UserService extends BaseService
         }else {
             $user = User::find($inviteRecord->origin_id);
         }
-        return [
+
+        return Result::success([
             'origin_type' => $inviteRecord->origin_type,
             'user' => $user,
             'merchant' => $merchant,
             'oper' => $oper,
             'mappingUser' => $mappingUser,
-        ];
+        ]);
     }
 
     public static function getUserConsumeQuotaRecordList($userId,$year,$month)
@@ -496,7 +318,7 @@ class UserService extends BaseService
                 $unbindInviteRecord->user_id = $userId;
                 $unbindInviteRecord->status = 2;
                 $unbindInviteRecord->save();
-                return true;
+                return Result::success();
             }
         }
     }
@@ -520,29 +342,5 @@ class UserService extends BaseService
         $user->level_text = User::getLevelText($user->level);
 
         return $user;
-    }
-
-    /**
-     * 通过手机号获取user中某个字段的数组
-     * @param $mobile
-     * @param $field
-     * @return \Illuminate\Support\Collection
-     */
-    public static function getUserColumnArrayByMobile($mobile, $field)
-    {
-        $arr = User::where('mobile', 'like', "%$mobile%")
-            ->get()
-            ->pluck($field);
-        return $arr;
-    }
-
-    /**
-     * 获取用户头像
-     * @author zwg
-     * @param $userId
-     * @return string 用户头像地址
-     */
-    public static function getUserAvatarUrlByUserId($userId){
-        return User::where('id',$userId)->value('avatar_url');
     }
 }

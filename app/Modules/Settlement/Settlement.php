@@ -3,7 +3,6 @@
 namespace App\Modules\Settlement;
 
 use App\BaseModel;
-use App\Modules\Merchant\Merchant;
 use Illuminate\Support\Carbon;
 
 
@@ -12,7 +11,7 @@ use Illuminate\Support\Carbon;
  * @package App\Modules\Settlement
  *
  * @property int    oper_id
- * @property int    merchant_id
+ * @property int    merchant_category_id
  * @property Carbon settlement_date
  * @property Carbon start_date
  * @property Carbon end_date
@@ -38,8 +37,4 @@ use Illuminate\Support\Carbon;
 class Settlement extends BaseModel
 {
     //
-    public function merchant()
-    {
-        return $this->belongsTo(Merchant::class);
-    }
 }

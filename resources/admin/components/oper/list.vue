@@ -12,17 +12,11 @@
                     <el-option label="停止合作" value="3"/>
                 </el-select>
             </el-form-item>
+
             <el-form-item prop="tel" label="手机号码">
-                <el-input v-model="query.tel" clearable @keyup.enter.native="search" placeholder="请输入手机号码"/>
+                <el-input v-model="query.tel"   clearable @keyup.enter.native="search" />
             </el-form-item>
-            <el-form-item label="支付到平台" prop="status">
-                <el-select v-model="query.payToPlatform" clearable placeholder="请选择">
-                    <el-option label="全部" value=""/>
-                    <el-option label="支付到运营中心" value="3"/>
-                    <el-option label="先切换到平台(平台不参与分成)" value="1"/>
-                    <el-option label="切换到平台(平台按照合约参与分成)" value="2"/>
-                </el-select>
-            </el-form-item>
+
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
@@ -39,13 +33,6 @@
                     <span v-else-if="scope.row.status === 2" class="c-warning">已冻结</span>
                     <span v-else-if="scope.row.status === 3" class="c-danger">停止合作</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="pay_to_platform" label="支付到平台">
-                <template slot-scope="scope">
-                    <span v-if="scope.row.pay_to_platform === 0" >支付到运营中心</span>
-                    <span v-else-if="scope.row.pay_to_platform === 1" >先切换到平台(平台不参与分成)</span>
-                    <span v-else-if="scope.row.pay_to_platform === 2" >切换到平台(平台按照合约参与分成)</span>
                 </template>
             </el-table-column>
             <el-table-column prop="bindInfo" label="绑定TPS帐号">
@@ -93,7 +80,6 @@
                 query: {
                     name: '',
                     status: '',
-                    payToPlatform: '',
                     page: 1,
                     tel:''
                 },

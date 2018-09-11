@@ -6,9 +6,7 @@ use App\Jobs\Schedule\AutoDownGoodsJob;
 use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Jobs\Schedule\OrderAutoFinished;
 use App\Jobs\Schedule\OrderExpired;
-use App\Jobs\Schedule\SettlementAgentPayDaily;
-use App\Jobs\Schedule\SettlementDaily;
-use App\Jobs\Schedule\SettlementWeekly;
+use App\Jobs\Schedule\SettlementJob;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -42,13 +40,23 @@ class Kernel extends ConsoleKernel
         /** 输入金额付款订单自动完成 */
         $schedule->job(OrderAutoFinished::class)->daily();
         /** 结算任务 */
-        // 周结, 旧结算逻辑, 支付到运营中心的订单结算
-        $schedule->job(new SettlementWeekly(Merchant::SETTLE_WEEKLY))
+        // 周结
+        $schedule->job(new SettlementJob(Merchant::SETTLE_WEEKLY))
             ->weeklyOn(1);
-        // T+1结算统计 Author：Jerry Date：180824
-        $schedule->job( new SettlementDaily() )->daily();
-        // T+1结算分账任务， 生成的结算单每天8点自动打款
-//        $schedule->job(new SettlementAgentPayDaily())->dailyAt('08:00');
+        // 半月结
+        $schedule->job(new SettlementJob(Merchant::SETTLE_HALF_MONTHLY))
+            ->monthlyOn(1);
+        $schedule->job(new SettlementJob(Merchant::SETTLE_HALF_MONTHLY))
+            ->monthlyOn(16);
+        // 月结
+        $schedule->job(new SettlementJob(Merchant::SETTLE_MONTHLY))
+            ->monthly();
+        // 半年结
+        $schedule->job(new SettlementJob(Merchant::SETTLE_HALF_YEARLY))
+            ->cron('0 0 1 1,7 *');
+        // 年结
+        $schedule->job(new SettlementJob(Merchant::SETTLE_YEARLY))
+            ->yearly();
         /**团购商品过期自动下架*/
         $schedule->job(AutoDownGoodsJob::class)->daily();
     }

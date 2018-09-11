@@ -6,7 +6,6 @@
                         v-for="(value, key) in breadcrumbs"
                         :key="key"
                         @click.native="typeof value === 'function' ? value() : toPath(value)"
-                        style="cursor:pointer;"
                 >
                     {{key}}
                 </el-breadcrumb-item>

@@ -8,8 +8,6 @@ use App\Exceptions\PasswordErrorException;
 use App\Exceptions\AccountNotFoundException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
-use App\Modules\Oper\Oper;
-use App\Modules\Oper\OperService;
 use App\Modules\Tps\TpsBind;
 use App\Modules\Tps\TpsBindService;
 use Illuminate\Support\Facades\Session;
@@ -68,21 +66,13 @@ class MerchantAccountService extends BaseService
 
         $menus =  (new self())->menus();
 
-        // 查询运营中心是否绑定tps账号
         $operBindInfo = TpsBindService::getTpsBindInfoByOriginInfo($operId, TpsBind::ORIGIN_TYPE_OPER);
-        $operUnbindTps = empty($operBindInfo);
-        // 查询运营中心信息是否绑定到平台
-        $oper = OperService::getById($operId, 'pay_to_platform');
-        $isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
-        if($operUnbindTps || !$isPayToPlatform){
+        if(empty($operBindInfo)){
+            // 如果商户所属运营中心没有绑定tps帐号, 则去掉商户的绑定tps帐号菜单
             foreach ($menus as $key => &$second) {
                 if(isset($second['sub'])){
                     foreach ($second['sub'] as $key2 => $sub) {
-                        // 如果商户所属运营中心没有绑定tps帐号, 则去掉商户的绑定tps帐号菜单
-                        if($operUnbindTps && $sub['name'] == 'TPS会员账号管理'){
-                            unset($menus[$key]['sub'][$key2]);
-                        }
-                        if(!$isPayToPlatform && $sub['name'] == 'T+1结算管理'){
+                        if($sub['name'] == 'TPS会员账号管理'){
                             unset($menus[$key]['sub'][$key2]);
                         }
                     }
@@ -114,20 +104,7 @@ class MerchantAccountService extends BaseService
                     [ 'id' => 13, 'name' => '会员分析', 'level' => 2, 'url' => '/merchant/invite/statistics/daily', 'pid' => 3,],
                 ]
             ],
-             [ 'id' => 5, 'name' => '财务管理', 'level' => 1, 'url' => '/merchant/settlements',
-                 'sub' => [
-                    [ 'id' => 19, 'name' => '运营中心结算管理', 'level' => 2, 'url' => '/merchant/settlements', 'pid' => 5,],
-                    [ 'id' => 20, 'name' => 'T+1结算管理', 'level' => 2, 'url' => '/merchant/settlement/platform/list', 'pid' => 5,],
-                ]
-            ],
-            [ 'id' => 15, 'name' => '账户管理', 'level' => 1, 'url' => '/wallet', 'sub' =>
-                [
-                    [ 'id' => 16, 'name' => '账户总览', 'level' => 2, 'url' => '/merchant/wallet/summary/list', 'pid' => 15,],
-                    [ 'id' => 17, 'name' => '我的贡献值', 'level' => 2, 'url' => '/merchant/wallet/consume/list', 'pid' => 15,],
-//                    [ 'id' => 19, 'name' => '我的TPS积分', 'level' => 2, 'url' => '/merchant/wallet/credit/list', 'pid' => 15,],
-                    [ 'id' => 18, 'name' => '提现密码管理', 'level' => 2, 'url' => '/merchant/wallet/withdraw/password', 'pid' => 15,],
-                ]
-            ],
+            [ 'id' => 5, 'name' => '财务管理', 'level' => 1, 'url' => '/merchant/settlements',],
             [ 'id' => 6, 'name' => '素材中心', 'level' => 1, 'url' => 'material', 'sub' =>
                 [
                     [ 'id' => 7, 'name' => '分享会员二维码', 'level' => 2, 'url' => '/merchant/invite/channel', 'pid' => 6,],
@@ -138,7 +115,7 @@ class MerchantAccountService extends BaseService
                 [
 //                    [ 'id' => 10, 'name' => '关联用户', 'level' => 2, 'url' => '/merchant/setting/mapping_user', 'pid' => 9],
                     [ 'id' => 12, 'name' => '系统配置', 'level' => 2, 'url' => '/merchant/setting', 'pid' => 9 ],
-                    [ 'id' => 14, 'name' => 'TPS会员账号管理', 'level' => 2, 'url' => '/merchant/tps-bind', 'pid' => 9 ],
+//                    [ 'id' => 14, 'name' => 'TPS会员账号管理', 'level' => 2, 'url' => '/merchant/tps-bind', 'pid' => 9 ],
                 ]
             ],
         ];

@@ -20,11 +20,6 @@ use Illuminate\Database\Eloquent\Builder;
 class OperService extends BaseService
 {
 
-    /**
-     * @param $id
-     * @param array $fields
-     * @return Oper
-     */
     public static function getById($id, $fields = ['*'])
     {
         if (is_string($fields)) {
@@ -50,10 +45,6 @@ class OperService extends BaseService
         $name = array_get($params, 'name');
         $status = array_get($params, 'status');
         $tel = array_get($params, 'tel');
-        $payToPlatform = array_get($params, 'payToPlatform');
-        if($payToPlatform ==3){$payToPlatform1 = true;} else{$payToPlatform1 = NULL;}
-        if($payToPlatform ==1){$payToPlatform2 = true;} else{$payToPlatform2 = NULL;}
-        if($payToPlatform ==2){$payToPlatform3 = true;} else{$payToPlatform3 = NULL;}
 
         $data = Oper::when($status, function (Builder $query) use ($status) {
             $query->where('status', $status);
@@ -63,15 +54,6 @@ class OperService extends BaseService
             })
             ->when($tel, function (Builder $query) use ($tel) {
                 $query->where('tel', 'like', "%$tel%");
-            })
-            ->when($payToPlatform1, function (Builder $query) {
-                $query->where('pay_to_platform', 0);
-            })
-            ->when($payToPlatform2, function (Builder $query){
-                $query->where('pay_to_platform', 1);
-            })
-            ->when($payToPlatform3, function (Builder $query){
-                $query->where('pay_to_platform', 2);
             })
             ->orderBy('id', 'desc')
             ->paginate();
@@ -243,25 +225,6 @@ class OperService extends BaseService
     }
 
     /**
-     * 更新小程序支付对象设置
-     * @param $id
-     * @param $pay_to_platform
-     * @return Oper
-     */
-    public static function changePayToPlatform($id, $pay_to_platform)
-    {
-
-        $oper = Oper::find($id);
-        if (empty($oper)) {
-            throw new DataNotFoundException('运营中心信息不存在');
-        }
-        $oper->pay_to_platform = $pay_to_platform;
-
-        $oper->save();
-        return $oper;
-    }
-
-    /**
      * 切换运营中心支付到平台
      * @param $id
      * @return Oper
@@ -275,20 +238,5 @@ class OperService extends BaseService
         $oper->pay_to_platform = 1;
         $oper->save();
         return $oper;
-    }
-
-    /**
-     * 根据运营中心名获取运营中心某个字段的数组
-     * @param $operName
-     * @param $field
-     * @return \Illuminate\Support\Collection
-     */
-    public static function getOperColumnArrayByOperName($operName, $field)
-    {
-        $arr = Oper::where('name', 'like', "%$operName%")
-            ->select($field)
-            ->get()
-            ->pluck($field);
-        return $arr;
     }
 }

@@ -48,7 +48,7 @@
                     this.$message.error('请上传回款单图片');
                     return false;
                 }
-                api.post('/settlements/updatePayPicUrl', this.form).then(data => {
+                api.post('/updatePayPicUrl', this.form).then(data => {
                     this.$message.success('上传回款单成功');
                     this.$refs.form.resetFields();
                     this.form.pay_pic_url = '';

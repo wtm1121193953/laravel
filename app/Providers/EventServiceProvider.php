@@ -13,13 +13,9 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        /*'App\Events\Event' => [
+        'App\Events\Event' => [
             'App\Listeners\EventListener',
-        ],*/
-        // Author:Jerry Date:180903
-        'App\Events\TpsBindSave'    =>  [
-            'App\Listeners\TpsBindSaveEventListener'
-        ]
+        ],
     ];
 
     /**

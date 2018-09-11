@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
-use Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -44,11 +43,6 @@ class AppServiceProvider extends ServiceProvider
         Merchant::observe(MerchantObserver::class);
         // 用户绑定运营中心模型观察者
         UserOpenIdMapping::observe(UserOpenIdMappingObserver::class);
-
-        //扩展身份证验证规则 Author:Jerry Date:180831
-        Validator::extend('identitycards', function($attribute, $value, $parameters) {
-            return preg_match('/(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}$)/', $value);
-        });
     }
 
     /**

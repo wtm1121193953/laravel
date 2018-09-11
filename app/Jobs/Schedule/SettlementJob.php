@@ -12,12 +12,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
-/**
- * 每周订单结算, 旧结算逻辑, 支付到运营中心时使用此结算逻辑
- * Class SettlementWeekly
- * @package App\Jobs\Schedule
- */
-class SettlementWeekly implements ShouldQueue
+class SettlementJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

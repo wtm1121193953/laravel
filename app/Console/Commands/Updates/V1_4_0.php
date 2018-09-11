@@ -4,7 +4,9 @@ namespace App\Console\Commands\Updates;
 
 use App\Jobs\InviteStatisticsDailyUpdateByDate;
 use App\Jobs\UserOrderCountUpdateJob;
+use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Invite\InviteUserRecord;
+use App\Modules\Order\OrderService;
 use App\Modules\User\User;
 use App\Modules\Wechat\MiniprogramScene;
 use Carbon\Carbon;

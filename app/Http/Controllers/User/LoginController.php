@@ -94,11 +94,11 @@ class LoginController extends Controller
         $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
         if($userOpenIdMapping){
             $userOpenIdMapping->user_id = $user->id;
-            $userOpenIdMapping->oper_id = request()->get('current_oper_id');
+            $userOpenIdMapping->oper_id = request()->get('current_oper')->id;
             $userOpenIdMapping->save();
         }else {
             $userOpenIdMapping = new UserOpenIdMapping();
-            $userOpenIdMapping->oper_id = request()->get('current_oper_id');
+            $userOpenIdMapping->oper_id = request()->get('current_oper')->id;
             $userOpenIdMapping->open_id = $openId;
             $userOpenIdMapping->user_id = $user->id;
             $userOpenIdMapping->save();
@@ -145,11 +145,11 @@ class LoginController extends Controller
         $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
         if($userOpenIdMapping){
             $userOpenIdMapping->user_id = $payload['user_id'];
-            $userOpenIdMapping->oper_id = request()->get('current_oper_id');
+            $userOpenIdMapping->oper_id = request()->get('current_oper')->id;
             $userOpenIdMapping->save();
         }else {
             $userOpenIdMapping = new UserOpenIdMapping();
-            $userOpenIdMapping->oper_id = request()->get('current_oper_id');
+            $userOpenIdMapping->oper_id = request()->get('current_oper')->id;
             $userOpenIdMapping->open_id = $openId;
             $userOpenIdMapping->user_id = $payload['user_id'];
             $userOpenIdMapping->save();

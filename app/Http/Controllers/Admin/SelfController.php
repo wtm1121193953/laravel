@@ -45,8 +45,7 @@ class SelfController extends Controller
         ]);
         return Result::success([
             'user' => $user,
-            'menus' => $menuTree,
-            'rules' => $rules,
+            'menus' => $menuTree
         ]);
     }
 
@@ -73,8 +72,7 @@ class SelfController extends Controller
 
         return Result::success([
             'user' => $user,
-            'menus' => $menuTree,
-            'rules' => $rules,
+            'menus' => $menuTree
         ]);
     }
 

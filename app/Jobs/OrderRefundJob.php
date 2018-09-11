@@ -45,8 +45,6 @@ class OrderRefundJob implements ShouldQueue
     {
         //处理消费额 消费额逻辑需要修改
         $this->handleConsumeQuota($this->order);
-        // 处理分润
-        $this->handleFeeSplitting();
     }
 
     /**
@@ -177,14 +175,6 @@ class OrderRefundJob implements ShouldQueue
         }else if ($parent instanceof Oper){
             // 如果上级是运营中心, 处理运营中心的消费额
         }
-    }
-
-    /**
-     * 处理分润
-     */
-    private function handleFeeSplitting()
-    {
-        // todo
     }
 
 }
