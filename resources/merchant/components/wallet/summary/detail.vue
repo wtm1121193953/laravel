@@ -30,7 +30,6 @@
                 </el-col>
             </el-form>
         </el-row>
-        <div v-if="billData.type == 2 || billData.type == 4" style="border: 1px solid #DCDFE6;"></div>
         <el-row :gutter="20" v-if="billData.type == 2 || billData.type == 4">
             <el-form label-width="120px" label-position="left" size="small">
                 <el-col :span="12">
