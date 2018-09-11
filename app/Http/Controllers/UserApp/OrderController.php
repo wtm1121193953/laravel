@@ -15,6 +15,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Dishes\DishesItem;
+use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
@@ -27,6 +28,7 @@ use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use App\Support\Alipay;
+use App\Support\Utils;
 use Illuminate\Support\Facades\Log;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Merchant\MerchantSettingService;
@@ -40,11 +42,36 @@ class OrderController extends Controller
         $status = request('status');
         $user = request()->get('current_user');
 
-        $data = OrderService::getList([
-            'userId' => $user->id,
-            'status' => $status
-        ]);
+        $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
 
+        $currentOperId = request()->get('current_oper_id');
+        $data = Order::where('user_id', $user->id)
+            ->where(function (Builder $query) {
+                $query->where('type', Order::TYPE_GROUP_BUY)
+                    ->orWhere(function (Builder $query) {
+                        $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
+                            ->whereIn('status', [4, 6, 7]);
+                    })->orWhere('type', Order::TYPE_DISHES);
+            })
+            ->when($merchantShareInMiniprogram != 1, function (Builder $query) use ($currentOperId) {
+                $query->where('oper_id', $currentOperId);
+            })
+            ->when($status, function (Builder $query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->orderByDesc('id')
+            ->paginate();
+        $data->each(function ($item) use ($currentOperId) {
+            $item->items = OrderItem::where('order_id', $item->id)->get();
+            // 判断商户是否是当前小程序关联运营中心下的商户
+            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
+            $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
+            $item->merchant_logo = Merchant::where('id', $item->merchant_id)->value('logo');
+            $item->signboard_name = Merchant::where('id', $item->merchant_id)->value('signboard_name');
+            if ($item->type == Order::TYPE_DISHES) {
+                $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
+            }
+        });
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -55,21 +82,43 @@ class OrderController extends Controller
         $this->validate(request(), [
             'order_no' => 'required'
         ]);
-        $user = request()->get('current_user');
-        $detail = Order::where('order_no', request('order_no'))
-            ->where('user_id', $user->id)
-            ->firstOrFail();
-        $detail->items = OrderItem::where('order_id', $detail->id)->get();
+        $detail = Order::where('order_no', request('order_no'))->firstOrFail();
+        // 只返回一个核销码
+        $orderItem = OrderItem::where('order_id', $detail->id)->first();
+        $detail->items = !empty($orderItem) ? [$orderItem] : [];
+        $currentOperId = request()->get('current_oper_id');
+        // 判断商户是否是当前小程序关联运营中心下的商户
+        if($detail->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){
+            // 如果是需要支付到平台的订单
+            if(!$currentOperId){ // 如果当前operId是0, 表示是在平台的小程序内
+                $detail->isOperSelf = 1;
+            }else {
+                $detail->isOperSelf = 0;
+            }
+        }else {
+            $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        }
 
+        $detail->signboard_name = Merchant::where('id', $detail->merchant_id)->value('signboard_name');
+        // 积分记录
         $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
             ->where('type', 1)
-            ->where('user_id', $user->id)
             ->first();
-        if (!empty($creditRecord)){
+        if (!empty($creditRecord)) {
             $detail->user_level = $creditRecord->user_level;
             $detail->user_level_text = User::getLevelText($creditRecord->user_level);
             $detail->credit = $creditRecord->credit;
         }
+        // 单品订单
+        if ($detail->type == Order::TYPE_DISHES) {
+            $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
+        }
+        // 查看分润详情
+        $userFeeSplittingRatioToSelf = FeeSplittingService::getUserFeeSplittingRatioToSelfByMerchantId($detail->merchant_id);
+        $detail->fee_splitting_amount = Utils::getDecimalByNotRounding($detail->pay_price * $userFeeSplittingRatioToSelf, 2);
+
+        // 贡献值
+        $detail->consume_quota = floor($detail->pay_price);
         return Result::success($detail);
     }
 

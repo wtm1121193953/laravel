@@ -209,6 +209,8 @@ class MerchantController extends Controller
         $detail->merchantCategoryName = $category->name;
         //商家是否开启单品模式
         $detail->isOpenDish = MerchantSettingService::getValueByKey($id,'dishes_enabled');
+        // 商家是否开启直接买单
+        $detail->isOpenQrcodePay = 1;
         // 最低消费
         $detail->lowestAmount = MerchantService::getLowestPriceForMerchant($detail->id);
         $currentOperId = request()->get('current_oper_id');
