@@ -29,10 +29,10 @@ Route::prefix('app/user')
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
         Route::get('merchants', 'MerchantController@getList');
         Route::get('merchant/detail', 'MerchantController@detail');
-        Route::get('merchant/getDishesCategoryAndGoods', 'DishesController@getDishesCategory');
-        Route::get('merchant/getHotDishesGoods', 'DishesController@getHotDishesGoods');
-        Route::post('merchant/dishesOrder', 'DishesController@add')->middleware(UserLoginFilter::class);
-        Route::get('merchant/dishesDetail', 'DishesController@detail')->middleware(UserLoginFilter::class);
+        Route::get('merchant/getDishesCategoryAndGoods', 'DishesController@getDishesCategory'); // 废弃
+        Route::get('merchant/getHotDishesGoods', 'DishesController@getHotDishesGoods'); // 废弃
+        Route::post('merchant/dishesOrder', 'DishesController@add')->middleware(UserLoginFilter::class); // 废弃
+        Route::get('merchant/dishesDetail', 'DishesController@detail')->middleware(UserLoginFilter::class); // 废弃
         Route::get('merchant/dishes/categoryAndGoods', 'DishesController@getDishesCategory');
         Route::get('merchant/dishes/hotGoods', 'DishesController@getHotDishesGoods');
         Route::post('merchant/dishes/add', 'DishesController@add')->middleware(UserLoginFilter::class);
