@@ -76,16 +76,10 @@ class DishesService extends BaseService
     public static function detailDishes($dishesId)
     {
         $list = DishesItem::where('dishes_id',$dishesId)->get();
-        $detailDishes = [];
-        foreach ($list as  $k=>$item){
-            $detailDishes[$k]['dishes_goods_name'] = $item->dishes_goods_name;
-            $detailDishes[$k]['number'] = $item->number;
-            $detailDishes[$k]['total_price'] = ($item->number)*($item->dishes_goods_sale_price);
-            $detailDishes[$k]['dishes_goods_detail_image'] = $item->dishes_goods_detail_image;
-            $detailDishes[$k]['user_id'] = $item->user_id;
-            $detailDishes[$k]['oper_id'] = $item->oper_id;
-        }
+        $list->each(function($item){
+            $item->total_price = $item->number * $item->dishes_goods_sale_price;
+        });
 
-        return $detailDishes;
+        return $list;
     }
 }

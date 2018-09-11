@@ -58,7 +58,7 @@ class MerchantController extends Controller
 
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
 
-        $currentOperId = request()->get('current_oper')->id;
+        $currentOperId = request()->get('current_oper_id');
         $query = Merchant::when($merchantShareInMiniprogram != 1, function(Builder $query) use ($currentOperId) {
                 $query->where('oper_id', $currentOperId);
             })
@@ -213,7 +213,7 @@ class MerchantController extends Controller
         $detail->isOpenQrcodePay = 1;
         // 最低消费
         $detail->lowestAmount = MerchantService::getLowestPriceForMerchant($detail->id);
-        $currentOperId = request()->get('current_oper')->id;
+        $currentOperId = request()->get('current_oper_id');
         // 判断商户是否是当前小程序关联运营中心下的商户
         $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
         // 兼容v1.0.0版客服电话字段

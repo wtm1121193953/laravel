@@ -11,6 +11,7 @@ namespace App\Modules\Tps;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
+use App\Exceptions\PasswordErrorException;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\MerchantService;
@@ -65,19 +66,22 @@ class TpsBindService extends BaseService
         }
 
         DB::beginTransaction();
-    	$record = new TpsBind();
-    	$record->origin_type = TpsBind::ORIGIN_TYPE_OPER;
-    	$record->origin_id = $operId;
-    	$record->tps_account = $email;
-    	$record->save();
 
         try{
             // 调用TPS接口, 生成TPS帐号
             $tpsPassword = 'a12345678';
             $result = TpsApi::createTpsAccount($email, $tpsPassword);
-            if($result['code'] !== 0){
+            if($result['code'] !== 0 || empty($result['data']['uid'])){
                 throw new BaseResponseException($result['msg']);
             }
+
+            $record = new TpsBind();
+            $record->origin_type = TpsBind::ORIGIN_TYPE_OPER;
+            $record->origin_id = $operId;
+            $record->tps_account = $email;
+            $record->tps_uid = $result['data']['uid'];
+            $record->save();
+
             // 生成完帐号, 发送邮件
             TpsApi::sendEmail($email, '创建成功通知', "您的帐号 $email 创建成功, 密码为 $tpsPassword, 请及时登录tps商城重置您的密码");
         } catch (\Exception $e){
@@ -122,19 +126,23 @@ class TpsBindService extends BaseService
 
         // 若符合条件, 则进行创建帐号
         DB::beginTransaction();
-    	$record = new TpsBind();
-    	$record->origin_type = TpsBind::ORIGIN_TYPE_MERCHANT;
-    	$record->origin_id = $merchantId;
-    	$record->tps_account = $mobile;
-    	$record->save();
+
 
         try{
             // 调用TPS接口, 生成TPS帐号
             $tpsPassword = 'a12345678';
             $result = TpsApi::createTpsAccount($mobile, $tpsPassword, $operBindInfo->tps_account, 2);
-            if($result['code'] !== 0){
+            if($result['code'] !== 0 || empty($result['data']['uid'])) {
                 throw new BaseResponseException($result['msg']);
             }
+
+            $record = new TpsBind();
+            $record->origin_type = TpsBind::ORIGIN_TYPE_MERCHANT;
+            $record->origin_id = $merchantId;
+            $record->tps_account = $mobile;
+            $record->tps_uid = $result['data']['uid'];
+            $record->save();
+
             // 生成完帐号, 发送短信通知, 目前没有自定义内容短信, 暂不发送
         } catch (\Exception $e){
             DB::rollBack();
@@ -157,9 +165,10 @@ class TpsBindService extends BaseService
     {
         // 调用TPS接口, 验证帐号密码是否正确
         $result = TpsApi::checkTpsAccount($tpsAccount, $tpsPassword);
-        if($result['code'] !== 0){
+        if($result['code'] !== 0 || empty($result['data']['uid']) ){
             if($result['code'] == 1301 || $result['code'] == 1302){
                 $message = '很遗憾！绑定失败，请输入正确的TPS账号密码！';
+                throw new PasswordErrorException($message);
             }else {
                 $message = $result['msg'];
             }
@@ -202,9 +211,11 @@ class TpsBindService extends BaseService
         $record->origin_type = TpsBind::ORIGIN_TYPE_USER;
         $record->origin_id = $userId;
         $record->tps_account = $tpsAccount;
+        $record->tps_uid = $result['data']['uid'];
         $record->save();
 
         return $record;
     }
+
 
 }

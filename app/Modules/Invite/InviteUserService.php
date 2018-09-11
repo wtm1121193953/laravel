@@ -16,7 +16,6 @@ use App\Modules\Admin\AdminUser;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
-use App\Modules\Order\Order;
 use App\Modules\Tps\TpsBind;
 use App\Modules\Tps\TpsBindService;
 use App\Modules\User\User;
@@ -445,7 +444,6 @@ class InviteUserService
         $inviteUserRecords->each(function(InviteUserRecord $item){
             $item->user_mobile = $item->user->mobile;
         });
-
         return $inviteUserRecords;
     }
 

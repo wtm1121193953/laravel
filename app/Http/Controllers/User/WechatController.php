@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\User;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\User\User;
 use App\Modules\User\UserOpenIdMapping;
@@ -31,11 +32,23 @@ class WechatController extends Controller
             'code' => 'required'
         ]);
         $code = request('code', '');
-        $app = WechatService::getWechatMiniAppForOper(request()->get('current_oper')->id);
-        $result = $app->auth->session($code);
-        if(is_string($result)) $result = json_decode($result, 1);
-        Log::info('wxLogin 返回', $result);
-        $openid = $result['openid'];
+        if($code == 'mock code' && !App::environment('production')){
+            $openid = UserOpenIdMapping::where('oper_id', request()->get('current_oper_id'))
+                ->inRandomOrder()->first()->open_id;
+        }else {
+            $app = WechatService::getWechatMiniAppFromRequest();
+            $result = $app->auth->session($code);
+            if(is_string($result)) $result = json_decode($result, 1);
+            Log::info('wxLogin 返回', $result);
+            if(!isset($result['openid'])){
+                Log::error('微信openId获取失败', [
+                    'code' => $code,
+                    'result' => $result,
+                ]);
+                throw new BaseResponseException('微信openId获取失败: ' . $result['errmsg'] ?? 'unknown');
+            }
+            $openid = $result['openid'];
+        }
         // 绑定用户openId到token
         $token = str_random(32);
         Cache::put('open_id_for_token_' . $token, $openid, 60 * 24 * 30);

@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Merchant;
 
+use App\Exceptions\UnloginException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantAccountService;
 use App\Modules\Merchant\MerchantService;
@@ -32,6 +33,21 @@ class SelfController extends Controller
         $password = request('password');
 
         $user = MerchantAccountService::login($username,$password);
+        $menus = MerchantAccountService::getMenus($user->oper_id);
+
+        return Result::success([
+            'user' => $user,
+            'menus' => $menus,
+        ]);
+    }
+
+    public function getMenus()
+    {
+        $user = request()->get('current_user');
+        if(empty($user)){
+            throw new UnloginException();
+        }
+
         $menus = MerchantAccountService::getMenus($user->oper_id);
 
         return Result::success([

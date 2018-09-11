@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\Schedule\SettlementJob;
+use App\Jobs\Schedule\SettlementWeekly;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -45,6 +45,6 @@ class Settlement extends Command
         if(empty($date)){
             $date = date('Y-m-d');
         }
-        SettlementJob::dispatch(Merchant::SETTLE_WEEKLY, Carbon::createFromFormat('Y-m-d', $date));
+        SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY, Carbon::createFromFormat('Y-m-d', $date));
     }
 }
