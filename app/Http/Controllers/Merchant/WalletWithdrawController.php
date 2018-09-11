@@ -144,7 +144,7 @@ class WalletWithdrawController extends Controller
      */
     public function getInvoiceTemplatePath()
     {
-        $path = storage_path('app\help-doc\merchant_invoice_template.doc');
+        $path = storage_path('app/help-doc/merchant_invoice_template.doc');
         return Result::success(['url' => $path]);
     }
 }
