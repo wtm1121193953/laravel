@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/5/9
- * Time: 23:36
- */
 
 namespace App\Http\Controllers\User;
 
@@ -26,7 +20,7 @@ class InviteChannelController extends Controller
      */
     public function getInviteQrcode()
     {
-        $operId = request()->get('current_oper')->id;
+        $operId = request()->get('current_oper_id');
         $userId = request()->get('current_user')->id;
         $inviteChannel = InviteChannelService::getByOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER, $operId);
         $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
@@ -61,6 +55,7 @@ class InviteChannelController extends Controller
 
     /**
      * 绑定推荐人
+     * @throws \Exception
      */
     public function bindInviter()
     {

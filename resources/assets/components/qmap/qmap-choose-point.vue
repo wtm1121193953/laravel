@@ -174,11 +174,7 @@
         },
         watch: {
             shownMarkers(val){
-                for(let item of val) {
-                    if(item && item.length == 2){
-                        this.addMarkerByLnglat(item);
-                    }
-                }
+
             },
             center(val){
                 this.map.setCenter(...val)

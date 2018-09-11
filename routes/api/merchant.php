@@ -13,6 +13,7 @@ Route::prefix('merchant')
         Route::post('logout', 'SelfController@logout');
         Route::post('self/modifyPassword', 'SelfController@modifyPassword');
         Route::get('self/getMerchantInfo', 'SelfController@getMerchantInfo');
+        Route::get('self/menus', 'SelfController@getMenus');
 
         Route::get('inviteChannel/inviteQrcode', 'InviteChannelController@getInviteQrcode');
         Route::get('inviteChannel/downloadInviteQrcode', 'InviteChannelController@downloadInviteQrcode');
@@ -38,8 +39,6 @@ Route::prefix('merchant')
         Route::group([], base_path('routes/api/merchant/orders.php'));
         Route::group([], base_path('routes/api/merchant/settlements.php'));
         Route::group([], base_path('routes/api/merchant/mapping_user.php'));
-
         Route::group([], base_path('routes/api/merchant/dishes.php'));
-
-
+        Route::group([], base_path('routes/api/merchant/wallet.php'));
     });
