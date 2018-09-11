@@ -128,11 +128,11 @@ class OperAccountService extends BaseService
                 ]
             ],
 
-            [ 'id' => 20, 'name' => '系统配置', 'level' => 1, 'url' => 'sysconfig', 'sub' =>
-                [
-                    [ 'id' => 21, 'name' => '绑定TPS', 'level' => 2, 'url' => '/oper/tps-bind', 'pid' => 20,],
-                ]
-            ],
+//            [ 'id' => 20, 'name' => '系统配置', 'level' => 1, 'url' => 'sysconfig', 'sub' =>
+//                [
+//                    [ 'id' => 21, 'name' => '绑定TPS', 'level' => 2, 'url' => '/oper/tps-bind', 'pid' => 20,],
+//                ]
+//            ],
             /*[ 'id' => 11, 'name' => '系统设置', 'level' => 1, 'url' => 'setting', 'sub' =>
                 [
                     [ 'id' => 12, 'name' => '关联用户', 'level' => 2, 'url' => '/oper/setting/mapping_user', 'pid' => 11],
