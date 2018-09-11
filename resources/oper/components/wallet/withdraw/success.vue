@@ -35,7 +35,7 @@
                 {{(new Date((new Date()).setDate((new Date(form.created_at)).getDate() + 7))).format('yyyy-MM-dd')}} 24:00:00前，具体到账时间请以银行通知时间为准
             </el-form-item>
             <el-form-item>
-                <el-button @click="goBack">完 成</el-button>
+                <el-button @click="goBack" type="primary">完 成</el-button>
             </el-form-item>
         </el-form>
     </page>
