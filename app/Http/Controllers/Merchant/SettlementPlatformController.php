@@ -46,7 +46,7 @@ class SettlementPlatformController extends Controller
         if(empty($settlement)){
             throw new DataNotFoundException('结算单不存在');
         }
-        $data = OrderService::getListByOperSettlementId($settlementId);
+        $data = OrderService::getListByPlatformSettlementId($settlementId);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
