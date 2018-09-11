@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\UserApp;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
@@ -20,6 +21,7 @@ use App\Result;
 use App\Modules\Tps\TpsBindService;
 use App\Modules\Tps\TpsBind;
 use App\Modules\User\UserIdentityAuditRecordService;
+use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller
 {
@@ -44,14 +46,18 @@ class UserController extends Controller
             }
         }
 
-        $user->avatar_url = UserService::getUserAvatarUrlWith($user->id);
+        $dbUser = UserService::getUserById($user->id);
+
+        $user->name = $dbUser->name;
+
+        $user->avatar_url = UserService::getUserAvatarUrlByUserId($user->id);
 
         $user->level_text = User::getLevelText($user->level);
         $bindInfo = TpsBindService::getTpsBindInfoByOriginInfo($user->id, TpsBind::ORIGIN_TYPE_USER);
         if ($bindInfo) {
             $user['tpsBindInfo'] = $bindInfo;
         } else {
-            $user['tpsBindInfo'] = '';
+            $user['tpsBindInfo'] = null;
         }
 
 
@@ -93,6 +99,10 @@ class UserController extends Controller
             $userInfo->name = $name;
         }
         $userInfo->save();
+
+        // 修改用户信息后更新缓存中的用户信息
+        $token = request()->headers->get('token');
+        Cache::put('token_to_user_' . $token, $userInfo, 60 * 24 * 30);
 
         return Result::success();
     }

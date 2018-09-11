@@ -33,17 +33,21 @@ Route::prefix('app/user')
         Route::get('merchant/getHotDishesGoods', 'DishesController@getHotDishesGoods');
         Route::post('merchant/dishesOrder', 'DishesController@add')->middleware(UserLoginFilter::class);
         Route::get('merchant/dishesDetail', 'DishesController@detail')->middleware(UserLoginFilter::class);
-        Route::post('order/dishesBuy','OrderController@dishesBuy')->middleware(UserLoginFilter::class);
+        Route::get('merchant/dishes/categoryAndGoods', 'DishesController@getDishesCategory');
+        Route::get('merchant/dishes/hotGoods', 'DishesController@getHotDishesGoods');
+        Route::post('merchant/dishes/add', 'DishesController@add')->middleware(UserLoginFilter::class);
+        Route::get('merchant/dishes/detail', 'DishesController@detail')->middleware(UserLoginFilter::class);
 
         Route::get('goods', 'GoodsController@getList');
         Route::get('goods/detail', 'GoodsController@detail');
 
         Route::get('orders', 'OrderController@getList')->middleware(UserLoginFilter::class);
         Route::get('order/detail', 'OrderController@detail')->middleware(UserLoginFilter::class);
-        Route::any('order/buy', 'OrderController@buy')->middleware(UserLoginFilter::class);
-        Route::any('order/pay', 'OrderController@pay')->middleware(UserLoginFilter::class);
-        Route::any('order/refund', 'OrderController@refund')->middleware(UserLoginFilter::class);
-        Route::any('order/scanQrcodePay', 'OrderController@scanQrcodePay')->middleware(UserLoginFilter::class);
+        Route::post('order/buy', 'OrderController@buy')->middleware(UserLoginFilter::class);
+        Route::post('order/pay', 'OrderController@pay')->middleware(UserLoginFilter::class);
+        Route::post('order/refund', 'OrderController@refund')->middleware(UserLoginFilter::class);
+        Route::post('order/scanQrcodePay', 'OrderController@scanQrcodePay')->middleware(UserLoginFilter::class);
+        Route::post('order/dishesBuy','OrderController@dishesBuy')->middleware(UserLoginFilter::class);
 
         Route::get('invite/qrcode', 'InviteChannelController@getInviteQrcode')->middleware(UserLoginFilter::class);
         Route::get('invite/getInviterByInviteChannelId', 'InviteChannelController@getInviterByChannelId');
