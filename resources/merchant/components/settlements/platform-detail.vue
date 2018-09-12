@@ -7,7 +7,7 @@
             <el-table-column prop="pay_price" label="总价" align="center"/>
             <el-table-column prop="settlement_rate" label="费率" align="center">
                 <template slot-scope="scope">
-                    <span>{{ parseInt(scope.row.settlement_rate).toFixed(2) }}%</span>
+                    {{scope.row.settlement_rate}}%
                 </template>
             </el-table-column>
             <el-table-column prop="status" label="订单状态" align="center">
