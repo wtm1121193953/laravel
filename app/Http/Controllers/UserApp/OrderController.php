@@ -291,12 +291,14 @@ class OrderController extends Controller
             throw new ParamInvalidException('价格不合法');
         }
         $user = request()->get('current_user');
-        $merchant = Merchant::first(request('merchant_id'));
+        $merchant = Merchant::find(request('merchant_id'));
         if (empty($merchant)) {
             throw new DataNotFoundException('商户信息不存在！');
         }
-
-        $merchant_oper = Oper::first($merchant->oper_id);
+        $merchant_oper = Oper::find($merchant->oper_id);
+        if (empty($merchant_oper)) {
+            throw new DataNotFoundException('该商户的运营中心不存在！');
+        }
 
         $order = new Order();
         $orderNo = Order::genOrderNo();
