@@ -2,9 +2,19 @@
 
 namespace App\Console\Commands\Updates;
 
+use App\Modules\Admin\AdminAuthRule;
+use App\Modules\FeeSplitting\FeeSplittingRecord;
+use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Order\Order;
+use App\Modules\Wallet\Wallet;
+use App\Modules\Wallet\WalletBalanceUnfreezeRecord;
+use App\Modules\Wallet\WalletBatch;
+use App\Modules\Wallet\WalletBill;
+use App\Modules\Wallet\WalletConsumeQuotaRecord;
+use App\Modules\Wallet\WalletConsumeQuotaUnfreezeRecord;
+use App\Modules\Wallet\WalletWithdraw;
 use Illuminate\Console\Command;
 
 class V1_4_3 extends Command
@@ -37,22 +47,24 @@ class V1_4_3 extends Command
      * Execute the console command.
      *
      * @return mixed
+     * @throws \Exception
      */
     public function handle()
     {
-        // 1. 更新现有订单数据中的费率字段
-        $this->info('更新现有订单数据中的费率字段 Start');
-        $bar = $this->output->createProgressBar(Order::where('settlement_rate', 0)->count('id'));
-        Order::where('settlement_rate', 0)
-            ->chunk(1000, function ($list) use ($bar) {
-                $list->each(function (Order $item) use ($bar) {
-                    $item->settlement_rate = MerchantService::getById($item->merchant_id, ['id', 'settlement_rate'])->settlement_rate;
-                    $item->save();
+        // 1. 清楚结算出的分润
+        // 代码全部注释掉, 以免后面误操作
+//        Wallet::where('id', '>', 0)->delete();
+//        FeeSplittingRecord::where('id', '>', 0)->delete();
+//        WalletBalanceUnfreezeRecord::where('id', '>', 0)->delete();
+//        WalletBatch::where('id', '>', 0)->delete();
+//        WalletBill::where('id', '>', 0)->delete();
+//        WalletConsumeQuotaRecord::where('id', '>', 0)->delete();
+//        WalletConsumeQuotaUnfreezeRecord::where('id', '>', 0)->delete();
+//        WalletWithdraw::where('id', '>', 0)->delete();
+//        Order::where('id', '>', 0)->update(['splitting_status' => 1, 'splitting_time' => null]);
+//
+//        // 删除错误的权限
+//        AdminAuthRule::where('pid', 35)->delete();
 
-                    $bar->advance();
-                });
-            });
-        $bar->finish();
-        $this->info("\n更新现有订单数据中的费率字段 Finished");
     }
 }

@@ -82,7 +82,7 @@ class V1_4_2 extends Command
         $this->info("\n更新现有订单数据中的费率字段 Finished");
 
         // 历史订单分润
-        $this->info('历史订单分润 Start');
+        /*$this->info('历史订单分润 Start');
         $bar = $this->output->createProgressBar(Order::where('status', Order::STATUS_FINISHED)->where('splitting_status', Order::SETTLEMENT_STATUS_NO)->count('id'));
         Order::where('status', Order::STATUS_FINISHED)->chunk(1000, function ($list) use ($bar) {
             $list->each(function (Order $item) use ($bar) {
@@ -93,7 +93,7 @@ class V1_4_2 extends Command
             });
         });
         $bar->finish();
-        $this->info("\n历史订单分润 Finished: 已发放全部任务到队列");
+        $this->info("\n历史订单分润 Finished: 已发放全部任务到队列");*/
 
         // 历史订单消费额转换
         $this->info("\n初始化银行列表 Start");
