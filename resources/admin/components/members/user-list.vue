@@ -38,7 +38,7 @@
                     <el-option label="禁用" value="2"/>
                 </el-select>
             </el-form-item>
-            -->
+
             <el-form-item label="用户认证状态" prop="identity_status">
                 <el-select v-model="query.identityStatus" size="small"  multiple placeholder="请选择" class="w-150">
                     <el-option label="待审核" value="1"/>
@@ -46,6 +46,8 @@
                     <el-option label="审核不通过" value="3"/>
                 </el-select>
             </el-form-item>
+            -->
+
             <el-form-item>
                 <el-button type="primary" @click="search">搜索</el-button>
             </el-form-item>
