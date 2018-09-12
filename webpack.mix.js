@@ -40,12 +40,25 @@ mix.webpackConfig(webpack => {
                                     path
                                         .replace(/\\/g, '/')
                                         .replace(
+                                            /(.*(resources)|images|image|img|assets)\//g,
+                                            ''
+                                        )
+                                        .replace(/\//g, '__')
+                                    + '?[hash]'
+                                );
+                            }
+                            /*if (!/node_modules|bower_components/.test(path)) {
+                                return (
+                                    Config.fileLoaderDirs.images + '/' +
+                                    path
+                                        .replace(/\\/g, '/')
+                                        .replace(
                                             /(.*(images|image|img|assets))\//g,
                                             ''
                                         ) +
                                     '?[hash]'
                                 );
-                            }
+                            }*/
 
                             return (
                                 Config.fileLoaderDirs.images +
@@ -83,6 +96,7 @@ mix.webpackConfig(webpack => {
 })
 
 // 加载 admin 前端模块
+mix.js('./resources/developer/app.js', 'public/js/developer.js');
 mix.js('./resources/admin/app.js', 'public/js/admin.js');
 mix.js('./resources/oper/app.js', 'public/js/oper.js');
 mix.js('./resources/merchant/app.js', 'public/js/merchant.js');
