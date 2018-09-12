@@ -163,10 +163,10 @@ class InviteChannelService extends BaseService
         $inviteChannel->origin_type = $originType;
         $inviteChannel->save();
 
-        if($operId > 0){
+//        if($operId > 0){
             // 邀请渠道创建成功后添加小程序场景
             MiniprogramSceneService::createInviteScene($inviteChannel);
-        }
+//        }
 
         return $inviteChannel;
     }
