@@ -60,6 +60,7 @@ class V1_4_3 extends Command
         WalletConsumeQuotaRecord::where('id', '>', 0)->delete();
         WalletConsumeQuotaUnfreezeRecord::where('id', '>', 0)->delete();
         WalletWithdraw::where('id', '>', 0)->delete();
+        Order::where('id', '>', 0)->update(['splitting_status' => 1, 'splitting_time' => null]);
 
         // 删除错误的权限
         AdminAuthRule::where('pid', 35)->delete();
