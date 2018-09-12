@@ -53,7 +53,8 @@ class MiniprogramSceneService extends BaseService
             ->orderBy('id', 'desc')
             ->first();
         if (empty($miniprogramScene)) {
-            throw new DataNotFoundException('该邀请渠道的小程序场景不存在');
+            $inviteChannel = InviteChannelService::getById($inviteChannelId);
+            $miniprogramScene = self::createInviteScene($inviteChannel);
         }
         return $miniprogramScene;
     }
