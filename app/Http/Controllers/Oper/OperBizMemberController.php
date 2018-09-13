@@ -6,8 +6,10 @@ use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperBizMember;
+use App\Modules\Bizer\BizerService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use App\Modules\Oper\OperBizerService;
 
 /**
  * 原有的业务员操作不再提取到service中, 后面会去掉
@@ -86,6 +88,31 @@ class OperBizMemberController extends Controller
             })->get();
         return Result::success([
             'list' => $list
+        ]);
+         /*
+        $where_data["status"] = request('status');
+        $list = BizerService::getList($where_data);
+        return Result::success([
+            'list' => $list
+        ]);* 
+         */
+    }
+
+    public function getAllbizer(){
+        $name = request('name', '');
+        $mobile = request('mobile', '');
+        $keyword = request('keyword', '');
+        $status = request('status');
+        $where_arr = [
+            "name"=>$name,
+            "mobile"=>$mobile,
+            "keyword"=>$keyword,
+            "status"=>$status,
+        ];
+        $data = OperBizerService::getAllbizer($where_arr);
+        //echo "<pre>";print_r($data);exit;
+        return Result::success([
+            'list' => $data->items(),
         ]);
     }
 

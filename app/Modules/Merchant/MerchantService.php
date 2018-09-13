@@ -15,14 +15,17 @@ use App\Exceptions\ParamInvalidException;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperBizer;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
 use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
+use App\Modules\Area\Area;
 use Illuminate\Support\Collection;
 use App\Modules\Setting\SettingService;
-use App\Modules\Area\Area;
 use App\Modules\Goods\GoodsService;
+
+use App\Modules\Oper\MyOperBizer;
 
 
 class MerchantService extends BaseService
@@ -75,15 +78,24 @@ class MerchantService extends BaseService
     public static function getAllNames(array $data)
     {
         // todo 后期可以对查询结果做缓存
-        $auditStatus = $data['audit_status'];
-        $status = $data['status'];
-        $operId = $data['operId'];
-        $list = Merchant::where(function (Builder $query) use ($operId) {
-            $query->where('oper_id', $operId)
+        $auditStatus = array_get($data, 'audit_status');
+        $status =array_get($data, 'status');
+        $operId =array_get($data, 'operId'); //运营中心ID
+        $bizer_id = array_get($data, 'bizer_id');//业务员ID
+//        $list = Merchant::where(function (Builder $query) use ($operId) {
+//            $query->where('oper_id', $operId)
+//                ->orWhere('audit_oper_id', $operId);
+//        })
+        $list = Merchant::select('id', 'name')
+            ->when(!empty($operId), function (Builder $query) use ($operId) {
+                $query->where('oper_id', $operId)
                 ->orWhere('audit_oper_id', $operId);
-        })
+            })
             ->when($status, function (Builder $query) use ($status) {
                 $query->where('status', $status);
+            })
+            ->when(!empty($bizer_id), function (Builder $query) use ($bizer_id) {
+                $query->where('bizer_id', $bizer_id);
             })
             ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus) {
                 if ($auditStatus == -1) {
@@ -127,6 +139,8 @@ class MerchantService extends BaseService
         $startCreatedAt = array_get($data,'startCreatedAt');
         $endCreatedAt = array_get($data,'endCreatedAt');
 
+        $cityId =array_get($data,"cityId");
+        $bizer_id = array_get($data, "bizer_id");
         // 全局限制条件
         $query = Merchant::where('audit_oper_id', '>', 0)->orderByDesc('id');
 
@@ -152,6 +166,24 @@ class MerchantService extends BaseService
                 $query->whereIn('creator_oper_id', $creatorOperId);
             } else {
                 $query->where('creator_oper_id', $creatorOperId);
+            }
+        }
+        if($bizer_id){
+             $query->where('bizer_id', $bizer_id);
+        }
+
+        if(!empty($cityId)){
+            if(isset($cityId[0]) && $cityId[0]){
+                $province_Id = Area::findOrFail($cityId[0]);
+                $query->where('province_id', $province_Id->area_id);
+            }
+            if(isset($cityId[1]) && $cityId[1]){
+                $city_Id = Area::findOrFail($cityId[1]);
+                $query->where('city_id', $city_Id->area_id);
+            }
+            if(isset($cityId[2]) && $cityId[2]){
+                $area_Id = Area::findOrFail($cityId[2]);
+                $query->where('area_id', $area_Id->area_id);
             }
         }
         if ($status) {
@@ -186,7 +218,7 @@ class MerchantService extends BaseService
             if (count($merchantCategory) == 1) {
                 $merchantCategoryFinalId = MerchantCategory::where('pid', $merchantCategory[0])
                     ->select('id')->get()
-                    ->pluck('id');
+                    ->pluck('id')->toArray();
             } else {
                 $merchantCategoryFinalId = intval($merchantCategory[1]);
             }
@@ -207,7 +239,8 @@ class MerchantService extends BaseService
         } else {
 
             $data = $query->paginate();
-
+            //$cc = $query->toSql();
+            //echo $cc;exit;
             $data->each(function ($item) {
                 if ($item->merchant_category_id) {
                     $item->categoryPath = MerchantCategoryService::getCategoryPath($item->merchant_category_id);
@@ -217,6 +250,7 @@ class MerchantService extends BaseService
                 $item->business_time = json_decode($item->business_time, 1);
                 $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
                 $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
+                $item->divide = (OperBizer::where('oper_id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('divide')) * 100 ."%";
                 $item->operBizMemberName = OperBizMember::where('oper_id', $item->operId)->where('code', $item->oper_biz_member_code)->value('name') ?: '无';
             });
 
@@ -274,15 +308,16 @@ class MerchantService extends BaseService
             throw new BaseResponseException('该商户不存在');
         }
 
-        if (!empty($merchant->oper_biz_member_code)) {
+        if (!empty($merchant->bizer_id)) {
             // 记录原业务员ID
-            $originOperBizMemberCode = $merchant->oper_biz_member_code;
+            $originOperBizMemberCode = $merchant->bizer_id;
         }
 
         $merchant->fillMerchantPoolInfoFromRequest();
         $merchant->fillMerchantActiveInfoFromRequest();
 
         // 商户名不能重复
+
         $exists = Merchant::where('name', $merchant->name)
             ->where('id', '<>', $merchant->id)->first();
         $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
@@ -323,15 +358,21 @@ class MerchantService extends BaseService
         $merchant->save();
 
         // 更新业务员已激活商户数量
-        if ($merchant->oper_biz_member_code) {
-            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
-            OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
+        if ($merchant->bizer_id) {
+
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
+            MyOperBizer::updateAuditMerchantNumberByCode($merchant->bizer_id);
+
+            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+            //OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
         }
 
         // 如果存在原有的业务员, 并且不等于现有的业务员, 更新原有业务员邀请用户数量
-        if (isset($originOperBizMemberCode) && $originOperBizMemberCode != $merchant->oper_biz_member_code) {
-            OperBizMember::updateActiveMerchantNumberByCode($originOperBizMemberCode);
-            OperBizMember::updateAuditMerchantNumberByCode($originOperBizMemberCode);
+        if (isset($originOperBizMemberCode) && $originOperBizMemberCode != $merchant->bizer_id) {
+            MyOperBizer::updateActiveMerchantNumberByCode($originOperBizMemberCode);
+            MyOperBizer::updateAuditMerchantNumberByCode($originOperBizMemberCode);
+            //OperBizMember::updateActiveMerchantNumberByCode($originOperBizMemberCode);
+            //OperBizMember::updateAuditMerchantNumberByCode($originOperBizMemberCode);
         }
 
         return $merchant;
@@ -371,8 +412,9 @@ class MerchantService extends BaseService
         MerchantAuditService::addAudit($merchant->id, $currentOperId);
 
         // 更新业务员已激活商户数量
-        if ($merchant->oper_biz_member_code) {
-            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        if ($merchant->bizer_id) {
+            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
         }
 
         return $merchant;
@@ -409,8 +451,9 @@ class MerchantService extends BaseService
         MerchantAuditService::addAudit($merchant->id, $operId);
 
         // 更新业务员已激活商户数量
-        if($merchant->oper_biz_member_code){
-            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        if($merchant->bizer_id){
+            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
         }
 
         return $merchant;

@@ -20,6 +20,7 @@ Route::get('/', function () {
     return redirect('/merchant');
 });
 
+Route::view('/developer', 'developer');
 // 后端页面
 Route::get('/admin', function () {
     return view('admin');

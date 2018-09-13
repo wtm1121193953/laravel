@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\Http\Middleware\AdminLoginFilter;
 use App\Http\Middleware\AdminPermissionAuthenticate;
+use App\Http\Middleware\Developer\DeveloperLoginFilter;
 use App\Http\Middleware\Merchant\MerchantLoginFilter;
 use App\Http\Middleware\Oper\OperLoginFilter;
 use App\Http\Middleware\User\CurrentOperInjector;
@@ -54,6 +55,11 @@ class Kernel extends HttpKernel
             RequestLog::class,
         ],
 
+        // developer 开发总后台接口中间件
+        'developer' => [
+            DeveloperLoginFilter::class,
+        ],
+
         // admin 后台接口中间件
         'admin' => [
             AdminLoginFilter::class,
@@ -85,7 +91,7 @@ class Kernel extends HttpKernel
 
         // user_app 用户端(App)接口中间件
         'bizer' => [
-            \App\Http\Middleware\UserApp\UserInfoInjector::class,
+            \App\Http\Middleware\Bizer\BizerLoginFilter::class,
         ],
     ];
 

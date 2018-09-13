@@ -1,5 +1,5 @@
 <template>
-    <page title="我的业务员" v-loading="isLoading">
+    <page title="我的员工" v-loading="isLoading">
         <el-form class="fl" size="small" inline>
             <el-form-item label="" prop="name">
                 <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="姓名"/>
@@ -18,7 +18,7 @@
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
         </el-form>
-        <el-button class="fr" type="primary" @click="add">添加业务员</el-button>
+        <el-button class="fr" type="primary" @click="add">添加员工</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="created_at" label="加入时间">
@@ -56,7 +56,7 @@
                 :page-size="15"
                 :total="total"/>
 
-        <el-dialog title="添加业务员" :visible.sync="isAdd" width="500px">
+        <el-dialog title="添加员工" :visible.sync="isAdd" width="500px">
             <operBizMember-form
                     ref="addForm"
                     @cancel="isAdd = false"

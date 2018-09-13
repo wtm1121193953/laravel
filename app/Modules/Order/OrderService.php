@@ -23,6 +23,7 @@ use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Sms\SmsService;
 use App\Modules\User\User;
+use App\Modules\Oper\Oper;
 use App\Modules\UserCredit\UserCreditRecord;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -69,8 +70,15 @@ class OrderService extends BaseService
         if ($userId > 0) {
             $query->where('user_id', $userId);
         }
-        if ($merchantId > 0) {
-            $query->where('merchant_id', $merchantId);
+        //if($merchantId > 0){
+            //$query->where('merchant_id', $merchantId);
+       // }
+        if(!empty($merchantId)){
+            if (is_array($merchantId) || $merchantId instanceof Collection) {
+                $query->whereIn('merchant_id', $merchantId);
+            } else {
+                $query->where('merchant_id', $merchantId);
+            }
         }
         if ($operId > 0) {
             $query->where('oper_id', $operId);
@@ -116,7 +124,8 @@ class OrderService extends BaseService
                 $query->where('status', $status);
             }
         }
-        if ($type == 1 && $goodsName) {
+        //if($type== 1 && $goodsName)
+        if($goodsName){
             $query->where('goods_name', 'like', "%$goodsName%");
         }
         if ($keyword) {
@@ -138,7 +147,9 @@ class OrderService extends BaseService
         $merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
         foreach ($data as $key => $item) {
             $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
-            if ($item->type == 3) {
+            $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
+            $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
+            if ($item->type == 3){
                 $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
                 $data[$key]['dishes_items'] = $dishesItems;
             }

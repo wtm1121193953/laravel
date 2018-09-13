@@ -64,7 +64,7 @@ Vue.component(ImageUpload.name, ImageUpload)
 import quillEditorPlugin from './quill-editor-plugin'
 Vue.use(quillEditorPlugin.VueQuillEditor, quillEditorPlugin.globalOptions)
 
-window.baseApiUrl = '/api/oper/'
+window.baseApiUrl = '/api/bizer/'
 import api from '../assets/js/api'
 window.api = api;
 Vue.prototype.$api = api;

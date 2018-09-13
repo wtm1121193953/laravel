@@ -11,7 +11,18 @@ Route::prefix('bizer')
 
         Route::post('login', 'SelfController@login');
         Route::post('logout', 'SelfController@logout');
-        Route::post('self/modifyPassword', 'SelfController@modifyPassword');
-
-
+        Route::post('register', 'SelfController@register');
+        Route::post('forgot_password', 'SelfController@forgotPassword');
+        
+        Route::get('merchants', 'MerchantController@getList');
+        Route::get('sms/getVerifyCode', 'SmsController@sendVerifyCode');
+        Route::get('merchant/categories/tree', 'MerchantController@getTree');
+        Route::get('area/tree', 'AreaController@getTree');
+        Route::get('merchant/opers/tree', 'MerchantController@allOperNames');
+        
+        Route::get('orders', 'OrderController@getList');
+        Route::get('merchant/allMerchantNames', 'OrderController@allMerchantNames');
+        Route::get('opersRecord', 'OperRecordController@getList');
+        
+        Route::group([], base_path('routes/api/bizer/oper.php'));
     });
