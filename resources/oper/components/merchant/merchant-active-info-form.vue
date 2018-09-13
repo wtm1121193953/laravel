@@ -326,7 +326,7 @@
                     ],
                     bank_card_no: [
                         {required: true, message: '银行账号 不能为空'},
-                        {min: 11, max: 20, message: '银行账号 11-20个数字内'}
+                        {min: 8, max: 30, message: '银行账号 8-30个数字内'}
                     ],
                     bank_name: [
                         {required: true, message: '开户行不能为空'}
