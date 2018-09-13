@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/4/14
- * Time: 14:58
- */
-
 namespace App\Http\Controllers\Bizer;
 
 use App\Exceptions\AccountNotFoundException;
@@ -16,7 +9,6 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
-use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Bizer\Bizer;
 use App\Modules\Sms\SmsVerifyCode;
 use App\Modules\Sms\SmsService;

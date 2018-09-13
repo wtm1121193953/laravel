@@ -22,8 +22,6 @@ use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Area\Area;
 use Illuminate\Support\Collection;
-use App\Modules\Setting\SettingService;
-use App\Modules\Area\Area;
 use App\Modules\Goods\GoodsService;
 
 use App\Modules\Oper\MyOperBizer;

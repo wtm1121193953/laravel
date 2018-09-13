@@ -53,13 +53,13 @@ class OperBizerService extends BaseService {
     public static function updateIsTipsById($id, $isTips = 1){
         OperBizer::where('id', $id)->update(['is_tips' => $isTips]);
     }
-    
+
     /**
      *  获取列表
      * @param array $params 参数数组
      * @param array|string $fields 查询字段
      * @param bool $getOperInfo 是否获取运营中心信息
-     * @return OperBizer[]
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      * @author tong.chen
      * @date 2018-08-23
      */

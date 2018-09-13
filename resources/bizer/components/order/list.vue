@@ -2,14 +2,6 @@
     <page title="订单列表" v-loading="isLoading">
         <el-form class="fl" inline size="small">
             <el-form-item prop="createdAt" label="创建时间">
-                <!-- <el-date-picker
-                        v-model="query.createdAt"
-                        type="daterange"
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        value-format="yyyy-MM-dd">
-                </el-date-picker> -->
                 <el-date-picker
                         class="w-150"
                         v-model="query.startTime"
@@ -191,17 +183,9 @@
                 let _self = this;
                 _self.isLoading = true;
                 let params = {};
-                // if (_self.query.createdAt && _self.query.createdAt.length > 0 ) {
-                //     params.startTime = _self.query.createdAt[0];
-                //     params.endTime = _self.query.createdAt[1];
-                // }else{
-                //     params.startTime = '';
-                //     params.endTime = '';
-                // }
                 Object.assign(params, _self.query);
                 api.get('/orders', params).then(data => {
                     _self.query.page = params.page;
-                    // _self.isLoading = false;
                     _self.list = data.list;
                     _self.total = data.total;
                 }).catch(() =>{
@@ -213,14 +197,8 @@
                     _self.isLoading = false;
                 })
             },
-            showMessage(scope){
-                api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
-                    this.auditRecord = [data];
-                })
-            },
             details(index){
                 this.detailOption = this.list[index];
-                //console.log("test",this.detailOption);
                 this.dialogDetailVisible = true;
             },
         },
