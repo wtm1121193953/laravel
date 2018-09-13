@@ -109,7 +109,7 @@ class SelfController extends Controller {
             'newPassword' => 'required|between:6,30',
             'reNewPassword' => 'required|same:newPassword'
         ]);
-        // todo 业务员修改密码
+
         $user = request()->get('current_user');
         // 检查原密码是否正确
         if (MerchantAccount::genPassword(request('password'), $user->salt) !== $user->password) {
@@ -185,7 +185,6 @@ class SelfController extends Controller {
     }
 
     private function getMenus() {
-        // todo 返回业务员菜单
         return [
             ['id' => 1, 'name' => '订单管理', 'level' => 1, 'url' => '/bizer/orders', 'sub' =>
                 [

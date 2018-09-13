@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/4/11
- * Time: 0:31
- */
 
 namespace App\Http\Middleware\Bizer;
 

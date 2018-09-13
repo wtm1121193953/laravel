@@ -45,12 +45,11 @@
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
             </el-form-item>
+            <el-button class="fr" type="success" size="small" icon="el-icon-plus" @click="add">添加运营中心</el-button>
         </el-form>
 
-        <el-button class="fr" type="primary" icon="el-icon-plus" @click="add">添加运营中心</el-button>
-
         <el-table :data="list" stripe>
-            <el-table-column prop="created_at" label="添加时间"/>
+        button classe-column prop="created_at" label="添加时间"/>
             <el-table-column prop="operInfo.name" label="运营中心名称"/>
             <el-table-column prop="operInfo.contacter" label="负责人"/>
             <el-table-column prop="operInfo.tel" label="联系电话"/>
@@ -141,8 +140,8 @@
                     name: '',
                     contacter: '',
                     tel: '',
-                    provinceId:'',//省份ID
-                    //cityId:'',//城市ID不能写,组件是自动生成的
+                    // provinceId:'',//省份ID
+                    cityId:[],//城市ID不能写,组件是自动生成的
                     status: '',
                     page: 1
                 },

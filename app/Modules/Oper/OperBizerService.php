@@ -1,16 +1,8 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: 57458
- * Date: 2018/7/23
- * Time: 15:59
- */
-
 namespace App\Modules\Oper;
 
 use App\BaseService;
-use App\Exceptions\BaseResponseException;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Bizer\BizerService;
 
@@ -18,9 +10,9 @@ class OperBizerService extends BaseService {
 
     /**
      * 根据业务员获取运营中心
-     * @param type $file
-     * @return string
-     * @throws BaseResponseException
+     * @param array $data
+     * @param bool $getWithQuery
+     * @return OperBizer|array|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public static function getBizerOper(array $data, bool $getWithQuery = false) {
         $bizer_id = array_get($data, "bizer_id");
@@ -33,11 +25,8 @@ class OperBizerService extends BaseService {
             return $query;
         } else {
             $data = $query->paginate();
-            //print_r($data);exit;
             $data->each(function ($item) {
-                //echo $item->bizer_id;exit;
                 $item->operName = Oper::where('id', $item->oper_id)->value('name');
-                //$item->bizerName = Bizer::where('bizer_id', $item->bizer_id)->value('name');
             });
             return $data;
         }
@@ -112,6 +101,7 @@ class OperBizerService extends BaseService {
     /**
      * 获取所有业务员，不分页
      * @param $params
+     * @param array $fields
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      * @internal param array $fields
      */
