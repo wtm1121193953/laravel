@@ -25,7 +25,7 @@ const routes = [
             ...order,
             ...merchant,
             // demo组件示例
-            {path: '/', component: welcome, name: 'welcome'},
+            {path: '/', component: welcome, name: 'welcomePage'},
             // demo组件示例
             {path: 'welcome', component: welcome, name: 'welcome'},
             // 刷新组件

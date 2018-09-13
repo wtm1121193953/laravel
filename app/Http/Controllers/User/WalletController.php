@@ -103,7 +103,7 @@ class WalletController extends Controller
     }
 
     /**
-     * 我的tps 消费额统计
+     * 我的贡献值统计
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function getTpsConsumeStatistics()
