@@ -52,3 +52,5 @@ Route::group([], base_path('routes/api/user.php'));
 Route::group([], base_path('routes/api/user_app.php'));
 
 Route::group([], base_path('routes/api/bizer.php'));
+
+Route::group([], base_path('routes/api/developer.php'));

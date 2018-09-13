@@ -60,6 +60,10 @@ class Handler extends ExceptionHandler
     {
         if($request->is('api/*')) {
             return $this->renderForApi($request, $exception);
+        }else if($request->is('developer/*')){
+            if($exception instanceof NotFoundHttpException){
+                return redirect('/developer?_from=' . urlencode(substr($request->getRequestUri(), 10)));
+            }
         }else if($request->is('admin/*')){
             if($exception instanceof NotFoundHttpException){
                 return redirect('/admin?_from=' . urlencode(substr($request->getRequestUri(), 6)));
