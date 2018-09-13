@@ -96,11 +96,11 @@ class WalletController extends Controller
      * @param $consume
      * @return float|int
      */
-    private static function getTpsConsumeByConsume($consume)
+    /*private static function getTpsConsumeByConsume($consume)
     {
         $tpsConsume = Utils::getDecimalByNotRounding($consume / 6 / 6.5 , 2);
         return $tpsConsume;
-    }
+    }*/
 
     /**
      * 我的tps 消费额统计
