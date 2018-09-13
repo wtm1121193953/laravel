@@ -74,7 +74,7 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
-                    <el-button @click="toMerchants(scope.row.id)" type="text">查看商户</el-button>
+                    <el-button v-if="scope.row.status === 1" @click="toMerchants(scope.row.id)" type="text">查看商户</el-button>
                     <!-- <el-button type="text" @click="contract">查看合同</el-button> -->
                 </template>
             </el-table-column>
@@ -94,7 +94,14 @@
                     {{ username }}
                 </el-form-item>
                 <el-form-item label="运营中心名称">
-                    <el-select v-model="addRegionData.oper_id" placeholder="请选择运营中心" style="width:100%;">
+                    <el-select
+                        filterable
+                        remote
+                        :remote-method="getOperNameList"
+                        v-model="addRegionData.oper_id"
+                        :loading="selectLoading"
+                        placeholder="请选择运营中心"
+                        style="width:100%;">
                         <el-option v-for="item in regionOptions" :label="item.name"  :key="item.id" :value="item.id"/>
                     </el-select>
                 </el-form-item>
@@ -162,6 +169,7 @@
                     }
                 ],
                 dialogTipsCurrent: 0,
+                selectLoading: false,
             }
         },
         computed: {
@@ -198,7 +206,6 @@
                         _self.dialogTips = data.tips;
                         _self.dialogPromptVisible = true;
                     }
-                    // console.log(data)
                 }).catch(() =>{
                     _self.$message({
                       message: '请求失败',
@@ -255,7 +262,17 @@
                     _self.dialogTipsCurrent ++;
                     _self.dialogPromptVisible = true;
                 }
-                
+            },
+            getOperNameList(query) {
+                if (query !== '') {
+                    this.selectLoading = true;
+                    api.get('/api/bizer/oper/name_list', {operName: query}).then(data => {
+                        this.regionOptions = data.list;
+                        this.selectLoading = false;
+                    });
+                } else {
+                    this.regionOptions = [];
+                }
             }
         },
         created(){
@@ -264,12 +281,7 @@
                 Object.assign(_self.query, _self.$route.params);
             }
             api.get('/api/bizer/area/tree?tier=2').then(data => {
-                // console.log(data.list)
                 _self.cityOptions = data.list;
-            });
-            api.get('/api/bizer/oper/name_list').then(data => {
-                // console.log(data.list)
-                _self.regionOptions = data.list;
             });
             _self.getList();
         },

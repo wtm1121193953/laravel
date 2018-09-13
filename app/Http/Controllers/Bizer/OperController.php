@@ -71,9 +71,9 @@ class OperController extends Controller {
         });
         
         return Result::success([
-                    'list' => $data->items(),
-                    'total' => $data->total(),
-                    'tips' => $tips
+            'list' => $data->items(),
+            'total' => $data->total(),
+            'tips' => $tips
         ]);
     }
 
@@ -83,11 +83,15 @@ class OperController extends Controller {
      * @date 2018-8-22
      */
     public function getNameList() {
-        $data = OperService::getAll(['status' => 1], 'id,name');
+        $operName = request('operName', '');
+        $params = [
+            'status' => 1,
+            'name' => $operName,
+        ];
+        $data = OperService::getAll($params, 'id,name');
 
         return Result::success([
-                    'list' => $data,
-//                    'total' => $data->total(),
+            'list' => $data,
         ]);
     }
 
@@ -99,7 +103,6 @@ class OperController extends Controller {
     public function add() {
         $this->validate(request(), [
             'oper_id' => 'required',
-                // 'remark' => 'required'
         ]);
 
         $operId = request('oper_id');
