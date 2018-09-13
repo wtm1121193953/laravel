@@ -235,6 +235,9 @@ class Merchant extends BaseModel
         //试点商户
         $this->is_pilot = request('is_pilot', 0);
 
+        //新业务员ID
+        $this->bizer_id = request('bizer_id','');
+
 
         //////// 没有了的字段
 //        $this->region = request('region');

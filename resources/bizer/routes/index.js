@@ -1,25 +1,31 @@
 import Login from '../components/login.vue'
+import Register from '../components/register.vue'
 import refresh from '../components/refresh.vue'
 import Home from '../components/home.vue'
 import ErrorPage from '../components/404.vue'
 import welcome from '../components/welcome.vue'
 
-import merchant from './merchant'
 
+
+import merchant from './merchant'
+import oper from './oper'
+import order from './order'
 /**
  *
  */
 const routes = [
 
     {path: '/login', component: Login, name: 'Login'},
-
-    // 商户模块, 留作实例使用
-    ...merchant,
-
+    {path: '/register', component: Register, name: 'Register'},
     {
         path: '/',
         component: Home,
         children: [
+            ...oper,
+            ...order,
+            ...merchant,
+            // demo组件示例
+            {path: '/', component: welcome, name: 'welcome'},
             // demo组件示例
             {path: 'welcome', component: welcome, name: 'welcome'},
             // 刷新组件

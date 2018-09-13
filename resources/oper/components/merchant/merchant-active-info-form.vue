@@ -6,9 +6,9 @@
         </el-col>
         <!-- 商户激活信息左侧块 -->
         <el-col :span="11">
-            <el-form-item prop="oper_biz_member_code" label="业务员">
+            <el-form-item prop="bizer_id" label="业务员">
                 <el-select
-                        v-model="form.oper_biz_member_code"
+                        v-model="form.bizer_id"
                         filterable
                         clearable
                         placeholder="请输入业务员姓名或手机号码"
@@ -16,12 +16,12 @@
                 >
                     <el-option
                             v-for="item in operBizMembers"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.code">
+                            :key="item.bizerId"
+                            :label="item.bizerMobile"
+                            :value="item.bizerId">
                         <!--<span class="c-gray">{{item.code}}</span>-->
-                        <span class="c-blue">{{item.name}}</span>
-                        <span class="c-light-gray">{{item.mobile}}</span>
+                        <span class="c-blue">{{item.bizerNme}}</span>
+                        <span class="c-light-gray">{{item.bizerMobile}}</span>
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -188,7 +188,7 @@
 
     let defaultForm = {
         /////// 商户激活信息
-        oper_biz_member_code: '',
+        bizer_id: '',
         brand: '',
         status: 1,
         // business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
@@ -405,7 +405,7 @@
         },
         methods: {
             getOperBizMember(){
-                api.get('/operBizMembers/search', {status: 1}).then(data => {
+                api.get('/operBizer/getbizers', {status: 1}).then(data => {
                     this.operBizMembers = data.list;
                 })
             },

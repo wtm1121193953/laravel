@@ -91,7 +91,7 @@ class Kernel extends HttpKernel
 
         // user_app 用户端(App)接口中间件
         'bizer' => [
-            \App\Http\Middleware\UserApp\UserInfoInjector::class,
+            \App\Http\Middleware\Bizer\BizerLoginFilter::class,
         ],
     ];
 

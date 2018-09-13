@@ -23,6 +23,9 @@ class BizerLoginFilter
     protected $publicUrls = [
         'api/bizer/login',
         'api/bizer/logout',
+        'api/bizer/register',
+        'api/bizer/forgot_password',
+        'api/bizer/sms/getVerifyCode',
     ];
 
     /**

@@ -157,7 +157,8 @@ class MerchantDraft extends BaseModel
         $this->oper_salesman = request('oper_salesman','');
         $this->site_acreage = request('site_acreage','');
         $this->employees_number = request('employees_number','');
-
+        //新业务员ID
+        $this->bizer_id = request('bizer_id','');
 
         //////// 没有了的字段
 //        $this->region = request('region');

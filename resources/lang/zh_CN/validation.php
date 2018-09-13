@@ -58,6 +58,10 @@ return [
             'required' => '请确认新密码',
             'same' => '两次输入的密码不相符'
         ],
+        'confirmPassword' => [
+            'required' => '请确认密码',
+            'same' => '两次输入的密码不相符'
+        ],
         'verifyCode' => [
             'required' => '请输入验证码',
             'captcha' => '验证码不正确',
@@ -94,6 +98,7 @@ return [
         'mobile' => [
             'required' => '手机号码不能为空',
             'size' => '手机号码位数不正确',
+            'regex' => '手机号码不合法'
         ],
 
         'province_id' => [
