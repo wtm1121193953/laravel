@@ -102,8 +102,8 @@ class OperBizerService extends BaseService {
      * 获取所有业务员，不分页
      * @param $params
      * @param array $fields
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      * @internal param array $fields
+     * @return OperBizer[]|\Illuminate\Database\Eloquent\Collection
      */
     public static function getAllbizer($params, $fields = ['*'])
     {
@@ -140,7 +140,7 @@ class OperBizerService extends BaseService {
             })
             ->orderBy('id', 'desc')
             ->select($fields)
-            ->paginate();
+            ->get();
 
             $data->each(function ($item) {
                 $bizerInfo = BizerService::getById($item->bizer_id) ?: null;

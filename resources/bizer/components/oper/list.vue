@@ -182,7 +182,7 @@
         },
         methods: {
             search(){
-                var _self = this;
+                let _self = this;
                 _self.query.page = 1;
                 _self.getList();
             },
@@ -241,6 +241,7 @@
                       message: '添加成功',
                       type: 'success'
                     });
+                    this.getList();
                 }).catch(() => {
                     _self.$message({
                       message: '添加失败',

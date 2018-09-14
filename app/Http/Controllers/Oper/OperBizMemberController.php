@@ -89,13 +89,6 @@ class OperBizMemberController extends Controller
         return Result::success([
             'list' => $list
         ]);
-         /*
-        $where_data["status"] = request('status');
-        $list = BizerService::getList($where_data);
-        return Result::success([
-            'list' => $list
-        ]);* 
-         */
     }
 
     public function getAllbizer(){
@@ -104,15 +97,15 @@ class OperBizMemberController extends Controller
         $keyword = request('keyword', '');
         $status = request('status');
         $where_arr = [
-            "name"=>$name,
-            "mobile"=>$mobile,
-            "keyword"=>$keyword,
-            "status"=>$status,
+            "name" => $name,
+            "mobile" => $mobile,
+            "keyword" => $keyword,
+            "status" => $status,
+            'oper_ids' => request()->get('current_user')->oper_id,
         ];
         $data = OperBizerService::getAllbizer($where_arr);
-        //echo "<pre>";print_r($data);exit;
         return Result::success([
-            'list' => $data->items(),
+            'list' => $data,
         ]);
     }
 
