@@ -104,11 +104,16 @@
                 :page-size="query.pageSize"
                 :total="total"
         />
+
+        <el-dialog title="明细" center :visible.sync="showDetailDialog" width="50%">
+            <detail :billData="billData" :orderOrWithdrawData="orderOrWithdrawData"></detail>
+        </el-dialog>
     </page>
 </template>
 
 <script>
     import api from '../../../assets/js/api'
+    import detail from './detail'
 
     export default {
         name: "wallet-list",
@@ -130,6 +135,10 @@
                 balance: 0,
                 freeze_balance: 0,
                 has_balanced: 0,
+
+                showDetailDialog: false,
+                billData: {},
+                orderOrWithdrawData: {},
             }
         },
         computed: {
@@ -176,12 +185,10 @@
                 location.href = '/api/bizer/wallet/bill/exportExcel?billNo=' + query.billNo + '&startDate=' + query.startDate + '&endDate=' + query.endDate +'&type=' + query.type;
             },
             detail(row) {
-                router.push({
-                    path: '/wallet/summary/detail',
-                    query: {
-                        id: row.id,
-                    }
-                });
+                api.get('/wallet/bill/detail', {id: row.id}).then(data => {
+                    this.billData = data.billData;
+                    this.orderOrWithdrawData = data.orderOrWithdrawData;
+                })
             },
             withdraw() {
                 router.push('/wallet/withdraw/form');
@@ -190,6 +197,9 @@
         created() {
             this.getList();
         },
+        components: {
+            detail,
+        }
     }
 </script>
 
