@@ -15,6 +15,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Dishes\DishesItem;
+use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Goods\Goods;
 use App\Modules\Goods\GoodsService;
@@ -396,7 +397,7 @@ class OrderController extends Controller
         $order->save();
 
         //返利金额
-        $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordByOrderId($order->id);
+        $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordByOrderId($order->id,FeeSplittingRecord::TYPE_TO_SELF);
 
         if(!empty($feeSplittingRecords)){
             $profitAmount = $feeSplittingRecords->amount;
