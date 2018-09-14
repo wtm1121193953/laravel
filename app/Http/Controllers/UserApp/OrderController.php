@@ -161,6 +161,7 @@ class OrderController extends Controller
 
         $order = new Order();
         $orderNo = Order::genOrderNo();
+        $order->pay_target_type = $order->pay_target_type = $oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->oper_id = $merchant->oper_id;
         $order->order_no = $orderNo;
         $order->user_id = $user->id;
