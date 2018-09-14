@@ -122,7 +122,7 @@ class OrderController extends Controller
         }
         // 查看分润详情
         $feeSplittingRecord = FeeSplittingService::getToSelfFeeSplittingRecordByOrderId($detail->id);
-        $detail->fee_splitting_amount = $feeSplittingRecord->amount;
+        $detail->fee_splitting_amount = !empty($feeSplittingRecord) ? $feeSplittingRecord->amount : 0;
 
         // 贡献值
         $detail->consume_quota = floor($detail->pay_price);
