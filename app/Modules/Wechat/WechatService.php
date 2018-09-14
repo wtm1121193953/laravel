@@ -88,7 +88,7 @@ class WechatService
         if($operId instanceof OperMiniprogram){
             $miniProgram = $operId;
         }else {
-            $miniProgram = OperMiniprogram::where('oper_id', $operId)->firstOrFail();
+            $miniProgram = OperMiniprogram::where('oper_id', $operId)->first();
         }
 
         $config = [
