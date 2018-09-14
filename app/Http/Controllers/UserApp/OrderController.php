@@ -154,7 +154,10 @@ class OrderController extends Controller
         $user = request()->get('current_user');
 
         $merchant = Merchant::findOrFail($goods->merchant_id);
-        $oper = Oper::findOrFail($merchant->oper_id);
+        $oper = Oper::find($merchant->oper_id);
+        if (empty($oper)) {
+            throw new DataNotFoundException('该商户的运营中心不存在！');
+        }
         if($oper->pay_to_platform == Oper::PAY_TO_OPER){
             throw new BaseResponseException('该商品不能在APP下单, 请在小程序下单');
         }
@@ -214,7 +217,10 @@ class OrderController extends Controller
         $user = request()->get('current_user');
         $merchant = Merchant::findOrFail($dishes->merchant_id);
 
-        $oper = Oper::findOrFail($merchant->oper_id);
+        $oper = Oper::find($merchant->oper_id);
+        if (empty($oper)) {
+            throw new DataNotFoundException('该商户的运营中心不存在！');
+        }
         if($oper->pay_to_platform == Oper::PAY_TO_OPER){
             throw new BaseResponseException('该商品不能在APP下单, 请在小程序下单');
         }
@@ -237,9 +243,7 @@ class OrderController extends Controller
                 throw new BaseResponseException('菜单已变更, 请刷新页面');
             }
         }
-
-        $merchant_oper = Oper::findOrFail($merchant->oper_id);
-
+        $merchant_oper = Oper::find($merchant->oper_id);
 
         $order = new Order();
         $orderNo = Order::genOrderNo();
@@ -312,7 +316,10 @@ class OrderController extends Controller
         if (empty($merchant)) {
             throw new DataNotFoundException('商户信息不存在！');
         }
-        $oper = Oper::findOrFail($merchant->oper_id);
+        $oper = Oper::find($merchant->oper_id);
+        if (empty($oper)) {
+            throw new DataNotFoundException('该商户的运营中心不存在！');
+        }
         if($oper->pay_to_platform == Oper::PAY_TO_OPER){
             throw new BaseResponseException('该商品不能在APP下单, 请在小程序下单');
         }
