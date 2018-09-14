@@ -339,6 +339,7 @@ class OrderService extends BaseService
         // 处理订单支付成功逻辑
         $order = OrderService::getInfoByOrderNo($orderNo);
 
+        Log::info('处理订单回调order数据',['order' => $order]);
         if($order->status === Order::STATUS_UN_PAY
             || $order->status === Order::STATUS_CANCEL
             || $order->status === Order::STATUS_CLOSED

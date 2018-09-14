@@ -51,8 +51,7 @@ class OrderController extends Controller
 
         $currentOperId = request()->get('current_oper_id');
         //只能查询支付到平台的订单
-        $data = Order::where('user_id', 226)
-            //->where('pay_target_type',Order::PAY_TARGET_TYPE_PLATFORM)
+        $data = Order::where('user_id', $user->id)
             ->where(function (Builder $query) {
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function (Builder $query) {
