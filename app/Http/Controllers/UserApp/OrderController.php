@@ -353,7 +353,8 @@ class OrderController extends Controller
             'pay_type' => 'required',
         ]);
         $orderNo = request('order_no');
-        $order = Order::where('order_no', $orderNo)->firstOrFail();
+        $order = Order::where('order_no', $orderNo)->first();
+        var_dump($order->id);die();
 
         if ($order->status == Order::STATUS_PAID) {
             throw new ParamInvalidException('该订单已支付');
