@@ -82,7 +82,7 @@ class MiniprogramSceneService extends BaseService
     public static function getMiniprogramAppCode(MiniprogramScene $scene, $width=375, $getAsFilePath=false) : string
     {
         if($getAsFilePath){
-            $filename = WechatService::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page, $width, true);
+            $filename = WechatService::genMiniprogramAppCode($scene->oper_id, $scene, $scene->page, $width, true);
             $path = storage_path('app/public/miniprogram/app_code') . '/' . $filename;
             return $path;
         }
@@ -90,7 +90,7 @@ class MiniprogramSceneService extends BaseService
         if(!empty($scene->qrcode_url)){
             return $scene->qrcode_url;
         }else {
-            $url = WechatService::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page);
+            $url = WechatService::genMiniprogramAppCode($scene->oper_id, $scene, $scene->page);
             $scene->qrcode_url = $url;
             $scene->save();
             return $url;

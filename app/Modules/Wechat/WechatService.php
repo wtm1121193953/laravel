@@ -13,12 +13,15 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\MiniprogramPageNotExistException;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperMiniprogram;
+use App\Modules\Oper\OperService;
+use App\Modules\Oper\Oper;
 use App\ResultCode;
 use App\Support\ImageTool;
 use EasyWeChat\Factory;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 use Intervention\Image\Facades\Image;
 use Intervention\Image\Gd\Font;
+use App\Modules\Wechat\MiniprogramScene;
 
 class WechatService
 {
@@ -136,20 +139,25 @@ class WechatService
     /**
      * 生成小程序码
      * @param $operId
-     * @param $sceneId
+     * @param MiniprogramScene $scene
      * @param string $page
      * @param int $width
      * @param bool $getWithFilename
      * @param string $merchantId
      * @return bool|int|string
      */
-    public static function genMiniprogramAppCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false,$merchantId ='')
+    public static function genMiniprogramAppCode($operId, $scene, $page='pages/index/index', $width=375, $getWithFilename=false,$merchantId ='')
     {
-        if(!$operId){
-            $app = WechatService::getWechatMiniAppForPlatform();
-        }else {
-            $app = WechatService::getWechatMiniAppForOper($operId);
+        $sceneId = $scene->id;
+        if($operId && ($scene->type!=MiniprogramScene::TYPE_INVITE_CHANNEL)){
+            // 如果切换到了支付到平台
+            $oper = OperService::getById($operId);
+            if($oper->pay_to_platform==Oper::PAY_TO_OPER){
+                $app = WechatService::getWechatMiniAppForOper($operId);
+            }
         }
+        // 如果为邀请码，统一使用平台邀请码；
+        $app = $app ?? WechatService::getWechatMiniAppForPlatform();
 
         $response = $app->app_code->getUnlimit($sceneId, [
             'page' => $page,
@@ -200,7 +208,7 @@ class WechatService
         if(!empty($scene->qrcode_url)){
             return $scene->qrcode_url;
         }else {
-            $url = self::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page,'',false,$scene->merchant_id);
+            $url = self::genMiniprogramAppCode($scene->oper_id, $scene, $scene->page,'',false,$scene->merchant_id);
             $scene->qrcode_url = $url;
             $scene->save();
             return $url;
