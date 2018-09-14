@@ -260,6 +260,19 @@ class FeeSplittingService extends BaseService
     }
 
     /**
+     * 获取用户自返的返利记录
+     * @param int $orderId 订单ID
+     * @return FeeSplittingRecord
+     */
+    public static function getToSelfFeeSplittingRecordByOrderId($orderId)
+    {
+        $record = FeeSplittingRecord::where('order_id', $orderId)
+            ->where('type', FeeSplittingRecord::TYPE_TO_SELF)
+            ->first();
+        return $record;
+    }
+
+    /**
      * 通过参数 获取 分润记录详情
      * @param $params
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null|object
