@@ -17,10 +17,13 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
 use App\Modules\User\User;
+use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Support\Utils;
 use function foo\func;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class InviteChannelService extends BaseService
 {
@@ -262,6 +265,55 @@ class InviteChannelService extends BaseService
         } else {
             $data = $query->get();
             return $data;
+        }
+    }
+
+    public static function unbindChannels($originId, $originType){
+        // 获取需要解绑的旧用户渠道
+        $oldChannelsIds = InviteChannel::where('origin_id',$originId)
+                                        ->where('origin_type',$originType)
+                                        ->pluck('id')
+                                        ->toArray();
+        $oldChannelsIdsStr = implode("," ,$oldChannelsIds);
+        $inviteChannel = new InviteChannel();
+        $inviteChannel->oper_id = 0;
+        $inviteChannel->origin_id = $originId;
+        $inviteChannel->origin_type = $originType;
+        $inviteChannel->remark = 'new |'.$oldChannelsIdsStr;
+        DB::beginTransaction();
+        try{
+            $inviteChannel->save();
+            // 新生成的渠道ID
+            $newChannelId = $inviteChannel->id;
+            // 添加解绑标记
+            InviteChannel::whereIn('id',$oldChannelsIds)
+                            ->update(['remark'=>'unbind']);
+
+            // 更新场景值的invite_channel_id为新的渠道ID
+            MiniprogramScene::whereIn('invite_channel_id',$oldChannelsIds)
+                                ->update(['invite_channel_id' => $newChannelId]);
+
+            // 更新邀请记录的invite_channel_id为新的渠道ID
+            InviteUserRecord::whereIn('invite_channel_id',$oldChannelsIds)
+                                ->update(['invite_channel_id' => $newChannelId]);
+            // 添加解绑记录
+            foreach ($oldChannelsIds as $k=>$v){
+                $inviteUserUnbindRecord = new InviteUserUnbindRecord();
+                $inviteUserUnbindRecord->user_id = $originId;
+                $inviteUserUnbindRecord->status = InviteUserUnbindRecord::STATUS_UNBIND;
+                // 获取旧邀请记录数据
+                $oldInviteUserRecord = InviteUserRecord::where('invite_channel_id', $v)->first();
+                if(!$oldInviteUserRecord){
+                    continue;
+                }
+                $oldInviteUserRecord = $oldInviteUserRecord->toArray();
+                $inviteUserUnbindRecord->old_invite_user_record = json_encode($oldInviteUserRecord);
+                $inviteUserUnbindRecord->save();
+            }
+            Db::commit();
+        }catch (\Exception $e){
+            DB::rollBack();
+            throw $e;
         }
     }
 

@@ -139,24 +139,22 @@ class WechatService
     /**
      * 生成小程序码
      * @param $operId
-     * @param MiniprogramScene $scene
+     * @param  $sceneId
      * @param string $page
      * @param int $width
      * @param bool $getWithFilename
      * @param string $merchantId
      * @return bool|int|string
      */
-    public static function genMiniprogramAppCode($operId, $scene, $page='pages/index/index', $width=375, $getWithFilename=false,$merchantId ='')
+    public static function genMiniprogramAppCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false,$merchantId ='')
     {
-        $sceneId = $scene->id;
-        if($operId && ($scene->type!=MiniprogramScene::TYPE_INVITE_CHANNEL)){
-            // 如果切换到了支付到平台
+        if($operId){
             $oper = OperService::getById($operId);
             if($oper->pay_to_platform==Oper::PAY_TO_OPER){
+                // 如果未切换到了支付到运营中心,则使用运营中心二维码
                 $app = WechatService::getWechatMiniAppForOper($operId);
             }
         }
-        // 如果为邀请码，统一使用平台邀请码；
         $app = $app ?? WechatService::getWechatMiniAppForPlatform();
 
         $response = $app->app_code->getUnlimit($sceneId, [
@@ -208,7 +206,7 @@ class WechatService
         if(!empty($scene->qrcode_url)){
             return $scene->qrcode_url;
         }else {
-            $url = self::genMiniprogramAppCode($scene->oper_id, $scene, $scene->page,'',false,$scene->merchant_id);
+            $url = self::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page,'',false,$scene->merchant_id);
             $scene->qrcode_url = $url;
             $scene->save();
             return $url;
