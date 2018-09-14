@@ -1,6 +1,8 @@
 <template>
     <page title="提现设置">
-        <el-form></el-form>
+        <el-form v-model="form" size="small" :rules="formRules" ref="form">
+
+        </el-form>
     </page>
 </template>
 

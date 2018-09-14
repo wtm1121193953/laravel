@@ -88,6 +88,9 @@
                                   placeholder="请输入验证码" maxlength="4"/>
                         <el-button type="primary" class="fr" style="width:132px;" :disabled="buttonCode.isDisabled" @click.native.prevent="sendCode">{{buttonCode.buttonName}}</el-button>
                     </el-form-item>
+                    <el-form-item prop="name" label="姓名">
+                        <el-input v-model="form.name" maxlength="10" placeholder="请输入真实姓名"/>
+                    </el-form-item>
                     <el-form-item label="设置密码" prop="password">
                         <el-input type="password" v-model="form.password" auto-complete="off" placeholder="请设置6-12位密码，不区分大小写"/>
                     </el-form-item>
@@ -137,6 +140,7 @@
             return {
                 form: {
                     mobile: '',
+                    name: '',
                     password: '',
                     confirmPassword:'',
                     verify_code: ''
