@@ -394,6 +394,10 @@ class OrderController extends Controller
         $payType = request('pay_type', 1);
         $order->pay_type = $payType;
         $order->save();
+
+        //返利金额
+        $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordByOrderId($order->id);
+        $profitAmount = $feeSplittingRecords->amount;
         if ($payType == 1) {
             // 如果是微信支付
             $sdkConfig = $this->_wechatPayToPlatform($order);
@@ -402,6 +406,7 @@ class OrderController extends Controller
             return Result::success([
                 'order_no' => $orderNo,
                 'sdk_config' => $sdkConfig,
+                'profitAmount' => $profitAmount ? $profitAmount : '',
                 'order' => $order,
             ]);
         } else {
