@@ -24,6 +24,7 @@ use App\Result;
 use App\Support\Reapal\ReapalPay;
 use Exception;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 
 class PayController extends Controller
 {
@@ -103,6 +104,8 @@ class PayController extends Controller
         }
         // 获取appid对应的运营中心小程序
         $config_platfrom = config('platform');
+        Log::info('appid01',['appid' => $appid]);
+        Log::info('appid02',['appid' => $config_platfrom['miniprogram']['app_id']]);
         if ($appid == $config_platfrom['miniprogram']['app_id']) {
             $app = WechatService::getWechatPayAppForPlatform();
         } else {
