@@ -1,6 +1,6 @@
 <template>
-    <el-col>
-        <el-col :gutter="20" v-if="billData.type == 9 || billData.type == 10">
+    <el-row :gutter="20">
+        <el-col v-if="billData.type == 9 || billData.type == 10">
             <el-form label-width="120px" label-position="left" size="small"  v-if="billData.type == 9 || billData.type == 10">
                 <el-col :span="12">
                     <el-form-item label="订单类型">
@@ -137,7 +137,7 @@
                 </el-col>
             </el-form>
         </el-col>
-    </el-col>
+    </el-row>
 </template>
 
 <script>
