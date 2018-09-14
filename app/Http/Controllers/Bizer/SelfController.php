@@ -209,7 +209,7 @@ class SelfController extends Controller {
             ],
             ['id' => 5, 'name' => '设置', 'level' => 1, 'url' => '/bizer/withdraw', 'sub' =>
                 [
-                    ['id' => 50, 'name' => '提现设置', 'level' => 2, 'url' => '/bizer/withdraw/setting', 'pid' => 5],
+                    ['id' => 50, 'name' => '提现设置', 'level' => 2, 'url' => '/bizer/withdraw/password/form', 'pid' => 5],
                 ]
             ],
         ];
