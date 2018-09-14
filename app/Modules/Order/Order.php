@@ -67,6 +67,7 @@ class Order extends BaseModel
      */
     const PAY_TARGET_TYPE_OPER = 1; // 支付给运营中心
     const PAY_TARGET_TYPE_PLATFORM = 2; // 支付给平台
+    const PAY_TARGET_TYPE_PLATFORM_3 = 3; // 支付给平台且平台参与分成
 
     /**
      * 订单来源客户端app类型
