@@ -137,7 +137,7 @@
                 has_balanced: 0,
 
                 showDetailDialog: false,
-                billData: {},
+                billData: null,
                 orderOrWithdrawData: {},
             }
         },
@@ -188,6 +188,7 @@
                 api.get('/wallet/bill/detail', {id: row.id}).then(data => {
                     this.billData = data.billData;
                     this.orderOrWithdrawData = data.orderOrWithdrawData;
+                    this.showDetailDialog = true;
                 })
             },
             withdraw() {

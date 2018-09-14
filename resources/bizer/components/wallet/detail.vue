@@ -1,13 +1,11 @@
 <template>
-    <page title="订单明细" :breadcrumbs="{账户总览: '/wallet/summary/list'}">
-        <el-row :gutter="20" v-if="billData.type == 2 || billData.type == 4 || billData.type == 5 || billData.type == 6">
-            <el-form label-width="120px" label-position="left" size="small">
+    <el-col>
+        <el-col :gutter="20" v-if="billData.type == 9 || billData.type == 10">
+            <el-form label-width="120px" label-position="left" size="small"  v-if="billData.type == 9 || billData.type == 10">
                 <el-col :span="12">
                     <el-form-item label="订单类型">
-                        <span v-if="billData.type == 2">下级消费返利</span>
-                        <span v-else-if="billData.type == 4">下级消费返利退款</span>
-                        <span v-else-if="billData.type == 5">交易分润入账</span>
-                        <span v-else-if="billData.type == 6">交易分润退款</span>
+                        <span v-if="billData.type == 9">交易分润入账</span>
+                        <span v-else-if="billData.type == 10">交易分润退款</span>
                         <span v-else>未知 ({{billData.type}})</span>
                     </el-form-item>
                     <el-form-item label="入账金额">
@@ -34,8 +32,8 @@
                     </el-form-item>
                 </el-col>
             </el-form>
-        </el-row>
-        <el-row :gutter="20" v-if="billData.type == 2 || billData.type == 4 || billData.type == 5 || billData.type == 6">
+        </el-col>
+        <el-col :gutter="20" v-if="billData.type == 9 || billData.type == 10">
             <el-form label-width="120px" label-position="left" size="small">
                 <el-col :span="12">
                     <el-form-item label="交易用户">
@@ -67,8 +65,8 @@
                     </el-form-item>
                 </el-col>
             </el-form>
-        </el-row>
-        <el-row :gutter="20" v-if="billData.type == 7 || billData.type == 8">
+        </el-col>
+        <el-col :gutter="20" v-if="billData.type == 7 || billData.type == 8">
             <el-form label-width="120px" label-position="left" size="small">
                 <el-col :span="12">
                     <el-form-item label="订单类型">
@@ -138,15 +136,15 @@
                     </el-form-item>
                 </el-col>
             </el-form>
-        </el-row>
-    </page>
+        </el-col>
+    </el-col>
 </template>
 
 <script>
     export default {
         name: "wallet-bill-detail",
         props: {
-            billDate: {
+            billData: {
                 type: Object,
             },
             orderOrWithdrawData: {
