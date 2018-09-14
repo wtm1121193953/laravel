@@ -233,9 +233,9 @@ class OrderController extends Controller
         $order->save();
         if ($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM) { // 如果是支付到平台
             if ($currentOperId == 0) { // 在平台小程序下
-                // 调平台支付, 走融宝支付接口
+                // 调平台支付, 走微信支付接口
                 $isOperSelf = 1;
-//                $sdkConfig = $this->_payToPlatform($order);
+                $sdkConfig = $this->_payToPlatform($order);
             } else {
                 $isOperSelf = 0;
                 $sdkConfig = null;
@@ -254,7 +254,7 @@ class OrderController extends Controller
         return Result::success([
             'order_no' => $orderNo,
             'isOperSelf' => $isOperSelf,
-            'sdk_config' => '',
+            'sdk_config' => $sdkConfig,
             'order' => $order,
         ]);
     }
@@ -324,9 +324,8 @@ class OrderController extends Controller
 
         if ($payType == 1) {
             // 如果是微信支付
-            // todo 微信支付暂时跳过
-//            $sdkConfig = $this->_wechatUnifyPay($order);
-            $sdkConfig = [];
+            $sdkConfig = $this->_wechatUnifyPay($order);
+//            $sdkConfig = [];
             return Result::success([
                 'order' => $order,
                 'order_no' => $orderNo,
@@ -371,9 +370,9 @@ class OrderController extends Controller
         $order->save();
         if ($payType == 1) {
             // 如果是微信支付
-            // todo 暂时跳过微信支付
-//            $sdkConfig = $this->_wechatUnifyPay($order);
-            $sdkConfig = [];
+            $sdkConfig = $this->_wechatUnifyPay($order);
+            Log::info('开始执行微信支付', ['sdkConfig' => $sdkConfig]);
+//            $sdkConfig = [];
             return Result::success([
                 'order_no' => $orderNo,
                 'sdk_config' => $sdkConfig,
@@ -482,6 +481,7 @@ class OrderController extends Controller
     {
         // todo 获取平台的微信支付实例
         $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
+        Log::info('微信支付实例', ['payApp' => $payApp]);
         $data = [
             'body' => $order->goods_name,
             'out_trade_no' => $order->order_no,
@@ -501,6 +501,7 @@ class OrderController extends Controller
             throw new BaseResponseException('微信统一下单失败');
         }
         $sdkConfig = $payApp->jssdk->appConfig($unifyResult['prepay_id']);
+        Log::info('微信支付实例参数', ['sdkConfig' => $sdkConfig]);
         return $sdkConfig;
     }
 
@@ -510,7 +511,7 @@ class OrderController extends Controller
      * @return null|array
      * @throws \Exception
      */
-    private function _payToPlatform($order)
+    private function _payToPlatform(Order $order)
     {
         $sdkConfig = null;
         //OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
@@ -544,7 +545,7 @@ class OrderController extends Controller
         $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
         */
 
-        return $sdkConfig;
+        //return $sdkConfig;
 
     }
 
