@@ -532,6 +532,7 @@ class OrderController extends Controller
             throw new BaseResponseException('微信统一下单失败');
         }
         $sdkConfig = $payApp->jssdk->appConfig($unifyResult['prepay_id']);
+        $sdkConfig['packageValue'] = $sdkConfig['package'];
         return $sdkConfig;
 
         // 调平台支付, 走融宝支付接口
