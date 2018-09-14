@@ -312,6 +312,9 @@ class OrderController extends Controller
             throw new DataNotFoundException('商户信息不存在！');
         }
         $oper = Oper::find($merchant->oper_id);
+        if (empty($oper)) {
+            throw new DataNotFoundException('该商户的运营中心不存在！');
+        }
         if($oper->pay_to_platform == Oper::PAY_TO_OPER){
             throw new BaseResponseException('该商品不能在APP下单, 请在小程序下单');
         }
