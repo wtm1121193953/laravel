@@ -45,7 +45,7 @@
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
             </el-form-item>
-            <el-button class="fr" type="success" size="small" icon="el-icon-plus" @click="add">添加运营中心</el-button>
+            <el-button class="fr" type="success" size="small" icon="el-icon-plus" @click="add">申请运营中心</el-button>
         </el-form>
 
         <el-table :data="list" stripe>

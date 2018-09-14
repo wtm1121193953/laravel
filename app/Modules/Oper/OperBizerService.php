@@ -151,4 +151,26 @@ class OperBizerService extends BaseService {
 
         return $data;
     }
+
+    /**
+     * 通过参数获取运营中心与业务员的关联信息
+     * @param $params
+     * @return Builder|\Illuminate\Database\Eloquent\Model|null|object|OperBizer
+     */
+    public static function getOperBizerByParam($params)
+    {
+        $operId = array_get($params, 'operId', 0);
+        $bizerId = array_get($params, 'bizerId', 0);
+
+        $query = OperBizer::query();
+        if ($operId) {
+            $query->where('oper_id', $operId);
+        }
+        if ($bizerId) {
+            $query->where('bizer_id', $bizerId);
+        }
+        $operBizer = $query->first();
+
+        return $operBizer;
+    }
 }
