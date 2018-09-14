@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers\Bizer;
 
-use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
-use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Merchant\MerchantCategoryService;
-use App\Modules\Bizer\BizermerchantMember;
 use App\Result;
-use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Oper\OperBizerService;
 
 class MerchantController extends Controller
@@ -32,27 +28,27 @@ class MerchantController extends Controller
             'endCreatedAt'=>request('endTime'),//添加时间
             
         ];
-        //echo "<pre>";print_r($where_data);exit;
+
         $data = MerchantService::getList($where_data);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
     }
-    
+
     /**
      * 获取所属行业树形
-     * @return type
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getTree()
     {
         $tree = MerchantCategoryService::getTree();
         return Result::success(['list' => $tree]);
     }
-   
+
     /**
      * 获取业务员所属的运营中心名称
-     * @return type
+     * @return \Illuminate\Http\JsonResponse
      */
     public function allOperNames(){
         $where_data = [

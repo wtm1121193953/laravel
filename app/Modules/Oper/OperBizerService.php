@@ -1,16 +1,8 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: 57458
- * Date: 2018/7/23
- * Time: 15:59
- */
-
 namespace App\Modules\Oper;
 
 use App\BaseService;
-use App\Exceptions\BaseResponseException;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Bizer\BizerService;
 
@@ -18,9 +10,9 @@ class OperBizerService extends BaseService {
 
     /**
      * 根据业务员获取运营中心
-     * @param type $file
-     * @return string
-     * @throws BaseResponseException
+     * @param array $data
+     * @param bool $getWithQuery
+     * @return OperBizer|array|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public static function getBizerOper(array $data, bool $getWithQuery = false) {
         $bizer_id = array_get($data, "bizer_id");
@@ -33,11 +25,8 @@ class OperBizerService extends BaseService {
             return $query;
         } else {
             $data = $query->paginate();
-            //print_r($data);exit;
             $data->each(function ($item) {
-                //echo $item->bizer_id;exit;
                 $item->operName = Oper::where('id', $item->oper_id)->value('name');
-                //$item->bizerName = Bizer::where('bizer_id', $item->bizer_id)->value('name');
             });
             return $data;
         }
@@ -53,13 +42,13 @@ class OperBizerService extends BaseService {
     public static function updateIsTipsById($id, $isTips = 1){
         OperBizer::where('id', $id)->update(['is_tips' => $isTips]);
     }
-    
+
     /**
      *  获取列表
      * @param array $params 参数数组
      * @param array|string $fields 查询字段
      * @param bool $getOperInfo 是否获取运营中心信息
-     * @return OperBizer[]
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      * @author tong.chen
      * @date 2018-08-23
      */
@@ -112,8 +101,9 @@ class OperBizerService extends BaseService {
     /**
      * 获取所有业务员，不分页
      * @param $params
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @param array $fields
      * @internal param array $fields
+     * @return OperBizer[]|\Illuminate\Database\Eloquent\Collection
      */
     public static function getAllbizer($params, $fields = ['*'])
     {
@@ -150,7 +140,7 @@ class OperBizerService extends BaseService {
             })
             ->orderBy('id', 'desc')
             ->select($fields)
-            ->paginate();
+            ->get();
 
             $data->each(function ($item) {
                 $bizerInfo = BizerService::getById($item->bizer_id) ?: null;
@@ -160,5 +150,27 @@ class OperBizerService extends BaseService {
             });
 
         return $data;
+    }
+
+    /**
+     * 通过参数获取运营中心与业务员的关联信息
+     * @param $params
+     * @return Builder|\Illuminate\Database\Eloquent\Model|null|object|OperBizer
+     */
+    public static function getOperBizerByParam($params)
+    {
+        $operId = array_get($params, 'operId', 0);
+        $bizerId = array_get($params, 'bizerId', 0);
+
+        $query = OperBizer::query();
+        if ($operId) {
+            $query->where('oper_id', $operId);
+        }
+        if ($bizerId) {
+            $query->where('bizer_id', $bizerId);
+        }
+        $operBizer = $query->first();
+
+        return $operBizer;
     }
 }

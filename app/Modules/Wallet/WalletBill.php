@@ -28,9 +28,10 @@ class WalletBill extends BaseModel
     const ORIGIN_TYPE_USER = 1; // 用户
     const ORIGIN_TYPE_MERCHANT = 2; // 商户
     const ORIGIN_TYPE_OPER = 3; // 运营中心
+    const ORIGIN_TYPE_BIZER = 4; // 业务员
 
     /**
-     * 钱包流水类型 类型  1-个人消费返利  2-下级消费返利  3-个人消费返利退款  4-下级消费返利退款 5-运营中心交易分润 6-运营中心交易分润退款 7-提现 8-提现失败
+     * 钱包流水类型 类型  1-个人消费返利  2-下级消费返利  3-个人消费返利退款  4-下级消费返利退款 5-运营中心交易分润 6-运营中心交易分润退款 7-提现 8-提现失败 9-业务员交易分润 10-业务员交易分润退款
      */
     const TYPE_SELF = 1;
     const TYPE_SUBORDINATE = 2;
@@ -40,6 +41,8 @@ class WalletBill extends BaseModel
     const TYPE_OPER_REFUND = 6;
     const TYPE_WITHDRAW = 7;
     const TYPE_WITHDRAW_FAILED = 8;
+    const TYPE_BIZER = 9;
+    const TYPE_BIZER_REFUND = 10;
 
     /**
      * 收支类型 1-收入 2-支出

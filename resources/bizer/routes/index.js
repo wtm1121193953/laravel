@@ -10,9 +10,8 @@ import welcome from '../components/welcome.vue'
 import merchant from './merchant'
 import oper from './oper'
 import order from './order'
-/**
- *
- */
+import walletAndWithdrew from './wallet-and-withdraw'
+
 const routes = [
 
     {path: '/login', component: Login, name: 'Login'},
@@ -24,8 +23,9 @@ const routes = [
             ...oper,
             ...order,
             ...merchant,
+            ...walletAndWithdrew,
             // demo组件示例
-            {path: '/', component: welcome, name: 'welcome'},
+            {path: '/', component: welcome, name: 'welcomePage'},
             // demo组件示例
             {path: 'welcome', component: welcome, name: 'welcome'},
             // 刷新组件

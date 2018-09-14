@@ -1,16 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/4/12
- * Time: 13:11
- */
 
 namespace App\Http\Controllers\Bizer;
 
-
 use App\Exceptions\BaseResponseException;
-//use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Sms\SmsService;
 use App\Result;

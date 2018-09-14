@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Oper;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Oper\OperService;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperBizer;
 
@@ -13,7 +12,7 @@ class BizerRecordController extends Controller {
 
     /**
      * 业务员申请，默认申请中的业务员
-     * @return type
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getList() {
         $status = request("selectStatus")=='first' ? 0 : -1;
@@ -21,7 +20,7 @@ class BizerRecordController extends Controller {
             "oper_ids" => request()->get('current_user')->oper_id,//登录所属运营中心ID
             "status" =>$status,//查询业务员的状态
         ];
-        //echo "<pre>";print_r($where);exit;
+
         $data = OperBizerService::getList($where);
         
         return Result::success([
@@ -29,9 +28,10 @@ class BizerRecordController extends Controller {
             'total' => $data->total(),
         ]);
     }
+
     /**
      * 签约或者拒绝签约，修改状态
-     * @return type
+     * @return \Illuminate\Http\JsonResponse
      */
     public function contractBizer()
     {
@@ -56,7 +56,7 @@ class BizerRecordController extends Controller {
             $operBizMember->divide = number_format($divide/100,2);        
             $operBizMember->sign_time = date("Y-m-d H:i:s");
         }
-        //echo "<pre>";print_r($operBizMember);exit;
+
         $operBizMember->save();
         return Result::success($operBizMember);
     }

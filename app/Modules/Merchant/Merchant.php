@@ -76,6 +76,7 @@ use Carbon\Carbon;
  * @property int mapping_user_id
  * @property int level
  * @property int is_pilot
+ * @property integer bizer_id
  *
  */
 class Merchant extends BaseModel

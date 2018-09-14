@@ -5,6 +5,7 @@ namespace App\Modules\Wallet;
 
 use App\BaseService;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Bizer\Bizer;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Merchant\Merchant;
@@ -25,7 +26,7 @@ class WalletService extends BaseService
 
     /**
      * 创建钱包
-     * @param User|Merchant|Oper $user
+     * @param User|Merchant|Oper|Bizer $user
      * @return Wallet
      */
     public static function getWalletInfo($user)
@@ -36,6 +37,8 @@ class WalletService extends BaseService
             $originType = Wallet::ORIGIN_TYPE_MERCHANT;
         } elseif ($user instanceof Oper) {
             $originType = Wallet::ORIGIN_TYPE_OPER;
+        } elseif ($user instanceof Bizer) {
+            $originType = Wallet::ORIGIN_TYPE_BIZER;
         } else {
             throw new ParamInvalidException('参数错误');
         }
@@ -82,6 +85,8 @@ class WalletService extends BaseService
             $type = WalletBill::TYPE_SUBORDINATE;
         } elseif ($feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_OPER) {
             $type = WalletBill::TYPE_OPER;
+        } elseif ($feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_BIZER) {
+            $type = WalletBill::TYPE_BIZER;
         } else {
             throw new ParamInvalidException('分润类型参数错误');
         }

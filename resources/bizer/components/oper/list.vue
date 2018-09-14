@@ -45,12 +45,11 @@
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
             </el-form-item>
+            <el-button class="fr" type="success" size="small" icon="el-icon-plus" @click="add">申请运营中心</el-button>
         </el-form>
 
-        <el-button class="fr" type="primary" icon="el-icon-plus" @click="add">添加运营中心</el-button>
-
         <el-table :data="list" stripe>
-            <el-table-column prop="created_at" label="添加时间"/>
+        button classe-column prop="created_at" label="添加时间"/>
             <el-table-column prop="operInfo.name" label="运营中心名称"/>
             <el-table-column prop="operInfo.contacter" label="负责人"/>
             <el-table-column prop="operInfo.tel" label="联系电话"/>
@@ -75,7 +74,7 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
-                    <el-button @click="toMerchants(scope.row.id)" type="text">查看商户</el-button>
+                    <el-button v-if="scope.row.status === 1" @click="toMerchants(scope.row.id)" type="text">查看商户</el-button>
                     <!-- <el-button type="text" @click="contract">查看合同</el-button> -->
                 </template>
             </el-table-column>
@@ -95,7 +94,14 @@
                     {{ username }}
                 </el-form-item>
                 <el-form-item label="运营中心名称">
-                    <el-select v-model="addRegionData.oper_id" placeholder="请选择运营中心" style="width:100%;">
+                    <el-select
+                        filterable
+                        remote
+                        :remote-method="getOperNameList"
+                        v-model="addRegionData.oper_id"
+                        :loading="selectLoading"
+                        placeholder="请选择运营中心"
+                        style="width:100%;">
                         <el-option v-for="item in regionOptions" :label="item.name"  :key="item.id" :value="item.id"/>
                     </el-select>
                 </el-form-item>
@@ -141,8 +147,8 @@
                     name: '',
                     contacter: '',
                     tel: '',
-                    provinceId:'',//省份ID
-                    //cityId:'',//城市ID不能写,组件是自动生成的
+                    // provinceId:'',//省份ID
+                    cityId:[],//城市ID不能写,组件是自动生成的
                     status: '',
                     page: 1
                 },
@@ -163,6 +169,7 @@
                     }
                 ],
                 dialogTipsCurrent: 0,
+                selectLoading: false,
             }
         },
         computed: {
@@ -175,7 +182,7 @@
         },
         methods: {
             search(){
-                var _self = this;
+                let _self = this;
                 _self.query.page = 1;
                 _self.getList();
             },
@@ -199,7 +206,6 @@
                         _self.dialogTips = data.tips;
                         _self.dialogPromptVisible = true;
                     }
-                    // console.log(data)
                 }).catch(() =>{
                     _self.$message({
                       message: '请求失败',
@@ -235,6 +241,7 @@
                       message: '添加成功',
                       type: 'success'
                     });
+                    this.getList();
                 }).catch(() => {
                     _self.$message({
                       message: '添加失败',
@@ -256,7 +263,17 @@
                     _self.dialogTipsCurrent ++;
                     _self.dialogPromptVisible = true;
                 }
-                
+            },
+            getOperNameList(query) {
+                if (query !== '') {
+                    this.selectLoading = true;
+                    api.get('/api/bizer/oper/name_list', {operName: query}).then(data => {
+                        this.regionOptions = data.list;
+                        this.selectLoading = false;
+                    });
+                } else {
+                    this.regionOptions = [];
+                }
             }
         },
         created(){
@@ -265,12 +282,7 @@
                 Object.assign(_self.query, _self.$route.params);
             }
             api.get('/api/bizer/area/tree?tier=2').then(data => {
-                // console.log(data.list)
                 _self.cityOptions = data.list;
-            });
-            api.get('/api/bizer/oper/name_list').then(data => {
-                // console.log(data.list)
-                _self.regionOptions = data.list;
             });
             _self.getList();
         },
