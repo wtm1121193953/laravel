@@ -202,16 +202,16 @@ class SelfController extends Controller {
                     ['id' => 31, 'name' => '申请记录', 'level' => 2, 'url' => '/bizer/opersRecord', 'pid' => 3],
                 ]
             ],
-//            ['id' => 4, 'name' => '财务管理', 'level' => 1, 'url' => '/bizer/settlements', 'sub' =>
-//                [
-//                    ['id' => 40, 'name' => '财务总览', 'level' => 2, 'url' => '/bizer/settlements', 'pid' => 4],
-//                ]
-//            ],
-//            ['id' => 5, 'name' => '设置', 'level' => 1, 'url' => '', 'sub' =>
-//                [
-//                    ['id' => 50, 'name' => '提现设置', 'level' => 2, 'url' => '', 'pid' => 5],
-//                ]
-//            ],
+            ['id' => 4, 'name' => '财务管理', 'level' => 1, 'url' => '/bizer/wallet', 'sub' =>
+                [
+                    ['id' => 40, 'name' => '财务总览', 'level' => 2, 'url' => '/bizer/wallet/bills', 'pid' => 4],
+                ]
+            ],
+            ['id' => 5, 'name' => '设置', 'level' => 1, 'url' => '/bizer/withdraw', 'sub' =>
+                [
+                    ['id' => 50, 'name' => '提现设置', 'level' => 2, 'url' => '/bizer/withdraw/setting', 'pid' => 5],
+                ]
+            ],
         ];
     }
 

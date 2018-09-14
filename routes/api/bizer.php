@@ -25,4 +25,5 @@ Route::prefix('bizer')
         Route::get('opersRecord', 'OperRecordController@getList');
         
         Route::group([], base_path('routes/api/bizer/oper.php'));
+        Route::group([], base_path('routes/api/bizer/wallet.php'));
     });

@@ -68,6 +68,13 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
                 '账户交易金额',
                 '账户余额',
             ];
+        } elseif ($this->originType == WalletBill::ORIGIN_TYPE_BIZER) {
+            $array = [
+                '交易时间',
+                '交易号',
+                '交易类型',
+                '账户交易金额',
+            ];
         } else {
             $array = [];
         }
@@ -119,6 +126,10 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
             }
         } elseif ($row->type == WalletBill::TYPE_WITHDRAW_FAILED) {
             $typeText = '提现失败';
+        } elseif ($row->type == WalletBill::TYPE_BIZER) {
+            $typeText = '业务员交易分润入账';
+        } elseif ($row->type == WalletBill::TYPE_BIZER_REFUND) {
+            $typeText = '业务员交易分润退款';
         } else {
             $typeText = '未知'.$row->type;
         }
@@ -150,6 +161,13 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
                 $typeText,
                 $row->amount,
                 $row->after_amount,
+            ];
+        } elseif ($this->originType == WalletBill::ORIGIN_TYPE_BIZER) {
+            $array = [
+                $row->created_at,
+                $row->bill_no,
+                $typeText,
+                $row->amount,
             ];
         } else {
             $array = [];

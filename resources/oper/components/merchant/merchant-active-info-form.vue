@@ -19,7 +19,6 @@
                             :key="item.bizerId"
                             :label="item.bizerMobile"
                             :value="item.bizerId">
-                        <!--<span class="c-gray">{{item.code}}</span>-->
                         <span class="c-blue">{{item.bizerNme}}</span>
                         <span class="c-light-gray">{{item.bizerMobile}}</span>
                     </el-option>
@@ -427,6 +426,7 @@
                     this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                     this.form.status = parseInt(data.status);
                     this.form.bank_card_type = parseInt(data.bank_card_type);
+                    this.form.bizer_id = parseInt(data.bizer_id) != 0 ? parseInt(data.bizer_id) : '';
                 }else {
                     this.form = deepCopy(defaultForm);
                 }
