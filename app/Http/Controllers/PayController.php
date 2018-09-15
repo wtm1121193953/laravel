@@ -104,14 +104,13 @@ class PayController extends Controller
         }
         // 获取appid对应的运营中心小程序
         $config_platfrom = config('platform');
-        Log::info('appid01',['appid' => $appid]);
-        Log::info('appid02',['appid' => $config_platfrom['miniprogram']['app_id']]);
+
         if ($appid == $config_platfrom['miniprogram']['app_id']) {
             $app = WechatService::getWechatPayAppForPlatform();
         } else {
-            $miniprogram = OperMiniprogramService::getByAppid($appid);
-
-            $app = WechatService::getWechatPayAppForOper($miniprogram->oper_id);
+//            $miniprogram = OperMiniprogramService::getByAppid($appid);
+//            $app = WechatService::getWechatPayAppForOper($miniprogram->oper_id);
+            $app = WechatService::getOpenPlatformPayAppFromPlatform();
         }
 
         $response = $app->handlePaidNotify(function ($message, $fail){
