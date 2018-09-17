@@ -8,6 +8,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Bank\Bank;
 use App\Modules\Bank\BankService;
@@ -43,8 +44,13 @@ class BankController extends Controller
      */
     public function add()
     {
-
         $name = request('name');
+        $this->validate(request(),[
+            'name'  =>  'required|unique:banks,name'
+        ],[
+            'name.required'  => '银行名不可为空',
+            'name.unique'    => '银行名不可重复'
+        ]);
         $rt = 0;
         if ($name) {
             $obj = new Bank();
@@ -67,7 +73,12 @@ class BankController extends Controller
      {
          $id = request('id');
          $name = request('name');
-
+         $existBankName = Bank::where('name',$name)
+                                ->where('id','!=',$id)
+                                ->exists();
+         if($existBankName){
+             throw new BaseResponseException('银行名不能相同');
+         }
          $bank = Bank::findOrFail($id);
          $bank->name = $name;
          $bank->save();
