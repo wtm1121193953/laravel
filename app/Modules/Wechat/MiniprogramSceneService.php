@@ -53,8 +53,7 @@ class MiniprogramSceneService extends BaseService
         // 判断是否切换到平台
         // todo
         $oper = OperService::getById($operId);
-        if($oper->pay_to_platform!=Oper::PAY_TO_OPER)
-        {
+        if($oper->pay_to_platform!=Oper::PAY_TO_OPER){
             $operId=0;
         }
         $miniprogramScene = MiniprogramScene::where('invite_channel_id', $inviteChannelId)
@@ -90,6 +89,12 @@ class MiniprogramSceneService extends BaseService
      */
     public static function getMiniprogramAppCode(MiniprogramScene $scene, $width=375, $getAsFilePath=false) : string
     {
+        // 判断是否切换到平台
+        // todo
+        $oper = OperService::getById($scene->oper_id);
+        if($oper->pay_to_platform!=Oper::PAY_TO_OPER){
+            $scene->oper_id=0;
+        }
         if($getAsFilePath){
             $filename = WechatService::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page, $width, true);
             $path = storage_path('app/public/miniprogram/app_code') . '/' . $filename;
