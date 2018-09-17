@@ -149,6 +149,9 @@
                     mobile: [
                         {validator: validateMobile, trigger: 'blur'}
                     ],
+                    name: [
+                        {required: true, message: '姓名不能为空', trigger: 'blur'},
+                    ],
                     verify_code: [
                         {required: true, message: '请输入验证码', trigger: 'blur'},
                         {min: 4, max: 6, message: '请输入4位验证码', trigger: 'blur'}

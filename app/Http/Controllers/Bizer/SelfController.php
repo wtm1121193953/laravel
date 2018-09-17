@@ -59,12 +59,14 @@ class SelfController extends Controller {
     public function register() {
         $this->validate(request(), [
             'mobile' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}/',
+            'name' => 'required|max:10',
             'verify_code' => 'required|size:4',
             'password' => 'required|between:6,12',
             'confirmPassword' => 'required|same:password',
         ]);
 
         $mobile = request('mobile');
+        $name = request('name');
         $password = request('password');
         $verifyCode = request('verify_code');
 
@@ -80,6 +82,7 @@ class SelfController extends Controller {
 
         $bizer = new Bizer();
         $bizer->mobile = $mobile;
+        $bizer->name = $name;
         $salt = str_random();
         $bizer->salt = $salt;
         $bizer->password = Bizer::genPassword($password, $salt);
