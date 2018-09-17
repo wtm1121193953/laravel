@@ -1,5 +1,5 @@
 <template>
-    <page title="商户货款结算管理" v-loading="isLoading">
+    <page title="银行库管理" v-loading="isLoading">
 
             <el-form v-model="query" class="fl" inline size="small">
                 <el-form-item prop="name" label="名称" >
