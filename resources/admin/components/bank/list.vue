@@ -2,8 +2,8 @@
     <page title="银行库管理" v-loading="isLoading">
 
             <el-form v-model="query" class="fl" inline size="small">
-                <el-form-item prop="name" label="名称" >
-                    <el-input v-model="query.name" size="small"  placeholder="名称"  class="w-200" clearable></el-input>
+                <el-form-item prop="name" label="银行名称" >
+                    <el-input v-model="query.name" size="small"  placeholder="银行名称"  class="w-200" clearable></el-input>
                 </el-form-item>
 
                 <el-form-item label="状态" prop="status">
@@ -21,7 +21,7 @@
         <el-button class="fr" type="primary" @click="add">添加</el-button>
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="id" label="ID"  width="100px" />
-            <el-table-column prop="name" label="名称"  width="160px" />
+            <el-table-column prop="name" label="银行名称"  width="160px" />
             <el-table-column prop="status_val" label="状态" />
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column label="操作" width="150px">
