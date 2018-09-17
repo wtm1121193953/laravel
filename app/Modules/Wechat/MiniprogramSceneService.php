@@ -176,9 +176,16 @@ class MiniprogramSceneService extends BaseService
      */
     public static function getPayAppCodeByMerchantId($merchantId)
     {
-        $scene = MiniprogramScene::where('type', MiniprogramScene::TYPE_PAY_SCAN)
-            ->where('merchant_id', $merchantId)
-            ->first();
+        // 判断是否切换到平台
+        // todo
+        $merchant = MerchantService::getById($merchantId);
+        $oper = OperService::getById($merchant->oper_id);
+        $query = MiniprogramScene::where('type', MiniprogramScene::TYPE_PAY_SCAN)
+            ->where('merchant_id', $merchantId);
+        if($oper->pay_to_platform!=Oper::PAY_TO_OPER){
+            $query->where('oper_id',0);
+        }
+        $scene = $query->first();
         if(empty($scene)){
             $scene = self::createScanPayScene($merchantId);
         }
