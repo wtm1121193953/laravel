@@ -51,10 +51,13 @@ class MiniprogramSceneService extends BaseService
     public static function getByInviteChannelId($inviteChannelId, $operId): MiniprogramScene
     {
         // 判断是否切换到平台
-        $oper = OperService::getById($operId);
-        if($oper->pay_to_platform!=Oper::PAY_TO_OPER){
-            $operId=0;
+        if($operId!=0){
+            $oper = OperService::getById($operId);
+            if(!is_null($oper) && $oper->pay_to_platform!=Oper::PAY_TO_OPER){
+                $operId=0;
+            }
         }
+
         $miniprogramScene = MiniprogramScene::where('invite_channel_id', $inviteChannelId)
             ->where('oper_id', $operId)
             ->orderBy('id', 'desc')
@@ -186,11 +189,13 @@ class MiniprogramSceneService extends BaseService
         // 判断是否切换到平台
         // todo
         $merchant = MerchantService::getById($merchantId);
-        $oper = OperService::getById($merchant->oper_id);
         $query = MiniprogramScene::where('type', MiniprogramScene::TYPE_PAY_SCAN)
             ->where('merchant_id', $merchantId);
-        if($oper->pay_to_platform!=Oper::PAY_TO_OPER){
-            $query->where('oper_id',0);
+        if($merchantId->oper_id!=0){
+            $oper = OperService::getById($merchant->oper_id);
+            if($oper->pay_to_platform!=Oper::PAY_TO_OPER){
+                $query->where('oper_id',0);
+            }
         }
         $scene = $query->first();
         if(empty($scene)){
