@@ -51,7 +51,6 @@ class MiniprogramSceneService extends BaseService
     public static function getByInviteChannelId($inviteChannelId, $operId): MiniprogramScene
     {
         // 判断是否切换到平台
-        // todo
         $oper = OperService::getById($operId);
         if($oper->pay_to_platform!=Oper::PAY_TO_OPER){
             $operId=0;
@@ -90,7 +89,6 @@ class MiniprogramSceneService extends BaseService
     public static function getMiniprogramAppCode(MiniprogramScene $scene, $width=375, $getAsFilePath=false) : string
     {
         // 判断是否切换到平台
-        // todo
         if($scene->oper_id!=0){
             $oper = OperService::getById($scene->oper_id);
             if(!is_null($oper) && $oper->pay_to_platform!=Oper::PAY_TO_OPER){
@@ -125,11 +123,15 @@ class MiniprogramSceneService extends BaseService
      */
     public static function createInviteScene(InviteChannel $inviteChannel)
     {
-        // todo
-        $oper = OperService::getById($inviteChannel->oper_id);
         $miniprogramScene = new MiniprogramScene();
         // 判断是否切换到平台
-        $miniprogramScene->oper_id = ($oper->pay_to_platform!=Oper::PAY_TO_OPER) ? 0 : $inviteChannel->oper_id;
+        if($inviteChannel->oper_id!=0){
+            $oper = OperService::getById($inviteChannel->oper_id);
+            if(!is_null($oper) && $oper->pay_to_platform!=Oper::PAY_TO_OPER){
+                $inviteChannel->oper_id=0;
+            }
+        }
+        $miniprogramScene->oper_id = $inviteChannel->oper_id;
         $miniprogramScene->invite_channel_id = $inviteChannel->id;
         $miniprogramScene->page = MiniprogramScene::PAGE_INVITE_REGISTER;
         $miniprogramScene->type = MiniprogramScene::TYPE_INVITE_CHANNEL;
@@ -153,10 +155,13 @@ class MiniprogramSceneService extends BaseService
         if(empty($merchant) || empty($operId = $merchant->oper_id)){
             throw new BaseResponseException('商户信息不存在或商户尚未审核');
         }
-        // todo
-        $oper = OperService::getById($operId);
-        // 判断是否切换到平台
-        $operId= ($oper->pay_to_platform!=Oper::PAY_TO_OPER) ? 0 : $operId;
+        if($operId!=0){
+            $oper = OperService::getById($operId);
+            if(!is_null($oper) && $oper->pay_to_platform!=Oper::PAY_TO_OPER){
+                // 判断是否切换到平台
+                $operId = 0;
+            }
+        }
         $scene = new MiniprogramScene();
         $scene->oper_id = $operId;
         $scene->merchant_id = $merchantId;
