@@ -91,9 +91,9 @@ class MiniprogramSceneService extends BaseService
     {
         // 判断是否切换到平台
         // todo
-        if(!$scene->oper_id){
+        if($scene->oper_id!=0){
             $oper = OperService::getById($scene->oper_id);
-            if($oper->pay_to_platform!=Oper::PAY_TO_OPER){
+            if(!is_null($oper) && $oper->pay_to_platform!=Oper::PAY_TO_OPER){
                 $scene->oper_id=0;
             }
         }
