@@ -4,11 +4,11 @@
             <el-tabs v-model="activeName" type="card">
                 <el-tab-pane :disabled="activeName != 'bindBankCard'" label="绑定银行卡" name="bindBankCard">
                     <el-form :model="form1" :rules="formRules1" ref="form1" size="small" label-width="110px">
-                        <el-form-item prop="bankCardNo" label="提现银行卡号">
-                            <el-input v-model="form1.bankCardNo" clearable/>
+                        <el-form-item prop="bank_card_no" label="提现银行卡号">
+                            <el-input v-model="form1.bank_card_no" clearable/>
                         </el-form-item>
-                        <el-form-item prop="bankName" label="开户行">
-                            <el-select v-model="form1.bankName" filterable clearable placeholder="请选择">
+                        <el-form-item prop="bank_name" label="开户行">
+                            <el-select v-model="form1.bank_name" filterable clearable placeholder="请选择">
                                 <el-option
                                     v-for="item in bankList"
                                     :key="item.id"
@@ -17,8 +17,8 @@
                                 ></el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item prop="bankCardOpenName" label="账户姓名">
-                            <el-input v-model="form1.bankCardOpenName" clearable/>
+                        <el-form-item prop="bank_card_open_name" label="账户姓名">
+                            <el-input v-model="form1.bank_card_open_name" clearable/>
                         </el-form-item>
                         <div class="tips">注意：业务员所获得的收入提现时，将通过以上所填写资料进行操作</div>
                         <el-form-item>
@@ -28,14 +28,17 @@
                 </el-tab-pane>
                 <el-tab-pane :disabled="activeName != 'uploadIdCard'" label="上传证件照" name="uploadIdCard">
                     <el-form :model="form2" :rules="formRules2" ref="form2" size="small" label-width="110px">
-                        <el-form-item prop="idCardNo" label="身份证号码">
-                            <el-input v-model="form2.idCardNo" clearable/>
+                        <el-form-item prop="id_card_name" label="身份证姓名">
+                            <el-input v-model="form2.id_card_name" clearable/>
                         </el-form-item>
-                        <el-form-item prop="frontPic" label="身份证正面">
-                            <image-upload v-model="form2.frontPic" :limit="1"></image-upload>
+                        <el-form-item prop="id_card_no" label="身份证号码">
+                            <el-input v-model="form2.id_card_no" clearable/>
                         </el-form-item>
-                        <el-form-item prop="oppositePic" label="身份证反面">
-                            <image-upload v-model="form2.oppositePic" :limit="1"></image-upload>
+                        <el-form-item prop="front_pic" label="身份证正面">
+                            <image-upload v-model="form2.front_pic" :limit="1"></image-upload>
+                        </el-form-item>
+                        <el-form-item prop="opposite_pic" label="身份证反面">
+                            <image-upload v-model="form2.opposite_pic" :limit="1"></image-upload>
                         </el-form-item>
                         <div class="tips">注意：提交审核后，将在7个工作日内返回审核结果，请耐心等待</div>
                         <el-form-item>
@@ -111,14 +114,15 @@
                 activeName: 'bindBankCard',
 
                 form1: {
-                    bankCardNo: '',
-                    bankName: '',
-                    bankCardOpenName: '',
+                    bank_card_no: '',
+                    bank_name: '',
+                    bank_card_open_name: '',
                 },
                 form2: {
-                    idCardNo: '',
-                    frontPic: '',
-                    oppositePic: '',
+                    id_card_name: '',
+                    id_card_no: '',
+                    front_pic: '',
+                    opposite_pic: '',
                 },
                 form3: {
                     password: '',
@@ -127,28 +131,32 @@
                 bankList: [],
 
                formRules1: {
-                    bankCardNo: [
+                    bank_card_no: [
                         {required: true, message: '提现银行卡号不能为空'},
                         {max: 30, min: 8, message: '提现银行卡号最少为8位，最多为30位'},
                         {validator: validateBankCardNo}
                     ],
-                   bankName: [
+                   bank_name: [
                        {required: true, message: '开户行不能为空'},
                    ],
-                   bankCardOpenName: [
+                   bank_card_open_name: [
                        {required: true, message: '账户姓名不能为空'},
-                       {max: 10, message: '账户姓名不能超过10个字'},
+                       {max: 20, message: '账户姓名不能超过20个字'},
                    ],
                },
                 formRules2: {
-                    idCardNo: [
+                    id_card_name: [
+                        {required: true, message: '身份证姓名不能为空'},
+                        {max: 20, message: '身份证姓名不能超过20个字'},
+                    ],
+                    id_card_no: [
                         {required: true, message: '身份证号码不能为空'},
                         {validator: idCardNoValidate},
                     ],
-                    frontPic: [
+                    front_pic: [
                         {required: true, message: '身份证正面图片不能为空'},
                     ],
-                    oppositePic: [
+                    opposite_pic: [
                         {required: true, message: '身份证反面图片不能为空'},
                     ],
                 },
@@ -180,7 +188,12 @@
             settingPasswordNext() {
                 this.$refs.form3.validate(valid => {
                     if (valid) {
-
+                        let form = {};
+                        Object.assign(form, this.form1, this.form2, this.form3);
+                        api.post('/wallet/withdraw/setting', form).then(data => {
+                            this.$message.success('提现设置成功');
+                            router.replace(this.$route.path);
+                        })
                     }
                 })
             },

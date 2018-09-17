@@ -82,7 +82,7 @@ class UserIdentityAuditRecordController extends Controller
      */
     public function getRecord( Request $request )
     {
-        $record = UserIdentityAuditRecordService::getRecordByUser( $request->get('current_user')->id);
+        $record = UserIdentityAuditRecordService::getRecordByUserId( $request->get('current_user')->id);
         return Result::success($record);
     }
 }

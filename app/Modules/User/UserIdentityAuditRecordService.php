@@ -78,7 +78,7 @@ class UserIdentityAuditRecordService extends BaseService
      * @param $userId
      * @return UserIdentityAuditRecord
      */
-    public static function getRecordByUser($userId)
+    public static function getRecordByUserId($userId)
     {
         $record = UserIdentityAuditRecord::where('user_id', $userId)->first();
         return $record;
