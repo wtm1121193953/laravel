@@ -52,6 +52,7 @@ class V1_4_4 extends Command
             ->where('oper_id', '<>', 0)
             ->select(['origin_id', 'origin_type'])
             ->groupBy(['origin_id', 'origin_type'])
+            ->orderBy('origin_id')
             ->chunk(10000, function ( $channels ) use ($bar) {
                 $channels->each(function ( $channel ) use ($bar) {
                     UserInviteChannelsDataMigration::dispatch( $channel->origin_id, $channel->origin_type );
