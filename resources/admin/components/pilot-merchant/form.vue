@@ -79,6 +79,42 @@
                 <image-upload :width="752" :height="398" v-model="form.desc_pic_list" :limit="6"/>
                 <div>图片尺寸: 752 px * 398 px</div>
             </el-form-item>
+
+            <el-form-item prop="oper_biz_member_code" label="业务员">
+                <el-select
+                        v-model="form.oper_biz_member_code"
+                        filterable
+                        clearable
+                        placeholder="请输入业务员姓名或手机号码"
+                        class="w-300"
+                >
+                    <el-option
+                            v-for="item in operBizMembers"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.code">
+                        <span class="c-blue">{{item.name}}</span>
+                        <span class="c-light-gray">{{item.mobile}}</span>
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item prop="service_phone" label="客服电话" class="w-500">
+                <el-input v-model="form.service_phone"/>
+            </el-form-item>
+            <el-form-item prop="logo" label="商家logo">
+                <image-upload :width="190" :height="190" v-model="form.logo" :limit="1"/>
+                <div>图片尺寸: 190 px * 190 px</div>
+            </el-form-item>
+            <el-form-item prop="desc_pic_list" label="商家介绍图片">
+                <image-upload :width="752" :height="398" v-model="form.desc_pic_list" :limit="6"/>
+                <div>图片尺寸: 752 px * 398 px</div>
+            </el-form-item>
+            <el-form-item prop="business_licence_pic_url" label="营业执照">
+                <image-upload  v-model="form.business_licence_pic_url" :limit="1"/>
+            </el-form-item>
+            <el-form-item prop="organization_code" label="营业执照代码">
+                <el-input v-model="form.organization_code"/>
+            </el-form-item>
         </el-col>
 
         <el-col>
@@ -108,6 +144,8 @@
         service_phone: '',
         logo: '',
         desc_pic_list: [],
+        business_licence_pic_url:'',
+        organization_code:'',
 
         is_pilot: 1,
     };
@@ -172,6 +210,13 @@
                     ],
                     desc_pic_list: [
                         {required: true, message: '商家介绍图片不能为空'}
+                    ],
+                    business_licence_pic_url: [
+                        {required: true, message: '营业执照不能为空', trigger: 'change'}
+                    ],
+                    organization_code: [
+                        {required: true, message: '营业执照代码 不能为空'},
+                        {max: 100, message: '营业执照代码 不能超过100个字'},
                     ],
                 },
             }

@@ -12,22 +12,22 @@ use Illuminate\Database\Eloquent\Builder;
 
 class BankService
 {
+
     /**
      * @param array $params
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @param bool  $return_query
+     * @return Bank|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public static function getList(array $params = [], bool $return_query = false)
     {
+        $statusArr = [];
         if($params['status']){
-            if(!is_array($params['status'])){
-                $statusArr = explode(',',$params['status']);
-            }else{
+            if(is_array($params['status'])){
                 $statusArr = $params['status'];
+            }else{
+                $statusArr = explode(',',$params['status']);
             }
-        }else{
-            $statusArr = [];
         }
-        //DB::enableQueryLog();
         $query  = Bank::select('id','name','created_at','status')
             ->when($params['name'], function (Builder $query) use ($params){
                 $query->where('name','like','%'.$params['name'].'%');
@@ -35,8 +35,7 @@ class BankService
             ->when($statusArr, function (Builder $query) use ($statusArr){
                 $query->whereIn('status', $statusArr);
             })
-            ->orderByDesc('created_at');
-        //dd(DB::getQueryLog());
+            ->orderByDesc('id');
         if ($return_query) {
             return  $query;
         }

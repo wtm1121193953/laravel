@@ -88,7 +88,7 @@
             },
             add() {
                 let param = {};
-                this.$prompt(`添加银行`,'添加银行', {
+                this.$prompt(``,'添加银行', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     // type: 'warning',

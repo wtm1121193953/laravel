@@ -63,12 +63,31 @@
                     {{data.contacter_phone}}
                 </el-form-item>
 
+
+
+                <el-form-item prop="oper_biz_member_code" label="业务员">
+                    {{data.name}}{{data.mobile}}
+                </el-form-item>
+                <el-form-item prop="service_phone" label="客服电话" class="w-500">
+                    {{data.service_phone}}
+                </el-form-item>
+                <el-form-item prop="business_licence_pic_url" label="营业执照">
+                    <div class="desc" v-viewer >
+                        <img :src="data.business_licence_pic_url" :key="index" />
+                    </div>
+                </el-form-item>
+                <el-form-item prop="organization_code" label="营业执照代码">
+                    {{data.organization_code}}
+                </el-form-item>
+
                 <el-col  >
                     <el-form-item >
                         <el-button type="primary" @click="back">返回</el-button>
                     </el-form-item>
 
                 </el-col>
+
+
             </el-form>
 
         </el-col>
