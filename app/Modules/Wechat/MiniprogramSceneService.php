@@ -91,9 +91,11 @@ class MiniprogramSceneService extends BaseService
     {
         // 判断是否切换到平台
         // todo
-        $oper = OperService::getById($scene->oper_id);
-        if($oper->pay_to_platform!=Oper::PAY_TO_OPER){
-            $scene->oper_id=0;
+        if(!$scene->oper_id){
+            $oper = OperService::getById($scene->oper_id);
+            if($oper->pay_to_platform!=Oper::PAY_TO_OPER){
+                $scene->oper_id=0;
+            }
         }
         if($getAsFilePath){
             $filename = WechatService::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page, $width, true);
