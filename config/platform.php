@@ -22,8 +22,8 @@ return [
         'app' => [
             'mch_id' => '1514435661',
             'key' => '3kDjtZLtK2vhgB0FvG5OQuCk5lWIB7e6',
-            'cert_path' => storage_path('app/wxPayCert/app/1514435661_20180914_cert.pem'),
-            'key_path' => storage_path('app/wxPayCert/app/1514435661_20180914_key.pem'),
+            'cert_path' => storage_path('app/wxPayCert/platform/app/1514435661_20180914_cert.pem'),
+            'key_path' => storage_path('app/wxPayCert/platform/app/1514435661_20180914_key.pem'),
         ]
     ],
     // 支付宝支付配置
