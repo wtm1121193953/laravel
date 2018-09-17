@@ -22,9 +22,15 @@
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="id" label="ID"  width="100px" />
             <el-table-column prop="name" label="银行名称"  width="160px" />
-            <el-table-column prop="status_val" label="状态" />
-            <el-table-column prop="created_at" label="添加时间"/>
-            <el-table-column label="操作" width="150px">
+            <el-table-column prop="status_val" label="状态" width="100px" >
+                <template slot-scope="scope">
+                    <el-tag
+                            :type="scope.row.status_val === '启用' ? 'success' : 'danger'"
+                            disable-transitions>{{scope.row.status_val}}</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="created_at" label="添加时间" width="200px"/>
+            <el-table-column label="操作" >
                 <template slot-scope="scope">
                     <el-button type="text" @click="edit(scope)">编辑</el-button>
                     <el-button type="text" @click="changeStatus(scope)">{{scope.row.status === 1 ? '禁用' : '启用'}}</el-button>
