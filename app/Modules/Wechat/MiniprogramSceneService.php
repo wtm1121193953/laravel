@@ -124,7 +124,7 @@ class MiniprogramSceneService extends BaseService
     public static function createInviteScene(InviteChannel $inviteChannel)
     {
         // todo
-        $oper = OperService::getById($inviteChannel->id);
+        $oper = OperService::getById($inviteChannel->oper_id);
         $miniprogramScene = new MiniprogramScene();
         // 判断是否切换到平台
         $miniprogramScene->oper_id = ($oper->pay_to_platform!=Oper::PAY_TO_OPER) ? 0 : $inviteChannel->oper_id;
