@@ -149,11 +149,8 @@ class WechatService
     public static function genMiniprogramAppCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false,$merchantId ='')
     {
         if($operId){
-            $oper = OperService::getById($operId);
-            if($oper->pay_to_platform==Oper::PAY_TO_OPER){
-                // 如果未切换到了支付到运营中心,则使用运营中心二维码
-                $app = WechatService::getWechatMiniAppForOper($operId);
-            }
+            // 如果未切换到了支付到运营中心,则使用运营中心二维码
+            $app = WechatService::getWechatMiniAppForOper($operId);
         }
         $app = $app ?? WechatService::getWechatMiniAppForPlatform();
 
