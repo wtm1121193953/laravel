@@ -6,7 +6,6 @@ use App\BaseService;
 use App\Modules\Bizer\Bizer;
 use App\Modules\Bizer\BizerService;
 use App\Modules\User\User;
-use App\Modules\Wallet\BankCard;
 use App\Modules\User\UserIdentityAuditRecordService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -117,16 +116,11 @@ class BankCardService extends BaseService
      * Author：  Jerry
      * Date：    180901
      * @param   int   $id
-     * @param   \App\Modules\User\User|  $obj
-     * @param   int $originType
      * @return \App\Modules\Wallet\BankCard
      */
-    public static function getCardById( $id, $obj, $originType=BankCard::ORIGIN_TYPE_USER )
+    public static function getCardById($id)
     {
-        return BankCard::where('origin_id', $obj->id )
-            ->where("origin_type",$originType)
-            ->where('id', $id )
-            ->first();
+        return BankCard::find($id);
     }
 
     public static function getList( $obj, $originType=BankCard::ORIGIN_TYPE_USER  )
@@ -162,5 +156,19 @@ class BankCardService extends BaseService
         return  Bank::when($onlyStatusUsable, function (Builder $query) {
             $query->where('status', Bank::STATUS_USABLE);
         })->get();
+    }
+
+    /**
+     * 通过用户id和类型获取银行卡信息
+     * @param $originId
+     * @param $originType
+     * @return BankCard
+     */
+    public static function getBankCardByOriginInfo($originId, $originType)
+    {
+        $bankCard = BankCard::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->first();
+        return $bankCard;
     }
 }
