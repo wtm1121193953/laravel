@@ -33,17 +33,24 @@ class FeeSplittingService extends BaseService
         $profitAmount = OrderService::getProfitAmount($order);
         DB::beginTransaction();
         try {
-            // 1 分给自己 5%
-            self::feeSplittingToSelf($order, $profitAmount);
-            // 2 分给上级 25%
-            self::feeSplittingToParent($order, $profitAmount);
-            // 3 分给运营中心  50% || 100% , 暂时不做
-            self::feeSplittingToOper($order, $profitAmount);
+            $oper = OperService::getById($order->oper_id);
+            // 只有切换到平台并且平台参与分成的运营中心才执行返利
+            if ($oper->pay_to_platform == Oper::PAY_TO_PLATFORM_WITH_SPLITTING) {
+                // 1 分给自己 5%
+                self::feeSplittingToSelf($order, $profitAmount);
+                // 2 分给上级 25%
+                self::feeSplittingToParent($order, $profitAmount);
+            }
+            // 只有切换到平台的才给运营中心分润
+            if ($oper->pay_to_platform != Oper::PAY_TO_OPER) {
+                // 3 分给运营中心  50% || 100%
+                self::feeSplittingToOper($order, $profitAmount);
+            }
             // 4 修改订单中的分润状态
             OrderService::updateSplittingStatus($order);
 
             DB::commit();
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             DB::rollBack();
             throw  $e;
         }
@@ -70,7 +77,7 @@ class FeeSplittingService extends BaseService
             WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
 
             DB::commit();
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -180,13 +187,13 @@ class FeeSplittingService extends BaseService
     private static function createFeeSplittingRecord(Order $order, $originInfo, $type, float $profitAmount)
     {
         $merchantLevel = 0;
-        if($originInfo instanceof User){
+        if ($originInfo instanceof User) {
             $originType = FeeSplittingRecord::ORIGIN_TYPE_USER;
-        }else if ($originInfo instanceof Merchant) {
+        } else if ($originInfo instanceof Merchant) {
             $originType = FeeSplittingRecord::ORIGIN_TYPE_MERCHANT;
-        }else if($originInfo instanceof Oper){
+        } else if ($originInfo instanceof Oper) {
             $originType = FeeSplittingRecord::ORIGIN_TYPE_OPER;
-        }else {
+        } else {
             throw new BaseResponseException('用户类型错误');
         }
         if ($type == FeeSplittingRecord::TYPE_TO_SELF) {
@@ -194,14 +201,14 @@ class FeeSplittingService extends BaseService
             $feeRatio = UserCreditSettingService::getFeeSplittingRatioToSelfSetting(); // 自反的分润比例
         } elseif ($type == FeeSplittingRecord::TYPE_TO_PARENT) {
             // 2 返上级比例
-            if($originType == FeeSplittingRecord::ORIGIN_TYPE_USER){
+            if ($originType == FeeSplittingRecord::ORIGIN_TYPE_USER) {
                 $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfUserSetting();
-            }else if($originType == FeeSplittingRecord::ORIGIN_TYPE_MERCHANT){
+            } else if ($originType == FeeSplittingRecord::ORIGIN_TYPE_MERCHANT) {
                 $merchantLevel = $originInfo->level;
                 $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfMerchantSetting($merchantLevel);
-            }else if($originType == FeeSplittingRecord::ORIGIN_TYPE_OPER) {
+            } else if ($originType == FeeSplittingRecord::ORIGIN_TYPE_OPER) {
                 $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfOperSetting();
-            }else {
+            } else {
                 throw new BaseResponseException();
             }
         } elseif ($type == FeeSplittingRecord::TYPE_TO_OPER) {
@@ -253,6 +260,19 @@ class FeeSplittingService extends BaseService
     }
 
     /**
+     * 获取用户自返的返利记录
+     * @param int $orderId 订单ID
+     * @return FeeSplittingRecord
+     */
+    public static function getToSelfFeeSplittingRecordByOrderId($orderId)
+    {
+        $record = FeeSplittingRecord::where('order_id', $orderId)
+            ->where('type', FeeSplittingRecord::TYPE_TO_SELF)
+            ->first();
+        return $record;
+    }
+
+    /**
      * 通过参数 获取 分润记录详情
      * @param $params
      * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|null|object
@@ -293,6 +313,12 @@ class FeeSplittingService extends BaseService
      */
     public static function getUserFeeSplittingRatioToSelfByMerchantId($merchantId)
     {
+        // 如果平台没有参与运营中心的分润, 则用户自返比例为0
+        $operId = Merchant::where('id', $merchantId)->value('oper_id');
+        $oper = Oper::where('id', $operId)->first();
+        if($oper->pay_to_platform != Oper::PAY_TO_PLATFORM_WITH_SPLITTING){
+            return 0;
+        }
         $feeRatio = UserCreditSettingService::getFeeSplittingRatioToSelfSetting(); // 自反的分润比例
         $merchant = MerchantService::getById($merchantId);
         if (empty($merchant)) {
