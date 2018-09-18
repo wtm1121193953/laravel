@@ -46,7 +46,7 @@
                 </el-form-item>
                 <el-form-item prop="logo" label="商家logo">
                     <div v-viewer>
-                        <img :src="data.logo" alt="商家logo" width="200px" height="100px" />
+                        <img :src="data.logo" alt="商家logo" style="max-width: 200px;" height="100px" />
                     </div>
                 </el-form-item>
                 <el-form-item prop="desc_pic" label="商家介绍图片">
@@ -73,7 +73,7 @@
                 </el-form-item>
                 <el-form-item prop="business_licence_pic_url" label="营业执照">
                     <div class="desc" v-viewer >
-                        <img :src="data.business_licence_pic_url" :key="index" />
+                        <img :src="data.business_licence_pic_url" :key="index" style="max-width: 200px;" height="100px" />
                     </div>
                 </el-form-item>
                 <el-form-item prop="organization_code" label="营业执照代码">
