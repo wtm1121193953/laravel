@@ -26,7 +26,7 @@ class BankCardsController extends Controller
     public function  addCard( Request $request)
     {
         $max = '';
-        for ($i=0;$i<30;$i++){
+        for ($i=0;$i<35;$i++){
             $max .= '9';
         }
 
