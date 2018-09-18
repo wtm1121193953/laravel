@@ -5,6 +5,7 @@ namespace App\Modules\Bizer;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\ResultCode;
+use Illuminate\Database\Eloquent\Builder;
 
 class BizerService extends BaseService
 {
@@ -114,10 +115,85 @@ class BizerService extends BaseService
         return $bizerIdentityAuditRecord;
     }
 
+    /**
+     * 判断身份证号码是否存在
+     * @param $bizerId
+     * @param $cardNo
+     * @return bool
+     */
     public static function checkRecordCardNoUsed($bizerId, $cardNo)
     {
         $exist=  BizerIdentityAuditRecord::where('id_card_no', $cardNo)
             ->where('bizer_id', '!=', $bizerId)->exists();
         return $exist;
+    }
+
+    /**
+     * 获取业务员列表
+     * @param $params
+     * @param int $pageSize
+     * @param bool $withQuery
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|Builder
+     */
+    public static function getBizerList($params, $pageSize = 15, $withQuery = false)
+    {
+        $mobile = array_get($params, 'mobile', '');
+        $id = array_get($params, 'id', 0);
+        $name = array_get($params, 'name', '');
+        $bizerStartDate = array_get($params, 'startDate', '');
+        $bizerEndDate = array_get($params, 'endDate', '');
+        $status = array_get($params, 'status', 0);
+        $identityStatus = array_get($params, 'identityStatus', 0);
+        $identityStartDate = array_get($params, 'identityStartDate', '');
+        $identityEndDate = array_get($params, 'identityEndDate', '');
+
+        $query = Bizer::query()->with('bizerIdentityAuditRecord');
+        if ($id) {
+            $query->where('id', $id);
+        }
+        if ($mobile) {
+            $query->where('mobile', 'like', "%$mobile%");
+        }
+        if ($name) {
+            $query->where('name', 'like', "%$name%");
+        }
+        if ($bizerStartDate && $bizerEndDate) {
+            $query->whereBetween('created_at', [$bizerStartDate, $bizerEndDate]);
+        }elseif ($bizerStartDate) {
+            $query->where('created_at', '>', $bizerStartDate);
+        }elseif ($bizerEndDate) {
+            $query->where('created_at', '<', $bizerEndDate);
+        }
+        if ($status) {
+            $query->where('status', $status);
+        }
+        if (($identityStatus && !empty($identityStatus)) || $identityStartDate || $identityEndDate) {
+            $query->whereHas('bizerIdentityAuditRecord', function (Builder $query) use ($identityStatus, $identityStartDate, $identityEndDate) {
+                if ($identityStatus) {
+                    if (is_array($identityStatus) && !empty($identityStatus)) {
+                        $query->whereIn('status', $identityStatus);
+                    } elseif (!is_array($identityStatus)) {
+                        $query->where('status', $identityStatus);
+                    }
+                }
+                if ($identityStartDate && $identityEndDate) {
+                    $query->whereBetween('created_at', [$identityStartDate, $identityEndDate]);
+                } elseif ($identityStartDate) {
+                    $query->where('created_at', '>', $identityStartDate);
+                } elseif ($identityEndDate) {
+                    $query->where('created_at', '<', $identityEndDate);
+                }
+            });
+            if ($identityStatus == BizerIdentityAuditRecord::STATUS_NOT_SUBMIT || (is_array($identityStatus) && in_array(BizerIdentityAuditRecord::STATUS_NOT_SUBMIT, $identityStatus))) {
+                $query->orDoesntHave('bizerIdentityAuditRecord');
+            }
+        }
+
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate($pageSize);
+            return $data;
+        }
     }
 }

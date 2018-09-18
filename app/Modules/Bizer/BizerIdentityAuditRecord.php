@@ -25,4 +25,5 @@ class BizerIdentityAuditRecord extends BaseModel
     const STATUS_AUDIT_PREPARE = 1;
     const STATUS_AUDIT_SUCCESS = 2;
     const STATUS_AUDIT_FAILED = 3;
+    const STATUS_NOT_SUBMIT = 4;     // 不是数据库中的状态 是列表中未提交身份认证的状态
 }

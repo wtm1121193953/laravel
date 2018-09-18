@@ -19,4 +19,8 @@ class Bizer extends BaseModel {
 
     use GenPassword;
 
+    public function bizerIdentityAuditRecord()
+    {
+        return $this->hasOne('App\Modules\Bizer\BizerIdentityAuditRecord');
+    }
 }
