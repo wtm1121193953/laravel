@@ -54,15 +54,15 @@ class V1_4_3 extends Command
     {
         // 1. 清楚结算出的分润
         // 代码全部注释掉, 以免后面误操作
-        Wallet::where('id', '>', 0)->delete();
-        FeeSplittingRecord::where('id', '>', 0)->delete();
-        WalletBalanceUnfreezeRecord::where('id', '>', 0)->delete();
-        WalletBatch::where('id', '>', 0)->delete();
-        WalletBill::where('id', '>', 0)->delete();
-        WalletConsumeQuotaRecord::where('id', '>', 0)->delete();
-        WalletConsumeQuotaUnfreezeRecord::where('id', '>', 0)->delete();
-        WalletWithdraw::where('id', '>', 0)->delete();
-        Order::where('id', '>', 0)->update(['splitting_status' => 1, 'splitting_time' => null]);
+//        Wallet::where('id', '>', 0)->delete();
+//        FeeSplittingRecord::where('id', '>', 0)->delete();
+//        WalletBalanceUnfreezeRecord::where('id', '>', 0)->delete();
+//        WalletBatch::where('id', '>', 0)->delete();
+//        WalletBill::where('id', '>', 0)->delete();
+//        WalletConsumeQuotaRecord::where('id', '>', 0)->delete();
+//        WalletConsumeQuotaUnfreezeRecord::where('id', '>', 0)->delete();
+//        WalletWithdraw::where('id', '>', 0)->delete();
+//        Order::where('id', '>', 0)->update(['splitting_status' => 1, 'splitting_time' => null]);
 //
 //        // 删除错误的权限
 //        AdminAuthRule::where('pid', 35)->delete();
