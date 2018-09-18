@@ -15,6 +15,8 @@ use App\Exceptions\DataNotFoundException;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\OperService;
+use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
 
 class MiniprogramSceneService extends BaseService
@@ -48,6 +50,14 @@ class MiniprogramSceneService extends BaseService
      */
     public static function getByInviteChannelId($inviteChannelId, $operId): MiniprogramScene
     {
+        // 判断是否切换到平台
+        if($operId!=0){
+            $oper = OperService::getById($operId);
+            if(!is_null($oper) && $oper->pay_to_platform!=Oper::PAY_TO_OPER){
+                $operId=0;
+            }
+        }
+
         $miniprogramScene = MiniprogramScene::where('invite_channel_id', $inviteChannelId)
             ->where('oper_id', $operId)
             ->orderBy('id', 'desc')
@@ -81,6 +91,13 @@ class MiniprogramSceneService extends BaseService
      */
     public static function getMiniprogramAppCode(MiniprogramScene $scene, $width=375, $getAsFilePath=false) : string
     {
+        // 判断是否切换到平台
+        if($scene->oper_id!=0){
+            $oper = OperService::getById($scene->oper_id);
+            if(!is_null($oper) && $oper->pay_to_platform!=Oper::PAY_TO_OPER){
+                $scene->oper_id=0;
+            }
+        }
         if($getAsFilePath){
             $filename = WechatService::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page, $width, true);
             $path = storage_path('app/public/miniprogram/app_code') . '/' . $filename;
@@ -110,6 +127,13 @@ class MiniprogramSceneService extends BaseService
     public static function createInviteScene(InviteChannel $inviteChannel)
     {
         $miniprogramScene = new MiniprogramScene();
+        // 判断是否切换到平台
+        if($inviteChannel->oper_id!=0){
+            $oper = OperService::getById($inviteChannel->oper_id);
+            if(!is_null($oper) && $oper->pay_to_platform!=Oper::PAY_TO_OPER){
+                $inviteChannel->oper_id=0;
+            }
+        }
         $miniprogramScene->oper_id = $inviteChannel->oper_id;
         $miniprogramScene->invite_channel_id = $inviteChannel->id;
         $miniprogramScene->page = MiniprogramScene::PAGE_INVITE_REGISTER;
@@ -134,6 +158,13 @@ class MiniprogramSceneService extends BaseService
         if(empty($merchant) || empty($operId = $merchant->oper_id)){
             throw new BaseResponseException('商户信息不存在或商户尚未审核');
         }
+        if($operId!=0){
+            $oper = OperService::getById($operId);
+            if(!is_null($oper) && $oper->pay_to_platform!=Oper::PAY_TO_OPER){
+                // 判断是否切换到平台
+                $operId = 0;
+            }
+        }
         $scene = new MiniprogramScene();
         $scene->oper_id = $operId;
         $scene->merchant_id = $merchantId;
@@ -155,9 +186,17 @@ class MiniprogramSceneService extends BaseService
      */
     public static function getPayAppCodeByMerchantId($merchantId)
     {
-        $scene = MiniprogramScene::where('type', MiniprogramScene::TYPE_PAY_SCAN)
-            ->where('merchant_id', $merchantId)
-            ->first();
+        // 判断是否切换到平台
+        $merchant = MerchantService::getById($merchantId);
+        $query = MiniprogramScene::where('type', MiniprogramScene::TYPE_PAY_SCAN)
+            ->where('merchant_id', $merchantId);
+        if($merchant->oper_id != 0){
+            $oper = OperService::getById($merchant->oper_id);
+            if($oper->pay_to_platform!=Oper::PAY_TO_OPER){
+                $query->where('oper_id',0);
+            }
+        }
+        $scene = $query->first();
         if(empty($scene)){
             $scene = self::createScanPayScene($merchantId);
         }
@@ -176,7 +215,7 @@ class MiniprogramSceneService extends BaseService
      * @param string $qrcodeUrl
      * @return MiniprogramScene
      */
-    public static function edit($sceneId, $operId, $merchantId, $inviteChannelId, $page, $type = 1, $payload, $qrcodeUrl = ''): MiniprogramScene
+    /*public static function edit($sceneId, $operId, $merchantId, $inviteChannelId, $page, $type = 1, $payload, $qrcodeUrl = ''): MiniprogramScene
     {
         $miniprogramScene = MiniprogramScene::find($sceneId);
         if (empty($miniprogramScene)) {
@@ -192,5 +231,5 @@ class MiniprogramSceneService extends BaseService
         $miniprogramScene->save();
 
         return $miniprogramScene;
-    }
+    }*/
 }

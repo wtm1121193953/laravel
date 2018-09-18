@@ -45,7 +45,7 @@
                 </el-form-item>
                 <el-form-item prop="logo" label="商家logo">
                     <div v-viewer>
-                        <img :src="data.logo" alt="商家logo" width="200px" height="100px" />
+                        <img :src="data.logo" alt="商家logo" style="max-width: 200px;" height="100px"  />
                     </div>
                 </el-form-item>
                 <el-form-item prop="desc_pic" label="商家介绍图片">
@@ -66,6 +66,21 @@
                         <span v-else>{{data.audit_suggestion}}</span>
                     </el-form-item>
                 </el-col>
+
+                <el-form-item prop="oper_biz_member_code" label="业务员">
+                    {{data.name}}{{data.mobile}}
+                </el-form-item>
+                <el-form-item prop="service_phone" label="客服电话" class="w-500">
+                    {{data.service_phone}}
+                </el-form-item>
+                <el-form-item prop="business_licence_pic_url" label="营业执照">
+                    <div class="desc" v-viewer >
+                        <img :src="data.business_licence_pic_url" :key="index" style="max-width: 200px;" height="100px"  />
+                    </div>
+                </el-form-item>
+                <el-form-item prop="organization_code" label="营业执照代码">
+                    {{data.organization_code}}
+                </el-form-item>
 
                 <!-- 商户激活信息右侧块 -->
                 <el-col v-if="auditType == 3 && type != 'poolOnly'"  >
