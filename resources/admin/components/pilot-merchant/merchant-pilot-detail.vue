@@ -60,13 +60,6 @@
                 <el-form-item prop="contacter_phone" label="负责人手机号码">
                     {{data.contacter_phone}}
                 </el-form-item>
-                <el-col v-if="type != 'poolOnly' ">
-                    <el-form-item prop="audit_suggestion" label="审核意见">
-                        <el-input v-if="(data.audit_status == 0 || data.audit_status == 3) && auditType == 3" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
-                        <span v-else>{{data.audit_suggestion}}</span>
-                    </el-form-item>
-                </el-col>
-                
                 <el-form-item prop="business_licence_pic_url" label="营业执照">
                     <div class="desc" v-viewer >
                         <img :src="data.business_licence_pic_url" :key="index" style="max-width: 200px;" height="100px"  />
@@ -75,6 +68,13 @@
                 <el-form-item prop="organization_code" label="营业执照代码">
                     {{data.organization_code}}
                 </el-form-item>
+
+                <el-col v-if="type != 'poolOnly' ">
+                    <el-form-item prop="audit_suggestion" label="审核意见">
+                        <el-input v-if="(data.audit_status == 0 || data.audit_status == 3) && auditType == 3" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
+                        <span v-else>{{data.audit_suggestion}}</span>
+                    </el-form-item>
+                </el-col>
 
                 <!-- 商户激活信息右侧块 -->
                 <el-col v-if="auditType == 3 && type != 'poolOnly'"  >
