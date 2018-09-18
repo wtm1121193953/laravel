@@ -145,6 +145,7 @@ class WechatService
      * @param bool $getWithFilename
      * @param string $merchantId
      * @return bool|int|string
+     * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      */
     public static function genMiniprogramAppCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false,$merchantId ='')
     {
