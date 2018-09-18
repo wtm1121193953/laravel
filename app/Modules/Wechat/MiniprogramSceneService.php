@@ -191,7 +191,7 @@ class MiniprogramSceneService extends BaseService
         $merchant = MerchantService::getById($merchantId);
         $query = MiniprogramScene::where('type', MiniprogramScene::TYPE_PAY_SCAN)
             ->where('merchant_id', $merchantId);
-        if($merchantId->oper_id!=0){
+        if($merchant->oper_id!=0){
             $oper = OperService::getById($merchant->oper_id);
             if($oper->pay_to_platform!=Oper::PAY_TO_OPER){
                 $query->where('oper_id',0);
