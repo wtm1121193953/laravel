@@ -207,7 +207,7 @@
                     name: 'MerchantPilotDetail',
                     query: {
                         id: scope.row.id,
-                        auditType: type,
+                        auditType: type || 0,
                     },
                     params: self.query,
                 })
