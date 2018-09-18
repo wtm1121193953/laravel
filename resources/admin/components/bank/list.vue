@@ -24,9 +24,8 @@
             <el-table-column prop="name" label="银行名称"   />
             <el-table-column prop="status_val" label="状态" >
                 <template slot-scope="scope">
-                    <el-tag
-                            :type="scope.row.status_val === '启用' ? 'success' : 'danger'"
-                            disable-transitions>{{scope.row.status_val}}</el-tag>
+                    <span v-if="scope.row.status === 1" class="c-green">{{scope.row.status_val}}</span>
+                    <span v-else-if="scope.row.status === 2" class="c-danger">{{scope.row.status_val}}</span>
                 </template>
             </el-table-column>
             <el-table-column prop="created_at" label="添加时间"/>
