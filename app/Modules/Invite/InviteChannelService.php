@@ -17,10 +17,13 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
 use App\Modules\User\User;
+use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Support\Utils;
 use function foo\func;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class InviteChannelService extends BaseService
 {

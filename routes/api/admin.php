@@ -90,4 +90,9 @@ Route::prefix('admin')
         Route::get('settlement/modifyStatus', 'SettlementPlatformController@modifyStatus');
 
         Route::get('settlement/getPlatformOrders', 'SettlementPlatformController@getSettlementOrders');
+        Route::get('bank/list', 'BankController@getList');
+        Route::post('bank/add', 'BankController@add');
+        Route::post('bank/del', 'BankController@del');
+        Route::post('bank/changeStatus', 'BankController@changeStatus');
+        Route::post('bank/edit', 'BankController@edit');
     });

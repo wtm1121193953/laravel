@@ -16,13 +16,13 @@ class InviteChannelController extends Controller
 {
 
     /**
-     *
+     * 获取邀请二维码码
      */
     public function getInviteQrcode()
     {
         $operId = request()->get('current_oper_id');
         $userId = request()->get('current_user')->id;
-        $inviteChannel = InviteChannelService::getByOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER, $operId);
+        $inviteChannel = InviteChannelService::getByOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER, $operId);      // 获取邀请渠道
         $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
         $scene = MiniprogramSceneService::getByInviteChannel($inviteChannel);
         $url = MiniprogramSceneService::getMiniprogramAppCode($scene);

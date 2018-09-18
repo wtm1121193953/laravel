@@ -117,6 +117,9 @@
                         <el-form-item label="银行账号">
                             {{data.bank_card_no}}
                         </el-form-item>
+                        <el-form-item label="开户行">
+                            {{data.bank_name}}
+                        </el-form-item>
                         <el-form-item label="开户支行名称">
                             {{data.sub_bank_name}}
                         </el-form-item>

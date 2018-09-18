@@ -13,12 +13,15 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\MiniprogramPageNotExistException;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperMiniprogram;
+use App\Modules\Oper\OperService;
+use App\Modules\Oper\Oper;
 use App\ResultCode;
 use App\Support\ImageTool;
 use EasyWeChat\Factory;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 use Intervention\Image\Facades\Image;
 use Intervention\Image\Gd\Font;
+use App\Modules\Wechat\MiniprogramScene;
 
 class WechatService
 {
@@ -136,7 +139,7 @@ class WechatService
     /**
      * 生成小程序码
      * @param $operId
-     * @param $sceneId
+     * @param  $sceneId
      * @param string $page
      * @param int $width
      * @param bool $getWithFilename
@@ -145,11 +148,11 @@ class WechatService
      */
     public static function genMiniprogramAppCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false,$merchantId ='')
     {
-        if(!$operId){
-            $app = WechatService::getWechatMiniAppForPlatform();
-        }else {
+        if($operId){
+            // 如果未切换到了支付到运营中心,则使用运营中心二维码
             $app = WechatService::getWechatMiniAppForOper($operId);
         }
+        $app = $app ?? WechatService::getWechatMiniAppForPlatform();
 
         $response = $app->app_code->getUnlimit($sceneId, [
             'page' => $page,
