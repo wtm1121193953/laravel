@@ -239,7 +239,6 @@
             getBizerIdentityAuditRecord() {
                 this.pageLoading = true;
                 api.get('/wallet/withdraw/getRecordAndWallet').then(data => {
-                    console.log(data);
                     let record = data.record;
                     if (record && record.id) {
                         if (record.status == 1) {

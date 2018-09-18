@@ -50,7 +50,6 @@
             getInfo() {
                 this.formLoading = true;
                 api.get('/wallet/withdraw/getBankCardAndIdCardInfo').then(data => {
-                    console.log(data);
                     this.form.bank_card_no = data.bankCard.bank_card_no;
                     this.form.bank_name = data.bankCard.bank_name;
                     this.form.bank_card_open_name = data.bankCard.bank_card_open_name;
