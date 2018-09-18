@@ -137,7 +137,7 @@
                 }
             };
             let validateBankCardNo = (rule, value, callback) => {
-                if (!(/^[0-9]\d{0,29}$/.test(value))) {
+                if (!(/^[0-9]\d{0,35}$/.test(value))) {
                     callback(new Error('请输入正确的公司账号'));
                 } else {
                     callback();
