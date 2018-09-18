@@ -88,18 +88,20 @@ class MiniprogramSceneService extends BaseService
      * @param int $width
      * @param bool $getAsFilePath
      * @return string
+     * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      */
     public static function getMiniprogramAppCode(MiniprogramScene $scene, $width=375, $getAsFilePath=false) : string
     {
         // 判断是否切换到平台
-        if($scene->oper_id!=0){
+        $operId = $scene->oper_id;
+        if($operId != 0){
             $oper = OperService::getById($scene->oper_id);
             if(!is_null($oper) && $oper->pay_to_platform!=Oper::PAY_TO_OPER){
-                $scene->oper_id=0;
+                $operId = 0;
             }
         }
         if($getAsFilePath){
-            $filename = WechatService::genMiniprogramAppCode($scene->oper_id, $scene->id, $scene->page, $width, true);
+            $filename = WechatService::genMiniprogramAppCode($operId, $scene->id, $scene->page, $width, true);
             $path = storage_path('app/public/miniprogram/app_code') . '/' . $filename;
             return $path;
         }
