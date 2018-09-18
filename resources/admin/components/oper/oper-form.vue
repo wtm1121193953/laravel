@@ -164,7 +164,9 @@
                         {validator: validateIdCard}
                     ],
                     bank_card_no: [
-                        {validator: validateBankCardNo}
+                        {validator: validateBankCardNo},
+                        {required: true, message: '银行账号 不能为空'},
+                        {min: 8, max: 35, message: '银行账号 8-35个数字内'}
                     ],
                     contacter: [
                         {max: 60, message: '负责人不能超过60个字'}
