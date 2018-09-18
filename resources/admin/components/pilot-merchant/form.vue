@@ -98,17 +98,6 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item prop="service_phone" label="客服电话" class="w-500">
-                <el-input v-model="form.service_phone"/>
-            </el-form-item>
-            <el-form-item prop="logo" label="商家logo">
-                <image-upload :width="190" :height="190" v-model="form.logo" :limit="1"/>
-                <div>图片尺寸: 190 px * 190 px</div>
-            </el-form-item>
-            <el-form-item prop="desc_pic_list" label="商家介绍图片">
-                <image-upload :width="752" :height="398" v-model="form.desc_pic_list" :limit="6"/>
-                <div>图片尺寸: 752 px * 398 px</div>
-            </el-form-item>
             <el-form-item prop="business_licence_pic_url" label="营业执照">
                 <image-upload  v-model="form.business_licence_pic_url" :limit="1"/>
             </el-form-item>
