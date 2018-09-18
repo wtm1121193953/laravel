@@ -121,8 +121,8 @@ class OrderController extends Controller
             $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
         }
         // 查看分润详情
-        $userFeeSplittingRatioToSelf = FeeSplittingService::getUserFeeSplittingRatioToSelfByMerchantId($detail->merchant_id);
-        $detail->fee_splitting_amount = Utils::getDecimalByNotRounding($detail->pay_price * $userFeeSplittingRatioToSelf, 2);
+        $feeSplittingRecord = FeeSplittingService::getToSelfFeeSplittingRecordByOrderId($detail->id);
+        $detail->fee_splitting_amount = !empty($feeSplittingRecord) ? $feeSplittingRecord->amount : 0;
 
         // 贡献值
         $detail->consume_quota = floor($detail->pay_price);
