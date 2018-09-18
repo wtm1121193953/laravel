@@ -80,24 +80,6 @@
                 <div>图片尺寸: 752 px * 398 px</div>
             </el-form-item>
 
-            <el-form-item prop="oper_biz_member_code" label="业务员">
-                <el-select
-                        v-model="form.oper_biz_member_code"
-                        filterable
-                        clearable
-                        placeholder="请输入业务员姓名或手机号码"
-                        class="w-300"
-                >
-                    <el-option
-                            v-for="item in operBizMembers"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.code">
-                        <span class="c-blue">{{item.name}}</span>
-                        <span class="c-light-gray">{{item.mobile}}</span>
-                    </el-option>
-                </el-select>
-            </el-form-item>
             <el-form-item prop="business_licence_pic_url" label="营业执照">
                 <image-upload  v-model="form.business_licence_pic_url" :limit="1"/>
             </el-form-item>
