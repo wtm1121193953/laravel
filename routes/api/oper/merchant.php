@@ -27,6 +27,7 @@ Route::get('/merchant/pool', 'MerchantPoolController@getList');
 Route::get('/merchant/pool/detail', 'MerchantPoolController@detail');
 Route::post('/merchant/pool/add', 'MerchantPoolController@add');
 Route::post('/merchant/pool/edit', 'MerchantPoolController@edit');
+Route::post('/merchant/pool/del', 'MerchantPoolController@del');
 
 Route::post('/merchant/draft/add', 'MerchantDraftController@add');
 Route::get('/merchant/drafts', 'MerchantDraftController@getList');
