@@ -34,6 +34,7 @@ use App\Result;
 use App\Support\Alipay;
 use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Merchant\MerchantSettingService;
@@ -471,6 +472,8 @@ class OrderController extends Controller
                 $orderRefund->save();
 
                 $order->status = Order::STATUS_REFUNDED;
+                $order->refund_time = Carbon::now();
+                $order->refund_price = $orderPay->amount;
                 $order->save();
                 $this->decSellNumber($order);
                 return Result::success($orderRefund);
