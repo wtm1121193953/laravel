@@ -98,7 +98,7 @@
                 <el-input v-model="form.bank_card_no"/>
             </el-form-item>
             <el-form-item prop="bank_name" label="开户行">
-                <el-select v-model="form.bank_name">
+                <el-select v-model="form.bank_name" filterable >
                     <el-option
                             v-for="item in bankList"
                             :value="item.name"
@@ -325,7 +325,7 @@
                     ],
                     bank_card_no: [
                         {required: true, message: '银行账号 不能为空'},
-                        {min: 11, max: 20, message: '银行账号 11-20个数字内'}
+                        {min: 8, max: 35, message: '银行账号 11-20个数字内'}
                     ],
                     bank_name: [
                         {required: true, message: '开户行不能为空'}
