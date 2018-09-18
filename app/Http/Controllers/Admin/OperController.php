@@ -50,7 +50,7 @@ class OperController extends Controller
     public function add()
     {
         $max = '';
-        for ($i=0;$i<30;$i++){
+        for ($i=0;$i<35;$i++){
             $max .= '9';
         }
         $this->validate(request(), [
@@ -72,7 +72,7 @@ class OperController extends Controller
     public function edit()
     {
         $max = '';
-        for ($i=0;$i<30;$i++){
+        for ($i=0;$i<35;$i++){
             $max .= '9';
         }
         $this->validate(request(), [
