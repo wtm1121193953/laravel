@@ -34,7 +34,8 @@ Route::prefix('oper')
         Route::get('order/export', 'OrderController@export');
 
         Route::get('/tps/getBindInfo', 'TpsBindController@getBindInfo');
-        
+        Route::get('/member/userlist', 'MemberController@getList');
+
         Route::group([], base_path('routes/api/oper/merchant.php'));
         Route::group([], base_path('routes/api/oper/settlements.php'));
         Route::group([], base_path('routes/api/oper/operBizMember.php'));

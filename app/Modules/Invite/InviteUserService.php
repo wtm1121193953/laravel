@@ -528,4 +528,41 @@ class InviteUserService
         return self::getInviteUsersByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $params, $withQuery);
     }
 
+    /**
+     * 获取运营中心邀请的用户列表
+     * @param $params
+     * @param bool $return_query
+     */
+    public static function operInviteList($params,bool $return_query = false)
+    {
+
+        $query = InviteUserRecord::select('*')
+            ->where('origin_id','=',$params['origin_id'])
+            ->where('origin_type','=',3)
+            ->when($params['mobile'],function (Builder $query) use ($params){
+                $query->whereHas('user',function($q) use ($params) {
+                    $q->where('mobile', 'like', "%{$params['mobile']}%");
+                });
+            })
+            ->with('user:id,mobile,wx_nick_name')
+            ->orderByDesc('id');
+
+        if ($return_query) {
+            return $query;
+        }
+
+        $data = $query->paginate();
+
+        if ($data) {
+            $channels = InviteChannelService::allOperInviteChannel($params['origin_id']);
+
+
+            $data->each(function ($item) use ($channels){
+               $item->invite_channel_name = $channels[$item->invite_channel_id];
+            });
+        }
+
+        return $data;
+
+    }
 }
