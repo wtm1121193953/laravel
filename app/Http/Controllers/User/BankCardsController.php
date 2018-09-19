@@ -26,15 +26,18 @@ class BankCardsController extends Controller
     public function  addCard( Request $request)
     {
         $max = '';
-        for ($i=0;$i<30;$i++){
+        for ($i=0;$i<35;$i++){
             $max .= '9';
         }
 
         $request->validate([
-            'bank_card_no'          =>  'bail|required|min:10000000|max:'.$max.'|numeric',
+            'bank_card_no'          =>  'bail|required|min:8|max:30',
             'bank_card_open_name'   =>  'required|max:20',
             'bank_name'             =>  'required',
             ]);
+        $request->validate([
+            'bank_card_no'          =>  'numeric',
+        ]);
         $saveData = [
             'bank_card_no'          =>  $request->get('bank_card_no'),
             'bank_card_open_name'   =>  $request->get('bank_card_open_name'),

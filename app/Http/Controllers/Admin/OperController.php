@@ -49,18 +49,16 @@ class OperController extends Controller
      */
     public function add()
     {
-        $max = '';
-        for ($i=0;$i<30;$i++){
-            $max .= '9';
-        }
         $this->validate(request(), [
             'name' => 'required',
             'tel' => 'required',
             'province_id' => 'required',
             'city_id' => 'required',
-            'bank_card_no' =>  'bail|required|min:10000000|max:'.$max.'|numeric',
+            'bank_card_no' =>  'bail|required|min:8|max:35',
         ]);
-
+        $this->validate(request(),[
+            'bank_card_no' =>  'numeric',
+        ]);
         $oper = OperService::addFromRequest();
 
         return Result::success($oper);
@@ -71,17 +69,15 @@ class OperController extends Controller
      */
     public function edit()
     {
-        $max = '';
-        for ($i=0;$i<30;$i++){
-            $max .= '9';
-        }
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
             'name' => 'required',
             'province_id' => 'required',
             'city_id' => 'required',
-            'bank_card_no' =>  'bail|required|min:10000000|max:'.$max.'|numeric',
-
+            'bank_card_no' =>  'bail|required|min:8|max:35',
+        ]);
+        $this->validate(request(),[
+            'bank_card_no' =>  'numeric',
         ]);
         $oper = OperService::editFromRequest(request('id'));
         return Result::success($oper);
