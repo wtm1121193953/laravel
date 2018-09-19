@@ -133,7 +133,6 @@
 
 <script>
     import api from '../../../assets/js/api'
-    import MembersItemOptions from './members-item-options'
     import IdentityItemOptions from "./identity-item-options";
 
     export default {
@@ -263,7 +262,6 @@
         },
         components: {
             IdentityItemOptions,
-            MembersItemOptions,
         }
     }
 </script>

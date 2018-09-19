@@ -1,9 +1,10 @@
 <template>
-    <!-- 会员管理操作页面 -->
     <div>
         <el-button type="text" @click="detail">查看</el-button>
-        <el-button type="text" @click="edit">审核</el-button>
-        <el-dropdown @command="quickAudit" class="m-l-10">
+        <el-button v-if="scope.row.status == 1" type="text" @click="changeStatus(scope.row)">冻结</el-button>
+        <el-button v-if="scope.row.status == 2" type="text" @click="changeStatus(scope.row)">解冻</el-button>
+        <el-button v-if="scope.row.bizer_identity_audit_record" type="text" @click="audit">审核</el-button>
+        <el-dropdown v-if="scope.row.bizer_identity_audit_record" @command="quickAudit" class="m-l-10">
             <span class="el-dropdown-link">
                 <el-button type="text">快捷审核<i class="el-icon-arrow-down el-icon--right"></i></el-button>
             </span>
@@ -24,35 +25,48 @@
         },
         data(){
             return {
+
             }
         },
-        computed: {
-        },
         methods: {
-
-            edit(){
+            audit(){
                 router.push({
-                    path: '/member/identity/edit',
-                    query: {id: this.scope.row.id}
+                    path: '/bizer/identity/audit',
+                    query: {
+                        id: this.scope.row.id,
+                        isAudit: true,
+                        breadcrumbsPath: this.$route.path,
+                        title: '业务员身份审核',
+                    }
                 });
             },
             detail() {
                 router.push({
-                    path: '/member/identity/detail',
-                    query: {id: this.scope.row.id}
+                    path: '/bizer/identity/audit',
+                    query: {
+                        id: this.scope.row.id,
+                        isAudit: '',
+                        breadcrumbsPath: this.$route.path,
+                        title: '业务员详情',
+                    }
                 });
+            },
+            changeStatus(row) {
+                let message = row.status == 1 ? '确认冻结该业务员吗？' : '确认解冻该业务员吗？';
+                this.$confirm(message, '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                }).then(() => {
+                    api.post('/bizer/changeStatus', {id: row.id}).then(data => {
+                        row.status = data.status;
+                        let msg = data.status == 1 ? '解冻成功' : '冻结成功';
+                        this.$message.success(msg);
+                    })
+                }).catch(() => {});
             },
             quickAudit(type){
                 if(type == 1){
-                    /*this.$confirm('确认审核通过吗').then(() => {
-                        this.loading = true;
-                        let data = {id:this.scope.row.id,status:2}
-                        api.post('/member/identity_do', data).then((data) => {
-                            this.$emit('refresh')
-                        }).finally(() => {
-                            this.loading = false;
-                        })
-                    }).catch(() => { })*/
                     this.$prompt('确认审核通过吗', {
                         inputType: 'text',
                         inputPlaceholder: '请填写通过原因，可不填，最多50字',
@@ -83,10 +97,6 @@
                 }
             }
         },
-        created(){
-        },
-        components: {
-        }
     }
 </script>
 

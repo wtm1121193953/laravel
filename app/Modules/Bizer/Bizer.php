@@ -19,6 +19,12 @@ class Bizer extends BaseModel {
 
     use GenPassword;
 
+    /**
+     * 状态 1-正常  2-禁用
+     */
+    const STATUS_ON = 1;
+    const STATUS_OFF = 2;
+
     public function bizerIdentityAuditRecord()
     {
         return $this->hasOne('App\Modules\Bizer\BizerIdentityAuditRecord');

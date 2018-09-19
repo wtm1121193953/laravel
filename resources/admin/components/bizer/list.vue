@@ -72,11 +72,25 @@
                     <span v-if="scope.row.bizer_identity_audit_record">
                         <span v-if="scope.row.bizer_identity_audit_record.status == 1">待审核</span>
                         <span v-else-if="scope.row.bizer_identity_audit_record.status == 2">审核通过</span>
-                        <span v-else-if="scope.row.bizer_identity_audit_record.status == 3">审核不通过</span>
-                        <span v-else-if="scope.row.bizer_identity_audit_record.status == 3">审核不通过</span>
+                        <span v-else-if="parseInt(scope.row.bizer_identity_audit_record.status) === 3" class="c-danger">
+                            <span v-if="scope.row.bizer_identity_audit_record.reason">
+                                <el-popover
+                                        placement="right-start"
+                                        trigger="hover"
+                                        :content="scope.row.bizer_identity_audit_record.reason">
+                                <span slot="reference">审核不通过</span>
+                                </el-popover>
+                            </span>
+                            <span v-else>审核不通过</span>
+                        </span>
                         <span v-else>未知({{scope.row.bizer_identity_audit_record.status}})</span>
                     </span>
                     <span v-else>未提交</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <identity-item-options :scope="scope"></identity-item-options>
                 </template>
             </el-table-column>
 
@@ -135,7 +149,7 @@
                 this.getList();
             },
             downloadExcel() {
-                let message = '确定要导出当前筛选的用户列表么？'
+                let message = '确定要导出当前筛选的业务员列表么？'
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
                 this.$confirm(message).then(() => {

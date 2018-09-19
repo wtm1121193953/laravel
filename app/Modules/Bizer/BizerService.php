@@ -4,6 +4,8 @@ namespace App\Modules\Bizer;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use App\Modules\Oper\OperBizerService;
+use App\Modules\Oper\OperService;
 use App\ResultCode;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -195,5 +197,46 @@ class BizerService extends BaseService
             $data = $query->paginate($pageSize);
             return $data;
         }
+    }
+
+    /**
+     * 获取业务员详情
+     * @param $bizerId
+     * @return Bizer
+     */
+    public static function getBizerDetail($bizerId)
+    {
+        $bizer = Bizer::find($bizerId);
+        if (empty($bizer)) {
+            throw new BaseResponseException('该业务员不存在');
+        }
+        $bizerIdentityAuditRecord = BizerService::getBizerIdentityAuditRecordByBizerId($bizerId);
+        $bizer->bizerIdentityAuditRecord = $bizerIdentityAuditRecord;
+
+        $operBizersQuery = OperBizerService::getBizerOper(['bizer_id' => $bizerId], true);
+        $operBizers = $operBizersQuery->get();
+        $operBizers->each(function ($item) {
+            $item->operName = OperService::getNameById($item->oper_id);
+        });
+        $bizer->operBizers = $operBizers;
+
+        return $bizer;
+    }
+
+    /**
+     * 更改业务员的状态
+     * @param $bizerId
+     * @return Bizer
+     */
+    public static function changeStatus($bizerId)
+    {
+        $bizer = Bizer::find($bizerId);
+        if (empty($bizer)) {
+            throw new BaseResponseException('该业务员不存在');
+        }
+        $bizer->status = $bizer->status == Bizer::STATUS_ON ? Bizer::STATUS_OFF : Bizer::STATUS_ON;
+        $bizer->save();
+
+        return $bizer;
     }
 }
