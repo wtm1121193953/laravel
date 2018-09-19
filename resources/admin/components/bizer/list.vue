@@ -90,7 +90,7 @@
             </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <identity-item-options :scope="scope"></identity-item-options>
+                    <identity-item-options :scope="scope" @refresh="getList"></identity-item-options>
                 </template>
             </el-table-column>
 
