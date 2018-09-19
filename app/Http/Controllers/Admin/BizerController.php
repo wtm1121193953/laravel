@@ -7,6 +7,10 @@ use App\Result;
 
 class BizerController extends Controller
 {
+    /**
+     * 获取业务员列表
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getList()
     {
         $mobile = request('mobile', '');
@@ -27,5 +31,35 @@ class BizerController extends Controller
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
+
+    /**
+     * 获取业务员详情
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function detail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $bizerId = request('id');
+        $bizer = BizerService::getBizerDetail($bizerId);
+
+        return Result::success($bizer);
+    }
+
+    /**
+     * 更改业务员的状态
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changeStatus()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $bizerId = request('id');
+        $bizer = BizerService::changeStatus($bizerId);
+
+        return Result::success($bizer);
     }
 }

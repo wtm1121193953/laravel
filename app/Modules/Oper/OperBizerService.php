@@ -17,7 +17,7 @@ class OperBizerService extends BaseService {
     public static function getBizerOper(array $data, bool $getWithQuery = false) {
         $bizer_id = array_get($data, "bizer_id");
         // 全局限制条件
-        $query = OperBizer::where('status', 1)->orderByDesc('id');
+        $query = OperBizer::where('status', OperBizer::STATUS_SIGNED)->orderByDesc('id');
         if (!empty($bizer_id)) {
             $query->where("bizer_id",$bizer_id);
         }
