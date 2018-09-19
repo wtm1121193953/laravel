@@ -33,6 +33,7 @@
                 markers: [],
                 keyword: '',
                 selectedPosition: [],
+                isMapLoad : false
             }
         },
         methods: {
@@ -109,72 +110,75 @@
                 this.markers.push(marker);
                 this.resetLatlngBounds();
             },
+            loadMap(){
+                let initQmap = () => {
+                    // 初始化地图
+                    let center = this.center;
+                    this.map = new qq.maps.Map(this.$refs.mapContainer, {
+                        center: new qq.maps.LatLng(...center), // 地图的中心地理坐标。
+                        zoom: 10, // 缩放级别
+                        zoomControl: false, // 缩放控件
+                        panControl: false, // 平移控件
+                        mapTypeControl: false, // 地图类型切换
+                    });
+                    if(this.searchable && !this.disabled){
+                        // 初始化搜索服务
+                        let SearchOptions = {
+                            // map: this.map,
+                            complete: (results) => {this.searchComplete(results)},
+                            pageCapacity: this.searchLimit,
+                            location: this.cityName,
+                        };
+                        this.searchService=new qq.maps.SearchService(SearchOptions);
+                        // 初始化信息窗口
+                        this.infoWindow = new qq.maps.InfoWindow({
+                            map: this.map,
+                            content: 'content',
+                            position: null,
+                            // zIndex
+                        });
+                        // 初始化自动补全控件 腾讯地图的自动补全zindex为1, 且无法修改, 在弹框中显示不出来
+                        this.autoComplete = new qq.maps.place.Autocomplete(this.$refs.autoComplete.$refs.input, {
+                            location: this.cityName,
+                        });
+                        //添加监听事件
+                        qq.maps.event.addListener(this.autoComplete, "confirm", (res) => {
+                            this.searchService.search(res.value);
+                        });
+                    }
+                    // 回显marker
+                    if(this.shownMarkers){
+                        this.shownMarkers.forEach(item => {
+                            if(item && item.length == 2){
+                                this.addMarkerByLnglat(item);
+                            }
+                        })
+                    }
+                };
+                window.initQmap = window.initQmap || initQmap;
+
+                if(typeof qq == 'undefined'){
+                    function loadScript() {
+                        var script = document.createElement("script");
+                        script.type = "text/javascript";
+                        script.src = "https://map.qq.com/api/js?v=2.exp&libraries=place&callback=initQmap&key=V2IBZ-JCFKG-UPXQA-IZYP3-II5B6-UFFOR";
+                        document.body.appendChild(script);
+                    }
+                    loadScript();
+                }else {
+                    initQmap();
+                }
+            }
         },
         created(){
         },
 
         mounted(){
-            let initQmap = () => {
-                // 初始化地图
-                let center = this.center;
-                this.map = new qq.maps.Map(this.$refs.mapContainer, {
-                    center: new qq.maps.LatLng(...center), // 地图的中心地理坐标。
-                    zoom: 10, // 缩放级别
-                    zoomControl: false, // 缩放控件
-                    panControl: false, // 平移控件
-                    mapTypeControl: false, // 地图类型切换
-                });
-                if(this.searchable && !this.disabled){
-                    // 初始化搜索服务
-                    let SearchOptions = {
-                        // map: this.map,
-                        complete: (results) => {this.searchComplete(results)},
-                        pageCapacity: this.searchLimit,
-                        location: this.cityName,
-                    };
-                    this.searchService=new qq.maps.SearchService(SearchOptions);
-                    // 初始化信息窗口
-                    this.infoWindow = new qq.maps.InfoWindow({
-                        map: this.map,
-                        content: 'content',
-                        position: null,
-                        // zIndex
-                    });
-                    // 初始化自动补全控件 腾讯地图的自动补全zindex为1, 且无法修改, 在弹框中显示不出来
-                    this.autoComplete = new qq.maps.place.Autocomplete(this.$refs.autoComplete.$refs.input, {
-                        location: this.cityName,
-                    });
-                    //添加监听事件
-                    qq.maps.event.addListener(this.autoComplete, "confirm", (res) => {
-                        this.searchService.search(res.value);
-                    });
-                }
-                // 回显marker
-                if(this.shownMarkers){
-                    this.shownMarkers.forEach(item => {
-                        if(item && item.length == 2){
-                            this.addMarkerByLnglat(item);
-                        }
-                    })
-                }
-            };
-            window.initQmap = window.initQmap || initQmap
-
-            if(typeof qq == 'undefined'){
-                function loadScript() {
-                    var script = document.createElement("script");
-                    script.type = "text/javascript";
-                    script.src = "https://map.qq.com/api/js?v=2.exp&libraries=place&callback=initQmap&key=V2IBZ-JCFKG-UPXQA-IZYP3-II5B6-UFFOR";
-                    document.body.appendChild(script);
-                }
-                loadScript();
-            }else {
-                initQmap();
-            }
+            this.loadMap();
         },
         watch: {
             shownMarkers(val){
-
+                this.addMarkerByLnglat(val)
             },
             center(val){
                 this.map.setCenter(...val)

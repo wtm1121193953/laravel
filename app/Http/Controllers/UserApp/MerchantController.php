@@ -74,6 +74,8 @@ class MerchantController extends Controller
         // 商户评级字段，暂时全部默认为5星
         $detail->grade = 5;
 
+
+
         return Result::success(['list' => $detail]);
     }
     /**
