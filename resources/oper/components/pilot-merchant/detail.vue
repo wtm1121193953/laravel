@@ -23,8 +23,8 @@
                     <span v-else-if="data.audit_status === 3" class="c-warning">重新提交审核</span>
                     <span v-else>未知 ({{data.audit_status}})</span>
                 </el-form-item>
-                <el-form-item prop="location" label="商户坐标">
-                    <qmap-choose-point width="60%" height="300px" :shown-markers="[[data.lng, data.lat]]" disabled/>
+                <el-form-item prop="location" label="商户坐标" >
+                    <qmap-choose-point width="60%"  height="300px" :shown-markers="[data.lng,data.lat]" disabled/>
                 </el-form-item>
                 <el-form-item prop="operAddress" label="运营中心地址">
                     {{data.operAddress}}
@@ -118,7 +118,7 @@
             },
             back(){
                 router.back(-1)
-            },
+            }
         },
         created(){
             this.id = this.$route.query.id;
@@ -130,6 +130,10 @@
         },
         components: {
             QmapChoosePoint,
+
+        },
+        mounted(){
+
         }
     }
 </script>

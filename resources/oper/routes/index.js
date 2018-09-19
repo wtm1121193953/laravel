@@ -22,6 +22,7 @@ import SettingMappingUser from '../components/setting/mapping-user'
 
 //系统设置
 import TpsBind from '../components/setting/tps-bind'
+import MemberList from '../components/member/list'
 
 /**
  *
@@ -52,6 +53,7 @@ const routes = [
         component: Home,
         children: [
             {path: 'invite/statistics/daily', component: InviteStatisticsDaily, name: 'InviteStatisticsDaily'},
+            {path: 'member/index', component: MemberList, name: 'MemberList'},
         ]
     },
 
