@@ -8,6 +8,7 @@
 
 namespace App\HTTP\Controllers\UserApp;
 
+use App\Exceptions\NoPermissionException;
 use App\Http\Controllers\Controller;
 use App\Result;
 use App\ResultCode;
@@ -233,14 +234,14 @@ class WalletController extends Controller
      * @param $consume
      * @return float|int
      */
-    private static function getTpsConsumeByConsume($consume)
+    /*private static function getTpsConsumeByConsume($consume)
     {
         $tpsConsume = Utils::getDecimalByNotRounding($consume / 6 / 6.5 / 4, 2);
         return $tpsConsume;
-    }
+    }*/
 
     /**
-     * 我的tps 消费额统计
+     * 我的贡献值统计
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function getTpsConsume()
@@ -248,16 +249,19 @@ class WalletController extends Controller
         $user = request()->get('current_user');
 
         $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
-        $totalTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
+        $totalTpsConsume = !empty($wallet)?($wallet->consume_quota + $wallet->freeze_consume_quota + $wallet->share_consume_quota + $wallet->share_freeze_consume_quota):0;
+
+        $theMonthTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
             'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
             'originId' => $user->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+            'startDate' => Carbon::now()->startOfMonth(),
+            'endDate' => Carbon::now()->endOfMonth(),
         ], 15, true)->sum('consume_quota');
-        $theMonthTpsConsume = self::getTpsConsumeByConsume($wallet->consume_quota);
 
         return Result::success([
-            'totalTpsConsume' => $totalTpsConsume,
-            'theMonthTpsConsume' => $theMonthTpsConsume,
+            'totalTpsConsume' => Utils::getDecimalByNotRounding($totalTpsConsume, 2),
+            'theMonthTpsConsume' => Utils::getDecimalByNotRounding($theMonthTpsConsume, 2),
             'showReminder' => 1, // 是否显示提示语 0-不显示 1-显示
         ]);
     }

@@ -79,6 +79,12 @@
                 <image-upload :width="752" :height="398" v-model="form.desc_pic_list" :limit="6"/>
                 <div>图片尺寸: 752 px * 398 px</div>
             </el-form-item>
+            <el-form-item prop="business_licence_pic_url" label="营业执照">
+                <image-upload  v-model="form.business_licence_pic_url" :limit="1"/>
+            </el-form-item>
+            <el-form-item prop="organization_code" label="营业执照代码">
+                <el-input v-model="form.organization_code"/>
+            </el-form-item>
         </el-col>
 
         <el-col>
@@ -108,7 +114,8 @@
         service_phone: '',
         logo: '',
         desc_pic_list: [],
-
+        business_licence_pic_url:'',
+        organization_code:'',
         is_pilot: 1,
     };
     let validateContacterPhone = (rule, value, callback) => {
@@ -172,6 +179,13 @@
                     ],
                     desc_pic_list: [
                         {required: true, message: '商家介绍图片不能为空'}
+                    ],
+                    business_licence_pic_url: [
+                        {required: true, message: '营业执照不能为空', trigger: 'change'}
+                    ],
+                    organization_code: [
+                        {required: true, message: '营业执照代码 不能为空'},
+                        {max: 100, message: '营业执照代码 不能超过100个字'},
                     ],
                 },
             }
