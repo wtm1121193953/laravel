@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\User\UserCollectMerchantService;
 use App\Result;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Support\Lbs;
@@ -73,7 +74,8 @@ class MerchantController extends Controller
         $detail->contacter_phone = $detail->service_phone;
         // 商户评级字段，暂时全部默认为5星
         $detail->grade = 5;
-
+        // 获取用户是否关注商户
+        $detail->isCollectMerchant = UserCollectMerchantService::getCollectionByUserAndMerchantExists(request()->get('current_user')->id, $id);
 
 
         return Result::success(['list' => $detail]);

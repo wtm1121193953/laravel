@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\UserApp;
 
+use App\Modules\User\UserCollectMerchantService;
+use App\Result;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -14,8 +16,41 @@ use App\Http\Controllers\Controller;
  */
 class UserCollectMerchantController extends Controller
 {
-    public function add()
+    /**
+     * 添加商铺收藏
+     * Author:   JerryChan
+     * Date:     2018/9/19 18:06
+     * @param Request $request
+     */
+    public function add( Request $request )
     {
+        $merchantId = $request->get('id');
+        // 表单验证
+        $request->validate([
+            'id' => 'required'
+        ], [
+            'id.required' => 'ID数据不存在'
+        ]);
+        UserCollectMerchantService::addCollect($request->get('current_user')->id, $merchantId);
+        Result::success('收藏成功');
+    }
 
+    public function del( Request $request )
+    {
+        $merchantId = $request->get('id');
+        // 表单验证
+        $request->validate([
+            'id' => 'required'
+        ], [
+            'id.required' => 'ID数据不存在'
+        ]);
+        UserCollectMerchantService::delCollect($request->get('current_user')->id, $merchantId);
+        Result::success('删除成功');
+    }
+
+    public function getList( Request $request )
+    {
+        $list = UserCollectMerchantService::getListByUserId($request->get('current_user')->id);
+        return Result::success('获取成功', ['list' => $list]);
     }
 }

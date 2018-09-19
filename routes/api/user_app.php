@@ -21,6 +21,9 @@ Route::prefix('app/user')
         Route::any('user/info', 'UserController@getInfo')->middleware(UserLoginFilter::class);
         Route::post('user/setNameAndAvatar', 'UserController@setAvatar')->middleware(UserLoginFilter::class);
 
+        Route::post('user/addCollectMerchant', 'UserCollectMerchantController@add')->middleware(UserLoginFilter::class);
+        Route::get('user/delCollectMerchant', 'UserCollectMerchantController@del')->middleware(UserLoginFilter::class);
+
         Route::get('area/tree', 'AreaController@getTree');
         Route::get('area/cities/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
         Route::get('area/cities/withHot', 'AreaController@getCitiesWithHot');
