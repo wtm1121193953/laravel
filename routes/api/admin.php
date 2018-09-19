@@ -62,6 +62,7 @@ Route::prefix('admin')
         Route::get('merchants', 'MerchantController@getList');
         Route::get('merchant/detail', 'MerchantController@detail');
         Route::post('merchant/audit', 'MerchantController@audit');
+        Route::post('merchant/batch_audit', 'MerchantController@batchAudit');
         Route::get('merchant/download', 'MerchantController@downloadExcel');
         Route::post('merchant/changeStatus', 'MerchantController@changeStatus');
         Route::post('merchant/edit', 'MerchantController@edit');

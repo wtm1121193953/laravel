@@ -240,4 +240,54 @@ class MerchantController extends Controller
 
         return Result::success($merchant);
     }
+
+    public function batchAudit()
+    {
+        $this->validate(request(), [
+            'ids' => 'required',
+            'type' => 'required|integer|in:1,2,3',
+            'audit_suggestion' => 'max:50',
+        ]);
+
+        $ids = request('ids');
+        $type = request('type');
+        $auditSuggestion = request('audit_suggestion', '');
+
+        if ($ids && is_array($ids)) {
+            foreach ($ids as $merchantId) {
+                $merchant = MerchantService::getById($merchantId);
+                if(empty($merchant)){
+                    throw new ParamInvalidException('商户信息不存在');
+                }
+
+                // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
+                $merchantCurrentAudit = MerchantAudit::where('merchant_id', $merchantId)
+                    ->where('oper_id', $merchant->audit_oper_id)
+                    ->whereIn('status', [0,3])
+                    ->orderBy('updated_at','desc')
+                    ->first();
+                if(empty($merchantCurrentAudit)){
+                    MerchantAuditService::addAudit($merchantId, $merchant->audit_oper_id);
+                }
+
+                switch ($type){
+                    case '1': // 审核通过
+                        $merchant = MerchantAuditService::auditSuccess($merchant, $auditSuggestion);
+                        break;
+                    case '2': // 审核不通过
+                        $merchant = MerchantAuditService::auditFail($merchant, $auditSuggestion);
+                        break;
+                    case '3': // 审核不通过并打回到商户池
+                        $merchant = MerchantAuditService::auditFailAndPushToPool($merchant, $auditSuggestion);
+                        break;
+                    default:
+                        throw new BaseResponseException('错误的操作');
+                }
+            }
+            return Result::success('操作成功');
+        } else {
+            throw new BaseResponseException('错误的操作');
+        }
+
+    }
 }

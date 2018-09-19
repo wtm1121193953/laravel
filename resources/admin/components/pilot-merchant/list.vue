@@ -66,6 +66,7 @@
             </el-col>
             <el-table :data="list" v-loading="tableLoading" stripe @selection-change="handleSelectionChange">
                 <el-table-column
+                        :selectable='checkboxT'
                         type="selection"
                         width="55">
                 </el-table-column>
@@ -215,6 +216,13 @@
                 this.query.page = 1;
                 this.getList();
             },
+            checkboxT(row,index){
+                if(row.audit_status==0 || row.audit_status==3){
+                    return 1;
+                }else{
+                    return 0;
+                }
+            },
             getList(){
                 this.tableLoading = true;
                 let params = {};
@@ -296,7 +304,7 @@
                     center: true,
                     dangerouslyUseHTMLString: true,
                 }).then(() => {
-                    api.post('/merchant/pilot/batch_identity', param).then(data => {
+                    api.post('/merchant/batch_audit', param).then(data => {
                         this.$alert('操作成功');
                         this.getList();
                     })
@@ -325,8 +333,8 @@
                     inputPlaceholder: '请填写不通过原因，必填，最多50字',
                     inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
                 }).then(({value}) => {
-                    param.reason = value ? value : '';
-                    api.post('/merchant/pilot/batch_identity', param).then(data => {
+                    param.audit_suggestion = value ? value : '';
+                    api.post('/merchant/batch_audit', param).then(data => {
                         this.$alert('操作成功');
                         this.getList();
                     })
