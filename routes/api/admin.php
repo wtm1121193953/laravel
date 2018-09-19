@@ -84,6 +84,7 @@ Route::prefix('admin')
         Route::group([], base_path('routes/api/admin/miniprogram.php'));
         Route::group([], base_path('routes/api/admin/setting.php'));
         Route::group([], base_path('routes/api/admin/wallet.php'));
+        Route::group([], base_path('routes/api/admin/bizer.php'));
 
         Route::get('settlement/platforms', 'SettlementPlatformController@getList');
         Route::get('settlement/download', 'SettlementPlatformController@downloadExcel');

@@ -6,6 +6,7 @@ use App\BaseModel;
 use App\Modules\Area\Area;
 use App\Modules\Oper\Oper;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Merchant
@@ -81,6 +82,14 @@ use Carbon\Carbon;
  */
 class Merchant extends BaseModel
 {
+    use SoftDeletes;
+
+    /**
+     * 需要转换成日期的属性
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
     //
     /**
      * 未审核(审核中)

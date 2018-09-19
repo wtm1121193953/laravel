@@ -98,7 +98,7 @@
                 <el-input v-model="form.bank_card_no"/>
             </el-form-item>
             <el-form-item prop="bank_name" label="开户行">
-                <el-select v-model="form.bank_name">
+                <el-select v-model="form.bank_name" filterable >
                     <el-option
                             v-for="item in bankList"
                             :value="item.name"

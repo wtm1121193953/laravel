@@ -5,16 +5,18 @@ namespace App\Http\Controllers\Bizer;
 
 use App\Exceptions\BaseResponseException;
 use App\Exports\WalletBillExport;
+use App\Http\Controllers\Controller;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Oper\OperService;
 use App\Modules\Order\OrderService;
+use App\Modules\Wallet\BankCardService;
 use App\Modules\Wallet\WalletBill;
 use App\Modules\Wallet\WalletService;
 use App\Modules\Wallet\WalletWithdraw;
 use App\Modules\Wallet\WalletWithdrawService;
 use App\Result;
 
-class WalletController
+class WalletController extends Controller
 {
     /**
      * 获取业务员 钱包流水
@@ -98,5 +100,15 @@ class WalletController
             'billData' => $walletBill,
             'orderOrWithdrawData' => $orderOrWithdrawData,
         ]);
+    }
+
+    /**
+     * 获取银行列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getBankList()
+    {
+        $list = BankCardService::getBankList(true);
+        return Result::success($list);
     }
 }

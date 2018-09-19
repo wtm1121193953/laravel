@@ -1,0 +1,159 @@
+<?php
+
+namespace App\Http\Controllers\Bizer;
+
+use App\Exceptions\BaseResponseException;
+use App\Http\Controllers\Controller;
+use App\Modules\Bizer\BizerService;
+use App\Modules\Wallet\BankCard;
+use App\Modules\Wallet\BankCardService;
+use App\Modules\Wallet\WalletService;
+use App\Result;
+use Illuminate\Support\Facades\DB;
+
+class WalletWithdrawController extends Controller
+{
+    /**
+     * 业务员提现设置
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function withdrawSetting()
+    {
+        $this->validate(request(), [
+            'bank_card_no' => 'required|numeric|min:10000000|max:99999999999999999999999999999999999|unique:bank_cards',
+            'bank_card_open_name' => 'required|max:20',
+            'bank_name' => 'required|max:20',
+            'password' => 'required|max:6',
+            'checkPassword' => 'required|max:6|same:password'
+        ]);
+
+        $bankCardNo = request('bank_card_no');
+        $bankCardOpenName = request('bank_card_open_name');
+        $bankName = request('bank_name');
+
+        $password = request('password');
+
+        $bizer = request()->get('current_user');
+
+        DB::beginTransaction();
+        try {
+            // 1.添加银行卡信息
+            $saveData = [
+                'bank_card_no' => $bankCardNo,
+                'bank_card_open_name' => $bankCardOpenName,
+                'bank_name' => $bankName,
+            ];
+            BankCardService::addCard($saveData, $bizer, BankCard::ORIGIN_TYPE_BIZER);
+
+            // 2.设置提现密码
+            $wallet = WalletService::getWalletInfo($bizer);
+            WalletService::updateWalletWithdrawPassword($wallet, $password);
+
+            DB::commit();
+
+            return Result::success();
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            $msg = $e->getResponse()->original['message'] ?: '提现设置失败';
+            throw new BaseResponseException($msg);
+        }
+    }
+
+    /**
+     * 获取业务员 审核记录 和 钱包信息
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getBizerIdentityAuditRecordAndWalletInfo()
+    {
+        $bizer = request()->get('current_user');
+        $identityAuditRecord = BizerService::getBizerIdentityAuditRecordByBizerId($bizer->id);
+
+        $wallet = WalletService::getWalletInfo($bizer);
+        if ($wallet && $wallet->withdraw_password) {
+            $isSetPassword = true;
+        } else {
+            $isSetPassword = false;
+        }
+
+        return Result::success([
+            'record' => $identityAuditRecord,
+            'isSetPassword' => $isSetPassword,
+        ]);
+    }
+
+    /**
+     * 添加业务员审核记录
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addBizerIdentityAuditRecord()
+    {
+        $this->validate(request(), [
+            'name' => 'required|max:20',
+            'id_card_no' => 'required|identitycards|unique:user_identity_audit_records',
+            'front_pic' => 'required',
+            'opposite_pic' => 'required',
+        ]);
+
+        $name = request('name');
+        $idCardNo = request('id_card_no');
+        $frontPic = request('front_pic');
+        $oppositePic = request('opposite_pic');
+
+        $bizer = request()->get('current_user');
+
+        $bizerIdentityAuditRecord = BizerService::addBizerIdentityAuditRecord(compact('name', 'idCardNo', 'frontPic', 'oppositePic'), $bizer);
+
+        return Result::success($bizerIdentityAuditRecord);
+    }
+
+    /**
+     * 编辑业务员审核记录
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function editBizerIdentityAuditRecord()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'name' => 'required|max:20',
+            'id_card_no' => 'required|identitycards',
+            'front_pic' => 'required',
+            'opposite_pic' => 'required',
+        ]);
+
+        $id = request('id');
+        $name = request('name');
+        $idCardNo = request('id_card_no');
+        $frontPic = request('front_pic');
+        $oppositePic = request('opposite_pic');
+
+        $bizerIdentityAuditRecord = BizerService::getBizerIdentityAuditRecordById($id);
+        if (empty($bizerIdentityAuditRecord)) {
+            throw new BaseResponseException('该业务员审核信息不存在');
+        }
+
+        $bizerIdentityAuditRecord = BizerService::editBizerIdentityAuditRecord(compact('name', 'idCardNo', 'frontPic', 'oppositePic'), $bizerIdentityAuditRecord);
+
+        return Result::success($bizerIdentityAuditRecord);
+    }
+
+    /**
+     * 获取业务员身份和银行卡信息
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getBankCardAndIdCardInfo()
+    {
+        $bizer = request()->get('current_user');
+        $identityAuditRecord = BizerService::getBizerIdentityAuditRecordByBizerId($bizer->id);
+        if (empty($identityAuditRecord)) throw new BaseResponseException('业务员身份信息不存在');
+
+        $bankCard = BankCardService::getBankCardByOriginInfo($bizer->id, BankCard::ORIGIN_TYPE_BIZER);
+        if (empty($bankCard)) throw new BaseResponseException('业务员银行卡信息不存在');
+
+        return Result::success([
+            'identityAuditRecord' => $identityAuditRecord,
+            'bankCard' => $bankCard,
+        ]);
+    }
+}

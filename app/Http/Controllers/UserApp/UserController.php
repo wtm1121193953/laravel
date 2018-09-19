@@ -61,7 +61,7 @@ class UserController extends Controller
         }
 
 
-        $record = UserIdentityAuditRecordService::getRecordByUser($user->id);
+        $record = UserIdentityAuditRecordService::getRecordByUserId($user->id);
         if ($record) {
             $user['identityInfoStatus'] = $record->status;
         } else {
