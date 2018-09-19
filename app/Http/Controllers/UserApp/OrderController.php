@@ -15,6 +15,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Dishes\DishesItem;
+use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Goods\Goods;
 use App\Modules\Goods\GoodsService;
@@ -33,6 +34,7 @@ use App\Result;
 use App\Support\Alipay;
 use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Merchant\MerchantSettingService;
@@ -49,7 +51,9 @@ class OrderController extends Controller
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
 
         $currentOperId = request()->get('current_oper_id');
+        //只能查询支付到平台的订单
         $data = Order::where('user_id', $user->id)
+            ->where('pay_target_type',Order::PAY_TARGET_TYPE_PLATFORM)
             ->where(function (Builder $query) {
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function (Builder $query) {
@@ -134,23 +138,35 @@ class OrderController extends Controller
     /**
      * 订单创建
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function buy()
     {
         $this->validate(request(), [
             'goods_id' => 'required|integer|min:1',
             'number' => 'integer|min:1',
+            'pay_type' => 'integer|min:1',
         ]);
         $goodsId = request('goods_id');
         $number = request('number', 1);
+        $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
+
         $goods = Goods::findOrFail($goodsId);
 
         $user = request()->get('current_user');
 
         $merchant = Merchant::findOrFail($goods->merchant_id);
+        $oper = Oper::find($merchant->oper_id);
+        if (empty($oper)) {
+            throw new DataNotFoundException('该商户的运营中心不存在！');
+        }
+        if($oper->pay_to_platform == Oper::PAY_TO_OPER){
+            throw new BaseResponseException('该商品不能在APP下单, 请在小程序下单');
+        }
 
         $order = new Order();
         $orderNo = Order::genOrderNo();
+        $order->pay_target_type = $order->pay_target_type = $oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->oper_id = $merchant->oper_id;
         $order->order_no = $orderNo;
         $order->user_id = $user->id;
@@ -167,28 +183,50 @@ class OrderController extends Controller
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $goods->price * $number;
         $order->origin_app_type = request()->header('app-type');
+        $order->pay_type = $payType;
         $order->save();
 
-        return Result::success($order);
+        // 如果是微信支付
+        if($payType == Order::PAY_TYPE_WECHAT){
+            $sdkConfig = $this->_wechatPayToPlatform($order);
+        }else {
+            throw new BaseResponseException('支付方式错误');
+        }
+
+        return Result::success([
+            'order_no' => $orderNo,
+            'sdk_config' => $sdkConfig,
+            'order' => $order,
+        ]);
     }
 
     /**
      * 点菜订单创建
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \Exception
      */
     public function dishesBuy()
     {
         $this->validate(request(), [
             'dishes_id' => 'required|integer|min:1',
+            'pay_type' => 'integer|min:1',
         ]);
         $dishesId = request('dishes_id');
+        $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
+
         $dishes = Dishes::findOrFail($dishesId);
         $userIdByDish = $dishes->user_id;
         $user = request()->get('current_user');
         $merchant = Merchant::findOrFail($dishes->merchant_id);
-        $currentOperId = request()->get('current_oper_id');
+
+        $oper = Oper::find($merchant->oper_id);
+        if (empty($oper)) {
+            throw new DataNotFoundException('该商户的运营中心不存在！');
+        }
+        if($oper->pay_to_platform == Oper::PAY_TO_OPER){
+            throw new BaseResponseException('该商品不能在APP下单, 请在小程序下单');
+        }
+
 
         if ($userIdByDish != $user->id) {
             throw new ParamInvalidException('参数错误');
@@ -207,16 +245,13 @@ class OrderController extends Controller
                 throw new BaseResponseException('菜单已变更, 请刷新页面');
             }
         }
-
-        $merchant_oper = Oper::findOrFail($merchant->oper_id);
-
+        $merchant_oper = Oper::find($merchant->oper_id);
 
         $order = new Order();
         $orderNo = Order::genOrderNo();
         $order->oper_id = $merchant->oper_id;
         $order->order_no = $orderNo;
         $order->user_id = $user->id;
-        $order->open_id = request()->get('current_open_id');
         $order->user_name = $user->name ?? '';
         $order->type = Order::TYPE_DISHES;
         $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
@@ -229,32 +264,19 @@ class OrderController extends Controller
         $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
-        empty($order->open_id) ? $order->open_id = 'mock_open_id' : $order->open_id = $order->open_id;
+        $order->pay_type = $payType;
         $order->save();
-        if ($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM) { // 如果是支付到平台
-            if ($currentOperId == 0) { // 在平台小程序下
-                // 调平台支付, 走融宝支付接口
-                $isOperSelf = 1;
-//                $sdkConfig = $this->_payToPlatform($order);
-            } else {
-                $isOperSelf = 0;
-                $sdkConfig = null;
-            }
-        } else {
-            $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
-            if ($isOperSelf == 1) {
-//                $sdkConfig = $this->_wechatUnifyPayToOper($order);
-            } else {
-                $sdkConfig = null;
-            }
 
+        // 如果是微信支付
+        if($payType == Order::PAY_TYPE_WECHAT){
+            $sdkConfig = $this->_wechatPayToPlatform($order);
+        }else {
+            throw new BaseResponseException('支付方式错误');
         }
-
 
         return Result::success([
             'order_no' => $orderNo,
-            'isOperSelf' => $isOperSelf,
-            'sdk_config' => '',
+            'sdk_config' => $sdkConfig,
             'order' => $order,
         ]);
     }
@@ -277,16 +299,17 @@ class OrderController extends Controller
 
     /**
      * 扫码付款
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \Exception
      */
     public function scanQrcodePay()
     {
         $this->validate(request(), [
             'merchant_id' => 'required|integer|min:1',
             'price' => 'required|numeric|min:0',
-            'pay_type' => 'required',
+            'pay_type' => 'integer|min:1',
         ]);
         $price = request('price');
+        $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
         if ($price <= 0) {
             throw new ParamInvalidException('价格不合法');
         }
@@ -295,9 +318,12 @@ class OrderController extends Controller
         if (empty($merchant)) {
             throw new DataNotFoundException('商户信息不存在！');
         }
-        $merchant_oper = Oper::find($merchant->oper_id);
-        if (empty($merchant_oper)) {
+        $oper = Oper::find($merchant->oper_id);
+        if (empty($oper)) {
             throw new DataNotFoundException('该商户的运营中心不存在！');
+        }
+        if($oper->pay_to_platform == Oper::PAY_TO_OPER){
+            throw new BaseResponseException('该商品不能在APP下单, 请在小程序下单');
         }
 
         $order = new Order();
@@ -317,16 +343,13 @@ class OrderController extends Controller
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $price;
 
-        $payType = request('pay_type', 1);
         $order->pay_type = $payType;
-        $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
+        $order->pay_target_type =Order::PAY_TARGET_TYPE_PLATFORM;
         $order->save();
 
         if ($payType == 1) {
             // 如果是微信支付
-            // todo 微信支付暂时跳过
-//            $sdkConfig = $this->_wechatUnifyPay($order);
-            $sdkConfig = [];
+            $sdkConfig = $this->_wechatPayToPlatform($order);
             return Result::success([
                 'order' => $order,
                 'order_no' => $orderNo,
@@ -334,12 +357,13 @@ class OrderController extends Controller
             ]);
         } else {
             // 如果是支付宝支付
-            $sdkConfig = Alipay::pay($order);
-            return Result::success([
-                'order' => $order,
-                'order_no' => $orderNo,
-                'alipay_sdk_config' => $sdkConfig,
-            ]);
+            throw new BaseResponseException('支付方式错误');
+//            $sdkConfig = Alipay::pay($order);
+//            return Result::success([
+//                'order' => $order,
+//                'order_no' => $orderNo,
+//                'alipay_sdk_config' => $sdkConfig,
+//            ]);
         }
     }
 
@@ -354,7 +378,7 @@ class OrderController extends Controller
             'pay_type' => 'required',
         ]);
         $orderNo = request('order_no');
-        $order = Order::where('order_no', $orderNo)->firstOrFail();
+        $order = Order::where('order_no', $orderNo)->first();
 
         if ($order->status == Order::STATUS_PAID) {
             throw new ParamInvalidException('该订单已支付');
@@ -365,26 +389,41 @@ class OrderController extends Controller
         if ($order->status != Order::STATUS_UN_PAY) {
             throw new BaseResponseException('订单状态异常');
         }
+        if($order->pay_target_type != Order::PAY_TARGET_TYPE_PLATFORM){
+            throw new BaseResponseException('该订单不能在APP中支付, 请到小程序中付款');
+        }
 
         $payType = request('pay_type', 1);
         $order->pay_type = $payType;
         $order->save();
+
+        //返利金额
+        $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordByOrderId($order->id,FeeSplittingRecord::TYPE_TO_SELF);
+
+        if(!empty($feeSplittingRecords)){
+            $profitAmount = $feeSplittingRecords->amount;
+        }else{
+            $profitAmount = '';
+        }
         if ($payType == 1) {
             // 如果是微信支付
-            // todo 暂时跳过微信支付
-//            $sdkConfig = $this->_wechatUnifyPay($order);
-            $sdkConfig = [];
+            $sdkConfig = $this->_wechatPayToPlatform($order);
+            Log::info('开始执行微信支付', ['sdkConfig' => $sdkConfig]);
+
             return Result::success([
                 'order_no' => $orderNo,
                 'sdk_config' => $sdkConfig,
+                'profitAmount' => $profitAmount,
+                'order' => $order,
             ]);
         } else {
+            throw new BaseResponseException('支付方式错误');
             // 如果是支付宝支付
-            $sdkConfig = Alipay::pay($order);
-            return Result::success([
-                'order_no' => $orderNo,
-                'alipay_sdk_config' => $sdkConfig,
-            ]);
+//            $sdkConfig = Alipay::pay($order);
+//            return Result::success([
+//                'order_no' => $orderNo,
+//                'alipay_sdk_config' => $sdkConfig,
+//            ]);
         }
     }
 
@@ -410,20 +449,19 @@ class OrderController extends Controller
         $orderRefund->order_no = $order->order_no;
         $orderRefund->amount = $orderPay->amount;
         $orderRefund->save();
-        if ($order->pay_type == 1) {
-            // todo 暂时跳过支付, 直接返回成功
+        if ($order->pay_type == Order::PAY_TYPE_WECHAT) {
             // 微信退款成功
-            $orderRefund->refund_id = 'mock refund id';
-            $orderRefund->status = 2;
-            $orderRefund->save();
-
-            $order->status = Order::STATUS_REFUNDED;
-            $order->save();
-            return Result::success($orderRefund);
+//            $orderRefund->refund_id = 'mock refund id';
+//            $orderRefund->status = 2;
+//            $orderRefund->save();
+//
+//            $order->status = Order::STATUS_REFUNDED;
+//            $order->save();
+//            return Result::success($orderRefund);
 
             // 发起微信支付退款
-            // todo 获取平台的微信支付实例
-            $payApp = WechatService::getWechatPayAppForOper(0);
+            // 获取平台的微信支付实例
+            $payApp = WechatService::getOpenPlatformPayAppFromPlatform();
             $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->id, $orderPay->amount * 100, $orderPay->amount * 100, [
                 'refund_desc' => '用户发起退款',
             ]);
@@ -434,6 +472,8 @@ class OrderController extends Controller
                 $orderRefund->save();
 
                 $order->status = Order::STATUS_REFUNDED;
+                $order->refund_time = Carbon::now();
+                $order->refund_price = $orderPay->amount;
                 $order->save();
                 $this->decSellNumber($order);
                 return Result::success($orderRefund);
@@ -448,7 +488,8 @@ class OrderController extends Controller
                 throw new BaseResponseException('微信退款失败');
             }
         } else {
-            $result = Alipay::refund($orderPay, $orderRefund);
+            throw new BaseResponseException('支付方式错误, 不能退款');
+            /*$result = Alipay::refund($orderPay, $orderRefund);
             if (!empty($result->code) && $result->code == 10000) {
                 // 支付宝退款成功
                 $orderRefund->refund_id = '';
@@ -468,60 +509,27 @@ class OrderController extends Controller
                     ]
                 ]);
                 throw new BaseResponseException('支付宝退款失败');
-            }
+            }*/
         }
-    }
-
-    /**
-     * 微信下单并获取支付参数
-     * @param $order
-     * @return array
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     */
-    private function _wechatUnifyPay(Order $order)
-    {
-        // todo 获取平台的微信支付实例
-        $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
-        $data = [
-            'body' => $order->goods_name,
-            'out_trade_no' => $order->order_no,
-            'total_fee' => $order->pay_price * 100,
-            'trade_type' => 'JSAPI',
-            'openid' => $order->open_id,
-        ];
-        $unifyResult = $payApp->order->unify($data);
-        if ($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS') {
-            $order->save();
-        } else {
-            Log::error('微信统一下单失败', [
-                'payConfig' => $payApp->getConfig(),
-                'data' => $data,
-                'result' => $unifyResult,
-            ]);
-            throw new BaseResponseException('微信统一下单失败');
-        }
-        $sdkConfig = $payApp->jssdk->appConfig($unifyResult['prepay_id']);
-        return $sdkConfig;
     }
 
     /**
      * 订单支付到平台, 返回微信支付参数
      * @param $order
      * @return null|array
-     * @throws \Exception
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    private function _payToPlatform($order)
+    private function _wechatPayToPlatform(Order $order)
     {
         $sdkConfig = null;
         //OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
 
-        $payApp = WechatService::getWechatPayAppForPlatform();
+        $payApp = WechatService::getOpenPlatformPayAppFromPlatform();
         $data = [
             'body' => $order->goods_name,
             'out_trade_no' => $order->order_no,
             'total_fee' => $order->pay_price * 100,
-            'trade_type' => 'JSAPI',
-            'openid' => request()->get('current_open_id'),
+            'trade_type' => 'APP',
         ];
         $unifyResult = $payApp->order->unify($data);
         if (!($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS')) {
@@ -532,7 +540,8 @@ class OrderController extends Controller
             ]);
             throw new BaseResponseException('微信统一下单失败');
         }
-        $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
+        $sdkConfig = $payApp->jssdk->appConfig($unifyResult['prepay_id']);
+        $sdkConfig['packageValue'] = $sdkConfig['package'];
         return $sdkConfig;
 
         // 调平台支付, 走融宝支付接口
@@ -544,39 +553,8 @@ class OrderController extends Controller
         $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
         */
 
-        return $sdkConfig;
+        //return $sdkConfig;
 
-    }
-
-    /**
-     * 微信下单并获取支付参数, 支付到运营中心
-     * @param $order
-     * @return array
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     */
-    private function _wechatUnifyPayToOper(Order $order)
-    {
-        $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
-        $data = [
-            'body' => $order->goods_name,
-            'out_trade_no' => $order->order_no,
-            'total_fee' => $order->pay_price * 100,
-            'trade_type' => 'JSAPI',
-            'openid' => request()->get('current_open_id'),
-        ];
-        $unifyResult = $payApp->order->unify($data);
-        if ($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS') {
-            $order->save();
-        } else {
-            Log::error('微信统一下单失败', [
-                'payConfig' => $payApp->getConfig(),
-                'data' => $data,
-                'result' => $unifyResult,
-            ]);
-            throw new BaseResponseException('微信统一下单失败');
-        }
-        $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
-        return $sdkConfig;
     }
 
     /**

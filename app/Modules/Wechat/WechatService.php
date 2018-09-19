@@ -13,17 +13,20 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\MiniprogramPageNotExistException;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperMiniprogram;
+use App\Modules\Oper\OperService;
+use App\Modules\Oper\Oper;
 use App\ResultCode;
 use App\Support\ImageTool;
 use EasyWeChat\Factory;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
 use Intervention\Image\Facades\Image;
 use Intervention\Image\Gd\Font;
+use App\Modules\Wechat\MiniprogramScene;
 
 class WechatService
 {
     /**
-     * 获取微信小程序实例
+     * 获取运营中心的微信小程序实例
      * @param $operId int
      * @return \EasyWeChat\MiniProgram\Application
      */
@@ -68,6 +71,10 @@ class WechatService
         return Factory::miniProgram($config);
     }
 
+    /**
+     * 根据请求信息自动判断获取平台或运营中心的小程序实例
+     * @return \EasyWeChat\MiniProgram\Application
+     */
     public static function getWechatMiniAppFromRequest()
     {
         $oper = request()->get('current_oper');
@@ -76,6 +83,25 @@ class WechatService
         }else {
             return WechatService::getWechatMiniAppForOper(request()->get('current_oper')->id);
         }
+    }
+
+    /**
+     * 获取平台的微信开放平台实例
+     * @return \EasyWeChat\OpenPlatform\Application
+     */
+    public static function getOpenPlatformAppForPlatform()
+    {
+
+        $wechatOpen = config('platform.wechat_open');
+
+        $config = [
+            'app_id'   => $wechatOpen['app_id'],
+            'secret'   => $wechatOpen['e0f7d6492e089f45671b7a5408962315'],
+//            'token'    => '开放平台第三方平台 Token',
+//            'aes_key'  => '开放平台第三方平台 AES Key'
+        ];
+
+        return Factory::openPlatform($config);
     }
 
     /**
@@ -88,7 +114,7 @@ class WechatService
         if($operId instanceof OperMiniprogram){
             $miniProgram = $operId;
         }else {
-            $miniProgram = OperMiniprogram::where('oper_id', $operId)->firstOrFail();
+            $miniProgram = OperMiniprogram::where('oper_id', $operId)->first();
         }
 
         $config = [
@@ -109,23 +135,50 @@ class WechatService
 
     /**
      * 获取平台微信支付的 EasyWechat App
-     * @param $operId
      * @return \EasyWeChat\Payment\Application
      */
     public static function getWechatPayAppForPlatform()
     {
 
         $platform = config('platform');
+        $miniprogram = $platform['miniprogram'];
+        $wechatPay = $platform['wechat_pay']['miniprogram'];
 
         $config = [
             // 必要配置
-            'app_id' => $platform['miniprogram']['app_id'],
-            'mch_id'             => $platform['wechat_pay']['mch_id'],
-            'key'                => $platform['wechat_pay']['key'],   // API 密钥
+            'app_id'             => $miniprogram['app_id'],
+            'mch_id'             => $wechatPay['mch_id'],
+            'key'                => $wechatPay['key'],   // API 密钥
 
             // 如需使用敏感接口（如退款、发送红包等）需要配置 API 证书路径(登录商户平台下载 API 证书)
-            'cert_path'          => $platform['wechat_pay']['cert_path'], // XXX: 绝对路径！！！！
-            'key_path'           => $platform['wechat_pay']['key_path'],      // XXX: 绝对路径！！！！
+            'cert_path'          => $wechatPay['cert_path'], // XXX: 绝对路径！！！！
+            'key_path'           => $wechatPay['key_path'],      // XXX: 绝对路径！！！！
+
+            'notify_url' => request()->getSchemeAndHttpHost() . '/api/pay/notify',     // 你也可以在下单时单独设置来想覆盖它
+        ];
+
+        return Factory::payment($config);
+    }
+
+    /**
+     * 获取微信开发平台app应用对应的支付
+     * @return \EasyWeChat\Payment\Application
+     */
+    public static function getOpenPlatformPayAppFromPlatform()
+    {
+
+        $wechatOpen = config('platform.wechat_open');
+        $appPay = config('platform.wechat_pay.app');
+
+        $config = [
+            // 必要配置
+            'app_id'             => $wechatOpen['app_id'],
+            'mch_id'             => $appPay['mch_id'],
+            'key'                => $appPay['key'],   // API 密钥
+
+            // 如需使用敏感接口（如退款、发送红包等）需要配置 API 证书路径(登录商户平台下载 API 证书)
+            'cert_path'          => $appPay['cert_path'], // XXX: 绝对路径！！！！
+            'key_path'           => $appPay['key_path'],      // XXX: 绝对路径！！！！
 
             'notify_url' => request()->getSchemeAndHttpHost() . '/api/pay/notify',     // 你也可以在下单时单独设置来想覆盖它
         ];
@@ -136,20 +189,21 @@ class WechatService
     /**
      * 生成小程序码
      * @param $operId
-     * @param $sceneId
+     * @param  $sceneId
      * @param string $page
      * @param int $width
      * @param bool $getWithFilename
      * @param string $merchantId
      * @return bool|int|string
+     * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      */
     public static function genMiniprogramAppCode($operId, $sceneId, $page='pages/index/index', $width=375, $getWithFilename=false,$merchantId ='')
     {
-        if(!$operId){
-            $app = WechatService::getWechatMiniAppForPlatform();
-        }else {
+        if($operId){
+            // 如果未切换到了支付到运营中心,则使用运营中心二维码
             $app = WechatService::getWechatMiniAppForOper($operId);
         }
+        $app = $app ?? WechatService::getWechatMiniAppForPlatform();
 
         $response = $app->app_code->getUnlimit($sceneId, [
             'page' => $page,

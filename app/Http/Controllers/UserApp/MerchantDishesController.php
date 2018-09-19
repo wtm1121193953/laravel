@@ -65,7 +65,7 @@ class MerchantDishesController extends Controller
         }
         $list = DishesGoods::where('merchant_id', $merchantId)
             ->where('status', 1)
-            ->where('dashes_category_id',$categoryId)
+            ->where('dishes_category_id',$categoryId)
             ->get();
         return Result::success([
             'list' => $list,

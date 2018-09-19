@@ -22,6 +22,7 @@ use App\Support\Lbs;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Area\Area;
 use Illuminate\Support\Collection;
+use App\Modules\Setting\SettingService;
 use App\Modules\Goods\GoodsService;
 
 use App\Modules\Oper\MyOperBizer;
@@ -541,9 +542,13 @@ class MerchantService extends BaseService
         }
 
         // todo 只获取切换到平台的运营中心下的商家信息
+        //只能查询切换到平台的商户
         $query = Merchant::query()
             ->where('oper_id', '>', 0)
             ->where('status', 1)
+            ->whereHas('oper', function(Builder $query){
+                $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
+            })
             ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT])
             ->when($city_id, function(Builder $query) use ($city_id){
                 // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户

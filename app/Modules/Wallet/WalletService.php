@@ -294,6 +294,9 @@ class WalletService extends BaseService
             WalletBill::TYPE_OPER_REFUND,
         ])){
             $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordById($bill->obj_id);
+
+            //返利金额
+            $bill->profitAmount = $feeSplittingRecords->amount;
             $bill->order = OrderService::getById($feeSplittingRecords->order_id, ['id', 'order_no', 'status', 'created_at', 'pay_time', 'notify_mobile', 'pay_price']);
 
             // 如果是退款相关, 补充退款信息

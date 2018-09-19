@@ -311,6 +311,18 @@ class FeeSplittingService extends BaseService
     }
 
     /**
+     * 通过 订单id 分润类型type 获取分润记录
+     * @param $orderId
+     * @param $type
+     * @return FeeSplittingRecord
+     */
+    public static function getFeeSplittingRecordByOrderId($orderId,$type)
+    {
+        $feeSplittingRecord = FeeSplittingRecord::where('order_id', $orderId)->where('type',$type)->first();
+        return $feeSplittingRecord;
+    }
+
+    /**
      * 通过订单id 获取 该订单的 总分润金额
      * @param $orderId
      * @return mixed

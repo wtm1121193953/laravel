@@ -62,6 +62,7 @@ Route::prefix('admin')
         Route::get('merchants', 'MerchantController@getList');
         Route::get('merchant/detail', 'MerchantController@detail');
         Route::post('merchant/audit', 'MerchantController@audit');
+        Route::post('merchant/batch_audit', 'MerchantController@batchAudit');
         Route::get('merchant/download', 'MerchantController@downloadExcel');
         Route::post('merchant/changeStatus', 'MerchantController@changeStatus');
         Route::post('merchant/edit', 'MerchantController@edit');
@@ -91,4 +92,9 @@ Route::prefix('admin')
         Route::get('settlement/modifyStatus', 'SettlementPlatformController@modifyStatus');
 
         Route::get('settlement/getPlatformOrders', 'SettlementPlatformController@getSettlementOrders');
+        Route::get('bank/list', 'BankController@getList');
+        Route::post('bank/add', 'BankController@add');
+        Route::post('bank/del', 'BankController@del');
+        Route::post('bank/changeStatus', 'BankController@changeStatus');
+        Route::post('bank/edit', 'BankController@edit');
     });
