@@ -42,8 +42,8 @@
 
                 <el-form-item>
                     <el-button @click="cancel" type="primary">返 回</el-button>
-                    <el-button v-if="info.status !== 2 && isAudit" type="success" @click="doAudit">审核通过</el-button>
-                    <el-button v-if="info.status !== 3 && isAudit" type="danger" @click="doReject">审核不通过</el-button>
+                    <el-button v-if="info.bizerIdentityAuditRecord && info.bizerIdentityAuditRecord.status !== 2 && isAudit" type="success" @click="doAudit(2)">审核通过</el-button>
+                    <el-button v-if="info.bizerIdentityAuditRecord && info.bizerIdentityAuditRecord.status !== 3 && isAudit" type="danger" @click="doAudit(3)">审核不通过</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -82,19 +82,12 @@
                     this.loading = false;
                 });
             },
-            doAudit(){
+            doAudit(status){
                 this.loading = true;
-                let data = {id:this.id,status:2,reason:this.info.reason}
-                api.post('/bizer/identity_do', data).then((data) => {
-                    router.push(this.breadcrumbsPath);
-                }).finally(() => {
-                    this.loading = false;
-                })
-            },
-            doReject(){
-                this.loading = true;
-                let data = {id:this.id,status:3,reason:this.info.reason}
-                api.post('/bizer/identity_do', data).then((data) => {
+                let data = {ids: this.id, status: status, reason: this.info.reason}
+                api.post('/bizer/identity/audit', data).then((data) => {
+                    let msg = status == 2 ? '审核通过操作成功' : '审核不通过操作成功';
+                    this.$message.success(msg);
                     router.push(this.breadcrumbsPath);
                 }).finally(() => {
                     this.loading = false;

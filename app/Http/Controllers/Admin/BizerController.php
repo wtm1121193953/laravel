@@ -90,4 +90,21 @@ class BizerController extends Controller
 
         return Result::success();
     }
+
+    public function exportExcel()
+    {
+        $mobile = request('mobile', '');
+        $id = request('id', 0);
+        $name = request('name', '');
+        $bizerStartDate = request('startDate', '');
+        $bizerEndDate = request('endDate', '');
+        $status = request('status', 0);
+        $identityStatus = request('identityStatus', 0);
+        $identityStartDate = request('identityStartDate', '');
+        $identityEndDate = request('identityEndDate', '');
+        $pageSize = request('pageSize', 15);
+
+        $params = compact('mobile', 'id', 'name', 'bizerEndDate', 'bizerStartDate', 'status', 'identityStatus', 'identityStartDate', 'identityEndDate');
+        $query = BizerService::getBizerList($params, $pageSize, true);
+    }
 }
