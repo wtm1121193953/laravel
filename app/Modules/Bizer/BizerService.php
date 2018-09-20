@@ -239,4 +239,26 @@ class BizerService extends BaseService
 
         return $bizer;
     }
+
+    /**
+     * 审核业务员身份
+     * @param $bizerId
+     * @param $status
+     * @param $reason
+     * @param $user
+     * @return BizerIdentityAuditRecord
+     */
+    public static function identityAudit($bizerId, $status, $reason, $user)
+    {
+        $identityAuditRecord = self::getBizerIdentityAuditRecordByBizerId($bizerId);
+        if (empty($identityAuditRecord)) {
+            throw new BaseResponseException('该业务员身份审核信息不存在');
+        }
+        $identityAuditRecord->status = $status;
+        $identityAuditRecord->reason = $reason;
+        $identityAuditRecord->update_user = $user->id;
+        $identityAuditRecord->save();
+
+        return $identityAuditRecord;
+    }
 }

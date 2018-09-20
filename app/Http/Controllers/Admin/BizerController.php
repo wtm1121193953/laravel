@@ -62,4 +62,32 @@ class BizerController extends Controller
 
         return Result::success($bizer);
     }
+
+    /**
+     * 业务员身份信息审核
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function bizerIdentityAudit()
+    {
+        $this->validate(request(), [
+            'ids' => 'required',
+            'status' => 'required',
+        ]);
+        $ids = request('ids');
+        $status = request('status');
+        $reason = request('reason', '');
+        $user = request()->get('current_user');
+
+        if (is_array($ids)) {
+            if (!empty($ids)) {
+                foreach ($ids as $id) {
+                    BizerService::identityAudit($id, $status, $reason, $user);
+                }
+            }
+        } else {
+            BizerService::identityAudit($ids, $status, $reason, $user);
+        }
+
+        return Result::success();
+    }
 }
