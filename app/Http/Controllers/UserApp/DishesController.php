@@ -113,6 +113,7 @@ class DishesController extends Controller
         }*/
         Log::info('disesList11',['diesList' => $dishesList]);
 
+        die();
         $merchantId = request('merchant_id');
         if (empty($dishesList)) {
             throw new ParamInvalidException('单品列表为空');
