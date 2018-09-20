@@ -15,6 +15,8 @@ use App\BaseModel;
  */
 class UserCollectMerchant extends BaseModel
 {
+    const STATUS_COLLECT = 1;               // 状态：关注
+    const STATUS_UNCOLLECT = 2;             // 装填：取消关注
     //
     public function getMerchant()
     {

@@ -44,8 +44,13 @@ class UserCollectMerchantController extends Controller
         ], [
             'id.required' => 'ID数据不存在'
         ]);
-        UserCollectMerchantService::delCollect($request->get('current_user')->id, $merchantId);
+        UserCollectMerchantService::modifyStatus($request->get('current_user')->id, $merchantId);
         Result::success('删除成功');
+    }
+
+    public function modifyStatus( Request $request )
+    {
+//        $mer
     }
 
     public function getList( Request $request )
