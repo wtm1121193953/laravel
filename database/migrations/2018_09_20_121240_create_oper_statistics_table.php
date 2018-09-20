@@ -21,8 +21,8 @@ class CreateOperStatisticsTable extends Migration
             $table->integer('user_num')->default(0)->comment('邀请用户数');
             $table->integer('order_paid_num')->default(0)->comment('总订单量（已支付）');
             $table->integer('order_refund_num')->default(0)->comment('总退款量');
-            $table->integer('order_paid_amount')->default(0)->comment('总订单金额（已支付）');
-            $table->integer('order_refund_amount')->default(0)->comment('总退款金额');
+            $table->decimal('order_paid_amount', 11, 2)->default(0)->comment('总订单金额（已支付）');
+            $table->decimal('order_refund_amount', 11, 2)->default(0)->comment('总退款金额');
             $table->timestamps();
         });
     }
