@@ -50,7 +50,12 @@ class UserCollectMerchantController extends Controller
 
     public function getList( Request $request )
     {
-        $list = UserCollectMerchantService::getListByUserId($request->get('current_user')->id);
+        $distance = [
+            'lng'               =>  $request->get('lng'),
+            'lat'               =>  $request->get('lat'),
+            'current_open_id'   =>  $request->get('current_open_id')
+        ];
+        $list = UserCollectMerchantService::getListByUserId($request->get('current_user')->id, $distance);
         return Result::success('获取成功', ['list' => $list]);
     }
 }
