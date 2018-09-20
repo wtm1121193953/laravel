@@ -40,7 +40,7 @@
         <el-table :data="list" stripe>
             <el-table-column prop="date" label="时间"/>
             <el-table-column prop="oper_id" label="运营中心id"/>
-            <el-table-column prop="oper_name" label="运营中心名称"/>
+            <el-table-column prop="oper.name" label="运营中心名称"/>
             <el-table-column prop="merchant_num" label="商户数"/>
             <el-table-column prop="user_num" label="邀请用户数"/>
             <el-table-column prop="order_paid_num" label="总订单量（已支付）"/>

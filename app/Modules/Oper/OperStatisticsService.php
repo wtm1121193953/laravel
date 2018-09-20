@@ -27,6 +27,8 @@ class OperStatisticsService extends BaseService
         }
 
         $query->orderBy('id', 'desc');
+        $query->with('oper:id,name');
+
         if ($return_query) {
             return  $query;
         }

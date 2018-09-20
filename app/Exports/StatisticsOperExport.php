@@ -65,7 +65,7 @@ class StatisticsOperExport implements FromQuery, WithHeadings, WithMapping
         return [
             $row->date,
             $row->oper_id,
-            $row->oper_name,
+            $row->oper->name,
             '`'.$row->merchant_num,
             '`'.$row->user_num,
             '`'.$row->order_paid_num,

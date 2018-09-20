@@ -21,4 +21,11 @@ use App\BaseModel;
 class OperStatistics extends BaseModel
 {
     //
+    /**
+     *
+     */
+    public function oper()
+    {
+        return $this->belongsTo(Oper::class);
+    }
 }
