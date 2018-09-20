@@ -59,7 +59,11 @@
                     endDate: '',
                 },
                 list: [],
-                total: 0
+                total: 0,
+                originType: 'all',
+                timeType: 'today',
+                dateRange: [],
+                operId: '',
             }
         },
         computed: {

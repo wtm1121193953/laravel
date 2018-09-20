@@ -2,9 +2,9 @@
 
 namespace App\Modules\Oper;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class OperStatistics extends Model
+class OperStatistics extends BaseModel
 {
     //
 }
