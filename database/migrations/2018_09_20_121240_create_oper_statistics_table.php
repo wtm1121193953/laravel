@@ -22,7 +22,7 @@ class CreateOperStatisticsTable extends Migration
             $table->integer('order_paid_num')->index()->default(0)->comment('总订单量（已支付）');
             $table->integer('order_refund_num')->index()->default(0)->comment('总退款量');
             $table->integer('order_paid_amount')->index()->default(0)->comment('总订单金额（已支付）');
-            $table->integer('order_refund_amount')->index()->default(0)->comment('总退款金额p');
+            $table->integer('order_refund_amount')->index()->default(0)->comment('总退款金额');
             $table->timestamps();
         });
     }
