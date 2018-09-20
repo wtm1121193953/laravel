@@ -4,10 +4,15 @@ namespace App\Http\Controllers\Bizer;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Bizer\Bizer;
+use App\Modules\Bizer\BizerIdentityAuditRecord;
 use App\Modules\Bizer\BizerService;
+use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\BankCard;
 use App\Modules\Wallet\BankCardService;
+use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletService;
+use App\Modules\Wallet\WalletWithdrawService;
 use App\Result;
 use Illuminate\Support\Facades\DB;
 
@@ -155,5 +160,61 @@ class WalletWithdrawController extends Controller
             'identityAuditRecord' => $identityAuditRecord,
             'bankCard' => $bankCard,
         ]);
+    }
+
+    /**
+     * 获取提现表单所需的相关信息
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getWithdrawInfoAndBankInfo()
+    {
+        $bizerId = request()->get('current_user')->id;
+        $bizer = BizerService::getById($bizerId);
+        $wallet = WalletService::getWalletInfo($bizer);
+        $bankCard = BankCardService::getBankCardByOriginInfo($bizerId, BankCard::ORIGIN_TYPE_BIZER);
+        $ratio = UserCreditSettingService::getBizerWithdrawChargeRatio();
+
+        return Result::success([
+            'balance' => $wallet->balance,  // 可提现金额
+            'bankCardOpenName' => $bankCard->bank_card_open_name,
+            'bankCardNo' => $bankCard->bank_card_no,
+            'bankName' => $bankCard->bank_name,
+            'ratio' => $ratio,  // 手续费百分比
+            'isSetPassword' => $wallet->withdraw_password != '',
+        ]);
+    }
+
+    /**
+     * 业务员提现操作
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function withdrawApplication()
+    {
+        $this->validate(request(), [
+            'amount' => 'required',
+            'withdrawPassword' => 'required|max:6',
+        ]);
+
+        $amount = request('amount');
+        $withdrawPassword = request('withdrawPassword');
+
+        $bizerId = request()->get('current_user')->id;
+        $bizer = BizerService::getById($bizerId);
+        $bizerIdentityAuditRecord = BizerService::getBizerIdentityAuditRecordByBizerId($bizerId);
+        if ($bizer->status != Bizer::STATUS_ON || $bizerIdentityAuditRecord->status != BizerIdentityAuditRecord::STATUS_AUDIT_SUCCESS) {
+            throw new BaseResponseException('商户状态异常，请联系客服');
+        }
+
+        $wallet = WalletService::getWalletInfo($bizer);
+        $checkPass = WalletWithdrawService::checkWithdrawPasswordByOriginInfo($withdrawPassword, $bizerId, Wallet::ORIGIN_TYPE_BIZER);
+
+        if ($checkPass) {
+            $walletWithdraw = WalletWithdrawService::createWalletWithdrawAndUpdateWallet($wallet, $bizer, $amount);
+
+            return Result::success($walletWithdraw);
+        } else {
+            throw new BaseResponseException('提现密码错误');
+        }
     }
 }

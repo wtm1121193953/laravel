@@ -159,7 +159,7 @@ class BankCardService extends BaseService
     }
 
     /**
-     * 通过用户id和类型获取银行卡信息
+     * 通过用户id和类型获取一张银行卡信息
      * @param $originId
      * @param $originType
      * @return BankCard

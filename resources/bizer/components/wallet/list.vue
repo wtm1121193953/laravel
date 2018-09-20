@@ -108,12 +108,25 @@
         <el-dialog title="明细" center :visible.sync="showDetailDialog" width="50%">
             <detail :billData="billData" :orderOrWithdrawData="orderOrWithdrawData"></detail>
         </el-dialog>
+
+        <el-dialog title="提现"
+               center
+               :visible.sync="showWithdrawDialog"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false"
+               width="50%">
+            <withdraw-form
+                @closeWithdrawDialog="showWithdrawDialog = false"
+                @getList="getList"
+            ></withdraw-form>
+        </el-dialog>
     </page>
 </template>
 
 <script>
     import api from '../../../assets/js/api'
     import detail from './detail'
+    import WithdrawForm from '../withdraw/form'
 
     export default {
         name: "wallet-list",
@@ -139,6 +152,8 @@
                 showDetailDialog: false,
                 billData: null,
                 orderOrWithdrawData: {},
+
+                showWithdrawDialog: false,
             }
         },
         computed: {
@@ -192,7 +207,41 @@
                 })
             },
             withdraw() {
-                router.push('/wallet/withdraw/form');
+                api.get('/wallet/withdraw/getRecordAndWallet').then(data => {
+                    let record = data.record;
+                    if (record && record.id) {
+                        if (record.status == 1) {
+                            // 待审核
+                            this.$message.error('提现资料正在审核，审核通过才行进行提现操作');
+                        } else if (record.status == 2) {
+                            // 审核成功
+                            if (data.isSetPassword) {
+                                this.showWithdrawDialog = true;
+                            } else {
+                                this.$message.error('请设置提现密码');
+                                router.replace({
+                                    path: '/refresh',
+                                    query: {
+                                        name: 'WithdrawPasswordForm',
+                                        key: '/withdraw/password/form',
+                                    }
+                                });
+                            }
+                        } else if (record.status == 3) {
+                            // 审核失败
+                            this.$message.error('提现资料审核失败，请重新提交审核');
+                            router.replace({
+                                path: '/refresh',
+                                query: {
+                                    name: 'WithdrawPasswordForm',
+                                    key: '/withdraw/password/form',
+                                }
+                            });
+                        } else {
+                            this.$message.error('改审核状态不存在');
+                        }
+                    }
+                })
             }
         },
         created() {
@@ -200,6 +249,7 @@
         },
         components: {
             detail,
+            WithdrawForm,
         }
     }
 </script>

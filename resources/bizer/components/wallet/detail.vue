@@ -97,9 +97,9 @@
                     <el-form-item label="运营中心名称">
                         {{billData.oper_name}}
                     </el-form-item>
-                    <el-form-item label="快递编号">
+                    <!--<el-form-item label="快递编号">
                         {{orderOrWithdrawData.invoice_express_no}}
-                    </el-form-item>
+                    </el-form-item>-->
                     <el-form-item label="交易状态">
                         <span v-if="orderOrWithdrawData.status == 1">审核中</span>
                         <span v-else-if="orderOrWithdrawData.status == 2">审核通过</span>
@@ -125,9 +125,9 @@
                     <el-form-item label="提现发起时间">
                         {{orderOrWithdrawData.created_at}}
                     </el-form-item>
-                    <el-form-item label="发票快递公司">
+                    <!--<el-form-item label="发票快递公司">
                         {{orderOrWithdrawData.invoice_express_company}}
-                    </el-form-item>
+                    </el-form-item>-->
                     <el-form-item label="提现编号">
                         {{orderOrWithdrawData.withdraw_no}}
                     </el-form-item>

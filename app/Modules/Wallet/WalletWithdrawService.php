@@ -5,6 +5,8 @@ namespace App\Modules\Wallet;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use App\Modules\Bizer\Bizer;
+use App\Modules\Bizer\BizerService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
@@ -73,13 +75,13 @@ class WalletWithdrawService extends BaseService
     /**
      * 创建 提现记录 并更新钱包可提现余额
      * @param Wallet $wallet
-     * @param Merchant|Oper|User $obj
+     * @param Merchant|Oper|User|Bizer $obj
      * @param $amount
      * @param $param
      * @return WalletWithdraw
      * @throws \Exception
      */
-    public static function createWalletWithdrawAndUpdateWallet(Wallet $wallet, $obj, $amount, $param)
+    public static function createWalletWithdrawAndUpdateWallet(Wallet $wallet, $obj, $amount, $param = [])
     {
         $invoiceExpressCompany = array_get($param, 'invoiceExpressCompany', '');
         $invoiceExpressNo = array_get($param, 'invoiceExpressNo', '');
@@ -92,14 +94,20 @@ class WalletWithdrawService extends BaseService
         }
 
         if ($obj instanceof User) {
-//            throw new BaseResponseException('暂不支持提现');
             $ratio = UserCreditSettingService::getUserWithdrawChargeRatio();
         } elseif ($obj instanceof Merchant) {
             $ratio = UserCreditSettingService::getMerchantWithdrawChargeRatioByBankCardType($obj->bank_card_type);
         } elseif ($obj instanceof Oper) {
             $ratio = UserCreditSettingService::getOperWithdrawChargeRatio();
             $obj->bank_card_type = 1;
-        } else {
+        } elseif ($obj instanceof Bizer) {
+            $ratio = UserCreditSettingService::getBizerWithdrawChargeRatio();
+            $bizerBankCard = BankCardService::getBankCardByOriginInfo($obj->id, BankCard::ORIGIN_TYPE_BIZER);
+            $obj->bank_card_type = $bizerBankCard->bank_card_type;
+            $obj->bank_open_name = $bizerBankCard->bank_card_open_name;
+            $obj->bank_card_no = $bizerBankCard->bank_card_no;
+            $obj->sub_bank_name = $bizerBankCard->bank_name;
+        }else {
             throw new BaseResponseException('用户类型错误');
         }
 
