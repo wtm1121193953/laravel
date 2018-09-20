@@ -256,4 +256,8 @@ class Merchant extends BaseModel
 //        $this->agreement_pic_url = request('agreement_pic_url','');
     }
 
+    protected $dispatchesEvents = [
+        'created' => \App\Events\MerchantCreatedEvent::class,
+    ];
+
 }

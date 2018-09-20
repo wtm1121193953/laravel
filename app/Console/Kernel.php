@@ -13,6 +13,7 @@ use App\Modules\Merchant\Merchant;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Carbon;
+use App\Jobs\Schedule\OperStatisticsDailyJob;
 
 class Kernel extends ConsoleKernel
 {
@@ -48,6 +49,8 @@ class Kernel extends ConsoleKernel
         // T+1结算统计 Author：Jerry Date：180824
         $schedule->job( new SettlementDaily() )->daily();
         // T+1结算分账任务， 生成的结算单每天8点自动打款
+        // 运营中心营销统计
+        $schedule->job( new OperStatisticsDailyJob() )->daily();
 //        $schedule->job(new SettlementAgentPayDaily())->dailyAt('08:00');
         /**团购商品过期自动下架*/
         $schedule->job(AutoDownGoodsJob::class)->daily();
