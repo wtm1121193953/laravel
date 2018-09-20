@@ -184,6 +184,7 @@ class OrderController extends Controller
         $order->pay_price = $goods->price * $number;
         $order->origin_app_type = request()->header('app-type');
         $order->pay_type = $payType;
+        $order->remark = request('remark', '');
         $order->save();
 
         // 如果是微信支付
