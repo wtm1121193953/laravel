@@ -272,13 +272,16 @@ class InviteChannelService extends BaseService
      * 获取运营中心的所有邀请渠道
      * @param $oper_id
      */
-    public static function allOperInviteChannel($oper_id)
+    public static function allOperInviteChannel($oper_id, $ori = false)
     {
         $data = InviteChannel::select('id','name')
             ->where('origin_id','=',$oper_id)
             ->where('origin_type','=',3)
             ->orderByDesc('id')->get();
 
+        if ($ori) {
+            return $data->toArray();
+        }
         $rt = [];
         if ($data) {
             foreach ($data as $v) {
