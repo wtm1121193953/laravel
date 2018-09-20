@@ -9,6 +9,7 @@
 namespace App\Modules\Oper;
 
 use App\BaseService;
+use tests\Mockery\Adapter\Phpunit\EmptyTestCase;
 
 class OperStatisticsService extends BaseService
 {
@@ -20,6 +21,9 @@ class OperStatisticsService extends BaseService
         if (!empty($params['startDate']) && !empty($params['endDate'])) {
             $query->where('date', '>=', $params['startDate']);
             $query->where('date', '<=', $params['endDate']);
+        }
+        if (!empty($params['oper_id'])) {
+            $query->where('oper_id', '=', $params['oper_id']);
         }
 
         $query->orderBy('id', 'desc');
