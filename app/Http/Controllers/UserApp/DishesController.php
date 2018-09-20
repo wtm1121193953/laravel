@@ -108,12 +108,11 @@ class DishesController extends Controller
             'merchant_id' => 'required|integer|min:1',
         ]);
         $dishesList = request('goods_list');
-        /*if (is_string($dishesList)) {
+        if (is_string($dishesList)) {
             $dishesList = json_decode($dishesList, true);
-        }*/
+        }
         Log::info('disesList11',['diesList' => $dishesList]);
 
-        die();
         $merchantId = request('merchant_id');
         if (empty($dishesList)) {
             throw new ParamInvalidException('单品列表为空');
