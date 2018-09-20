@@ -123,9 +123,10 @@ class MerchantService extends BaseService
      *      endCreatedAt,
      *  }
      * @param bool $getWithQuery
+     * @param bool $isFollows
      * @return Merchant|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getList(array $data, bool $getWithQuery = false)
+    public static function getList(array $data, bool $getWithQuery = false, bool $isFollows = false)
     {
         $id = array_get($data,'id');
         $operId = array_get($data,'operId');
@@ -141,8 +142,16 @@ class MerchantService extends BaseService
 
         $cityId =array_get($data,"cityId");
         $bizer_id = array_get($data, "bizer_id");
+
+        $userId = request()->get('current_user')->id;
         // 全局限制条件
-        $query = Merchant::where('audit_oper_id', '>', 0)->orderByDesc('id');
+        $query = Merchant::where('audit_oper_id', '>', 0)
+            ->when($isFollows, function (Builder $query) use ($userId){
+                $query->whereHas('merchantFollow',function (Builder $query) use ($userId) {
+                   $query->where('user_id',$userId);
+                });
+            })
+            ->orderByDesc('id');
 
         // 筛选条件
         if ($id) {
@@ -266,6 +275,7 @@ class MerchantService extends BaseService
     public static function detail($id)
     {
 
+        $userId = request()->get('current_user')->id;
         $merchant = Merchant::findOrFail($id);
         $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
         $merchant->categoryPathText = '';
@@ -288,6 +298,12 @@ class MerchantService extends BaseService
         $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
+        }
+        $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
+        if($merchantFollow){
+            $merchant->user_follow_status = 2;
+        }else{
+            $merchant->user_follow_status =1;
         }
         return $merchant;
     }

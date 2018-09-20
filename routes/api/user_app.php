@@ -29,6 +29,8 @@ Route::prefix('app/user')
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
         Route::get('merchants', 'MerchantController@getList');
         Route::get('merchant/detail', 'MerchantController@detail');
+        Route::get('merchant/followStatus', 'MerchantFollowController@modifyFollowStatus');
+        Route::get('merchant/followLists', 'MerchantFollowController@userFollowList');
         Route::get('merchant/getDishesCategoryAndGoods', 'DishesController@getDishesCategory'); // 废弃
         Route::get('merchant/getHotDishesGoods', 'DishesController@getHotDishesGoods'); // 废弃
         Route::post('merchant/dishesOrder', 'DishesController@add')->middleware(UserLoginFilter::class); // 废弃
