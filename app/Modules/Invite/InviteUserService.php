@@ -544,7 +544,10 @@ class InviteUserService
                     $q->where('mobile', 'like', "%{$params['mobile']}%");
                 });
             })
-            ->with('user:id,mobile,wx_nick_name')
+            ->when($params['invite_channel_id'], function (Builder $query) use ($params){
+                $query->whereIn('invite_channel_id', $params['invite_channel_id']);
+            })
+            ->with('user:id,mobile,wx_nick_name,order_count,created_at')
             ->orderByDesc('id');
 
         if ($return_query) {

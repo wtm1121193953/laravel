@@ -17,6 +17,7 @@ class CreateUserCollectMerchantsTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->index()->default(0)->comment('用户ID');
             $table->integer('merchant_id')->index()->default(0)->comment('商铺ID');
+            $table->tinyInteger('status')->default(1)->comment('1：为收藏，2：为取消收藏');
             $table->timestamps();
         });
     }

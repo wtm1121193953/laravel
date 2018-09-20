@@ -239,8 +239,6 @@ class MerchantService extends BaseService
         } else {
 
             $data = $query->paginate();
-            //$cc = $query->toSql();
-            //echo $cc;exit;
             $data->each(function ($item) {
                 if ($item->merchant_category_id) {
                     $item->categoryPath = MerchantCategoryService::getCategoryPath($item->merchant_category_id);
@@ -688,7 +686,7 @@ class MerchantService extends BaseService
         return $detail;
     }
 
-    private static function _getFormativeDistance($distance)
+    public static function _getFormativeDistance($distance)
     {
         return $distance >= 1000 ? (number_format($distance / 1000, 1) . '千米') : ($distance . '米');
     }

@@ -35,6 +35,10 @@ Route::prefix('oper')
 
         Route::get('/tps/getBindInfo', 'TpsBindController@getBindInfo');
         Route::get('/member/userlist', 'MemberController@getList');
+        Route::get('/member/channels', 'MemberController@getAllChannel');
+        Route::get('/member/export', 'MemberController@export');
+        Route::get('/member/statistics/daily', 'MemberController@statisticsDaily');
+        Route::get('/member/statistics/getTodayAndTotalInviteNumber', 'MemberController@getTodayAndTotalInviteNumber');
 
         Route::group([], base_path('routes/api/oper/merchant.php'));
         Route::group([], base_path('routes/api/oper/settlements.php'));
