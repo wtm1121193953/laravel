@@ -35,6 +35,7 @@ use App\Jobs\ConsumeQuotaSyncToTpsJob;
 use App\Jobs\InviteChannelsUnbindMaker;
 
 use App\Support\TpsApi;
+use App\Jobs\Schedule\OperStatisticsDailyJob;
 
 class Test extends Command
 {
@@ -70,6 +71,8 @@ class Test extends Command
     public function handle()
     {
 
+        OperStatisticsDailyJob::dispatch();
+        dd('hi');
 //        $data = InviteChannel::where('id','<','10')->pluck('id');
 //        var_dump($data);
         InviteChannelsUnbindMaker::dispatch();
