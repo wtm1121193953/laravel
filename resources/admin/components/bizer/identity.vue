@@ -300,11 +300,17 @@
                     let data = this.query;
                     let params = [];
                     Object.keys(data).forEach((key) => {
-                        let value = data.key;
+                        let value = data[key];
                         if (typeof value === 'undefined' || value == null) {
                             value = '';
                         }
-                        params.push([key, encodeURIComponent(value)].join('='));
+                        if (value instanceof Array) {
+                            value.forEach((val) => {
+                                params.push([key + '[]', encodeURIComponent(val)].join('='));
+                            })
+                        } else {
+                            params.push([key, encodeURIComponent(value)].join('='));
+                        }
                     });
                     let uri = params.join('&');
 

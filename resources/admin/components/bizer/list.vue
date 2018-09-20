@@ -164,7 +164,24 @@
                 this.query.identityStartDate = this.query.identityStartDate == null ? '' : this.query.identityStartDate;
                 this.query.identityEndDate = this.query.identityEndDate == null ? '' : this.query.identityEndDate;
                 this.$confirm(message).then(() => {
+                    let data = this.query;
+                    let params = [];
+                    Object.keys(data).forEach((key) => {
+                        let value = data[key];
+                        if (typeof value === 'undefined' || value == null) {
+                            value = '';
+                        }
+                        if (value instanceof Array) {
+                            value.forEach((val) => {
+                                params.push([key + '[]', encodeURIComponent(val)].join('='));
+                            })
+                        } else {
+                            params.push([key, encodeURIComponent(value)].join('='));
+                        }
+                    });
+                    let uri = params.join('&');
 
+                    location.href = `/api/admin/bizer/export?${uri}`;
                 })
             }
         },

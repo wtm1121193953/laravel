@@ -91,6 +91,9 @@ class BizerController extends Controller
         return Result::success();
     }
 
+    /**
+     * 业务员列表导出
+     */
     public function exportExcel()
     {
         $mobile = request('mobile', '');
@@ -106,5 +109,39 @@ class BizerController extends Controller
 
         $params = compact('mobile', 'id', 'name', 'bizerEndDate', 'bizerStartDate', 'status', 'identityStatus', 'identityStartDate', 'identityEndDate');
         $query = BizerService::getBizerList($params, $pageSize, true);
+        $data = $query->get()->toArray();
+
+        $fileName = '业务员列表';
+        header('Content-Type: application/vnd.ms-execl');
+        header('Content-Disposition: attachment;filename="' . $fileName . '.csv"');
+
+        $fp = fopen('php://output', 'a');
+        $title = ['提交认证时间', '手机号码', '业务员ID', '注册时间', '姓名', '身份证号码', '用户状态', '身份认证状态'];
+        foreach ($title as $key => $value) {
+            $title[$key] = iconv('UTF-8', 'GBK', $value);
+        }
+        fputcsv($fp, $title);
+
+        if (!empty($data)) {
+            foreach ($data as $key => $value) {
+                $item = [];
+                $item['identity_created_at'] = isset($value['bizer_identity_audit_record']) ? iconv('UTF-8', 'GBK', $value['bizer_identity_audit_record']['created_at']) : '';
+                $item['mobile'] = iconv('UTF-8', 'GBK', $value['mobile']);
+                $item['id'] = iconv('UTF-8', 'GBK',$value['id']);
+                $item['created_at'] = iconv('UTF-8', 'GBK',$value['created_at']);
+                $item['name'] = iconv('UTF-8', 'GBK',$value['name']);
+                $idCardNo = '';
+                if (isset($value['bizer_identity_audit_record'])) {
+                    $arr = str_split($value['bizer_identity_audit_record']['id_card_no']);
+                    $idCardNo = implode("\t", $arr);
+                }
+                $item['id_card_no'] = $idCardNo;
+                $item['status'] = iconv('UTF-8', 'GBK',['', '正常', '禁用'][$value['status']]);
+                $item['identity_status'] = isset($value['bizer_identity_audit_record']) ? iconv('UTF-8', 'GBK',['', '待审核', '审核通过', '审核不通过', '未提交'][$value['bizer_identity_audit_record']['status']]) : '';
+                fputcsv($fp, $item);
+            }
+            ob_flush();
+            flush();
+        }
     }
 }
