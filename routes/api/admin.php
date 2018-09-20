@@ -97,4 +97,8 @@ Route::prefix('admin')
         Route::post('bank/del', 'BankController@del');
         Route::post('bank/changeStatus', 'BankController@changeStatus');
         Route::post('bank/edit', 'BankController@edit');
+
+        Route::get('statistics/oper','StatisticsController@oper');
+        Route::get('statistics/all_opers','StatisticsController@allOpers');
+        Route::get('statistics/oper_export','StatisticsController@operExport');
     });

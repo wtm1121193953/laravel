@@ -75,6 +75,7 @@
                         this.loading = true;
                         let data = {ids: this.scope.row.id, status: 2, reason: val.value};
                         api.post('/bizer/identity/audit', data).then((data) => {
+                            this.$message.success('审核通过操作成功');
                             this.$emit('refresh')
                         }).finally(() => {
                             this.loading = false;
@@ -82,13 +83,14 @@
                     }).catch(() => { })
                 }else {
                     this.$prompt('确认审核不通过吗', {
-                        inputType: 'text',
+                        inputType: 'textarea',
                         inputPlaceholder: '请填写失败原因，可不填，最多50字',
                         inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
                     }).then((val) => {
                         this.loading = true;
                         let data = {ids: this.scope.row.id, status: 3, reason: val.value};
                         api.post('/bizer/identity/audit', data).then((data) => {
+                            this.$message.success('审核不通过操作成功');
                             this.$emit('refresh')
                         }).finally(() => {
                             this.loading = false;

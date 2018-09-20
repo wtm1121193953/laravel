@@ -38,8 +38,7 @@
                     <el-option label="禁用" value="2"/>
                 </el-select>
             </el-form-item>
-
-            <el-form-item label="用户认证状态" prop="identity_status">
+            <el-form-item label="身份认证状态" prop="identity_status">
                 <el-select v-model="query.identityStatus" size="small"  multiple placeholder="请选择" class="w-150">
                     <el-option label="待审核" value="1"/>
                     <el-option label="审核通过" value="2"/>
@@ -71,7 +70,17 @@
                 <template slot-scope="scope">
                     <span v-if="scope.row.bizer_identity_audit_record">
                         <span v-if="scope.row.bizer_identity_audit_record.status == 1">待审核</span>
-                        <span v-else-if="scope.row.bizer_identity_audit_record.status == 2">审核通过</span>
+                        <span v-else-if="parseInt(scope.row.bizer_identity_audit_record.status) === 2" class="c-green">
+                            <span v-if="scope.row.bizer_identity_audit_record.reason">
+                                <el-popover
+                                        placement="right-start"
+                                        trigger="hover"
+                                        :content="scope.row.bizer_identity_audit_record.reason">
+                                <span slot="reference">审核通过</span>
+                                </el-popover>
+                            </span>
+                            <span v-else>审核通过</span>
+                        </span>
                         <span v-else-if="parseInt(scope.row.bizer_identity_audit_record.status) === 3" class="c-danger">
                             <span v-if="scope.row.bizer_identity_audit_record.reason">
                                 <el-popover
@@ -85,7 +94,7 @@
                         </span>
                         <span v-else>未知({{scope.row.bizer_identity_audit_record.status}})</span>
                     </span>
-                    <span v-else>未提交</span>
+                    <span v-else class="c-gray">未提交</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作">
@@ -152,8 +161,27 @@
                 let message = '确定要导出当前筛选的业务员列表么？'
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
+                this.query.identityStartDate = this.query.identityStartDate == null ? '' : this.query.identityStartDate;
+                this.query.identityEndDate = this.query.identityEndDate == null ? '' : this.query.identityEndDate;
                 this.$confirm(message).then(() => {
+                    let data = this.query;
+                    let params = [];
+                    Object.keys(data).forEach((key) => {
+                        let value = data[key];
+                        if (typeof value === 'undefined' || value == null) {
+                            value = '';
+                        }
+                        if (value instanceof Array) {
+                            value.forEach((val) => {
+                                params.push([key + '[]', encodeURIComponent(val)].join('='));
+                            })
+                        } else {
+                            params.push([key, encodeURIComponent(value)].join('='));
+                        }
+                    });
+                    let uri = params.join('&');
 
+                    location.href = `/api/admin/bizer/export?${uri}`;
                 })
             }
         },

@@ -20,6 +20,7 @@ import bizer from './bizer'
 
 import SettlementPlatfroms from '../components/settlement/platform.vue'
 
+import StatisticsOper from '../components/statistics/oper.vue'
 /**
  *
  */
@@ -57,7 +58,14 @@ const routes = [
             {path: '/settlement/platforms', component: SettlementPlatfroms, name: 'SettlementPlatfroms'},
         ]
     },
-
+    // 营销报表模块,,
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: '/statistics/oper', component: StatisticsOper, name: 'StatisticsOper'},
+        ]
+    },
     {
         path: '/',
         component: Home,
@@ -70,6 +78,7 @@ const routes = [
             {path: '*', component: ErrorPage, name: 'ErrorPage'},
         ]
     },
+
 
     // 拦截所有无效的页面到错误页面
     { path: '*' , component: ErrorPage, name: 'GlobalErrorPage'}

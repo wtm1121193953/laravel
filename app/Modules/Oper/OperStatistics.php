@@ -2,7 +2,7 @@
 
 namespace App\Modules\Oper;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
 /**
  * Class OperStatistics
@@ -18,8 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property float order_paid_amount
  * @property float order_refund_amount
  */
-class OperStatistics extends Model
+class OperStatistics extends BaseModel
 {
-
     //
 }
