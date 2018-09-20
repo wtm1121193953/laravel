@@ -27,6 +27,7 @@
                     {{remitAmount}}
                 </el-form-item>
             </el-col>
+            <el-col class="tips">温馨提示： 每月10号、20号、30号才能提现</el-col>
             <el-col style="text-align: center">
                 <el-button @click="cancel">取 消</el-button>
                 <el-button type="primary" @click="commit">立即申请</el-button>

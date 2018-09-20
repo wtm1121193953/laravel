@@ -135,6 +135,7 @@
                         {{orderOrWithdrawData.remark}}
                     </el-form-item>
                 </el-col>
+                <el-col class="tips">注意：具体到账时间请以银行通知时间为准</el-col>
             </el-form>
         </el-col>
     </el-row>
