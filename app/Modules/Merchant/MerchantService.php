@@ -147,8 +147,9 @@ class MerchantService extends BaseService
         // 全局限制条件
         $query = Merchant::where('audit_oper_id', '>', 0)
             ->when($isFollows, function (Builder $query) use ($userId){
-                $query->whereHas('merchantFollow',function (Builder $query) use ($userId) {
-                   $query->where('user_id',$userId);
+                $query->whereHas('merchantFollow',function (Builder $q) use ($userId) {
+                   $q->where('user_id',$userId)
+                   ->where('status',MerchantFollow::USER_YES_FOLLOW);
                 });
             })
             ->orderByDesc('id');
