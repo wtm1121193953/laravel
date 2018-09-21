@@ -266,6 +266,7 @@ class OrderController extends Controller
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->pay_type = $payType;
+        $order->remark = request('remark', '');
         $order->save();
 
         // 如果是微信支付
@@ -345,6 +346,7 @@ class OrderController extends Controller
         $order->pay_price = $price;
 
         $order->pay_type = $payType;
+        $order->remark = request('remark', '');
         $order->pay_target_type =Order::PAY_TARGET_TYPE_PLATFORM;
         $order->save();
 
@@ -396,6 +398,7 @@ class OrderController extends Controller
 
         $payType = request('pay_type', 1);
         $order->pay_type = $payType;
+        $order->remark = request('remark', '');
         $order->save();
 
         //返利金额
