@@ -7,6 +7,7 @@
  */
 namespace App\Http\Controllers\Oper;
 
+use App\Exceptions\ParamInvalidException;
 use App\Exports\OperInviteExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
@@ -14,6 +15,7 @@ use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Invite\InviteUserService;
 use App\Result;
+use Illuminate\Support\Carbon;
 
 class MemberController extends Controller
 {
@@ -108,6 +110,52 @@ class MemberController extends Controller
         return Result::success([
             'todayInviteCount' => $todayInviteCount,
             'totalInviteCount' => $totalInviteCount,
+        ]);
+    }
+
+    public function getTotal()
+    {
+        $timeType = request('timeType');
+        $startDate = '';
+        $endDate = '';
+        switch ($timeType) {
+            case 'today':
+                $startDate = Carbon::now()->startOfDay();
+                $endDate = Carbon::now()->endOfDay();
+                break;
+            case 'yesterday':
+                $startDate = Carbon::now()->subDay()->startOfDay();
+                $endDate = $startDate->copy()->endOfDay();
+                break;
+            case 'week':
+                $startDate = Carbon::now()->subWeek();
+                $endDate = Carbon::now()->endOfDay();
+                break;
+            case 'month':
+                $startDate = Carbon::now()->startOfMonth();
+                $endDate = Carbon::now()->endOfMonth();
+                break;
+            case 'lastMonth':
+                $startDate = Carbon::now()->subMonth()->startOfMonth();
+                $endDate = Carbon::now()->endOfMonth();
+                break;
+            default:
+                throw new ParamInvalidException('参数错误');
+                break;
+        }
+
+        if($startDate && $startDate instanceof Carbon){
+            $startDate = $startDate->format('Y-m-d');
+        }
+        if($endDate && $endDate instanceof Carbon){
+            $endDate = $endDate->format('Y-m-d');
+        }
+        $operId = request()->get('current_user')->oper_id;
+        $total = InviteStatisticsService::getTimeSlotInviteCountByOriginInfo($operId, InviteChannel::ORIGIN_TYPE_OPER, $startDate, $endDate);
+
+        return Result::success([
+            'total' => $total,
+            'totalInviteCount' => $total,
         ]);
     }
 }

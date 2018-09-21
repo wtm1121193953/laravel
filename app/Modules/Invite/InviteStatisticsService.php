@@ -192,6 +192,36 @@ class InviteStatisticsService extends BaseService
     }
 
     /**
+     * 获取时间段内的邀请总数
+     * @param $originId
+     * @param $originType
+     * @param $startDate
+     * @param $endDate
+     * @return int|mixed
+     */
+    public static function getTimeSlotInviteCountByOriginInfo($originId, $originType, $startDate, $endDate)
+    {
+        if ($startDate > $endDate) {
+            return 0 ;
+        }
+        //如果结束日期包含今天，把今天的单独统计
+        $today = date('Y-m-d', time());
+        $todayInviteCount = 0;
+        if ($endDate >= $today) {
+            $todayInviteCount = self::getTodayInviteCountByOriginInfo($originId, $originType);
+            $endDate = date('Y-m-d', time()-86400);
+        }
+
+        $totalCount = InviteUserStatisticsDaily::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->where('date', '>=',$startDate)
+            ->where('date', '<=',$endDate)
+            ->sum('invite_count');
+
+        return $totalCount + $todayInviteCount;
+    }
+
+    /**
      * 获取用户类型邀请人的邀请总数
      * @param $userId
      * @return int
