@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\User;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Area\Area;
 use App\Modules\Area\AreaService;
@@ -73,6 +74,9 @@ class AreaController extends Controller
     public function searchCityList()
     {
         $name = request('name');
+        if(!$name){
+            throw new BaseResponseException('请输入关键字');
+        }
         $list = AreaService::getCityListByKeyword($name);
         return Result::success([
             'list' => $list,
