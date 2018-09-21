@@ -60,4 +60,17 @@ class AreaController extends Controller
         }
         return Result::success(['list' => $data]);
     }
+
+    /**
+     * 地区搜索
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function searchCityList()
+    {
+        $name = request('name');
+        $list = AreaService::getCityListByKeyword($name);
+        return Result::success([
+            'list' => $list,
+        ]);
+    }
 }
