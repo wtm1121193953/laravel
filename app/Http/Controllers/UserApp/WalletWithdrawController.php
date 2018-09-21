@@ -81,6 +81,8 @@ class WalletWithdrawController extends Controller
             'isSetWithdrawPassword' => empty($wallet->withdraw_password) ? 0 : 1,
             'hasBankCard' => $cards->count() <= 0 ? 0 : 1,
             'balance' => $wallet->balance,
+            // 判断现今可否结算
+            'isWithdraw'    =>  (in_array(date('d'), [10,20,30])) ? true:false,
         ]);
     }
 }
