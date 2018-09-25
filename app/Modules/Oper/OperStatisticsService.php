@@ -78,29 +78,29 @@ class OperStatisticsService extends BaseService
 
             // 总订单量（已支付）
             $row['order_paid_num'] = Order::where('oper_id','=',$row['oper_id'])
-                ->where('created_at','>=',$startTime)
-                ->where('created_at','<=',$endTime)
+                ->where('pay_time','>=',$startTime)
+                ->where('pay_time','<=',$endTime)
                 ->whereIn('status',[Order::STATUS_PAID,Order::STATUS_FINISHED])
                 ->count();
 
             //总退款量
             $row['order_refund_num'] = Order::where('oper_id','=',$row['oper_id'])
-                ->where('created_at','>=',$startTime)
-                ->where('created_at','<=',$endTime)
+                ->where('refund_time','>=',$startTime)
+                ->where('refund_time','<=',$endTime)
                 ->where('status','=',Order::STATUS_REFUNDED)
                 ->count();
 
             //总订单金额（已支付）
             $row['order_paid_amount'] = Order::where('oper_id','=',$row['oper_id'])
-                ->where('created_at','>=',$startTime)
-                ->where('created_at','<=',$endTime)
+                ->where('pay_time','>=',$startTime)
+                ->where('pay_time','<=',$endTime)
                 ->whereIn('status',[Order::STATUS_PAID,Order::STATUS_FINISHED])
                 ->sum('pay_price');
 
             //总退款金额
             $row['order_refund_amount'] = Order::where('oper_id','=',$row['oper_id'])
-                ->where('created_at','>=',$startTime)
-                ->where('created_at','<=',$endTime)
+                ->where('refund_time','>=',$startTime)
+                ->where('refund_time','<=',$endTime)
                 ->where('status','=',Order::STATUS_REFUNDED)
                 ->sum('pay_price');
 

@@ -75,7 +75,7 @@
                 list: [],
                 total: 0,
                 originType: 'all',
-                timeType: 'today',
+                timeType: 'yesterday',
                 dateRange: [],
                 operId: '',
                 searchDate: {},
