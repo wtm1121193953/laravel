@@ -45,7 +45,8 @@ class MerchantFollowController extends Controller
     {
         $data = MerchantService::getListForUserApp([
             'lng' => request('lng'),
-            'lat' => request('lat')
+            'lat' => request('lat'),
+            'page' => request('page'),
         ],true);
         return $data;
     }

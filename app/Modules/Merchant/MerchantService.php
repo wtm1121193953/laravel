@@ -641,7 +641,7 @@ class MerchantService extends BaseService
             $allList = $query->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat) {
-                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
+                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
                 return $item;
             })
                 ->sortBy('distance')

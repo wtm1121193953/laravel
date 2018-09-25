@@ -30,8 +30,12 @@ class MerchantFollowService extends BaseService
 
             if($merchantFollowQuery){
 
-                $merchantFollowQuery->status = MerchantFollow::USER_YES_FOLLOW;
-                $merchantFollowQuery->save();
+                if($merchantFollowQuery->status == MerchantFollow::USER_NOT_FOLLOW){
+                    $merchantFollowQuery->status = MerchantFollow::USER_YES_FOLLOW;
+                    $merchantFollowQuery->save();
+                }else{
+                    throw new BaseResponseException('已关注');
+                }
 
             }else{
                 $merchantFollow = new MerchantFollow();
@@ -44,8 +48,13 @@ class MerchantFollowService extends BaseService
             $merchant->where('id',$merchantId)->increment('user_follows');
             $follow_status = MerchantFollow::USER_YES_FOLLOW; //返回已关注状态
         }else{
-            $merchantFollowQuery->status = MerchantFollow::USER_NOT_FOLLOW;
-            $merchantFollowQuery->save();
+
+            if($merchantFollowQuery->status == MerchantFollow::USER_NOT_FOLLOW){
+                throw new BaseResponseException('已取消');
+            }else{
+                $merchantFollowQuery->status = MerchantFollow::USER_NOT_FOLLOW;
+                $merchantFollowQuery->save();
+            }
             $merchant->where('id',$merchantId)->decrement('user_follows');
             $follow_status = MerchantFollow::USER_NOT_FOLLOW; //返回未关注状态
         }
