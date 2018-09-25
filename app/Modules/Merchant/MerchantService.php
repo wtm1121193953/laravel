@@ -549,7 +549,7 @@ class MerchantService extends BaseService
             // 如果经纬度及范围都存在, 则按距离筛选出附近的商家
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
         }
-        $userId = request()->get('current_user')->id;
+        $userId = request()->get('current_user')->id ?? 0;
 
         // todo 只获取切换到平台的运营中心下的商家信息
         //只能查询切换到平台的商户
