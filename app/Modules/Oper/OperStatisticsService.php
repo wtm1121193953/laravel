@@ -46,16 +46,12 @@ class OperStatisticsService extends BaseService
      */
     public static function statistics($endTime='')
     {
-
         if (empty($endTime)) {
             $endTime = date('Y-m-d H:i:s');
         }
-
         $startTime = substr($endTime,0,10) . ' 00:00:00';
 
-
         $opers = OperService::allNormalOpers();
-
         foreach ($opers as $o) {
             $where['oper_id'] = $o['id'];
             $where['date'] = substr($startTime,0,10);
@@ -105,9 +101,6 @@ class OperStatisticsService extends BaseService
                 ->sum('pay_price');
 
             $rs = OperStatistics::updateOrCreate($where,$row);
-
         }
-
-
     }
 }
