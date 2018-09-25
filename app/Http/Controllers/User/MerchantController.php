@@ -16,6 +16,7 @@ use App\Modules\Goods\GoodsService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantCategoryService;
+use App\Modules\Merchant\MerchantFollow;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Setting\SettingService;
@@ -196,6 +197,8 @@ class MerchantController extends Controller
         $lng = request('lng');
         $lat = request('lat');
 
+        $userId = request()->get('current_user')->id;
+
         $detail = Merchant::findOrFail($id);
         $detail->desc_pic_list = $detail->desc_pic_list ? explode(',', $detail->desc_pic_list) : [];
         if($detail->business_time) $detail->business_time = json_decode($detail->business_time, 1);
@@ -205,6 +208,11 @@ class MerchantController extends Controller
             $detail->distance = $this->_getFormativeDistance($distance);
         }
         $category = MerchantCategory::find($detail->merchant_category_id);
+
+
+        //商家是否被当前用户关注
+        $isFollows = MerchantFollow::where('merchant_id',$id)->where('user_id',$userId)->where('status',MerchantFollow::USER_YES_FOLLOW)->first();
+        $detail->isFollows = empty($isFollows)? 1 : 2;
 
         $detail->merchantCategoryName = $category->name;
         //商家是否开启单品模式
