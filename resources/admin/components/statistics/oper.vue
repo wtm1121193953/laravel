@@ -37,7 +37,7 @@
             </template>
             <el-button type="success" size="small" @click="dataExport">导出</el-button>
         </el-col>
-        <el-table :data="list" stripe>
+        <el-table :data="list" stripe v-loading="isLoading">
             <el-table-column prop="date" label="时间"/>
             <el-table-column prop="oper_id" label="运营中心id"/>
             <el-table-column prop="oper.name" label="运营中心名称"/>
@@ -99,9 +99,12 @@
                 this.query.startDate = this.dateRange[0] || '';
                 this.query.endDate = this.dateRange[1] || '';
 
+                this.isLoading = true;
                 api.get('/statistics/oper', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                }).finally(() => {
+                    this.isLoading = false;
                 })
             },
             getSearchDate() {
