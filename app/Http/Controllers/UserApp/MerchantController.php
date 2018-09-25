@@ -51,7 +51,7 @@ class MerchantController extends Controller
         $id = request('id');
         $lng = request('lng');
         $lat = request('lat');
-        $userId = request()->get('current_user')->id;
+        $userId = request()->get('current_user')->id ?? 0;
 
         $detail = Merchant::findOrFail($id);
         $detail->desc_pic_list = $detail->desc_pic_list ? explode(',', $detail->desc_pic_list) : [];
