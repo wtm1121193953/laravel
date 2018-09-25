@@ -104,33 +104,8 @@ class OperStatisticsService extends BaseService
                 ->where('status','=',Order::STATUS_REFUNDED)
                 ->sum('pay_price');
 
+            $rs = OperStatistics::updateOrCreate($where,$row);
 
-            $exist = OperStatistics::select('*')
-                ->where('oper_id',$where['oper_id'])
-                ->where('date',$where['date'])
-                ->first();
-
-
-            if ($exist) {
-                $exist->merchant_num = $row['merchant_num'];
-                $exist->user_num = $row['user_num'];
-                $exist->order_paid_num = $row['order_paid_num'];
-                $exist->order_refund_num = $row['order_refund_num'];
-                $exist->order_paid_amount = $row['order_paid_amount'];
-                $exist->order_refund_amount = $row['order_refund_amount'];
-                $rs = $exist->save();
-            } else {
-                $obj = new OperStatistics();
-                $obj->oper_id = $row['oper_id'];
-                $obj->date = $row['date'];
-                $obj->merchant_num = $row['merchant_num'];
-                $obj->user_num = $row['user_num'];
-                $obj->order_paid_num = $row['order_paid_num'];
-                $obj->order_refund_num = $row['order_refund_num'];
-                $obj->order_paid_amount = $row['order_paid_amount'];
-                $obj->order_refund_amount = $row['order_refund_amount'];
-                $rs = $obj->save();
-            }
         }
 
 
