@@ -43,7 +43,10 @@ class MerchantFollowController extends Controller
 
     public function userFollowList()
     {
-        $data = MerchantService::getListForUserApp([],true);
+        $data = MerchantService::getListForUserApp([
+            'lng' => request('lng'),
+            'lat' => request('lat')
+        ],true);
         return $data;
     }
 }
