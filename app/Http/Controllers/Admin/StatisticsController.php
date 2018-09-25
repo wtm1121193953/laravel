@@ -25,6 +25,7 @@ class StatisticsController extends Controller
                 $endDate = null;
                 break;
             case 'today':
+                OperStatisticsService::statistics();
                 $startDate = Carbon::now()->startOfDay();
                 $endDate = Carbon::now()->endOfDay();
                 break;

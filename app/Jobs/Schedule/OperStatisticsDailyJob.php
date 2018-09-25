@@ -3,6 +3,7 @@
 namespace App\Jobs\Schedule;
 
 use App\Modules\Oper\OperStatistics;
+use App\Modules\Oper\OperStatisticsService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -39,6 +40,7 @@ class OperStatisticsDailyJob implements ShouldQueue
     public function handle()
     {
         Log::info('生成运营中心营销统计数据 :Start');
+        /*
         $date = date('Y-m-d');
         // 获取operList数据
         $operList = Oper::whereStatus(Oper::STATUS_NORMAL)->get(['id'])->toArray();
@@ -58,6 +60,13 @@ class OperStatisticsDailyJob implements ShouldQueue
         }
         $operStatistics = new OperStatistics();
         DB::table($operStatistics->getTable())->insert($saveList);
+        */
+
+        $endTime = date('Y-m-d',strtotime('-1 day')) . ' 23:59:59';
+
+        $rt = OperStatisticsService::statistics($endTime);
+
+
         Log::info('生成运营中心营销统计数据 :end');
     }
 }

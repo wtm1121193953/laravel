@@ -20,6 +20,8 @@ use App\BaseModel;
  */
 class OperStatistics extends BaseModel
 {
+    protected $fillable = ['oper_id'];
+
     //
     /**
      *
