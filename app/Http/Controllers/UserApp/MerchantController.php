@@ -17,6 +17,7 @@ use App\Modules\Merchant\MerchantService;
 use App\Result;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Support\Lbs;
+use App\Support\Utils;
 
 
 class MerchantController extends Controller
@@ -59,7 +60,7 @@ class MerchantController extends Controller
         if($lng && $lat){
             $distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), $lng, $lat);
             // 格式化距离
-            $detail->distance = $this->_getFormativeDistance($distance);
+            $detail->distance = Utils::getFormativeDistance($distance);
         }
         $category = MerchantCategory::find($detail->merchant_category_id);
 
@@ -81,14 +82,5 @@ class MerchantController extends Controller
         $detail->grade = 5;
 
         return Result::success(['list' => $detail]);
-    }
-    /**
-     * 格式化距离
-     * @param $distance
-     * @return string
-     */
-    private function _getFormativeDistance($distance)
-    {
-        return $distance >= 1000 ? (number_format($distance / 1000, 1) . 'km') : ($distance . 'm');
     }
 }

@@ -44,6 +44,15 @@ class BankCardService extends BaseService
         if( !($bankCard->save()) ){
             throw new BaseResponseException('新增失败', ResultCode::DB_INSERT_FAIL);
         }
+
+        //判断只有一张银行卡时设置为默认银行卡
+        $query = BankCard::where('origin_id',$user->id)
+            ->where('origin_type',$originType);
+        if($query ->count() == 1){
+                $item = $query->first();
+                $item->default = BankCard::DEFAULT_SELECTED;
+                $item->save();
+        }
     }
 
     /**
@@ -100,6 +109,15 @@ class BankCardService extends BaseService
         if(!$res)
         {
             throw new BaseResponseException('删除失败',ResultCode::DB_INSERT_FAIL);
+        }
+
+        //判断只有一张银行卡时设置为默认银行卡
+        $query = BankCard::where('origin_id',$user->id)
+            ->where('origin_type',$originType);
+        if($query ->count() == 1){
+            $item = $query->first();
+            $item->default = BankCard::DEFAULT_SELECTED;
+            $item->save();
         }
     }
 
