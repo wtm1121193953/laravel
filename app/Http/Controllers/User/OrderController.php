@@ -34,6 +34,7 @@ use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use App\Support\Lbs;
 use App\Support\Reapal\ReapalPay;
 use App\Support\Utils;
 use Carbon\Carbon;
@@ -89,6 +90,8 @@ class OrderController extends Controller
         $this->validate(request(), [
             'order_no' => 'required'
         ]);
+        $lng = request('lng');
+        $lat = request('lat');
         $detail = Order::where('order_no', request('order_no'))->firstOrFail();
         // 只返回一个核销码
         $orderItem = OrderItem::where('order_id', $detail->id)->first();
@@ -119,6 +122,12 @@ class OrderController extends Controller
         // 单品订单
         if ($detail->type == Order::TYPE_DISHES) {
             $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
+        }
+
+        if($lng && $lat){
+            $distance = Lbs::getDistanceOfMerchant($detail->merchant_id, request()->get('current_open_id'), $lng, $lat);
+            // 格式化距离
+            $detail->distance = Utils::getFormativeDistance($distance);
         }
         // 查看分润详情
         $feeSplittingRecord = FeeSplittingService::getToSelfFeeSplittingRecordByOrderId($detail->id);

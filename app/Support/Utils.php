@@ -94,4 +94,14 @@ class Utils
         $decimal = number_format($decimal, $decimalQuantity, '.', '');
         return $decimal;
     }
+
+    /**
+     * 格式化距离
+     * @param $distance
+     * @return string
+     */
+    public static function getFormativeDistance($distance)
+    {
+        return $distance >= 1000 ? (number_format($distance / 1000, 1) . 'km') : ($distance . 'm');
+    }
 }
