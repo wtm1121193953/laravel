@@ -123,10 +123,9 @@ class MerchantService extends BaseService
      *      endCreatedAt,
      *  }
      * @param bool $getWithQuery
-     * @param bool $isFollows
      * @return Merchant|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getList(array $data, bool $getWithQuery = false, bool $isFollows = false)
+    public static function getList(array $data, bool $getWithQuery = false)
     {
         $id = array_get($data,'id');
         $operId = array_get($data,'operId');
@@ -143,15 +142,8 @@ class MerchantService extends BaseService
         $cityId =array_get($data,"cityId");
         $bizer_id = array_get($data, "bizer_id");
 
-        $userId = request()->get('current_user')->id;
         // 全局限制条件
         $query = Merchant::where('audit_oper_id', '>', 0)
-            ->when($isFollows, function (Builder $query) use ($userId){
-                $query->whereHas('merchantFollow',function (Builder $q) use ($userId) {
-                   $q->where('user_id',$userId)
-                   ->where('status',MerchantFollow::USER_YES_FOLLOW);
-                });
-            })
             ->orderByDesc('id');
 
         // 筛选条件
@@ -534,7 +526,7 @@ class MerchantService extends BaseService
         }
     }
 
-    public static function getListForUserApp(array $params)
+    public static function getListForUserApp(array $params, bool $isFollows = false)
     {
         $city_id = array_get($params, 'city_id');
         $merchant_category_id = array_get($params, 'merchant_category_id');
@@ -557,12 +549,19 @@ class MerchantService extends BaseService
             // 如果经纬度及范围都存在, 则按距离筛选出附近的商家
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
         }
+        $userId = request()->get('current_user')->id;
 
         // todo 只获取切换到平台的运营中心下的商家信息
         //只能查询切换到平台的商户
         $query = Merchant::query()
             ->where('oper_id', '>', 0)
             ->where('status', 1)
+            ->when($isFollows, function (Builder $query) use ($userId){
+                $query->whereHas('merchantFollow',function (Builder $q) use ($userId) {
+                    $q->where('user_id',$userId)
+                        ->where('status',MerchantFollow::USER_YES_FOLLOW);
+                });
+            })
             ->whereHas('oper', function(Builder $query){
                 $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
             })
