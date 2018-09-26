@@ -13,7 +13,7 @@ class SmsController extends Controller
     public function sendVerifyCode()
     {
         $this->validate(request(), [
-            'mobile' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}/'
+            'mobile' => 'required|regex:/^1[3456789]\d{9}/'
         ]);
         $mobile = request('mobile');
 
@@ -24,6 +24,28 @@ class SmsController extends Controller
             return Result::success();
         }else{
             throw new BaseResponseException($result['message'], $result['code']);
+        }
+    }
+
+    /**
+     * 校验验证码
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkVerifyCode()
+    {
+        $this->validate(request(), [
+            'mobile' => 'required|regex:/^1[3456789]\d{9}/',
+            'verifyCode' => 'required',
+        ]);
+        $mobile = request('mobile');
+        $verifyCode = request('verifyCode');
+
+        $res = SmsService::checkVerifyCode($mobile, $verifyCode);
+
+        if ($res) {
+            return Result::success();
+        } else {
+            throw new BaseResponseException('验证码错误');
         }
     }
 }

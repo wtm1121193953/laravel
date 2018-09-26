@@ -217,4 +217,29 @@ class WalletWithdrawController extends Controller
             throw new BaseResponseException('提现密码错误');
         }
     }
+
+    /**
+     * 忘记密码 重置提现密码
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function resetWithdrawPassword()
+    {
+        $this->validate(request(), [
+            'password' => 'required|max:6',
+            'checkPassword' => 'required|max:6|same:password'
+        ]);
+
+        $password = request('password');
+
+        $bizerId = request()->get('current_user')->id;
+        $bizer = BizerService::getById($bizerId);
+        if (empty($bizer)) {
+            throw new BaseResponseException('该业务员不存');
+        }
+
+        $wallet = WalletService::getWalletInfo($bizer);
+        WalletService::updateWalletWithdrawPassword($wallet, $password);
+
+        return Result::success();
+    }
 }
