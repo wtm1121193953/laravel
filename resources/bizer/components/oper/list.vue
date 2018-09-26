@@ -90,8 +90,11 @@
 
         <el-dialog title="添加运营中心" :visible.sync="dialogFormVisible" width="30%">
             <el-form label-width="100px">
+                <el-form-item label="姓名">
+                    {{ user.name }}
+                </el-form-item>
                 <el-form-item label="电话">
-                    {{ username }}
+                    {{ user.mobile }}
                 </el-form-item>
                 <el-form-item label="运营中心名称">
                     <el-select
@@ -176,9 +179,6 @@
             ...mapState([
                 'user',
             ]),
-            username(){
-                return this.user ? (this.user.operName || this.user.account || this.user.mobile) : '';
-            }
         },
         methods: {
             search(){
