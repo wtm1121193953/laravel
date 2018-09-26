@@ -151,7 +151,7 @@ class Order extends BaseModel
         return $this->hasMany(WalletConsumeQuotaRecord::class);
     }
 
-    protected $dispatchesEvents = [
+    /*protected $dispatchesEvents = [
         'updated' => \App\Events\OrdersUpdatedEvent::class,
-    ];
+    ];*/
 }

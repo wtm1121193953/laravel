@@ -49,7 +49,8 @@ class OperStatisticsService extends BaseService
         if (empty($endTime)) {
             $endTime = date('Y-m-d H:i:s');
         }
-        $startTime = substr($endTime,0,10) . ' 00:00:00';
+//        $startTime = substr($endTime,0,10) . ' 00:00:00';
+        $startTime = date('Y-m-d', strtotime($endTime));
 
         $opers = OperService::allNormalOpers();
         foreach ($opers as $o) {
@@ -101,7 +102,7 @@ class OperStatisticsService extends BaseService
                 ->where('status','=',Order::STATUS_REFUNDED)
                 ->sum('pay_price');
 
-            $rs = OperStatistics::updateOrCreate($where,$row);
+            OperStatistics::updateOrCreate($where,$row);
         }
     }
 }
