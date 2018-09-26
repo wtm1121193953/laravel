@@ -139,6 +139,15 @@ class OrderController extends Controller
         // 贡献值
         $detail->consume_quota = floor($detail->pay_price);
 
+        //返利金额
+        $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordByOrderId($detail->id,FeeSplittingRecord::TYPE_TO_SELF);
+
+        if(!empty($feeSplittingRecords)){
+            $detail = $feeSplittingRecords->amount;
+        }else{
+            $detail = '';
+        }
+
         //商家详情
         $detail['merchant'] = $merchant_of_order;
         $detail['good'] = GoodsService::getById($detail->goods_id);
