@@ -153,7 +153,7 @@ class MerchantController extends Controller
                 ->values()
                 ->each(function($item) {
                     // 格式化距离
-                    $item->distance = $item->is_pilot == 1 ? '' : Utils::getFormativeDistance($distance);
+                    $item->distance = $item->is_pilot == 1 ? '' : Utils::getFormativeDistance($item->distance);
                 });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页

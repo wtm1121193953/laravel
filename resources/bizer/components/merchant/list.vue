@@ -202,7 +202,6 @@
             
             api.get('merchant/opers/tree').then(data => {
                 _self.operOptions = data.list;
-                console.log(data);
             });
             api.get('merchant/categories/tree').then(data => {
                  _self.categoryOptions = data.list;
