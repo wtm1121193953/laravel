@@ -89,14 +89,14 @@
                 :total="total"/>
 
         <el-dialog title="添加运营中心" :visible.sync="dialogFormVisible" width="30%">
-            <el-form label-width="100px">
+            <el-form label-width="120px" ref="addRegionData" :model="addRegionData" :rules="addRegionDataRules">
                 <el-form-item label="姓名">
                     {{ user.name }}
                 </el-form-item>
                 <el-form-item label="电话">
                     {{ user.mobile }}
                 </el-form-item>
-                <el-form-item label="运营中心名称">
+                <el-form-item prop="oper_id" label="运营中心名称">
                     <el-select
                         filterable
                         remote
@@ -108,7 +108,7 @@
                         <el-option v-for="item in regionOptions" :label="item.name"  :key="item.id" :value="item.id"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="备注">
+                <el-form-item prop="remark" label="备注">
                     <el-input type="textarea" v-model="addRegionData.remark" auto-complete="off"/>
                 </el-form-item>
             </el-form>
@@ -173,6 +173,15 @@
                 ],
                 dialogTipsCurrent: 0,
                 selectLoading: false,
+
+                addRegionDataRules: {
+                    oper_id: [
+                        {required: true, message: '运营中心名称不能为空'},
+                    ],
+                    remark: [
+                        {max: 50, message: '备注不能超过50个字'},
+                    ]
+                }
             }
         },
         computed: {
@@ -225,31 +234,35 @@
                 this.dialogPromptVisible = true;
             },
             addRegion(){
-                let _self = this;
-                if (!_self.addRegionData.oper_id) {
-                    _self.$message({
-                      message: '请选择运营中心',
-                      type: 'warning'
-                    });
-                    return;
-                }
-                _self.regionLoading = true;
-                api.post('/api/bizer/oper/add', _self.addRegionData).then(data => {
-                    _self.regionLoading = false;
-                    _self.dialogFormVisible = false;
-                    _self.$message({
-                      message: '添加成功',
-                      type: 'success'
-                    });
-                    this.getList();
-                }).catch(() => {
-                    _self.$message({
-                      message: '添加失败',
-                      type: 'warning'
-                    });
-                }).finally(() => {
-                    _self.regionLoading = false;
-                })
+                this.$refs.addRegionData.validate(valid => {
+                    if (valid) {
+                        let _self = this;
+                        if (!_self.addRegionData.oper_id) {
+                            _self.$message({
+                                message: '请选择运营中心',
+                                type: 'warning'
+                            });
+                            return;
+                        }
+                        _self.regionLoading = true;
+                        api.post('/api/bizer/oper/add', _self.addRegionData).then(data => {
+                            _self.regionLoading = false;
+                            _self.dialogFormVisible = false;
+                            _self.$message({
+                                message: '添加成功',
+                                type: 'success'
+                            });
+                            this.getList();
+                        }).catch(() => {
+                            _self.$message({
+                                message: '添加失败',
+                                type: 'warning'
+                            });
+                        }).finally(() => {
+                            _self.regionLoading = false;
+                        })
+                    }
+                });
             },
             toMerchants(oper_id){
                 //改变vuex状态
