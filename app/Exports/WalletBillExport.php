@@ -101,11 +101,11 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
         if ($row->type == WalletBill::TYPE_SELF) {
             $typeText = '自己消费返利';
         } elseif ($row->type == WalletBill::TYPE_SUBORDINATE) {
-            $typeText = '下级消费返利';
+            $typeText = '分享消费奖励';
         } elseif ($row->type == WalletBill::TYPE_SELF_CONSUME_REFUND) {
             $typeText = '自己消费返利退款';
         } elseif ($row->type == WalletBill::TYPE_SUBORDINATE_REFUND) {
-            $typeText = '下级消费返利退款';
+            $typeText = '分享消费奖励退款';
         } elseif ($row->type == WalletBill::TYPE_OPER) {
             $typeText = '交易分润入账';
         } elseif ($row->type == WalletBill::TYPE_OPER_REFUND) {

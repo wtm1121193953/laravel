@@ -43,7 +43,7 @@ class WalletConsumeQuotaRecordExport implements FromQuery, WithMapping, WithHead
         return [
             $row->created_at,
             $row->consume_quota_no,
-            '下级贡献',
+            '分享者贡献',
             $row->order_no,
             $row->consume_user_mobile,
             $row->pay_price,

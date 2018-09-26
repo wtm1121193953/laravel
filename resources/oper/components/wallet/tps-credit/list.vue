@@ -52,7 +52,7 @@
             <el-table-column prop="consume_quota_no" label="流水号"></el-table-column>
             <el-table-column prop="type" label="交易类型">
                 <template slot-scope="scope">
-                    <span>下级贡献</span>
+                    <span>分享者贡献</span>
                 </template>
             </el-table-column>
             <el-table-column prop="consume_user_mobile" label="用户手机号"></el-table-column>
@@ -114,11 +114,11 @@
             credit() {
                 return [
                     {
-                        label: '累计获得下级贡献TPS积分',
+                        label: '累计获得分享者贡献TPS积分',
                         val: parseFloat(this.totalShareTpsCredit).toFixed(2),
                     },
                     {
-                        label: '本月累计获得下级贡献TPS积分',
+                        label: '本月累计获得分享者贡献TPS积分',
                         val: parseFloat(this.theMonthShareTpsCredit).toFixed(2),
                     },
                 ];
