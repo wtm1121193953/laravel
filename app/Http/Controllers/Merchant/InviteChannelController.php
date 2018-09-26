@@ -64,7 +64,7 @@ class InviteChannelController extends Controller
         $signboardName = MerchantService::getSignboardNameById($currentUser->merchant_id);
         WechatService::addNameToAppCode($filePath, $signboardName);
 
-        return response()->download($filePath, '分享会员二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
+        return response()->download($filePath, '分享用户二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
 
     }
 }

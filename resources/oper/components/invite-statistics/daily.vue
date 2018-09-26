@@ -1,5 +1,5 @@
 <template>
-    <page title="我的会员">
+    <page title="我的用户">
         <el-table stripe :data="list">
             <el-table-column prop="date" label="注册日期"/>
             <el-table-column prop="invite_count" label="注册人数"/>

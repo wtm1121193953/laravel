@@ -48,7 +48,7 @@ const routes = [
     },
 
 
-    // 我的会员
+    // 我的用户
     {
         path: '/',
         component: Home,
