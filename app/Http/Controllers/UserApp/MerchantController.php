@@ -10,13 +10,16 @@ namespace App\Http\Controllers\UserApp;
 
 
 use App\Http\Controllers\Controller;
+use App\Modules\Goods\GoodsService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
+use App\Modules\Merchant\MerchantFollow;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\User\UserCollectMerchantService;
 use App\Result;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Support\Lbs;
+use App\Support\Utils;
 
 
 class MerchantController extends Controller
@@ -51,16 +54,21 @@ class MerchantController extends Controller
         $id = request('id');
         $lng = request('lng');
         $lat = request('lat');
+        $userId = request()->get('current_user')->id ?? 0;
 
         $detail = Merchant::findOrFail($id);
         $detail->desc_pic_list = $detail->desc_pic_list ? explode(',', $detail->desc_pic_list) : [];
         if($detail->business_time) $detail->business_time = json_decode($detail->business_time, 1);
         if($lng && $lat){
-            $distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), $lng, $lat);
+            $distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), floatval($lng), floatval($lat));
             // 格式化距离
-            $detail->distance = $this->_getFormativeDistance($distance);
+            $detail->distance = Utils::getFormativeDistance($distance);
         }
         $category = MerchantCategory::find($detail->merchant_category_id);
+
+        //商家是否被当前用户关注
+        $isFollows = MerchantFollow::where('merchant_id',$id)->where('user_id',$userId)->where('status',MerchantFollow::USER_YES_FOLLOW)->first();
+        $detail->isFollows = empty($isFollows)? 1 : 2;
 
         $detail->merchantCategoryName = $category->name;
         //商家是否开启单品模式
@@ -78,15 +86,9 @@ class MerchantController extends Controller
         $detail->isCollectMerchant = UserCollectMerchantService::getCollectionByUserAndMerchantExists(request()->get('current_user')->id, $id);
 
 
+        // 首页商户列表，显示价格最低的n个团购商品
+        $detail->lowestGoods = GoodsService::getLowestPriceGoodsForMerchant($id);
+
         return Result::success(['list' => $detail]);
-    }
-    /**
-     * 格式化距离
-     * @param $distance
-     * @return string
-     */
-    private function _getFormativeDistance($distance)
-    {
-        return $distance >= 1000 ? (number_format($distance / 1000, 1) . 'km') : ($distance . 'm');
     }
 }

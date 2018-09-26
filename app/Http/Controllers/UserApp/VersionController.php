@@ -22,7 +22,7 @@ class VersionController extends Controller
     {
         $appType = request()->headers->get('app-type');
         return Result::success([
-            'version' => 'v1.0.2',
+            'version' => 'v1.0.0',
             'force' => '1',
             'desc' => '更新说明',
             'app_type' => $appType,

@@ -78,6 +78,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int level
  * @property int is_pilot
  * @property integer bizer_id
+ * @property int user_follows
  *
  */
 class Merchant extends BaseModel
@@ -157,6 +158,10 @@ class Merchant extends BaseModel
     public function oper()
     {
         return $this->belongsTo(Oper::class);
+    }
+
+    public function merchantFollow(){
+        return $this->hasOne(MerchantFollow::class);
     }
 
     /**
@@ -256,8 +261,8 @@ class Merchant extends BaseModel
 //        $this->agreement_pic_url = request('agreement_pic_url','');
     }
 
-    protected $dispatchesEvents = [
+    /*protected $dispatchesEvents = [
         'created' => \App\Events\MerchantCreatedEvent::class,
-    ];
+    ];*/
 
 }

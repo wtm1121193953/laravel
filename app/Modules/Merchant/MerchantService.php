@@ -141,8 +141,10 @@ class MerchantService extends BaseService
 
         $cityId =array_get($data,"cityId");
         $bizer_id = array_get($data, "bizer_id");
+
         // 全局限制条件
-        $query = Merchant::where('audit_oper_id', '>', 0)->orderByDesc('id');
+        $query = Merchant::where('audit_oper_id', '>', 0)
+            ->orderByDesc('id');
 
         // 筛选条件
         if ($id) {
@@ -264,6 +266,7 @@ class MerchantService extends BaseService
     public static function detail($id)
     {
 
+        $userId = request()->get('current_user')->id;
         $merchant = Merchant::findOrFail($id);
         $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
         $merchant->categoryPathText = '';
@@ -286,6 +289,12 @@ class MerchantService extends BaseService
         $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
+        }
+        $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
+        if($merchantFollow){
+            $merchant->user_follow_status = 2;
+        }else{
+            $merchant->user_follow_status =1;
         }
         return $merchant;
     }
@@ -515,7 +524,7 @@ class MerchantService extends BaseService
         }
     }
 
-    public static function getListForUserApp(array $params)
+    public static function getListForUserApp(array $params, bool $isFollows = false)
     {
         $city_id = array_get($params, 'city_id');
         $merchant_category_id = array_get($params, 'merchant_category_id');
@@ -538,12 +547,19 @@ class MerchantService extends BaseService
             // 如果经纬度及范围都存在, 则按距离筛选出附近的商家
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
         }
+        $userId = request()->get('current_user')->id ?? 0;
 
         // todo 只获取切换到平台的运营中心下的商家信息
         //只能查询切换到平台的商户
         $query = Merchant::query()
             ->where('oper_id', '>', 0)
             ->where('status', 1)
+            ->when($isFollows, function (Builder $query) use ($userId){
+                $query->whereHas('merchantFollow',function (Builder $q) use ($userId) {
+                    $q->where('user_id',$userId)
+                        ->where('status',MerchantFollow::USER_YES_FOLLOW);
+                });
+            })
             ->whereHas('oper', function(Builder $query){
                 $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
             })
@@ -623,7 +639,7 @@ class MerchantService extends BaseService
             $allList = $query->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat) {
-                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
+                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
                 return $item;
             })
                 ->sortBy('distance')
@@ -672,7 +688,7 @@ class MerchantService extends BaseService
         if($lng && $lat){
             $currentUser = request()->get('current_user');
             $tempToken = empty($currentUser) ? str_random() : $currentUser->id;
-            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, $lng, $lat);
+            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, floatval($lng), floatval($lat));
             // 格式化距离
             $detail->distance = self::_getFormativeDistance($distance);
         }
