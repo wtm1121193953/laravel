@@ -143,9 +143,9 @@ class OrderController extends Controller
         $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordByOrderId($detail->id,FeeSplittingRecord::TYPE_TO_SELF);
 
         if(!empty($feeSplittingRecords)){
-            $detail = $feeSplittingRecords->amount;
+            $detail->profitAmount = $feeSplittingRecords->amount;
         }else{
-            $detail = '';
+            $detail->profitAmount = '';
         }
 
         //商家详情
