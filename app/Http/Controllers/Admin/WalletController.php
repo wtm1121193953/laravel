@@ -21,11 +21,14 @@ class WalletController extends Controller
     {
         $originType = request('originType', 0);
         $userMobile = request('mobile', '');
+        $bizerMobile = request('bizerMobile', '');
+        $bizerName = request('bizerName', '');
         $merchantName = request('merchantName', '');
         $operName = request('operName', '');
         $merchantId = request('merchantId', '');
         $operId = request('operId', '');
         $userId = request('userId', '');
+        $bizerId = request('bizerId', '');
         $status = request('status', '');
 
         $originId = '';
@@ -35,9 +38,11 @@ class WalletController extends Controller
             $originId = $operId;
         } elseif ($originType == Wallet::ORIGIN_TYPE_USER) {
             $originId = $userId;
+        } elseif ($originType == Wallet::ORIGIN_TYPE_BIZER) {
+            $originId = $bizerId;
         }
 
-        $param = compact('originType', 'originId', 'status', 'userMobile', 'merchantName', 'operName');
+        $param = compact('originType', 'originId', 'status', 'userMobile', 'merchantName', 'operName', 'bizerMobile', 'bizerName');
         return $param;
     }
 

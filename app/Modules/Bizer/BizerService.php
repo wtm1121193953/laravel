@@ -261,4 +261,27 @@ class BizerService extends BaseService
 
         return $identityAuditRecord;
     }
+
+    /**
+     * 根据相关参数获取业务员相应列的数组
+     * @param $params
+     * @param $filed
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getBizerColumnArrayByParams($params, $filed)
+    {
+        $bizerMobile = array_get($params, 'bizerMobile');
+        $bizerName = array_get($params, 'bizerName');
+
+        $query = Bizer::query();
+        if ($bizerName) {
+            $query->where('name', 'like', "%$bizerName%");
+        }
+        if ($bizerMobile) {
+            $query->where('mobile', 'like', "%$bizerMobile%");
+        }
+        $arr = $query->select($filed)->get()->pluck($filed);
+
+        return $arr;
+    }
 }
