@@ -82,7 +82,7 @@ class WalletWithdrawController extends Controller
             'hasBankCard' => $cards->count() <= 0 ? 0 : 1,
             'balance' => $wallet->balance,
             // 判断现今可否结算
-            'isWithdraw'    =>  (in_array(date('d'), [10,20,30])) ? true:false,
+            'isWithdraw'    =>  true,//(in_array(date('d'), [10,20,30])) ? true:false,
         ]);
     }
 }
