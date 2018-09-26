@@ -187,6 +187,10 @@ class WalletWithdrawService extends BaseService
                     $item->oper_name = OperService::getNameById($merchant->oper_id);
                 } elseif ($item->origin_type == WalletWithdraw::ORIGIN_TYPE_OPER) {
                     $item->oper_name = OperService::getNameById($item->origin_id);
+                } elseif ($item->origin_type == WalletWithdraw::ORIGIN_TYPE_BIZER) {
+                    $bizer = BizerService::getById($item->origin_id);
+                    $item->bizer_name = $bizer->name;
+                    $item->bizer_mobile = $bizer->mobile;
                 }
             });
             return $data;
@@ -303,6 +307,10 @@ class WalletWithdrawService extends BaseService
             $withdraw->oper_name = OperService::getNameById($merchant->oper_id);
         } elseif ($withdraw->origin_type == WalletWithdraw::ORIGIN_TYPE_OPER) {
             $withdraw->oper_name = OperService::getNameById($withdraw->origin_id);
+        } elseif ($withdraw->origin_type == WalletWithdraw::ORIGIN_TYPE_BIZER) {
+            $bizer = BizerService::getById($withdraw->origin_id);
+            $withdraw->bizer_name = $bizer->name;
+            $withdraw->bizer_mobile = $bizer->mobile;
         } else {
             throw new BaseResponseException('该提现记录用户类型不存在');
         }
