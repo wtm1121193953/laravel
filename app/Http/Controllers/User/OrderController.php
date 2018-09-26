@@ -34,6 +34,7 @@ use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use App\Support\Lbs;
 use App\Support\Reapal\ReapalPay;
 use App\Support\Utils;
 use Carbon\Carbon;
@@ -89,6 +90,8 @@ class OrderController extends Controller
         $this->validate(request(), [
             'order_no' => 'required'
         ]);
+        $lng = request('lng');
+        $lat = request('lat');
         $detail = Order::where('order_no', request('order_no'))->firstOrFail();
         // 只返回一个核销码
         $orderItem = OrderItem::where('order_id', $detail->id)->first();
@@ -119,6 +122,12 @@ class OrderController extends Controller
         // 单品订单
         if ($detail->type == Order::TYPE_DISHES) {
             $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
+        }
+
+        if($lng && $lat){
+            $distance = Lbs::getDistanceOfMerchant($detail->merchant_id, request()->get('current_open_id'), floatval($lng), floatval($lat));
+            // 格式化距离
+            $detail->distance = Utils::getFormativeDistance($distance);
         }
         // 查看分润详情
         $feeSplittingRecord = FeeSplittingService::getToSelfFeeSplittingRecordByOrderId($detail->id);
@@ -164,7 +173,7 @@ class OrderController extends Controller
         $order->user_name = $user->name ?? '';
         $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
         $order->merchant_id = $merchant->id;
-        $order->merchant_name = $merchant->name ?? '';
+        $order->merchant_name = $merchant->signboard_name ?? '';
         $order->goods_id = $goodsId;
         $order->goods_name = $goods->name;
         $order->goods_pic = $goods->pic;
@@ -252,7 +261,7 @@ class OrderController extends Controller
         $order->type = Order::TYPE_DISHES;
         $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
         $order->merchant_id = $merchant->id;
-        $order->merchant_name = $merchant->name ?? '';
+        $order->merchant_name = $merchant->signboard_name ?? '';
         $order->goods_name = $merchant->name ?? '';
         $order->dishes_id = $dishesId;
         $order->status = Order::STATUS_UN_PAY;
@@ -374,7 +383,7 @@ class OrderController extends Controller
         $order->user_name = $user->name ?? '';
         $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
         $order->merchant_id = $merchant->id;
-        $order->merchant_name = $merchant->name ?? '';
+        $order->merchant_name = $merchant->signboard_name ?? '';
         $order->type = Order::TYPE_SCAN_QRCODE_PAY;
         $order->goods_id = 0;
         $order->goods_name = $merchant->name;

@@ -32,6 +32,7 @@ use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use App\Support\Alipay;
+use App\Support\Lbs;
 use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -74,8 +75,10 @@ class OrderController extends Controller
             // 判断商户是否是当前小程序关联运营中心下的商户
             $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
             $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
-            $item->merchant_logo = Merchant::where('id', $item->merchant_id)->value('logo');
-            $item->signboard_name = Merchant::where('id', $item->merchant_id)->value('signboard_name');
+            $item->merchant = Merchant::where('id', $item->merchant_id)->first();
+            $item->merchant_logo = $item->merchant->logo;
+            $item->signboard_name = $item->merchant->signboard_name;
+
             if ($item->type == Order::TYPE_DISHES) {
                 $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
             }
@@ -91,6 +94,8 @@ class OrderController extends Controller
         $this->validate(request(), [
             'order_no' => 'required'
         ]);
+        $lng = request('lng');
+        $lat = request('lat');
         $detail = Order::where('order_no', request('order_no'))->firstOrFail();
         // 只返回一个核销码
         $orderItem = OrderItem::where('order_id', $detail->id)->first();
@@ -122,12 +127,28 @@ class OrderController extends Controller
         if ($detail->type == Order::TYPE_DISHES) {
             $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
         }
+
+        if($lng && $lat){
+            $distance = Lbs::getDistanceOfMerchant($detail->merchant_id, request()->get('current_open_id'), floatval($lng), floatval($lat));
+            // 格式化距离
+            $detail->distance = Utils::getFormativeDistance($distance);
+        }
+
         // 查看分润详情
         $userFeeSplittingRatioToSelf = FeeSplittingService::getUserFeeSplittingRatioToSelfByMerchantId($detail->merchant_id);
         $detail->fee_splitting_amount = Utils::getDecimalByNotRounding($detail->pay_price * $userFeeSplittingRatioToSelf, 2);
 
         // 贡献值
         $detail->consume_quota = floor($detail->pay_price);
+
+        //返利金额
+        $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordByOrderId($detail->id,FeeSplittingRecord::TYPE_TO_SELF);
+
+        if(!empty($feeSplittingRecords)){
+            $detail->profitAmount = $feeSplittingRecords->amount;
+        }else{
+            $detail->profitAmount = 0;
+        }
 
         //商家详情
         $detail['merchant'] = $merchant_of_order;
@@ -173,7 +194,7 @@ class OrderController extends Controller
         $order->user_name = $user->name ?? '';
         $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
         $order->merchant_id = $merchant->id;
-        $order->merchant_name = $merchant->name ?? '';
+        $order->merchant_name = $merchant->signboard_name ?? '';
         $order->goods_id = $goodsId;
         $order->goods_name = $goods->name;
         $order->goods_pic = $goods->pic;
@@ -184,6 +205,7 @@ class OrderController extends Controller
         $order->pay_price = $goods->price * $number;
         $order->origin_app_type = request()->header('app-type');
         $order->pay_type = $payType;
+        $order->remark = request('remark', '');
         $order->save();
 
         // 如果是微信支付
@@ -256,7 +278,7 @@ class OrderController extends Controller
         $order->type = Order::TYPE_DISHES;
         $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
         $order->merchant_id = $merchant->id;
-        $order->merchant_name = $merchant->name ?? '';
+        $order->merchant_name = $merchant->signboard_name ?? '';
         $order->goods_name = $merchant->name ?? '';
         $order->dishes_id = $dishesId;
         $order->status = Order::STATUS_UN_PAY;
@@ -265,6 +287,7 @@ class OrderController extends Controller
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->pay_type = $payType;
+        $order->remark = request('remark', '');
         $order->save();
 
         // 如果是微信支付
@@ -334,7 +357,7 @@ class OrderController extends Controller
         $order->user_name = $user->name ?? '';
         $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
         $order->merchant_id = $merchant->id;
-        $order->merchant_name = $merchant->name ?? '';
+        $order->merchant_name = $merchant->signboard_name ?? '';
         $order->type = Order::TYPE_SCAN_QRCODE_PAY;
         $order->goods_id = 0;
         $order->goods_name = $merchant->name;
@@ -344,6 +367,7 @@ class OrderController extends Controller
         $order->pay_price = $price;
 
         $order->pay_type = $payType;
+        $order->remark = request('remark', '');
         $order->pay_target_type =Order::PAY_TARGET_TYPE_PLATFORM;
         $order->save();
 
@@ -395,6 +419,7 @@ class OrderController extends Controller
 
         $payType = request('pay_type', 1);
         $order->pay_type = $payType;
+        $order->remark = request('remark', '');
         $order->save();
 
         //返利金额
@@ -403,7 +428,7 @@ class OrderController extends Controller
         if(!empty($feeSplittingRecords)){
             $profitAmount = $feeSplittingRecords->amount;
         }else{
-            $profitAmount = '';
+            $profitAmount = 0;
         }
         if ($payType == 1) {
             // 如果是微信支付

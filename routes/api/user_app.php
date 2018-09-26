@@ -28,14 +28,23 @@ Route::prefix('app/user')
         Route::get('area/cities/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
         Route::get('area/cities/withHot', 'AreaController@getCitiesWithHot');
         Route::get('area/getByGps', 'AreaController@getAreaByGps');
+        Route::get('area/search', 'AreaController@searchCityList');
 
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
         Route::get('merchants', 'MerchantController@getList');
         Route::get('merchant/detail', 'MerchantController@detail');
+        Route::get('merchant/followStatus', 'MerchantFollowController@modifyFollowStatus')->middleware(UserLoginFilter::class);
+        Route::get('merchant/followLists', 'MerchantFollowController@userFollowList')->middleware(UserLoginFilter::class);
         Route::get('merchant/getDishesCategoryAndGoods', 'DishesController@getDishesCategory'); // 废弃
         Route::get('merchant/getHotDishesGoods', 'DishesController@getHotDishesGoods'); // 废弃
         Route::post('merchant/dishesOrder', 'DishesController@add')->middleware(UserLoginFilter::class); // 废弃
         Route::get('merchant/dishesDetail', 'DishesController@detail')->middleware(UserLoginFilter::class); // 废弃
+
+        Route::get('dishes/category', 'DishesController@getDishesCategory');
+        Route::get('dishes/goods', 'DishesController@getDishesGoods');
+        Route::get('dishes/hot', 'DishesController@getHotDishesGoods');
+        Route::post('dishes/add','DishesController@add')->middleware(UserLoginFilter::class);
+        Route::get('dishes/detail','DishesController@detail')->middleware(UserLoginFilter::class);
 
         Route::get('goods', 'GoodsController@getList');
         Route::get('goods/detail', 'GoodsController@detail');

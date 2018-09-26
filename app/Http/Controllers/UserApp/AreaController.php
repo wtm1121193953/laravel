@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\UserApp;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Area\Area;
 use App\Modules\Area\AreaService;
@@ -59,5 +60,21 @@ class AreaController extends Controller
             $data[] = ['tag' => $firstLetter, 'list' => $list];
         }
         return Result::success(['list' => $data]);
+    }
+
+    /**
+     * 地区搜索
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function searchCityList()
+    {
+        $name = request('name');
+        if(!$name){
+            throw new BaseResponseException('请输入关键字');
+        }
+        $list = AreaService::getCityListByKeyword($name);
+        return Result::success([
+            'list' => $list,
+        ]);
     }
 }

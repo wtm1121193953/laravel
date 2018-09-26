@@ -16,11 +16,13 @@ use App\Modules\Goods\GoodsService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantCategoryService;
+use App\Modules\Merchant\MerchantFollow;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Setting\SettingService;
 use App\Result;
 use App\Support\Lbs;
+use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
 
 class MerchantController extends Controller
@@ -143,7 +145,7 @@ class MerchantController extends Controller
             $allList = $query->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat) {
-                $item->distance = $item->is_pilot == 1?100000000:Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
+                $item->distance = $item->is_pilot == 1?100000000:Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
                 return $item;
             })
                 ->sortBy('distance')
@@ -151,7 +153,7 @@ class MerchantController extends Controller
                 ->values()
                 ->each(function($item) {
                     // 格式化距离
-                    $item->distance = $item->is_pilot == 1 ? '' : $this->_getFormativeDistance($item->distance);
+                    $item->distance = $item->is_pilot == 1 ? '' : Utils::getFormativeDistance($distance);
                 });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
@@ -197,15 +199,22 @@ class MerchantController extends Controller
         $lng = request('lng');
         $lat = request('lat');
 
+        $userId = request()->get('current_user')->id ?? 0;
+
         $detail = Merchant::findOrFail($id);
         $detail->desc_pic_list = $detail->desc_pic_list ? explode(',', $detail->desc_pic_list) : [];
         if($detail->business_time) $detail->business_time = json_decode($detail->business_time, 1);
         if($lng && $lat){
-            $distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), $lng, $lat);
+            $distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), floatval($lng), floatval($lat));
             // 格式化距离
-            $detail->distance = $this->_getFormativeDistance($distance);
+            $detail->distance = Utils::getFormativeDistance($distance);
         }
         $category = MerchantCategory::find($detail->merchant_category_id);
+
+
+        //商家是否被当前用户关注
+        $isFollows = MerchantFollow::where('merchant_id',$id)->where('user_id',$userId)->where('status',MerchantFollow::USER_YES_FOLLOW)->first();
+        $detail->isFollows = empty($isFollows)? 1 : 2;
 
         $detail->merchantCategoryName = $category->name;
         //商家是否开启单品模式
@@ -224,15 +233,4 @@ class MerchantController extends Controller
 
         return Result::success(['list' => $detail]);
     }
-
-    /**
-     * 格式化距离
-     * @param $distance
-     * @return string
-     */
-    private function _getFormativeDistance($distance)
-    {
-        return $distance >= 1000 ? (number_format($distance / 1000, 1) . 'km') : ($distance . 'm');
-    }
-
 }
