@@ -2,9 +2,18 @@
     <page title="会员统计">
         <div class="statistics-div">
             <div class="today-div">
+                <div>
+                    <el-radio-group v-model="timeType" size="small">
+                        <el-radio label="today" border>今日</el-radio>
+                        <el-radio label="yesterday" border>昨日</el-radio>
+                        <el-radio label="week" border>最近七天</el-radio>
+                        <el-radio label="month" border>本月</el-radio>
+                        <el-radio label="lastMonth" border>上个月</el-radio>
+                    </el-radio-group>
+                </div>
                 <div class="today-invite">
                     <div>
-                        今日新增人数
+                        新增人数
                     </div>
                     <div class="today-number">
                         {{todayInviteCount}}
@@ -52,6 +61,7 @@
                 },
                 todayInviteCount: 0,
                 totalInviteCount: 0,
+                timeType: 'today',
             }
         },
         methods: {
@@ -64,7 +74,15 @@
                     this.loading = false;
                 })
             },
+            getTotal() {
+                let params = {};
+                params.timeType = this.timeType;
+                api.get('member/statistics/total',params).then(data => {
+                    this.todayInviteCount = data.total;
+                })
+            },
             getTodayAndTotalInvite() {
+
                 api.get('member/statistics/getTodayAndTotalInviteNumber').then(data => {
                     this.todayInviteCount = data.todayInviteCount;
                     this.totalInviteCount = data.totalInviteCount;
@@ -74,6 +92,11 @@
         mounted(){
             this.getList();
             this.getTodayAndTotalInvite();
+        },
+        watch:{
+            timeType(){
+                this.getTotal();
+            },
         }
     }
 </script>
@@ -97,7 +120,7 @@
         float: left;
     }
     .today-invite, .total-invite {
-        margin-top: 50px;
+        margin-top: 40px;
     }
 
     .today-invite > *,.total-invite > * {

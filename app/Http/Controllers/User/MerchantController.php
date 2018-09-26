@@ -143,7 +143,7 @@ class MerchantController extends Controller
             $allList = $query->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat) {
-                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
+                $item->distance = $item->is_pilot == 1?100000000:Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
                 return $item;
             })
                 ->sortBy('distance')
@@ -151,10 +151,11 @@ class MerchantController extends Controller
                 ->values()
                 ->each(function($item) {
                     // 格式化距离
-                    $item->distance = $this->_getFormativeDistance($item->distance);
+                    $item->distance = $item->is_pilot == 1 ? '' : $this->_getFormativeDistance($item->distance);
                 });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
+            $query->orderBy('is_pilot', 'asc');
             $data = $query->paginate();
             $list = $data->items();
             $total = $data->total();

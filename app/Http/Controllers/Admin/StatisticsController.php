@@ -19,12 +19,19 @@ class StatisticsController extends Controller
     public function oper()
     {
         $timeType = request('timeType');
+        $page = request('page');
+        if (empty($page)) {
+            $page = 1;
+        }
         switch ($timeType) {
             case 'all':
                 $startDate = null;
                 $endDate = null;
                 break;
-            case 'today':
+            case 'today'://今天的数据需要实时统计，只有第一页做统计，不然翻页慢
+                if ($page == 1) {
+                    OperStatisticsService::statistics();
+                }
                 $startDate = Carbon::now()->startOfDay();
                 $endDate = Carbon::now()->endOfDay();
                 break;

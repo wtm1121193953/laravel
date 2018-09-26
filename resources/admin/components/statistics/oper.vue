@@ -37,10 +37,10 @@
             </template>
             <el-button type="success" size="small" @click="dataExport">导出</el-button>
         </el-col>
-        <el-table :data="list" stripe>
+        <el-table :data="list" stripe v-loading="isLoading">
             <el-table-column prop="date" label="时间"/>
             <el-table-column prop="oper_id" label="运营中心id"/>
-            <el-table-column prop="oper_name" label="运营中心名称"/>
+            <el-table-column prop="oper.name" label="运营中心名称"/>
             <el-table-column prop="merchant_num" label="商户数"/>
             <el-table-column prop="user_num" label="邀请用户数"/>
             <el-table-column prop="order_paid_num" label="总订单量（已支付）"/>
@@ -75,7 +75,7 @@
                 list: [],
                 total: 0,
                 originType: 'all',
-                timeType: 'today',
+                timeType: 'yesterday',
                 dateRange: [],
                 operId: '',
                 searchDate: {},
@@ -99,9 +99,12 @@
                 this.query.startDate = this.dateRange[0] || '';
                 this.query.endDate = this.dateRange[1] || '';
 
+                this.isLoading = true;
                 api.get('/statistics/oper', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                }).finally(() => {
+                    this.isLoading = false;
                 })
             },
             getSearchDate() {

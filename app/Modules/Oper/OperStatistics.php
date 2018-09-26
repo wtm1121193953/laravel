@@ -20,5 +20,14 @@ use App\BaseModel;
  */
 class OperStatistics extends BaseModel
 {
+    protected $guarded = [];
+
     //
+    /**
+     *
+     */
+    public function oper()
+    {
+        return $this->belongsTo(Oper::class);
+    }
 }
