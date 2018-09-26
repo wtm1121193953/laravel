@@ -18,9 +18,9 @@ class MyBizerController extends Controller {
      */
     public function getList() {
         $where =[
-            "yao" => request()->get('current_user')->oper_id,//登录所属运营中心ID
+            "oper_id" => request()->get('current_user')->oper_id,//登录所属运营中心ID
         ];
-        //echo "<pre>";print_r($where);exit;
+
         $data = MyOperBizer::getList($where);
         
         return Result::success([

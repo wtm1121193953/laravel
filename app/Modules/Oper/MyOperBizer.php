@@ -28,11 +28,11 @@ class MyOperBizer extends BaseModel
     //
 
     /**
-     * 
+     *
      * 根据运营中心获取业务员及商户信息，我的业务员
-     * @param type $retry
-     * @return type
-     * @throws BaseResponseException
+     * @param $params
+     * @param array $fields
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public static function getList($params, $fields = ['*'])
     {
