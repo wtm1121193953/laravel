@@ -109,12 +109,12 @@ class OperController extends Controller {
         $bizerId = request()->get('current_user')->id;
         $remark = request('remark', '');
 
-        $operBizer = OperBizer::where('oper_id', $operId)->where('bizer_id', $bizerId)->first();
+        $operBizer = OperBizerService::getOperBizerByParam(['operId' => $operId, 'bizerId' => $bizerId]);
         if ($operBizer) {
-            if ($operBizer->status == 0) {
+            if ($operBizer->status == OperBizer::STATUS_APPLYING) {
                 throw new BaseResponseException('此运营中心已在申请中');
             }
-            if ($operBizer->status == 1) {
+            if ($operBizer->status == OperBizer::STATUS_SIGNED) {
                 throw new BaseResponseException('此运营中心已经签约成功');
             }
             $model = $operBizer;

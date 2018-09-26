@@ -35,11 +35,10 @@
                 </el-cascader>
             </el-form-item>
             <el-form-item prop="status" label="状态">
-                <el-select v-model="query.status" class="w-100">
-                    <el-option label="全部" value=""/>
-                    <el-option label="正常" value="1"/>
-                    <el-option label="拒绝" value="-1"/>
-                    <el-option label="申请中" value="0"/>
+                <el-select v-model="query.status" multiple class="w-100">
+                    <el-option label="正常" :value="1"/>
+                    <el-option label="拒绝" :value="-1"/>
+                    <el-option label="申请中" :value="0"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -74,7 +73,7 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
-                    <el-button v-if="scope.row.status === 1" @click="toMerchants(scope.row.id)" type="text">查看商户</el-button>
+                    <el-button v-if="scope.row.status === 1" @click="toMerchants(scope.row.oper_id)" type="text">查看商户</el-button>
                     <!-- <el-button type="text" @click="contract">查看合同</el-button> -->
                 </template>
             </el-table-column>
@@ -152,7 +151,7 @@
                     tel: '',
                     // provinceId:'',//省份ID
                     cityId:[],//城市ID不能写,组件是自动生成的
-                    status: '',
+                    status: [0, 1],
                     page: 1
                 },
                 list: [],
@@ -253,11 +252,6 @@
                                 type: 'success'
                             });
                             this.getList();
-                        }).catch(() => {
-                            _self.$message({
-                                message: '添加失败',
-                                type: 'warning'
-                            });
                         }).finally(() => {
                             _self.regionLoading = false;
                         })

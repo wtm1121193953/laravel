@@ -61,7 +61,7 @@
                         v-model="query.cityId">
                 </el-cascader>
             </el-form-item>
-            <el-form-item label="所属运营中心">
+            <el-form-item prop="operId" label="所属运营中心">
                 <el-select v-model="query.operId" filterable clearable >
                     <el-option v-for="item in operOptions" :key="item.id" :value="item.oper_id" :label="item.operName"/>
                 </el-select>
@@ -202,8 +202,7 @@
             
             api.get('merchant/opers/tree').then(data => {
                 _self.operOptions = data.list;
-                
-                
+                console.log(data);
             });
             api.get('merchant/categories/tree').then(data => {
                  _self.categoryOptions = data.list;

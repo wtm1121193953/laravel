@@ -26,5 +26,5 @@ class OperBizer extends BaseModel {
      */
     const STATUS_APPLYING = 0;
     const STATUS_SIGNED = 1;
-    const STATUS_REJECTED = 2;
+    const STATUS_REJECTED = -1;
 }
