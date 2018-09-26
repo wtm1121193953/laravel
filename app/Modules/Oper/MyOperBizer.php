@@ -44,7 +44,7 @@ class MyOperBizer extends BaseModel
                 ->paginate();
 
         $data->each(function ($item) {
-            $item->divide = $item->divide > 0 ? ($item->divide * 100)."%" : 0;
+            $item->divide = $item->divide > 0 ? ($item->divide)."%" : 0;
             $item->bizerInfo = BizerService::getById($item->bizer_id, 'name,mobile,status') ?: null;
             $item->activeNum = MyOperBizer::getActiveMerchantNumber($item->bizer_id,$item->oper_id);
             $item->auditNum = MyOperBizer::getAuditMerchantNumber($item->bizer_id,$item->oper_id);
