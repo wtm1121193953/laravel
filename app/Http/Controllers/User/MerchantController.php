@@ -145,7 +145,7 @@ class MerchantController extends Controller
             $allList = $query->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat) {
-                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
+                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
                 return $item;
             })
                 ->sortBy('distance')
@@ -204,7 +204,7 @@ class MerchantController extends Controller
         $detail->desc_pic_list = $detail->desc_pic_list ? explode(',', $detail->desc_pic_list) : [];
         if($detail->business_time) $detail->business_time = json_decode($detail->business_time, 1);
         if($lng && $lat){
-            $distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), $lng, $lat);
+            $distance = Lbs::getDistanceOfMerchant($id, request()->get('current_open_id'), floatval($lng), floatval($lat));
             // 格式化距离
             $detail->distance = Utils::getFormativeDistance($distance);
         }

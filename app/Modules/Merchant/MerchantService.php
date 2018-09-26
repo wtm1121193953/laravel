@@ -690,7 +690,7 @@ class MerchantService extends BaseService
         if($lng && $lat){
             $currentUser = request()->get('current_user');
             $tempToken = empty($currentUser) ? str_random() : $currentUser->id;
-            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, $lng, $lat);
+            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, floatval($lng), floatval($lat));
             // 格式化距离
             $detail->distance = self::_getFormativeDistance($distance);
         }

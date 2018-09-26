@@ -125,7 +125,7 @@ class OrderController extends Controller
         }
 
         if($lng && $lat){
-            $distance = Lbs::getDistanceOfMerchant($detail->merchant_id, request()->get('current_open_id'), $lng, $lat);
+            $distance = Lbs::getDistanceOfMerchant($detail->merchant_id, request()->get('current_open_id'), floatval($lng), floatval($lat));
             // 格式化距离
             $detail->distance = Utils::getFormativeDistance($distance);
         }
