@@ -10,6 +10,7 @@ namespace App\Http\Controllers\UserApp;
 
 
 use App\Http\Controllers\Controller;
+use App\Modules\Goods\GoodsService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantFollow;
@@ -80,6 +81,9 @@ class MerchantController extends Controller
         $detail->contacter_phone = $detail->service_phone;
         // 商户评级字段，暂时全部默认为5星
         $detail->grade = 5;
+
+        // 首页商户列表，显示价格最低的n个团购商品
+        $detail->lowestGoods = GoodsService::getLowestPriceGoodsForMerchant($id);
 
         return Result::success(['list' => $detail]);
     }
