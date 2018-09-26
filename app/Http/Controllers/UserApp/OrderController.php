@@ -145,7 +145,7 @@ class OrderController extends Controller
         if(!empty($feeSplittingRecords)){
             $detail->profitAmount = $feeSplittingRecords->amount;
         }else{
-            $detail->profitAmount = '';
+            $detail->profitAmount = 0;
         }
 
         //商家详情
@@ -426,7 +426,7 @@ class OrderController extends Controller
         if(!empty($feeSplittingRecords)){
             $profitAmount = $feeSplittingRecords->amount;
         }else{
-            $profitAmount = '';
+            $profitAmount = 0;
         }
         if ($payType == 1) {
             // 如果是微信支付
