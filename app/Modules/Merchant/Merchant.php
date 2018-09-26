@@ -251,7 +251,7 @@ class Merchant extends BaseModel
         $this->is_pilot = request('is_pilot', 0);
 
         //新业务员ID
-        $this->bizer_id = request('bizer_id','');
+        $this->bizer_id = request('bizer_id',0);
 
 
         //////// 没有了的字段
