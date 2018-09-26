@@ -30,10 +30,10 @@
                 <el-select v-model="query.type" placeholder="请选择" clearable class="w-150">
                     <el-option label="全部" :value="0"></el-option>
                     <el-option label="提现" :value="7"></el-option>
-                    <el-option label="自己消费返利" :value="1"></el-option>
-                    <el-option label="下级消费返利" :value="2"></el-option>
-                    <!--<el-option label="自己消费返利退款" :value="3"></el-option>-->
-                    <!--<el-option label="下级消费返利退款" :value="4"></el-option>-->
+                    <el-option label="自己消费奖励" :value="1"></el-option>
+                    <el-option label="分享消费奖励" :value="2"></el-option>
+                    <!--<el-option label="自己消费奖励退款" :value="3"></el-option>-->
+                    <!--<el-option label="分享消费奖励退款" :value="4"></el-option>-->
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -47,10 +47,10 @@
             <el-table-column prop="user_mobile" label="用户手机号码"></el-table-column>
             <el-table-column prop="type" label="交易类型">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.type == 1">自己消费返利</span>
-                    <span v-else-if="scope.row.type == 2">下级消费返利</span>
-                    <span v-else-if="scope.row.type == 3">自己消费返利退款</span>
-                    <span v-else-if="scope.row.type == 4">下级消费返利退款</span>
+                    <span v-if="scope.row.type == 1">自己消费奖励</span>
+                    <span v-else-if="scope.row.type == 2">分享消费奖励</span>
+                    <span v-else-if="scope.row.type == 3">自己消费奖励退款</span>
+                    <span v-else-if="scope.row.type == 4">分享消费奖励退款</span>
                     <span v-else-if="scope.row.type == 5">交易分润入账</span>
                     <span v-else-if="scope.row.type == 6">交易分润退款</span>
                     <span v-else-if="scope.row.type == 7">
