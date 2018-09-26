@@ -42,7 +42,7 @@ class MyBizerController extends Controller {
             $validate["status"] = 'required|integer';
         }
         if(!empty($divide)){
-            $validate["divide"] = 'required|integer';
+            $validate["divide"] = 'required';
         }
         $this->validate(request(),$validate);
         $operBizMember = OperBizer::findOrFail($id);
