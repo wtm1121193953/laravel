@@ -47,13 +47,13 @@ class BizerRecordController extends Controller {
 
         $id = request('id');
         $status = request('status');
-        $remark = request('remark');
+        $note = request('note');
         $divide = request('divide');
         $operBizMember = OperBizer::findOrFail($id);
         $operBizMember->status = $status;
-        $operBizMember->remark = $remark;
+        $operBizMember->note = $note;
         if($status==1){//签约成功，更新签约时间,分成比例
-            $operBizMember->divide = number_format($divide/100,2);        
+            $operBizMember->divide = number_format($divide,2);
             $operBizMember->sign_time = date("Y-m-d H:i:s");
         }
 

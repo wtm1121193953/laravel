@@ -20,7 +20,7 @@
             
             <template v-if="secondTable">
                 <el-table-column prop="updated_at" label="拒绝签约时间"/>
-                <el-table-column prop="remark" label="原因"/>
+                <el-table-column prop="note" label="原因"/>
             </template>
             
             <div v-if="!secondTable">
@@ -49,8 +49,11 @@
                 <el-form-item label="分成" prop="divide">
                     <el-input v-model="formSigning.divide" auto-complete="off" style="width:90%;"/> %
                 </el-form-item>
+                <el-form-item label="原因">
+                    <el-input type="textarea" v-model="formSigning.note" auto-complete="off" placeholder="最多50个字" style="width:90%;"/>
+                </el-form-item>
                 <el-form-item label="备注">
-                    <el-input type="textarea" v-model="formSigning.remark" auto-complete="off" placeholder="最多50个字" style="width:90%;"/>
+                    {{detailOption.remark}}
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -65,7 +68,10 @@
                     确定拒绝签约业务员<span class="c-danger">{{detailOption.bizerInfo.name}}</span>
                 </el-form-item>
                 <el-form-item label="原因">
-                    <el-input type="textarea" v-model="formRefusal.remark" auto-complete="off" placeholder="最多50个字"/>
+                    <el-input type="textarea" v-model="formRefusal.note" auto-complete="off" placeholder="最多50个字"/>
+                </el-form-item>
+                <el-form-item label="备注">
+                    {{detailOption.remark}}
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -105,11 +111,11 @@
                 formSigning: {
                     status: 1,
                     divide: '',
-                    remark: ''
+                    note: ''
                 },
                 formRefusal: {
                     status: -1,
-                    remark: ''
+                    note: ''
                 },
                 rules: {
                     divide: [
@@ -122,6 +128,7 @@
                         name:'',
                     },
                     id:'',
+                    remark: '',
                 },
             }
         },
@@ -135,7 +142,6 @@
                 this.query.selectStatus = this.activeName;
                 Object.assign(params, this.query);
                 api.get('/bizerRecord', params).then(data => {
-                    console.log(data.list)
                     this.query.page = params.page;
                     this.isLoading = false;
                     this.list = data.list;
@@ -143,7 +149,6 @@
                 })
             },
             handleClick(tab, event) {
-                // console.log(tab, event);
                 let _self = this;
                 this.getList();
                 if ( _self.activeName == "first" ) {
@@ -176,7 +181,7 @@
                         }else{
                             isValid = false;
                         }
-                    })
+                    });
                     successMsg = "签约成功";
                     if(!isValid)return false;
                 }else{
@@ -202,21 +207,6 @@
                 })
                     
             },
-            // refusalSubmit(){
-            //     let _self = this;
-            //     _self.bntLoading = true;
-            //     _self.formRefusal.id = this.detailOption.id;
-            //     api.get('/bizerRecord/contractBizer', _self.formRefusal).then(data => {
-            //        _self.dialogRefusalFormVisible = false;
-            //     }).catch((error) => {
-            //         _self.$message({
-            //           message: error.response && error.response.message ? error.response.message:'请求失败',
-            //           type: 'warning'
-            //         });
-            //     }).finally(() => {
-            //         _self.bntLoading = false;
-            //     })
-            // },
         },
         created(){
             this.getList();
