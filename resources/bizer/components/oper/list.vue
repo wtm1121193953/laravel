@@ -61,7 +61,7 @@
             </el-table-column>
             <el-table-column prop="divide" label="我的分成">
                 <template slot-scope="scope">
-                    <span>{{scope.row.divide * 100}}%</span>
+                    <span>{{scope.row.divide}}%</span>
                 </template>
             </el-table-column>
             <el-table-column prop="status" label="合作状态">

@@ -330,7 +330,7 @@
                     center: true,
                     dangerouslyUseHTMLString: true,
                     inputType: 'text',
-                    inputPlaceholder: '请填写不通过原因，必填，最多50字',
+                    inputPlaceholder: '审核意见，最多50个汉字，非必填',
                     inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
                 }).then(({value}) => {
                     param.audit_suggestion = value ? value : '';
