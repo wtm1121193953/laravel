@@ -127,11 +127,12 @@ class StatisticsController extends Controller
             $endDate = $endDate->format('Y-m-d');
         }
 
-        $data = OperStatisticsService::getList([
+        $params = [
             'startDate' => $startDate,
             'endDate' => $endDate,
             'oper_id' => $oper_id,
-        ],true);
-        return (new StatisticsOperExport($data))->download(' 运营中心营销报表.xlsx');
+        ];
+        $data = OperStatisticsService::getList($params,true);
+        return (new StatisticsOperExport($data,$params))->download(' 运营中心营销报表.xlsx');
     }
 }
