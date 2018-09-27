@@ -47,8 +47,8 @@ class BizerRecordController extends Controller {
 
         $id = request('id');
         $status = request('status');
-        $note = request('note');
-        $divide = request('divide');
+        $note = request('note', '');
+        $divide = request('divide', 0);
         $operBizMember = OperBizer::findOrFail($id);
         $operBizMember->status = $status;
         $operBizMember->note = $note;
