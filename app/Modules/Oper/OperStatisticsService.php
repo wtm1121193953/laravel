@@ -12,12 +12,14 @@ use App\BaseService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
+use Illuminate\Support\Facades\DB;
 
 class OperStatisticsService extends BaseService
 {
     public static function getList(array $params = [],bool $return_query = false)
     {
-        $query = OperStatistics::select('*');
+        $query = OperStatistics::select('oper_id',DB::raw('sum(merchant_num) as merchant_num,sum(user_num) as user_num,sum(order_paid_num) as order_paid_num,sum(order_refund_num) as order_refund_num,sum(order_paid_amount) as order_paid_amount,sum(order_refund_amount) as order_refund_amount '));
+
 
 
         if (!empty($params['startDate']) && !empty($params['endDate'])) {
@@ -28,7 +30,9 @@ class OperStatisticsService extends BaseService
             $query->where('oper_id', '=', $params['oper_id']);
         }
 
-        $query->orderBy('date', 'desc');
+
+        $query->groupBy('oper_id');
+        $query->orderBy('oper_id', 'desc');
         $query->with('oper:id,name');
 
         if ($return_query) {
@@ -36,6 +40,9 @@ class OperStatisticsService extends BaseService
         }
         $data = $query->paginate();
 
+        $data->each(function ($item) use ($params){
+            $item->date = "{$params['startDate']}至{$params['endDate']}";
+        });
         return $data;
     }
 

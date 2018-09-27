@@ -25,8 +25,11 @@ class StatisticsController extends Controller
         }
         switch ($timeType) {
             case 'all':
+                if ($page == 1) {
+                    OperStatisticsService::statistics();
+                }
                 $startDate = null;
-                $endDate = null;
+                $endDate = Carbon::now()->endOfDay();
                 break;
             case 'today'://今天的数据需要实时统计，只有第一页做统计，不然翻页慢
                 if ($page == 1) {
@@ -40,6 +43,9 @@ class StatisticsController extends Controller
                 $endDate = $startDate->copy()->endOfDay();
                 break;
             case 'month':
+                if ($page == 1) {
+                    OperStatisticsService::statistics();
+                }
                 $startDate = Carbon::now()->startOfMonth();
                 $endDate = Carbon::now()->endOfMonth();
                 break;
