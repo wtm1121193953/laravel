@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteUserService;
+use App\Modules\Wechat\MiniprogramSceneService;
 use App\Result;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Modules\Invite\InviteStatisticsService;
@@ -25,21 +26,12 @@ class InviteChannelController extends Controller
     {
         $userId = request()->get('current_user')->id;
         $inviteChannel = InviteChannelService::getByOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER);
-        $dir = storage_path('app/public/inviteChannel/qrcode');
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
-        $filename = "{$inviteChannel->id}_375.png";
-        $path = $dir . "/{$filename}";
-        if (!is_file($path)) {
-            QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(json_encode([
-                'type' => 'inviteChannel',
-                'value' => ['id' => $inviteChannel->id],
-            ]), $path);
-        }
+        $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
+        $scene = MiniprogramSceneService::getByInviteChannel($inviteChannel);
+        $url = MiniprogramSceneService::genSceneQrCode($scene);
 
         return Result::success([
-            'qrcode_url' => asset('storage/inviteChannel/qrcode/' . $filename),
+            'qrcode_url' => $url,
         ]);
     }
 
