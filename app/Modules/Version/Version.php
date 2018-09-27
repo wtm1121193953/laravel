@@ -18,6 +18,6 @@ use Illuminate\Database\Eloquent\Model;
 class Version extends Model
 {
 
-    const APP_TYPE_IOS = 1;
-    const APP_TYPE_ANDROID = 2;
+    const APP_TYPE_IOS = 2;
+    const APP_TYPE_ANDROID = 1;
 }

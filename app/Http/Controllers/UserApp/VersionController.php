@@ -23,6 +23,7 @@ class VersionController extends Controller
     public function last()
     {
         $appType = request()->headers->get('app-type');
+
         if (!in_array($appType,[1,2])) {
             throw new ParamInvalidException('参数错误');
         }
