@@ -46,14 +46,15 @@ class V1_4_5 extends Command
     {
 
         /*************统计运营中心5月份之后历史运营数据start*************/
-        $day = 200;
 
-        for($i=1; $i<$day; $i++) {
+        $i = 1;
+        while (1) {
             $endTime = date('Y-m-d',strtotime("-{$i} day")) . ' 23:59:59';
             OperStatisticsDailyJob::dispatch($endTime);
-            if(date('Y-m-d',strtotime("-{$i} day"))<='2018-05-01') {
+            if(date('Y-m-d',strtotime("-{$i} day"))<='2018-04-17') {
                 break;
             }
+            $i ++;
         }
         /*************统计运营中心5月份之后历史运营数据end*************/
 
