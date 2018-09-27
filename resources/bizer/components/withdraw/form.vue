@@ -147,6 +147,7 @@
                     bankCardOpenName: '',
                     bankCardNo: '',
                     bankName: '',
+                    bizerMobile: '',
                     ratio: 0,  // 手续费百分比
                 },
                 form: {
@@ -245,6 +246,9 @@
                 if (!reg.test(self.verifyCodeForm.mobile)) {
                     self.$message.error('请输入有效手机号码');
                     return false;
+                } else if (self.verifyCodeForm.mobile != this.initForm.bizerMobile) {
+                    self.$message.error('该手机号与业务员注册手机号不符');
+                    return;
                 } else {
                     self.isDisabled = true;
                     let interval = window.setInterval(function() {
@@ -265,6 +269,10 @@
                 }
             },
             checkVerifyCode() {
+                if (this.verifyCodeForm.mobile != this.initForm.bizerMobile) {
+                    this.$message.error('该手机号与业务员注册手机号不符');
+                    return;
+                }
                 this.$refs.verifyCodeForm.validate(valid => {
                     if (valid) {
                         api.post('/sms/checkVerifyCode', this.verifyCodeForm).then(() => {

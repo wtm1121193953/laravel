@@ -180,6 +180,7 @@ class WalletWithdrawController extends Controller
             'bankCardNo' => $bankCard->bank_card_no,
             'bankName' => $bankCard->bank_name,
             'ratio' => $ratio,  // 手续费百分比
+            'bizerMobile' => $bizer->mobile,
             'isSetPassword' => $wallet->withdraw_password != '',
         ]);
     }
