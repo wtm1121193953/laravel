@@ -75,8 +75,11 @@ class SettlementPlatformService extends BaseService
             $query->where('merchant_id','=', $params['merchant_id']);
         }
 
-        if (!empty($params['startDate']) && !empty($params['endDate'])) {
+        if (!empty($params['startDate'])) {
             $query->where('created_at', '>=', Carbon::createFromFormat('Y-m-d',$params['startDate'])->startOfDay());
+        }
+
+        if (!empty($params['endDate'])) {
             $query->where('created_at', '<=', Carbon::createFromFormat('Y-m-d',$params['endDate'])->endOfDay());
         }
 

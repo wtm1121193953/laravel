@@ -23,10 +23,12 @@ class StatisticsOperExport implements FromQuery, WithHeadings, WithMapping
     use Exportable;
 
     protected $query;
+    protected $params;
 
-    public function __construct($query)
+    public function __construct($query,$params=[])
     {
         $this->query = $query;
+        $this->params = $params;
     }
 
     /**
@@ -62,6 +64,7 @@ class StatisticsOperExport implements FromQuery, WithHeadings, WithMapping
      */
     public function map($row): array
     {
+        $row->date = "{$this->params['startDate']}至{$this->params['endDate']}";
         return [
             $row->date,
             $row->oper_id,
