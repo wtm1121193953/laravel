@@ -41,7 +41,7 @@
                         v-model="form.area">
                 </el-cascader>
             </el-form-item>
-            <el-form-item prop="address" label="详细地址">
+            <el-form-item prop="address" label="详细地址" class="w-500">
                 <el-input v-model="form.address"/>
             </el-form-item>
             <el-form-item prop="contacter" label="负责人姓名" class="w-500">
@@ -83,7 +83,7 @@
                 <image-upload  v-model="form.business_licence_pic_url" :limit="1"/>
             </el-form-item>
             <el-form-item prop="organization_code" label="营业执照代码">
-                <el-input v-model="form.organization_code"/>
+                <el-input v-model="form.organization_code" class="w-500"/>
             </el-form-item>
         </el-col>
 

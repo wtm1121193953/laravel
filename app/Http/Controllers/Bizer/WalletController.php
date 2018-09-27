@@ -79,7 +79,7 @@ class WalletController extends Controller
         $walletBill = WalletService::getBillById($id);
         if (empty($walletBill)) throw new BaseResponseException('该钱包流水不存在');
 
-        $walletBill->oper_name = OperService::getNameById($walletBill->origin_id);
+        $walletBill->oper_name = '';
         $walletBill->balance_unfreeze_time = '';
 
         $orderOrWithdrawData = null;
@@ -89,6 +89,7 @@ class WalletController extends Controller
             $orderOrWithdrawData = $order;
             $walletBalanceUnfreezeRecord = WalletService::getBalanceUnfreezeRecordByFeeSplittingId($walletBill->obj_id);
             $walletBill->balance_unfreeze_time = !empty($walletBalanceUnfreezeRecord) ? $walletBalanceUnfreezeRecord->created_at->format('Y-m-d H:i:s') : '';
+            $walletBill->oper_name = OperService::getNameById($order->oper_id);
         }
 
         if (in_array($walletBill->type, [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED])) {
