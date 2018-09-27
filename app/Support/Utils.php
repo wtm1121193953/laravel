@@ -102,6 +102,6 @@ class Utils
      */
     public static function getFormativeDistance($distance)
     {
-        return $distance >= 1000 ? (number_format($distance / 1000, 1) . 'km') : ($distance . 'm');
+        return $distance >= 1000 ? (number_format($distance / 1000, 1) . 'Km') : ($distance . 'm');
     }
 }
