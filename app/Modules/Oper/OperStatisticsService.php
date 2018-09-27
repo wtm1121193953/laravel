@@ -28,7 +28,7 @@ class OperStatisticsService extends BaseService
             $query->where('oper_id', '=', $params['oper_id']);
         }
 
-        $query->orderBy('id', 'desc');
+        $query->orderBy('date', 'desc');
         $query->with('oper:id,name');
 
         if ($return_query) {
