@@ -43,6 +43,9 @@ class WithdrawController extends Controller
             case 'oper':
                 $originType = 3;
                 break;
+            case 'bizer':
+                $originType = 4;
+                break;
             default:
                 $originType = null;
         }
