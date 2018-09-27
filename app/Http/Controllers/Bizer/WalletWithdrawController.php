@@ -96,7 +96,7 @@ class WalletWithdrawController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:20',
-            'id_card_no' => 'required|identitycards|unique:user_identity_audit_records',
+            'id_card_no' => 'required|identitycards|unique:bizer_identity_audit_records',
             'front_pic' => 'required',
             'opposite_pic' => 'required',
         ]);
