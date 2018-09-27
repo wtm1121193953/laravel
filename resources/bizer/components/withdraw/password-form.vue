@@ -151,7 +151,7 @@
                formRules1: {
                     bank_card_no: [
                         {required: true, message: '提现银行卡号不能为空'},
-                        {max: 30, min: 8, message: '提现银行卡号最少为8位，最多为30位'},
+                        {max: 35, min: 8, message: '提现银行卡号最少为8位，最多为35位'},
                         {validator: validateBankCardNo}
                     ],
                    bank_name: [
