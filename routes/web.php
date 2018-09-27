@@ -58,3 +58,4 @@ Route::get('/miniprogram_bridge/pay', 'PayController@miniprogramPayBridgeByH5');
 
 Route::post('/upload/image', 'UploadController@image');
 Route::get('/download', 'DownloadController@download');
+Route::get('/scene', 'SceneController@index')->name('scene');
