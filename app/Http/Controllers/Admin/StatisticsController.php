@@ -133,6 +133,6 @@ class StatisticsController extends Controller
             'oper_id' => $oper_id,
         ];
         $data = OperStatisticsService::getList($params,true);
-        return (new StatisticsOperExport($data,$params))->download(' 运营中心营销报表.xlsx');
+        return (new StatisticsOperExport($data, $params))->download(' 运营中心营销报表.xlsx');
     }
 }
