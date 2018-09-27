@@ -48,11 +48,11 @@
         >
             <el-form :model="verifyCodeForm" ref="verifyCodeForm" :rules="verifyCodeFormRules" size="small" label-width="65px">
                 <el-form-item prop="mobile" label="账号">
-                    <el-input v-model="verifyCodeForm.mobile" placeholder="请输入手机号" class="w-200"/>
+                    <el-input v-model="verifyCodeForm.mobile" placeholder="请输入手机号" style="width: 80%;"/>
                 </el-form-item>
                 <el-form-item prop="verifyCode" label="验证码">
-                    <el-input v-model="verifyCodeForm.verifyCode" placeholder="请输入验证码" class="w-115"/>
-                    <span><el-button type="primary" :disabled="isDisabled" @click="getVerifyCode">{{buttonName}}</el-button></span>
+                    <el-input v-model="verifyCodeForm.verifyCode" placeholder="请输入验证码" style="width: 50%;"/>
+                    <span><el-button type="primary" :disabled="isDisabled" @click="getVerifyCode" style="padding: 8px 7px">{{buttonName}}</el-button></span>
                 </el-form-item>
                 <div style="text-align: center">
                     <el-button size="small" type="primary" @click="checkVerifyCode">确定</el-button>
