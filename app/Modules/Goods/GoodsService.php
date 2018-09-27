@@ -49,7 +49,7 @@ class GoodsService extends BaseService
     {
         $list = Goods::where('merchant_id', $merchantId)
             ->where('status', Goods::STATUS_ON)
-            ->orderBy('sort', 'desc');
+            ->orderBy('price', 'asc');
         if($number){
             $list->limit($number);
         }
