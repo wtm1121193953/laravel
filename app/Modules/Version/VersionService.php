@@ -53,6 +53,11 @@ class VersionService extends BaseService
         }
     }
 
+    public static function getAllByAppType($app_type)
+    {
+        return Version::where('app_type','=',$app_type)->orderBy('version_num','desc')->get();
+    }
+
     public static function getLastIos()
     {
         return Version::where('app_type','=',Version::APP_TYPE_IOS)->orderBy('version_num','desc')->first();
