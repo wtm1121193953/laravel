@@ -63,11 +63,11 @@
         </el-dialog>
 
         <el-dialog title="拒绝业务员" :visible.sync="dialogRefusalFormVisible" width="30%">
-            <el-form :model="formRefusal" label-width="70px">
+            <el-form :model="formRefusal" ref="formRefusal" :rules="formRefusalRules" label-width="70px">
                 <el-form-item>
                     确定拒绝签约业务员<span class="c-danger">{{detailOption.bizerInfo.name}}</span>
                 </el-form-item>
-                <el-form-item label="原因">
+                <el-form-item prop="note" label="原因">
                     <el-input type="textarea" v-model="formRefusal.note" auto-complete="off" placeholder="最多50个字"/>
                 </el-form-item>
                 <el-form-item label="备注">
@@ -120,6 +120,12 @@
                 rules: {
                     divide: [
                         {required: true, validator: validateDivided, trigger: 'blur'}
+                    ]
+                },
+                formRefusalRules: {
+                    note: [
+                        {required: true, message: '原因不能为空'},
+                        {max: 50, message: '原因不能超过50个字'},
                     ]
                 },
                 bntLoading: false,
@@ -185,10 +191,19 @@
                     successMsg = "签约成功";
                     if(!isValid)return false;
                 }else{
-                    _self.formRefusal.id = _self.detailOption.id;
-                    params = _self.formRefusal;
-                    successMsg = "已拒绝";
+                    let flag = false;
+                    this.$refs.formRefusal.validate(valid => {
+                        if (valid) {
+                            _self.formRefusal.id = _self.detailOption.id;
+                            params = _self.formRefusal;
+                            successMsg = "已拒绝";
+                        } else {
+                            flag = true;
+                        }
+                    });
+                    if (flag) return;
                 }
+
                 _self.bntLoading = true;
                 api.get('/bizerRecord/contractBizer', params).then(data => {
                     _self.dialogSigningFormVisible = _self.dialogRefusalFormVisible = false;
