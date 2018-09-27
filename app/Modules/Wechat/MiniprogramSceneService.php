@@ -18,6 +18,7 @@ use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperService;
 use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MiniprogramSceneService extends BaseService
 {
@@ -234,4 +235,28 @@ class MiniprogramSceneService extends BaseService
 
         return $miniprogramScene;
     }*/
+
+    /**
+     * 生成场景二维码
+     * @param $scene_id
+     */
+    public static function genSceneQrCode(MiniprogramScene $scene)
+    {
+
+        $url = route('scene',['id'=>$scene->id]);
+        $dir = storage_path('app/public/scene_qrcode/');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        $size = 375;
+        $filename = "{$scene->id}_{$size}.png";
+        $path = $dir . "/{$filename}";
+
+        $rs = QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate($url, $path);
+
+
+        $scene->qrcode_url = asset('storage/scene_qrcode/' . $filename);
+        $scene->save();
+        return $scene->qrcode_url;
+    }
 }

@@ -14,7 +14,7 @@ class SceneController extends Controller
     public function index()
     {
 
-        echo 123;exit;
+        echo route('scene',['id'=>1]);
 
     }
 }
