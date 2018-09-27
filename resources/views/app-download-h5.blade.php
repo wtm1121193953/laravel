@@ -360,7 +360,7 @@
         <p>大千生活</p>
     </div>
     <div class="version">
-        <p>版本：1.0.3 (build 6)<span></span>大小：40.3MB</p>
+        <p>版本：{{$ios->app_num}}<span></span>大小：40.3MB</p>
         <p>更新时间：2018-09-26<span></span>12:23:06</p>
     </div>
     <div class="qrcode">

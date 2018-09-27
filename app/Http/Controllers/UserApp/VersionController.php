@@ -9,7 +9,9 @@
 namespace App\Http\Controllers\UserApp;
 
 
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Version\VersionService;
 use App\Result;
 
 class VersionController extends Controller
@@ -21,11 +23,19 @@ class VersionController extends Controller
     public function last()
     {
         $appType = request()->headers->get('app-type');
+        if (!in_array($appType,[1,2])) {
+            throw new ParamInvalidException('参数错误');
+        }
+        if ($appType == 1 ) {
+            $data = VersionService::getLastIos();
+        } else {
+            $data = VersionService::getLastAndroid();
+        }
         return Result::success([
-            'version' => 'v1.0.0',
-            'force' => '1',
-            'desc' => '更新说明',
-            'app_type' => $appType,
+            'version' => $data['app_num'],
+            'force' => $data['force_update'],
+            'desc' => $data['version_explain'],
+            'app_type' => $data['app_type'],
         ]);
     }
 
@@ -35,33 +45,40 @@ class VersionController extends Controller
     public function getList()
     {
         $appType = request()->headers->get('app-type');
+
+        if (!in_array($appType,[1,2])) {
+            throw new ParamInvalidException('参数错误');
+        }
+        if ($appType == 1 ) {
+            $data = VersionService::getLastIos();
+        } else {
+            $data = VersionService::getLastAndroid();
+        }
+
+        $last = [
+            'version' => $data['app_num'],
+            'force' => $data['force_update'],
+            'desc' => $data['version_explain'],
+            'app_type' => $data['app_type'],
+        ];
+
+        $list = VersionService::getAllByAppType(['app_type' => $appType]);
+        $versions = [];
+        if ($list) {
+            foreach ($list as $l) {
+                $versions[] = [
+                    'version' => $l['app_num'],
+                    'force' => $l['force_update'],
+                    'desc' => $l['version_explain'],
+                    'app_type' => $l['app_type'],
+                ];
+            }
+        }
+
+
         return Result::success([
-            'last' => [
-                'version' => 'v1.0.2',
-                'force' => '1',
-                'desc' => '更新说明',
-                'app_type' => $appType,
-            ],
-            'versions' => [
-                [
-                    'version' => 'v1.0.0',
-                    'force' => '0',
-                    'desc' => '更新说明',
-                    'app_type' => $appType,
-                ],
-                [
-                    'version' => 'v1.0.1',
-                    'force' => '0',
-                    'desc' => '更新说明',
-                    'app_type' => $appType,
-                ],
-                [
-                    'version' => 'v1.0.2',
-                    'force' => '0',
-                    'desc' => '更新说明',
-                    'app_type' => $appType,
-                ],
-            ]
+            'last' => $last,
+            'versions' => $versions
         ]);
     }
 }

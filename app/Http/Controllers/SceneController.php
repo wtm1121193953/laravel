@@ -8,6 +8,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Modules\Version\VersionService;
+
 class SceneController extends Controller
 {
 
@@ -15,7 +17,13 @@ class SceneController extends Controller
     {
 
         $scene_id = request('id');
-        echo $scene_id;
+
+        $data = [];
+        $data['ios'] = VersionService::getLastIos();
+        $data['android'] = VersionService::getLastAndroid();
+        return view('app-download-h5',$data);
 
     }
+
+
 }

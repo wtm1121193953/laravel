@@ -4,7 +4,7 @@ namespace App\Modules\Version;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
-
+use phpDocumentor\Reflection\Types\Self_;
 
 
 class VersionService extends BaseService
@@ -51,5 +51,20 @@ class VersionService extends BaseService
         if( !$query->save() ){
             throw new BaseResponseException('添加版本信息失败');
         }
+    }
+
+    public static function getAllByAppType($app_type)
+    {
+        return Version::where('app_type','=',$app_type)->orderBy('version_num','desc')->get();
+    }
+
+    public static function getLastIos()
+    {
+        return Version::where('app_type','=',Version::APP_TYPE_IOS)->orderBy('version_num','desc')->first();
+    }
+
+    public static function getLastAndroid()
+    {
+        return Version::where('app_type','=',Version::APP_TYPE_ANDROID)->orderBy('version_num','desc')->first();
     }
 }
