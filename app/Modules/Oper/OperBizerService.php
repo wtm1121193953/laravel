@@ -177,4 +177,18 @@ class OperBizerService extends BaseService {
 
         return $operBizer;
     }
+
+    /**
+     * 通过id获取运营中心业务员
+     * @param $id
+     * @return OperBizer
+     */
+    public static function getById($id)
+    {
+        $operBizer = OperBizer::find($id);
+
+        return $operBizer;
+    }
+
+
 }

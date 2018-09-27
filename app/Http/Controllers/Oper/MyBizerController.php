@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Oper;
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperService;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperBizer;
 use App\Modules\Oper\MyOperBizer;
 
 use App\Result;
+use Illuminate\Database\Eloquent\Builder;
 
 class MyBizerController extends Controller {
 
@@ -34,7 +37,6 @@ class MyBizerController extends Controller {
     public function changeDetail()
     {
         $id = request('id');
-        $sign_status = request('sign_status');
         $status = request('status');
         $divide = request('divide');
         $remark = request('remark');
@@ -47,9 +49,6 @@ class MyBizerController extends Controller {
         }
         $this->validate(request(),$validate);
         $operBizMember = OperBizer::findOrFail($id);
-        if (!empty($sign_status)) {
-            $operBizMember->sign_status = $sign_status;
-        }
         if(!empty($status)){
             $operBizMember->status = $status;
         }
@@ -91,5 +90,25 @@ class MyBizerController extends Controller {
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
+
+    /**
+     * 改变业务员签约状态
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changeOperBizerSignStatus()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $operBizer = OperBizerService::getById($id);
+        if (empty($operBizer)) {
+            throw new BaseResponseException('该业务员不存在');
+        }
+        $operBizer->sign_status = $operBizer->sign_status == OperBizer::SIGN_STATUS_ON ? OperBizer::SIGN_STATUS_OFF : OperBizer::SIGN_STATUS_ON;
+        $operBizer->save();
+
+        return Result::success($operBizer);
     }
 }

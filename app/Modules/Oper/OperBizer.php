@@ -27,4 +27,10 @@ class OperBizer extends BaseModel {
     const STATUS_APPLYING = 0;
     const STATUS_SIGNED = 1;
     const STATUS_REJECTED = -1;
+
+    /**
+     * 签约状态，1-正常，0-冻结
+     */
+    const SIGN_STATUS_ON = 1;
+    const SIGN_STATUS_OFF = 0;
 }

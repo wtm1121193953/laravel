@@ -85,11 +85,10 @@
             },
             changeStatus(){
                 let _self = this;
-                let sign_status = _self.scope.row.sign_status === 1 ? 0 : 1;
-                api.get('/operBizer/changeDetail', {id: _self.scope.row.id, sign_status: sign_status}).then((data) => {
-                    _self.scope.row.sign_status = sign_status;
+                api.get('/operBizer/changeStatus', {id: _self.scope.row.id}).then((data) => {
+                    _self.scope.row.sign_status = data.sign_status;
                     _self.$message({
-                        message: sign_status === 1 ? '解冻成功' : '冻结成功',
+                        message: data.sign_status == 1 ? '解冻成功' : '冻结成功',
                         type: 'success'
                     });
                     _self.$emit('change', this.scope.$index, data)
