@@ -297,13 +297,17 @@
                     this.$message.error('请选择审核数据');
                     return;
                 }
-                this.$confirm(`<div>确定将这${length}条数据审核通过</div>`,'批量审核提示', {
+                this.$prompt(`<div>确定将这${length}条数据审核通过</div>`,'批量审核提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning',
                     center: true,
                     dangerouslyUseHTMLString: true,
-                }).then(() => {
+                    inputType: 'textarea',
+                    inputPlaceholder: '审核意见，最多50个汉字，非必填',
+                    inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
+                }).then(({value}) => {
+                    param.audit_suggestion = value ? value : '';
                     api.post('/merchant/batch_audit', param).then(data => {
                         this.$alert('操作成功');
                         this.getList();
@@ -329,7 +333,7 @@
                     type: 'warning',
                     center: true,
                     dangerouslyUseHTMLString: true,
-                    inputType: 'text',
+                    inputType: 'textarea',
                     inputPlaceholder: '审核意见，最多50个汉字，非必填',
                     inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
                 }).then(({value}) => {
