@@ -4,7 +4,6 @@ namespace App\Modules\Version;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
-use phpDocumentor\Reflection\Types\Self_;
 
 
 class VersionService extends BaseService
@@ -43,7 +42,7 @@ class VersionService extends BaseService
         $query->app_num = $app_num;
         $query->version_num = $version_num;
         $query->version_explain = $version_explain;
-        $query->package_url = $package_url;
+        $query->package_url = $package_url ?? '';
         $query->status = $status;
         $query->force_update = $force_update;
         $query->app_type = $app_type;

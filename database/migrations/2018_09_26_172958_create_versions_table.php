@@ -22,8 +22,8 @@ class CreateVersionsTable extends Migration
             $table->string('version_explain')->default('')->comment('更新说明');
             $table->string('package_url')->default('')->comment('安装包路径');
             $table->integer('status')->default(1)->comment('发布状态,1-暂不发布;2-已发布');
-            $table->integer('force_update')->default(1)->comment('强制更新,1-否,2-是');
-            $table->integer('app_type')->default(1)->comment('应用类型,1-IOS,2-Android');
+            $table->integer('force_update')->default(1)->comment('强制更新,0-否,1-是');
+            $table->integer('app_type')->default(1)->comment('应用类型,1-Android,2-IOS');
             $table->timestamps();
             $table->comment = '版本管理表';
         });

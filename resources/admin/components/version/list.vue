@@ -3,8 +3,8 @@
         <el-form class="fl" inline size="small">
             <el-form-item label="" prop="app_type">
                 <el-select v-model="query.app_type">
-                    <el-option label="IOS" :value="1"/>
-                    <el-option label="Android" value="2"/>
+                    <el-option label="Android" :value="1"/>
+                    <el-option label="IOS" value="2"/>
                 </el-select>
             </el-form-item>
             <el-form-item prop="app_name" label="">

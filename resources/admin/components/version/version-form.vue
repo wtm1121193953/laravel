@@ -30,22 +30,25 @@
                 </el-form-item>
                 <el-form-item prop="force_update" label="强制更新">
                     <el-radio-group v-model="form.force_update">
-                        <el-radio :label="1">否</el-radio>
-                        <el-radio :label="2">是</el-radio>
+                        <el-radio :label="0">否</el-radio>
+                        <el-radio :label="1">是</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item prop="app_type" label="应用类型">
                     <el-radio-group v-model="form.app_type">
-                        <el-radio :label="1">IOS</el-radio>
-                        <el-radio :label="2">Android</el-radio>
+                        <el-radio :label="1">Android</el-radio>
+                        <el-radio :label="2">IOS</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item prop="package_url" v-if="form.app_type == 2" required label="安装包">
+                <el-form-item prop="package_url" v-if="form.app_type == 1" required label="安装包">
                     <el-upload
+                            v-model="form.package_url"
                             class="upload-demo"
                             action="/api/upload/app"
                             :on-change="handleChange"
-                            :file-list="fileList">
+                            :file-list="fileList"
+                            :on-success="handleAvatarSuccess"
+                            :before-upload="beforeAvatarUpload">
                         <el-button size="small" type="primary">点击上传</el-button>
                         <div slot="tip" class="el-upload__tip">只能上传apk文件</div>
                     </el-upload>
@@ -70,7 +73,7 @@
         version_explain: '',
         package_url: '',
         status: 1,
-        force_update: 1,
+        force_update: 0,
         app_type: 1,
     };
     export default {
@@ -112,12 +115,12 @@
                     ],
                     app_type: [
                         {required: true, message: '应用类型不能为空'},
+                    ],
+                    package_url : [
+                        {required: true, message: '安装包不能为空'},
                     ]
                 },
-                fileList: [{
-                    name: 'food.jpeg',
-                    url: "11"
-                }]
+                fileList: []
             }
         },
         methods: {
@@ -143,6 +146,21 @@
                 })
 
             },
+            handleChange(file, fileList) {
+                this.fileList = fileList.slice(-3);
+            },
+            handleAvatarSuccess(res, file) {
+                this.package_url = URL.createObjectURL(file.raw);
+            },
+            beforeAvatarUpload(file) {
+                //console.log(file.type);
+                const isAPK = file.type === 'application/vnd.android.package-archive';
+
+                if (!isAPK) {
+                    this.$message.error('上传文件只能是 apk 格式!');
+                }
+                return isAPK;
+            }
 
         },
         created(){
