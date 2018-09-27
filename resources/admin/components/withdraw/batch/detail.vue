@@ -252,6 +252,8 @@
                     path = '/withdraw/record/merchant';
                 } else if (row.origin_type == 3) {
                     path = '/withdraw/record/oper';
+                } else if (row.origin_type == 4) {
+                    path = '/withdraw/record/bizer';
                 } else {
                     this.$message.error('提现类型错误');
                     return false;

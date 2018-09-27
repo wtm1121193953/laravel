@@ -195,13 +195,13 @@
                 this.goBack();
             }
             if (this.audit) {
-                this.pageTitle = '用户提现审核';
+                this.pageTitle = '业务员提现审核';
                 if (!this.type) {
                     this.$message.error('批次类型不能为空');
                     this.goBack();
                 }
             } else {
-                this.pageTitle = '用户提现明细';
+                this.pageTitle = '业务员提现明细';
             }
             this.getDetail();
             this.getBatchList();
