@@ -46,6 +46,11 @@ Route::get('/merchant-h5', function () {
     return view('user-h5');
 });*/
 
+// app引导下载h5页面
+Route::get('/app-download-h5', function () {
+    return view('app-download-h5');
+});
+
 // 业务员端
 Route::get('/bizer', function () {
     return view('bizer');
