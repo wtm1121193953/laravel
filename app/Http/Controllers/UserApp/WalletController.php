@@ -53,6 +53,8 @@ class WalletController extends Controller
         $type = request('type');
         if ($type == '0') {
             $type = '';
+        }elseif ($type == 7){
+            $type = [7,8];
         }
         $bills = WalletService::getBillList([
             'originId' => $value,
