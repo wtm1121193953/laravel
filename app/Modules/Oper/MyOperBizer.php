@@ -38,7 +38,7 @@ class MyOperBizer extends BaseModel
         $data = OperBizer::when(!empty($operId), function (Builder $query) use ($operId) {
                     $query->where('oper_id', $operId);
                 })
-                ->where('status','<>','0')
+                ->where('status', OperBizer::STATUS_SIGNED)
                 ->orderBy('id', 'desc')
                 ->select($fields)
                 ->paginate();
