@@ -1,7 +1,7 @@
 <template>
     <page :title="pageTitle" :breadcrumbs="{提现记录: '/withdraw/records'}">
         <el-row :gutter="20" v-loading="loading">
-            <el-form size="small" label-width="100px">
+            <el-form size="small" label-width="150px">
                 <el-col :span="12">
                     <el-form-item label="提现时间">
                         {{data.created_at}}
