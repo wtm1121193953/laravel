@@ -24,13 +24,18 @@ class OperStatisticsDailyJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $endTime = '';
     /**
      * Create a new job instance.
      * @return void
      */
-    public function __construct()
+    public function __construct($endTime='')
     {
         //
+        if (empty($endTime)) {
+            $endTime = date('Y-m-d H:i:s');
+        }
+        $this->endTime = $endTime;
     }
 
     /**
@@ -40,8 +45,8 @@ class OperStatisticsDailyJob implements ShouldQueue
     public function handle()
     {
         Log::info('生成运营中心营销统计数据 :Start');
-
-        /*$date = date('Y-m-d');
+        /*
+        $date = date('Y-m-d');
         // 获取operList数据
         $operList = Oper::whereStatus(Oper::STATUS_NORMAL)->get(['id'])->toArray();
         $saveList = [];
@@ -59,12 +64,11 @@ class OperStatisticsDailyJob implements ShouldQueue
             ];
         }
         $operStatistics = new OperStatistics();
-        DB::table($operStatistics->getTable())->insert($saveList);*/
+        DB::table($operStatistics->getTable())->insert($saveList);
+        */
 
 
-        $endTime = date('Y-m-d',strtotime('-1 day')) . ' 23:59:59';
-
-        OperStatisticsService::statistics($endTime);
+        OperStatisticsService::statistics($this->endTime);
 
 
         Log::info('生成运营中心营销统计数据 :end');

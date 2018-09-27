@@ -50,7 +50,7 @@ class Kernel extends ConsoleKernel
         $schedule->job( new SettlementDaily() )->daily();
         // T+1结算分账任务， 生成的结算单每天8点自动打款
         // 运营中心营销统计
-        $schedule->job( new OperStatisticsDailyJob() )->daily();
+        $schedule->job( new OperStatisticsDailyJob((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s')))->daily();
 //        $schedule->job(new SettlementAgentPayDaily())->dailyAt('08:00');
         /**团购商品过期自动下架*/
         $schedule->job(AutoDownGoodsJob::class)->daily();

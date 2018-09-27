@@ -71,7 +71,7 @@ class Test extends Command
     public function handle()
     {
 
-        OperStatisticsDailyJob::dispatch();
+        OperStatisticsDailyJob::dispatch((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s'));
         dd('hi');
 //        $data = InviteChannel::where('id','<','10')->pluck('id');
 //        var_dump($data);
