@@ -19,6 +19,7 @@ use App\Modules\Oper\OperBizer;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
 use App\Support\Lbs;
+use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Area\Area;
 use Illuminate\Support\Collection;
@@ -649,7 +650,7 @@ class MerchantService extends BaseService
                 ->values()
                 ->each(function($item) {
                     // 格式化距离
-                    $item->distance = self::_getFormativeDistance($item->distance);
+                    $item->distance = Utils::getFormativeDistance($item->distance);
                 });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
@@ -692,7 +693,7 @@ class MerchantService extends BaseService
             $tempToken = empty($currentUser) ? str_random() : $currentUser->id;
             $distance = Lbs::getDistanceOfMerchant($id, $tempToken, floatval($lng), floatval($lat));
             // 格式化距离
-            $detail->distance = self::_getFormativeDistance($distance);
+            $detail->distance = Utils::getFormativeDistance($distance);
         }
         $category = MerchantCategory::find($detail->merchant_category_id);
         $detail->merchantCategoryName = $category->name;
@@ -704,10 +705,6 @@ class MerchantService extends BaseService
         return $detail;
     }
 
-    private static function _getFormativeDistance($distance)
-    {
-        return $distance >= 1000 ? (number_format($distance / 1000, 1) . '千米') : ($distance . '米');
-    }
 
     /**
      * 根据商户名称获取商户某个字段的数组

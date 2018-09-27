@@ -25,7 +25,9 @@ class InviteChannelController extends Controller
         $inviteChannel = InviteChannelService::getByOriginInfo($userId, InviteChannel::ORIGIN_TYPE_USER);      // 获取邀请渠道
         $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);
         $scene = MiniprogramSceneService::getByInviteChannel($inviteChannel);
-        $url = MiniprogramSceneService::getMiniprogramAppCode($scene);
+        $url = MiniprogramSceneService::genSceneQrCode($scene);
+
+        //$url = MiniprogramSceneService::getMiniprogramAppCode($scene);
 
         return Result::success([
             'qrcode_url' => $url,

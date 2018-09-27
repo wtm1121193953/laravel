@@ -11,6 +11,8 @@ namespace App\Http\Controllers\Merchant;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Merchant\PayQrcodeService;
+use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
@@ -24,12 +26,39 @@ class PayQrcodeController extends Controller
     public function getMiniprogramAppCode()
     {
         $merchantId = request()->get('current_user')->merchant_id;
+        $operId = request()->get('current_user')->oper_id;
 
         $scene = MiniprogramSceneService::getPayAppCodeByMerchantId($merchantId);
-        $qrcode_url = WechatService::getMiniprogramAppCodeUrl($scene);
+
+        $oper = OperService::getById($operId);
+
+        if (empty($scene->qrcode_url)) {
+
+            //如果是支付到平台生成二维码
+            if ($oper->pay_to_platform != Oper::PAY_TO_OPER) {
+                $url = MiniprogramSceneService::genSceneQrCode($scene);
+            } else {
+
+                $url = WechatService::getMiniprogramAppCodeUrl($scene);
+
+            }
+
+        } else {
+            //如果是支付到平台老的分享码换成二维码
+            if ( ($oper->pay_to_platform != Oper::PAY_TO_OPER) && strpos($scene->qrcode_url,'scene_qrcode')===false ) {
+                $url = MiniprogramSceneService::genSceneQrCode($scene);
+            } elseif (($oper->pay_to_platform == Oper::PAY_TO_OPER) && strpos($scene->qrcode_url,'app_code')===false) {
+                $url = WechatService::getMiniprogramAppCodeUrl($scene);
+            } else {
+                $url = $scene->qrcode_url;
+            }
+
+        }
+
+
 
         return Result::success([
-            'qrcode_url' => $qrcode_url,
+            'qrcode_url' => $url,
         ]);
     }
 
