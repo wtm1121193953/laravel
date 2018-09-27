@@ -50,9 +50,9 @@
             <el-form-item prop="contacter_phone" label="负责人手机号码" class="w-500">
                 <el-input v-model="form.contacter_phone"/>
             </el-form-item>
-            <el-form-item prop="oper_biz_member_code" label="业务员">
+            <el-form-item prop="bizer_id" label="业务员">
                 <el-select
-                        v-model="form.oper_biz_member_code"
+                        v-model="form.bizer_id"
                         filterable
                         clearable
                         placeholder="请输入业务员姓名或手机号码"
@@ -60,11 +60,11 @@
                 >
                     <el-option
                             v-for="item in operBizMembers"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.code">
-                        <span class="c-blue">{{item.name}}</span>
-                        <span class="c-light-gray">{{item.mobile}}</span>
+                            :key="item.bizerId"
+                            :label="item.bizerMobile"
+                            :value="item.bizerId">
+                        <span class="c-blue">{{item.bizerNme}}</span>
+                        <span class="c-light-gray">{{item.bizerMobile}}</span>
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -108,6 +108,7 @@
         area: [],
         address: '',
 
+        bizer_id: '',
         contacter: '',
         contacter_phone: '',
         oper_biz_member_code: '',
@@ -243,7 +244,7 @@
                 api.get('area/tree').then(data => {
                     this.areaOptions = data.list;
                 });
-                api.get('/operBizMembers/search', {status: 1}).then(data => {
+                api.get('/operBizer/getbizers', {status: 1, sign_status: 1}).then(data => {
                     this.operBizMembers = data.list;
                 })
             },
@@ -273,6 +274,8 @@
                     } else {
                         this.form.lng_and_lat = [data.lng, data.lat];
                     }
+
+                    this.form.bizer_id = parseInt(data.bizer_id) != 0 ? parseInt(data.bizer_id) : '';
                 }else {
                     this.form = deepCopy(defaultForm);
                 }
