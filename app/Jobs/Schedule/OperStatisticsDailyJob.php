@@ -45,31 +45,8 @@ class OperStatisticsDailyJob implements ShouldQueue
     public function handle()
     {
         Log::info('生成运营中心营销统计数据 :Start');
-        /*
-        $date = date('Y-m-d');
-        // 获取operList数据
-        $operList = Oper::whereStatus(Oper::STATUS_NORMAL)->get(['id'])->toArray();
-        $saveList = [];
-        foreach ($operList as $k => $v) {
-
-            $saveList[] = [
-                'date' => $date,
-                'oper_id' => $v['id'],
-                'merchant_num' => 0,
-                'user_num' => 0,
-                'order_paid_num' => 0,
-                'order_refund_num' => 0,
-                'order_paid_amount' => 0,
-                'order_refund_amount' => 0,
-            ];
-        }
-        $operStatistics = new OperStatistics();
-        DB::table($operStatistics->getTable())->insert($saveList);
-        */
-
 
         OperStatisticsService::statistics($this->endTime);
-
 
         Log::info('生成运营中心营销统计数据 :end');
     }
