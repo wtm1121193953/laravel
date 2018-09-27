@@ -252,10 +252,11 @@ class MerchantService extends BaseService
                 $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
                 $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
                 if ($item->bizer_id) {
-                    $item->divide = OperBizerService::getOperBizerByParam([
+                    $operBizer = OperBizerService::getOperBizerByParam([
                         'operId' => $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id,
                         'bizerId' => $item->bizer_id,
-                    ])->divide;
+                    ]);
+                    $item->divide = empty($operBizer) ? 0 : $operBizer->divide;
                 }
                 $item->operBizMemberName = OperBizMember::where('oper_id', $item->operId)->where('code', $item->oper_biz_member_code)->value('name') ?: '无';
             });
