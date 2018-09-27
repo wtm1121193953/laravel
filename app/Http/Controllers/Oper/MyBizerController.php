@@ -34,6 +34,7 @@ class MyBizerController extends Controller {
     public function changeDetail()
     {
         $id = request('id');
+        $sign_status = request('sign_status');
         $status = request('status');
         $divide = request('divide');
         $remark = request('remark');
@@ -46,6 +47,9 @@ class MyBizerController extends Controller {
         }
         $this->validate(request(),$validate);
         $operBizMember = OperBizer::findOrFail($id);
+        if (!empty($sign_status)) {
+            $operBizMember->sign_status = $sign_status;
+        }
         if(!empty($status)){
             $operBizMember->status = $status;
         }

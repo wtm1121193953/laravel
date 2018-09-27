@@ -3,7 +3,7 @@
     <div>
         <el-button type="text" @click="remarks">备注</el-button>
         <el-button type="text" @click="merchants">业务</el-button>
-        <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '冻结' : '解冻'}}</el-button>
+        <el-button type="text" @click="changeStatus">{{scope.row.sign_status === 1 ? '冻结' : '解冻'}}</el-button>
         <el-button type="text" @click="dividedIntoSettings">分成设置</el-button>
 
         <el-dialog title="业务员备注" :visible.sync="dialogRemarksFormVisible" width="30%">
@@ -85,11 +85,11 @@
             },
             changeStatus(){
                 let _self = this;
-                let status = _self.scope.row.status === 1 ? -1 : 1;
-                api.get('/operBizer/changeDetail', {id: _self.scope.row.id, status: status}).then((data) => {
-                    _self.scope.row.status = status;
+                let sign_status = _self.scope.row.sign_status === 1 ? 0 : 1;
+                api.get('/operBizer/changeDetail', {id: _self.scope.row.id, sign_status: sign_status}).then((data) => {
+                    _self.scope.row.sign_status = sign_status;
                     _self.$message({
-                        message: status === 1 ? '解冻成功' : '冻结成功',
+                        message: sign_status === 1 ? '解冻成功' : '冻结成功',
                         type: 'success'
                     });
                     _self.$emit('change', this.scope.$index, data)

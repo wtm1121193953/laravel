@@ -109,6 +109,7 @@ class OperBizerService extends BaseService {
     {
         $bizerId = array_get($params, "bizer_id");
         $status = array_get($params, "status");
+        $sign_status = array_get($params, 'sign_status');
         $startTime = array_get($params, 'start_time');
         $endTime = array_get($params, 'end_time');
         $operIds = array_get($params, 'oper_ids');
@@ -128,6 +129,9 @@ class OperBizerService extends BaseService {
             })
             ->when(is_array($status), function (Builder $query) use ($status) {
                 $query->whereIn('status', $status);
+            })
+            ->when($sign_status, function (Builder $query) use ($sign_status) {
+                $query->where('sign_status', $sign_status);
             })
             ->when(is_numeric($status), function (Builder $query) use ($status) {
                 $query->where('status', $status);

@@ -404,7 +404,7 @@
         },
         methods: {
             getOperBizMember(){
-                api.get('/operBizer/getbizers', {status: 1}).then(data => {
+                api.get('/operBizer/getbizers', {status: 1, sign_status: 1}).then(data => {
                     this.operBizMembers = data.list;
                 })
             },
