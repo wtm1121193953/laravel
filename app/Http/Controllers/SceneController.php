@@ -14,7 +14,8 @@ class SceneController extends Controller
     public function index()
     {
 
-        echo route('scene',['id'=>1]);
+        $scene_id = request('id');
+        echo $scene_id;
 
     }
 }
