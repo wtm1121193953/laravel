@@ -47,24 +47,6 @@ class DishesGoodsService extends BaseService
     }
 
     /**
-     * 首页商户列表，显示价格最低的n个团购商品
-     * @param int $merchantId 商户ID
-     * @param int $number 要获取的商品个数
-     * @return Goods[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public static function getLowestPriceDishesGoodsForMerchant($merchantId, $number = null)
-    {
-        $list = DishesGoods::where('merchant_id', $merchantId)
-            ->where('status', DishesGoods::STATUS_ON)
-            ->orderBy('sale_price', 'asc');
-        if($number){
-            $list->limit($number);
-        }
-        $data = $list->get();
-        return $data;
-    }
-
-    /**
      * 通过merchant_id分类获取单品商品列表
      * @param $merchantId
      * @return DishesGoods[]|\Illuminate\Database\Eloquent\Collection

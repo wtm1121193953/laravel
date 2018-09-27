@@ -13,7 +13,6 @@ use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Dishes\DishesGoods;
-use App\Modules\Dishes\DishesGoodsService;
 use App\Modules\Goods\Goods;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizer;
@@ -675,8 +674,6 @@ class MerchantService extends BaseService
             $item->grade = 5;
             // 首页商户列表，显示价格最低的n个团购商品
             $item->lowestGoods = GoodsService::getLowestPriceGoodsForMerchant($item->id, 2);
-
-            $item->lowestdishesGoods = DishesGoodsService::getLowestPriceDishesGoodsForMerchant($item->id, 1);
         });
 
         return Result::success(['list' => $list, 'total' => $total]);
