@@ -48,7 +48,7 @@ class BankCardService extends BaseService
         }
 
         //判断只有一张银行卡时设置为默认银行卡
-        $query = BankCard::where('origin_id',$user->id)
+        $query = BankCard::where('origin_id',$obj->id)
             ->where('origin_type',$originType);
         if($query ->count() == 1){
                 $item = $query->first();
