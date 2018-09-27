@@ -89,6 +89,7 @@
                     <span v-if="scope.row.origin_type == 1">用户提现</span>
                     <span v-else-if="scope.row.origin_type == 2">商户提现</span>
                     <span v-else-if="scope.row.origin_type == 3">运营中心提现</span>
+                    <span v-else-if="scope.row.origin_type == 4">业务员提现</span>
                     <span v-else>未知({{scope.row.origin_type}})</span>
                 </template>
             </el-table-column>
