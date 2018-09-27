@@ -110,7 +110,7 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
             $typeText = '交易分润入账';
         } elseif ($row->type == WalletBill::TYPE_OPER_REFUND) {
             $typeText = '交易分润退款';
-        } elseif ($row->type = WalletBill::TYPE_WITHDRAW) {
+        } elseif ($row->type == WalletBill::TYPE_WITHDRAW) {
             if ($row->status == WalletWithdraw::STATUS_AUDITING) {
                 $typeText = '提现（审核中）';
             } elseif ($row->status == WalletWithdraw::STATUS_AUDIT) {
@@ -167,7 +167,7 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
                 $row->created_at,
                 $row->bill_no,
                 $typeText,
-                $row->amount,
+                ($row->inout_type == 1 ? '+' : '-') . "\t" . $row->amount,
             ];
         } else {
             $array = [];
