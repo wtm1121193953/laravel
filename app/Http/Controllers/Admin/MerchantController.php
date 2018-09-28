@@ -14,10 +14,12 @@ use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Exports\MerchantExport;
 use App\Http\Controllers\Controller;
+use App\Modules\Bizer\BizerService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperService;
 use App\Result;
 use Illuminate\Support\Facades\Log;
@@ -40,6 +42,8 @@ class MerchantController extends Controller
         $status = request('status');
         $auditStatus = request('auditStatus');
         $merchantCategory = request('merchantCategory');
+        $memberNameOrMobile = request('memberNameOrMobile');
+        $bizerNameOrMobile = request('bizerNameOrMobile');
         $isPilot = request('isPilot');
 
         if(is_string($auditStatus)){
@@ -59,6 +63,10 @@ class MerchantController extends Controller
         if($creatorOperName){
             $createOperIds = OperService::getAll(['name' => $creatorOperName], 'id')->pluck('id');
         }
+
+        $operBizMemberCodes = OperBizerService::getOperBizMemberCodeByNameOrMobile($memberNameOrMobile);
+        $bizerIds = BizerService::getBizerIdsByNameOrMobile($bizerNameOrMobile);
+
         $startTime = microtime(true);
         $data = MerchantService::getList([
             'id' => $id,
@@ -72,6 +80,8 @@ class MerchantController extends Controller
             'isPilot' => $isPilot,
             'startCreatedAt' => $startDate,
             'endCreatedAt' => $endDate,
+            'bizer_id' => $bizerIds,
+            'operBizMemberCodes' => $operBizMemberCodes,
         ]);
         $endTime = microtime(true);
 

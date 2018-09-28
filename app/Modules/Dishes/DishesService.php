@@ -1,13 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 57458
- * Date: 2018/7/24
- * Time: 16:38
- */
-
 namespace App\Modules\Dishes;
-
 
 use App\BaseService;
 use App\Modules\Merchant\Merchant;

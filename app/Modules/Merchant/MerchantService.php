@@ -12,6 +12,7 @@ namespace App\Modules\Merchant;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Bizer\BizerService;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
 use App\Modules\Oper\Oper;
@@ -141,7 +142,8 @@ class MerchantService extends BaseService
         $endCreatedAt = array_get($data,'endCreatedAt');
 
         $cityId =array_get($data,"cityId");
-        $bizer_id = array_get($data, "bizer_id");
+        $bizerIds = array_get($data, "bizer_id");
+        $operBizMemberCodes = array_get($data, 'operBizMemberCodes');
 
         // 全局限制条件
         $query = Merchant::where('audit_oper_id', '>', 0)
@@ -171,8 +173,21 @@ class MerchantService extends BaseService
                 $query->where('creator_oper_id', $creatorOperId);
             }
         }
-        if($bizer_id){
-             $query->where('bizer_id', $bizer_id);
+
+        if (!empty($bizerIds)) {
+            if (is_array($bizerIds) || $bizerIds instanceof Collection) {
+                $query->whereIn('bizer_id', $bizerIds);
+            } else {
+                $query->where('bizer_id', $bizerIds);
+            }
+        }
+
+        if (!empty($operBizMemberCodes)) {
+            if (is_array($operBizMemberCodes) || $operBizMemberCodes instanceof Collection) {
+                $query->whereIn('oper_biz_member_code', $operBizMemberCodes);
+            } else {
+                $query->where('oper_biz_member_code', $operBizMemberCodes);
+            }
         }
 
         if(!empty($cityId)){
@@ -258,7 +273,12 @@ class MerchantService extends BaseService
                     ]);
                     $item->divide = empty($operBizer) ? 0 : $operBizer->divide;
                 }
-                $item->operBizMemberName = OperBizMember::where('oper_id', $item->operId)->where('code', $item->oper_biz_member_code)->value('name') ?: '无';
+                $item->bizer = BizerService::getById($item->bizer_id);
+                $operBizMember = OperBizMember::where('oper_id', $item->operId)
+                    ->where('code', $item->oper_biz_member_code)
+                    ->first();
+                $item->operBizMember = $operBizMember;
+                $item->operBizMemberName = !empty($operBizMember) ? $operBizMember->value('name') : '无';
             });
 
             return $data;
@@ -291,7 +311,12 @@ class MerchantService extends BaseService
         $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
         $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
         if ($merchant->oper_biz_member_code) {
-            $merchant->operBizMemberName = OperBizMember::where('code', $merchant->oper_biz_member_code)->value('name');
+            $operBizMember = OperBizMember::where('code', $merchant->oper_biz_member_code)->first();
+            $merchant->operBizMember = $operBizMember;
+            $merchant->operBizMemberName = !empty($operBizMember) ? $operBizMember->name : '';
+        }
+        if ($merchant->bizer_id) {
+            $merchant->bizer = BizerService::getById($merchant->bizer_id);
         }
         $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
         if ($oper) {

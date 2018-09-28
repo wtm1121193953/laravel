@@ -284,4 +284,24 @@ class BizerService extends BaseService
 
         return $arr;
     }
+
+    /**
+     * 通过业务员手机号码或姓名或者业务ids
+     * @param $bizerNameOrMobile
+     * @return \Illuminate\Support\Collection|string
+     */
+    public static function getBizerIdsByNameOrMobile($bizerNameOrMobile)
+    {
+        if($bizerNameOrMobile) {
+            $bizerIds = Bizer::where('name', 'like', "%$bizerNameOrMobile%")
+                ->orWhere('mobile', 'like', "%$bizerNameOrMobile%")
+                ->select('id')
+                ->get()
+                ->pluck('id');
+        } else {
+            $bizerIds = '';
+        }
+
+        return $bizerIds;
+    }
 }

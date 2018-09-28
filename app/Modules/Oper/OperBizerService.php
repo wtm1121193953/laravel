@@ -190,5 +190,23 @@ class OperBizerService extends BaseService {
         return $operBizer;
     }
 
+    /**
+     * 通过姓名和手机号码获取员工推荐码
+     * @param $memberNameOrMobile
+     * @return \Illuminate\Support\Collection|string
+     */
+    public static function getOperBizMemberCodeByNameOrMobile($memberNameOrMobile)
+    {
+        if ($memberNameOrMobile) {
+            $operBizMemberCodes = OperBizMember::where('name', 'like', "%$memberNameOrMobile%")
+                ->orWhere('mobile', 'like', "%$memberNameOrMobile%")
+                ->select('code')
+                ->get()
+                ->pluck('code');
+        } else {
+            $operBizMemberCodes = '';
+        }
 
+        return $operBizMemberCodes;
+    }
 }
