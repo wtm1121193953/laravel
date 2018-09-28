@@ -24,4 +24,23 @@ class UploadController
             'size' => $file->getSize(),
         ]);
     }
+
+    /**
+     * apk文件上传
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function file()
+    {
+        $file = request()->file('file');
+        $name = $file->getClientOriginalName();
+
+        $path = $file->storeAs('/apk', $name, 'public');
+        $url = asset('storage/' .$path);
+
+        return Result::success([
+            'url' => $url,
+            'name' => $name,
+            'size' => $file->getSize(),
+        ]);
+    }
 }

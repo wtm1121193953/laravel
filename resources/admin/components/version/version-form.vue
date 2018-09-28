@@ -44,9 +44,8 @@
                     <el-upload
                             v-model="form.package_url"
                             class="upload-demo"
-                            action="/api/upload/app"
-                            :on-change="handleChange"
-                            :file-list="fileList"
+                            action="/api/upload/file"
+                            :limit="1"
                             :on-success="handleAvatarSuccess"
                             :before-upload="beforeAvatarUpload">
                         <el-button size="small" type="primary">点击上传</el-button>
@@ -119,8 +118,7 @@
                     package_url : [
                         {required: true, message: '安装包不能为空'},
                     ]
-                },
-                fileList: []
+                }
             }
         },
         methods: {
@@ -146,14 +144,10 @@
                 })
 
             },
-            handleChange(file, fileList) {
-                this.fileList = fileList.slice(-3);
-            },
             handleAvatarSuccess(res, file) {
-                this.package_url = URL.createObjectURL(file.raw);
+                this.form.package_url = file.response.data.url;
             },
             beforeAvatarUpload(file) {
-                //console.log(file.type);
                 const isAPK = file.type === 'application/vnd.android.package-archive';
 
                 if (!isAPK) {
