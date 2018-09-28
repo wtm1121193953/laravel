@@ -44,7 +44,7 @@
                         <div style="text-align: right; margin: 0">
                             <el-button type="primary" size="mini" @click="download(scope.row)">确定</el-button>
                         </div>
-                        <el-button slot="reference" type="text">下载小程序码</el-button>
+                        <el-button slot="reference" type="text">下载推广码</el-button>
                     </el-popover>
                 </template>
             </el-table-column>
