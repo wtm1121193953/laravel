@@ -19,6 +19,9 @@ class MerchantApi extends DaqianApi
 
     protected static $getMerchantsUri = '';
 
+    /**
+     * 初始化配置方法
+     */
     public static function init()
     {
         static::$appKey = config('daqian_api.merchant.app_key');
@@ -31,7 +34,7 @@ class MerchantApi extends DaqianApi
      * @return mixed
      * @throws ApiRequestException
      */
-    public function getMerchants(array $params)
+    public static function getMerchants(array $params)
     {
         self::init();
         $result = parent::get(static::$appKey, static::$host . self::$getMerchantsUri, $params);
@@ -39,18 +42,4 @@ class MerchantApi extends DaqianApi
         return $result;
     }
 
-    /**
-     * @param $name
-     * @param $arguments
-     * @return mixed
-     * @throws ApiRequestException
-     */
-    public static function __callStatic($name, $arguments)
-    {
-        $instance = new static();
-        if(!method_exists($instance, $name)){
-            throw new ApiRequestException('要调用的方法不存在: ' . $name, compact('name', 'arguments'));
-        }
-        return $instance->$name(...$arguments);
-    }
 }
