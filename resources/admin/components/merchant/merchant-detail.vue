@@ -71,7 +71,7 @@
                     </el-col>
                     <!-- 商户激活信息左侧块 -->
                     <el-col :span="11">
-                        <el-form-item prop="oper_biz_member_code" label="业务员">
+                        <el-form-item prop="oper_biz_member_code" label="签约人">
                             <template>
                                 <span v-if="data.bizer_id && data.bizer">
                                     <span>{{data.bizer.name}}</span>
