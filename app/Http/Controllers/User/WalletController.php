@@ -55,6 +55,11 @@ class WalletController extends Controller
         $endDate = request('endDate');
         $type = request('type');
         $user = request()->get('current_user');
+        if ($type == '0') {
+            $type = '';
+        }elseif ($type == 7){
+            $type = [7,8];
+        }
         $bills = WalletService::getBillList([
             'originId' => $user->id,
             'originType' => WalletBill::ORIGIN_TYPE_USER,
