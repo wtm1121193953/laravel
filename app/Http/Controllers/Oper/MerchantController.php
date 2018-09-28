@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Oper;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Bizer\BizerService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAccountService;
 use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\OperBizerService;
 use App\Result;
 
 
@@ -23,6 +25,12 @@ class MerchantController extends Controller
      */
     public function getList()
     {
+        $memberNameOrMobile = request('memberNameOrMobile');
+        $bizerNameOrMobile = request('bizerNameOrMobile');
+
+        $operBizMemberCodes = OperBizerService::getOperBizMemberCodeByNameOrMobile($memberNameOrMobile);
+        $bizerIds = BizerService::getBizerIdsByNameOrMobile($bizerNameOrMobile);
+
         $data = [
             'id' => request('id'),
             'operId' => request()->get('current_user')->oper_id,
@@ -35,6 +43,8 @@ class MerchantController extends Controller
             'isPilot' => request('isPilot'),
             'startCreatedAt' => request('startCreatedAt'),
             'endCreatedAt' => request('endCreatedAt'),
+            'bizer_id' => $bizerIds,
+            'operBizMemberCodes' => $operBizMemberCodes,
         ];
 
         $data = MerchantService::getList($data);
