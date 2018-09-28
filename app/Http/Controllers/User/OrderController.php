@@ -182,6 +182,7 @@ class OrderController extends Controller
         $order->buy_number = $number;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $goods->price * $number;
+        $order->origin_app_type = request()->header('app-type');
         $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
@@ -266,6 +267,7 @@ class OrderController extends Controller
         $order->dishes_id = $dishesId;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $this->getTotalPrice();
+        $order->origin_app_type = request()->header('app-type');
         $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
