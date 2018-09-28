@@ -15,7 +15,13 @@
                     <span v-else-if="scope.row.status === 0">待签约</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="remark" label="原因"/>
+        <el-table-column prop="remark" label="备注">
+            <template slot-scope="scope">
+                <span v-if="scope.row.status == 0">{{scope.row.remark}}</span>
+                <span v-else-if="scope.row.status == 1 || scope.row.status == -1">{{scope.row.note}}</span>
+                <span v-else></span>
+            </template>
+        </el-table-column>
         </el-table>
 
         <el-pagination

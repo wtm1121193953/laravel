@@ -17,6 +17,7 @@
                     <span> {{ scope.row.bizerInfo.mobile }} </span>
                 </template>
             </el-table-column>
+            <el-table-column prop="remark" label="备注"></el-table-column>
             
             <template v-if="secondTable">
                 <el-table-column prop="updated_at" label="拒绝签约时间"/>
