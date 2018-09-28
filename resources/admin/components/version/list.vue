@@ -20,8 +20,8 @@
             <el-table-column prop="app_name" label="应用名称" />
             <el-table-column prop="app_type" label="应用类型">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.app_type === 1">IOS</span>
-                    <span v-else-if="scope.row.app_type === 2">Android</span>
+                    <span v-if="scope.row.app_type === 1">Android</span>
+                    <span v-else-if="scope.row.app_type === 2">IOS</span>
                 </template>
             </el-table-column>
             <el-table-column prop="app_tag" label="版本标签" />
