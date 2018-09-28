@@ -38,6 +38,7 @@ class VersionController extends Controller
         $status = request()->get('status');
         $force_update = request()->get('force_update');
         $app_type = request()->get('app_type');
+        $app_size = request()->get('app_size');
 
         $params = [
             'app_name' => $app_name,
@@ -48,7 +49,8 @@ class VersionController extends Controller
             'package_url' => $package_url,
             'status' => $status,
             'force_update' => $force_update,
-            'app_type' => $app_type
+            'app_type' => $app_type,
+            'app_size' => $app_size
         ];
         $data = VersionService::addVersion($params);
         return Result::success($data);

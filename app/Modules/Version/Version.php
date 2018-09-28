@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int status
  * @property int force_update
  * @property int app_type
+ * @property float app_size
  */
 class Version extends Model
 {

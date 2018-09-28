@@ -35,6 +35,7 @@ class VersionService extends BaseService
         $status = array_get($params,'status');
         $force_update = array_get($params,'force_update');
         $app_type = array_get($params,'app_type');
+        $app_size = array_get($params,'app_size');
 
         $query = new Version();
         $query->app_name = $app_name;
@@ -46,6 +47,7 @@ class VersionService extends BaseService
         $query->status = $status;
         $query->force_update = $force_update;
         $query->app_type = $app_type;
+        $query->app_size = $app_size;
 
         if( !$query->save() ){
             throw new BaseResponseException('添加版本信息失败');

@@ -52,6 +52,9 @@
                         <div slot="tip" class="el-upload__tip">只能上传apk文件</div>
                     </el-upload>
                 </el-form-item>
+                <el-form-item prop="app_size" v-if="form.app_type == 1" required label="版本大小">
+                    <el-input v-model="form.app_size" :disabled="true"/>
+                </el-form-item>
                 <el-form-item>
                     <el-button @click="cancel">取消</el-button>
                     <el-button type="primary" @click="save">保存</el-button>
@@ -74,6 +77,7 @@
         status: 1,
         force_update: 0,
         app_type: 1,
+        app_size: 0,
     };
     export default {
         name: 'version-form',
@@ -146,6 +150,7 @@
             },
             handleAvatarSuccess(res, file) {
                 this.form.package_url = file.response.data.url;
+                this.form.app_size = parseFloat(file.response.data.size/1024/1024).toFixed(2);
             },
             beforeAvatarUpload(file) {
                 const isAPK = file.type === 'application/vnd.android.package-archive';
