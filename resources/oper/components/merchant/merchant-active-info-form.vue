@@ -6,7 +6,7 @@
         </el-col>
         <!-- 商户激活信息左侧块 -->
         <el-col :span="11">
-            <el-form-item prop="bizer_id" label="业务员">
+            <el-form-item prop="bizer_id" label="签约人">
                 <el-select
                         v-model="form.bizer_id"
                         filterable
