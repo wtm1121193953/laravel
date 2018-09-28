@@ -4,7 +4,7 @@
             <el-table-column prop="created_at" label="申请签约时间"/>
             <el-table-column prop="name" label="运营中心名称">
                 <template slot-scope="scope">
-                    <span> {{ scope.row.operInfo.name }} </span>
+                    <span> {{ scope.row.operName }} </span>
                 </template>
             </el-table-column>
             <el-table-column prop="oper_id" label="运营中心ID"/>
@@ -15,13 +15,7 @@
                     <span v-else-if="scope.row.status === 0">待签约</span>
                 </template>
             </el-table-column>
-        <el-table-column prop="remark" label="备注">
-            <template slot-scope="scope">
-                <span v-if="scope.row.status == 0">{{scope.row.remark}}</span>
-                <span v-else-if="scope.row.status == 1 || scope.row.status == -1">{{scope.row.note}}</span>
-                <span v-else></span>
-            </template>
-        </el-table-column>
+        <el-table-column prop="note" label="原因"></el-table-column>
         </el-table>
 
         <el-pagination

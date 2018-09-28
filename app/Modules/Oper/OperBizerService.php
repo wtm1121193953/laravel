@@ -3,6 +3,7 @@
 namespace App\Modules\Oper;
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Bizer\BizerService;
 
@@ -208,5 +209,109 @@ class OperBizerService extends BaseService {
         }
 
         return $operBizMemberCodes;
+    }
+
+    /**
+     * 添加运营中心与业务员的关联
+     * @param $operId
+     * @param $bizerId
+     * @param $remark
+     * @return OperBizer|Builder|\Illuminate\Database\Eloquent\Model|null|object
+     */
+    public static function addOperBizer($operId, $bizerId, $remark)
+    {
+        $operBizer = OperBizerService::getOperBizerByParam(['operId' => $operId, 'bizerId' => $bizerId]);
+        if ($operBizer) {
+            if ($operBizer->status == OperBizer::STATUS_APPLYING) {
+                throw new BaseResponseException('此运营中心已在申请中');
+            }
+            if ($operBizer->status == OperBizer::STATUS_SIGNED) {
+                throw new BaseResponseException('此运营中心已经签约成功');
+            }
+            $model = $operBizer;
+        } else {
+            $model = new OperBizer();
+        }
+
+        $model->oper_id = $operId;
+        $model->bizer_id = $bizerId;
+        $model->remark = $remark;
+        $model->status = OperBizer::STATUS_APPLYING;
+
+        $model->save();
+
+        return $model;
+    }
+
+    /**
+     * 添加业务员申请运营中心日志记录
+     * @param $operId
+     * @param $bizerId
+     * @return OperBizerLog
+     */
+    public static function addOperBizerLog($operId, $bizerId)
+    {
+        $bizerLog = new OperBizerLog();
+        $bizerLog->oper_id = $operId;
+        $bizerLog->bizer_id = $bizerId;
+        $bizerLog->status = OperBizerLog::STATUS_APPLYING;
+        $bizerLog->save();
+
+        return $bizerLog;
+    }
+
+    /**
+     * 更新业务员申请运营中心日志记录
+     * @param $operId
+     * @param $bizerId
+     * @param $status
+     * @param $note
+     * @return OperBizerLog
+     */
+    public static function updateOperBizerLog($operId, $bizerId, $status, $note)
+    {
+        $operBizerLog = OperBizerLog::where('oper_id', $operId)
+            ->where('bizer_id', $bizerId)
+            ->orderBy('id', 'desc')
+            ->first();
+        if (empty($operBizerLog)) {
+            throw new BaseResponseException('该业务员申请运营中心的记录不存在');
+        }
+        $operBizerLog->status = $status;
+        $operBizerLog->note = $note;
+        $operBizerLog->save();
+
+        return $operBizerLog;
+    }
+
+    /**
+     * 获取业务员申请运营中心审核记录列表
+     * @param $params
+     * @param bool $withQuery
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|Builder
+     */
+    public static function getOperBizerLogList($params, $withQuery = false)
+    {
+        $bizerId = array_get($params, 'bizerId', '');
+        $operId = array_get($params, 'operId', '');
+
+        $query = OperBizerLog::query();
+        if ($bizerId) {
+            $query->where('bizer_id', $bizerId);
+        }
+        if ($operId) {
+            $query->where('oper_id', $operId);
+        }
+        $query->orderBy('id', 'desc');
+
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate();
+            $data->each(function ($item) {
+                $item->operName = OperService::getNameById($item->oper_id);
+            });
+            return $data;
+        }
     }
 }

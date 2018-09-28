@@ -9,6 +9,7 @@ use App\Modules\Oper\OperBizerService;
 use App\Exceptions\BaseResponseException;
 use App\Result;
 use App\Modules\Area\Area;
+use Illuminate\Support\Facades\DB;
 
 class OperController extends Controller {
 
@@ -99,6 +100,7 @@ class OperController extends Controller {
      * 添加运营中心
      * @author tong.chen
      * @date 2018-8-22
+     * @throws \Exception
      */
     public function add() {
         $this->validate(request(), [
@@ -109,25 +111,17 @@ class OperController extends Controller {
         $bizerId = request()->get('current_user')->id;
         $remark = request('remark', '');
 
-        $operBizer = OperBizerService::getOperBizerByParam(['operId' => $operId, 'bizerId' => $bizerId]);
-        if ($operBizer) {
-            if ($operBizer->status == OperBizer::STATUS_APPLYING) {
-                throw new BaseResponseException('此运营中心已在申请中');
-            }
-            if ($operBizer->status == OperBizer::STATUS_SIGNED) {
-                throw new BaseResponseException('此运营中心已经签约成功');
-            }
-            $model = $operBizer;
-        } else {
-            $model = new OperBizer();
+        DB::beginTransaction();
+        try {
+            OperBizerService::addOperBizer($operId, $bizerId, $remark);
+
+            OperBizerService::addOperBizerLog($operId, $bizerId);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw new BaseResponseException('添加运营中心失败');
         }
-
-        $model->oper_id = $operId;
-        $model->bizer_id = $bizerId;
-        $model->remark = $remark;
-        $model->status = 0;
-
-        $model->save();
 
         return Result::success();
     }
