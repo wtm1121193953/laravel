@@ -41,7 +41,7 @@ class BizerRecordController extends Controller {
         $validate = array(
             'id' => 'required|integer|min:1',
             'status' => 'required|integer',
-            'divide' => 'required|integer',
+            'divide' => 'required',
         );
         if(request('status')=='-1'){
             unset($validate["divide"]);
