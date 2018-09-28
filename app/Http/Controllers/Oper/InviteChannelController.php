@@ -16,6 +16,8 @@ use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteUserService;
+use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
@@ -109,14 +111,28 @@ class InviteChannelController extends Controller
 
         $width = $qrcodeSizeType == 3 ? 1280 : ($qrcodeSizeType == 2 ? 430 : 258);
 
-        $path = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
-        WechatService::addNameToAppCode($path, $inviteChannel->name);
-
-        if(request()->ajax()){
-            return Result::success(['name' => $path]);
-        }else {
-            return response()->download($path, '推广小程序码-' . $inviteChannel->name . '-' . ['', '小', '中', '大'][$qrcodeSizeType] . '.jpg');
+        $oper = OperService::getById($operId);
+        if ($oper->pay_to_platform!=Oper::PAY_TO_OPER){
+            $url = MiniprogramSceneService::genSceneQrCode($scene);
+            $fileName = pathinfo($url, PATHINFO_BASENAME);
+            $path = storage_path('app/public/scene_qrcode/') . $fileName;
+            if(request()->ajax()){
+                return Result::success(['name' => $path]);
+            }else {
+                return response()->download($path, '推广二维码-' . $inviteChannel->name . '-' . ['', '小', '中', '大'][$qrcodeSizeType] . '.png');
+            }
+        } else {
+            $path = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
+            WechatService::addNameToAppCode($path, $inviteChannel->name);
+            if(request()->ajax()){
+                return Result::success(['name' => $path]);
+            }else {
+                return response()->download($path, '推广小程序码-' . $inviteChannel->name . '-' . ['', '小', '中', '大'][$qrcodeSizeType] . '.jpg');
+            }
         }
+
+
+
     }
 
     /**
