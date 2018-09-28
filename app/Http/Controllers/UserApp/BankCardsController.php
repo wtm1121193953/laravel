@@ -79,7 +79,8 @@ class BankCardsController extends Controller
             ->orderBy('default', 'desc')
             ->get();
         foreach ($list as $value){
-            $value['logo'] = BankCards::getBankLogo($value['bank_name']);
+            //$value['logo'] = BankCards::getBankLogo($value['bank_name']);
+            $value['logo'] = url("/images/bank.png");
         }
 
         return Result::success($list);
