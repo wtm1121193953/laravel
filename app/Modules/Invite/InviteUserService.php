@@ -551,7 +551,7 @@ class InviteUserService
                 $sort = $params['orderType'] == 'ascending'?'asc':'desc';
                 $query->orderBy($params['orderColumn'],$sort);
             }, function ($query) {
-                $query->orderBy('invite_user_records.created_at','desc');
+                $query->orderBy('users.created_at','desc');
             })
         ;
 

@@ -8,7 +8,6 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -137,7 +136,7 @@ class ImageMigrationToCOSJob implements ShouldQueue
 //            Log::error($e);
             return ['status' => $status, 'url' => '图片信息不存在'];
         }
-        return ['status' => $status, 'url' => config('cos.cos_url') . $newPath . $newFilename['name']];
+        return ['status' => $status, 'url' => config('cos.cos_url') . '/' . $newPath . $newFilename['name']];
     }
 
 }
