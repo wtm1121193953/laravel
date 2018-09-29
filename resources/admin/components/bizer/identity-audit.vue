@@ -18,7 +18,9 @@
                     {{info.bizerIdentityAuditRecord ? info.bizerIdentityAuditRecord.id_card_no: ''}}
                 </el-form-item>
                 <el-form-item label="签约运营中心">
-                    <span v-for="item in info.operBizers">{{item.operName}}</span>
+                    <span v-for="item in info.operBizers">
+                        <span style="margin-right: 15px;">{{item.operName}}</span>
+                    </span>
                 </el-form-item>
                 <el-form-item label="身份证正面">
                     <div v-viewer>
