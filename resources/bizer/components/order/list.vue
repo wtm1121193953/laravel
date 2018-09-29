@@ -101,9 +101,9 @@
                     <dd v-else class="c-danger">订单类型：未知</dd>
                     
                     <dd>商户名称：{{detailOption.merchant_name}}</dd>
-                    <template v-if="detailOption.type== 1">    
+                    <!--<template v-if="detailOption.type== 1">
                         <dd>身份：{{detailOption.merchant_name}}</dd>
-                    </template>
+                    </template>-->
                     <template v-if="detailOption.type== 1 || detailOption.type== 3">    
                         <dd>单价：{{detailOption.price}}元</dd>
                     </template>

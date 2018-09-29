@@ -49,6 +49,7 @@
 
         <el-table :data="list" stripe>
         button classe-column prop="created_at" label="添加时间"/>
+            <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="operInfo.name" label="运营中心名称"/>
             <el-table-column prop="operInfo.contacter" label="负责人"/>
             <el-table-column prop="operInfo.tel" label="联系电话"/>
