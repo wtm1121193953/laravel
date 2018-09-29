@@ -55,6 +55,12 @@ class MemberController extends Controller
         $operId = request()->get('current_user')->oper_id;
         $channels = InviteChannelService::allOperInviteChannel($operId,true);
 
+        if ($channels) {
+            foreach ($channels as &$c) {
+                empty($c['name']) && $c['name'] = '未命名';
+            }
+        }
+
         return Result::success([
             'list' => $channels
         ]);
