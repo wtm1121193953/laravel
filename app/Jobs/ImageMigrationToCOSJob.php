@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Http\Controllers\UploadController;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -121,15 +122,15 @@ class ImageMigrationToCOSJob implements ShouldQueue
         try{
             $file = file_get_contents($filename);       // 旧文件流数据
             $pathInfo = pathinfo($filename);            // 旧文件路径信息
-            $newFilename = md5(uniqid() . str_random(32)) . '.' . $pathInfo['extension'];  // 新文件名字
-            $newPath = config('cos.test_image');
-            if ($disk->put($newPath . $newFilename, $file)) {
+            $newPath = config('cos.default_image_save_path');
+            $newFilename = UploadController::makeName($pathInfo['extension'],$newPath);     // 新文件名字
+            if ($disk->put($newPath.'/' . $newFilename, $file)) {
                 $status = true;
             }
         }catch (\Exception $e){
             return ['status'=>$status,'url'=>'图片信息不存在'];
         }
-        return ['status' => $status, 'url' => config('cos.cos_url') . $newPath . $newFilename];
+        return ['status' => $status, 'url' => config('cos.cos_url') . $newPath.'/' . $newFilename];
     }
 
 }
