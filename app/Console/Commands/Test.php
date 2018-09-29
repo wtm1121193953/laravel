@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Jobs\Schedule\SettlementAgentPayDaily;
 
 use App\Jobs\Schedule\SettlementDaily;
@@ -70,7 +71,8 @@ class Test extends Command
      */
     public function handle()
     {
-
+        InviteUserStatisticsDailyJob::dispatch((new Carbon())->subDay());
+dd('ok');
         OperStatisticsDailyJob::dispatch((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s'));
         dd('hi');
 //        $data = InviteChannel::where('id','<','10')->pluck('id');
