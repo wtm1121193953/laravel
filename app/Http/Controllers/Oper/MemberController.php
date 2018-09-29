@@ -29,11 +29,15 @@ class MemberController extends Controller
         $operId = request()->get('current_user')->oper_id;
         $mobile = request('mobile');
         $invite_channel_id = request('invite_channel_id');
+        $orderColumn = request('orderColumn');
+        $orderType = request('orderType');
 
         $data = InviteUserService::operInviteList([
             'origin_id' => $operId,
             'mobile' => $mobile,
-            'invite_channel_id' => $invite_channel_id
+            'invite_channel_id' => $invite_channel_id,
+            'orderColumn' => $orderColumn,
+            'orderType' => $orderType
         ]);
 
         return Result::success([
@@ -65,11 +69,15 @@ class MemberController extends Controller
         $operId = request()->get('current_user')->oper_id;
         $mobile = request('mobile');
         $invite_channel_id = request('invite_channel_id');
+        $orderColumn = request('orderColumn');
+        $orderType = request('orderType');
 
         $data = InviteUserService::operInviteList([
             'origin_id' => $operId,
             'mobile' => $mobile,
-            'invite_channel_id' => $invite_channel_id
+            'invite_channel_id' => $invite_channel_id,
+            'orderColumn' => $orderColumn,
+            'orderType' => $orderType
         ],true);
 
         return (new OperInviteExport($data,$operId))->download('用户列表.xlsx');

@@ -536,19 +536,25 @@ class InviteUserService
     public static function operInviteList($params,bool $return_query = false)
     {
 
-        $query = InviteUserRecord::select('*')
-            ->where('origin_id','=',$params['origin_id'])
-            ->where('origin_type','=',3)
-            ->when($params['mobile'],function (Builder $query) use ($params){
-                $query->whereHas('user',function($q) use ($params) {
-                    $q->where('mobile', 'like', "%{$params['mobile']}%");
-                });
+        $query = DB::table('invite_user_records')
+            ->select('invite_user_records.*','users.mobile','users.wx_nick_name','users.order_count','users.created_at as user_created_at')
+            ->leftJoin('users', 'invite_user_records.user_id', '=', 'users.id')
+            ->where('invite_user_records.origin_id','=',$params['origin_id'])
+            ->where('invite_user_records.origin_type','=',3)
+            ->when($params['mobile'],function ( $query) use ($params){
+                $query->where('users.mobile', $params['mobile']);
             })
-            ->when($params['invite_channel_id'], function (Builder $query) use ($params){
-                $query->whereIn('invite_channel_id', $params['invite_channel_id']);
+            ->when($params['invite_channel_id'], function ( $query) use ($params){
+                $query->where('invite_user_records.invite_channel_id', $params['invite_channel_id']);
             })
-            ->with('user:id,mobile,wx_nick_name,order_count,created_at')
-            ->orderByDesc('id');
+            ->when(!empty($params['orderColumn']) && !empty($params['orderType']), function ( $query) use ($params){
+                $sort = $params['orderType'] == 'ascending'?'asc':'desc';
+                $query->orderBy($params['orderColumn'],$sort);
+            }, function ($query) {
+                $query->orderBy('invite_user_records.created_at','desc');
+            })
+        ;
+
 
         if ($return_query) {
             return $query;
@@ -558,7 +564,6 @@ class InviteUserService
 
         if ($data) {
             $channels = InviteChannelService::allOperInviteChannel($params['origin_id']);
-
 
             $data->each(function ($item) use ($channels){
                $item->invite_channel_name = $channels[$item->invite_channel_id];
