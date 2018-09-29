@@ -26,7 +26,7 @@ class WalletWithdrawController extends Controller
     public function withdrawSetting()
     {
         $this->validate(request(), [
-            'bank_card_no' => 'required|numeric|min:10000000|max:99999999999999999999999999999999999|unique:bank_cards',
+            'bank_card_no' => 'required|numeric|min:10000000|max:99999999999999999999999999999999999',
             'bank_card_open_name' => 'required|max:20',
             'bank_name' => 'required|max:20',
             'password' => 'required|max:6',
