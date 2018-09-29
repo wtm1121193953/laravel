@@ -23,11 +23,8 @@ class OrderController extends Controller
             "operId"=>request('operId'),
             'startCreatedAt' => request('startTime'),
             'endCreatedAt' => request('endTime'),
+            'bizerId' => request()->get('current_user')->id,
         ];
-        //当商户ID 不存在的时候，取当前业务员的所有商户
-        if(empty(request('merchantId'))){
-            $where["merchantId"] = Merchant::where('bizer_id', request()->get('current_user')->id)->where('status', 1)->select('id')->get()->pluck('id')->toArray();
-        }
 
         $data = OrderService::getList($where);
         $list = empty($where["merchantId"]) ? [] : $data->items();

@@ -43,6 +43,7 @@ class OrderService extends BaseService
     {
         $operId = array_get($params, 'operId');
         $userId = array_get($params, 'userId');
+        $bizerId = array_get($params, 'bizerId');
         $merchantId = array_get($params, 'merchantId');
         $orderNo = array_get($params, 'orderNo');
         $notifyMobile = array_get($params, 'notifyMobile');
@@ -82,6 +83,9 @@ class OrderService extends BaseService
         }
         if ($operId > 0) {
             $query->where('oper_id', $operId);
+        }
+        if ($bizerId > 0) {
+            $query->where('bizer_id', $bizerId);
         }
         if ($orderNo) {
             $query->where('order_no', 'like', "%$orderNo%");

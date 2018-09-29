@@ -44,6 +44,7 @@ use Carbon\Carbon;
  * @property number settlement_charge_amount
  * @property integer splitting_status
  * @property Carbon splitting_time
+ * @property integer bizer_id
  */
 
 class Order extends BaseModel
