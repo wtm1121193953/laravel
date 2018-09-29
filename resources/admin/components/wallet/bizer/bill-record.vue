@@ -63,6 +63,8 @@
                         <span v-else-if="scope.row.status == 5">(审核不通过)</span>
                     </span>
                     <span v-else-if="scope.row.type == 8">提现失败</span>
+                    <span v-else-if="scope.row.type == 9">交易分润入账(业务员)</span>
+                    <span v-else-if="scope.row.type == 10">交易分润退款(业务员)</span>
                     <span v-else>未知{{scope.row.type}}</span>
                 </template>
             </el-table-column>
