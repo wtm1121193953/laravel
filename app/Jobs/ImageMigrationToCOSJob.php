@@ -96,9 +96,9 @@ class ImageMigrationToCOSJob implements ShouldQueue
                 if($this->data[$tmp]!=$res['url']){
                     // 避免重复提交
                     $this->data[$tmp] = $res['url'];
+                    $isSave = true;
                 }
 
-                $isSave = true;
             } else {
                 Log::error('迁移COS字段上传失败', [
                     'column' => $explode,
@@ -147,7 +147,7 @@ class ImageMigrationToCOSJob implements ShouldQueue
             }
 
         } catch (\Exception $e) {
-            Log::error('COS上传报错',$e);
+            Log::error('COS上传报错',json_decode(json_encode($e), true));
             return ['status' => $status, 'url' => '图片信息不存在'];
         }
         return ['status' => $status, 'url' => config('cos.cos_url') . '/' . $newPath . $newFilename['name']];
