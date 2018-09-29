@@ -141,8 +141,7 @@ class V1_4_5 extends Command
 
         $bar = $this->output->createProgressBar($count);
         foreach ($changModel as $modelName => $columns) {
-            $modelName::select(array_merge(['id'],$columns))
-                ->chunk(10000, function ( $list ) use ( $columns, $bar ) {
+            $modelName::chunk(10000, function ( $list ) use ( $columns, $bar ) {
                 $list->each(function ( $data ) use ( $columns, $bar ) {
                     ImageMigrationToCOSJob::dispatch($data, $columns);
                     $bar->advance();
