@@ -147,7 +147,7 @@ class ImageMigrationToCOSJob implements ShouldQueue
             }
 
         } catch (\Exception $e) {
-//            Log::error($e);
+            Log::error($e);
             return ['status' => $status, 'url' => '图片信息不存在'];
         }
         return ['status' => $status, 'url' => config('cos.cos_url') . '/' . $newPath . $newFilename['name']];
