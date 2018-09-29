@@ -25,7 +25,7 @@ class UploadController
         } else {
             $path = $cosPath . $name['name'];
         }
-        $url = config('cos.cos_url') . $path;
+        $url = config('cos.cos_url') . '/' . $path;
         $image = Image::make($url);
 
         return Result::success([
