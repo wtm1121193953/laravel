@@ -132,9 +132,11 @@
                     <template v-if="detailOption.type== 3">
                         <dd>
                             <p>商品信息：</p>
-                            <p class="clearfix"><span class="fl">我是宇宙牛逼店铺的商品名</span><span class="fr">100¥</span></p>
-                            <p class="clearfix"><span class="fl">我是宇宙牛逼店铺的商品名</span><span class="fr">100¥</span></p>
-                            <p class="clearfix"><span class="fl">我是宇宙牛逼店铺的商品名</span><span class="fr">100¥</span></p>
+                            <div v-for="(item, index) in detailOption.dishes_items" :key="index">
+                                <span>{{item.dishes_goods_name}}</span>&nbsp;&nbsp;&nbsp;
+                                <span>¥{{item.dishes_goods_sale_price}}</span>&nbsp;&nbsp;&nbsp;
+                                <span>×{{item.number}}</span><br/>
+                            </div>
                         </dd>
                     </template>
                 </dl>
