@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Schema;
 
 use App\Jobs\ConsumeQuotaSyncToTpsJob;
 use App\Jobs\InviteChannelsUnbindMaker;
+use Illuminate\Support\Facades\Storage;
 
 use App\Support\TpsApi;
 use App\Jobs\Schedule\OperStatisticsDailyJob;
@@ -71,6 +72,7 @@ class Test extends Command
      */
     public function handle()
     {
+        dd(config('cos.cos_url'));
         InviteUserStatisticsDailyJob::dispatch((new Carbon())->subDay());
 dd('ok');
         OperStatisticsDailyJob::dispatch((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s'));

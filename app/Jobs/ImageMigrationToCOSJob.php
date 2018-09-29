@@ -69,7 +69,11 @@ class ImageMigrationToCOSJob implements ShouldQueue
                     }
                     if (!empty($newFileArr)) {
                         // 如果有新数据插入
-                        $this->data[$column] = implode(',', $newFileArr);
+                        $saveFile = implode(',', $newFileArr);
+                        if($this->data[$column]!=$saveFile){
+                            // 避免重复插入
+                            $this->data[$column] = implode(',', $newFileArr);
+                        }
                         $isSave = true;
                     }
                     continue;
@@ -83,7 +87,17 @@ class ImageMigrationToCOSJob implements ShouldQueue
             }
             $res = $this->upload($this->data[$explode], $disk);
             if ($res['status']) {
-                $this->data[$explode] = $res['url'];
+
+                if (!is_numeric($column)) {
+                    $tmp = $column;
+                }else{
+                    $tmp = $explode;
+                }
+                if($this->data[$tmp]!=$res['url']){
+                    // 避免重复提交
+                    $this->data[$tmp] = $res['url'];
+                }
+
                 $isSave = true;
             } else {
                 Log::error('迁移COS字段上传失败', [
@@ -133,7 +147,7 @@ class ImageMigrationToCOSJob implements ShouldQueue
             }
 
         } catch (\Exception $e) {
-//            Log::error($e);
+            Log::error('COS上传报错',$e);
             return ['status' => $status, 'url' => '图片信息不存在'];
         }
         return ['status' => $status, 'url' => config('cos.cos_url') . '/' . $newPath . $newFilename['name']];
