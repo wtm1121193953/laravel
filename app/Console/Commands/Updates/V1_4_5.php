@@ -71,12 +71,12 @@ class V1_4_5 extends Command
         // 待修改字段
         $changModel = [
             DishesGoods::class => ['detail_image'],
-            DishesItem::class => ['dishes_goods_detail_image'],
+            /*DishesItem::class => ['dishes_goods_detail_image'],
             Goods::class => [
                 'thumb_url',
                 'pic',
                 'pic_list' => ','
-            ],
+            ],*/
             /*Merchant::class => ['logo'
                 , 'desc_pic'
                 , 'desc_pic_list' => ','

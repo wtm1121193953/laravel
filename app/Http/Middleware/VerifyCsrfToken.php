@@ -13,6 +13,6 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         //
-//        'http://dqo2o.com/upload/image'
+        'http://dqo2o.com/upload/image'
     ];
 }

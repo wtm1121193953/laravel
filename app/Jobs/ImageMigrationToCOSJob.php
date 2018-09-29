@@ -95,7 +95,7 @@ class ImageMigrationToCOSJob implements ShouldQueue
                 ]);
             }
         }
-        if($isSave){
+        if ($isSave) {
             if (!$this->data->save()) {
                 // 如果入库失败
                 Log::error('迁移COS数据保存失败', [
@@ -113,24 +113,31 @@ class ImageMigrationToCOSJob implements ShouldQueue
      * Author:   JerryChan
      * Date:     2018/9/28 16:34
      * @param string $filename
-     * @param $disk
+     * @param        $disk
      * @return array
      */
     private function upload( $filename, $disk )
     {
         $status = false;
-        try{
+        try {
             $file = file_get_contents($filename);       // 旧文件流数据
             $pathInfo = pathinfo($filename);            // 旧文件路径信息
-            $newPath = config('cos.default_image_save_path');
-            $newFilename = UploadController::makeName($pathInfo['extension'],$newPath);     // 新文件名字
-            if ($disk->put($newPath.'/' . $newFilename, $file)) {
+            $newPath = '';
+            $newFilename = UploadController::makeName($file, $pathInfo['extension'], $newPath);     // 新文件名字
+            if (!$newFilename['status']) {
+                if ($disk->put($newPath . '/' . $newFilename['name'], $file)) {
+                    $status = true;
+                }
+            } else {
+                // 文件已存在，无需重复上传
                 $status = true;
             }
-        }catch (\Exception $e){
-            return ['status'=>$status,'url'=>'图片信息不存在'];
+
+        } catch (\Exception $e) {
+//            Log::error($e);
+            return ['status' => $status, 'url' => '图片信息不存在'];
         }
-        return ['status' => $status, 'url' => config('cos.cos_url') . $newPath.'/' . $newFilename];
+        return ['status' => $status, 'url' => config('cos.cos_url') . $newPath . $newFilename['name']];
     }
 
 }
