@@ -15,7 +15,7 @@
                 :closable="false"
                 show-icon>
             </el-alert>
-            <el-tabs v-model="activeName" type="card">
+            <el-tabs v-model="activeName" type="card" class="m-t-15">
                 <el-tab-pane :disabled="activeName != 'uploadIdCard'" label="上传证件照" name="uploadIdCard">
                     <el-form :model="form1" :rules="formRules2" ref="form1" size="small" label-width="110px">
                         <el-form-item prop="name" label="身份证姓名">
