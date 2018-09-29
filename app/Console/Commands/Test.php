@@ -72,6 +72,7 @@ class Test extends Command
      */
     public function handle()
     {
+        dd(config('cos.cos_url'));
         InviteUserStatisticsDailyJob::dispatch((new Carbon())->subDay());
 dd('ok');
         OperStatisticsDailyJob::dispatch((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s'));
