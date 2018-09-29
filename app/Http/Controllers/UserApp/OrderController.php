@@ -192,7 +192,7 @@ class OrderController extends Controller
         $order->order_no = $orderNo;
         $order->user_id = $user->id;
         $order->user_name = $user->name ?? '';
-        $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
+        $order->notify_mobile = $user->mobile;
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->signboard_name ?? '';
         $order->goods_id = $goodsId;
@@ -276,7 +276,7 @@ class OrderController extends Controller
         $order->user_id = $user->id;
         $order->user_name = $user->name ?? '';
         $order->type = Order::TYPE_DISHES;
-        $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
+        $order->notify_mobile = $user->mobile;
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->signboard_name ?? '';
         $order->goods_name = $merchant->name ?? '';
@@ -356,7 +356,7 @@ class OrderController extends Controller
         $order->oper_id = $merchant->oper_id;
         $order->user_id = $user->id;
         $order->user_name = $user->name ?? '';
-        $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
+        $order->notify_mobile = $user->mobile;
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->signboard_name ?? '';
         $order->type = Order::TYPE_SCAN_QRCODE_PAY;
