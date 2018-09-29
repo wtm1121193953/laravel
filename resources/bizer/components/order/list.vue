@@ -123,9 +123,9 @@
                     <template v-if="detailOption.type== 1">
                         <dd>商品名称：{{detailOption.goods_name}}</dd>
                     </template>
-                    <template v-if="detailOption.type== 1 || detailOption.type== 2">
+                    <!--<template v-if="detailOption.type== 1 || detailOption.type== 2">
                         <dd>数量：{{detailOption.buy_number}}</dd>
-                    </template>
+                    </template>-->
                     <dd>手机号：{{detailOption.notify_mobile}}</dd>
                     <!--<dd>返利积分：20</dd>-->
                     <dd>订单创建时间：{{detailOption.created_at}}</dd>

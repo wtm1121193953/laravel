@@ -27,8 +27,8 @@ class OrderController extends Controller
         ];
 
         $data = OrderService::getList($where);
-        $list = empty($where["merchantId"]) ? [] : $data->items();
-        $total= empty($where["merchantId"]) ? 0 : $data->total();
+        $list = $data->items();
+        $total= $data->total();
 
         return Result::success([
             'list' => $list,
