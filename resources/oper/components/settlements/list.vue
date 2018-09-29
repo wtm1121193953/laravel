@@ -31,10 +31,8 @@
                 <el-select
                     v-model="query.bizerId"
                     filterable
-                    remote
                     clearable
                     placeholder="请输入业务员姓名或手机号码"
-                    :remote-method="bizerSearch"
                     @clear="bizerId = ''"
                     :loading="bizerSelectLoading"
                 >
@@ -53,10 +51,8 @@
                 <el-select
                         v-model="query.memberId"
                         filterable
-                        remote
                         clearable
                         placeholder="请输入员工姓名或手机号码"
-                        :remote-method="memberSearch"
                         @clear="memberId = ''"
                         :loading="memberSelectLoading"
                 >
@@ -256,16 +252,16 @@
                 this.isShowPayMoney = false;
                 this.getList();
             },
-            bizerSearch(query = '') {
+            bizerSearch() {
                 this.bizerSelectLoading = true;
-                api.get('/oper/bizer/getBizerList', {bizerNameOrMobile: query}).then(data => {
+                api.get('/oper/bizer/getBizerList').then(data => {
                     this.bizerList = data;
                     this.bizerSelectLoading = false;
                 })
             },
-            memberSearch(query = '') {
+            memberSearch() {
                 this.memberSelectLoading = true;
-                api.get('/operBizer/getMemberList', {memberNameOrMobile: query}).then(data => {
+                api.get('/operBizer/getMemberList').then(data => {
                     this.memberList = data;
                     this.memberSelectLoading = false;
                 })
