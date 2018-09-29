@@ -9,6 +9,7 @@
 namespace App\Exports;
 
 
+use App\Modules\Bizer\BizerService;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperService;
 use App\Modules\User\UserService;
@@ -72,8 +73,11 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
             $array = [
                 '交易时间',
                 '交易号',
+                '业务员手机号码',
+                '业务员姓名',
                 '交易类型',
                 '账户交易金额',
+                '账户余额'
             ];
         } else {
             $array = [];
@@ -90,6 +94,11 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
         }
         if ($row->origin_type == WalletBill::ORIGIN_TYPE_USER) {
             $row->user_mobile = UserService::getUserById($row->origin_id)->mobile;
+        }
+        if ($row->origin_type == WalletBill::ORIGIN_TYPE_BIZER) {
+            $bizer = BizerService::getById($row->origin_id);
+            $row->bizer_mobile = $bizer->mobile;
+            $row->bizer_name = $bizer->name;
         }
         if (in_array($row->type, [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED])) {
             $walletWithdraw = WalletWithdrawService::getWalletWithdrawById($row->obj_id);
@@ -166,8 +175,11 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
             $array = [
                 $row->created_at,
                 $row->bill_no,
+                $row->bizer_mobile,
+                $row->bizer_name,
                 $typeText,
                 ($row->inout_type == 1 ? '+' : '-') . "\t" . $row->amount,
+                $row->after_amount,
             ];
         } else {
             $array = [];

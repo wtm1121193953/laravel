@@ -100,7 +100,7 @@
                     startDate: '',
                     endDate: '',
                     type: 0,
-                    originType: 1, // 商户类型
+                    originType: 4, // 商户类型
                     walletId: null, // 钱包id
 
                     page: 1,
