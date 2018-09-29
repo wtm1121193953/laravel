@@ -50,7 +50,7 @@ class OperSettlementExport implements FromQuery, WithHeadings, WithMapping
             '费率',
             '结算金额',
             '结算状态',
-            '业务员信息',
+            '签约人',
         ];
     }
 
@@ -61,6 +61,14 @@ class OperSettlementExport implements FromQuery, WithHeadings, WithMapping
      */
     public function map($row): array
     {
+        if ($row->bizer_name) {
+            $signName = '[业务员]' . $row->bizer_name . '/' . $row->bizer_mobile;
+        } elseif ($row->oper_biz_member_name) {
+            $signName = '[员工]' . $row->oper_biz_member_name . '/' . $row->oper_biz_member_mobile;
+        } else {
+            $signName = '无';
+        }
+
         return [
             $row->id,
             $row->merchant_name,
@@ -70,9 +78,7 @@ class OperSettlementExport implements FromQuery, WithHeadings, WithMapping
             $row->settlement_rate.'%',
             $row->real_amount,
             $row->status ==1 ? '审核中':'已打款',
-            $row->oper_biz_member_name.'/'.$row->oper_biz_member_mobile,
-
-
+            $signName,
         ];
     }
 }

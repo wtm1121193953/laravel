@@ -28,8 +28,8 @@ class MerchantController extends Controller
         $memberNameOrMobile = request('memberNameOrMobile');
         $bizerNameOrMobile = request('bizerNameOrMobile');
 
-        $operBizMemberCodes = OperBizerService::getOperBizMemberCodeByNameOrMobile($memberNameOrMobile);
-        $bizerIds = BizerService::getBizerIdsByNameOrMobile($bizerNameOrMobile);
+        $operBizMemberCodes = $memberNameOrMobile ? OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile)->pluck('code') : '';
+        $bizerIds = $bizerNameOrMobile ? BizerService::getBizersByNameOrMobile($bizerNameOrMobile)->pluck('id') : '';
 
         $data = [
             'id' => request('id'),

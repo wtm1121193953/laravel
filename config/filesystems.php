@@ -66,16 +66,16 @@ return [
 
         'cosv5' => [
             'driver' => 'cosv5',
-            'region'          => env('COSV5_REGION', 'ap-guangzhou'),
+            'region'          => 'ap-guangzhou',
             'credentials'     => [
-                'appId'     => env('COSV5_APP_ID'),
-                'secretId'  => env('COSV5_SECRET_ID'),
-                'secretKey' => env('COSV5_SECRET_KEY'),
+                'appId'     => env('COSV5_APP_ID', '1257640953'),
+                'secretId'  => env('COSV5_SECRET_ID', 'AKIDreHl4Gu6ohZUEoFPSVO8h5HSRIyTl132'),
+                'secretKey' => env('COSV5_SECRET_KEY', 'yqZ7UgjbIi0CE7rYKn8HF1mOo372mLn7'),
             ],
-            'timeout'         => env('COSV5_TIMEOUT', 60),
-            'connect_timeout' => env('COSV5_CONNECT_TIMEOUT', 60),
-            'bucket'          => env('COSV5_BUCKET'),
-            'cdn'             => env('COSV5_CDN'),
+            'timeout'         => 60,
+            'connect_timeout' => 60,
+            'bucket'          => env('COSV5_SECRET_KEY', 'daqian-public-1257640953'),
+            'cdn'             => env('COSV5_CDN', '#https://{your-bucket-name}-{your-app-id}.file.myqcloud.com'),
             'scheme'          => env('COSV5_SCHEME', 'https'),
         ],
 
