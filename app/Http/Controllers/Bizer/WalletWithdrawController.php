@@ -173,6 +173,9 @@ class WalletWithdrawController extends Controller
         $wallet = WalletService::getWalletInfo($bizer);
         $bankCard = BankCardService::getBankCardByOriginInfo($bizerId, BankCard::ORIGIN_TYPE_BIZER);
         $ratio = UserCreditSettingService::getBizerWithdrawChargeRatio();
+        if (empty($bankCard)) {
+            throw new BaseResponseException('提现银行卡不存在');
+        }
 
         return Result::success([
             'balance' => $wallet->balance,  // 可提现金额

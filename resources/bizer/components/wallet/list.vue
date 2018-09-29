@@ -240,6 +240,14 @@
                         } else {
                             this.$message.error('改审核状态不存在');
                         }
+                    } else {
+                        router.replace({
+                            path: '/refresh',
+                            query: {
+                                name: 'WithdrawPasswordForm',
+                                key: '/withdraw/password/form',
+                            }
+                        });
                     }
                 })
             }
