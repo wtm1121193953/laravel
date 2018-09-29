@@ -64,8 +64,8 @@ class MerchantController extends Controller
             $createOperIds = OperService::getAll(['name' => $creatorOperName], 'id')->pluck('id');
         }
 
-        $operBizMemberCodes = OperBizerService::getOperBizMemberCodeByNameOrMobile($memberNameOrMobile);
-        $bizerIds = BizerService::getBizerIdsByNameOrMobile($bizerNameOrMobile);
+        $operBizMemberCodes = $memberNameOrMobile ? OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile)->pluck('code') : '';
+        $bizerIds = $bizerNameOrMobile ? BizerService::getBizersByNameOrMobile($bizerNameOrMobile)->pluck('id') : '';
 
         $startTime = microtime(true);
         $data = MerchantService::getList([

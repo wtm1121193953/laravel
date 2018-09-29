@@ -55,11 +55,11 @@ class OperInviteExport implements FromQuery, WithHeadings, WithMapping
     public function map($row): array
     {
         return [
-            $row->user->created_at,
-            $row->user->mobile,
-            $row->user->wx_nick_name,
+            $row->user_created_at,
+            $row->mobile,
+            $row->wx_nick_name,
             $this->channels[$row->invite_channel_id],
-            '`'.$row->user->order_count
+            '`'.$row->order_count
         ];
     }
 }

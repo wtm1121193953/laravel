@@ -20,12 +20,58 @@
                     <el-option label="不显示" :value="1"/>
                 </el-select>
             </el-form-item>
-            <el-form-item label="业务员">
+            <!--<el-form-item label="业务员">
                 <el-input v-model="query.oper_biz_member_name" clearable placeholder="请输入业务员"/>
             </el-form-item>
             <el-form-item label="业务员手机号码">
                 <el-input v-model="query.oper_biz_member_mobile" clearable placeholder="请输入业务员手机号码"/>
+            </el-form-item>-->
+
+            <el-form-item label="业务员">
+                <el-select
+                    v-model="query.bizerId"
+                    filterable
+                    remote
+                    clearable
+                    placeholder="请输入业务员姓名或手机号码"
+                    :remote-method="bizerSearch"
+                    @clear="bizerId = ''"
+                    :loading="bizerSelectLoading"
+                >
+                    <el-option
+                        v-for="item in bizerList"
+                        :key="item.id"
+                        :label="item.name + item.mobile"
+                        :value="item.id"
+                    >
+                        <span class="c-blue">{{item.name}}</span>
+                        <span class="c-light-gray">{{item.mobile}}</span>
+                    </el-option>
+                </el-select>
             </el-form-item>
+            <el-form-item label="我的员工">
+                <el-select
+                        v-model="query.memberId"
+                        filterable
+                        remote
+                        clearable
+                        placeholder="请输入员工姓名或手机号码"
+                        :remote-method="memberSearch"
+                        @clear="memberId = ''"
+                        :loading="memberSelectLoading"
+                >
+                    <el-option
+                            v-for="item in memberList"
+                            :key="item.id"
+                            :label="item.name + item.mobile"
+                            :value="item.id"
+                    >
+                        <span class="c-blue">{{item.name}}</span>
+                        <span class="c-light-gray">{{item.mobile}}</span>
+                    </el-option>
+                </el-select>
+            </el-form-item>
+
             <el-form-item prop="settlement_date" label="结算时间">
                 <el-date-picker
                         v-model="query.settlement_date"
@@ -39,8 +85,9 @@
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search"> 搜索</i></el-button>
             </el-form-item>
+
+            <el-button class="m-l-20" size="small" type="success" @click="exportExcel">导出Excel</el-button>
         </el-form>
-        <el-button class="fr m-l-20" type="success" @click="exportExcel">导出Excel</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="merchant_name" label="结算商户" align="center">
                 <template slot-scope="scope">
@@ -71,9 +118,19 @@
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column label="业务员信息" align="center">
+            <el-table-column label="签约人" align="center">
                 <template slot-scope="scope">
-                    {{scope.row.oper_biz_member_name}}/{{scope.row.oper_biz_member_mobile}}
+                    <span v-if="scope.row.bizer_name">
+                        <span>[业务员]</span>
+                        <span>{{scope.row.bizer_name}}</span>
+                        <span>{{scope.row.bizer_mobile}}</span>
+                    </span>
+                    <span v-else-if="scope.row.oper_biz_member_name">
+                        <span>[员工]</span>
+                        <span>{{scope.row.oper_biz_member_name}}</span>
+                        <span>{{scope.row.oper_biz_member_mobile}}</span>
+                    </span>
+                    <span v-else>无</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="300px" align="center">
@@ -130,10 +187,17 @@
                     oper_biz_member_name: '',
                     oper_biz_member_mobile: '',
                     settlement_date: '',
+                    bizerId: '',
+                    memberId: '',
                 },
                 total: 0,
                 settlement: {},
                 merchants: [],
+
+                bizerSelectLoading: false,
+                memberSelectLoading: false,
+                bizerList: [],
+                memberList: [],
             }
         },
         methods: {
@@ -191,11 +255,27 @@
             addPayPicUrl() {
                 this.isShowPayMoney = false;
                 this.getList();
-            }
+            },
+            bizerSearch(query = '') {
+                this.bizerSelectLoading = true;
+                api.get('/oper/bizer/getBizerList', {bizerNameOrMobile: query}).then(data => {
+                    this.bizerList = data;
+                    this.bizerSelectLoading = false;
+                })
+            },
+            memberSearch(query = '') {
+                this.memberSelectLoading = true;
+                api.get('/operBizer/getMemberList', {memberNameOrMobile: query}).then(data => {
+                    this.memberList = data;
+                    this.memberSelectLoading = false;
+                })
+            },
         },
         created() {
             this.getList();
             this.getMerchants();
+            this.bizerSearch();
+            this.memberSearch();
         },
         components: {
             SettlementDetail,

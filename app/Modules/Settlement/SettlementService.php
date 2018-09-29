@@ -85,27 +85,38 @@ class SettlementService extends BaseService
 
     /**
      * @param $operId
-     * @param string $merchantId
-     * @param string $status
-     * @param string $showAmount
-     * @param array $settlementDate
-     * @param string $operBizMemberName
-     * @param string $operBizMemberMobile
+     * @param $params
      * @param bool $getWithQuery
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Database\Query\Builder
      */
-    public static function getOperSettlements($operId, $merchantId = '', $status = '', $showAmount = '', $settlementDate = [], $operBizMemberName = '', $operBizMemberMobile = '', $getWithQuery = false)
+    public static function getOperSettlements($operId, $params, $getWithQuery = false)
     {
+        $merchantId = array_get($params, 'merchantId', '');
+        $status = array_get($params, 'status', '');
+        $showAmount = array_get($params, 'showAmount', '');
+        $settlementDate = array_get($params, 'settlementDate', []);
+        $operBizMemberName = array_get($params, 'operBizMemberName', '');
+        $operBizMemberMobile = array_get($params, 'operBizMemberMobile', '');
+        $bizerId = array_get($params, 'bizerId', '');
+        $memberId = array_get($params, 'memberId', '');
+
         $query = DB::table('settlements')
             ->leftJoin('merchants','settlements.merchant_id','=','merchants.id')
             ->leftJoin('oper_biz_members as om','om.code','=','merchants.oper_biz_member_code')
-            ->select('settlements.*','merchants.name as merchant_name','om.name as oper_biz_member_name','om.mobile as oper_biz_member_mobile')
+            ->leftJoin('bizers', 'bizers.id', '=', 'merchants.bizer_id')
+            ->select('settlements.*','merchants.name as merchant_name','om.name as oper_biz_member_name','om.mobile as oper_biz_member_mobile', 'om.id as oper_biz_member_id', 'bizers.id as bizer_id', 'bizers.name as bizer_name', 'bizers.mobile as bizer_mobile')
             ->where('settlements.oper_id', $operId)
             ->where('settlements.amount','>',0)
             ->orderBy('settlements.id', 'desc');
 
         if($merchantId){
             $query->where('settlements.merchant_id', $merchantId);
+        }
+        if ($bizerId) {
+            $query->where('bizers.id', $bizerId);
+        }
+        if ($memberId) {
+            $query->where('om.id', $memberId);
         }
         if($status){
             $query->where('settlements.status', $status);

@@ -242,4 +242,16 @@ class OperBizMemberController extends Controller
         ]);
     }
 
+    /**
+     * 获取员工列表
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getMemberList()
+    {
+        $operId = request()->get('current_user')->oper_id;
+        $memberNameOrMobile = request('memberNameOrMobile', '');
+        $memberList = OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile, $operId);
+
+        return Result::success($memberList);
+    }
 }

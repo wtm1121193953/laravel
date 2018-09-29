@@ -192,21 +192,21 @@ class OperBizerService extends BaseService {
     }
 
     /**
-     * 通过姓名和手机号码获取员工推荐码
+     * 通过姓名和手机号码获取员工列表
      * @param $memberNameOrMobile
+     * @param int $operId
      * @return \Illuminate\Support\Collection|string
      */
-    public static function getOperBizMemberCodeByNameOrMobile($memberNameOrMobile)
+    public static function getOperBizMembersByNameOrMobile($memberNameOrMobile, $operId = 0)
     {
-        if ($memberNameOrMobile) {
-            $operBizMemberCodes = OperBizMember::where('name', 'like', "%$memberNameOrMobile%")
-                ->orWhere('mobile', 'like', "%$memberNameOrMobile%")
-                ->select('code')
-                ->get()
-                ->pluck('code');
-        } else {
-            $operBizMemberCodes = '';
-        }
+        $operBizMemberCodes = OperBizMember::when($operId, function (Builder $query) use ($operId) {
+                $query->where('oper_id', $operId);
+            })
+            ->where(function (Builder $query) use ($memberNameOrMobile) {
+                $query->where('name', 'like', "%$memberNameOrMobile%")
+                    ->orWhere('mobile', 'like', "%$memberNameOrMobile%");
+            })
+            ->get();
 
         return $operBizMemberCodes;
     }

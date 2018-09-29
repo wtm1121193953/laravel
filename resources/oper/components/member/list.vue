@@ -7,12 +7,11 @@
             </el-form-item>
 
             <el-form-item label="渠道名称" prop="invite_channel_id">
-                <el-select v-model="query.invite_channel_id" size="small"  multiple placeholder="请选择" class="w-150">
-                    <el-option value="" label="全部"/>
+                <el-select v-model="query.invite_channel_id" size="small"   placeholder="请选择" class="w-150">
+                    <el-option value="0" label="全部"/>
                     <el-option v-for="item in channels" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
             </el-form-item>
-
             <el-form-item>
                 <el-button type="primary" @click="search">搜索</el-button>
             </el-form-item>
@@ -20,12 +19,12 @@
                 <el-button type="success" size="small" @click="downloadExcel">导出</el-button>
             </el-form-item>
         </el-form>
-        <el-table :data="list" stripe>
-            <el-table-column prop="user.created_at" label="注册时间"/>
-            <el-table-column prop="user.mobile" label="手机号"/>
-            <<el-table-column prop="user.wx_nick_name" label="微信昵称"/>
+        <el-table :data="list" stripe @sort-change="sortChange">
+            <el-table-column prop="user_created_at" label="注册时间"/>
+            <el-table-column prop="mobile" label="手机号"/>
+            <<el-table-column prop="wx_nick_name" label="微信昵称"/>
             <el-table-column prop="invite_channel_name" label="渠道"/>
-            <el-table-column prop="user.order_count" label="下单次数"/>
+            <el-table-column prop="order_count" label="下单次数" sortable="custom"/>
         </el-table>
         <el-pagination
                 class="fr m-t-20"
@@ -48,7 +47,9 @@
                 query: {
                     page: 1,
                     mobile: '',
-                    invite_channel_id:0
+                    invite_channel_id:'',
+                    orderColumn: null,
+                    orderType: null,
                 },
                 list: [],
                 total: 0,
@@ -64,6 +65,11 @@
                 this.query.page = 1;
                 this.getList();
             },
+            sortChange (column) {
+                this.query.orderColumn = column.prop;
+                this.query.orderType = column.order;
+                this.getList();
+            },
             getList(){
                 api.get('/member/userlist', this.query).then(data => {
                     this.list = data.list;
@@ -77,9 +83,14 @@
             downloadExcel() {
                 let message = '确定要导出当前筛选的用户列表么？'
                 this.$confirm(message).then(() => {
-                    window.location.href = window.location.origin + '/api/oper/member/export?'
+                    let url = window.location.origin + '/api/oper/member/export?'
                         + 'mobile=' + this.query.mobile
-                        + '&invite_channel_id[]=' + this.query.invite_channel_id ;
+                        + '&invite_channel_id=' + this.query.invite_channel_id ;
+                    if (this.query.orderColumn && this.q.orderType) {
+                        url += '&orderColumn=' + this.query.orderColumn ;
+                        url += '&orderType=' + this.query.orderType ;
+                    }
+                    window.location.href = url ;
                 })
             },
             getChannels() {

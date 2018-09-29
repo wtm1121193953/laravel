@@ -190,6 +190,7 @@ class BizerService extends BaseService
                 $query->orDoesntHave('bizerIdentityAuditRecord');
             }
         }
+        $query->orderBy('id', 'desc');
 
         if ($withQuery) {
             return $query;
@@ -286,21 +287,25 @@ class BizerService extends BaseService
     }
 
     /**
-     * 通过业务员手机号码或姓名或者业务ids
+     * 通过业务员手机号码或姓名获取业务员列表
      * @param $bizerNameOrMobile
+     * @param int $operId
      * @return \Illuminate\Support\Collection|string
      */
-    public static function getBizerIdsByNameOrMobile($bizerNameOrMobile)
+    public static function getBizersByNameOrMobile($bizerNameOrMobile, $operId = 0)
     {
-        if($bizerNameOrMobile) {
-            $bizerIds = Bizer::where('name', 'like', "%$bizerNameOrMobile%")
-                ->orWhere('mobile', 'like', "%$bizerNameOrMobile%")
-                ->select('id')
-                ->get()
-                ->pluck('id');
-        } else {
-            $bizerIds = '';
+        $ids = [];
+        if ($operId) {
+            $ids = OperBizerService::getAllbizer(['oper_ids' => $operId])->pluck('bizer_id');
         }
+        $bizerIds = Bizer::when(!empty($ids), function (Builder $query) use ($ids) {
+                $query->whereIn('id', $ids);
+            })
+            ->where(function (Builder $query) use ($bizerNameOrMobile) {
+                $query->where('name', 'like', "%$bizerNameOrMobile%")
+                    ->orWhere('mobile', 'like', "%$bizerNameOrMobile%");
+            })
+            ->get();
 
         return $bizerIds;
     }
