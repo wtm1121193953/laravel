@@ -17,9 +17,9 @@
                     <el-option
                             v-for="item in operBizMembers"
                             :key="item.bizerId"
-                            :label="item.bizerMobile"
+                            :label="item.bizerName + item.bizerMobile"
                             :value="item.bizerId">
-                        <span class="c-blue">{{item.bizerNme}}</span>
+                        <span class="c-blue">{{item.bizerName}}</span>
                         <span class="c-light-gray">{{item.bizerMobile}}</span>
                     </el-option>
                 </el-select>

@@ -150,7 +150,7 @@ class OperBizerService extends BaseService {
             $data->each(function ($item) {
                 $bizerInfo = BizerService::getById($item->bizer_id) ?: null;
                 $item->bizerId = $bizerInfo->id;
-                $item->bizerNme = $bizerInfo->name;
+                $item->bizerName = $bizerInfo->name;
                 $item->bizerMobile = $bizerInfo->mobile;
             });
 

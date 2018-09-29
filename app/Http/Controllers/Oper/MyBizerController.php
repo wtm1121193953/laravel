@@ -6,7 +6,6 @@ use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Bizer\BizerService;
 use App\Modules\Merchant\Merchant;
-use App\Modules\Oper\OperService;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperBizer;
 use App\Modules\Oper\MyOperBizer;
