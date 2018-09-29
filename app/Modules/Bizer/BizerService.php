@@ -190,6 +190,7 @@ class BizerService extends BaseService
                 $query->orDoesntHave('bizerIdentityAuditRecord');
             }
         }
+        $query->orderBy('id', 'desc');
 
         if ($withQuery) {
             return $query;
