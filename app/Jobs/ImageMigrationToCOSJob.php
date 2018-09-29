@@ -87,7 +87,7 @@ class ImageMigrationToCOSJob implements ShouldQueue
             }
             $res = $this->upload($this->data[$explode], $disk);
             if ($res['status']) {
-
+                // 为cos保存成功，需要入库
                 if (!is_numeric($column)) {
                     $tmp = $column;
                 }else{
@@ -131,7 +131,7 @@ class ImageMigrationToCOSJob implements ShouldQueue
      */
     private function upload( $filename, $disk )
     {
-        $status = false;
+        $status = false;                // 判断是否上传   false为未上传
         try {
             $file = file_get_contents($filename);       // 旧文件流数据
             $pathInfo = pathinfo($filename);            // 旧文件路径信息
@@ -147,7 +147,7 @@ class ImageMigrationToCOSJob implements ShouldQueue
             }
 
         } catch (\Exception $e) {
-            Log::error('COS上传报错',json_decode(json_encode($e), true));
+            Log::error('COS上传报错：'.compact(['message'=>$e->getMessage(),'code'=>$e->getCode(),'line'=>$e->getLine()]));
             return ['status' => $status, 'url' => '图片信息不存在'];
         }
         return ['status' => $status, 'url' => config('cos.cos_url') . '/' . $newPath . $newFilename['name']];
