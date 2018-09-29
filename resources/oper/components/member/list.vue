@@ -79,7 +79,7 @@
                 this.$confirm(message).then(() => {
                     window.location.href = window.location.origin + '/api/oper/member/export?'
                         + 'mobile=' + this.query.mobile
-                        + '&invite_channel_id=' + this.query.invite_channel_id ;
+                        + '&invite_channel_id[]=' + this.query.invite_channel_id ;
                 })
             },
             getChannels() {

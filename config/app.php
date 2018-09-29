@@ -150,6 +150,9 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
+        // 腾讯云 COS
+        Freyo\Flysystem\QcloudCOSv5\ServiceProvider::class,
+
         /*
          * Package Service Providers...
          */

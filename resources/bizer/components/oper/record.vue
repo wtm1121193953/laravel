@@ -10,9 +10,10 @@
             <el-table-column prop="oper_id" label="运营中心ID"/>
             <el-table-column prop="status" label="签约状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1">已签约</span>
-                    <span v-else-if="scope.row.status === -1">已拒绝</span>
-                    <span v-else-if="scope.row.status === 0">待签约</span>
+                    <span v-if="scope.row.status == 1">已签约</span>
+                    <span v-else-if="scope.row.status == -1">已拒绝</span>
+                    <span v-else-if="scope.row.status == 0">待签约</span>
+                    <span v-else>未知状态</span>
                 </template>
             </el-table-column>
         <el-table-column prop="note" label="原因"></el-table-column>

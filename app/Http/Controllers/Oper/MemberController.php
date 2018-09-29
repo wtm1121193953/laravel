@@ -137,7 +137,7 @@ class MemberController extends Controller
                 break;
             case 'lastMonth':
                 $startDate = Carbon::now()->subMonth()->startOfMonth();
-                $endDate = Carbon::now()->endOfMonth();
+                $endDate = $startDate->copy()->endOfMonth();;
                 break;
             default:
                 throw new ParamInvalidException('参数错误');
