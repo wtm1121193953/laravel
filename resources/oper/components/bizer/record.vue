@@ -1,7 +1,7 @@
 <template>
     <page title="业务员申请" v-loading="isLoading">
         <el-tabs type="card" v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="新申请" name="first"></el-tab-pane>
+            <el-tab-pane :label="'新申请'+total" name="first"></el-tab-pane>
             <el-tab-pane label="已拒绝" name="second"></el-tab-pane>
         </el-tabs>
 
