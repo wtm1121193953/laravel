@@ -16,7 +16,7 @@
                     <span v-else>未知状态</span>
                 </template>
             </el-table-column>
-        <el-table-column prop="note" label="原因"></el-table-column>
+            <el-table-column prop="note" label="原因"></el-table-column>
         </el-table>
 
         <el-pagination
