@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Oper;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Bizer\BizerService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperService;
 use App\Modules\Oper\OperBizerService;
@@ -110,5 +111,18 @@ class MyBizerController extends Controller {
         $operBizer->save();
 
         return Result::success($operBizer);
+    }
+
+    /**
+     * 获取业务员列表
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getBizerList()
+    {
+        $operId = request()->get('current_user')->oper_id;
+        $bizerNameOrMobile = request('bizerNameOrMobile', '');
+        $bizerList = BizerService::getBizersByNameOrMobile($bizerNameOrMobile, $operId);
+
+        return Result::success($bizerList);
     }
 }
