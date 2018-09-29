@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Oper;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Oper\OperBizerLog;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperBizer;
 
@@ -74,5 +75,22 @@ class BizerRecordController extends Controller {
         }
 
         return Result::success($operBizer);
+    }
+
+    /**
+     * 获取运营中间拒绝业务员记录
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRejectList() {
+        $params =[
+            'operId' => request()->get('current_user')->oper_id,
+            'status' => OperBizerLog::STATUS_REJECTED,
+        ];
+        $data = OperBizerService::getOperBizerLogList($params);
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
     }
 }
