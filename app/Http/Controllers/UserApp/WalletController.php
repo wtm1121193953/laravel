@@ -270,6 +270,7 @@ class WalletController extends Controller
 
     /**
      * 获取tps消费额记录
+     * @deprecated
      */
     public function getTpsConsumeQuotasList()
     {
@@ -302,6 +303,7 @@ class WalletController extends Controller
 
     /**
      * 获取tps消费额详情
+     * @deprecated
      */
     public function getTpsConsumeQuotaDetail()
     {

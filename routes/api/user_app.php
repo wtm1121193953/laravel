@@ -85,11 +85,11 @@ Route::prefix('app/user')
         Route::post('wallet/withDraw', 'WalletWithdrawController@withdraw')->middleware(UserLoginFilter::class);
         Route::get('wallet/getWithDrawConfig', 'WalletWithdrawController@getWithdrawConfig')->middleware(UserLoginFilter::class);
         Route::get('wallet/getTpsConsume', 'WalletController@getTpsConsume')->middleware(UserLoginFilter::class);
-        Route::get('wallet/getTpsConsumeQuotasList', 'WalletController@getTpsConsumeQuotasList')->middleware(UserLoginFilter::class);
-        Route::get('wallet/getTpsConsumeQuotaDetail', 'WalletController@getTpsConsumeQuotaDetail')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getTpsConsumeQuotasList', 'WalletController@getTpsConsumeQuotasList')->middleware(UserLoginFilter::class);//废弃
+        Route::get('wallet/getTpsConsumeQuotaDetail', 'WalletController@getTpsConsumeQuotaDetail')->middleware(UserLoginFilter::class);//废弃
         Route::get('wallet/getUserFeeSplittingRatioToSelf', 'WalletController@getUserFeeSplittingRatioToSelf')->middleware(UserLoginFilter::class);
-        Route::get('wallet/getTpsCreditStatistics', 'WalletController@getTpsCreditStatistics')->middleware(UserLoginFilter::class); //未录入接口文档
-        Route::get('wallet/getTpsCreditList', 'WalletController@getTpsCreditList')->middleware(UserLoginFilter::class);//未录入接口文档
+        Route::get('wallet/getTpsCreditStatistics', 'WalletController@getTpsCreditStatistics')->middleware(UserLoginFilter::class); //未录入接口文档，废弃
+        Route::get('wallet/getTpsCreditList', 'WalletController@getTpsCreditList')->middleware(UserLoginFilter::class);//未录入接口文档，废弃
 
         //app银行卡接口
         Route::post('bankcard/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);
