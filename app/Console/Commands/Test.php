@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Schema;
 
 use App\Jobs\ConsumeQuotaSyncToTpsJob;
 use App\Jobs\InviteChannelsUnbindMaker;
+use Illuminate\Support\Facades\Storage;
 
 use App\Support\TpsApi;
 use App\Jobs\Schedule\OperStatisticsDailyJob;

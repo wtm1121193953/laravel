@@ -83,7 +83,12 @@ class ImageMigrationToCOSJob implements ShouldQueue
             }
             $res = $this->upload($this->data[$explode], $disk);
             if ($res['status']) {
-                $this->data[$explode] = $res['url'];
+                if (!is_numeric($column)) {
+                    $this->data[$column] = $res['url'];
+                }else{
+                    $this->data[$explode] = $res['url'];
+                }
+
                 $isSave = true;
             } else {
                 Log::error('迁移COS字段上传失败', [
