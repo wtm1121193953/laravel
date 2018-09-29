@@ -71,7 +71,7 @@
         <transition name="form-fade" mode="in-out">
             <div class="login-form form-label-noBefore" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
                 <div class="login-link">
-                    <el-button type="text" @click="goLogin">已有账号，立即登录</el-button>
+                    <el-button type="text" @click="goLogin">已有帐号，立即登录</el-button>
                 </div>
                 <div class="login-logo">
                     <span>{{projectName}} - {{systemName}}</span>

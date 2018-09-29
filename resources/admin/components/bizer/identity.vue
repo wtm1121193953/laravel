@@ -1,5 +1,5 @@
 <template>
-    <page title="用户审核列表" v-loading="isLoading">
+    <page title="业务员审核列表" v-loading="isLoading">
         <el-form :model="query" inline size="small" class="fl" @submit.native.prevent>
             <el-form-item prop="mobile" label="手机号码" >
                 <el-input v-model="query.mobile" placeholder="手机号码"  class="w-200" clearable></el-input>

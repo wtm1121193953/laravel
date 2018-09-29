@@ -47,7 +47,7 @@
                 width="20%"
         >
             <el-form :model="verifyCodeForm" ref="verifyCodeForm" :rules="verifyCodeFormRules" size="small" label-width="65px">
-                <el-form-item prop="mobile" label="账号">
+                <el-form-item prop="mobile" label="帐号">
                     <el-input v-model="verifyCodeForm.mobile" placeholder="请输入手机号" style="width: 80%;"/>
                 </el-form-item>
                 <el-form-item prop="verifyCode" label="验证码">
@@ -182,7 +182,7 @@
                 },
                 verifyCodeFormRules: {
                     mobile: [
-                        {required: true, message: '账号不能为空'},
+                        {required: true, message: '帐号不能为空'},
                         {validator: validateMobile}
                     ],
                     verifyCode: [
