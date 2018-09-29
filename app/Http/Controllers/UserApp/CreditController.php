@@ -43,7 +43,7 @@ class CreditController extends Controller
         }
         $creditRatio = UserCreditSettingService::getCreditToSelfRatioSetting($userLevel); //自反比例
         $creditMultiplierOfAmount = SettingService::getValueByKey('credit_multiplier_of_amount'); //积分系数
-        $creditRatio = $settlementRate / 100 * $creditRatio * $creditMultiplierOfAmount / 100.0 ; //积分换算比例
+        $creditRatio = $settlementRate * $creditRatio * $creditMultiplierOfAmount / 100.0 ; //积分换算比例
 
         return Result::success([
             'creditRatio' => $creditRatio,
