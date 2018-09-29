@@ -74,7 +74,7 @@
                 <el-form-item label="分成" prop="divide">
                     <el-input v-model="formSigning.divide" auto-complete="off" style="width:90%;"/> %
                 </el-form-item>
-                <el-form-item label="原因">
+                <el-form-item label="原因" prop="note">
                     <el-input type="textarea" v-model="formSigning.note" auto-complete="off" placeholder="最多50个字" style="width:90%;"/>
                 </el-form-item>
                 <el-form-item label="备注">
@@ -145,6 +145,9 @@
                 rules: {
                     divide: [
                         {required: true, validator: validateDivided, trigger: 'blur'}
+                    ],
+                    note: [
+                        {max: 50, message: '原因不能超过50个字'},
                     ]
                 },
                 formRefusalRules: {
