@@ -45,14 +45,14 @@ class MyBizerController extends Controller {
             $validate["status"] = 'required|integer';
         }
         if(!empty($divide)){
-            $validate["divide"] = 'required';
+            $validate["divide"] = 'required|min:0|max:100';
         }
         $this->validate(request(),$validate);
         $operBizMember = OperBizer::findOrFail($id);
         if(!empty($status)){
             $operBizMember->status = $status;
         }
-        if(!empty($divide)){
+        if($divide >= 0 && $divide <= 100){
             $operBizMember->divide = $divide;
         }
         if(!empty($remark)){
