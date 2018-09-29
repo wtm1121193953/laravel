@@ -12,6 +12,7 @@
             <el-table-column prop="activeNum" label="发展商户（家）"/>
             <el-table-column prop="auditNum" label="审核通过商户（家）"/>
             <el-table-column prop="remark" label="备注"/>
+            <el-table-column prop="note" label="原因"/>
             <el-table-column prop="sign_status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.sign_status == 1" class="c-green">正常</span>
