@@ -33,7 +33,7 @@
                 ></el-date-picker>
             </el-form-item>
             <el-form-item label="状态" prop="status">
-                <el-select v-model="query.status" size="small" placeholder="请选择" class="w-150">
+                <el-select v-model="query.status" size="small" placeholder="请选择" clearable class="w-150">
                     <el-option label="正常" value="1"/>
                     <el-option label="禁用" value="2"/>
                 </el-select>

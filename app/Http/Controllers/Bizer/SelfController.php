@@ -38,6 +38,9 @@ class SelfController extends Controller {
         if (Bizer::genPassword(request('password'), $user['salt']) != $user['password']) {
             throw new PasswordErrorException();
         }
+        if ($user->status == Bizer::STATUS_OFF) {
+            throw new BaseResponseException('该业务员已被禁用');
+        }
 
         unset($user['password']);
         unset($user['salt']);
