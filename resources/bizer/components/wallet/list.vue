@@ -218,7 +218,7 @@
                             if (data.isSetPassword) {
                                 this.showWithdrawDialog = true;
                             } else {
-                                this.$message.error('请设置提现密码');
+                                this.$message.error('请绑定银行卡并设置提现密码');
                                 router.replace({
                                     path: '/refresh',
                                     query: {
