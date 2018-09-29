@@ -70,7 +70,6 @@ class BankCardsController extends Controller
         $currentUser = $request->get('current_user');
         $list = $bankCard::where('origin_id', $currentUser->id)
             ->where('origin_type', $currentUser->status)
-            ->orderBy('default', 'desc')
             ->get();
         foreach ($list as $value){
             //$value['logo'] = BankCards::getBankLogo($value['bank_name']);
