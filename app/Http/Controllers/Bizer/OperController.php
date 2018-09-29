@@ -120,7 +120,8 @@ class OperController extends Controller {
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new BaseResponseException('添加运营中心失败');
+            $msg = $e->getResponse()->original['message'] ?: '添加运营中心失败';
+            throw new BaseResponseException($msg);
         }
 
         return Result::success();

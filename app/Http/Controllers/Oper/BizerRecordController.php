@@ -71,7 +71,8 @@ class BizerRecordController extends Controller {
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            throw new BaseResponseException('操作失败');
+            $msg = $e->getResponse()->original['message'] ?: '操作失败';
+            throw new BaseResponseException($msg);
         }
 
         return Result::success($operBizer);
