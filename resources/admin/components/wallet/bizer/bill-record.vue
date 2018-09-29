@@ -30,10 +30,8 @@
                 <el-select v-model="query.type" placeholder="请选择" clearable class="w-150">
                     <el-option label="全部" :value="0"></el-option>
                     <el-option label="提现" :value="7"></el-option>
-                    <!--<el-option label="自己消费奖励" :value="1"></el-option>-->
-                    <el-option label="分享消费奖励" :value="2"></el-option>
-                    <!--<el-option label="自己消费奖励退款" :value="3"></el-option>-->
-                    <!--<el-option label="分享消费奖励退款" :value="4"></el-option>-->
+                    <el-option label="分享消费奖励(业务员)" :value="9"></el-option>
+                    <!--<el-option label="分享消费奖励退款(业务员)" :value="10"></el-option>-->
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -63,8 +61,8 @@
                         <span v-else-if="scope.row.status == 5">(审核不通过)</span>
                     </span>
                     <span v-else-if="scope.row.type == 8">提现失败</span>
-                    <span v-else-if="scope.row.type == 9">交易分润入账(业务员)</span>
-                    <span v-else-if="scope.row.type == 10">交易分润退款(业务员)</span>
+                    <span v-else-if="scope.row.type == 9">分享消费奖励(业务员)</span>
+                    <span v-else-if="scope.row.type == 10">分享消费奖励退款(业务员)</span>
                     <span v-else>未知{{scope.row.type}}</span>
                 </template>
             </el-table-column>

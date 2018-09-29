@@ -136,9 +136,9 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
         } elseif ($row->type == WalletBill::TYPE_WITHDRAW_FAILED) {
             $typeText = '提现失败';
         } elseif ($row->type == WalletBill::TYPE_BIZER) {
-            $typeText = '业务员交易分润入账';
+            $typeText = '分享消费奖励(业务员)';
         } elseif ($row->type == WalletBill::TYPE_BIZER_REFUND) {
-            $typeText = '业务员交易分润退款';
+            $typeText = '分享消费奖励退款(业务员)';
         } else {
             $typeText = '未知'.$row->type;
         }
