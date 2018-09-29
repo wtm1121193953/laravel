@@ -270,6 +270,10 @@ class OperBizerService extends BaseService {
      */
     public static function updateOperBizerLog($operId, $bizerId, $status, $note)
     {
+        $operBizer = self::getOperBizerByParam(['operId' => $operId, 'bizerId' => $bizerId]);
+        if (empty($operBizer)) {
+            throw new BaseResponseException('业务员与运营中心的关联不存在');
+        }
         $operBizerLog = OperBizerLog::where('oper_id', $operId)
             ->where('bizer_id', $bizerId)
             ->orderBy('id', 'desc')
@@ -279,6 +283,8 @@ class OperBizerService extends BaseService {
         }
         $operBizerLog->status = $status;
         $operBizerLog->note = $note;
+        $operBizerLog->apply_time = $operBizer->updated_at;
+        $operBizerLog->remark = $operBizer->remark;
         $operBizerLog->save();
 
         return $operBizerLog;
@@ -294,6 +300,7 @@ class OperBizerService extends BaseService {
     {
         $bizerId = array_get($params, 'bizerId', '');
         $operId = array_get($params, 'operId', '');
+        $status = array_get($params, 'status', '');
 
         $query = OperBizerLog::query();
         if ($bizerId) {
@@ -301,6 +308,13 @@ class OperBizerService extends BaseService {
         }
         if ($operId) {
             $query->where('oper_id', $operId);
+        }
+        if (!empty($status)) {
+            if (is_array($status)) {
+                $query->whereIn('status', $status);
+            } else {
+                $query->where('status', $status);
+            }
         }
         $query->orderBy('id', 'desc');
 
@@ -310,6 +324,7 @@ class OperBizerService extends BaseService {
             $data = $query->paginate();
             $data->each(function ($item) {
                 $item->operName = OperService::getNameById($item->oper_id);
+                $item->bizerInfo = BizerService::getById($item->bizer_id) ?: null;
             });
             return $data;
         }

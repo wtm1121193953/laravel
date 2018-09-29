@@ -11,6 +11,8 @@ use App\BaseModel;
  * @property integer bizer_id
  * @property string note
  * @property integer status
+ * @property string apply_time
+ * @property string remark
  */
 
 class OperBizerLog extends BaseModel
