@@ -84,7 +84,7 @@
             },
             doAudit(status){
                 this.loading = true;
-                let data = {ids: this.id, status: status, reason: this.info.reason}
+                let data = {ids: this.id, status: status, reason: this.reason}
                 api.post('/bizer/identity/audit', data).then((data) => {
                     let msg = status == 2 ? '审核通过操作成功' : '审核不通过操作成功';
                     this.$message.success(msg);
