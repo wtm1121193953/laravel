@@ -122,7 +122,7 @@
                     package_url : [
                         {required: true, message: '安装包不能为空'},
                     ]
-                }
+                },
             }
         },
         methods: {

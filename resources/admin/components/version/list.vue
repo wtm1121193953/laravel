@@ -34,6 +34,18 @@
                     <span v-else-if="scope.row.status === 2" class="c-warning">已发布</span>
                 </template>
             </el-table-column>
+            <el-table-column prop="force_update" label="强制更新">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.force_update === 0">否</span>
+                    <span v-else-if="scope.row.force_update === 1">是</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <el-button type="text" @click="edit(scope)">修改</el-button>
+                    <el-button type="text" @click="del(scope)">删除</el-button>
+                </template>
+            </el-table-column>
         </el-table>
         <el-pagination
                 class="fr m-t-20"
@@ -82,6 +94,22 @@
             },
             add(){
                 router.push('/version/add')
+            },
+            edit(scope){
+                router.push({
+                    path: '/version/edit',
+                    query: {id: scope.row.id}
+                });
+            },
+            del(scope){
+                this.$confirm(`确定要删除 ${scope.row.app_name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
+                    this.isLoading = true;
+                    api.post('/version/del', {id: scope.row.id}).then(() => {
+                        this.getList();
+                    }).finally(() => {
+                        this.isLoading = false;
+                    })
+                })
             }
         },
         created(){

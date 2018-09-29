@@ -97,5 +97,8 @@ Route::prefix('admin')
         Route::post('bank/edit', 'BankController@edit');
 
         Route::get('versions', 'VersionController@getList');
+        Route::get('version/detail', 'VersionController@detail');
         Route::post('version/add', 'VersionController@add');
+        Route::post('version/edit', 'VersionController@edit');
+        Route::post('version/del', 'VersionController@del');
     });
