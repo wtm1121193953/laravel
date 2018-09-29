@@ -69,7 +69,11 @@ class ImageMigrationToCOSJob implements ShouldQueue
                     }
                     if (!empty($newFileArr)) {
                         // 如果有新数据插入
-                        $this->data[$column] = implode(',', $newFileArr);
+                        $saveFile = implode(',', $newFileArr);
+                        if($this->data[$column]!=$saveFile){
+                            // 避免重复插入
+                            $this->data[$column] = implode(',', $newFileArr);
+                        }
                         $isSave = true;
                     }
                     continue;
@@ -83,10 +87,15 @@ class ImageMigrationToCOSJob implements ShouldQueue
             }
             $res = $this->upload($this->data[$explode], $disk);
             if ($res['status']) {
+
                 if (!is_numeric($column)) {
-                    $this->data[$column] = $res['url'];
+                    $tmp = $column;
                 }else{
-                    $this->data[$explode] = $res['url'];
+                    $tmp = $explode;
+                }
+                if($this->data[$tmp]!=$res['url']){
+                    // 避免重复提交
+                    $this->data[$tmp] = $res['url'];
                 }
 
                 $isSave = true;
