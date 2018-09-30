@@ -27,7 +27,7 @@ class VersionController extends Controller
         if (!in_array($appType,[1,2])) {
             throw new ParamInvalidException('参数错误');
         }
-        if ($appType == 1 ) {
+        if ($appType == 2 ) {
             $data = VersionService::getLastIos();
         } else {
             $data = VersionService::getLastAndroid();
@@ -37,6 +37,8 @@ class VersionController extends Controller
             'force' => $data['force_update'],
             'desc' => $data['version_explain'],
             'app_type' => $data['app_type'],
+            'package_url' => $data['package_url'],
+            'app_size' => $data['app_size'],
         ]);
     }
 
@@ -50,7 +52,7 @@ class VersionController extends Controller
         if (!in_array($appType,[1,2])) {
             throw new ParamInvalidException('参数错误');
         }
-        if ($appType == 1 ) {
+        if ($appType == 2 ) {
             $data = VersionService::getLastIos();
         } else {
             $data = VersionService::getLastAndroid();
