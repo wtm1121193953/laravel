@@ -11,14 +11,16 @@ use App\Result;
 use App\Modules\Area\Area;
 use Illuminate\Support\Facades\DB;
 
-class OperController extends Controller {
+class OperController extends Controller
+{
 
     /**
      * 运营中心列表
      * @author tong.chen
      * @date 2018-8-22
      */
-    public function getList() {
+    public function getList()
+    {
 
         $startTime = request('startTime');
         $endTime = request('endTime');
@@ -32,37 +34,37 @@ class OperController extends Controller {
 
         $provinceId = 0;
         $cityId = 0;
-        if(isset($areaIds[0])){
+        if (isset($areaIds[0])) {
             $provinceId = Area::findOrFail($areaIds[0])->area_id;
         }
-        if(isset($areaIds[1])){
+        if (isset($areaIds[1])) {
             $cityId = Area::findOrFail($areaIds[1])->area_id;
         }
         $opers = OperService::getAll([
-                    'name' => $name,
-                    'contacter' => $contacter,
-                    'tel' => $tel,
-                    'province_id' => $provinceId,
-                    'city_id' => $cityId
-                        ], 'id');
+            'name' => $name,
+            'contacter' => $contacter,
+            'tel' => $tel,
+            'province_id' => $provinceId,
+            'city_id' => $cityId
+        ], 'id');
 
         $operIds = [];
         $opers->each(function ($oper) use (&$operIds) {
             $operIds[] = $oper->id;
         });
-        
+
         $data = OperBizerService::getList([
-                    'bizer_id' => $bizerId,
-                    'oper_ids' => $operIds ? $operIds : [0],
-                    'start_time' => $startTime,
-                    'end_time' => $endTime,
-                    'status' => $status
+            'bizer_id' => $bizerId,
+            'oper_ids' => $operIds ? $operIds : [0],
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+            'status' => $status
         ]);
 
         $tips = [];
 
         $data->each(function ($item) use (&$tips) {
-            if($item->status == -1 && $item->is_tips == 0 && $item->note){
+            if ($item->status == -1 && $item->is_tips == 0 && $item->note) {
                 $tips[] = [
                     'operName' => $item->operInfo->name,
                     'note' => $item->note,
@@ -70,7 +72,7 @@ class OperController extends Controller {
             }
             OperBizerService::updateIsTipsById($item->id);
         });
-        
+
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -83,7 +85,8 @@ class OperController extends Controller {
      * @author tong.chen
      * @date 2018-8-22
      */
-    public function getNameList() {
+    public function getNameList()
+    {
         $operName = request('operName', '');
         $params = [
             'status' => 1,
@@ -102,7 +105,8 @@ class OperController extends Controller {
      * @date 2018-8-22
      * @throws \Exception
      */
-    public function add() {
+    public function add()
+    {
         $this->validate(request(), [
             'oper_id' => 'required',
         ]);

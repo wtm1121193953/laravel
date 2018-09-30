@@ -312,7 +312,7 @@
     }
     .el-icon-info {
         position: absolute;
-        top: 0px;
-        right: 5px;
+        top: 5px;
+        right: 15px;
     }
 </style>

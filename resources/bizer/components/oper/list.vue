@@ -48,7 +48,6 @@
         </el-form>
 
         <el-table :data="list" stripe>
-        button classe-column prop="created_at" label="添加时间"/>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="operInfo.name" label="运营中心名称"/>
             <el-table-column prop="operInfo.contacter" label="负责人"/>
@@ -103,7 +102,7 @@
                         :remote-method="getOperNameList"
                         v-model="addRegionData.oper_id"
                         :loading="selectLoading"
-                        placeholder="请选择运营中心"
+                        placeholder="请输入运营中心名称"
                         style="width:100%;">
                         <el-option v-for="item in regionOptions" :label="item.name"  :key="item.id" :value="item.id"/>
                     </el-select>

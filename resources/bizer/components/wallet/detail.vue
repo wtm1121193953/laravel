@@ -124,10 +124,10 @@
                     </el-form-item>
                     <!--<el-form-item label="提现编号">
                         {{orderOrWithdrawData.withdraw_no}}
-                    </el-form-item>
+                    </el-form-item>-->
                     <el-form-item label="备注">
                         {{orderOrWithdrawData.remark}}
-                    </el-form-item>-->
+                    </el-form-item>
                 </el-col>
                 <el-col class="tips">注意：具体到账时间请以银行通知时间为准</el-col>
             </el-form>
