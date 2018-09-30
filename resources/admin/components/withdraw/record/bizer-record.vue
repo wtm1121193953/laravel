@@ -7,8 +7,8 @@
             <el-form-item prop="bizerId" label="业务员ID">
                 <el-input v-model="form.bizerId" clearable placeholder="请输入业务员ID"/>
             </el-form-item>
-            <el-form-item prop="bizerMobile" label="业务员ID">
-                <el-input v-model="form.bizerMobile" clearable placeholder="请输入业务员ID"/>
+            <el-form-item prop="bizerMobile" label="业务员手机号">
+                <el-input v-model="form.bizerMobile" clearable placeholder="请输入业务员手机号"/>
             </el-form-item>
             <el-form-item label="提现时间">
                 <el-date-picker
