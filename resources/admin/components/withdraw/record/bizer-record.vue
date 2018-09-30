@@ -7,6 +7,9 @@
             <el-form-item prop="bizerId" label="业务员ID">
                 <el-input v-model="form.bizerId" clearable placeholder="请输入业务员ID"/>
             </el-form-item>
+            <el-form-item prop="bizerMobile" label="业务员ID">
+                <el-input v-model="form.bizerMobile" clearable placeholder="请输入业务员ID"/>
+            </el-form-item>
             <el-form-item label="提现时间">
                 <el-date-picker
                         v-model="form.startDate"
@@ -45,6 +48,7 @@
             <el-table-column prop="amount" label="提现金额"></el-table-column>
             <el-table-column prop="charge_amount" label="手续费"></el-table-column>
             <el-table-column prop="remit_amount" label="到账金额"></el-table-column>
+            <el-table-column prop="origin_id" label="业务员ID"></el-table-column>
             <el-table-column prop="bizer_name" label="业务员"></el-table-column>
             <el-table-column prop="bizer_mobile" label="业务员手机号码"></el-table-column>
             <el-table-column prop="bank_card_type" label="账户类型">
@@ -139,6 +143,7 @@
                 form: {
                     withdrawNo: '',
                     bizerId: '',
+                    bizerMobile: '',
                     startDate: '',
                     endDate: '',
                     status: [],

@@ -128,6 +128,7 @@ class WithdrawController extends Controller
         $merchantId = request('merchantId', '');
         $operId = request('operId', '');
         $bizerId = request('bizerId', '');
+        $bizerMobile = request('bizerMobile', '');
         $withdrawNo = request('withdrawNo', '');
         $bankCardType = request('bankCardType', '');
         $start = request('startDate', '');
@@ -147,7 +148,7 @@ class WithdrawController extends Controller
             $originId = $bizerId;
         }
 
-        $param = compact('originType', 'originId', 'withdrawNo', 'bankCardType', 'start', 'end', 'status', 'userMobile', 'merchantName', 'operName', 'batchId');
+        $param = compact('originType', 'originId', 'withdrawNo', 'bankCardType', 'start', 'end', 'status', 'userMobile', 'merchantName', 'operName', 'bizerMobile', 'batchId');
         return $param;
     }
 

@@ -229,6 +229,7 @@ class WalletWithdrawService extends BaseService
         $userMobile = array_get($params, 'userMobile');
         $merchantName = array_get($params, 'merchantName');
         $operName = array_get($params, 'operName');
+        $bizerMobile = array_get($params, 'bizerMobile');
         $withdrawNo = array_get($params, 'withdrawNo');
         $bankCardType = array_get($params, 'bankCardType');
         $batchId = array_get($params, 'batchId');
@@ -259,6 +260,9 @@ class WalletWithdrawService extends BaseService
         }
         if ($originType == WalletWithdraw::ORIGIN_TYPE_OPER && $operName) {
             $originIds = OperService::getOperColumnArrayByOperName($operName, 'id');
+        }
+        if ($originType == WalletWithdraw::ORIGIN_TYPE_BIZER && $bizerMobile) {
+            $originIds = BizerService::getBizerColumnArrayByParams(['bizerMobile' => $bizerMobile], 'id');
         }
         if(isset($originIds)){
             $query->whereIn('origin_id', $originIds);
