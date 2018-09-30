@@ -44,13 +44,14 @@ class ImageMigrationToCOSJob implements ShouldQueue
         $disk = Storage::disk('cosv5');
         $isSave = false;
         foreach ($this->columns as $column => $explode) {
+            $tmp = (is_numeric($column)) ? $explode : $column;  // 带分隔符为$column , 不带为$explode
+            if(empty($this->data[$tmp])){
+                // 如果为空
+                continue;
+            }
             if (!is_numeric($column)) {
                 // 有分隔符
-                if (empty($this->data[$column])) {
-                    // 如果为空
-                    continue;
-                }
-                $arr = explode($explode, $this->data[$column]);         // 炸开数组
+                $arr = explode($explode, $this->data[$tmp]);         // 炸开数组
                 if (count($arr) > 1) {
                     // 如果为多张图片
                     $newFileArr = [];
@@ -60,7 +61,7 @@ class ImageMigrationToCOSJob implements ShouldQueue
                             $newFileArr[] = $res['url'];
                         } else {
                             Log::error('迁移COS字段上传失败', [
-                                'column' => $column,
+                                'column' => $tmp,
                                 'data' => $this->data,
                                 'cos_url' => $res['url'],
                                 'date' => date('Y-m-d H:i:s')
@@ -70,9 +71,9 @@ class ImageMigrationToCOSJob implements ShouldQueue
                     if (!empty($newFileArr)) {
                         // 如果有新数据插入
                         $saveFile = implode(',', $newFileArr);
-                        if($this->data[$column]!=$saveFile){
+                        if($this->data[$tmp]!=$saveFile){
                             // 避免重复插入
-                            $this->data[$column] = implode(',', $newFileArr);
+                            $this->data[$tmp] = implode(',', $newFileArr);
                         }
                         $isSave = true;
                     }
@@ -81,18 +82,9 @@ class ImageMigrationToCOSJob implements ShouldQueue
             }
 
             // 如果无分隔符，或者有分隔符只有一条数据，走以下逻辑
-            if (empty($this->data[$explode])) {
-                // 如果为空
-                continue;
-            }
-            $res = $this->upload($this->data[$explode], $disk);
+            $res = $this->upload($this->data[$tmp], $disk);
             if ($res['status']) {
                 // 为cos保存成功，需要入库
-                if (!is_numeric($column)) {
-                    $tmp = $column;
-                }else{
-                    $tmp = $explode;
-                }
                 if($this->data[$tmp]!=$res['url']){
                     // 避免重复提交
                     $this->data[$tmp] = $res['url'];
@@ -108,16 +100,14 @@ class ImageMigrationToCOSJob implements ShouldQueue
                 ]);
             }
         }
-        if ($isSave) {
-            if (!$this->data->save()) {
-                // 如果入库失败
-                Log::error('迁移COS数据保存失败', [
-                    'column' => $this->columns,
-                    'data' => $this->data,
-                    'cos_url' => $res['url'],
-                    'date' => date('Y-m-d H:i:s')
-                ]);
-            }
+        if ($isSave && (!$this->data->save())) {
+            // 如果入库失败
+            Log::error('迁移COS数据保存失败', [
+                'column' => $this->columns,
+                'data' => $this->data,
+                'cos_url' => $res['url'],
+                'date' => date('Y-m-d H:i:s')
+            ]);
         }
     }
 
