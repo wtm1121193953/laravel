@@ -5,6 +5,7 @@ namespace App\Modules\Version;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
+use App\Exceptions\ParamInvalidException;
 
 
 class VersionService extends BaseService
@@ -99,18 +100,66 @@ class VersionService extends BaseService
         return $query;
     }
 
-    public static function getAllByAppType($app_type)
+    /**
+     * 获取所有可用版本
+     * @param $app_type
+     * @return mixed
+     */
+    public static function getAllByAppType(int $app_type)
     {
-        return Version::where('app_type','=',$app_type)->orderBy('version_num','desc')->get();
+        return Version::where('app_type','=',$app_type)->where('status','=','2')->orderBy('version_num','desc')->get();
+    }
+    
+    /**
+     * 获取最新版本号
+     * @param $app_type app类型
+     * @param $app_num_now 当前版本号
+     * @return array
+     */
+    public static function getLastVersion(int $app_type, string $app_num_now='')
+    {
+        $app_types = [Version::APP_TYPE_ANDROID,Version::APP_TYPE_IOS];
+
+        if (!in_array($app_type, $app_types)) {
+            throw new ParamInvalidException('参数错误');
+        }
+
+        $version_num_now = 0;
+        if ($app_num_now) {
+            $version_now = Version::where('app_type','=', $app_type)
+                ->where('app_num','=',$app_num_now)
+                ->first();
+
+            if (empty($version_now)) {
+                throw new ParamInvalidException('当前版本号错误');
+            }
+            $version_num_now = $version_now['version_num'];
+        }
+
+
+        $list = Version::where('app_type','=', $app_type)
+            ->where('status','=','2')
+            ->where('version_num','>',$version_num_now)
+            ->orderBy('version_num','desc')
+            ->get()->toArray();
+
+        if (empty($list)) {
+            throw new ParamInvalidException('已经是最新版本');
+        }
+
+
+        $rt = $list[0];
+        $force_update = 0;
+        foreach ($list as $l) {
+            if ($l['force_update'] == 1) {
+                $force_update = 1;
+                break;
+            }
+        }
+
+        $rt['force_update'] = $force_update;
+        return $rt;
+
     }
 
-    public static function getLastIos()
-    {
-        return Version::where('app_type','=',Version::APP_TYPE_IOS)->orderBy('version_num','desc')->first();
-    }
-
-    public static function getLastAndroid()
-    {
-        return Version::where('app_type','=',Version::APP_TYPE_ANDROID)->orderBy('version_num','desc')->first();
-    }
 }

@@ -23,15 +23,10 @@ class VersionController extends Controller
     public function last()
     {
         $appType = request()->headers->get('app-type');
+        $version = request()->headers->get('version');
 
-        if (!in_array($appType,[1,2])) {
-            throw new ParamInvalidException('参数错误');
-        }
-        if ($appType == 2 ) {
-            $data = VersionService::getLastIos();
-        } else {
-            $data = VersionService::getLastAndroid();
-        }
+        $data = VersionService::getLastVersion($appType, $version);
+
         return Result::success([
             'version' => $data['app_num'],
             'force' => $data['force_update'],
@@ -48,15 +43,9 @@ class VersionController extends Controller
     public function getList()
     {
         $appType = request()->headers->get('app-type');
+        $version = request()->headers->get('version');
 
-        if (!in_array($appType,[1,2])) {
-            throw new ParamInvalidException('参数错误');
-        }
-        if ($appType == 2 ) {
-            $data = VersionService::getLastIos();
-        } else {
-            $data = VersionService::getLastAndroid();
-        }
+        $data = VersionService::getLastVersion($appType, $version);
 
         $last = [
             'version' => $data['app_num'],
@@ -77,7 +66,6 @@ class VersionController extends Controller
                 ];
             }
         }
-
 
         return Result::success([
             'last' => $last,
