@@ -54,16 +54,17 @@
                 <el-select
                         v-model="form.bizer_id"
                         filterable
+                        :filter-method="operBizersFilter"
                         clearable
                         placeholder="请输入业务员姓名或手机号码"
                         class="w-300"
                 >
                     <el-option
-                            v-for="item in operBizMembers"
+                            v-for="item in filterOperBizers"
                             :key="item.bizerId"
                             :label="item.bizerMobile"
                             :value="item.bizerId">
-                        <span class="c-blue">{{item.bizerNme}}</span>
+                        <span class="c-blue">{{item.bizerName}}</span>
                         <span class="c-light-gray">{{item.bizerMobile}}</span>
                     </el-option>
                 </el-select>
@@ -140,7 +141,8 @@
                 form: deepCopy(defaultForm),
                 categoryOptions: [],
                 areaOptions: [],
-                operBizMembers: [],
+                operBizers: [],
+                filterOperBizers: [],
                 formRules: {
                     name: [
                         {required: true, message: '商户名称不能为空', trigger: 'change'},
@@ -230,6 +232,11 @@
                     this.$refs.lngAndLat.clearValidate();
                 })
             },
+            operBizersFilter(keyword){
+                this.filterOperBizers = this.operBizers.filter((item) => {
+                    return item.bizerName.indexOf(keyword) >= 0 || item.bizerMobile.indexOf(keyword) >= 0
+                })
+            },
             getInitData() {
                 api.get('merchant/categories/tree').then(data => {
                     this.categoryOptions = data.list;
@@ -245,7 +252,7 @@
                     this.areaOptions = data.list;
                 });
                 api.get('/operBizer/getbizers', {status: 1, sign_status: 1}).then(data => {
-                    this.operBizMembers = data.list;
+                    this.filterOperBizers = this.operBizers = data.list;
                 })
             },
             initForm() {
