@@ -54,7 +54,7 @@ class VersionController extends Controller
             'app_type' => $data['app_type'],
         ];
 
-        $list = VersionService::getAllByAppType(['app_type' => $appType]);
+        $list = VersionService::getAllByAppType($appType);
         $versions = [];
         if ($list) {
             foreach ($list as $l) {
