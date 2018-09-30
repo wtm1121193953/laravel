@@ -87,15 +87,15 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
 
     public function map($row) : array
     {
-        $row->merchant_name = MerchantService::getNameById($row->origin_id);
-        $row->oper_name = OperService::getNameById($row->origin_id);
         if ($row->origin_type == WalletBill::ORIGIN_TYPE_MERCHANT) {
-            $row->merchant_level = MerchantService::getById($row->origin_id)->level;
-        }
-        if ($row->origin_type == WalletBill::ORIGIN_TYPE_USER) {
+            $merchant = MerchantService::getById($row->origin_id, ['name', 'level']);
+            $row->merchant_name = $merchant->name;
+            $row->merchant_level = $merchant->level;
+        }else if($row->origin_type == WalletBill::ORIGIN_TYPE_OPER){
+            $row->oper_name = OperService::getNameById($row->origin_id);
+        }else if ($row->origin_type == WalletBill::ORIGIN_TYPE_USER) {
             $row->user_mobile = UserService::getUserById($row->origin_id)->mobile;
-        }
-        if ($row->origin_type == WalletBill::ORIGIN_TYPE_BIZER) {
+        }else if ($row->origin_type == WalletBill::ORIGIN_TYPE_BIZER) {
             $bizer = BizerService::getById($row->origin_id);
             $row->bizer_mobile = $bizer->mobile;
             $row->bizer_name = $bizer->name;
@@ -136,9 +136,9 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
         } elseif ($row->type == WalletBill::TYPE_WITHDRAW_FAILED) {
             $typeText = '提现失败';
         } elseif ($row->type == WalletBill::TYPE_BIZER) {
-            $typeText = '分享消费奖励(业务员)';
+            $typeText = '交易分润入账(业务员)';
         } elseif ($row->type == WalletBill::TYPE_BIZER_REFUND) {
-            $typeText = '分享消费奖励退款(业务员)';
+            $typeText = '交易分润退款(业务员)';
         } else {
             $typeText = '未知'.$row->type;
         }
