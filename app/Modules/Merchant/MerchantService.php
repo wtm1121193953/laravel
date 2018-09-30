@@ -749,8 +749,7 @@ class MerchantService extends BaseService
 
         // 只获取切换到平台的运营中心下的商家信息
         //只能查询切换到平台的商户
-        $query = Merchant::query()
-            ->where('oper_id', '>', 0)
+        $query = Merchant::where('oper_id', '>', 0)
             ->where('status', 1)
             ->when($isFollows, function (Builder $query) use ($userId){
                 $query->whereHas('merchantFollow',function (Builder $q) use ($userId) {
@@ -839,7 +838,9 @@ class MerchantService extends BaseService
             $allList = $query->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat) {
-                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
+                $item->distance = $item->is_pilot == 1
+                    ? 100000000
+                    : Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
                 return $item;
             })
                 ->sortBy('distance')
@@ -847,7 +848,7 @@ class MerchantService extends BaseService
                 ->values()
                 ->each(function($item) {
                     // 格式化距离
-                    $item->distance = Utils::getFormativeDistance($item->distance);
+                    $item->distance =  $item->is_pilot == 1 ? '' : Utils::getFormativeDistance($item->distance);
                 });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
