@@ -31,8 +31,8 @@
             <el-table-column prop="created_at" label="发布时间" />
             <el-table-column prop="status" label="发布状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1" class="c-green">暂不发布</span>
-                    <span v-else-if="scope.row.status === 2" class="c-warning">已发布</span>
+                    <span v-if="scope.row.status === 1" class="c-warning">暂不发布</span>
+                    <span v-else-if="scope.row.status === 2" class="c-green">已发布</span>
                 </template>
             </el-table-column>
             <el-table-column prop="force_update" label="强制更新">
