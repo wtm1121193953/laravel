@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\ImageMigrationToCOSJob;
 use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Jobs\Schedule\SettlementAgentPayDaily;
 
@@ -10,6 +11,7 @@ use App\Jobs\Schedule\SettlementWeekly;
 
 use App\Jobs\OrderFinishedJob;
 use App\Jobs\SettlementAgentPay;
+use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
@@ -72,6 +74,8 @@ class Test extends Command
      */
     public function handle()
     {
+        $data = DishesGoods::where('id',10014)->get();
+        ImageMigrationToCOSJob::dispatch($data,['detail_image']);
         dd(config('cos.cos_url'));
         InviteUserStatisticsDailyJob::dispatch((new Carbon())->subDay());
 dd('ok');
