@@ -30,7 +30,7 @@
                     <el-option label="单品订单" :value="3"/>
                 </el-select>
             </el-form-item>
-            <el-form-item prop="goodsName" label="商品名称">
+            <el-form-item prop="goodsName" label="商品名称" v-if="query.order_type == 1">
                 <el-input v-model="query.goodsName" placeholder="请输入商品名称" clearable @keyup.enter.native="search"/>
             </el-form-item>
             <el-form-item label="商户名称">
@@ -248,6 +248,13 @@
         },
         components: {
 
+        },
+        watch: {
+            'query.order_type': function (val){
+                if(val != 1) {
+                    this.query.goodsName = '';
+                }
+            }
         }
     }
 </script>
