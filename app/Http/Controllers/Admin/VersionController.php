@@ -84,6 +84,10 @@ class VersionController extends Controller
         $force_update = request()->get('force_update');
         $app_type = request()->get('app_type');
         $app_size = request()->get('app_size');
+        if($app_type == 2){
+            $package_url = '';
+            $app_size = 0;
+        }
 
         $params = [
             'id' => $id,
