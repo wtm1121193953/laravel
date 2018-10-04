@@ -91,26 +91,6 @@ class OperBizMemberController extends Controller
         ]);
     }
 
-    public function getAllbizer(){
-        $name = request('name', '');
-        $mobile = request('mobile', '');
-        $keyword = request('keyword', '');
-        $status = request('status', '');
-        $sign_status = request('sign_status', '');
-        $where_arr = [
-            "name" => $name,
-            "mobile" => $mobile,
-            "keyword" => $keyword,
-            "status" => $status,
-            'sign_status' => $sign_status,
-            'oper_ids' => request()->get('current_user')->oper_id,
-        ];
-        $data = OperBizerService::getAllbizer($where_arr);
-        return Result::success([
-            'list' => $data,
-        ]);
-    }
-
     public function detail()
     {
         $this->validate(request(), [

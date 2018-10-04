@@ -124,4 +124,35 @@ class MyBizerController extends Controller {
 
         return Result::success($bizerList);
     }
+
+    public function detail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $bizer = BizerService::getById($id);
+        return Result::success($bizer);
+    }
+
+    public function getAllbizer(){
+        $name = request('name', '');
+        $mobile = request('mobile', '');
+        $keyword = request('keyword', '');
+        $status = request('status', '');
+        $sign_status = request('sign_status', '');
+        $where_arr = [
+            "name" => $name,
+            "mobile" => $mobile,
+            "keyword" => $keyword,
+            "status" => $status,
+            'sign_status' => $sign_status,
+            'oper_ids' => request()->get('current_user')->oper_id,
+        ];
+        $data = OperBizerService::getAllbizer($where_arr);
+        return Result::success([
+            'list' => $data,
+        ]);
+    }
+
 }

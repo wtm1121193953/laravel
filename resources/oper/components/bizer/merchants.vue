@@ -1,5 +1,5 @@
 <template>
-    <page :title="'业务-' + operBizMember.name + '-' + operBizMember.mobile" :breadcrumbs="{我的业务员: '/operBizMembers'}" v-loading="isLoading">
+    <page :title="'业务-' + operBizer.name + '-' + operBizer.mobile" :breadcrumbs="{我的业务员: '/bizers'}" v-loading="isLoading">
         <el-alert class="m-b-15" title="激活的商户才会算入业务" />
         <el-table :data="list" stripe v-loading="tableLoading">
             <el-table-column prop="created_at" label="添加商户时间"/>
@@ -37,7 +37,7 @@
                 list: [
                 ],
                 total: 0,
-                operBizMember: {
+                operBizer: {
                     name:'',
                     mobile: '',
                 },
@@ -46,9 +46,9 @@
         methods: {
             getList(){
                 let _self = this;
-                _self.query.code = _self.operBizMember.code;
+                _self.query.bizer_id = _self.operBizer.id;
                 _self.tableLoading = true;
-                api.get('/operBizMember/merchants', _self.query).then(data => {
+                api.get('/operBizer/merchants', _self.query).then(data => {
                     _self.list = data.list;
                     _self.total = data.total;
                 }).finally(() => {
@@ -65,8 +65,8 @@
                 return ;
             }
             _self.isLoading = true;
-            api.get('/operBizMembers/detail', {id: bizer_id}).then(data => {
-                _self.operBizMember = data;
+            api.get('/operBizer/detail', {id: bizer_id}).then(data => {
+                _self.operBizer = data;
                 _self.getList();
             }).finally(() => {
                 _self.isLoading = false;

@@ -261,7 +261,7 @@
             },
             memberSearch() {
                 this.memberSelectLoading = true;
-                api.get('/operBizer/getMemberList').then(data => {
+                api.get('/operBizerMember/getMemberList').then(data => {
                     this.memberList = data;
                     this.memberSelectLoading = false;
                 })
