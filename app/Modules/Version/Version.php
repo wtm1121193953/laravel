@@ -2,7 +2,7 @@
 
 namespace App\Modules\Version;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
 /**
  * @property string app_name
@@ -16,9 +16,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property int app_type
  * @property float app_size
  */
-class Version extends Model
+class Version extends BaseModel
 {
 
     const APP_TYPE_IOS = 2;
     const APP_TYPE_ANDROID = 1;
+
+    const STATUS_UNPUBLISH = 1;
+    const STATUS_PUBLISHED = 2;
 }

@@ -112,8 +112,8 @@ class VersionService extends BaseService
     
     /**
      * 获取最新版本号
-     * @param $app_type app类型
-     * @param $app_num_now 当前版本号
+     * @param int $app_type app类型
+     * @param string $app_num_now 当前版本号
      * @return array
      */
     public static function getLastVersion(int $app_type, string $app_num_now='')
@@ -138,7 +138,7 @@ class VersionService extends BaseService
 
 
         $list = Version::where('app_type','=', $app_type)
-            ->where('status','=','2')
+            ->where('status',Version::STATUS_PUBLISHED)
             ->where('version_num','>',$version_num_now)
             ->orderBy('version_num','desc')
             ->get()->toArray();
