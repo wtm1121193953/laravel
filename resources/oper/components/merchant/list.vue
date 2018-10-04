@@ -83,8 +83,8 @@
             </el-table-column>
             <el-table-column label="签约人">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.bizer">业务员 {{scope.row.bizer.name}}/{{scope.row.bizer.mobile}}</span>
-                    <span v-else-if="scope.row.operBizMember">员工 {{scope.row.operBizMember.name}}/{{scope.row.operBizMember.mobile}}</span>
+                    <span v-if="scope.row.bizer"><span class="c-green">业务员 </span>{{scope.row.bizer.name}}/{{scope.row.bizer.mobile}}</span>
+                    <span v-else-if="scope.row.operBizMember"><span class="c-gray">员工 </span>{{scope.row.operBizMember.name}}/{{scope.row.operBizMember.mobile}}</span>
                     <span v-else>无</span>
                 </template>
             </el-table-column>
