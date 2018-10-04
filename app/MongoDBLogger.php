@@ -9,6 +9,7 @@
 namespace App;
 
 
+use App\Exceptions\ParamInvalidException;
 use Illuminate\Support\Facades\App;
 use MongoDB\Client;
 use Monolog\Handler\MongoDBHandler;
@@ -24,7 +25,13 @@ class MongoDBLogger
      */
     public function __invoke(array $config)
     {
-        $client = new Client ();
+        if (empty($config['uri'])) {
+            throw new ParamInvalidException('确少uri');
+        }
+        $uri = $config['uri'];
+        $uriOptions = $config['uriOptions'] ??  [];
+        $driverOptions = $config['driverOptions'] ??  [];
+        $client = new Client ($uri, $uriOptions, $driverOptions);
         return new Logger(App::environment(), [
             new MongoDBHandler($client, $config['database'], $this->getCollection($config), $config['level'] ?? 'debug'),
         ]);
