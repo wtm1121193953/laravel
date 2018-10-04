@@ -1,5 +1,6 @@
 <template>
     <page :title="'业务-' + operBizMember.name + '-' + operBizMember.mobile" :breadcrumbs="{我的业务员: '/operBizMembers'}" v-loading="isLoading">
+        <el-alert class="m-b-15" title="激活的商户才会算入业务" />
         <el-table :data="list" stripe v-loading="tableLoading">
             <el-table-column prop="created_at" label="添加商户时间"/>
             <el-table-column prop="audit_done_time" label="商户审核通过时间"/>
