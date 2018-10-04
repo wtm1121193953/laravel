@@ -6,21 +6,21 @@
                 <el-form-item prop="app_name" label="应用名称">
                     <el-input v-model="form.app_name"/>
                 </el-form-item>
-                <el-form-item prop="app_num" label="版本号">
-                    <el-input v-model="form.app_num" placeholder=""/>
+                <el-form-item prop="version_no" label="版本号">
+                    <el-input v-model="form.version_no" placeholder=""/>
                 </el-form-item>
                 </el-col>
                 <el-col :span="11" :offset="1">
                 <el-form-item prop="app_tag" label="版本标签">
                     <el-input v-model="form.app_tag" placeholder=""/>
                 </el-form-item>
-                <el-form-item label="版本序号" prop="version_num">
-                    <el-input-number v-model="form.version_num" :min="0" :max="9999" />
+                <el-form-item label="版本序号" prop="version_seq">
+                    <el-input-number v-model="form.version_seq" :min="0" :max="9999" />
                 </el-form-item>
                 </el-col>
                 <el-col :span="22">
-                <el-form-item prop="version_explain" label="更新说明">
-                    <el-input type="textarea" :rows="5" v-model="form.version_explain" placeholder=""/>
+                <el-form-item prop="desc" label="更新说明">
+                    <el-input type="textarea" :rows="5" v-model="form.desc" placeholder=""/>
                 </el-form-item>
                 <el-form-item prop="status" label="发布状态">
                     <el-radio-group v-model="form.status">
@@ -28,8 +28,8 @@
                         <el-radio :label="2">已发布</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item prop="force_update" label="强制更新">
-                    <el-radio-group v-model="form.force_update">
+                <el-form-item prop="force" label="强制更新">
+                    <el-radio-group v-model="form.force">
                         <el-radio :label="0">否</el-radio>
                         <el-radio :label="1">是</el-radio>
                     </el-radio-group>
@@ -70,12 +70,12 @@
     let defaultForm = {
         app_name: '',
         app_tag: '',
-        app_num: '',
-        version_num: 1,
-        version_explain: '',
+        version_no: '',
+        version_seq: 1,
+        desc: '',
         package_url: '',
         status: 1,
-        force_update: 0,
+        force: 0,
         app_type: 1,
         app_size: 0,
     };
@@ -100,20 +100,20 @@
                         {required: true, message: '版本标签不能为空' },
                         {max: 30, message: '版本标签不能超过30个字'},
                     ],
-                    app_num: [
+                    version_no: [
                         {required: true, message: '版本号不能为空'},
                     ],
-                    version_num: [
+                    version_seq: [
                         {required: true, message: '版本序号不能为空'},
                     ],
-                    version_explain: [
+                    desc: [
                         {required: true, message: '更新说明不能为空'},
                         {max: 30, message: '更新说明不能超过30个字'},
                     ],
                     status: [
                         {required: true, message: '发布状态不能为空'},
                     ],
-                    force_update: [
+                    force: [
                         {required: true, message: '强制更新不能为空'},
                     ],
                     app_type: [

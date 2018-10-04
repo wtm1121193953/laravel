@@ -26,8 +26,8 @@
                 </template>
             </el-table-column>
             <el-table-column prop="app_tag" label="版本标签" />
-            <el-table-column prop="app_num" label="版本号" />
-            <el-table-column prop="version_num" label="版本序号" />
+            <el-table-column prop="version_no" label="版本号" />
+            <el-table-column prop="version_seq" label="版本序号" />
             <el-table-column prop="created_at" label="发布时间" />
             <el-table-column prop="status" label="发布状态">
                 <template slot-scope="scope">
@@ -35,10 +35,10 @@
                     <span v-else-if="scope.row.status === 2" class="c-green">已发布</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="force_update" label="强制更新">
+            <el-table-column prop="force" label="强制更新">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.force_update === 0">否</span>
-                    <span v-else-if="scope.row.force_update === 1">是</span>
+                    <span v-if="scope.row.force === 0">否</span>
+                    <span v-else-if="scope.row.force === 1">是</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作">

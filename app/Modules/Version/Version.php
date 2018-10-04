@@ -7,12 +7,12 @@ use App\BaseModel;
 /**
  * @property string app_name
  * @property string app_tag
- * @property string app_num
- * @property int version_num
- * @property string version_explain
+ * @property string version_no
+ * @property int version_seq
+ * @property string desc
  * @property string package_url
  * @property int status
- * @property int force_update
+ * @property int force
  * @property int app_type
  * @property float app_size
  */

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\NoPermissionException;
 use App\Http\Controllers\Controller;
 use App\Modules\Version\Version;
 use App\Modules\Version\VersionService;
@@ -40,83 +41,73 @@ class VersionController extends Controller
 
     public function add()
     {
-        $app_name = request()->get('app_name');
-        $app_tag = request()->get('app_tag');
-        $app_num = request()->get('app_num');
-        $version_num = request()->get('version_num');
-        $version_explain = request()->get('version_explain');
-        $package_url = request()->get('package_url');
-        $status = request()->get('status', Version::STATUS_UNPUBLISH);
-        $force_update = request()->get('force_update');
-        $app_type = request()->get('app_type');
-        $app_size = request()->get('app_size');
-        if($app_type == 2){
-            $package_url = '';
-            $app_size = 0;
-        }
+        $this->validate(request(), [
+            'app_name' => 'required',
+            'app_tag' => 'required',
+            'version_no' => 'required',
+            'version_seq' => 'required|integer',
+            'app_type' => 'required|in:1,2',
+        ]);
 
-        $params = [
-            'app_name' => $app_name,
-            'app_tag' => $app_tag,
-            'app_num' => $app_num,
-            'version_num' => $version_num,
-            'version_explain' => $version_explain,
-            'package_url' => $package_url,
-            'status' => $status,
-            'force_update' => $force_update,
-            'app_type' => $app_type,
-            'app_size' => $app_size
+
+        $data = [
+            'app_name' => request('app_name'),
+            'app_tag' => request('app_tag'),
+            'version_no' => request('version_no'),
+            'version_seq' => request('version_seq'),
+            'desc' => request('desc', ''),
+            'app_type' => request('app_type'),
+            'status' => request('status', Version::STATUS_UNPUBLISH),
+            'force' => request('force', 0),
+            'app_size' => request('app_size', 0),
+            'package_url' => request('package_url', ''),
         ];
-        $data = VersionService::addVersion($params);
-        return Result::success($data);
+        $version = VersionService::addVersion($data);
+        return Result::success($version);
     }
 
     public function edit()
     {
 
         $this->validate(request(), [
-            'id' => 'required|integer',
+            'id' => 'required|integer|min:1',
+            'app_name' => 'required',
+            'app_tag' => 'required',
+            'version_no' => 'required',
+            'version_seq' => 'required|integer',
+            'app_type' => 'required|in:1,2',
         ]);
-        $id = request()->get('id');
-        $app_name = request()->get('app_name');
-        $app_tag = request()->get('app_tag');
-        $app_num = request()->get('app_num');
-        $version_num = request()->get('version_num');
-        $version_explain = request()->get('version_explain');
-        $package_url = request()->get('package_url');
-        $status = request()->get('status');
-        $force_update = request()->get('force_update');
-        $app_type = request()->get('app_type');
-        $app_size = request()->get('app_size');
-        if($app_type == 2){
-            $package_url = '';
-            $app_size = 0;
-        }
 
-        $params = [
-            'id' => $id,
-            'app_name' => $app_name,
-            'app_tag' => $app_tag,
-            'app_num' => $app_num,
-            'version_num' => $version_num,
-            'version_explain' => $version_explain,
-            'package_url' => $package_url,
-            'status' => $status,
-            'force_update' => $force_update,
-            'app_type' => $app_type,
-            'app_size' => $app_size
+        $data = [
+            'app_name' => request('app_name'),
+            'app_tag' => request('app_tag'),
+            'version_no' => request('version_no'),
+            'version_seq' => request('version_seq'),
+            'desc' => request('desc', ''),
+            'app_type' => request('app_type'),
+            'status' => request('status', Version::STATUS_UNPUBLISH),
+            'force' => request('force', 0),
+            'app_size' => request('app_size', 0),
+            'package_url' => request('package_url', ''),
         ];
-        $data = VersionService::editVersion($params);
-        return Result::success($data);
+        $version = VersionService::editVersion(request('id'), $data);
+        return Result::success($version);
     }
 
     public function del(){
-        $id = request()->get('id');
-        if(!$id){
-            throw new BaseResponseException('版本号不能为空');
+
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+
+        $version = Version::find(request('id'));
+        if(empty($version)){
+            throw new BaseResponseException('该版本信息已删除或不存在');
         }
-        $data = Version::find($id);
-        $data->delete();
+        if($version->status == Version::STATUS_PUBLISHED){
+            throw new NoPermissionException('该版本已发布, 不能删除');
+        }
+        $version->delete();
         return Result::success();
     }
 }

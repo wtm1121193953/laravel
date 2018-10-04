@@ -37,67 +37,66 @@ class VersionService extends BaseService
     {
         $app_name = array_get($params,'app_name');
         $app_tag = array_get($params,'app_tag');
-        $app_num = array_get($params,'app_num');
-        $version_num = array_get($params,'version_num');
-        $version_explain = array_get($params,'version_explain');
+        $versionNo = array_get($params,'version_no');
+        $versionSeq = array_get($params,'version_seq');
+        $desc = array_get($params,'desc');
         $package_url = array_get($params,'package_url');
         $status = array_get($params,'status');
-        $force_update = array_get($params,'force_update');
+        $force = array_get($params,'force');
         $app_type = array_get($params,'app_type');
         $app_size = array_get($params,'app_size');
 
-        $query = new Version();
-        $query->app_name = $app_name;
-        $query->app_tag = $app_tag;
-        $query->app_num = $app_num;
-        $query->version_num = $version_num;
-        $query->version_explain = $version_explain;
-        $query->package_url = $package_url ?? '';
-        $query->status = $status;
-        $query->force_update = $force_update;
-        $query->app_type = $app_type;
-        $query->app_size = $app_size;
+        $version = new Version();
+        $version->app_name = $app_name;
+        $version->app_tag = $app_tag;
+        $version->version_no = $versionNo;
+        $version->version_seq = $versionSeq;
+        $version->desc = $desc;
+        $version->package_url = $package_url ?? '';
+        $version->status = $status;
+        $version->force = $force;
+        $version->app_type = $app_type;
+        $version->app_size = $app_size;
 
-        if( !$query->save() ){
+        if( !$version->save() ){
             throw new BaseResponseException('添加版本信息失败');
         }
     }
 
-    public static function editVersion(array $params)
+    public static function editVersion(int $id, array $data)
     {
-        $id = array_get($params,'id');
-        $app_name = array_get($params,'app_name');
-        $app_tag = array_get($params,'app_tag');
-        $app_num = array_get($params,'app_num');
-        $version_num = array_get($params,'version_num');
-        $version_explain = array_get($params,'version_explain');
-        $package_url = array_get($params,'package_url');
-        $status = array_get($params,'status');
-        $force_update = array_get($params,'force_update');
-        $app_type = array_get($params,'app_type');
-        $app_size = array_get($params,'app_size');
+        $app_name = array_get($data,'app_name');
+        $app_tag = array_get($data,'app_tag');
+        $versionNo = array_get($data,'version_no');
+        $versionSeq = array_get($data,'version_seq');
+        $desc = array_get($data,'desc');
+        $package_url = array_get($data,'package_url');
+        $status = array_get($data,'status');
+        $force = array_get($data,'force');
+        $app_type = array_get($data,'app_type');
+        $app_size = array_get($data,'app_size');
 
-        $query =  Version::find($id);
+        $version =  Version::find($id);
 
-        if(empty($query)){
+        if(empty($version)){
             throw new DataNotFoundException('数据不存在或已被删除');
         }
 
-        $query->app_name = $app_name;
-        $query->app_tag = $app_tag;
-        $query->app_num = $app_num;
-        $query->version_num = $version_num;
-        $query->version_explain = $version_explain;
-        $query->package_url = $package_url ?? '';
-        $query->status = $status;
-        $query->force_update = $force_update;
-        $query->app_type = $app_type;
-        $query->app_size = $app_size;
+        $version->app_name = $app_name;
+        $version->app_tag = $app_tag;
+        $version->version_no = $versionNo;
+        $version->version_seq = $versionSeq;
+        $version->desc = $desc;
+        $version->package_url = $package_url ?? '';
+        $version->status = $status;
+        $version->force = $force;
+        $version->app_type = $app_type;
+        $version->app_size = $app_size;
 
-        if( !$query->save() ){
+        if( !$version->save() ){
             throw new BaseResponseException('修改版本信息失败');
         }
-        return $query;
+        return $version;
     }
 
     /**
@@ -107,16 +106,16 @@ class VersionService extends BaseService
      */
     public static function getAllEnableVersionsByAppType(int $app_type)
     {
-        return Version::where('app_type','=',$app_type)->where('status',Version::STATUS_PUBLISHED)->orderBy('version_num','desc')->get();
+        return Version::where('app_type','=',$app_type)->where('status',Version::STATUS_PUBLISHED)->orderBy('version_seq','desc')->get();
     }
     
     /**
      * 获取最新版本号
      * @param int $app_type app类型
-     * @param string $app_num_now 当前版本号
+     * @param string $currentVersionNo 当前版本号
      * @return Version|null
      */
-    public static function getLastVersion(int $app_type, string $app_num_now='')
+    public static function getLastVersion(int $app_type, string $currentVersionNo = '')
     {
         $app_types = [Version::APP_TYPE_ANDROID,Version::APP_TYPE_IOS];
 
@@ -126,7 +125,7 @@ class VersionService extends BaseService
 
         // 获取当前版本
         $currentVersion = Version::where('app_type', $app_type)
-            ->where('app_num','=',$app_num_now)
+            ->where('version_no','=', $currentVersionNo)
             ->first();
         if (empty($currentVersion)) {
             throw new ParamInvalidException('当前版本号错误');
@@ -134,8 +133,8 @@ class VersionService extends BaseService
 
         $newVersions = Version::where('app_type','=', $app_type)
             ->where('status',Version::STATUS_PUBLISHED)
-            ->where('version_num','>', $currentVersion->version_num)
-            ->orderBy('version_num','desc')
+            ->where('version_seq','>', $currentVersion->version_seq)
+            ->orderBy('version_seq','desc')
             ->get();
 
         if(empty($newVersions)){
@@ -143,10 +142,10 @@ class VersionService extends BaseService
         }
 
         $lastVersion = $newVersions[0];
-        if($lastVersion->force_update == 0){
+        if($lastVersion->force == 0){
             foreach ($newVersions as $l) {
-                if ($l['force_update'] == 1) {
-                    $lastVersion->force_update = 1;
+                if ($l['force'] == 1) {
+                    $lastVersion->force = 1;
                     break;
                 }
             }

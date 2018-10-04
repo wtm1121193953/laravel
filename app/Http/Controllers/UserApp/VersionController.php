@@ -23,21 +23,15 @@ class VersionController extends Controller
     public function last()
     {
         $appType = request()->headers->get('app-type');
-        $version = request()->headers->get('version');
+        $versionNo = request()->headers->get('version');
 
-        $lastVersion = VersionService::getLastVersion($appType, $version);
+        $lastVersion = VersionService::getLastVersion($appType, $versionNo);
         if(empty($lastVersion)){
             return Result::success('已经是最新版本');
         }
 
-        return Result::success([
-            'version' => $lastVersion['app_num'],
-            'force' => $lastVersion['force_update'],
-            'desc' => $lastVersion['version_explain'],
-            'app_type' => $lastVersion['app_type'],
-            'package_url' => $lastVersion['package_url'],
-            'app_size' => $lastVersion['app_size'],
-        ]);
+        $lastVersion->version = $lastVersion->version_no;
+        return Result::success($lastVersion);
     }
 
     /**
@@ -46,33 +40,20 @@ class VersionController extends Controller
     public function getList()
     {
         $appType = request()->headers->get('app-type');
-        $version = request()->headers->get('version');
+        $versionNo = request()->headers->get('version');
 
-        $data = VersionService::getLastVersion($appType, $version);
+        $lastVersion = VersionService::getLastVersion($appType, $versionNo);
 
-        $last = [
-            'version' => $data['app_num'],
-            'force' => $data['force_update'],
-            'desc' => $data['version_explain'],
-            'app_type' => $data['app_type'],
-        ];
+        $lastVersion->version = $lastVersion->version_no;
 
         $list = VersionService::getAllEnableVersionsByAppType($appType);
-        $versions = [];
-        if ($list) {
-            foreach ($list as $l) {
-                $versions[] = [
-                    'version' => $l['app_num'],
-                    'force' => $l['force_update'],
-                    'desc' => $l['version_explain'],
-                    'app_type' => $l['app_type'],
-                ];
-            }
-        }
+        $list->each(function($item){
+            $item->version = $item->version_no;
+        });
 
         return Result::success([
-            'last' => $last,
-            'versions' => $versions
+            'last' => $lastVersion,
+            'versions' => $list
         ]);
     }
 }
