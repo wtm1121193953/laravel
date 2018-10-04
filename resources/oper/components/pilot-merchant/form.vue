@@ -50,7 +50,7 @@
             <el-form-item prop="contacter_phone" label="负责人手机号码" class="w-500">
                 <el-input v-model="form.contacter_phone"/>
             </el-form-item>
-            <el-form-item prop="bizer_id" label="业务员">
+            <el-form-item prop="bizer_id" label="签约人">
                 <el-select
                         v-model="form.bizer_id"
                         filterable
