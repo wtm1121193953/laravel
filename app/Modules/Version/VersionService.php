@@ -137,11 +137,11 @@ class VersionService extends BaseService
             ->orderBy('version_seq','desc')
             ->get();
 
-        if(empty($newVersions)){
+        if($newVersions->count() <= 0){
             return null;
         }
 
-        $lastVersion = $newVersions[0];
+        $lastVersion = $newVersions->first();
         if($lastVersion->force == 0){
             foreach ($newVersions as $l) {
                 if ($l['force'] == 1) {
