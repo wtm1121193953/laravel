@@ -23,6 +23,7 @@ use App\Modules\Settlement\SettlementPlatform;
 use App\Modules\User\User;
 use App\Modules\User\UserIdentityAuditRecord;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class V1_4_5 extends Command
 {
@@ -150,6 +151,11 @@ class V1_4_5 extends Command
         }
         $bar->finish();
         /**********************系统图片迁移COS end**********************/
+
+        // 修改商户法人银行卡图片字段长度
+        $sql = 'ALTER TABLE `merchants`
+	CHANGE COLUMN `bank_card_pic_a` `bank_card_pic_a` VARCHAR(500) NOT NULL DEFAULT \'\' COMMENT \'法人银行卡正面照\' COLLATE \'utf8mb4_unicode_ci\' AFTER `service_phone`';
+        DB::update($sql);
         dd('ok');
     }
 }
