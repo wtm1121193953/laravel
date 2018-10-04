@@ -105,16 +105,16 @@ class VersionService extends BaseService
      * @param $app_type
      * @return mixed
      */
-    public static function getAllByAppType(int $app_type)
+    public static function getAllEnableVersionsByAppType(int $app_type)
     {
-        return Version::where('app_type','=',$app_type)->where('status','=','2')->orderBy('version_num','desc')->get();
+        return Version::where('app_type','=',$app_type)->where('status',Version::STATUS_PUBLISHED)->orderBy('version_num','desc')->get();
     }
     
     /**
      * 获取最新版本号
      * @param int $app_type app类型
      * @param string $app_num_now 当前版本号
-     * @return array
+     * @return Version|null
      */
     public static function getLastVersion(int $app_type, string $app_num_now='')
     {
@@ -124,41 +124,35 @@ class VersionService extends BaseService
             throw new ParamInvalidException('参数错误');
         }
 
-        $version_num_now = 0;
-        if ($app_num_now) {
-            $version_now = Version::where('app_type','=', $app_type)
-                ->where('app_num','=',$app_num_now)
-                ->first();
-
-            if (empty($version_now)) {
-                throw new ParamInvalidException('当前版本号错误');
-            }
-            $version_num_now = $version_now['version_num'];
+        // 获取当前版本
+        $currentVersion = Version::where('app_type', $app_type)
+            ->where('app_num','=',$app_num_now)
+            ->first();
+        if (empty($currentVersion)) {
+            throw new ParamInvalidException('当前版本号错误');
         }
 
-
-        $list = Version::where('app_type','=', $app_type)
+        $newVersions = Version::where('app_type','=', $app_type)
             ->where('status',Version::STATUS_PUBLISHED)
-            ->where('version_num','>',$version_num_now)
+            ->where('version_num','>', $currentVersion->version_num)
             ->orderBy('version_num','desc')
-            ->get()->toArray();
+            ->get();
 
-        if (empty($list)) {
-            throw new ParamInvalidException('已经是最新版本');
+        if(empty($newVersions)){
+            return null;
         }
 
-
-        $rt = $list[0];
-        $force_update = 0;
-        foreach ($list as $l) {
-            if ($l['force_update'] == 1) {
-                $force_update = 1;
-                break;
+        $lastVersion = $newVersions[0];
+        if($lastVersion->force_update == 0){
+            foreach ($newVersions as $l) {
+                if ($l['force_update'] == 1) {
+                    $lastVersion->force_update = 1;
+                    break;
+                }
             }
         }
 
-        $rt['force_update'] = $force_update;
-        return $rt;
+        return $lastVersion;
 
     }
 

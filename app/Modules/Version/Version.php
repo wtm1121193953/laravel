@@ -22,6 +22,6 @@ class Version extends BaseModel
     const APP_TYPE_IOS = 2;
     const APP_TYPE_ANDROID = 1;
 
-    const STATUS_UNPUBLISH = 1;
-    const STATUS_PUBLISHED = 2;
+    const STATUS_UNPUBLISH = 1; // 暂未发布
+    const STATUS_PUBLISHED = 2; // 已发布
 }

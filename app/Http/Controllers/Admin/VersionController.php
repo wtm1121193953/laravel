@@ -46,7 +46,7 @@ class VersionController extends Controller
         $version_num = request()->get('version_num');
         $version_explain = request()->get('version_explain');
         $package_url = request()->get('package_url');
-        $status = request()->get('status');
+        $status = request()->get('status', Version::STATUS_UNPUBLISH);
         $force_update = request()->get('force_update');
         $app_type = request()->get('app_type');
         $app_size = request()->get('app_size');

@@ -25,15 +25,18 @@ class VersionController extends Controller
         $appType = request()->headers->get('app-type');
         $version = request()->headers->get('version');
 
-        $data = VersionService::getLastVersion($appType, $version);
+        $lastVersion = VersionService::getLastVersion($appType, $version);
+        if(empty($lastVersion)){
+            return Result::success('已经是最新版本');
+        }
 
         return Result::success([
-            'version' => $data['app_num'],
-            'force' => $data['force_update'],
-            'desc' => $data['version_explain'],
-            'app_type' => $data['app_type'],
-            'package_url' => $data['package_url'],
-            'app_size' => $data['app_size'],
+            'version' => $lastVersion['app_num'],
+            'force' => $lastVersion['force_update'],
+            'desc' => $lastVersion['version_explain'],
+            'app_type' => $lastVersion['app_type'],
+            'package_url' => $lastVersion['package_url'],
+            'app_size' => $lastVersion['app_size'],
         ]);
     }
 
@@ -54,7 +57,7 @@ class VersionController extends Controller
             'app_type' => $data['app_type'],
         ];
 
-        $list = VersionService::getAllByAppType($appType);
+        $list = VersionService::getAllEnableVersionsByAppType($appType);
         $versions = [];
         if ($list) {
             foreach ($list as $l) {
