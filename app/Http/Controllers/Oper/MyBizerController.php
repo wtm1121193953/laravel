@@ -34,32 +34,30 @@ class MyBizerController extends Controller {
     /**
      * 修改状态,分成，备注
      */
-    public function changeDetail()
+    public function edit()
     {
         $id = request('id');
         $status = request('status');
         $divide = request('divide');
         $remark = request('remark');
-        $validate = array('id' => 'required|integer|min:1');
+
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'status' => 'integer|range:0,2',
+            'divide' => 'min:0|max:100'
+        ]);
+        $operBizer = OperBizer::findOrFail($id);
         if(!empty($status)){
-            $validate["status"] = 'required|integer';
+            $operBizer->status = $status;
         }
-        if(!empty($divide)){
-            $validate["divide"] = 'required|min:0|max:100';
-        }
-        $this->validate(request(),$validate);
-        $operBizMember = OperBizer::findOrFail($id);
-        if(!empty($status)){
-            $operBizMember->status = $status;
-        }
-        if($divide >= 0 && $divide <= 100){
-            $operBizMember->divide = $divide;
+        if(!is_null($divide) && $divide >= 0 && $divide <= 100){
+            $operBizer->divide = $divide;
         }
         if(!empty($remark)){
-            $operBizMember->remark = $remark;
+            $operBizer->remark = $remark;
         }
-        $operBizMember->save();
-        return Result::success($operBizMember);
+        $operBizer->save();
+        return Result::success($operBizer);
     }
     /**
      * 获取业务员的商户
