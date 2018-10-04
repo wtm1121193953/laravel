@@ -143,12 +143,12 @@ class FeeSplittingService extends BaseService
             $operBizer = OperBizerService::getOperBizerByParam($param);
             if ($operBizer->status == OperBizer::STATUS_SIGNED) {
                 $operFeeRatioInit = UserCreditSettingService::getFeeSplittingRatioToOper($oper);
-                if ($operFeeRatioInit == null) {
+                if ($operFeeRatioInit == null || $operFeeRatioInit <= 0) {
                     return;
                 }
                 $bizerFeeRatio = $operFeeRatioInit * $operBizer->divide / 100;
                 $operFeeRatio = $operFeeRatioInit - $bizerFeeRatio;
-                if ($operFeeRatio <= 0) {
+                if ($operFeeRatio < 0) {
                     return;
                 }
             }
