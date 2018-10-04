@@ -68,6 +68,7 @@
             },
             getList(){
                 let _self = this;
+                this.isLoading = true;
                 api.get('/oper/bizers', this.query).then(data => {
                     console.log(data)
                     _self.list = data.list;
@@ -78,7 +79,7 @@
                       type: 'warning'
                     });
                 }).finally(() => {
-
+                    this.isLoading = false;
                 })
             },
         },
