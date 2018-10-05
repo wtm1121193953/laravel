@@ -52,7 +52,7 @@
             <el-table-column prop="consume_quota_no" label="交易号"></el-table-column>
             <el-table-column prop="type" label="交易类型" width="100px">
                 <template slot-scope="scope">
-                    <span>分享者贡献</span>
+                    <span>被分享人贡献</span>
                 </template>
             </el-table-column>
             <el-table-column prop="order_no" label="原订单号"></el-table-column>
