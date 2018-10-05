@@ -76,12 +76,18 @@
                 <el-table-column prop="signboard_name" label="商户招牌名"/>
                 <el-table-column prop="operId" size="mini" label="激活运营中心ID"/>
                 <el-table-column prop="operName" label="激活运营中心名称"/>
-                <el-table-column prop="operBizMemberName" label="业务员" />
+                <el-table-column prop="operBizMemberName" label="签约人" >
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.bizer">业务员 {{scope.row.bizer.name}}/{{scope.row.bizer.mobile}}</span>
+                        <span v-else-if="scope.row.operBizMember">员工 {{scope.row.operBizMember.name}}/{{scope.row.operBizMember.mobile}}</span>
+                        <span v-else>无</span>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="categoryPath" label="行业">
                     <template slot-scope="scope">
-                <span v-for="item in scope.row.categoryPath" :key="item.id">
-                    {{ item.name }}
-                </span>
+                        <span v-for="item in scope.row.categoryPath" :key="item.id">
+                            {{ item.name }}
+                        </span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="city" label="城市">
