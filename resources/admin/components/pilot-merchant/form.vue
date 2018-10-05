@@ -142,7 +142,6 @@
                 form: deepCopy(defaultForm),
                 categoryOptions: [],
                 areaOptions: [],
-                operBizMembers: [],
                 operBizers: [],
                 formRules: {
                     name: [
@@ -254,7 +253,7 @@
                     this.areaOptions = data.list;
                 });
                 api.get('/bizer/operBizers/enable', {operId: this.data.audit_oper_id}).then(data => {
-                    this.operBizMembers = data.list;
+                    this.operBizers = data.list;
                 })
             },
             initForm() {
