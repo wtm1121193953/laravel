@@ -61,11 +61,11 @@
                 >
                     <el-option
                             v-for="item in operBizers"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id">
-                        <span class="c-blue">{{item.name}}</span>
-                        <span class="c-light-gray">{{item.mobile}}</span>
+                            :key="item.bizerId"
+                            :label="item.bizerName"
+                            :value="item.bizerId">
+                        <span class="c-blue">{{item.bizerName}}</span>
+                        <span class="c-light-gray">{{item.bizerMobile}}</span>
                     </el-option>
                 </el-select>
             </el-form-item>
