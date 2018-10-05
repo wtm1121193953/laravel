@@ -14,7 +14,7 @@ Route::post('/operBizMember/del', 'OperBizMemberController@del');
 Route::get('/operBizMember/merchants', 'OperBizMemberController@getMerchants');
 Route::get('/operBizerMember/getMemberList', 'OperBizMemberController@getMemberList');
 
-Route::get('/bizerRecord', 'BizerRecordController@getList');
+Route::get('/bizerRecords', 'BizerRecordController@getList');
 Route::get('/bizerRecord/contractBizer', 'BizerRecordController@contractBizer');
 Route::get('/bizerRecord/getRejectList', 'BizerRecordController@getRejectList');
 

@@ -18,7 +18,7 @@ class BizerRecordController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getList() {
-        $status = request("selectStatus")=='first' ? 0 : -1;
+        $status = request("status");
         $where =[
             "oper_ids" => request()->get('current_user')->oper_id,//登录所属运营中心ID
             "status" =>$status,//查询业务员的状态

@@ -1,70 +1,71 @@
 <template>
     <page title="业务员申请" v-loading="isLoading">
-        <el-tabs type="card" v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane :label="'新申请'+total" name="first"></el-tab-pane>
-            <el-tab-pane label="已拒绝" name="second"></el-tab-pane>
+        <el-tabs type="card" v-model="activeName">
+            <el-tab-pane :label="'新申请'+total" name="newRecords">
+                <el-col>
+                    <el-table :data="list" stripe>
+                        <el-table-column prop="created_at" label="申请签约时间"/>
+                        <el-table-column prop="name" label="姓名">
+                            <template slot-scope="scope">
+                                <span> {{ scope.row.bizerInfo.name }} </span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="mobile" label="手机号">
+                            <template slot-scope="scope">
+                                <span> {{ scope.row.bizerInfo.mobile }} </span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="remark" label="备注"></el-table-column>
+
+                        <div>
+                            <el-table-column fixed="right" label="操作">
+                                <template slot-scope="scope">
+                                    <el-button type="text" @click="signing(scope.$index)">签约</el-button>
+                                    <el-button type="text" @click="refusal(scope.$index)">拒绝</el-button>
+                                </template>
+                            </el-table-column>
+                        </div>
+                    </el-table>
+
+                    <el-pagination
+                            class="fr m-t-20"
+                            layout="total, prev, pager, next"
+                            :current-page.sync="query.page"
+                            @current-change="getNewList"
+                            :page-size="15"
+                            :total="total"/>
+                </el-col>
+            </el-tab-pane>
+            <el-tab-pane label="已拒绝" name="rejectRecords">
+                <el-col>
+                    <el-table :data="rejectList" stripe>
+                        <el-table-column prop="apply_time" label="申请签约时间"/>
+                        <el-table-column prop="name" label="姓名">
+                            <template slot-scope="scope">
+                                <span> {{ scope.row.bizerInfo.name }} </span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="mobile" label="手机号">
+                            <template slot-scope="scope">
+                                <span> {{ scope.row.bizerInfo.mobile }} </span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="created_at" label="拒绝签约时间"></el-table-column>
+                        <el-table-column prop="note" label="原因"></el-table-column>
+                        <el-table-column prop="remark" label="备注"></el-table-column>
+                    </el-table>
+
+                    <el-pagination
+                            class="fr m-t-20"
+                            layout="total, prev, pager, next"
+                            :current-page.sync="rejectPage"
+                            @current-change="getRejectList"
+                            :page-size="15"
+                            :total="rejectTotal"/>
+                </el-col>
+            </el-tab-pane>
         </el-tabs>
 
-        <el-col v-if="!secondTable">
-            <el-table :data="list" stripe>
-                <el-table-column prop="created_at" label="申请签约时间"/>
-                <el-table-column prop="name" label="姓名">
-                    <template slot-scope="scope">
-                        <span> {{ scope.row.bizerInfo.name }} </span>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="mobile" label="手机号">
-                    <template slot-scope="scope">
-                        <span> {{ scope.row.bizerInfo.mobile }} </span>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="remark" label="备注"></el-table-column>
-
-                <div>
-                    <el-table-column fixed="right" label="操作">
-                        <template slot-scope="scope">
-                            <el-button type="text" @click="signing(scope.$index)">签约</el-button>
-                            <el-button type="text" @click="refusal(scope.$index)">拒绝</el-button>
-                        </template>
-                    </el-table-column>
-                </div>
-            </el-table>
-
-            <el-pagination
-                    class="fr m-t-20"
-                    layout="total, prev, pager, next"
-                    :current-page.sync="query.page"
-                    @current-change="getList"
-                    :page-size="15"
-                    :total="total"/>
-        </el-col>
-
-        <el-col v-if="secondTable">
-            <el-table :data="rejectList" stripe>
-                <el-table-column prop="apply_time" label="申请签约时间"/>
-                <el-table-column prop="name" label="姓名">
-                    <template slot-scope="scope">
-                        <span> {{ scope.row.bizerInfo.name }} </span>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="mobile" label="手机号">
-                    <template slot-scope="scope">
-                        <span> {{ scope.row.bizerInfo.mobile }} </span>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="created_at" label="拒绝签约时间"></el-table-column>
-                <el-table-column prop="note" label="原因"></el-table-column>
-                <el-table-column prop="remark" label="备注"></el-table-column>
-            </el-table>
-
-            <el-pagination
-                    class="fr m-t-20"
-                    layout="total, prev, pager, next"
-                    :current-page.sync="rejectPage"
-                    @current-change="getRejectList"
-                    :page-size="15"
-                    :total="rejectTotal"/>
-        </el-col>
 
         <el-dialog title="签约业务员" :visible.sync="dialogSigningFormVisible" width="30%">
             <el-form :model="formSigning" ref="formSigning" :rules="rules" label-width="70px">
@@ -123,7 +124,7 @@
             };
             return {
                 isLoading: false,
-                activeName: 'first',
+                activeName: 'newRecords',
                 secondTable: false,
                 query: {
                     page: 1
@@ -174,26 +175,21 @@
 
         },
         methods: {
-            getList() {
+            getListData(){
+                this.getNewList();
+                this.getRejectList();
+            },
+            getNewList() {
                 this.isLoading = true;
                 let params = {};
-                this.query.selectStatus = this.activeName;
+                this.query.status = 0;
                 Object.assign(params, this.query);
-                api.get('/bizerRecord', params).then(data => {
+                api.get('/bizerRecords', params).then(data => {
                     this.query.page = params.page;
                     this.isLoading = false;
                     this.list = data.list;
                     this.total = data.total;
                 })
-            },
-            handleClick(tab, event) {
-                let _self = this;
-                this.getList();
-                if ( _self.activeName == "first" ) {
-                    _self.secondTable = false;
-                } else if ( _self.activeName == "second" ) {
-                    _self.secondTable = true;
-                }
             },
             signing(index) {
                 this.dialogSigningFormVisible = true;
@@ -243,7 +239,7 @@
                         message: successMsg,
                         type: 'success'
                     });
-                    _self.getList();
+                    _self.getListData();
                 }).catch((error) => {
                     _self.$message({
                       message: error.response && error.response.message ? error.response.message:'请求失败',
@@ -262,8 +258,7 @@
             },
         },
         created(){
-            this.getList();
-            this.getRejectList();
+            this.getListData();
         },
         components: {
 
