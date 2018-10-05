@@ -60,7 +60,7 @@
             <<el-table-column prop="id" label="用户id"/>
             <el-table-column prop="created_at" label="注册时间"/>
             <el-table-column prop="name" label="会员名称"/>
-            <el-table-column prop="parent" label="推荐人"/>
+            <el-table-column prop="parent" label="分享人"/>
             <el-table-column prop="stauts_val" label="用户状态"/>
             <el-table-column prop="identity_status_text" label="认证身份状态"/>
 

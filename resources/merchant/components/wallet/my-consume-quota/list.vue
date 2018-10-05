@@ -112,11 +112,11 @@
             consume() {
                 return [
                     {
-                        label: '累计获得分享者贡献值',
+                        label: '累计获得被分享人贡献值',
                         val: this.shareConsumeQuotaSum
                     },
                     {
-                        label: '本月累计获得分享者贡献值',
+                        label: '本月累计获得被分享人贡献值',
                         val: this.thisMonthQuotaSum,
                     },
                 ];

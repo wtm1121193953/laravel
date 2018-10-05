@@ -12,7 +12,7 @@
             <!--<el-table-column prop="name" label="会员名称"/>-->
             <el-table-column prop="mobile" label="手机号"/>
             <!--<el-table-column prop="email" label="邮箱"/>-->
-            <el-table-column prop="parent" label="推荐人"/>
+            <el-table-column prop="parent" label="分享人"/>
             <el-table-column prop="created_at" label="添加时间"/>
             <!--<el-table-column prop="city" label="城市">-->
                 <!--<template slot-scope="scope">-->
