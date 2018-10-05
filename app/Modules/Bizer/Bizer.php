@@ -29,4 +29,9 @@ class Bizer extends BaseModel {
     {
         return $this->hasOne('App\Modules\Bizer\BizerIdentityAuditRecord');
     }
+
+    public function Oper()
+    {
+        
+    }
 }

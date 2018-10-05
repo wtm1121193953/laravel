@@ -50,19 +50,20 @@
             <el-form-item prop="contacter_phone" label="负责人手机号码" class="w-500">
                 <el-input v-model="form.contacter_phone"/>
             </el-form-item>
-            <el-form-item prop="oper_biz_member_code" label="签约人">
+            <el-form-item prop="bizer_id" label="签约人">
                 <el-select
-                        v-model="form.oper_biz_member_code"
+                        v-model="form.bizer_id"
                         filterable
+                        :filter-method="filterOperBizers"
                         clearable
                         placeholder="请输入业务员姓名或手机号码"
                         class="w-300"
                 >
                     <el-option
-                            v-for="item in operBizMembers"
+                            v-for="item in operBizers"
                             :key="item.id"
                             :label="item.name"
-                            :value="item.code">
+                            :value="item.id">
                         <span class="c-blue">{{item.name}}</span>
                         <span class="c-light-gray">{{item.mobile}}</span>
                     </el-option>
@@ -142,6 +143,7 @@
                 categoryOptions: [],
                 areaOptions: [],
                 operBizMembers: [],
+                operBizers: [],
                 formRules: {
                     name: [
                         {required: true, message: '商户名称不能为空', trigger: 'change'},
@@ -232,6 +234,11 @@
                     this.$refs.lngAndLat.clearValidate();
                 })
             },
+            filterOperBizers(val){
+                return this.operBizers.filter(item => {
+                    return item.name.indexOf(val) >= 0 || item.mobile.indexOf(val) >= 0;
+                })
+            },
             getInitData() {
                 api.get('merchant/category/getTreeWithoutDisable').then(data => {
                     this.categoryOptions = data.list;
@@ -246,7 +253,7 @@
                 api.get('area/tree').then(data => {
                     this.areaOptions = data.list;
                 });
-                api.get('/operBizMembers/search', {status: 1, operId: this.data.audit_oper_id}).then(data => {
+                api.get('/bizer/operBizers/enable', {operId: this.data.audit_oper_id}).then(data => {
                     this.operBizMembers = data.list;
                 })
             },

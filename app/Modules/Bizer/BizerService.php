@@ -4,6 +4,7 @@ namespace App\Modules\Bizer;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use App\Modules\Oper\OperBizer;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperService;
 use App\ResultCode;
@@ -308,5 +309,19 @@ class BizerService extends BaseService
             ->get();
 
         return $bizerIds;
+    }
+
+    /**
+     * 根据运营中心ID获取全部业务员列表
+     * @param $operId
+     * @param array $fields
+     * @return Bizer[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getAllByOperId($operId, $fields = ['*'])
+    {
+        $list = Bizer::whereHas('operBizer', function($query) use ($operId){
+            $query->where('oper_id', $operId);
+        })->get();
+        return $list;
     }
 }

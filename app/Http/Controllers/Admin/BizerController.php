@@ -3,6 +3,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Bizer\BizerService;
+use App\Modules\Oper\OperBizer;
+use App\Modules\Oper\OperBizerService;
 use App\Result;
 
 class BizerController extends Controller
@@ -31,6 +33,20 @@ class BizerController extends Controller
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
+
+    /**
+     * 获取运营中心全部的业务员列表
+     */
+    public function getOperAllEnableBizers()
+    {
+        $this->validate(request(), [
+            'operId' => 'required|integer|min:1'
+        ]);
+        $operId = request('operId');
+
+        $list = OperBizerService::getAllbizer(['oper_ids' => $operId, 'status' => OperBizer::STATUS_SIGNED]);
+        return Result::success(['list' => $list]);
     }
 
     /**
