@@ -40,8 +40,8 @@
                 <el-select v-model="query.type" placeholder="请选择" clearable class="w-150">
                     <el-option label="全部" :value="0"></el-option>
                     <el-option label="提现" :value="1"></el-option>
-                    <el-option label="分享消费奖励" :value="2"></el-option>
-                    <!--<el-option label="分享消费奖励退款" :value="3"></el-option>-->
+                    <el-option label="被分享人消费奖励" :value="2"></el-option>
+                    <!--<el-option label="被分享人消费奖励退款" :value="3"></el-option>-->
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -54,8 +54,8 @@
             <el-table-column prop="bill_no" label="交易号"></el-table-column>
             <el-table-column prop="type" label="交易类型">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.type == 2">分享消费奖励</span>
-                    <span v-else-if="scope.row.type == 4">分享消费奖励退款</span>
+                    <span v-if="scope.row.type == 2">被分享人消费奖励</span>
+                    <span v-else-if="scope.row.type == 4">被分享人消费奖励退款</span>
                     <span v-else-if="scope.row.type == 7">
                         提现
                         <span v-if="scope.row.status == 1">(审核中)</span>
