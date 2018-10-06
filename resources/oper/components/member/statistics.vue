@@ -1,5 +1,5 @@
 <template>
-    <page title="会员统计">
+    <page title="用户统计">
         <div class="statistics-div">
             <div class="today-div">
                 <div>

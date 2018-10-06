@@ -1,5 +1,5 @@
 <template>
-    <page title="我的会员" v-loading="isLoading">
+    <page title="我的用户" v-loading="isLoading">
         <el-form :model="query" inline size="small" class="fl" @submit.native.prevent>
 
             <el-form-item prop="mobile" label="用户手机号码" >
