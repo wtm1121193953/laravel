@@ -17,7 +17,7 @@ class SelfController extends Controller
 {
 
     private $users = [
-        'dev' => '123456'
+        'dev' => '6A2uJsp5Bh27lj9UmdIFRz6COOHLyN'
     ];
 
     public function login()
@@ -57,6 +57,9 @@ class SelfController extends Controller
 
     private function getMenus()
     {
-        return [];
+        return [
+            ['id' => 0, 'name' => '首页', 'url' => '/welcome'],
+            ['id' => 1, 'name' => '命令执行', 'url' => '/system/option'],
+        ];
     }
 }
