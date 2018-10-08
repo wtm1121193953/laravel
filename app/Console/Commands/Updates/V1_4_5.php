@@ -57,8 +57,7 @@ class V1_4_5 extends Command
     {
 
         /*************统计运营中心5月份之后历史运营数据start*************/
-
-        /*$i = 1;
+        $i = 1;
         while (1) {
             $endTime = date('Y-m-d', strtotime("-{$i} day")) . ' 23:59:59';
             OperStatisticsDailyJob::dispatch($endTime);
@@ -66,7 +65,7 @@ class V1_4_5 extends Command
                 break;
             }
             $i++;
-        }*/
+        }
         /*************统计运营中心5月份之后历史运营数据end*************/
         /**********************系统图片迁移COS start**********************/
         // 待修改字段
