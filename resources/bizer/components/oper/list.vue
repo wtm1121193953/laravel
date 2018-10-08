@@ -64,11 +64,11 @@
                     <span>{{scope.row.divide}}%</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="status" label="合作状态">
+            <el-table-column prop="sign_status" label="合作状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.status === 0" class="c-warning">申请中</span>
-                    <span v-else-if="scope.row.status === -1" class="c-danger">拒绝</span>
+                    <span v-if="scope.row.sign_status == 1" class="c-green">正常</span>
+                    <span v-else-if="scope.row.sign_status == 0" class="c-warning">冻结</span>
+                    <span v-else class="c-danger">未知（{{scope.row.sign_status}}）</span>
                 </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作">
