@@ -288,7 +288,6 @@ class OrderController extends Controller
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->pay_type = $payType;
         $order->origin_app_type = request()->header('app-type');
-        $order->remark = request('remark', '');
         $order->save();
 
         // 如果是微信支付
