@@ -438,8 +438,8 @@ class WalletService extends BaseService
                     $item->sub_bank_name = $oper->sub_bank_name;
                 } elseif ($item->origin_type == Wallet::ORIGIN_TYPE_BIZER) {
                     $bizer = BizerService::getById($item->origin_id);
-                    $item->bizer_name = $bizer->name;
-                    $item->bizer_mobile = $bizer->mobile;
+                    $item->bizer_name = !empty($bizer) ? $bizer->name : '';
+                    $item->bizer_mobile = !empty($bizer) ? $bizer->mobile : '';
                     $bizerBank = BankCardService::getBankCardByOriginInfo($item->origin_id, $item->origin_type);
                     $item->bank_open_name = $bizerBank->bank_card_open_name ?? '';
                     $item->bank_card_no = $bizerBank->bank_card_no ?? '';
