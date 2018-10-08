@@ -97,35 +97,43 @@
                         <span> {{ scope.row.area }} </span>
                     </template>
                 </el-table-column>
-            <el-table-column prop="audit_status" label="审核状态">
-                <template slot-scope="scope">
-                    <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
-                        <el-popover
-                                v-else-if="scope.row.audit_status === 1"
-                                placement="bottom-start"
-                                width="200px"  trigger="hover"
-                                @show="showMessage(scope)"
-                            :disabled="scope.row.audit_suggestion == ''">
-                            <div   slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
-                            <unaudit-record-reason    :data="auditRecord"  />
-                        </el-popover>
-                          <el-popover
-                              v-else-if="scope.row.audit_status === 2"
-                              placement="bottom-start"
-                              width="200px"  trigger="hover"
-                              @show="showMessage(scope)"
-                              :disabled="scope.row.audit_suggestion == ''" >
-                              <div   slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
+                <el-table-column prop="status" label="商户状态">
+                    <template slot-scope="scope" v-if="scope.row.audit_status == 1 || scope.row.audit_status == 3">
+                        <span v-if="scope.row.status == 1" class="c-green">正常</span>
+                        <span v-else-if="scope.row.status == 2" class="c-danger">已冻结</span>
+                        <span v-else>未知 ({{scope.row.status}})</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="audit_status" label="审核状态">
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
+                            <el-popover
+                                    v-else-if="scope.row.audit_status === 1"
+                                    placement="bottom-start"
+                                    width="200px"  trigger="hover"
+                                    @show="showMessage(scope)"
+                                :disabled="scope.row.audit_suggestion == ''">
+                                <div   slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
                                 <unaudit-record-reason    :data="auditRecord"  />
-                          </el-popover>
-                    <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
-                    <span v-else>未知 ({{scope.row.audit_status}})</span>
-                </template>
-             </el-table-column>
+                            </el-popover>
+                              <el-popover
+                                  v-else-if="scope.row.audit_status === 2"
+                                  placement="bottom-start"
+                                  width="200px"  trigger="hover"
+                                  @show="showMessage(scope)"
+                                  :disabled="scope.row.audit_suggestion == ''" >
+                                  <div   slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
+                                    <unaudit-record-reason    :data="auditRecord"  />
+                              </el-popover>
+                        <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
+                        <span v-else>未知 ({{scope.row.audit_status}})</span>
+                    </template>
+                 </el-table-column>
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
                     <el-button type="text" @click="edit(scope)">编辑</el-button>
+                    <el-button v-if="parseInt(scope.row.audit_status) !== 0 && parseInt(scope.row.audit_status) !== 2" type="text" @click="changeStatus(scope.row)">{{parseInt(scope.row.status) === 1 ? '冻结' : '解冻'}}</el-button>
                     <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
                         <el-button type="text" @click="detail(scope,3)">审核</el-button>
                         <el-dropdown trigger="click" @command="(command) => {audit(scope, command)}">
@@ -352,6 +360,11 @@
 
                 })
             },
+            changeStatus(row) {
+                api.post('/merchant/changeStatus', {id: row.id}).then((data) => {
+                    row.status = data.status;
+                })
+            }
         },
         created(){
             Object.assign(this.query, this.$route.params);
