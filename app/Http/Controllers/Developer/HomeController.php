@@ -22,7 +22,7 @@ class HomeController extends Controller
 //        $connections = DB::getConnections();
 
         /** @var MySqlConnection $config */
-        $config = config('database.mysql');
+        $config = config('database.connections.mysql');
 //        $config->
         $connect = mysqli_connect($config['host'], $config['username'], $config['password'], $config['database']);
         return Result::success([
