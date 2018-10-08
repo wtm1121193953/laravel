@@ -113,9 +113,9 @@ class WalletController extends Controller
             'originId' => $value,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
         ], $pageSize, true);
-        $data = $query->paginate($pageSize);
         // 当月总消费额
         $amount = $query->sum('consume_quota');
+        $data = $query->paginate($pageSize);
 
         return Result::success([
             'list' => $data->items(),
