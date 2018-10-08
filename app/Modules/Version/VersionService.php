@@ -155,4 +155,20 @@ class VersionService extends BaseService
 
     }
 
+
+    public static function getLastVersionByType(int $app_type) {
+        $app_types = [Version::APP_TYPE_ANDROID,Version::APP_TYPE_IOS];
+
+        if (!in_array($app_type, $app_types)) {
+            throw new ParamInvalidException('参数错误');
+        }
+
+        $lastVersion = Version::where('app_type','=', $app_type)
+            ->where('status',Version::STATUS_PUBLISHED)
+            ->orderBy('version_seq','desc')
+            ->first();
+
+        return $lastVersion;
+    }
+
 }
