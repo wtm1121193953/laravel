@@ -110,7 +110,7 @@
             <el-form-item prop="sub_bank_name" label="开户行网点名称">
                 <el-input v-model="form.sub_bank_name" placeholder="填写银行网点具体名称，如北京市××分行××支行"/>
             </el-form-item>
-            <el-form-item prop="area" label="开户行网点地址">
+            <el-form-item prop="bank_area" label="开户行网点地址">
                 <el-cascader
                         :options="areaOptions"
                         :props="{
