@@ -189,8 +189,8 @@ class WalletWithdrawService extends BaseService
                     $item->oper_name = OperService::getNameById($item->origin_id);
                 } elseif ($item->origin_type == WalletWithdraw::ORIGIN_TYPE_BIZER) {
                     $bizer = BizerService::getById($item->origin_id);
-                    $item->bizer_name = $bizer->name;
-                    $item->bizer_mobile = $bizer->mobile;
+                    $item->bizer_name = !empty($bizer) ? $bizer->name : '';
+                    $item->bizer_mobile = !empty($bizer) ? $bizer->mobile : '';
                 }
             });
             return $data;
