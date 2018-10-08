@@ -4,6 +4,7 @@ namespace App\Modules\Oper;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Bizer\BizerService;
 
@@ -256,6 +257,7 @@ class OperBizerService extends BaseService {
         $bizerLog->oper_id = $operId;
         $bizerLog->bizer_id = $bizerId;
         $bizerLog->status = OperBizerLog::STATUS_APPLYING;
+        $bizerLog->apply_time = Carbon::now();
         $bizerLog->save();
 
         return $bizerLog;
