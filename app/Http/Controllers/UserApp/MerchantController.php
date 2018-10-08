@@ -15,6 +15,8 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Merchant\MerchantFollow;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\Oper;
+use App\Modules\Order\Order;
 use App\Result;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Support\Lbs;
@@ -84,6 +86,10 @@ class MerchantController extends Controller
 
         // 首页商户列表，显示价格最低的n个团购商品
         $detail->lowestGoods = GoodsService::getLowestPriceGoodsForMerchant($id);
+
+        // 支付目标类型  1-支付给运营中心 2-支付给平台
+        $merchant_oper = Oper::findOrFail($detail->oper_id);
+        $detail->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
 
         return Result::success(['list' => $detail]);
     }
