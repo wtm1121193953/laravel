@@ -4,14 +4,14 @@
             <div class="item" v-for="(item, index) in wallet">
                 <p class="label">{{item.label}}</p >
                 <p class="val">{{item.val}}元</p >
-                <el-tooltip v-if="index == 2" placement="top">
+                <!--<el-tooltip v-if="index == 2" placement="top">
                     <div slot="content">
                         <p>冻结金额：</p>
                         <p>1、包括提现中和暂未结算完成的金额</p>
                         <p>2、暂未结算的金额包括用户还未消费的订单以及运营中心还未结算的金额</p>
                     </div>
                     <i class="el-icon-info"></i>
-                </el-tooltip>
+                </el-tooltip>-->
             </div>
             <div class="handler">
                 <el-button type="success" @click="withdraw">我要提现</el-button>
@@ -167,10 +167,10 @@
                         label: '可提现金额',
                         val: this.balance
                     },
-                    {
+                    /*{
                         label: '冻结金额',
                         val: this.freeze_balance
-                    },
+                    },*/
                     {
                         label: '已提现金额',
                         val: this.has_balanced
