@@ -217,16 +217,17 @@ class OperBizerService extends BaseService {
      * @param $bizerId
      * @param $remark
      * @return OperBizer|Builder|\Illuminate\Database\Eloquent\Model|null|object
+     * @throws \Exception
      */
     public static function addOperBizer($operId, $bizerId, $remark)
     {
         $operBizer = OperBizerService::getOperBizerByParam(['operId' => $operId, 'bizerId' => $bizerId]);
         if ($operBizer) {
             if ($operBizer->status == OperBizer::STATUS_APPLYING) {
-                throw new BaseResponseException('此运营中心已在申请中');
+                throw new \Exception('此运营中心已在申请中');
             }
             if ($operBizer->status == OperBizer::STATUS_SIGNED) {
-                throw new BaseResponseException('此运营中心已经签约成功');
+                throw new \Exception('此运营中心已经签约成功');
             }
             $model = $operBizer;
         } else {
