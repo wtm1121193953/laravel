@@ -19,6 +19,7 @@
         "overtrue/laravel-wechat": "~4.0",
         "predis/predis": "^1.1",
         "simplesoftwareio/simple-qrcode": "^2.0",
+        "sngrl/sphinxsearch": "dev-master",
         "tamayo/laravel-scout-elastic": "^3.0",
         "zedisdog/laravel-schema-extend": "^1.0"
     },
