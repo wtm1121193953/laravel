@@ -196,7 +196,7 @@ class OrderController extends Controller
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->signboard_name ?? '';
         $order->goods_id = $goodsId;
-        $order->goods_name = $goods->name;
+        $order->goods_name = $merchant->signboard_name ?? '';
         $order->goods_pic = $goods->pic;
         $order->goods_thumb_url = $goods->thumb_url;
         $order->price = $goods->price;
