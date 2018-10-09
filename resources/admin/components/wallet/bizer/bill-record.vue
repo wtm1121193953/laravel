@@ -30,8 +30,8 @@
                 <el-select v-model="query.type" placeholder="请选择" clearable class="w-150">
                     <el-option label="全部" :value="0"></el-option>
                     <el-option label="提现" :value="7"></el-option>
-                    <el-option label="被分享人消费奖励(业务员)" :value="9"></el-option>
-                    <!--<el-option label="被分享人消费奖励退款(业务员)" :value="10"></el-option>-->
+                    <el-option label="交易分润入账(业务员)" :value="9"></el-option>
+                    <!--<el-option label="交易分润退款(业务员)" :value="10"></el-option>-->
                 </el-select>
             </el-form-item>
             <el-form-item>
