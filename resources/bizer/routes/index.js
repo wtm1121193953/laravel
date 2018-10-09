@@ -18,6 +18,7 @@ const routes = [
         path: '/',
         component: Login,
         children: [
+            {path: '/', component: LoginForm, name: 'Login'},
             {path: 'login', component: LoginForm, name: 'LoginForm'},
             {path: '/register', component: RegisterForm, name: 'RegisterForm'},
         ]
@@ -30,8 +31,6 @@ const routes = [
             ...order,
             ...merchant,
             ...walletAndWithdrew,
-            // demo组件示例
-            {path: '/', component: welcome, name: 'welcomePage'},
             // demo组件示例
             {path: 'welcome', component: welcome, name: 'welcome'},
             // 刷新组件

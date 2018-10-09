@@ -253,7 +253,7 @@
                 if (this.$route.query && this.$route.query._from) {
                     router.push(this.$route.query._from);
                 }else if(this.currentMenu){
-                    router.push('/');
+                    router.push(this.currentMenu);
                 }else {
                     router.push('welcome');
                 }
