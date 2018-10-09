@@ -17,7 +17,7 @@ class CreateVersionsTable extends Migration
             $table->increments('id');
             $table->string('app_name')->default('')->comment('应用名称');
             $table->string('app_tag')->default('')->comment('版本标签');
-            $table->string('version')->index()->default('')->comment('版本号');
+            $table->string('version_no')->index()->default('')->comment('版本号');
             $table->integer('version_seq')->index()->default(0)->comment('版本序号');
             $table->string('desc')->default('')->comment('更新说明');
             $table->string('package_url')->default('')->comment('安装包路径');
