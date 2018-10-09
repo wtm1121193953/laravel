@@ -90,7 +90,7 @@ class MerchantController extends Controller
     public function add()
     {
         $validate = [
-            'name' => 'required|max:20',
+            'name' => 'required|max:50',
             'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
@@ -121,7 +121,7 @@ class MerchantController extends Controller
     public function edit()
     {
         $validate = [
-            'name' => 'required|max:20',
+            'name' => 'required|max:50',
             'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
