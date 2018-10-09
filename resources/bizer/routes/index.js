@@ -18,7 +18,6 @@ const routes = [
         path: '/',
         component: Login,
         children: [
-            {path: '/', component: LoginForm, name: 'Login'},
             {path: 'login', component: LoginForm, name: 'LoginForm'},
             {path: '/register', component: RegisterForm, name: 'RegisterForm'},
         ]
