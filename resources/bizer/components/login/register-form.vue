@@ -14,7 +14,7 @@
                 <el-input type="text" v-model="form.mobile" auto-complete="off" placeholder="请输入手机号"/>
             </el-form-item>
             <el-form-item label="验证码" prop="verify_code">
-                <el-input type="text" v-model="form.verify_code" auto-complete="off" class="w-160"
+                <el-input type="text" v-model="form.verify_code" auto-complete="off" class="w-150"
                           placeholder="请输入验证码" maxlength="4"/>
                 <el-button type="primary" class="fr" style="width:132px;" :disabled="buttonCode.isDisabled" @click.native.prevent="sendCode">{{buttonCode.buttonName}}</el-button>
             </el-form-item>
