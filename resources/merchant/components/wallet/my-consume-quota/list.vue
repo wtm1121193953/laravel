@@ -50,7 +50,7 @@
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="created_at" label="交易时间"></el-table-column>
             <el-table-column prop="consume_quota_no" label="交易号"></el-table-column>
-            <el-table-column prop="type" label="交易类型" width="100px">
+            <el-table-column prop="type" label="交易类型" width="120px">
                 <template slot-scope="scope">
                     <span>被分享人贡献</span>
                 </template>
