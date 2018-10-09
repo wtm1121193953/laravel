@@ -1,5 +1,6 @@
 import Login from '../components/login.vue'
-import Register from '../components/register.vue'
+import LoginForm from '../components/login/login-form'
+import RegisterForm from '../components/login/register-form'
 import refresh from '../components/refresh.vue'
 import Home from '../components/home.vue'
 import ErrorPage from '../components/404.vue'
@@ -13,9 +14,14 @@ import order from './order'
 import walletAndWithdrew from './wallet-and-withdraw'
 
 const routes = [
-
-    {path: '/login', component: Login, name: 'Login'},
-    {path: '/register', component: Register, name: 'Register'},
+    {
+        path: '/',
+        component: Login,
+        children: [
+            {path: 'login', component: LoginForm, name: 'LoginForm'},
+            {path: '/register', component: RegisterForm, name: 'RegisterForm'},
+        ]
+    },
     {
         path: '/',
         component: Home,
