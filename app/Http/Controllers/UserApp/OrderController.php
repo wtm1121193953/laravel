@@ -485,8 +485,12 @@ class OrderController extends Controller
 //            return Result::success($orderRefund);
 
             // 发起微信支付退款
-            // 获取平台的微信支付实例
-            $payApp = WechatService::getOpenPlatformPayAppFromPlatform();
+            if($order->origin_app_type == Order::ORIGIN_APP_TYPE_MINIPROGRAM){
+                $payApp = WechatService::getWechatPayAppForPlatform();
+            }else{
+                // 获取平台的微信支付实例
+                $payApp = WechatService::getOpenPlatformPayAppFromPlatform();
+            }
             $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->id, $orderPay->amount * 100, $orderPay->amount * 100, [
                 'refund_desc' => '用户发起退款',
             ]);
