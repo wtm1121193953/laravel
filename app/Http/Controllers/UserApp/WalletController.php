@@ -10,6 +10,9 @@ namespace App\HTTP\Controllers\UserApp;
 
 use App\Exceptions\NoPermissionException;
 use App\Http\Controllers\Controller;
+use App\Modules\FeeSplitting\FeeSplittingService;
+use App\Modules\Merchant\Merchant;
+use App\Modules\Oper\Oper;
 use App\Result;
 use App\ResultCode;
 use App\Modules\Wallet\Wallet;
@@ -19,8 +22,6 @@ use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use App\Support\Utils;
-use App\Modules\UserCredit\UserCreditSettingService;
-use App\Modules\Merchant\MerchantService;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Sms\SmsService;
 use App\Exceptions\ParamInvalidException;
@@ -326,13 +327,7 @@ class WalletController extends Controller
             'merchantId' => 'required|integer|min:1'
         ]);
         $merchantId = request('merchantId');
-        $feeRatio = UserCreditSettingService::getFeeSplittingRatioToSelfSetting(); // 自反的分润比例
-        $merchant = MerchantService::getById($merchantId);
-        if (empty($merchant)) {
-            throw new BaseResponseException('该商户不存在');
-        }
-        $settlementRate = $merchant->settlement_rate;
-        $ratio = $feeRatio / 100 * ($settlementRate / 100 - ($settlementRate / 100 * 0.06 * 1.12 / 1.06 + $settlementRate / 100 * 0.1 * 0.25 + 0.0068));
+        $ratio = FeeSplittingService::getUserFeeSplittingRatioToSelfByMerchantId($merchantId);
         // 返回的是系数 直接乘以金额就好了
         return Result::success([
             'ratio' => $ratio,
