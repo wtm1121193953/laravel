@@ -4,7 +4,7 @@
         <el-button type="text" @click="remarks">备注</el-button>
         <el-button type="text" @click="merchants">业务</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.sign_status === 1 ? '冻结' : '解冻'}}</el-button>
-        <el-button type="text" @click="dividedIntoSettings">分成设置</el-button>
+        <!--<el-button type="text" @click="dividedIntoSettings">分成设置</el-button>-->
 
         <el-dialog title="业务员备注" :visible.sync="dialogRemarksFormVisible" width="30%">
             <el-form :model="formRemarks" label-width="70px">

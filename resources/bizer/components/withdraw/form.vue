@@ -3,11 +3,11 @@
         <el-form :model="form" :rules="formRules" ref="form" label-width="100px" label-position="left" size="small">
             <el-col :span="12">
                 <el-form-item label="可提现金额">
-                    {{initForm.balance}}
+                    {{initForm.balance}}元
                 </el-form-item>
                 <el-form-item prop="amount" label="提现金额">
                     <el-input-number v-model="form.amount" :precision="2" :min="0" :max="parseFloat(initForm.balance)"/>
-                    <span>手续费{{chargeAmount}}</span>
+                    <span>手续费{{chargeAmount}}元</span>
                 </el-form-item>
                 <el-form-item prop="withdrawPassword" label="提现密码">
                     <el-input v-model="form.withdrawPassword" type="password" :maxlength="6" placeholder="6位纯数字密码" class="w-150"/>
@@ -25,13 +25,28 @@
                     {{initForm.bankName}}
                 </el-form-item>
                 <el-form-item label="到账金额">
-                    {{remitAmount}}
+                    {{remitAmount}}元
                 </el-form-item>
             </el-col>
-            <el-col class="tips">温馨提示： 每月10号、20号、30号才能提现</el-col>
+            <el-col>
+                <div class="tips" style="display: inline;">
+                    <div style="float:left;">
+                        <p>温馨提示： </p>
+                    </div>
+
+                    <div style="float:left;">
+                        <ol>
+                            <li><p>提现手续费7%</p></li>
+                            <li><p>提现成功发起后，7个工作日左右到账。</p></li>
+                            <li><p>每月10号、20号、30号才能提现</p></li>
+                            <li><p>最低提现金额100元</p></li>
+                        </ol>
+                    </div>
+                </div>
+            </el-col>
             <el-col style="text-align: center">
                 <el-button @click="cancel">取 消</el-button>
-                <el-button type="primary" @click="commit">立即申请</el-button>
+                <el-button type="primary" :disabled="noWithdraw" @click="commit">立即申请</el-button>
             </el-col>
         </el-form>
 
