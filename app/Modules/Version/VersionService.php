@@ -128,7 +128,7 @@ class VersionService extends BaseService
             ->where('version_no','=', $currentVersionNo)
             ->first();
         if (empty($currentVersion)) {
-            throw new ParamInvalidException('当前版本号错误');
+            return self::getLastVersionByType($app_type);
         }
 
         $newVersions = Version::where('app_type','=', $app_type)

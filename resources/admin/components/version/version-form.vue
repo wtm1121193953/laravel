@@ -156,9 +156,9 @@
                 const isAPK = file.type === 'application/vnd.android.package-archive';
 
                 if (!isAPK) {
-                    this.$message.error('上传文件只能是 apk 格式!');
+                    //this.$message.error('上传文件只能是 apk 格式!');
                 }
-                return isAPK;
+                return true;
             }
 
         },
