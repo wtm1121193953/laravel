@@ -67,8 +67,9 @@ class UploadController
         $file = request()->file('file');
         $name = $file->getClientOriginalName();
 
-        $path = $file->storeAs('/apk', $name, 'public');
-        $url = asset('storage/' .$path);
+        $path = $file->storeAs('apk', $name, 'cosv5');
+
+        $url = config('cos.cos_url') . '/' . $path;
 
         return Result::success([
             'url' => $url,
