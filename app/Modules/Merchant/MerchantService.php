@@ -588,10 +588,14 @@ class MerchantService extends BaseService
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
         }
         $user_key = array_get($params, 'user_key', 0); //终端的唯一表示，用于计算距离
+        $current_oper_id = array_get($params, 'current_oper_id', 0); //是否只看当前运营中心的商户
 
         //只能查询切换到平台的商户
         $query = Merchant::where('status', 1)
             ->where('oper_id', '>', 0)
+            ->when($current_oper_id, function (Builder $query) use ($current_oper_id) {
+                $query->where('oper_id', $current_oper_id);
+            })
             ->when($onlyPayToPlatform, function (Builder $query) {
                 $query->whereHas('oper', function(Builder $query){
                     $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
