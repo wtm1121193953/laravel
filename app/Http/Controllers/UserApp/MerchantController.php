@@ -29,19 +29,20 @@ class MerchantController extends Controller
     public function getList()
     {
 
-        $data = MerchantService::getListForUserApp([
+        $data = MerchantService::getListAndDistance([
             'city_id' => request('city_id'),
             'merchant_category_id' => request('merchant_category_id'),
             'keyword' => request('keyword'),
             'lng' => request('lng'),
             'lat' => request('lat'),
             'radius' => request('radius'),
+            'lowest_price' => request('lowest_price'),
+            'highest_price' => request('highest_price'),
             'user_key' => request()->get('current_device_no'),
+            'onlyPayToPlatform' => 1,
         ]);
-//        $list = $data['list'];
-//        $total = $data['total'];
 
-        return $data;
+        return Result::success($data);
     }
 
     /**
