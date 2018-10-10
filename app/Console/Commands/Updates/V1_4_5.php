@@ -69,7 +69,7 @@ class V1_4_5 extends Command
         /*************统计运营中心5月份之后历史运营数据end*************/
         /**********************系统图片迁移COS start**********************/
         // 待修改字段
-        $changModel = [
+        /*$changModel = [
             DishesGoods::class => ['detail_image'],
             DishesItem::class => ['dishes_goods_detail_image'],
             Goods::class => [
@@ -149,13 +149,13 @@ class V1_4_5 extends Command
                 unset($list);
             });
         }
-        $bar->finish();
+        $bar->finish();*/
         /**********************系统图片迁移COS end**********************/
 
         // 修改商户法人银行卡图片字段长度
-        $sql = 'ALTER TABLE `merchants`
+        /*$sql = 'ALTER TABLE `merchants`
 	CHANGE COLUMN `bank_card_pic_a` `bank_card_pic_a` VARCHAR(500) NOT NULL DEFAULT \'\' COMMENT \'法人银行卡正面照\' COLLATE \'utf8mb4_unicode_ci\' AFTER `service_phone`';
         DB::update($sql);
-        dd('ok');
+        dd('ok');*/
     }
 }
