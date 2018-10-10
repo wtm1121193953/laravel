@@ -83,6 +83,8 @@ class WalletWithdrawController extends Controller
             'balance' => $wallet->balance,
             // 判断现今可否结算
             'isWithdraw'    =>  true,//(in_array(date('d'), [10,20,30])) ? true:false,
+            //显示可提现日期
+            'days'    =>  json_encode([10,20,30]),
         ]);
     }
 }
