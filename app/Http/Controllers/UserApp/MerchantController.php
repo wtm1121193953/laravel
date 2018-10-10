@@ -83,10 +83,7 @@ class MerchantController extends Controller
         $detail->contacter_phone = $detail->service_phone;
         // 商户评级字段，暂时全部默认为5星
         $detail->grade = 5;
-        // 获取用户是否关注商户
-        $detail->isCollectMerchant = UserCollectMerchantService::getCollectionByUserAndMerchantExists(request()->get('current_user')->id, $id);
-
-
+        
         // 首页商户列表，显示价格最低的n个团购商品
         $detail->lowestGoods = GoodsService::getLowestPriceGoodsForMerchant($id);
 
