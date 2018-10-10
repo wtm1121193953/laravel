@@ -146,6 +146,7 @@ class V1_4_5 extends Command
                     ImageMigrationToCOSJob::dispatch($data, $columns);
                     $bar->advance();
                 });
+                unset($list);
             });
         }
         $bar->finish();
