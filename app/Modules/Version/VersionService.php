@@ -22,6 +22,7 @@ class VersionService extends BaseService
         if($app_type){
             $query->where('app_type',$app_type);
         }
+        $query->orderBy('app_type','asc');
         $query->orderBy('version_seq','desc');
         $data = $query->paginate();
         return $data;
