@@ -1,16 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 57458
- * Date: 2018/7/24
- * Time: 16:38
- */
-
 namespace App\Modules\Dishes;
-
 
 use App\BaseService;
 use App\Modules\Merchant\Merchant;
+use Illuminate\Database\Eloquent\Builder;
 
 
 class DishesService extends BaseService
@@ -22,7 +15,9 @@ class DishesService extends BaseService
      */
     public static function getDishesCategory($merchantId)
     {
-        $categorys =DishesCategory::has('dishesGoods')
+        $categorys =DishesCategory::whereHas('dishesGoods', function (Builder $query) {
+            $query->where('status', DishesGoods::STATUS_ON);
+        })
             ->where('merchant_id', $merchantId)
             ->where('status', 1)
             ->orderBy('sort', 'desc')

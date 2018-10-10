@@ -62,6 +62,7 @@ Route::prefix('admin')
         Route::get('merchants', 'MerchantController@getList');
         Route::get('merchant/detail', 'MerchantController@detail');
         Route::post('merchant/audit', 'MerchantController@audit');
+        Route::post('merchant/batch_audit', 'MerchantController@batchAudit');
         Route::get('merchant/download', 'MerchantController@downloadExcel');
         Route::post('merchant/changeStatus', 'MerchantController@changeStatus');
         Route::post('merchant/edit', 'MerchantController@edit');
@@ -84,6 +85,7 @@ Route::prefix('admin')
         Route::group([], base_path('routes/api/admin/miniprogram.php'));
         Route::group([], base_path('routes/api/admin/setting.php'));
         Route::group([], base_path('routes/api/admin/wallet.php'));
+        Route::group([], base_path('routes/api/admin/bizer.php'));
 
         Route::get('settlement/platforms', 'SettlementPlatformController@getList');
         Route::get('settlement/download', 'SettlementPlatformController@downloadExcel');
@@ -95,6 +97,10 @@ Route::prefix('admin')
         Route::post('bank/del', 'BankController@del');
         Route::post('bank/changeStatus', 'BankController@changeStatus');
         Route::post('bank/edit', 'BankController@edit');
+
+        Route::get('statistics/oper','StatisticsController@oper');
+        Route::get('statistics/all_opers','StatisticsController@allOpers');
+        Route::get('statistics/oper_export','StatisticsController@operExport');
 
         Route::get('versions', 'VersionController@getList');
         Route::get('version/detail', 'VersionController@detail');

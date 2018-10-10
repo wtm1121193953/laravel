@@ -1,7 +1,11 @@
 <template>
     <page title="录入商户" :breadcrumbs="{'商户池': '/merchant/pool'}">
         <el-form size="small" label-width="120px">
-            <merchant-pool-form v-loading="isLoading" ref="poolForm"/>
+            <merchant-pool-form
+                    v-loading="isLoading"
+                    :areaOptions="areaOptions"
+                    ref="poolForm"
+            />
             <!-- 确定按钮 -->
             <el-col>
                 <el-form-item>
@@ -23,6 +27,7 @@
         },
         data() {
             return {
+                areaOptions: [],
                 isLoading: false,
             }
         },
@@ -43,7 +48,12 @@
             cancel(){
                 router.push('/merchant/pool');
             },
-        }
+        },
+        created(){
+            api.get('area/tree').then(data => {
+                this.areaOptions = data.list;
+            });
+        },
     }
 </script>
 

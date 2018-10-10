@@ -1,5 +1,5 @@
 <template>
-    <page title="会员解绑" v-loading="isLoading">
+    <page title="用户邀请关系解绑" v-loading="isLoading">
         <el-form :model="query" inline size="small" class="fl" @submit.native.prevent>
             <el-form-item>
                 <el-input v-model="query.keyword" placeholder="请输入用户手机搜索"  clearable  @keyup.native.enter="search"/>
@@ -9,10 +9,10 @@
             </el-form-item>
         </el-form>
         <el-table :data="list" stripe>
-            <!--<el-table-column prop="name" label="会员名称"/>-->
+            <!--<el-table-column prop="name" label="用户名称"/>-->
             <el-table-column prop="mobile" label="手机号"/>
             <!--<el-table-column prop="email" label="邮箱"/>-->
-            <el-table-column prop="parent" label="推荐人"/>
+            <el-table-column prop="parent" label="分享人"/>
             <el-table-column prop="created_at" label="添加时间"/>
             <!--<el-table-column prop="city" label="城市">-->
                 <!--<template slot-scope="scope">-->

@@ -11,7 +11,6 @@ namespace App\Modules\Sms;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
-use App\Exceptions\ParamInvalidException;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Goods\Goods;
 use App\Modules\Order\Order;

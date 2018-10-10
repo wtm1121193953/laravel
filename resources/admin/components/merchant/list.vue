@@ -53,6 +53,12 @@
                 <el-form-item prop="operName" label="激活运营中心名称"  >
                     <el-input v-model="query.operName" size="small"  placeholder="激活运营中心名称"  clearable></el-input>
                 </el-form-item>
+                <el-form-item prop="memberNameOrMobile" label="我的员工"  >
+                    <el-input v-model="query.memberNameOrMobile" size="small"  placeholder="请输入员工姓名或手机号码搜索"  clearable></el-input>
+                </el-form-item>
+                <el-form-item prop="bizerNameOrMobile" label="业务员"  >
+                    <el-input v-model="query.bizerNameOrMobile" size="small"  placeholder="请输入业务员姓名或手机号码搜索"  clearable></el-input>
+                </el-form-item>
                 <!--<el-form-item prop="creatorOperId" label="录入运营中心ID"   >-->
                     <!--<el-input v-model="query.creatorOperId" size="small"  placeholder="录入运营中心ID"  class="w-100" clearable />-->
                 <!--</el-form-item>-->
@@ -77,7 +83,13 @@
                 <el-table-column prop="operName" label="激活运营中心名称"/>
                 <!--<el-table-column prop="creatorOperId"  size="mini" label="录入运营中心ID"/>-->
                 <!--<el-table-column prop="creatorOperName" label="录入运营中心名称"/>-->
-                <el-table-column prop="operBizMemberName" label="业务员" />
+                <el-table-column label="签约人">
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.bizer"><span class="c-green">业务员 </span>{{scope.row.bizer.name}}/{{scope.row.bizer.mobile}}</span>
+                        <span v-else-if="scope.row.operBizMember"><span class="c-light-gray">员工 </span>{{scope.row.operBizMember.name}}/{{scope.row.operBizMember.mobile}}</span>
+                        <span v-else>无</span>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="categoryPath" label="行业">
                     <template slot-scope="scope">
                 <span v-for="item in scope.row.categoryPath" :key="item.id">
@@ -186,7 +198,9 @@
                     operName:'',
                     operId:'',
                     creatorOperName:'',
-                    creatorOperId:''
+                    creatorOperId:'',
+                    memberNameOrMobile: '',
+                    bizerNameOrMobile: '',
                 },
                 list: [],
                 auditRecord:[],

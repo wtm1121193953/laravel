@@ -36,10 +36,10 @@ class MerchantController extends Controller
         $lng = request('lng');
         $lat = request('lat');
 
-        $checkVersion = false;
+        $noPilot = false;
         if (isset($_SERVER['HTTP_X_VERSION'])) {
             $miniprogramVersion = $_SERVER['HTTP_X_VERSION'];
-            $checkVersion = $miniprogramVersion < 'v1.4.0';
+            $noPilot = $miniprogramVersion < 'v1.4.0';
         }
 
         // 暂时去掉商户列表中的距离限制
@@ -136,7 +136,7 @@ class MerchantController extends Controller
                     })
                     ->orderBy('lowest_amount');
             })
-            ->when($checkVersion, function (Builder $query) {
+            ->when($noPilot, function (Builder $query) {
                 $query->where('is_pilot', Merchant::NORMAL_MERCHANT);
             });
 
@@ -145,7 +145,9 @@ class MerchantController extends Controller
             $allList = $query->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat) {
-                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
+                $item->distance = $item->is_pilot == 1
+                    ? 100000000
+                    : Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
                 return $item;
             })
                 ->sortBy('distance')
@@ -153,10 +155,11 @@ class MerchantController extends Controller
                 ->values()
                 ->each(function($item) {
                     // 格式化距离
-                    $item->distance = Utils::getFormativeDistance($item->distance);
+                    $item->distance = $item->is_pilot == 1 ? '' : Utils::getFormativeDistance($item->distance);
                 });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
+            $query->orderBy('is_pilot', 'asc');
             $data = $query->paginate();
             $list = $data->items();
             $total = $data->total();

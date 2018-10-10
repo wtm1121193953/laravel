@@ -1,5 +1,5 @@
 <template>
-    <page title="TPS会员帐号管理">
+    <page title="TPS用户帐号管理">
         <div>
             <div v-if="bindInfo == null" class="title"><el-button type="primary" @click="showBox = true">生成TPS帐号</el-button></div>
             <div v-if="bindInfo" class="title">已生成TPS帐号：{{bindInfo.tps_account}}</div>
@@ -76,7 +76,7 @@
                 this.$refs.form.validate((valid) => {
                     if(valid){
                         this.$confirm(
-                            '每个商户仅只能添加一次TPS会员帐号，之后不可修改。确定生成吗？',
+                            '每个商户仅只能添加一次TPS用户帐号，之后不可修改。确定生成吗？',
                             '提示',
                             {type: 'warning',}
                         ).then(() => {

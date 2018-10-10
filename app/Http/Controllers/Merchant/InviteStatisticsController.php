@@ -87,7 +87,7 @@ class InviteStatisticsController
     }
 
     /**
-     * 导出我的会员（商户邀请的用户信息）
+     * 导出我的用户（商户邀请的用户信息）
      * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
      */
     public function downloadInviteRecordList()
@@ -95,6 +95,6 @@ class InviteStatisticsController
         $merchantId = request()->get('current_user')->merchant_id;
         $mobile = request('mobile', '');
 
-        return (new InviteUserRecordExport($merchantId, $mobile))->download('我的会员.xlsx');
+        return (new InviteUserRecordExport($merchantId, $mobile))->download('我的用户.xlsx');
     }
 }

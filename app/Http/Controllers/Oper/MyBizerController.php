@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Oper;
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
-use App\Modules\Oper\OperService;
+use App\Modules\Bizer\BizerService;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperBizer;
 use App\Modules\Oper\MyOperBizer;
 
 use App\Result;
+use Illuminate\Database\Eloquent\Builder;
 
 class MyBizerController extends Controller {
 
@@ -18,9 +21,9 @@ class MyBizerController extends Controller {
      */
     public function getList() {
         $where =[
-            "yao" => request()->get('current_user')->oper_id,//登录所属运营中心ID
+            "oper_id" => request()->get('current_user')->oper_id,//登录所属运营中心ID
         ];
-        //echo "<pre>";print_r($where);exit;
+
         $data = MyOperBizer::getList($where);
         
         return Result::success([
@@ -31,32 +34,30 @@ class MyBizerController extends Controller {
     /**
      * 修改状态,分成，备注
      */
-    public function changeDetail()
+    public function edit()
     {
         $id = request('id');
         $status = request('status');
         $divide = request('divide');
         $remark = request('remark');
-        $validate = array('id' => 'required|integer|min:1');
+
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'status' => 'integer|range:0,2',
+            'divide' => 'min:0|max:100'
+        ]);
+        $operBizer = OperBizer::findOrFail($id);
         if(!empty($status)){
-            $validate["status"] = 'required|integer';
+            $operBizer->status = $status;
         }
-        if(!empty($divide)){
-            $validate["divide"] = 'required|integer';
-        }
-        $this->validate(request(),$validate);
-        $operBizMember = OperBizer::findOrFail($id);
-        if(!empty($status)){
-            $operBizMember->status = $status;
-        }
-        if(!empty($divide)){
-            $operBizMember->divide = $divide/100;
+        if(!is_null($divide) && $divide >= 0 && $divide <= 100){
+            $operBizer->divide = $divide;
         }
         if(!empty($remark)){
-            $operBizMember->remark = $remark;
+            $operBizer->remark = $remark;
         }
-        $operBizMember->save();
-        return Result::success($operBizMember);
+        $operBizer->save();
+        return Result::success($operBizer);
     }
     /**
      * 获取业务员的商户
@@ -88,4 +89,68 @@ class MyBizerController extends Controller {
             'total' => $data->total(),
         ]);
     }
+
+    /**
+     * 改变业务员签约状态
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changeOperBizerSignStatus()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $operBizer = OperBizerService::getById($id);
+        if (empty($operBizer)) {
+            throw new BaseResponseException('该业务员不存在');
+        }
+        $operBizer->sign_status = $operBizer->sign_status == OperBizer::SIGN_STATUS_ON ? OperBizer::SIGN_STATUS_OFF : OperBizer::SIGN_STATUS_ON;
+        $operBizer->save();
+
+        return Result::success($operBizer);
+    }
+
+    /**
+     * 获取业务员列表
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getBizerList()
+    {
+        $operId = request()->get('current_user')->oper_id;
+        $bizerNameOrMobile = request('bizerNameOrMobile', '');
+        $bizerList = BizerService::getBizersByNameOrMobile($bizerNameOrMobile, $operId);
+
+        return Result::success($bizerList);
+    }
+
+    public function detail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $bizer = BizerService::getById($id);
+        return Result::success($bizer);
+    }
+
+    public function getAllbizer(){
+        $name = request('name', '');
+        $mobile = request('mobile', '');
+        $keyword = request('keyword', '');
+        $status = request('status', '');
+        $sign_status = request('sign_status', '');
+        $where_arr = [
+            "name" => $name,
+            "mobile" => $mobile,
+            "keyword" => $keyword,
+            "status" => $status,
+            'sign_status' => $sign_status,
+            'oper_ids' => request()->get('current_user')->oper_id,
+        ];
+        $data = OperBizerService::getAllbizer($where_arr);
+        return Result::success([
+            'list' => $data,
+        ]);
+    }
+
 }

@@ -1,45 +1,71 @@
 <template>
     <page title="业务员申请" v-loading="isLoading">
-        <el-tabs type="card" v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="新申请" name="first"></el-tab-pane>
-            <el-tab-pane label="已拒绝" name="second"></el-tab-pane>
+        <el-tabs type="card" v-model="activeName">
+            <el-tab-pane :label="'新申请'+total" name="newRecords">
+                <el-col>
+                    <el-table :data="list" stripe>
+                        <el-table-column prop="created_at" label="申请签约时间"/>
+                        <el-table-column prop="name" label="姓名">
+                            <template slot-scope="scope">
+                                <span> {{ scope.row.bizerInfo.name }} </span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="mobile" label="手机号">
+                            <template slot-scope="scope">
+                                <span> {{ scope.row.bizerInfo.mobile }} </span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="remark" label="备注"></el-table-column>
+
+                        <div>
+                            <el-table-column fixed="right" label="操作">
+                                <template slot-scope="scope">
+                                    <el-button type="text" @click="signing(scope.$index)">签约</el-button>
+                                    <el-button type="text" @click="refusal(scope.$index)">拒绝</el-button>
+                                </template>
+                            </el-table-column>
+                        </div>
+                    </el-table>
+
+                    <el-pagination
+                            class="fr m-t-20"
+                            layout="total, prev, pager, next"
+                            :current-page.sync="query.page"
+                            @current-change="getNewList"
+                            :page-size="15"
+                            :total="total"/>
+                </el-col>
+            </el-tab-pane>
+            <el-tab-pane label="已拒绝" name="rejectRecords">
+                <el-col>
+                    <el-table :data="rejectList" stripe>
+                        <el-table-column prop="apply_time" label="申请签约时间"/>
+                        <el-table-column prop="name" label="姓名">
+                            <template slot-scope="scope">
+                                <span> {{ scope.row.bizerInfo.name }} </span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="mobile" label="手机号">
+                            <template slot-scope="scope">
+                                <span> {{ scope.row.bizerInfo.mobile }} </span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="created_at" label="拒绝签约时间"></el-table-column>
+                        <el-table-column prop="note" label="原因"></el-table-column>
+                        <el-table-column prop="remark" label="备注"></el-table-column>
+                    </el-table>
+
+                    <el-pagination
+                            class="fr m-t-20"
+                            layout="total, prev, pager, next"
+                            :current-page.sync="rejectPage"
+                            @current-change="getRejectList"
+                            :page-size="15"
+                            :total="rejectTotal"/>
+                </el-col>
+            </el-tab-pane>
         </el-tabs>
 
-        <el-table :data="list" stripe>
-            <el-table-column prop="created_at" label="申请签约时间"/>
-            <el-table-column prop="name" label="姓名">
-                <template slot-scope="scope">
-                    <span> {{ scope.row.bizerInfo.name }} </span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="mobile" label="手机号">
-                <template slot-scope="scope">
-                    <span> {{ scope.row.bizerInfo.mobile }} </span>
-                </template>
-            </el-table-column>
-            
-            <template v-if="secondTable">
-                <el-table-column prop="updated_at" label="拒绝签约时间"/>
-                <el-table-column prop="remark" label="原因"/>
-            </template>
-            
-            <div v-if="!secondTable">
-                <el-table-column fixed="right" label="操作">
-                    <template slot-scope="scope">
-                        <el-button type="text" @click="signing(scope.$index)">签约</el-button>
-                        <el-button type="text" @click="refusal(scope.$index)">拒绝</el-button>
-                    </template>
-                </el-table-column>
-            </div>
-        </el-table>
-
-        <el-pagination
-                class="fr m-t-20"
-                layout="total, prev, pager, next"
-                :current-page.sync="query.page"
-                @current-change="getList"
-                :page-size="15"
-                :total="total"/>
 
         <el-dialog title="签约业务员" :visible.sync="dialogSigningFormVisible" width="30%">
             <el-form :model="formSigning" ref="formSigning" :rules="rules" label-width="70px">
@@ -49,8 +75,11 @@
                 <el-form-item label="分成" prop="divide">
                     <el-input v-model="formSigning.divide" auto-complete="off" style="width:90%;"/> %
                 </el-form-item>
+                <el-form-item label="原因" prop="note">
+                    <el-input type="textarea" v-model="formSigning.note" auto-complete="off" placeholder="最多50个字" style="width:90%;"/>
+                </el-form-item>
                 <el-form-item label="备注">
-                    <el-input type="textarea" v-model="formSigning.remark" auto-complete="off" placeholder="最多50个字" style="width:90%;"/>
+                    {{detailOption.remark}}
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -60,12 +89,15 @@
         </el-dialog>
 
         <el-dialog title="拒绝业务员" :visible.sync="dialogRefusalFormVisible" width="30%">
-            <el-form :model="formRefusal" label-width="70px">
+            <el-form :model="formRefusal" ref="formRefusal" :rules="formRefusalRules" label-width="70px">
                 <el-form-item>
                     确定拒绝签约业务员<span class="c-danger">{{detailOption.bizerInfo.name}}</span>
                 </el-form-item>
-                <el-form-item label="原因">
-                    <el-input type="textarea" v-model="formRefusal.remark" auto-complete="off" placeholder="最多50个字"/>
+                <el-form-item prop="note" label="原因">
+                    <el-input type="textarea" v-model="formRefusal.note" auto-complete="off" placeholder="最多50个字"/>
+                </el-form-item>
+                <el-form-item label="备注">
+                    {{detailOption.remark}}
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -92,7 +124,7 @@
             };
             return {
                 isLoading: false,
-                activeName: 'first',
+                activeName: 'newRecords',
                 secondTable: false,
                 query: {
                     page: 1
@@ -105,15 +137,24 @@
                 formSigning: {
                     status: 1,
                     divide: '',
-                    remark: ''
+                    note: ''
                 },
                 formRefusal: {
                     status: -1,
-                    remark: ''
+                    note: ''
                 },
                 rules: {
                     divide: [
                         {required: true, validator: validateDivided, trigger: 'blur'}
+                    ],
+                    note: [
+                        {max: 50, message: '原因不能超过50个字'},
+                    ]
+                },
+                formRefusalRules: {
+                    note: [
+                        {required: true, message: '原因不能为空'},
+                        {max: 50, message: '原因不能超过50个字'},
                     ]
                 },
                 bntLoading: false,
@@ -122,35 +163,33 @@
                         name:'',
                     },
                     id:'',
+                    remark: '',
                 },
+
+                rejectList: [],
+                rejectPage: 1,
+                rejectTotal: 0,
             }
         },
         computed: {
 
         },
         methods: {
-            getList() {
+            getListData(){
+                this.getNewList();
+                this.getRejectList();
+            },
+            getNewList() {
                 this.isLoading = true;
                 let params = {};
-                this.query.selectStatus = this.activeName;
+                this.query.status = 0;
                 Object.assign(params, this.query);
-                api.get('/bizerRecord', params).then(data => {
-                    console.log(data.list)
+                api.get('/bizerRecords', params).then(data => {
                     this.query.page = params.page;
                     this.isLoading = false;
                     this.list = data.list;
                     this.total = data.total;
                 })
-            },
-            handleClick(tab, event) {
-                // console.log(tab, event);
-                let _self = this;
-                this.getList();
-                if ( _self.activeName == "first" ) {
-                    _self.secondTable = false;
-                } else if ( _self.activeName == "second" ) {
-                    _self.secondTable = true;
-                }
             },
             signing(index) {
                 this.dialogSigningFormVisible = true;
@@ -176,14 +215,23 @@
                         }else{
                             isValid = false;
                         }
-                    })
+                    });
                     successMsg = "签约成功";
                     if(!isValid)return false;
                 }else{
-                    _self.formRefusal.id = _self.detailOption.id;
-                    params = _self.formRefusal;
-                    successMsg = "已拒绝";
+                    let flag = false;
+                    this.$refs.formRefusal.validate(valid => {
+                        if (valid) {
+                            _self.formRefusal.id = _self.detailOption.id;
+                            params = _self.formRefusal;
+                            successMsg = "已拒绝";
+                        } else {
+                            flag = true;
+                        }
+                    });
+                    if (flag) return;
                 }
+
                 _self.bntLoading = true;
                 api.get('/bizerRecord/contractBizer', params).then(data => {
                     _self.dialogSigningFormVisible = _self.dialogRefusalFormVisible = false;
@@ -191,7 +239,7 @@
                         message: successMsg,
                         type: 'success'
                     });
-                    _self.getList();
+                    _self.getListData();
                 }).catch((error) => {
                     _self.$message({
                       message: error.response && error.response.message ? error.response.message:'请求失败',
@@ -202,24 +250,15 @@
                 })
                     
             },
-            // refusalSubmit(){
-            //     let _self = this;
-            //     _self.bntLoading = true;
-            //     _self.formRefusal.id = this.detailOption.id;
-            //     api.get('/bizerRecord/contractBizer', _self.formRefusal).then(data => {
-            //        _self.dialogRefusalFormVisible = false;
-            //     }).catch((error) => {
-            //         _self.$message({
-            //           message: error.response && error.response.message ? error.response.message:'请求失败',
-            //           type: 'warning'
-            //         });
-            //     }).finally(() => {
-            //         _self.bntLoading = false;
-            //     })
-            // },
+            getRejectList() {
+                api.get('/bizerRecord/getRejectList', {page: this.rejectPage}).then(data => {
+                    this.rejectList = data.list;
+                    this.rejectTotal = data.total;
+                })
+            },
         },
         created(){
-            this.getList();
+            this.getListData();
         },
         components: {
 

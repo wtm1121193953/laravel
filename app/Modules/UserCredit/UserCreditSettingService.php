@@ -214,4 +214,13 @@ class UserCreditSettingService extends SettingService
         return 7;
     }
 
+    /**
+     * 获取业务员提现手续费百分比
+     * @return int
+     */
+    public static function getBizerWithdrawChargeRatio()
+    {
+        return 7;
+    }
+
 }

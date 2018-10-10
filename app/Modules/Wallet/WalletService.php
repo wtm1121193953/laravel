@@ -5,6 +5,8 @@ namespace App\Modules\Wallet;
 
 use App\BaseService;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Bizer\Bizer;
+use App\Modules\Bizer\BizerService;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Merchant\Merchant;
@@ -25,7 +27,7 @@ class WalletService extends BaseService
 
     /**
      * 创建钱包
-     * @param User|Merchant|Oper $user
+     * @param User|Merchant|Oper|Bizer $user
      * @return Wallet
      */
     public static function getWalletInfo($user)
@@ -36,6 +38,8 @@ class WalletService extends BaseService
             $originType = Wallet::ORIGIN_TYPE_MERCHANT;
         } elseif ($user instanceof Oper) {
             $originType = Wallet::ORIGIN_TYPE_OPER;
+        } elseif ($user instanceof Bizer) {
+            $originType = Wallet::ORIGIN_TYPE_BIZER;
         } else {
             throw new ParamInvalidException('参数错误');
         }
@@ -82,6 +86,8 @@ class WalletService extends BaseService
             $type = WalletBill::TYPE_SUBORDINATE;
         } elseif ($feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_OPER) {
             $type = WalletBill::TYPE_OPER;
+        } elseif ($feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_BIZER) {
+            $type = WalletBill::TYPE_BIZER;
         } else {
             throw new ParamInvalidException('分润类型参数错误');
         }
@@ -245,6 +251,11 @@ class WalletService extends BaseService
                         $item->user_mobile = $order->notify_mobile;
                     }
                 }
+                if ($item->origin_type == WalletBill::ORIGIN_TYPE_BIZER) {
+                    $bizer = BizerService::getById($item->origin_id);
+                    $item->bizer_mobile = $bizer->mobile;
+                    $item->bizer_name = $bizer->name;
+                }
                 if (in_array($item->type, [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED])) {
                     $walletWithdraw = WalletWithdrawService::getWalletWithdrawById($item->obj_id);
                     $item->status = $walletWithdraw->status;
@@ -353,8 +364,10 @@ class WalletService extends BaseService
         $originId = array_get($params, 'originId');
         $status = array_get($params, 'status');
         $userMobile = array_get($params, 'userMobile');
+        $bizerMobile = array_get($params, 'bizerMobile', '');
         $merchantName = array_get($params, 'merchantName');
         $operName = array_get($params, 'operName');
+        $bizerName = array_get($params, 'bizerName', '');
 
         $query = Wallet::query();
 
@@ -381,6 +394,9 @@ class WalletService extends BaseService
         if ($originType == Wallet::ORIGIN_TYPE_OPER && $operName) {
             $originIds = OperService::getOperColumnArrayByOperName($operName, 'id');
         }
+        if ($originType == Wallet::ORIGIN_TYPE_BIZER && ($bizerName || $bizerMobile)) {
+            $originIds = BizerService::getBizerColumnArrayByParams(compact('bizerMobile', 'bizerName'), 'id');
+        }
         if(isset($originIds)){
             $query->whereIn('origin_id', $originIds);
         }
@@ -400,7 +416,7 @@ class WalletService extends BaseService
                 if ($item->origin_type == Wallet::ORIGIN_TYPE_USER) {
                     $user = UserService::getUserById($item->origin_id);
                     $bankCard = self::getBankCardByOriginInfo($item->origin_id, $item->origin_type);
-                    $item->user_mobile = $user->mobile;
+                    $item->user_mobile = $user->mobile ?? '';
                     $item->bank_open_name = $bankCard->bank_card_open_name??'';
                     $item->bank_card_no = $bankCard->bank_card_no?? '';
                     $item->bank_name = $bankCard->bank_name?? '';
@@ -420,6 +436,15 @@ class WalletService extends BaseService
                     $item->bank_open_name = $oper->bank_open_name;
                     $item->bank_card_no = $oper->bank_card_no;
                     $item->sub_bank_name = $oper->sub_bank_name;
+                } elseif ($item->origin_type == Wallet::ORIGIN_TYPE_BIZER) {
+                    $bizer = BizerService::getById($item->origin_id);
+                    $item->bizer_name = !empty($bizer) ? $bizer->name : '';
+                    $item->bizer_mobile = !empty($bizer) ? $bizer->mobile : '';
+                    $bizerBank = BankCardService::getBankCardByOriginInfo($item->origin_id, $item->origin_type);
+                    $item->bank_open_name = $bizerBank->bank_card_open_name ?? '';
+                    $item->bank_card_no = $bizerBank->bank_card_no ?? '';
+                    $item->bank_name = $bizerBank->bank_name ?? '';
+                    $item->bank_card_type = $bizerBank->bank_card_type ?? '';
                 }
             });
             return $data;

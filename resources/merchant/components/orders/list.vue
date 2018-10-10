@@ -79,7 +79,7 @@
                     <span v-else>
                         {{scope.row.goods_name}}
                     </span>
-            </template>
+                </template>
             </el-table-column>
             <el-table-column prop="pay_price" label="总价 ¥"/>
             <el-table-column prop="notify_mobile" label="手机号"/>

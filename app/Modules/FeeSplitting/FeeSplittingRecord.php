@@ -25,6 +25,7 @@ class FeeSplittingRecord extends BaseModel
     const TYPE_TO_SELF = 1; // 自返
     const TYPE_TO_PARENT = 2; // 返利给上级
     const TYPE_TO_OPER = 3; // 返利给运营中心
+    const TYPE_TO_BIZER = 4; // 返利给业务员
 
     // 用户类型  1-用户
     const ORIGIN_TYPE_USER = 1;
@@ -32,6 +33,8 @@ class FeeSplittingRecord extends BaseModel
     const ORIGIN_TYPE_MERCHANT = 2;
     // 用户类型  3-运营中心
     const ORIGIN_TYPE_OPER = 3;
+    // 用户类型  4-业务员
+    const ORIGIN_TYPE_BIZER = 4;
 
     // 状态 冻结中
     const STATUS_FREEZE = 1;

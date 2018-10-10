@@ -111,7 +111,7 @@
                 formRules: {
                     name: [
                         {required: true, message: '商户名称不能为空', trigger: 'change'},
-                        {max: 20, message: '商户名称不能超过20个字'}
+                        {max: 50, message: '商户名称不能超过50个字'}
                     ],
                     signboard_name: [
                         {required: true, message: '招牌名称不能为空'},

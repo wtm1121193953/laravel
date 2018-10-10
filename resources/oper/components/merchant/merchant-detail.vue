@@ -71,9 +71,19 @@
                     </el-col>
                     <!-- 商户激活信息左侧块 -->
                     <el-col :span="11">
-                        <el-form-item prop="oper_biz_member_code" label="业务员">
-                            <template v-if="data.oper_biz_member_code">
-                                {{data.operBizMemberName}}
+                        <el-form-item prop="oper_biz_member_code" label="签约人">
+                            <template>
+                                <span v-if="data.bizer_id && data.bizer">
+                                    <span>{{data.bizer.name}}</span>
+                                    <span>{{data.bizer.mobile}}</span>
+                                    <span>(业务员)</span>
+                                </span>
+                                <span v-else-if="data.oper_biz_member_code && data.operBizMember">
+                                    <span>{{data.operBizMember.name}}</span>
+                                    <span>{{data.operBizMember.mobile}}</span>
+                                    <span>(员工)</span>
+                                </span>
+                                <span v-else>无</span>
                             </template>
                         </el-form-item>
                         <!--<el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>-->

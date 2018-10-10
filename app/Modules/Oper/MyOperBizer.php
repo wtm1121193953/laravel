@@ -25,14 +25,12 @@ use App\Modules\Bizer\BizerService;
 
 class MyOperBizer extends BaseModel
 {
-    //
-
     /**
-     * 
+     *
      * 根据运营中心获取业务员及商户信息，我的业务员
-     * @param type $retry
-     * @return type
-     * @throws BaseResponseException
+     * @param $params
+     * @param array $fields
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public static function getList($params, $fields = ['*'])
     {
@@ -40,26 +38,26 @@ class MyOperBizer extends BaseModel
         $data = OperBizer::when(!empty($operId), function (Builder $query) use ($operId) {
                     $query->where('oper_id', $operId);
                 })
-                ->where('status','<>','0')
+                ->where('status', OperBizer::STATUS_SIGNED)
                 ->orderBy('id', 'desc')
                 ->select($fields)
                 ->paginate();
-            //$userMapping = new OperBizerMy();        
-            $data->each(function ($item) {
-                $item->divide = $item->divide > 0 ? ($item->divide * 100)."%" : 0;
-                $item->bizerInfo = BizerService::getById($item->bizer_id, 'name,mobile,status') ?: null;
-                $item->activeNum = MyOperBizer::getActiveMerchantNumber($item->bizer_id,$item->oper_id);
-                $item->auditNum = MyOperBizer::getAuditMerchantNumber($item->bizer_id,$item->oper_id);
-            });
+
+        $data->each(function ($item) {
+            $item->divide = $item->divide > 0 ? ($item->divide)."%" : 0;
+            $item->bizerInfo = BizerService::getById($item->bizer_id, 'name,mobile,status') ?: null;
+            $item->activeNum = MyOperBizer::getActiveMerchantNumber($item->bizer_id,$item->oper_id);
+            $item->auditNum = MyOperBizer::getAuditMerchantNumber($item->bizer_id,$item->oper_id);
+        });
 
         return $data;
     }
 
     /**
      * 发展商户数
-     * @param type $bizerId
-     * @param type $operId
-     * @return type
+     * @param $bizerId
+     * @param $operId
+     * @return int|mixed
      */
     public static function getActiveMerchantNumber($bizerId, $operId)
     {
@@ -85,11 +83,11 @@ class MyOperBizer extends BaseModel
         Cache::forget('oper_bizer_active_merchant_number_' . $code);
     }
 
-     /**
+    /**
      *  审核通过数
-     * @param type $bizerId
-     * @param type $operId
-     * @return type
+     * @param $bizerId
+     * @param $operId
+     * @return int|mixed
      */
     public static function getAuditMerchantNumber($bizerId, $operId)
     {

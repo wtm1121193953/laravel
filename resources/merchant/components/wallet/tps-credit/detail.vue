@@ -18,7 +18,7 @@
                 </el-col>
                 <el-col :span="12">
                     <el-form-item label="交易类型">
-                        <span>下级贡献</span>
+                        <span>被分享人贡献</span>
                     </el-form-item>
                     <el-form-item label="用户手机号码">
                         {{data.consume_user_mobile}}

@@ -19,7 +19,6 @@ export default [
             {path: 'setting/page_setting', component: PageSetting, name: 'PageSetting'},
             {path: 'setting/page_setting_form', component: PageSettingForm, name: 'PageSettingForm'},
             {path: 'setting/filter_keyword_list', component: FilterKeywordList, name: 'FilterKeywordList'},
-            {path: 'setting/filter_keyword_list', component: FilterKeywordList, name: 'FilterKeywordList'},
             {path: 'bank/list', component: BanksList, name: 'BanksList'},
         ]
     },

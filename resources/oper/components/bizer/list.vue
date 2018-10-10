@@ -12,12 +12,12 @@
             <el-table-column prop="activeNum" label="发展商户（家）"/>
             <el-table-column prop="auditNum" label="审核通过商户（家）"/>
             <el-table-column prop="remark" label="备注"/>
-            <el-table-column prop="status" label="状态">
+            <el-table-column prop="note" label="原因"/>
+            <el-table-column prop="sign_status" label="状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.status === -1" class="c-danger">冻结</span>
-                    <span v-else-if="scope.row.status === 0" class="c-warning">申请中</span>
-                    <span v-else>未知 ({{scope.row.status}})</span>
+                    <span v-if="scope.row.sign_status == 1" class="c-green">正常</span>
+                    <span v-else-if="scope.row.sign_status == 0" class="c-danger">冻结</span>
+                    <span v-else>未知 ({{scope.row.sign_status}})</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="210px">
@@ -68,6 +68,7 @@
             },
             getList(){
                 let _self = this;
+                this.isLoading = true;
                 api.get('/oper/bizers', this.query).then(data => {
                     console.log(data)
                     _self.list = data.list;
@@ -78,7 +79,7 @@
                       type: 'warning'
                     });
                 }).finally(() => {
-
+                    this.isLoading = false;
                 })
             },
         },

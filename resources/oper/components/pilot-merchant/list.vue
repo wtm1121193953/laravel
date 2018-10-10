@@ -62,7 +62,13 @@
                     <span> {{ scope.row.area }} </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="operBizMemberName" label="业务员"/>
+            <el-table-column label="签约人">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.bizer"><span class="c-green">业务员 </span>{{scope.row.bizer.name}}/{{scope.row.bizer.mobile}}</span>
+                    <span v-else-if="scope.row.operBizMember"><span class="c-light-gray">员工 </span>{{scope.row.operBizMember.name}}/{{scope.row.operBizMember.mobile}}</span>
+                    <span v-else>无</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="status" label="商户状态">
                 <template slot-scope="scope" v-if="scope.row.audit_status == 1 || scope.row.audit_status == 3">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>

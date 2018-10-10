@@ -51,22 +51,43 @@
                 <el-form-item>
                     <el-button type="success" size="small" @click="downloadExcel">导出Excel</el-button>
                 </el-form-item>
-
+                <el-form-item>
+                    <el-dropdown>
+                        <el-button type="primary" size="small">
+                            批量审核<i class="el-icon-arrow-down el-icon--right"></i>
+                        </el-button>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item @click.native="batchIdentitySuccess()">审核通过</el-dropdown-item>
+                            <el-dropdown-item @click.native="batchIdentityFail()">审核不通过</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </el-form-item>
              </el-form>
             </el-col>
-            <el-table :data="list" v-loading="tableLoading" stripe>
+            <el-table :data="list" v-loading="tableLoading" stripe @selection-change="handleSelectionChange">
+                <el-table-column
+                        :selectable='checkboxT'
+                        type="selection"
+                        width="55">
+                </el-table-column>
                 <el-table-column prop="created_at" label="添加时间"  width="160px" />
                 <el-table-column prop="id" size="mini"	 label="商户ID"/>
                 <el-table-column prop="name" label="商户名称"/>
                 <el-table-column prop="signboard_name" label="商户招牌名"/>
                 <el-table-column prop="operId" size="mini" label="激活运营中心ID"/>
                 <el-table-column prop="operName" label="激活运营中心名称"/>
-                <el-table-column prop="operBizMemberName" label="业务员" />
+                <el-table-column label="签约人" >
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.bizer"><span class="c-green">业务员 </span>{{scope.row.bizer.name}}/{{scope.row.bizer.mobile}}</span>
+                        <span v-else-if="scope.row.operBizMember"><span class="c-light-gray">员工 </span>{{scope.row.operBizMember.name}}/{{scope.row.operBizMember.mobile}}</span>
+                        <span v-else>无</span>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="categoryPath" label="行业">
                     <template slot-scope="scope">
-                <span v-for="item in scope.row.categoryPath" :key="item.id">
-                    {{ item.name }}
-                </span>
+                        <span v-for="item in scope.row.categoryPath" :key="item.id">
+                            {{ item.name }}
+                        </span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="city" label="城市">
@@ -76,35 +97,43 @@
                         <span> {{ scope.row.area }} </span>
                     </template>
                 </el-table-column>
-            <el-table-column prop="audit_status" label="审核状态">
-                <template slot-scope="scope">
-                    <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
-                        <el-popover
-                                v-else-if="scope.row.audit_status === 1"
-                                placement="bottom-start"
-                                width="200px"  trigger="hover"
-                                @show="showMessage(scope)"
-                            :disabled="scope.row.audit_suggestion == ''">
-                            <div   slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
-                            <unaudit-record-reason    :data="auditRecord"  />
-                        </el-popover>
-                          <el-popover
-                              v-else-if="scope.row.audit_status === 2"
-                              placement="bottom-start"
-                              width="200px"  trigger="hover"
-                              @show="showMessage(scope)"
-                              :disabled="scope.row.audit_suggestion == ''" >
-                              <div   slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
+                <el-table-column prop="status" label="商户状态">
+                    <template slot-scope="scope" v-if="scope.row.audit_status == 1 || scope.row.audit_status == 3">
+                        <span v-if="scope.row.status == 1" class="c-green">正常</span>
+                        <span v-else-if="scope.row.status == 2" class="c-danger">已冻结</span>
+                        <span v-else>未知 ({{scope.row.status}})</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="audit_status" label="审核状态">
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
+                            <el-popover
+                                    v-else-if="scope.row.audit_status === 1"
+                                    placement="bottom-start"
+                                    width="200px"  trigger="hover"
+                                    @show="showMessage(scope)"
+                                :disabled="scope.row.audit_suggestion == ''">
+                                <div   slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
                                 <unaudit-record-reason    :data="auditRecord"  />
-                          </el-popover>
-                    <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
-                    <span v-else>未知 ({{scope.row.audit_status}})</span>
-                </template>
-             </el-table-column>
+                            </el-popover>
+                              <el-popover
+                                  v-else-if="scope.row.audit_status === 2"
+                                  placement="bottom-start"
+                                  width="200px"  trigger="hover"
+                                  @show="showMessage(scope)"
+                                  :disabled="scope.row.audit_suggestion == ''" >
+                                  <div   slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
+                                    <unaudit-record-reason    :data="auditRecord"  />
+                              </el-popover>
+                        <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
+                        <span v-else>未知 ({{scope.row.audit_status}})</span>
+                    </template>
+                 </el-table-column>
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
                     <el-button type="text" @click="edit(scope)">编辑</el-button>
+                    <el-button v-if="parseInt(scope.row.audit_status) !== 0 && parseInt(scope.row.audit_status) !== 2" type="text" @click="changeStatus(scope.row)">{{parseInt(scope.row.status) === 1 ? '冻结' : '解冻'}}</el-button>
                     <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
                         <el-button type="text" @click="detail(scope,3)">审核</el-button>
                         <el-dropdown trigger="click" @command="(command) => {audit(scope, command)}">
@@ -144,6 +173,7 @@
 
     export default {
         name: "merchant-pilot-list",
+
         data(){
             return {
                 activeTab: 'merchant',
@@ -168,11 +198,24 @@
                 total: 0,
                 currentMerchant: null,
                 tableLoading: false,
+                selection: [],
+            }
+        },
+        computed: {
+            seletcionIds() {
+                let ids = [];
+                this.selection.forEach(function (item) {
+                    ids.push(item.id);
+                });
+                return ids;
             }
         },
         methods: {
             merchantChange(){
                 this.getList();
+            },
+            handleSelectionChange(val) {
+                this.selection = val;
             },
             showMessage(scope){
                  api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
@@ -186,6 +229,13 @@
                 }
                 this.query.page = 1;
                 this.getList();
+            },
+            checkboxT(row,index){
+                if(row.audit_status==0 || row.audit_status==3){
+                    return 1;
+                }else{
+                    return 0;
+                }
             },
             getList(){
                 this.tableLoading = true;
@@ -250,6 +300,71 @@
                     params: self.query,
                 })
             },
+            batchIdentitySuccess() {
+                let length = 0;
+                let param = {};
+
+                length = this.seletcionIds.length;
+                param = {ids: this.seletcionIds,type:1};
+
+                if (length <= 0) {
+                    this.$message.error('请选择审核数据');
+                    return;
+                }
+                this.$prompt(`<div>确定将这${length}条数据审核通过</div>`,'批量审核提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true,
+                    dangerouslyUseHTMLString: true,
+                    inputType: 'textarea',
+                    inputPlaceholder: '审核意见，最多50个汉字，非必填',
+                    inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
+                }).then(({value}) => {
+                    param.audit_suggestion = value ? value : '';
+                    api.post('/merchant/batch_audit', param).then(data => {
+                        this.$alert('操作成功');
+                        this.getList();
+                    })
+                }).catch(() => {
+
+                })
+            },
+            batchIdentityFail() {
+                let length = 0;
+                let param = {};
+
+                length = this.seletcionIds.length;
+                param = {ids: this.seletcionIds,type:2};
+
+                if (length <= 0) {
+                    this.$message.error('请选择审核数据');
+                    return;
+                }
+                this.$prompt(`<div>确定将这${length}条数据审核不通过</div>`,'批量审核提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true,
+                    dangerouslyUseHTMLString: true,
+                    inputType: 'textarea',
+                    inputPlaceholder: '审核意见，最多50个汉字，非必填',
+                    inputValidator: (val) => {if(val && val.length > 50) return '备注不能超过50个字'}
+                }).then(({value}) => {
+                    param.audit_suggestion = value ? value : '';
+                    api.post('/merchant/batch_audit', param).then(data => {
+                        this.$alert('操作成功');
+                        this.getList();
+                    })
+                }).catch(() => {
+
+                })
+            },
+            changeStatus(row) {
+                api.post('/merchant/changeStatus', {id: row.id}).then((data) => {
+                    row.status = data.status;
+                })
+            }
         },
         created(){
             Object.assign(this.query, this.$route.params);

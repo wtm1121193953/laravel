@@ -1,5 +1,5 @@
 <template>
-    <page title="我的会员">
+    <page title="我的用户">
         <el-col>
             <el-form :model="query" class="fl" inline size="small">
                 <el-form-item label="手机号码">
