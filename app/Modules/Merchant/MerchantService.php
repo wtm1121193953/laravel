@@ -687,7 +687,7 @@ class MerchantService extends BaseService
      * @param float $lat
      * @return \Illuminate\Http\JsonResponse
      */
-    public static function details(array $ids = [],  float $lng = 0, float $lat=0)
+    public static function getListByIds(array $ids = [],  float $lng = 0, float $lat=0)
     {
         if (empty($ids)) {
             return [];
@@ -701,9 +701,7 @@ class MerchantService extends BaseService
             })
             ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT]);
 
-
         $list = $query->get();
-
 
         if($lng && $lat){
             // 如果是按距离搜索, 需要在程序中按距离排序
