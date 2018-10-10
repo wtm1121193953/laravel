@@ -35,11 +35,9 @@ class Utils
 
     public static function getRequestContext(Request $request)
     {
-        $attributes = $request->attributes->all();
-        foreach ($attributes as $key => $attribute) {
-            if($attribute instanceof Model){
-                $attributes[$key] = $attribute->toArray();
-            }
+        $currentUser = $request->get('current_user');
+        if($currentUser instanceof Model){
+            $currentUser = $currentUser->toArray();
         }
 
         $data = [
@@ -47,7 +45,7 @@ class Utils
             'fullUrl' => $request->fullUrl(),
             'header' => $request->header(),
             'params' => $request->all(),
-            'attributes' => $attributes,
+            'current_user' => $currentUser,
         ];
         if($request->hasSession()){
             $data['session'] = $request->session()->all();
