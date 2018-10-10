@@ -37,7 +37,7 @@
             </template>
             <el-button type="success" size="small" @click="dataExport">导出</el-button>
         </el-col>
-        <el-alert v-if="timeType == 'today'" type="success" title="注: 当日数据每半个小时更新一次"/>
+        <el-alert class="m-t-15 m-b-15" v-if="timeType == 'today'" type="success" title="注: 当日数据每半个小时更新一次"/>
         <el-table :data="list" stripe v-loading="isLoading">
             <el-table-column prop="date" label="时间"/>
             <el-table-column prop="oper_id" label="运营中心id"/>
