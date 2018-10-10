@@ -82,7 +82,7 @@
                 if (value === '') {
                     callback(new Error('请输入手机号'));
                     this.mobileValidate = false;
-                } else if (!/^1[3|4|5|7|8][0-9]\d{8}$/.test(value)) {
+                } else if (!/^1[3456789][0-9]\d{8}$/.test(value)) {
                     callback(new Error('手机号格式错误'));
                     this.mobileValidate = false;
                 } else {
