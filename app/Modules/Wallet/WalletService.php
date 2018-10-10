@@ -200,7 +200,8 @@ class WalletService extends BaseService
         $originType = array_get($param, 'originType', 0);
         $walletId = array_get($param, 'walletId', 0);
 
-        $query = WalletBill::query();
+        $query = WalletBill::query()
+            ->where('amount','>',0);
         if ($originId) {
             $query->where('origin_id', $originId);
         }
