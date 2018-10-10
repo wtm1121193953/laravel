@@ -60,4 +60,16 @@ class MerchantFollowService extends BaseService
         }
         return $follow_status;
     }
+
+    public static function getFollowMerchantList($userId)
+    {
+        $query = MerchantFollow::query()
+            ->where('user_id',$userId)
+            ->where('status',MerchantFollow::USER_YES_FOLLOW)
+            ->orderBy('updated_at','desc')
+            ->paginate();
+
+        return $query;
+
+    }
 }

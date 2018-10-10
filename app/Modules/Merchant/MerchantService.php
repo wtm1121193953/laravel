@@ -560,10 +560,9 @@ class MerchantService extends BaseService
     /**
      * 获取APP的商户列表
      * @param array $params
-     * @param bool $isFollows
      * @return \Illuminate\Http\JsonResponse
      */
-    public static function getListForUserApp(array $params, bool $isFollows = false)
+    public static function getListForUserApp(array $params)
     {
         $city_id = array_get($params, 'city_id');
         $merchant_category_id = array_get($params, 'merchant_category_id');
@@ -586,19 +585,12 @@ class MerchantService extends BaseService
             // 如果经纬度及范围都存在, 则按距离筛选出附近的商家
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
         }
-        $userId = request()->get('current_user')->id ?? 0;
 
         // 只获取切换到平台的运营中心下的商家信息
         //只能查询切换到平台的商户
         $query = Merchant::query()
             ->where('oper_id', '>', 0)
             ->where('status', 1)
-            ->when($isFollows, function (Builder $query) use ($userId){
-                $query->whereHas('merchantFollow',function (Builder $q) use ($userId) {
-                    $q->where('user_id',$userId)
-                        ->where('status',MerchantFollow::USER_YES_FOLLOW);
-                });
-            })
             ->whereHas('oper', function(Builder $query){
                 $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
             })
@@ -885,7 +877,7 @@ class MerchantService extends BaseService
      * @param float $lat
      * @return \Illuminate\Http\JsonResponse
      */
-    public static function details(array $ids = [],  float $lng = 0, float $lat=0)
+    public static function getListByIds(array $ids = [],  float $lng = 0, float $lat=0)
     {
         if (empty($ids)) {
             return [];
@@ -899,9 +891,7 @@ class MerchantService extends BaseService
             })
             ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT]);
 
-
         $list = $query->get();
-
 
         if($lng && $lat){
             // 如果是按距离搜索, 需要在程序中按距离排序
