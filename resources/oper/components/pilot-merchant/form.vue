@@ -41,7 +41,7 @@
                         v-model="form.area">
                 </el-cascader>
             </el-form-item>
-            <el-form-item prop="address" label="详细地址">
+            <el-form-item prop="address" label="详细地址" class="w-500">
                 <el-input v-model="form.address"/>
             </el-form-item>
             <el-form-item prop="contacter" label="负责人姓名" class="w-500">
@@ -50,21 +50,22 @@
             <el-form-item prop="contacter_phone" label="负责人手机号码" class="w-500">
                 <el-input v-model="form.contacter_phone"/>
             </el-form-item>
-            <el-form-item prop="oper_biz_member_code" label="业务员">
+            <el-form-item prop="bizer_id" label="签约人">
                 <el-select
-                        v-model="form.oper_biz_member_code"
+                        v-model="form.bizer_id"
                         filterable
+                        :filter-method="operBizersFilter"
                         clearable
                         placeholder="请输入业务员姓名或手机号码"
                         class="w-300"
                 >
                     <el-option
-                            v-for="item in operBizMembers"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.code">
-                        <span class="c-blue">{{item.name}}</span>
-                        <span class="c-light-gray">{{item.mobile}}</span>
+                            v-for="item in filterOperBizers"
+                            :key="item.bizerId"
+                            :label="item.bizerMobile"
+                            :value="item.bizerId">
+                        <span class="c-blue">{{item.bizerName}}</span>
+                        <span class="c-light-gray">{{item.bizerMobile}}</span>
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -83,7 +84,7 @@
                 <image-upload  v-model="form.business_licence_pic_url" :limit="1"/>
             </el-form-item>
             <el-form-item prop="organization_code" label="营业执照代码">
-                <el-input v-model="form.organization_code"/>
+                <el-input v-model="form.organization_code" class="w-500"/>
             </el-form-item>
         </el-col>
 
@@ -108,6 +109,7 @@
         area: [],
         address: '',
 
+        bizer_id: '',
         contacter: '',
         contacter_phone: '',
         oper_biz_member_code: '',
@@ -139,7 +141,8 @@
                 form: deepCopy(defaultForm),
                 categoryOptions: [],
                 areaOptions: [],
-                operBizMembers: [],
+                operBizers: [],
+                filterOperBizers: [],
                 formRules: {
                     name: [
                         {required: true, message: '商户名称不能为空', trigger: 'change'},
@@ -229,6 +232,11 @@
                     this.$refs.lngAndLat.clearValidate();
                 })
             },
+            operBizersFilter(keyword){
+                this.filterOperBizers = this.operBizers.filter((item) => {
+                    return item.bizerName.indexOf(keyword) >= 0 || item.bizerMobile.indexOf(keyword) >= 0
+                })
+            },
             getInitData() {
                 api.get('merchant/categories/tree').then(data => {
                     this.categoryOptions = data.list;
@@ -243,8 +251,8 @@
                 api.get('area/tree').then(data => {
                     this.areaOptions = data.list;
                 });
-                api.get('/operBizMembers/search', {status: 1}).then(data => {
-                    this.operBizMembers = data.list;
+                api.get('/operBizer/getbizers', {status: 1, sign_status: 1}).then(data => {
+                    this.filterOperBizers = this.operBizers = data.list;
                 })
             },
             initForm() {
@@ -273,6 +281,8 @@
                     } else {
                         this.form.lng_and_lat = [data.lng, data.lat];
                     }
+
+                    this.form.bizer_id = parseInt(data.bizer_id) != 0 ? parseInt(data.bizer_id) : '';
                 }else {
                     this.form = deepCopy(defaultForm);
                 }

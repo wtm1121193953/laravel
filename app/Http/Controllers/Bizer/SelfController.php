@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/4/14
- * Time: 14:58
- */
-
 namespace App\Http\Controllers\Bizer;
 
 use App\Exceptions\AccountNotFoundException;
@@ -16,7 +9,6 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
-use App\Modules\Merchant\MerchantCategory;
 use App\Modules\Bizer\Bizer;
 use App\Modules\Sms\SmsVerifyCode;
 use App\Modules\Sms\SmsService;
@@ -46,6 +38,9 @@ class SelfController extends Controller {
         if (Bizer::genPassword(request('password'), $user['salt']) != $user['password']) {
             throw new PasswordErrorException();
         }
+        if ($user->status == Bizer::STATUS_OFF) {
+            throw new BaseResponseException('该业务员已被禁用');
+        }
 
         unset($user['password']);
         unset($user['salt']);
@@ -67,12 +62,14 @@ class SelfController extends Controller {
     public function register() {
         $this->validate(request(), [
             'mobile' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}/',
+            'name' => 'required|max:10',
             'verify_code' => 'required|size:4',
             'password' => 'required|between:6,12',
             'confirmPassword' => 'required|same:password',
         ]);
 
         $mobile = request('mobile');
+        $name = request('name');
         $password = request('password');
         $verifyCode = request('verify_code');
 
@@ -88,6 +85,7 @@ class SelfController extends Controller {
 
         $bizer = new Bizer();
         $bizer->mobile = $mobile;
+        $bizer->name = $name;
         $salt = str_random();
         $bizer->salt = $salt;
         $bizer->password = Bizer::genPassword($password, $salt);
@@ -117,7 +115,7 @@ class SelfController extends Controller {
             'newPassword' => 'required|between:6,30',
             'reNewPassword' => 'required|same:newPassword'
         ]);
-        // todo 业务员修改密码
+
         $user = request()->get('current_user');
         // 检查原密码是否正确
         if (MerchantAccount::genPassword(request('password'), $user->salt) !== $user->password) {
@@ -193,7 +191,6 @@ class SelfController extends Controller {
     }
 
     private function getMenus() {
-        // todo 返回业务员菜单
         return [
             ['id' => 1, 'name' => '订单管理', 'level' => 1, 'url' => '/bizer/orders', 'sub' =>
                 [
@@ -211,16 +208,16 @@ class SelfController extends Controller {
                     ['id' => 31, 'name' => '申请记录', 'level' => 2, 'url' => '/bizer/opersRecord', 'pid' => 3],
                 ]
             ],
-//            ['id' => 4, 'name' => '财务管理', 'level' => 1, 'url' => '/bizer/settlements', 'sub' =>
-//                [
-//                    ['id' => 40, 'name' => '财务总览', 'level' => 2, 'url' => '/bizer/settlements', 'pid' => 4],
-//                ]
-//            ],
-//            ['id' => 5, 'name' => '设置', 'level' => 1, 'url' => '', 'sub' =>
-//                [
-//                    ['id' => 50, 'name' => '提现设置', 'level' => 2, 'url' => '', 'pid' => 5],
-//                ]
-//            ],
+            ['id' => 4, 'name' => '财务管理', 'level' => 1, 'url' => '/bizer/wallet', 'sub' =>
+                [
+                    ['id' => 40, 'name' => '财务总览', 'level' => 2, 'url' => '/bizer/wallet/bills', 'pid' => 4],
+                ]
+            ],
+            ['id' => 5, 'name' => '设置', 'level' => 1, 'url' => '/bizer/withdraw', 'sub' =>
+                [
+                    ['id' => 50, 'name' => '提现设置', 'level' => 2, 'url' => '/bizer/withdraw/password/form', 'pid' => 5],
+                ]
+            ],
         ];
     }
 

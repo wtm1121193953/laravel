@@ -170,7 +170,6 @@ return [
         'bank_card_open_name'   =>  [
             'required'  =>  '持卡人不可为空',
             'max'       =>  '银行名不可超过 :max个字'
-//            ''
         ],
         'bank_card_no'      =>  [
             'required'  =>  '银行卡号不可为空',

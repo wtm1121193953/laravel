@@ -6,7 +6,7 @@
         </el-col>
         <!-- 商户激活信息左侧块 -->
         <el-col :span="11">
-            <el-form-item prop="bizer_id" label="业务员">
+            <el-form-item prop="bizer_id" label="签约人">
                 <el-select
                         v-model="form.bizer_id"
                         filterable
@@ -17,10 +17,9 @@
                     <el-option
                             v-for="item in operBizMembers"
                             :key="item.bizerId"
-                            :label="item.bizerMobile"
+                            :label="item.bizerName + item.bizerMobile"
                             :value="item.bizerId">
-                        <!--<span class="c-gray">{{item.code}}</span>-->
-                        <span class="c-blue">{{item.bizerNme}}</span>
+                        <span class="c-blue">{{item.bizerName}}</span>
                         <span class="c-light-gray">{{item.bizerMobile}}</span>
                     </el-option>
                 </el-select>
@@ -99,7 +98,7 @@
                 <el-input v-model="form.bank_card_no"/>
             </el-form-item>
             <el-form-item prop="bank_name" label="开户行">
-                <el-select v-model="form.bank_name">
+                <el-select v-model="form.bank_name" filterable placeholder="输入银行名称关键字查找" >
                     <el-option
                             v-for="item in bankList"
                             :value="item.name"
@@ -111,7 +110,7 @@
             <el-form-item prop="sub_bank_name" label="开户行网点名称">
                 <el-input v-model="form.sub_bank_name" placeholder="填写银行网点具体名称，如北京市××分行××支行"/>
             </el-form-item>
-            <el-form-item prop="area" label="开户行网点地址">
+            <el-form-item prop="bank_area" label="开户行网点地址">
                 <el-cascader
                         :options="areaOptions"
                         :props="{
@@ -314,7 +313,7 @@
                     ],
                     desc: [
                         {required: true, message: '商家介绍不能为空'},
-                        {max: 50, message: '商家介绍不能超过50个字'}
+                        {max: 100, message: '商家介绍不能超过100个字'}
                     ],
                     settlement_rate: [
                         {required: true, message: '分利比例不能为空'},
@@ -405,7 +404,7 @@
         },
         methods: {
             getOperBizMember(){
-                api.get('/operBizer/getbizers', {status: 1}).then(data => {
+                api.get('/operBizer/getbizers', {status: 1, sign_status: 1}).then(data => {
                     this.operBizMembers = data.list;
                 })
             },
@@ -427,6 +426,7 @@
                     this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                     this.form.status = parseInt(data.status);
                     this.form.bank_card_type = parseInt(data.bank_card_type);
+                    this.form.bizer_id = parseInt(data.bizer_id) != 0 ? parseInt(data.bizer_id) : '';
                 }else {
                     this.form = deepCopy(defaultForm);
                 }

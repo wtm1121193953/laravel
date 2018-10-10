@@ -6,10 +6,14 @@ namespace App\Modules\FeeSplitting;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Bizer\Bizer;
+use App\Modules\Bizer\BizerService;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperBizer;
+use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
@@ -111,7 +115,7 @@ class FeeSplittingService extends BaseService
     }
 
     /**
-     * 返利给运营中心
+     * 返利给运营中心 和 业务员
      * @param Order $order
      * @param $profitAmount
      * @throws \Exception
@@ -127,12 +131,69 @@ class FeeSplittingService extends BaseService
         if ($oper->pay_to_platform == Oper::PAY_TO_OPER) {
             return;
         }
+
+        $operFeeRatio = 0;  // 运营中心分润比例
+        $bizerFeeRatio = 0; // 业务员分润比例
+        $bizer = BizerService::getById($merchant->bizer_id);
+        if (!empty($bizer)) {
+            $param = [
+                'operId' => $oper->id,
+                'bizerId' => $bizer->id,
+            ];
+            $operBizer = OperBizerService::getOperBizerByParam($param);
+            if ($operBizer->status == OperBizer::STATUS_SIGNED) {
+                $operFeeRatioInit = UserCreditSettingService::getFeeSplittingRatioToOper($oper);
+                if ($operFeeRatioInit == null || $operFeeRatioInit <= 0) {
+                    return;
+                }
+                $bizerFeeRatio = $operFeeRatioInit * $operBizer->divide / 100;
+                $operFeeRatio = $operFeeRatioInit - $bizerFeeRatio;
+                if ($operFeeRatio < 0) {
+                    return;
+                }
+            }
+        }
+
         DB::beginTransaction();
         try {
-            $feeSplittingRecord = self::createFeeSplittingRecord($order, $oper, FeeSplittingRecord::TYPE_TO_OPER, $profitAmount);
+            if ($merchant->bizer_id && $bizerFeeRatio > 0) {
+                // 计算业务员
+                // 如果该商户有业务员，则给业务员分润
+                self::feeSplittingToBizer($order, $profitAmount, $bizer, $bizerFeeRatio);
+            }
+
+            // 计算运营中心
+            $feeSplittingRecord = self::createFeeSplittingRecord($order, $oper, FeeSplittingRecord::TYPE_TO_OPER, $profitAmount, $operFeeRatio);
 
             // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
             $wallet = WalletService::getWalletInfo($oper);
+            if (!empty($feeSplittingRecord)) {
+                WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * 给业务员分润
+     * @param Order $order
+     * @param $profitAmount
+     * @param Bizer $bizer
+     * @param float $bizerFeeRatio
+     * @return null|void
+     * @throws \Exception
+     */
+    private static function feeSplittingToBizer(Order $order, $profitAmount, Bizer $bizer, float $bizerFeeRatio)
+    {
+        DB::beginTransaction();
+        try {
+            $feeSplittingRecord = self::createFeeSplittingRecord($order, $bizer, FeeSplittingRecord::TYPE_TO_BIZER, $profitAmount, $bizerFeeRatio);
+
+            // 更新钱包 并 添加钱包流水
+            $wallet = WalletService::getWalletInfo($bizer);
             if (!empty($feeSplittingRecord)) {
                 WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
             }
@@ -179,12 +240,13 @@ class FeeSplittingService extends BaseService
     /**
      * 创建分润记录
      * @param Order $order
-     * @param User|Merchant|Oper $originInfo
+     * @param User|Merchant|Oper|Bizer $originInfo
      * @param $type
      * @param float $profitAmount
+     * @param float $feeRatio
      * @return FeeSplittingRecord
      */
-    private static function createFeeSplittingRecord(Order $order, $originInfo, $type, float $profitAmount)
+    private static function createFeeSplittingRecord(Order $order, $originInfo, $type, float $profitAmount, float $feeRatio = 0)
     {
         $merchantLevel = 0;
         if ($originInfo instanceof User) {
@@ -193,7 +255,9 @@ class FeeSplittingService extends BaseService
             $originType = FeeSplittingRecord::ORIGIN_TYPE_MERCHANT;
         } else if ($originInfo instanceof Oper) {
             $originType = FeeSplittingRecord::ORIGIN_TYPE_OPER;
-        } else {
+        }else if($originInfo instanceof Bizer){
+            $originType = FeeSplittingRecord::ORIGIN_TYPE_BIZER;
+        }else {
             throw new BaseResponseException('用户类型错误');
         }
         if ($type == FeeSplittingRecord::TYPE_TO_SELF) {
@@ -213,11 +277,10 @@ class FeeSplittingService extends BaseService
             }
         } elseif ($type == FeeSplittingRecord::TYPE_TO_OPER) {
             // 3 运营中心分润比例
-            $feeRatio = UserCreditSettingService::getFeeSplittingRatioToOper($originInfo);
-            if ($feeRatio == null) {
-                return null;
-            }
-        } else {
+        } elseif ($type == FeeSplittingRecord::TYPE_TO_BIZER) {
+            // 4 业务员分润比例
+        }
+        else {
             throw new ParamInvalidException('分润类型错误');
         }
 

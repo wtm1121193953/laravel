@@ -1,6 +1,7 @@
 <template>
-    <page :title="'业务-' + operBizMember.name" :breadcrumbs="{我的业务员: '/operBizMembers'}" v-loading="isLoading">
-        <el-table :data="list" stripe>
+    <page :title="'业务-' + operBizer.name + '-' + operBizer.mobile" :breadcrumbs="{我的业务员: '/bizers'}" v-loading="isLoading">
+        <el-alert class="m-b-15" title="激活的商户才会算入业务" />
+        <el-table :data="list" stripe v-loading="tableLoading">
             <el-table-column prop="created_at" label="添加商户时间"/>
             <el-table-column prop="audit_done_time" label="商户审核通过时间"/>
             <el-table-column prop="name" label="商户名称"/>
@@ -29,24 +30,29 @@
         data() {
             return {
                 isLoading: false,
+                tableLoading: false,
                 query: {
                     page: 1,
                 },
                 list: [
                 ],
                 total: 0,
-                operBizMember: {
-                    name:''
+                operBizer: {
+                    name:'',
+                    mobile: '',
                 },
             }
         },
         methods: {
             getList(){
                 let _self = this;
-                _self.query.code = _self.operBizMember.code;
-                api.get('/operBizMember/merchants', _self.query).then(data => {
+                _self.query.bizer_id = _self.operBizer.id;
+                _self.tableLoading = true;
+                api.get('/operBizer/merchants', _self.query).then(data => {
                     _self.list = data.list;
                     _self.total = data.total;
+                }).finally(() => {
+                    _self.tableLoading = false;
                 })
             },
         },
@@ -58,9 +64,12 @@
                 router.go(-1);
                 return ;
             }
-            api.get('/operBizMembers/detail', {id: bizer_id}).then(data => {
-                _self.operBizMember = data;
+            _self.isLoading = true;
+            api.get('/operBizer/detail', {id: bizer_id}).then(data => {
+                _self.operBizer = data;
                 _self.getList();
+            }).finally(() => {
+                _self.isLoading = false;
             });
         },
     }

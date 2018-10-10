@@ -89,31 +89,6 @@ class OperBizMemberController extends Controller
         return Result::success([
             'list' => $list
         ]);
-         /*
-        $where_data["status"] = request('status');
-        $list = BizerService::getList($where_data);
-        return Result::success([
-            'list' => $list
-        ]);* 
-         */
-    }
-
-    public function getAllbizer(){
-        $name = request('name', '');
-        $mobile = request('mobile', '');
-        $keyword = request('keyword', '');
-        $status = request('status');
-        $where_arr = [
-            "name"=>$name,
-            "mobile"=>$mobile,
-            "keyword"=>$keyword,
-            "status"=>$status,
-        ];
-        $data = OperBizerService::getAllbizer($where_arr);
-        //echo "<pre>";print_r($data);exit;
-        return Result::success([
-            'list' => $data->items(),
-        ]);
     }
 
     public function detail()
@@ -247,4 +222,16 @@ class OperBizMemberController extends Controller
         ]);
     }
 
+    /**
+     * 获取员工列表
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getMemberList()
+    {
+        $operId = request()->get('current_user')->oper_id;
+        $memberNameOrMobile = request('memberNameOrMobile', '');
+        $memberList = OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile, $operId);
+
+        return Result::success($memberList);
+    }
 }

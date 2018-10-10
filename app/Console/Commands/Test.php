@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\ImageMigrationToCOSJob;
+use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Jobs\Schedule\SettlementAgentPayDaily;
 
 use App\Jobs\Schedule\SettlementDaily;
@@ -9,6 +11,7 @@ use App\Jobs\Schedule\SettlementWeekly;
 
 use App\Jobs\OrderFinishedJob;
 use App\Jobs\SettlementAgentPay;
+use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
@@ -33,8 +36,10 @@ use Illuminate\Support\Facades\Schema;
 
 use App\Jobs\ConsumeQuotaSyncToTpsJob;
 use App\Jobs\InviteChannelsUnbindMaker;
+use Illuminate\Support\Facades\Storage;
 
 use App\Support\TpsApi;
+use App\Jobs\Schedule\OperStatisticsDailyJob;
 
 class Test extends Command
 {
@@ -69,7 +74,13 @@ class Test extends Command
      */
     public function handle()
     {
-
+        $data = DishesGoods::where('id',10014)->get();
+        ImageMigrationToCOSJob::dispatch($data,['detail_image']);
+        dd(config('cos.cos_url'));
+        InviteUserStatisticsDailyJob::dispatch((new Carbon())->subDay());
+dd('ok');
+        OperStatisticsDailyJob::dispatch((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s'));
+        dd('hi');
 //        $data = InviteChannel::where('id','<','10')->pluck('id');
 //        var_dump($data);
         InviteChannelsUnbindMaker::dispatch();

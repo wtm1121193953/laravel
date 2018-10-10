@@ -186,6 +186,7 @@ class OrderController extends Controller
         $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
+        $order->bizer_id = $merchant->bizer_id;
         $order->save();
 
         if ($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM) { // 如果是支付到平台
@@ -271,6 +272,7 @@ class OrderController extends Controller
         $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
+        $order->bizer_id = $merchant->bizer_id;
         $order->save();
 
         if ($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM) { // 如果是支付到平台
@@ -396,6 +398,7 @@ class OrderController extends Controller
         $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
+        $order->bizer_id = $merchant->bizer_id;
         $order->save();
 
         if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台

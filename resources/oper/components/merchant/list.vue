@@ -40,9 +40,17 @@
                     <el-option label="重新提交审核" value="3"/>
                 </el-select>
             </el-form-item>
+            <el-form-item prop="memberNameOrMobile" label="我的员工"  >
+                <el-input v-model="query.memberNameOrMobile" size="small"  placeholder="请输入员工姓名或手机号码搜索"  clearable></el-input>
+            </el-form-item>
+            <el-form-item prop="bizerNameOrMobile" label="业务员"  >
+                <el-input v-model="query.bizerNameOrMobile" size="small"  placeholder="请输入业务员姓名或手机号码搜索"  clearable></el-input>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
+
+            <el-button class="fr inline" size="small" type="success" @click="add">录入并激活商户</el-button>
         </el-form>
         <!--<el-dropdown class="fr" @command="addBtnClick" trigger="click">
             <el-button type="primary">
@@ -53,7 +61,7 @@
                 <el-dropdown-item command="add">添加新商户</el-dropdown-item>
             </el-dropdown-menu>
         </el-dropdown>-->
-        <el-button class="fr" type="primary" @click="add">录入并激活商户</el-button>
+
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="id" label="ID"/>
@@ -73,7 +81,13 @@
                     <span> {{ scope.row.area }} </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="operBizMemberName" label="业务员"/>
+            <el-table-column label="签约人">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.bizer"><span class="c-green">业务员 </span>{{scope.row.bizer.name}}/{{scope.row.bizer.mobile}}</span>
+                    <span v-else-if="scope.row.operBizMember"><span class="c-light-gray">员工 </span>{{scope.row.operBizMember.name}}/{{scope.row.operBizMember.mobile}}</span>
+                    <span v-else>无</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="status" label="商户状态">
                 <template slot-scope="scope" v-if="scope.row.audit_status == 1 || scope.row.audit_status == 3">
                     <span v-if="scope.row.status === 1" class="c-green">正常</span>
@@ -149,7 +163,9 @@
                     status: '',
                     page: 1,
                     audit_status: '',
-                    signboardName:''
+                    signboardName:'',
+                    memberNameOrMobile: '',
+                    bizerNameOrMobile: '',
                 },
                 list: [],
                 total: 0,

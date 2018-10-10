@@ -71,6 +71,28 @@ return [
             'driver' => 'errorlog',
             'level' => 'debug',
         ],
+
+        'mongodb' => [
+            'driver' => 'custom',
+            'via' => \App\MongoDBLogger::class,
+            'uri' => 'mongodb://127.0.0.1/',
+            'daily' => true,
+            'database' => 'logs',
+            'collection' => 'all',
+            'level' => 'debug',
+        ],
+
+        'mongodb-error' => [
+            'driver' => 'custom',
+            'via' => \App\MongoDBLogger::class,
+            'uri' => 'mongodb://127.0.0.1/',
+            'daily' => true,
+            'database' => 'logs',
+            'collection' => 'error',
+            'level' => 'error',
+        ],
+
+
     ],
 
 ];

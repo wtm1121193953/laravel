@@ -50,9 +50,9 @@
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="created_at" label="交易时间"></el-table-column>
             <el-table-column prop="consume_quota_no" label="交易号"></el-table-column>
-            <el-table-column prop="type" label="交易类型" width="100px">
+            <el-table-column prop="type" label="交易类型" width="120px">
                 <template slot-scope="scope">
-                    <span>下级贡献</span>
+                    <span>被分享人贡献</span>
                 </template>
             </el-table-column>
             <el-table-column prop="order_no" label="原订单号"></el-table-column>
@@ -112,11 +112,11 @@
             consume() {
                 return [
                     {
-                        label: '累计获得下级贡献值',
+                        label: '累计获得被分享人贡献值',
                         val: this.shareConsumeQuotaSum
                     },
                     {
-                        label: '本月累计获得下级贡献值',
+                        label: '本月累计获得被分享人贡献值',
                         val: this.thisMonthQuotaSum,
                     },
                 ];

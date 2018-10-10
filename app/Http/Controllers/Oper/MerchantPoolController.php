@@ -8,7 +8,9 @@
 
 namespace App\Http\Controllers\Oper;
 
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantPoolService;
 use App\Modules\Merchant\MerchantService;
 use App\Result;
@@ -86,5 +88,22 @@ class MerchantPoolController extends Controller
         $operId = request()->get('current_user')->oper_id;
         $merchant = MerchantPoolService::operMerchantPoolEdit($id,$operId);
         return Result::success($merchant);
+    }
+
+    public function del()
+    {
+        $id = request('id');
+        $obj = Merchant::findOrFail($id);
+        $operId = request()->get('current_user')->oper_id;
+        if ($obj->creator_oper_id != $operId) {
+            throw new ParamInvalidException('没有权限');
+        }
+
+        if ($obj->audit_oper_id != 0) {
+            throw new ParamInvalidException('参数错误');
+        }
+
+        $obj->delete();
+        return Result::success('');
     }
 }

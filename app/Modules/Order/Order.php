@@ -44,6 +44,7 @@ use Carbon\Carbon;
  * @property number settlement_charge_amount
  * @property integer splitting_status
  * @property Carbon splitting_time
+ * @property integer bizer_id
  */
 
 class Order extends BaseModel
@@ -67,6 +68,7 @@ class Order extends BaseModel
      */
     const PAY_TARGET_TYPE_OPER = 1; // 支付给运营中心
     const PAY_TARGET_TYPE_PLATFORM = 2; // 支付给平台
+    const PAY_TARGET_TYPE_PLATFORM_3 = 3; // 支付给平台且平台参与分成
 
     /**
      * 订单来源客户端app类型
@@ -149,4 +151,8 @@ class Order extends BaseModel
     {
         return $this->hasMany(WalletConsumeQuotaRecord::class);
     }
+
+    /*protected $dispatchesEvents = [
+        'updated' => \App\Events\OrdersUpdatedEvent::class,
+    ];*/
 }

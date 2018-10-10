@@ -26,46 +26,13 @@ class SettlementController extends Controller
         $operBizMemberName = request('oper_biz_member_name');
         $operBizMemberMobile = request('oper_biz_member_mobile');
         $merchantId = request('merchantId');
+        $bizerId = request('bizerId');
+        $memberId = request('memberId');
         $operId = request()->get('current_user')->oper_id;
 
-        $data = SettlementService::getOperSettlements($operId, $merchantId, $status, $showAmount, $settlementDate, $operBizMemberName, $operBizMemberMobile);
-        //DB::enableQueryLog();
-        /*$data = Settlement::where('oper_id', request()->get('current_user')->oper_id)
-            ->where('amount', '>', 0)
-            ->when($merchantId, function(Builder $query) use ($merchantId){
-                $query->where('merchant_id', $merchantId);
-            })
-            ->when($status, function (Builder $query) use ($status){
-                $query->where('status', $status);
-            })
-            ->when($showAmount, function(Builder $query) {
-                $query->where('amount', '>', 0);
-            })
-            ->when($settlementDate, function (Builder $query) use ($settlementDate){
-                $query->whereBetween('created_at', [$settlementDate[0] . ' 00:00:00', $settlementDate[1] . ' 23:59:59']);
-            })->orderBy('id', 'desc')->paginate();
-        //var_dump(DB::getQueryLog());
+        $params = compact('merchantId', 'status', 'showAmount', 'settlementDate', 'operBizMemberMobile', 'operBizMemberName', 'bizerId', 'memberId');
+        $data = SettlementService::getOperSettlements($operId, $params);
 
-        $merchant = Merchant::where('oper_id', request()->get('current_user')->oper_id)->get()->keyBy('id');
-
-        $operBizMember = OperBizMember::where('oper_id', request()->get('current_user')->oper_id)->when($operBizMemberName, function(Builder $query) use ($operBizMemberName){
-            $query->where('name', $operBizMemberName);
-        })
-            ->when($operBizMemberMobile, function(Builder $query) use ($operBizMemberMobile){
-                $query->where('mobile', $operBizMemberMobile);
-            })->get()->keyBy('id');
-
-        foreach ($data as &$item){
-            if(isset($merchant[$item['merchant_id']])){
-                $item['merchant_name'] = $merchant[$item['merchant_id']]['name'];
-                foreach($operBizMember as &$key){
-                    if($merchant[$item['merchant_id']]['oper_biz_member_code'] == $key['code']){
-                        $item['oper_biz_member_name'] = $key['name'];
-                        $item['oper_biz_member_mobile'] = $key['mobile'];
-                    }
-                }
-            }
-        }*/
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -81,9 +48,12 @@ class SettlementController extends Controller
         $settlementDate = explode(',',request('settlementDate', ''));
         $operBizMemberName = request('operName', '');
         $operBizMemberMobile = request('operMobile', '');
-        //var_dump($settlementDate);die();
+        $bizerId = request('bizerId');
+        $memberId = request('memberId');
         $operId = request()->get('current_user')->oper_id;
-        $query = SettlementService::getOperSettlements($operId, $merchantId, $status, $showAmount, $settlementDate, $operBizMemberName, $operBizMemberMobile, true);
+
+        $params = compact('merchantId', 'status', 'showAmount', 'settlementDate', 'operBizMemberMobile', 'operBizMemberName', 'bizerId', 'memberId');
+        $query = SettlementService::getOperSettlements($operId, $params, true);
         return (new OperSettlementExport($query))->download('财务管理列表.xlsx');
     }
 

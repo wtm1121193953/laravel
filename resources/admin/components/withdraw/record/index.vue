@@ -25,6 +25,14 @@
                     :queryEndDate="endDate"
                 ></oper-record>
             </el-tab-pane>
+            <el-tab-pane label="业务员提现记录" name="bizer">
+                <bizer-record
+                        :type="type"
+                        :status="status"
+                        :queryStartDate="startDate"
+                        :queryEndDate="endDate"
+                ></bizer-record>
+            </el-tab-pane>
         </el-tabs>
     </page>
 </template>
@@ -33,6 +41,7 @@
     import MerchantRecord from './merchant-record'
     import UserRecord from './user-record'
     import OperRecord from './oper-record'
+    import BizerRecord from './bizer-record'
 
     export default {
         name: "withdraw-record-index",
@@ -47,7 +56,7 @@
         },
         created() {
             this.type =  this.$route.query.type;
-            if (this.$route.query.type === 'user' || this.$route.query.type === 'oper') {
+            if (this.$route.query.type === 'user' || this.$route.query.type === 'oper' || this.$route.query.type === 'bizer') {
                 this.activeTab = this.$route.query.type;
             }
             if (this.$route.query.status === 'success') {
@@ -66,6 +75,7 @@
             MerchantRecord,
             UserRecord,
             OperRecord,
+            BizerRecord,
         }
     }
 </script>

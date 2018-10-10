@@ -19,6 +19,8 @@ import wallet from './wallet'
 
 import SettlementPlatfroms from '../components/settlement/platform.vue'
 
+import SystemCommand from '../components/system/command'
+
 /**
  *
  */
@@ -34,6 +36,15 @@ const routes = [
             {path: 'rules', component: RuleList, name: 'RuleList'},
             {path: 'groups', component: GroupList, name: 'GroupList'},
             {path: 'users', component: UserList, name: 'UserList'},
+        ]
+    },
+
+    // 配置
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'system/option', component: SystemCommand, name: 'SystemCommand'},
         ]
     },
 

@@ -35,19 +35,17 @@
                 </el-cascader>
             </el-form-item>
             <el-form-item prop="status" label="状态">
-                <el-select v-model="query.status" class="w-100">
-                    <el-option label="全部" value=""/>
-                    <el-option label="正常" value="1"/>
-                    <el-option label="拒绝" value="-1"/>
-                    <el-option label="申请中" value="0"/>
+                <el-select v-model="query.status" multiple class="w-100">
+                    <el-option label="正常" :value="1"/>
+                    <el-option label="拒绝" :value="-1"/>
+                    <el-option label="申请中" :value="0"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
             </el-form-item>
+            <el-button class="fr" type="success" size="small" icon="el-icon-plus" @click="add">申请运营中心</el-button>
         </el-form>
-
-        <el-button class="fr" type="primary" icon="el-icon-plus" @click="add">添加运营中心</el-button>
 
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
@@ -63,19 +61,19 @@
             </el-table-column>
             <el-table-column prop="divide" label="我的分成">
                 <template slot-scope="scope">
-                    <span>{{scope.row.divide * 100}}%</span>
+                    <span>{{scope.row.divide}}%</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="status" label="合作状态">
+            <el-table-column prop="sign_status" label="合作状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.status === 0" class="c-warning">申请中</span>
-                    <span v-else-if="scope.row.status === -1" class="c-danger">拒绝</span>
+                    <span v-if="scope.row.sign_status == 1" class="c-green">正常</span>
+                    <span v-else-if="scope.row.sign_status == 0" class="c-warning">冻结</span>
+                    <span v-else class="c-danger">未知（{{scope.row.sign_status}}）</span>
                 </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
-                    <el-button @click="toMerchants(scope.row.id)" type="text">查看商户</el-button>
+                    <el-button v-if="scope.row.status === 1" @click="toMerchants(scope.row.oper_id)" type="text">查看商户</el-button>
                     <!-- <el-button type="text" @click="contract">查看合同</el-button> -->
                 </template>
             </el-table-column>
@@ -90,16 +88,26 @@
                 :total="total"/>
 
         <el-dialog title="添加运营中心" :visible.sync="dialogFormVisible" width="30%">
-            <el-form label-width="100px">
-                <el-form-item label="电话">
-                    {{ username }}
+            <el-form label-width="120px" ref="addRegionData" :model="addRegionData" :rules="addRegionDataRules">
+                <el-form-item label="姓名">
+                    {{ user.name }}
                 </el-form-item>
-                <el-form-item label="运营中心名称">
-                    <el-select v-model="addRegionData.oper_id" placeholder="请选择运营中心" style="width:100%;">
+                <el-form-item label="电话">
+                    {{ user.mobile }}
+                </el-form-item>
+                <el-form-item prop="oper_id" label="运营中心名称">
+                    <el-select
+                        filterable
+                        remote
+                        :remote-method="getOperNameList"
+                        v-model="addRegionData.oper_id"
+                        :loading="selectLoading"
+                        placeholder="请输入运营中心名称"
+                        style="width:100%;">
                         <el-option v-for="item in regionOptions" :label="item.name"  :key="item.id" :value="item.id"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="备注">
+                <el-form-item prop="remark" label="备注">
                     <el-input type="textarea" v-model="addRegionData.remark" auto-complete="off"/>
                 </el-form-item>
             </el-form>
@@ -141,9 +149,9 @@
                     name: '',
                     contacter: '',
                     tel: '',
-                    provinceId:'',//省份ID
-                    //cityId:'',//城市ID不能写,组件是自动生成的
-                    status: '',
+                    // provinceId:'',//省份ID
+                    cityId:[],//城市ID不能写,组件是自动生成的
+                    status: [0, 1],
                     page: 1
                 },
                 list: [],
@@ -163,19 +171,26 @@
                     }
                 ],
                 dialogTipsCurrent: 0,
+                selectLoading: false,
+
+                addRegionDataRules: {
+                    oper_id: [
+                        {required: true, message: '运营中心名称不能为空'},
+                    ],
+                    remark: [
+                        {max: 50, message: '备注不能超过50个字'},
+                    ]
+                }
             }
         },
         computed: {
             ...mapState([
                 'user',
             ]),
-            username(){
-                return this.user ? (this.user.operName || this.user.account || this.user.mobile) : '';
-            }
         },
         methods: {
             search(){
-                var _self = this;
+                let _self = this;
                 _self.query.page = 1;
                 _self.getList();
             },
@@ -199,7 +214,6 @@
                         _self.dialogTips = data.tips;
                         _self.dialogPromptVisible = true;
                     }
-                    // console.log(data)
                 }).catch(() =>{
                     _self.$message({
                       message: '请求失败',
@@ -219,30 +233,30 @@
                 this.dialogPromptVisible = true;
             },
             addRegion(){
-                let _self = this;
-                if (!_self.addRegionData.oper_id) {
-                    _self.$message({
-                      message: '请选择运营中心',
-                      type: 'warning'
-                    });
-                    return;
-                }
-                _self.regionLoading = true;
-                api.post('/api/bizer/oper/add', _self.addRegionData).then(data => {
-                    _self.regionLoading = false;
-                    _self.dialogFormVisible = false;
-                    _self.$message({
-                      message: '添加成功',
-                      type: 'success'
-                    });
-                }).catch(() => {
-                    _self.$message({
-                      message: '添加失败',
-                      type: 'warning'
-                    });
-                }).finally(() => {
-                    _self.regionLoading = false;
-                })
+                this.$refs.addRegionData.validate(valid => {
+                    if (valid) {
+                        let _self = this;
+                        if (!_self.addRegionData.oper_id) {
+                            _self.$message({
+                                message: '请选择运营中心',
+                                type: 'warning'
+                            });
+                            return;
+                        }
+                        _self.regionLoading = true;
+                        api.post('/api/bizer/oper/add', _self.addRegionData).then(data => {
+                            _self.regionLoading = false;
+                            _self.dialogFormVisible = false;
+                            _self.$message({
+                                message: '添加成功',
+                                type: 'success'
+                            });
+                            this.getList();
+                        }).finally(() => {
+                            _self.regionLoading = false;
+                        })
+                    }
+                });
             },
             toMerchants(oper_id){
                 //改变vuex状态
@@ -256,7 +270,17 @@
                     _self.dialogTipsCurrent ++;
                     _self.dialogPromptVisible = true;
                 }
-                
+            },
+            getOperNameList(query) {
+                if (query !== '') {
+                    this.selectLoading = true;
+                    api.get('/api/bizer/oper/name_list', {operName: query}).then(data => {
+                        this.regionOptions = data.list;
+                        this.selectLoading = false;
+                    });
+                } else {
+                    this.regionOptions = [];
+                }
             }
         },
         created(){
@@ -265,12 +289,7 @@
                 Object.assign(_self.query, _self.$route.params);
             }
             api.get('/api/bizer/area/tree?tier=2').then(data => {
-                // console.log(data.list)
                 _self.cityOptions = data.list;
-            });
-            api.get('/api/bizer/oper/name_list').then(data => {
-                // console.log(data.list)
-                _self.regionOptions = data.list;
             });
             _self.getList();
         },

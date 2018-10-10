@@ -304,4 +304,18 @@ class OperService extends BaseService
             ->pluck($field);
         return $arr;
     }
+
+    public static function allOpers()
+    {
+        return Oper::select('id','name')->get()->toArray();
+    }
+
+    /**
+     * 获取所有合作的运营商
+     * @return array
+     */
+    public static function allNormalOpers()
+    {
+        return Oper::select('id','name')->where('status','=',Oper::STATUS_NORMAL)->get()->toArray();
+    }
 }

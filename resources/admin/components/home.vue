@@ -241,9 +241,12 @@
             // 获取权限验证方法
             getHasRuleFunction(){
                 return (url) => {
+                    let urls = url.split('|');
                     for (let i = 0; i < this.rules.length; i ++) {
-                        if(this.rules[i].url_all.split(',').indexOf(url) >= 0){
-                            return true;
+                        for (let j = 0; j < urls.length; j ++){
+                            if(this.rules[i].url_all.split(',').indexOf(urls[j]) >= 0){
+                                return true;
+                            }
                         }
                     }
                     return false;

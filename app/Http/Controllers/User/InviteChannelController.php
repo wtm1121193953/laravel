@@ -48,7 +48,7 @@ class InviteChannelController extends Controller
         $inviteChannel = InviteChannelService::getBySceneId($sceneId);
 
         /*if($inviteChannel->origin_type == InviteChannel::ORIGIN_TYPE_USER){
-            throw new ParamInvalidException('会员二维码已经失效');
+            throw new ParamInvalidException('用户二维码已经失效');
         }*/
 
         $inviteChannel->origin_name = InviteChannelService::getInviteChannelOriginName($inviteChannel);

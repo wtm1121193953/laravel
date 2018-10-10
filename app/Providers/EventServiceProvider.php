@@ -19,6 +19,20 @@ class EventServiceProvider extends ServiceProvider
         // Author:Jerry Date:180903
         'App\Events\TpsBindSave'    =>  [
             'App\Listeners\TpsBindSaveEventListener'
+        ],
+
+        // 新增 运营中心营销统计 事件监听
+        // 添加用户数据统计
+        'App\Events\InviteUserRecordsCreatedEvent'  =>  [
+            'App\Listeners\OperStatisticsAddUserListener'
+        ],
+        // 添加订单记录
+        'App\Events\OrdersUpdatedEvent'    =>  [
+            'App\Listeners\OperStatisticsAddOrderListener'
+        ],
+        // 添加商户数
+        'App\Events\MerchantCreatedEvent' =>  [
+            'App\Listeners\OperStatisticsAddMerchantListener'
         ]
     ];
 

@@ -44,7 +44,7 @@ class WalletWithdrawController extends Controller
         // 获取钱包信息
         $wallet = WalletService::getWalletInfo( $obj );
         // 获取银行卡信息
-        $card   = BankCardService::getCardById( request()->input('card_id'), $obj );
+        $card   = BankCardService::getCardById( request()->input('card_id'));
         $isOk   = WalletWithdrawService::checkWithdrawPasswordByOriginInfo( request()->input('password'), $obj->id, $wallet->origin_type);
         if( !$isOk )
         {

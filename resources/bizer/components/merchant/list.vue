@@ -61,7 +61,7 @@
                         v-model="query.cityId">
                 </el-cascader>
             </el-form-item>
-            <el-form-item label="所属运营中心">
+            <el-form-item prop="operId" label="所属运营中心">
                 <el-select v-model="query.operId" filterable clearable >
                     <el-option v-for="item in operOptions" :key="item.id" :value="item.oper_id" :label="item.operName"/>
                 </el-select>
@@ -91,7 +91,11 @@
                 </template>
             </el-table-column>
             <el-table-column prop="operName" label="所属运营中心"/>
-            <el-table-column prop="divide" label="分成比例"/>
+            <el-table-column prop="divide" label="分成比例">
+                <template slot-scope="scope">
+                    {{scope.row.divide}}%
+                </template>
+            </el-table-column>
             <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="searchorders(scope.row.id)">查看订单</el-button>
@@ -202,8 +206,6 @@
             
             api.get('merchant/opers/tree').then(data => {
                 _self.operOptions = data.list;
-                
-                
             });
             api.get('merchant/categories/tree').then(data => {
                  _self.categoryOptions = data.list;

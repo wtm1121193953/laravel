@@ -1,5 +1,6 @@
 import Login from '../components/login.vue'
-import Register from '../components/register.vue'
+import LoginForm from '../components/login/login-form'
+import RegisterForm from '../components/login/register-form'
 import refresh from '../components/refresh.vue'
 import Home from '../components/home.vue'
 import ErrorPage from '../components/404.vue'
@@ -10,13 +11,18 @@ import welcome from '../components/welcome.vue'
 import merchant from './merchant'
 import oper from './oper'
 import order from './order'
-/**
- *
- */
-const routes = [
+import walletAndWithdrew from './wallet-and-withdraw'
 
-    {path: '/login', component: Login, name: 'Login'},
-    {path: '/register', component: Register, name: 'Register'},
+const routes = [
+    {
+        path: '/',
+        component: Login,
+        children: [
+            {path: '/', component: LoginForm, name: 'Login'},
+            {path: 'login', component: LoginForm, name: 'LoginForm'},
+            {path: '/register', component: RegisterForm, name: 'RegisterForm'},
+        ]
+    },
     {
         path: '/',
         component: Home,
@@ -24,8 +30,7 @@ const routes = [
             ...oper,
             ...order,
             ...merchant,
-            // demo组件示例
-            {path: '/', component: welcome, name: 'welcome'},
+            ...walletAndWithdrew,
             // demo组件示例
             {path: 'welcome', component: welcome, name: 'welcome'},
             // 刷新组件

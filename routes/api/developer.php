@@ -14,4 +14,7 @@ Route::prefix('developer')
         Route::get('home/index', 'HomeController@index');
         Route::get('home/phpinfo', 'HomeController@phpinfo');
 
+        Route::post('system/command', 'SystemController@command');
+        Route::post('system/command/native', 'SystemController@nativeCommand');
+
     });

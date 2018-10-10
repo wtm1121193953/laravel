@@ -89,6 +89,7 @@
                     <span v-if="scope.row.origin_type == 1">用户提现</span>
                     <span v-else-if="scope.row.origin_type == 2">商户提现</span>
                     <span v-else-if="scope.row.origin_type == 3">运营中心提现</span>
+                    <span v-else-if="scope.row.origin_type == 4">业务员提现</span>
                     <span v-else>未知({{scope.row.origin_type}})</span>
                 </template>
             </el-table-column>
@@ -251,6 +252,8 @@
                     path = '/withdraw/record/merchant';
                 } else if (row.origin_type == 3) {
                     path = '/withdraw/record/oper';
+                } else if (row.origin_type == 4) {
+                    path = '/withdraw/record/bizer';
                 } else {
                     this.$message.error('提现类型错误');
                     return false;

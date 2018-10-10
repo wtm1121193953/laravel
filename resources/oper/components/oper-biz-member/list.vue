@@ -18,7 +18,7 @@
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
         </el-form>
-        <el-button class="fr" type="primary" @click="add">添加员工</el-button>
+        <!--<el-button class="fr" type="primary" @click="add">添加员工</el-button>-->
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="created_at" label="加入时间">

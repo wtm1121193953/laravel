@@ -3,7 +3,9 @@
 namespace App\Modules\Wallet;
 
 use App\BaseService;
-use App\Modules\Wallet\BankCard;
+use App\Modules\Bizer\Bizer;
+use App\Modules\Bizer\BizerService;
+use App\Modules\User\User;
 use App\Modules\User\UserIdentityAuditRecordService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -20,12 +22,12 @@ use App\ResultCode;
  */
 class BankCardService extends BaseService
 {
-    public static function addCard( $data, $user, $originType=BankCard::ORIGIN_TYPE_USER )
+    public static function addCard($data, $obj, $originType = BankCard::ORIGIN_TYPE_USER )
     {
         // 检查开户名是否与实名验证信息一致
-        self::checkIdentityAuditName($user->id,$data['bank_card_open_name']);
+        self::checkIdentityAuditName($obj, $data['bank_card_open_name']);
         // 判断同一用户是否绑定相同的银行卡号
-        $exist= BankCard::where('origin_id', $user->id)
+        $exist= BankCard::where('origin_id', $obj->id)
                         ->where('origin_type', $originType)
                         ->where('bank_card_no', $data['bank_card_no'])
                         ->exists();
@@ -37,7 +39,7 @@ class BankCardService extends BaseService
         $bankCard->bank_card_open_name  = $data['bank_card_open_name'];
         $bankCard->bank_card_no         = $data['bank_card_no'];
         $bankCard->bank_name            = $data['bank_name'];
-        $bankCard->origin_id            = $user->id;
+        $bankCard->origin_id            = $obj->id;
         $bankCard->origin_type          = $originType;
         $bankCard->bank_card_type       = BankCard::BANK_CARD_TYPE_PEOPLE;
         $bankCard->default              = BankCard::DEFAULT_UNSELECTED;
@@ -46,7 +48,7 @@ class BankCardService extends BaseService
         }
 
         //判断只有一张银行卡时设置为默认银行卡
-        $query = BankCard::where('origin_id',$user->id)
+        $query = BankCard::where('origin_id',$obj->id)
             ->where('origin_type',$originType);
         if($query ->count() == 1){
                 $item = $query->first();
@@ -57,12 +59,18 @@ class BankCardService extends BaseService
 
     /**
      * 检查开户名是否与实名验证信息一致
-     * @param $userId
+     * @param $obj
      * @param $checkName
      */
-    public static function checkIdentityAuditName( $userId, $checkName )
+    public static function checkIdentityAuditName($obj, $checkName )
     {
-        $record = UserIdentityAuditRecordService::getRecordByUser($userId);
+        if ($obj instanceof User) {
+            $record = UserIdentityAuditRecordService::getRecordByUserId($obj->id);
+        } elseif ($obj instanceof Bizer) {
+            $record = BizerService::getBizerIdentityAuditRecordByBizerId($obj->id);
+        } else {
+            throw new BaseResponseException('该对象不存在');
+        }
         if( $record['name']!=$checkName ){
             throw new BaseResponseException('持卡人姓名必须和当前认证用户一致',ResultCode::PARAMS_INVALID );
         }
@@ -126,16 +134,11 @@ class BankCardService extends BaseService
      * Author：  Jerry
      * Date：    180901
      * @param   int   $id
-     * @param   \App\Modules\User\User|  $obj
-     * @param   int $originType
      * @return \App\Modules\Wallet\BankCard
      */
-    public static function getCardById( $id, $obj, $originType=BankCard::ORIGIN_TYPE_USER )
+    public static function getCardById($id)
     {
-        return BankCard::where('origin_id', $obj->id )
-            ->where("origin_type",$originType)
-            ->where('id', $id )
-            ->first();
+        return BankCard::find($id);
     }
 
     public static function getList( $obj, $originType=BankCard::ORIGIN_TYPE_USER  )
@@ -171,5 +174,19 @@ class BankCardService extends BaseService
         return  Bank::when($onlyStatusUsable, function (Builder $query) {
             $query->where('status', Bank::STATUS_USABLE);
         })->get();
+    }
+
+    /**
+     * 通过用户id和类型获取一张银行卡信息
+     * @param $originId
+     * @param $originType
+     * @return BankCard
+     */
+    public static function getBankCardByOriginInfo($originId, $originType)
+    {
+        $bankCard = BankCard::where('origin_id', $originId)
+            ->where('origin_type', $originType)
+            ->first();
+        return $bankCard;
     }
 }
