@@ -46,6 +46,7 @@ class MerchantFollowController extends Controller
         }
 
         $list = MerchantService::getListByIds($follow_merchant_ids,$lng,$lat);
+
         $total = $followmerchantList->total();
 
         return Result::success(['list' => $list, 'total' => $total]);

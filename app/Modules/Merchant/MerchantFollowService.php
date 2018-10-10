@@ -61,6 +61,11 @@ class MerchantFollowService extends BaseService
         return $follow_status;
     }
 
+    /**
+     * 获取用户关注列表
+     * @param $userId
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
     public static function getFollowMerchantList($userId)
     {
         $query = MerchantFollow::query()
