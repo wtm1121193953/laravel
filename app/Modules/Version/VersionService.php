@@ -37,6 +37,7 @@ class VersionService extends BaseService
     /**
      * 获取上一个版本的版本序号
      * @param $app_type
+     * @return integer
      */
     public static function getLastVersionSeq($app_type)
     {
