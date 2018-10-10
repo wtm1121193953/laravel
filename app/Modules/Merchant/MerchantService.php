@@ -669,8 +669,10 @@ class MerchantService extends BaseService
             // 如果是按距离搜索, 需要在程序中按距离排序
             $allList = $query->get();
             $total = $query->count();
-            $list = $allList->map(function ($item) use ($lng, $lat) {
-                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
+            $list = $allList->map(function ($item) use ($lng, $lat, $params) {
+                $item->distance = $item->is_pilot == 1
+                    ? 100000000
+                    : Lbs::getDistanceOfMerchant($item->id, $params['user_key'], floatval($lng), floatval($lat));
                 return $item;
             })
                 ->sortBy('distance')
@@ -678,7 +680,7 @@ class MerchantService extends BaseService
                 ->values()
                 ->each(function($item) {
                     // 格式化距离
-                    $item->distance = Utils::getFormativeDistance($item->distance);
+                    $item->distance =  $item->is_pilot == 1 ? '' : Utils::getFormativeDistance($item->distance);
                 });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页

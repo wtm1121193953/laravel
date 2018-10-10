@@ -35,7 +35,8 @@ class MerchantController extends Controller
             'keyword' => request('keyword'),
             'lng' => request('lng'),
             'lat' => request('lat'),
-            'radius' => request('radius')
+            'radius' => request('radius'),
+            'user_key' => request()->get('current_device_no'),
         ]);
 //        $list = $data['list'];
 //        $total = $data['total'];
