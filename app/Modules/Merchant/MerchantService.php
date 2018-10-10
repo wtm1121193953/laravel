@@ -679,6 +679,64 @@ class MerchantService extends BaseService
         return Result::success(['list' => $list, 'total' => $total]);
     }
 
+
+    /**
+     * 获取商家详情
+     * @param array $ids
+     * @param float $lng
+     * @param float $lat
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public static function details(array $ids = [],  float $lng = 0, float $lat=0)
+    {
+        if (empty($ids)) {
+            return [];
+        }
+        //只能查询切换到平台的商户
+        $query = Merchant::query()
+            ->whereIn('id', $ids)
+            ->where('status', 1)
+            ->whereHas('oper', function(Builder $query){
+                $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
+            })
+            ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT]);
+
+
+        $list = $query->get();
+
+
+        if($lng && $lat){
+            // 如果是按距离搜索, 需要在程序中按距离排序
+
+            $allList = $list;
+            $list = $allList->map(function ($item) use ($lng, $lat) {
+                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
+                $item->distance = Utils::getFormativeDistance($item->distance);
+                return $item;
+            });
+        }
+
+        // 补充商家其他信息
+        $list = collect($list);
+        $list->each(function ($item){
+            $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
+            if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
+            $category = MerchantCategory::find($item->merchant_category_id);
+            $item->merchantCategoryName = $category->name;
+            // 最低消费
+            $item->lowestAmount = MerchantService::getLowestPriceForMerchant($item->id);
+            // 兼容v1.0.0版客服电话字段
+            $item->contacter_phone = $item->service_phone;
+            // 商户评级字段，暂时全部默认为5星
+            $item->grade = 5;
+            // 首页商户列表，显示价格最低的n个团购商品
+            $item->lowestGoods = GoodsService::getLowestPriceGoodsForMerchant($item->id, 2);
+        });
+
+        return $list;
+
+    }
+
     public static function userAppMerchantDetial($data)
     {
         $id = array_get($data,'id');
@@ -704,6 +762,8 @@ class MerchantService extends BaseService
 
         return $detail;
     }
+
+
 
 
     /**
