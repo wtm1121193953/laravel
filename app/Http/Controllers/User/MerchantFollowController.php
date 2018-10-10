@@ -34,11 +34,20 @@ class MerchantFollowController extends Controller
 
     public function userFollowList()
     {
-        $data = MerchantService::getListForUserApp([
-            'lng' => request('lng'),
-            'lat' => request('lat'),
-            'page' => request('page'),
-        ],true);
-        return $data;
+        $userID = request()->get('current_user')->id;
+        $lng = request('lng',0);
+        $lat = request('lat',0);
+        //获取用户收藏的商户ID
+        $followmerchantList = MerchantFollowService::getFollowMerchantList($userID);
+
+        $follow_merchant_ids = [];
+        foreach($followmerchantList as $key){
+            array_push($follow_merchant_ids,$key->merchant_id);
+        }
+
+        $list = MerchantService::getListByIds($follow_merchant_ids,$lng,$lat);
+        $total = $followmerchantList->total();
+
+        return Result::success(['list' => $list, 'total' => $total]);
     }
 }
