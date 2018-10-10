@@ -168,6 +168,11 @@ class VersionService extends BaseService
             ->orderBy('version_seq','desc')
             ->first();
 
+        if ($lastVersion) {
+            $tmp = explode(' ',$lastVersion->updated_at);
+            $lastVersion->update_date = $tmp[0];
+            $lastVersion->update_time = $tmp[1];
+        }
         return $lastVersion;
     }
 
