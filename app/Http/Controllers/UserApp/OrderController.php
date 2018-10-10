@@ -555,7 +555,7 @@ class OrderController extends Controller
 
         $payApp = WechatService::getOpenPlatformPayAppFromPlatform();
         $data = [
-            'body' => $order->goods_name,
+            'body' => $order->merchant_name,
             'out_trade_no' => $order->order_no,
             'total_fee' => $order->pay_price * 100,
             'trade_type' => 'APP',
