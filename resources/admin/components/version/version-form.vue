@@ -15,7 +15,7 @@
                     <el-input v-model="form.app_tag" placeholder=""/>
                 </el-form-item>
                 <el-form-item label="版本序号" prop="version_seq">
-                    <el-input-number v-model="form.version_seq" :min="0" :max="9999" />
+                    <el-input-number v-model="form.version_seq" :min="0" :max="9999" v-if="form.id" disabled />
                 </el-form-item>
                 </el-col>
                 <el-col :span="22">
@@ -35,7 +35,7 @@
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item prop="app_type" label="应用类型">
-                    <el-radio-group v-model="form.app_type">
+                    <el-radio-group v-model="form.app_type" v-if="form.id" disabled>
                         <el-radio :label="1">Android</el-radio>
                         <el-radio :label="2">IOS</el-radio>
                     </el-radio-group>
