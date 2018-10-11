@@ -379,7 +379,7 @@
             <p>更新时间：{{$android->update_date}}<span></span>{{$android->update_time}}</p>
         </div>
         <div class="qrcode">
-            <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate('https://baidu.com')) !!}" />
+            <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(url()->full())) !!}" />
         </div>
         <div class="handler">
             <div id="android" class="btn" package-url="{{$android->package_url}}">Android版下载</div>
