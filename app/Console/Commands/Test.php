@@ -74,6 +74,8 @@ class Test extends Command
      */
     public function handle()
     {
+        SettlementAgentPay::dispatch([1]);
+        dd(1234);
         $data = DishesGoods::where('id',10014)->get();
         ImageMigrationToCOSJob::dispatch($data,['detail_image']);
         dd(config('cos.cos_url'));
@@ -112,8 +114,7 @@ dd('ok');
         $TpsBind->save();
         dd('saved');
 
-//        SettlementAgentPay::dispatch([1]);
-//        dd(1234);
+
         $orders = Order::all();
         foreach ($orders as $order) {
 //            $order->splitting_status = 1;
