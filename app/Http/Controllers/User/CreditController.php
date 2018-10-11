@@ -11,6 +11,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Modules\User\UserService;
+use App\Modules\UserCredit\UserCreditRecord;
 use App\Result;
 
 class CreditController extends Controller
@@ -51,9 +52,30 @@ class CreditController extends Controller
             $year = date('Y');
             $month = date('m');
         }
-        $userId = request()->get('current_user')->id;
+        $user = request()->get('current_user');
+        $data = UserCreditRecord::where('user_id', $user->id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->paginate();
 
-        UserService::getUserCreditList($userId,$year,$month);
+        // 获取当月总积分以及总消耗积分
+        $totalInCredit = UserCreditRecord::where('user_id', $user->id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 1)
+            ->sum('credit');
+        $totalOutCredit = UserCreditRecord::where('user_id', $user->id)
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('inout_type', 2)
+            ->sum('credit');
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+            'totalInCredit' => $totalInCredit,
+            'totalOutCredit' => $totalOutCredit,
+        ]);
     }
 
     /**

@@ -57,7 +57,7 @@ Route::prefix('user')
 
         Route::get('scene/info', 'SceneController@getSceneInfo');
 
-        Route::get('credit/payAmountToCreditRatio', 'CreditController@payAmountToCreditRatio')->middleware(UserLoginFilter::class);
+        Route::get('credit/payAmountToCreditRatio', 'CreditController@payAmountToCreditRatio')->middleware(UserLoginFilter::class); //废弃
         Route::get('credit/getCreditList', 'CreditController@getCreditList')->middleware(UserLoginFilter::class);
         Route::get('credit/getUserCredit', 'CreditController@getUserCredit')->middleware(UserLoginFilter::class);
         Route::get('credit/getConsumeQuotaRecordList', 'CreditController@getConsumeQuotaRecordList')->middleware(UserLoginFilter::class);
