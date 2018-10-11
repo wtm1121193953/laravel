@@ -138,7 +138,7 @@ class SettlementPlatformService extends BaseService
             ->where('status', Order::STATUS_FINISHED )
             ->where('finish_time','<=', $date->endOfDay());
         // 统计所有需结算金额
-        $sum = $query->where('settlement_status', Order::SETTLEMENT_STATUS_NO )->sum('pay_price');
+        $sum = $query->sum('pay_price');
 
         if( $sum<100 ){
             Log::info('商家每日结算时订单金额小于100，跳过结算', [
