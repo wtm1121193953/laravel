@@ -93,11 +93,6 @@ class VersionService extends BaseService
         $app_type = array_get($data,'app_type');
         $app_size = array_get($data,'app_size');
 
-        $last_seq = self::getLastVersionSeq($app_type);
-        if ($versionSeq <= $last_seq) {
-            throw new ParamInvalidException('版本号必须大于上一个版本号：' . $last_seq);
-        }
-
         $version =  Version::find($id);
 
         if(empty($version)){
