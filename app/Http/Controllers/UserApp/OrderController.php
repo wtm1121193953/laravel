@@ -419,7 +419,6 @@ class OrderController extends Controller
 
         $payType = request('pay_type', 1);
         $order->pay_type = $payType;
-        $order->remark = request('remark', 111);
         $order->save();
 
         //返利金额
