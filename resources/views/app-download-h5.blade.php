@@ -259,11 +259,9 @@
         }
 
         #app .handler {
-            margin-top: 0.8rem;
+            margin-top: 0.4rem;
             padding: 0 0.4rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            text-align: center;
         }
 
         #app .handler .btn {
@@ -274,31 +272,30 @@
             height: 0.92rem;
             line-height: 0.92rem;
             border-radius: 0.1rem;
-            flex: 1;
-            margin-left: 0.3rem;
+            width: 3.2rem;
+            display: inline-block;
         }
 
-        #app .handler .btn::before {
+        #app .handler .btn:before {
             content: '';
             display: inline-block;
             vertical-align: middle;
+            margin-right: 0.2rem;
+            margin-top: -0.08rem;
+        }
+
+        #app .handler #iphone:before {
             width: 0.4rem;
             height: 0.5rem;
-            margin-right: 0.2rem;
-        }
-
-        #app .handler .btn:first-child {
-            margin-left: 0;
-        }
-
-        #app .handler .btn:first-child::before {
             background: url({{ asset('static/img/icon_iphone.png') }}) no-repeat center;
             background-size: 100% 100%;
             -webkit-background-size: 100% 100%;
             -moz-background-size: 100% 100%;
         }
 
-        #app .handler .btn:last-child::before {
+        #app .handler #android:before {
+            width: 0.42rem;
+            height: 0.5rem;
             background: url({{ asset('static/img/icon_android.png') }}) no-repeat center;
             background-size: 100% 100%;
             -webkit-background-size: 100% 100%;
@@ -361,30 +358,32 @@
     </div>
 
     {{-- ios --}}
-    <div class="version">
-        <p>版本：{{$ios->app_num}}<span></span>大小：{{$ios->app_size}}MB</p>
-        <p>更新时间：{{$ios->update_date}}<span></span>{{$ios->update_time}}</p>
-    </div>
-    <div class="qrcode">
-        <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate('https://baidu.com')) !!}" />
-    </div>
-    <div class="handler">
-        <div id="iphone" class="btn">iPhone版下载</div>
-        <div id="android" class="btn">Android版下载</div>
+    <div id="ios-box">
+        <div class="version">
+            <p>版本：{{$ios->app_num}}<span></span>大小：{{$ios->app_size}}MB</p>
+            <p>更新时间：{{$ios->update_date}}<span></span>{{$ios->update_time}}</p>
+        </div>
+        <div class="qrcode">
+            <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate('https://baidu.com')) !!}" />
+        </div>
+        <div class="handler">
+            <div id="iphone" class="btn" package-url="{{$ios->package_url}}">iPhone版下载</div>
+        </div>
     </div>
 
 
     {{-- 安卓 --}}
-    <div class="version">
-        <p>版本：{{$android->app_num}}<span></span>大小：{{$android->app_size}}MB</p>
-        <p>更新时间：{{$android->update_date}}<span></span>{{$android->update_time}}</p>
-    </div>
-    <div class="qrcode">
-        <img src="https://xiaochengxu.niucha.ren/storage/miniprogram/app_code/_688_375.jpg" />
-    </div>
-    <div class="handler">
-        <div id="iphone" class="btn">iPhone版下载</div>
-        <div id="android" class="btn">Android版下载</div>
+    <div id="andriod-box">
+        <div class="version">
+            <p>版本：{{$android->app_num}}<span></span>大小：{{$android->app_size}}MB</p>
+            <p>更新时间：{{$android->update_date}}<span></span>{{$android->update_time}}</p>
+        </div>
+        <div class="qrcode">
+            <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate('https://baidu.com')) !!}" />
+        </div>
+        <div class="handler">
+            <div id="android" class="btn" package-url="{{$android->package_url}}">Android版下载</div>
+        </div>
     </div>
 
     <div class="tips">或者用手机扫描二维码安装</div>
@@ -412,35 +411,90 @@
     }
     
     //跳转地址
-    var openApp = '',
-        downloadIphone = '',
-        downloadAndroid = '';
     var lock = false;
+    var parentBox = document.getElementById('app'),
+        ios_box = document.getElementById('ios-box'),
+        iosEl = document.getElementById('iphone'),
+        android_box = document.getElementById('andriod-box'),
+        androidEl = document.getElementById('android'),
+        clientType = checkClient()
 
-    switch (checkClient()) {
-        case "Android":
-            //安卓
-            console.log('android')
-            break;
-        case "iPhone":case "iPad":case "iPod":
-            //苹果
-            console.log('iphone')
-            break;
+    if(/(iPhone|iPad|iPod)/.test(clientType)) {
+        //苹果
+        //删除
+        parentBox.removeChild(android_box)
+        //链接
+        var url = iosEl.getAttribute('package-url'),
+            action = null
+
+        //http:/https: => itms-apps:
+        url = url.replace(/(http\:|https\:)/g, "itms-apps:")
+        
+        if(url) {
+            window.location.href = url
+            action = function() {
+                window.location.href = url
+            }
+        } else {
+            action = function() {
+                alert('下载异常，请重新刷新页面后继续下载')
+            }
+        }
+
+        //监听
+        iosEl.addEventListener('click', function() {
+            if(lock) return
+            lock = true
+
+            action()
+            lock = false
+        })
+    } else {
+        //安卓
+        //删除
+        parentBox.removeChild(ios_box)
+        //链接
+        var url = androidEl.getAttribute('package-url'),
+            action = null
+
+        if(url) {
+            var version = "{{!empty($android->app_num) ? $android->app_num : 'v0.0.1'}}"
+            var filename = 'daqian-' + version + '.apk'
+
+            downloadFile(filename, url)
+            action = function() {
+                downloadFile(filename, url)
+            }
+        } else {
+            action = function() {
+                alert('下载异常，请重新刷新页面后继续下载')
+            }
+        }
+
+        //监听
+        androidEl.addEventListener('click', function() {
+            if(lock) return
+            lock = true
+
+            action()
+            lock = false
+        })
     }
-    
-    document.getElementById('android').addEventListener('click', function() {
-        if(lock) return;
-        lock = true;
 
-        console.log('android')
-    })
+    /**
+     * 通过创建a标签点击下载安装包
+     * 
+     * @param {String} filename 自定义文件名（有些浏览器不支持）
+     * @param {String} content  下载地址
+     */
+    function downloadFile(filename, content) {
+        var a = document.createElement('a')
+        a.href = content;
+        a.target = '_blank';
+        a.download = filename;
+        a.click();
+    }
 
-    document.getElementById('iphone').addEventListener('click', function() {
-        if(lock) return;
-        lock = true;
-
-        console.log('iphone')
-    })
 </script>
 </body>
 </html>
