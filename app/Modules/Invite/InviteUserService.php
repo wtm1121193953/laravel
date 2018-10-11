@@ -66,7 +66,9 @@ class InviteUserService
         $obj = self::getParent($userId);
         if($obj instanceof User){
             return $obj->mobile;
-        }else if($obj instanceof Merchant || $obj instanceof Oper) {
+        }else if($obj instanceof Merchant) {
+            return $obj->signboard_name;
+        }else if($obj instanceof Oper){
             return $obj->name;
         }else {
             return null;

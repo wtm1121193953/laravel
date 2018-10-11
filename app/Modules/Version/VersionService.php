@@ -22,7 +22,8 @@ class VersionService extends BaseService
         if($app_type){
             $query->where('app_type',$app_type);
         }
-        $query->orderBy('id','desc');
+        $query->orderBy('app_type','asc');
+        $query->orderBy('version_seq','desc');
         $data = $query->paginate();
         return $data;
     }
@@ -31,6 +32,17 @@ class VersionService extends BaseService
     {
         $oper = Version::find($id);
         return $oper;
+    }
+
+    /**
+     * 获取上一个版本的版本序号
+     * @param $app_type
+     * @return integer
+     */
+    public static function getLastVersionSeq($app_type)
+    {
+        $last_version = self::getLastVersionByType($app_type);
+        return $last_version->version_seq ?? 0;
     }
 
     public static function addVersion(array $params)
@@ -46,6 +58,11 @@ class VersionService extends BaseService
         $app_type = array_get($params,'app_type');
         $app_size = array_get($params,'app_size');
 
+
+        $last_seq = self::getLastVersionSeq($app_type);
+        if ($versionSeq <= $last_seq) {
+            throw new ParamInvalidException('版本号必须大于上一个版本号：' . $last_seq);
+        }
         $version = new Version();
         $version->app_name = $app_name;
         $version->app_tag = $app_tag;
@@ -75,6 +92,11 @@ class VersionService extends BaseService
         $force = array_get($data,'force');
         $app_type = array_get($data,'app_type');
         $app_size = array_get($data,'app_size');
+
+        $last_seq = self::getLastVersionSeq($app_type);
+        if ($versionSeq <= $last_seq) {
+            throw new ParamInvalidException('版本号必须大于上一个版本号：' . $last_seq);
+        }
 
         $version =  Version::find($id);
 
@@ -168,6 +190,11 @@ class VersionService extends BaseService
             ->orderBy('version_seq','desc')
             ->first();
 
+        if ($lastVersion) {
+            $tmp = explode(' ',$lastVersion->updated_at);
+            $lastVersion->update_date = $tmp[0];
+            $lastVersion->update_time = $tmp[1];
+        }
         return $lastVersion;
     }
 

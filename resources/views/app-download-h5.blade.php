@@ -359,9 +359,25 @@
         <img src="{{ asset('static/img/app-logo.png') }}" />
         <p>大千生活</p>
     </div>
+
+    {{-- ios --}}
     <div class="version">
-        <p>版本：{{$ios->app_num}}<span></span>大小：40.3MB</p>
-        <p>更新时间：2018-09-26<span></span>12:23:06</p>
+        <p>版本：{{$ios->app_num}}<span></span>大小：{{$ios->app_size}}MB</p>
+        <p>更新时间：{{$ios->update_date}}<span></span>{{$ios->update_time}}</p>
+    </div>
+    <div class="qrcode">
+        <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate('https://baidu.com')) !!}" />
+    </div>
+    <div class="handler">
+        <div id="iphone" class="btn">iPhone版下载</div>
+        <div id="android" class="btn">Android版下载</div>
+    </div>
+
+
+    {{-- 安卓 --}}
+    <div class="version">
+        <p>版本：{{$android->app_num}}<span></span>大小：{{$android->app_size}}MB</p>
+        <p>更新时间：{{$android->update_date}}<span></span>{{$android->update_time}}</p>
     </div>
     <div class="qrcode">
         <img src="https://xiaochengxu.niucha.ren/storage/miniprogram/app_code/_688_375.jpg" />
@@ -370,6 +386,7 @@
         <div id="iphone" class="btn">iPhone版下载</div>
         <div id="android" class="btn">Android版下载</div>
     </div>
+
     <div class="tips">或者用手机扫描二维码安装</div>
 </div>
 <script>

@@ -277,7 +277,8 @@ class ConsumeQuotaService extends BaseService
 //        $syncTpsCredit = array_get($param, 'syncTpsCredit', false);
         $consumeQuota = array_get($param, 'consumeQuota', 0);
 
-        $query = WalletConsumeQuotaRecord::query();
+        $query = WalletConsumeQuotaRecord::query()
+            ->where('consume_quota','>',0);
         if ($originId) {
             $query->where('origin_id', $originId);
         }
