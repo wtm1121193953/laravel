@@ -93,7 +93,7 @@ class ReapalAgentPay
 
         $paramArr = array(
             'charset' => $this->charset,
-            'notify_url' => env('APP_URL').'/api/agentPay/reapalNotify',
+            'notify_url' => url('/api/agentPay/reapalNotify'),
             'trans_time' => $nowTime,
             'batch_no' => $batch_no,
             'batch_count' => $batch_count,
