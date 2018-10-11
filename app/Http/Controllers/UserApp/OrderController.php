@@ -203,7 +203,7 @@ class OrderController extends Controller
         $order->buy_number = $number;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $goods->price * $number;
-        $order->origin_app_type = request()->header('app-type');
+        $order->origin_app_type = request()->get('app-type');
         $order->pay_type = $payType;
         $order->remark = request('remark', '');
         $order->save();
@@ -369,6 +369,7 @@ class OrderController extends Controller
         $order->pay_type = $payType;
         $order->remark = request('remark', '');
         $order->pay_target_type =Order::PAY_TARGET_TYPE_PLATFORM;
+        $order->origin_app_type = request()->get('app-type');
         $order->save();
 
         if ($payType == 1) {
