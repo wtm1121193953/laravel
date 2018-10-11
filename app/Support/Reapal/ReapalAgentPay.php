@@ -87,15 +87,13 @@ class ReapalAgentPay
      */
     public function agentpay($batch_no, $batch_count, $batch_amount, $content)
     {
-        $str = env('APP_URL');
-        Log::info('读取配置文件11111： ', ['str' => $str]);
         $nowTime = date('Y-m-d H:i:s');
 
         /*$content = '1,62220215080205389633,jack-cooper,工商银行,分行,支行,私,0.01,CNY,北京,北京,18910116131,身份证,420321199202150718,0001,12306,hehe,200100000001422,67180118000001421|2,62220215080205389634,jack,工商银行,分行,支行,私,0.11,CNY,北京,北京,18910116133,身份证,420321199202150728,0002,12307,hehe2,200100000001423,67180118000001422|3,62220215080205389635,cooper,工商银行,分行,支行,私,0.1,CNY,北京,北京,18910116134,身份证,420321199202150729,0003,12308,hehe3,200100000001424,67180118000001423|';*/
 
         $paramArr = array(
             'charset' => $this->charset,
-            'notify_url' => env('APP_URL').'/api/agentPay/reapalNotify',
+            'notify_url' => url('/api/agentPay/reapalNotify'),
             'trans_time' => $nowTime,
             'batch_no' => $batch_no,
             'batch_count' => $batch_count,
