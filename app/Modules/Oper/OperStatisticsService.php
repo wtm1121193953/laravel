@@ -69,8 +69,8 @@ class OperStatisticsService extends BaseService
 
             //商户数量
             $row['merchant_num'] = Merchant::where('oper_id','=',$row['oper_id'])
-                ->where('updated_at','>=',$startTime)
-                ->where('updated_at','<=',$endTime)
+                ->where('active_time','>=',$startTime)
+                ->where('active_time','<=',$endTime)
                 ->where('audit_status','=',1)
                 ->count();
 

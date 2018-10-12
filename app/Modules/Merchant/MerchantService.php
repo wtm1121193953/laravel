@@ -694,7 +694,6 @@ class MerchantService extends BaseService
                     $item->distance =  $item->is_pilot == 1 ? '' : Utils::getFormativeDistance($item->distance);
                     //$merchant = Merchant::find($item->id);
                     $merchant = DataCacheService::getMerchantDetail($item->id);
-                    DataCacheService::delMerchantDetail([$item->id]);
                     $merchant->distance = $item->distance;
                     // 格式化距离
                     return $merchant;
