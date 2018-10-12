@@ -471,7 +471,7 @@
         //删除
         parentBox.removeChild(ios_box)
 
-        if({{!empty($android)}}) {
+        <?php if ($android != null){ ?>
             //链接
             var url = androidEl.getAttribute('package-url'),
                 action = null
@@ -498,11 +498,11 @@
                 action()
                 lock = false
             })
-        } else {
+        <?php } else { ?>
             parentBox.removeChild(android_box)
             parentBox.removeChild(tips)
             createNull(parentBox)
-        }
+        <?php } ?>
     }
 
     /**
