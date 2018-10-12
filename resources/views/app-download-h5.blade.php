@@ -308,6 +308,12 @@
             color: #8b8b8b;
             text-align: center;
         }
+
+        #app .null {
+            font-size: 0.34rem;
+            color: #333;
+            text-align: center;
+        }
     </style>
     <script>
         (function(doc, win) {
@@ -360,11 +366,11 @@
     {{-- ios --}}
     <div id="ios-box">
         <div class="version">
-            <p>版本：{{$ios->app_num}}<span></span>大小：{{$ios->app_size}}MB</p>
-            <p>更新时间：{{$ios->update_date}}<span></span>{{$ios->update_time}}</p>
+            <p>版本：{{!empty($ios->version_no) ? $ios->version_no : ""}}<span></span>大小：{{!empty($ios->app_size) ? $ios->app_size : ""}}MB</p>
+            <p>更新时间：{{!empty($ios->update_date) ? $ios->update_date : ""}}<span></span>{{!empty($ios->update_time) ? $ios->update_time : ""}}</p>
         </div>
         <div class="qrcode">
-            <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate('https://baidu.com')) !!}" />
+            <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(url()->full())) !!}" />
         </div>
         <div class="handler">
             <div id="iphone" class="btn" package-url="{{$ios->package_url}}">iPhone版下载</div>
@@ -375,8 +381,8 @@
     {{-- 安卓 --}}
     <div id="andriod-box">
         <div class="version">
-            <p>版本：{{$android->app_num}}<span></span>大小：{{$android->app_size}}MB</p>
-            <p>更新时间：{{$android->update_date}}<span></span>{{$android->update_time}}</p>
+            <p>版本：{{!empty($android->version_no) ? $android->version_no : ""}}<span></span>大小：{{!empty($android->app_size) ? $android->app_size : ""}}MB</p>
+            <p>更新时间：{{!empty($android->update_date) ? $android->update_date : ""}}<span></span>{{!empty($android->update_time) ? $android->update_time : ""}}</p>
         </div>
         <div class="qrcode">
             <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(url()->full())) !!}" />
@@ -385,8 +391,8 @@
             <div id="android" class="btn" package-url="{{$android->package_url}}">Android版下载</div>
         </div>
     </div>
-
-    <div class="tips">或者用手机扫描二维码安装</div>
+    
+    <div id="tips" class="tips">或者用手机扫描二维码安装</div>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -417,68 +423,83 @@
         iosEl = document.getElementById('iphone'),
         android_box = document.getElementById('andriod-box'),
         androidEl = document.getElementById('android'),
+        tips = document.getElementById('tips'),
         clientType = checkClient()
 
     if(/(iPhone|iPad|iPod)/.test(clientType)) {
         //苹果
         //删除
         parentBox.removeChild(android_box)
-        //链接
-        var url = iosEl.getAttribute('package-url'),
-            action = null
 
-        //http:/https: => itms-apps:
-        url = url.replace(/(http\:|https\:)/g, "itms-apps:")
-        
-        if(url) {
-            window.location.href = url
-            action = function() {
+        if({{isset($ios) && !empty($ios)}}) {
+            //链接
+            var url = iosEl.getAttribute('package-url'),
+                action = null
+
+            //http:/https: => itms-apps:
+            url = url.replace(/(http\:|https\:)/g, "itms-apps:")
+            
+            if(url) {
                 window.location.href = url
+                action = function() {
+                    window.location.href = url
+                }
+            } else {
+                action = function() {
+                    alert('下载异常，请重新刷新页面后继续下载')
+                }
             }
+
+            //监听
+            iosEl.addEventListener('click', function() {
+                if(lock) return
+                lock = true
+
+                action()
+                lock = false
+            })
         } else {
-            action = function() {
-                alert('下载异常，请重新刷新页面后继续下载')
-            }
+            parentBox.removeChild(ios_box)
+            parentBox.removeChild(tips)
+            createNull(parentBox)
         }
-
-        //监听
-        iosEl.addEventListener('click', function() {
-            if(lock) return
-            lock = true
-
-            action()
-            lock = false
-        })
     } else {
         //安卓
         //删除
         parentBox.removeChild(ios_box)
-        //链接
-        var url = androidEl.getAttribute('package-url'),
-            action = null
 
-        if(url) {
-            var version = "{{!empty($android->app_num) ? $android->app_num : 'v0.0.1'}}"
-            var filename = 'daqian-' + version + '.apk'
+        if({{isset($android) && !empty($android)}}) {
+            //链接
+            var url = androidEl.getAttribute('package-url'),
+                action = null
 
-            downloadFile(filename, url)
-            action = function() {
+            if(url) {
+                var version = "{{!empty($android->app_num) ? $android->app_num : 'v0.0.1'}}"
+                var filename = 'daqian-' + version + '.apk'
+
                 downloadFile(filename, url)
+                action = function() {
+                    downloadFile(filename, url)
+                }
+            } else {
+                action = function() {
+                    alert('下载异常，请重新刷新页面后继续下载')
+                }
             }
+
+            //监听
+            androidEl.addEventListener('click', function() {
+                if(lock) return
+                lock = true
+
+                action()
+                lock = false
+            })
         } else {
-            action = function() {
-                alert('下载异常，请重新刷新页面后继续下载')
-            }
+            parentBox.removeChild(android_box)
+            parentBox.removeChild(tips)
+            createNull(parentBox)
         }
-
-        //监听
-        androidEl.addEventListener('click', function() {
-            if(lock) return
-            lock = true
-
-            action()
-            lock = false
-        })
     }
 
     /**
@@ -493,6 +514,18 @@
         a.target = '_blank';
         a.download = filename;
         a.click();
+    }
+
+    /**
+     * 创建暂无数据标签
+     */
+    function createNull(parentBox) {
+        var nullEl = document.createElement('div')
+        nullEl.className = 'null'
+        nullEl.appendChild(document.createTextNode('暂无数据，'))
+        nullEl.appendChild(document.createElement('br'))
+        nullEl.appendChild(document.createTextNode('可自行前往应用商店搜索“大千生活”下载'))
+        parentBox.appendChild(nullEl)
     }
 
 </script>
