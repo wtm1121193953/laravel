@@ -149,7 +149,7 @@ class FeeSplittingService extends BaseService
                 $order->save();
             }
             if ($operBizer->status == OperBizer::STATUS_SIGNED) {
-                $bizerFeeRatio = $operFeeRatioInit * $order->divide / 100;
+                $bizerFeeRatio = $operFeeRatioInit * $order->bizer_divide / 100;
                 $operFeeRatio = $operFeeRatioInit - $bizerFeeRatio;
                 if ($operFeeRatio < 0) {
                     return;
