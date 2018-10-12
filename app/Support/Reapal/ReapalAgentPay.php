@@ -102,7 +102,7 @@ class ReapalAgentPay
             'content' => $content,
         );
 
-        $url = $this->dsfUrl . 'agentpay/pay';
+        $url = $this->dsfUrl . '/agentpay/pay';
         $result = $this->apiPost($url, $paramArr);
 
         LogDbService::reapalPayRequest(3,$batch_no,$paramArr,$result);
