@@ -308,7 +308,10 @@ class GoodsService extends BaseService
     public static function userGoodsList($merchant_id)
     {
         $merchant = Merchant::findOrFail($merchant_id);
-        $list = Goods::where('merchant_id', $merchant_id)->get();
+        $list = Goods::where('merchant_id', $merchant_id)
+            ->where('status', Goods::STATUS_ON)
+            ->orderBy('sort', 'desc')
+            ->get();
         $list->each(function ($item) use ($merchant) {
             $item->pic_list = $item->pic_list ? explode(',', $item->pic_list) : [];
             $item->business_time = json_decode($merchant->business_time, 1);

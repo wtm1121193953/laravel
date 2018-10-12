@@ -27,6 +27,7 @@ use App\Modules\Sms\SmsService;
 use App\Modules\Tps\TpsBind;
 use App\Modules\User\User;
 use App\Modules\Wechat\WechatService;
+use App\Support\Reapal\ReapalPay;
 use App\Support\Utils;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
@@ -74,8 +75,26 @@ class Test extends Command
      */
     public function handle()
     {
-        SettlementAgentPay::dispatch([1]);
-        dd(1234);
+        $param = [
+            'title' => 'test_title',
+            'body' => 'testBody',
+            'order_no' => '1379988876545TestOrderNo',
+            'total_fee' => 1,
+            'merchantId' => 2,
+            'store_name' => 'merchant_name_test',
+            'store_phone' =>'13929492991',
+            'open_id' => 'owZet4vEP92tzXHIjrICO6_sIts8',
+        ];
+        if (empty($param['body'])) {
+            $param['body'] = $param['title'];
+        }
+        $reapal = new ReapalPay();
+        $result = $reapal->prepay($param);
+        dd($result);
+
+        if (empty($result['wxjsapi_str'])) {
+            throw new BaseResponseException('微信支付失败');
+        }
         $data = DishesGoods::where('id',10014)->get();
         ImageMigrationToCOSJob::dispatch($data,['detail_image']);
         dd(config('cos.cos_url'));
@@ -114,7 +133,8 @@ dd('ok');
         $TpsBind->save();
         dd('saved');
 
-
+//        SettlementAgentPay::dispatch([1]);
+//        dd(1234);
         $orders = Order::all();
         foreach ($orders as $order) {
 //            $order->splitting_status = 1;

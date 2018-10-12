@@ -241,6 +241,8 @@ class UserService extends BaseService
             })
             ->when($params['name'], function (Builder $query) use ($params){
                 $query->where('name','like','%'.$params['name'].'%');
+            })->when($params['id_card_no'], function (Builder $query) use ($params){
+                $query->where('id_card_no','like','%'.$params['id_card_no'].'%');
             })
             ->when($params['id'], function (Builder $query) use ($params){
                 $query->where('user_id', '=', $params['id']);
