@@ -97,8 +97,8 @@ class SettlementAgentPay implements ShouldQueue
             if ($result['result_code'] == '0000') {
                 $batch->status = SettlementPayBatch::STATUS_IS_SUBMIT;
             } else {
-                $batch->error_code = $result['result_code'];
-                $batch->error_msg = $result['result_msg'];
+                $batch->error_code = $result['result_code'] ?? '';
+                $batch->error_msg = $result['result_msg'] ?? '';
             }
             $batch->save();
 
