@@ -462,7 +462,7 @@
                 lock = false
             })
         <?php } else { ?>
-            parentBox.removeChild(ios_box)
+            ios_box && parentBox.removeChild(ios_box)
             parentBox.removeChild(tips)
             createNull(parentBox)
         <?php } ?>
@@ -499,7 +499,7 @@
                 lock = false
             })
         <?php } else { ?>
-            parentBox.removeChild(android_box)
+            android_box && parentBox.removeChild(android_box)
             parentBox.removeChild(tips)
             createNull(parentBox)
         <?php } ?>
