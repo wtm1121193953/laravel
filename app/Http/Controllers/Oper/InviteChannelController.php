@@ -113,9 +113,9 @@ class InviteChannelController extends Controller
 
         $oper = OperService::getById($operId);
         if ($oper->pay_to_platform!=Oper::PAY_TO_OPER){
-            $url = MiniprogramSceneService::genSceneQrCode($scene);
-            $fileName = pathinfo($url, PATHINFO_BASENAME);
-            $path = storage_path('app/public/scene_qrcode/') . $fileName;
+
+            $path = MiniprogramSceneService::genSceneQrCode($scene, $width,true,$inviteChannel->name);
+
             if(request()->ajax()){
                 return Result::success(['name' => $path]);
             }else {

@@ -13,6 +13,9 @@ import WalletOperBillRecord from '../components/wallet/oper/bill-record'
 import WalletBizerList from '../components/wallet/bizer/list'
 import WalletBizerBillRecord from '../components/wallet/bizer/bill-record'
 
+// 分润管理
+import FeeSplittingList from '../components/fee_splitting/list'
+
 export default [
     {
         path: '/',
@@ -29,6 +32,9 @@ export default [
 
             {path: '/wallet/bizer', component: WalletBizerList, name: 'WalletBizerList'},
             {path: '/wallet/bizer/bill', component: WalletBizerBillRecord, name: 'WalletBizerBillRecord'},
+
+
+            {path: '/fee_splitting/list', component: FeeSplittingList, name: 'FeeSplittingList'},
         ]
     }
 ]

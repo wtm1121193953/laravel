@@ -311,8 +311,10 @@
 
         #app .null {
             font-size: 0.34rem;
-            color: #333;
+            color: #8b8b8b;
             text-align: center;
+            margin-top: 1.5rem;
+            line-height: 0.6rem;
         }
     </style>
     <script>
@@ -367,8 +369,8 @@
     <?php if ($ios != null){ ?>
         <div id="ios-box">
             <div class="version">
-                <p>版本：{{!empty($ios->version_no) ? $ios->version_no : ""}}<span></span>大小：{{!empty($ios->app_size) ? $ios->app_size : ""}}MB</p>
-                <p>更新时间：{{!empty($ios->update_date) ? $ios->update_date : ""}}<span></span>{{!empty($ios->update_time) ? $ios->update_time : ""}}</p>
+                <p>版本：{{$ios->version_no}}<span></span>大小：{{$ios->app_size}}MB</p>
+                <p>更新时间：{{$ios->update_date}}<span></span>{{$ios->update_time}}</p>
             </div>
             <div class="qrcode">
                 <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(url()->full())) !!}" />
@@ -383,8 +385,8 @@
     <?php if ($android != null){ ?>
         <div id="andriod-box">
             <div class="version">
-                <p>版本：{{!empty($android->version_no) ? $android->version_no : ""}}<span></span>大小：{{!empty($android->app_size) ? $android->app_size : ""}}MB</p>
-                <p>更新时间：{{!empty($android->update_date) ? $android->update_date : ""}}<span></span>{{!empty($android->update_time) ? $android->update_time : ""}}</p>
+                <p>版本：{{$android->version_no}}<span></span>大小：{{$android->app_size}}MB</p>
+                <p>更新时间：{{$android->update_date}}<span></span>{{$android->update_time}}</p>
             </div>
             <div class="qrcode">
                 <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(url()->full())) !!}" />
@@ -432,9 +434,9 @@
     if(/(iPhone|iPad|iPod)/.test(clientType)) {
         //苹果
         //删除
-        parentBox.removeChild(android_box)
+        android_box && parentBox.removeChild(android_box)
 
-        if({{isset($ios) && !empty($ios)}}) {
+        <?php if ($ios != null){ ?>
             //链接
             var url = iosEl.getAttribute('package-url'),
                 action = null
@@ -461,17 +463,17 @@
                 action()
                 lock = false
             })
-        } else {
-            parentBox.removeChild(ios_box)
+        <?php } else { ?>
+            ios_box && parentBox.removeChild(ios_box)
             parentBox.removeChild(tips)
             createNull(parentBox)
-        }
+        <?php } ?>
     } else {
         //安卓
         //删除
-        parentBox.removeChild(ios_box)
+        ios_box && parentBox.removeChild(ios_box)
 
-        if({{isset($android) && !empty($android)}}) {
+        <?php if ($android != null){ ?>
             //链接
             var url = androidEl.getAttribute('package-url'),
                 action = null
@@ -498,11 +500,11 @@
                 action()
                 lock = false
             })
-        } else {
-            parentBox.removeChild(android_box)
+        <?php } else { ?>
+            android_box && parentBox.removeChild(android_box)
             parentBox.removeChild(tips)
             createNull(parentBox)
-        }
+        <?php } ?>
     }
 
     /**
@@ -525,7 +527,7 @@
     function createNull(parentBox) {
         var nullEl = document.createElement('div')
         nullEl.className = 'null'
-        nullEl.appendChild(document.createTextNode('暂无数据，'))
+        nullEl.appendChild(document.createTextNode('暂无数据'))
         nullEl.appendChild(document.createElement('br'))
         nullEl.appendChild(document.createTextNode('可自行前往应用商店搜索“大千生活”下载'))
         parentBox.appendChild(nullEl)
