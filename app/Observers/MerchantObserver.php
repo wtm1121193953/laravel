@@ -9,6 +9,7 @@
 namespace App\Observers;
 
 
+use App\DataCacheService;
 use App\Modules\Merchant\Merchant;
 use App\Support\Lbs;
 use Illuminate\Support\Facades\Log;
@@ -20,5 +21,6 @@ class MerchantObserver
     {
         Log::info('触发观察者 merchant saved');
         Lbs::merchantGpsAdd($merchant->id, $merchant->lng, $merchant->lat);
+        DataCacheService::delMerchantDetail([$merchant->id]);
     }
 }

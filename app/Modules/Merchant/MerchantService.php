@@ -10,6 +10,7 @@ namespace App\Modules\Merchant;
 
 
 use App\BaseService;
+use App\DataCacheService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Bizer\BizerService;
@@ -678,7 +679,7 @@ class MerchantService extends BaseService
 
         if($lng && $lat){
             // 如果是按距离搜索, 需要在程序中按距离排序
-            $allList = $query->get();
+            $allList = $query->select('id','is_pilot')->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat, $user_key) {
                 $item->distance = $item->is_pilot == 1
@@ -689,9 +690,14 @@ class MerchantService extends BaseService
                 ->sortBy('distance')
                 ->forPage(request('page', 1), 15)
                 ->values()
-                ->each(function($item) {
-                    // 格式化距离
+                ->map(function($item) {
                     $item->distance =  $item->is_pilot == 1 ? '' : Utils::getFormativeDistance($item->distance);
+                    //$merchant = Merchant::find($item->id);
+                    $merchant = DataCacheService::getMerchantDetail($item->id);
+                    DataCacheService::delMerchantDetail([$item->id]);
+                    $merchant->distance = $item->distance;
+                    // 格式化距离
+                    return $merchant;
                 });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
