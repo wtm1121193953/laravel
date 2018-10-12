@@ -132,8 +132,11 @@ class FeeSplittingService extends BaseService
             return;
         }
 
-        $operFeeRatio = 0;  // 运营中心分润比例
+        $operFeeRatio = $operFeeRatioInit = UserCreditSettingService::getFeeSplittingRatioToOper($oper);
         $bizerFeeRatio = 0; // 业务员分润比例
+        if ($operFeeRatioInit == null || $operFeeRatioInit <= 0) {
+            return;
+        }
         $bizer = BizerService::getById($order->bizer_id);
         if (!empty($bizer)) {
             if (!$order->bizer_divide) {
@@ -146,11 +149,7 @@ class FeeSplittingService extends BaseService
                 $order->save();
             }
             if ($operBizer->status == OperBizer::STATUS_SIGNED) {
-                $operFeeRatioInit = UserCreditSettingService::getFeeSplittingRatioToOper($oper);
-                if ($operFeeRatioInit == null || $operFeeRatioInit <= 0) {
-                    return;
-                }
-                $bizerFeeRatio = $operFeeRatioInit * $order->bizer_divide / 100;
+                $bizerFeeRatio = $operFeeRatioInit * $order->divide / 100;
                 $operFeeRatio = $operFeeRatioInit - $bizerFeeRatio;
                 if ($operFeeRatio < 0) {
                     return;

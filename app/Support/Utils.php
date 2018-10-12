@@ -47,9 +47,9 @@ class Utils
             'params' => $request->all(),
             'current_user' => $currentUser,
         ];
-        if($request->hasSession()){
-            $data['session'] = $request->session()->all();
-        }
+//        if($request->hasSession()){
+//            $data['session'] = $request->session()->all();
+//        }
         return $data;
     }
 
