@@ -589,11 +589,12 @@ class FeeSplittingService extends BaseService
      */
     public static function updateFeeSplittingRecord(FeeSplittingRecord $feeSplittingRecord, $profitAmount, $ratio)
     {
-        $feeSplittingRecord->order_profit_amount = $profitAmount;
-        $feeSplittingRecord->ratio = $ratio;
-        $feeSplittingRecord->amount = floor($profitAmount * $ratio) / 100;
-        $feeSplittingRecord->save();
+        $newFeeSplittingRecord = self::getById($feeSplittingRecord->id);
+        $newFeeSplittingRecord->order_profit_amount = $profitAmount;
+        $newFeeSplittingRecord->ratio = $ratio;
+        $newFeeSplittingRecord->amount = floor($profitAmount * $ratio) / 100;
+        $newFeeSplittingRecord->save();
 
-        return $feeSplittingRecord;
+        return $newFeeSplittingRecord;
     }
 }
