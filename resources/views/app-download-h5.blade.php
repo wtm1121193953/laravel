@@ -471,7 +471,7 @@
         //删除
         parentBox.removeChild(ios_box)
 
-        if({{isset($android) && !empty($android)}}) {
+        if({{isset($android) && !empty($android)}} || false) {
             //链接
             var url = androidEl.getAttribute('package-url'),
                 action = null
