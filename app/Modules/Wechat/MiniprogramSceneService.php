@@ -18,6 +18,8 @@ use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperService;
 use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
+use App\Support\ImageTool;
+use Intervention\Image\Facades\Image;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MiniprogramSceneService extends BaseService
@@ -236,11 +238,14 @@ class MiniprogramSceneService extends BaseService
         return $miniprogramScene;
     }*/
 
+
     /**
-     * 生成场景二维码
-     * @param $scene_id
+     * @param MiniprogramScene $scene
+     * @param int $size
+     * @param bool $rt_storage_path
+     * @return string
      */
-    public static function genSceneQrCode(MiniprogramScene $scene)
+    public static function genSceneQrCode(MiniprogramScene $scene, int $size=375, $rt_storage_path = false)
     {
 
         $url = route('scene',['id'=>$scene->id]);
@@ -248,15 +253,36 @@ class MiniprogramSceneService extends BaseService
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
-        $size = 375;
         $filename = "{$scene->id}_{$size}.png";
-        $path = $dir . "/{$filename}";
+        $path = $dir . "{$filename}";
 
-        $rs = QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate($url, $path);
-
-
+        QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size($size)->generate($url, $path);
+        self::addSceneIdToQrCode($path, $scene->id);
         $scene->qrcode_url = asset('storage/scene_qrcode/' . $filename);
         $scene->save();
-        return $scene->qrcode_url;
+        return $rt_storage_path?$path:$scene->qrcode_url;
+    }
+
+    /**
+     * 给小程序码增加场景ID
+     * @param string $path
+     * @param int|string $sceneId
+     */
+    public static function addSceneIdToQrCode($path, $sceneId)
+    {
+        $name = 'ID：' . str_pad($sceneId, 8, "0", STR_PAD_LEFT);
+        $fontSizeRatio = 0.045;
+        $qrCode = Image::make($path);
+        $width = $qrCode->width();
+        $height = $qrCode->height();
+
+        // 计算文字大小
+        $nameSize = intval($fontSizeRatio * $width);
+        $nameX = intval($width * 0.9);
+        $nameY = intval($height - 10);
+
+        // 将文字添加到画布上
+        $image = ImageTool::text($qrCode,  $name, $nameSize, $nameX, $nameY, 'right', '#666666');
+        $image->save($path);
     }
 }

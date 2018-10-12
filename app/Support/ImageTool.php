@@ -59,7 +59,7 @@ class ImageTool
      * @param string $color
      * @return Image
      */
-    public static function text(Image $image, string $text, int $size = 10, int $x, int $y, $position = 'center', $color='#000000')
+    public static function text(Image $image, string $text, int $size = 10, int $x=0, int $y=0, $position = 'center', $color='#000000')
     {
 
         $image->text($text, $x, $y, function(Font $font) use ($size, $position, $color) {

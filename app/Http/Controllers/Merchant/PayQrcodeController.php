@@ -70,19 +70,29 @@ class PayQrcodeController extends Controller
     public function downloadMiniprogramAppCode()
     {
         $type = request('type', 1);
-
+        $operId = request()->get('current_user')->oper_id;
         $merchantId = request()->get('current_user')->merchant_id;
 
         $scene = MiniprogramSceneService::getPayAppCodeByMerchantId($merchantId);
 
         $width = $type == 3 ? 1280 : ($type == 2 ? 430 : 258);
 
-        $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
+        $oper = OperService::getById($operId);
+        if ( $oper->pay_to_platform != Oper::PAY_TO_OPER ) {
 
-        $signboardName = MerchantService::getSignboardNameById($merchantId);
+            $filePath = MiniprogramSceneService::genSceneQrCode($scene, $width,true);
 
-        WechatService::addNameToAppCode($filePath, $signboardName);
+            return response()->download($filePath, '分享用户二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
+        } else {
+            $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
 
-        return response()->download($filePath, '支付小程序码_' . ['', '小', '中', '大'][$type] . '.jpg');
+            $signboardName = MerchantService::getSignboardNameById($merchantId);
+
+            WechatService::addNameToAppCode($filePath, $signboardName);
+
+            return response()->download($filePath, '支付小程序码_' . ['', '小', '中', '大'][$type] . '.jpg');
+        }
+
+
     }
 }
