@@ -508,4 +508,29 @@ class WalletService extends BaseService
             throw new BaseResponseException('交易密码不正确', ResultCode::PARAMS_INVALID);
         }
     }
+
+    /**
+     * 更新钱包和钱包流水
+     * @param Wallet $wallet
+     * @param FeeSplittingRecord $feeSplittingRecord
+     * @param FeeSplittingRecord $newFeeSplittingRecord
+     * @return WalletBill
+     */
+    public static function updateWalletAndWalletBill(Wallet $wallet, FeeSplittingRecord $feeSplittingRecord, FeeSplittingRecord $newFeeSplittingRecord)
+    {
+        $wallet->decrement('balance', $feeSplittingRecord->amount);
+        $wallet->increment('balance', $newFeeSplittingRecord->amount);
+
+        $walletBill = WalletBill::where('origin_id', $feeSplittingRecord->origin_id)
+            ->where('origin_type', $feeSplittingRecord->origin_type)
+            ->where('obj_id', $feeSplittingRecord->id)
+            ->first();
+        if (empty($walletBill)) throw new BaseResponseException('分润流水不存在');
+        $walletBill->amount = $newFeeSplittingRecord->amount;
+        $walletBill->after_amount = $walletBill->after_amount - $feeSplittingRecord->amount + $newFeeSplittingRecord->amount;
+        $walletBill->after_balance = $walletBill->after_balance - $feeSplittingRecord->amount + $newFeeSplittingRecord->amount;
+        $walletBill->save();
+
+        return $walletBill;
+    }
 }

@@ -261,6 +261,11 @@ class OrderService extends BaseService
         return Order::where('order_no', $orderNo)->firstOrFail();
     }
 
+    /**
+     * @param $orderId
+     * @param array $fields
+     * @return Order
+     */
     public static function getById($orderId, $fields = ['*'])
     {
         return Order::find($orderId, $fields);

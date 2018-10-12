@@ -45,6 +45,7 @@ use Carbon\Carbon;
  * @property integer splitting_status
  * @property Carbon splitting_time
  * @property integer bizer_id
+ * @property float bizer_divide
  */
 
 class Order extends BaseModel

@@ -139,6 +139,17 @@
                 <image-upload v-model="form.legal_id_card_pic_b" :limit="1"/>
             </el-form-item>
 
+            <el-form-item prop="country_id" label="法人身份证国别或地区">
+                <el-select v-model="form.country_id" clearable placeholder="请选择">
+                    <el-option
+                        v-for="item in countryList"
+                        :value="item.id"
+                        :label="item.name_zh"
+                        :key="item.id"
+                    ></el-option>
+                </el-select>
+            </el-form-item>
+
             <el-form-item prop="legal_id_card_num" label="法人身份证号码">
                 <el-input v-model="form.legal_id_card_num"/>
             </el-form-item>
@@ -211,6 +222,7 @@
         // 法人信息
         legal_id_card_pic_a: '',
         legal_id_card_pic_b: '',
+        country_id: '',
         legal_id_card_num: '',
         business_licence_pic_url: '',
         organization_code: '',
@@ -400,6 +412,7 @@
                 searchOperBizMemberLoading: false,
                 operBizMembers: [],
                 bankList: [],
+                countryList: [],
             }
         },
         methods: {
@@ -464,6 +477,9 @@
                     this.bankList = data;
                 })
             },
+            getCountryList() {
+
+            }
         },
         created(){
             this.initForm();
