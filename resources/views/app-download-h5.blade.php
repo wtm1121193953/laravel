@@ -311,8 +311,10 @@
 
         #app .null {
             font-size: 0.34rem;
-            color: #333;
+            color: #8b8b8b;
             text-align: center;
+            margin-top: 1.5rem;
+            line-height: 0.6rem;
         }
     </style>
     <script>
@@ -525,7 +527,7 @@
     function createNull(parentBox) {
         var nullEl = document.createElement('div')
         nullEl.className = 'null'
-        nullEl.appendChild(document.createTextNode('暂无数据，'))
+        nullEl.appendChild(document.createTextNode('暂无数据'))
         nullEl.appendChild(document.createElement('br'))
         nullEl.appendChild(document.createTextNode('可自行前往应用商店搜索“大千生活”下载'))
         parentBox.appendChild(nullEl)
