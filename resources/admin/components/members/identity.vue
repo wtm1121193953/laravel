@@ -42,6 +42,9 @@
                     <el-option label="审核不通过" value="3"/>
                 </el-select>
             </el-form-item>
+            <el-form-item prop="id_card_no" label="身份证号码" >
+                <el-input v-model="query.id_card_no" size="small"  placeholder="身份证号码"  class="w-200" clearable></el-input>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search">搜索</el-button>
                 <el-button type="success" size="small" @click="downloadExcel">导出Excel</el-button>
@@ -150,6 +153,7 @@
                     startDate: '',
                     endDate: '',
                     status: '',
+                    is_card_no:''
                 },
                 list: [],
                 total: 0,
