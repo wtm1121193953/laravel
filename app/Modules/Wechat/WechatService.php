@@ -57,6 +57,10 @@ class WechatService
     public static function getWechatMiniAppForPlatform()
     {
         $miniProgram = config('platform.miniprogram');
+        if(request()->get('current_oper_id') == -1){
+            // 旧的官方小程序中
+            $miniProgram = $miniProgram['old'];
+        }
         $config = [
             'app_id' => $miniProgram['app_id'],
             'secret' => $miniProgram['app_secret'],

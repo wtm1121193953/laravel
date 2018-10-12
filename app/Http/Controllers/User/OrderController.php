@@ -162,17 +162,17 @@ class OrderController extends Controller
         $user = request()->get('current_user');
 
         $merchant = Merchant::findOrFail($goods->merchant_id);
-        $oper = Oper::findOrFail($merchant->oper_id);
+        $merchant_oper = Oper::findOrFail($merchant->oper_id);
         $currentOperId = request()->get('current_oper_id');
 
         $order = new Order();
         $orderNo = Order::genOrderNo();
-        $order->pay_target_type = $oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->oper_id = $merchant->oper_id;
         $order->order_no = $orderNo;
         $order->user_id = $user->id;
+        $order->open_id = request()->get('current_open_id');
         $order->user_name = $user->name ?? '';
-        $order->notify_mobile = $user->mobile;
+        $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->signboard_name ?? '';
         $order->goods_id = $goodsId;
@@ -183,9 +183,11 @@ class OrderController extends Controller
         $order->buy_number = $number;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $goods->price * $number;
-        $order->origin_app_type = request()->header('app-type');
-        $order->pay_type = $payType;
+        $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
+        $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
+        $order->bizer_id = $merchant->bizer_id;
+        $order->pay_type = $payType;
         $order->save();
 
         if ($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM) { // 如果是支付到平台
@@ -260,14 +262,13 @@ class OrderController extends Controller
         $order->open_id = request()->get('current_open_id');
         $order->user_name = $user->name ?? '';
         $order->type = Order::TYPE_DISHES;
-        $order->notify_mobile = request('notify_mobile') ?? $user->mobile;
+        $order->notify_mobile = $user->mobile;
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->signboard_name ?? '';
         $order->goods_name = $merchant->name ?? '';
         $order->dishes_id = $dishesId;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $this->getTotalPrice();
-        $order->origin_app_type = request()->header('app-type');
         $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;

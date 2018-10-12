@@ -369,6 +369,7 @@ class OrderController extends Controller
         $order->pay_type = $payType;
         $order->remark = request('remark', '');
         $order->pay_target_type =Order::PAY_TARGET_TYPE_PLATFORM;
+        $order->origin_app_type = request()->header('app-type');
         $order->save();
 
         if ($payType == 1) {
@@ -419,7 +420,6 @@ class OrderController extends Controller
 
         $payType = request('pay_type', 1);
         $order->pay_type = $payType;
-        $order->remark = request('remark', '');
         $order->save();
 
         //返利金额

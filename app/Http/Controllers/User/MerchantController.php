@@ -52,7 +52,6 @@ class MerchantController extends Controller
             'lowest_price' => request('lowest_price'),
             'highest_price' => request('highest_price'),
             'user_key' => request()->get('current_open_id'),
-            'onlyPayToPlatform' => 1,
         ]);
 
         if (!empty($data['list'])) {
