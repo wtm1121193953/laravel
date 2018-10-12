@@ -5,9 +5,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Order\OrderService;
+use App\Modules\Wallet\WalletService;
 use App\Result;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FeeSplittingController extends Controller
 {
@@ -34,6 +38,10 @@ class FeeSplittingController extends Controller
         ]);
     }
 
+    /**
+     * 重新分润
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function ReFeeSplitting()
     {
         $this->validate(request(), [
@@ -48,6 +56,23 @@ class FeeSplittingController extends Controller
         // 获取订单利润
         $profitAmount = OrderService::getProfitAmount($order);
         // 获取分润比例
-        $ratio = FeeSplittingService::getReFeeSplittingRatio($feeSplittingRecord);
+        $ratio = FeeSplittingService::getReFeeSplittingRatio($feeSplittingRecord, $order);
+        if (!$ratio) throw new BaseResponseException('分润比例为空');
+
+        DB::beginTransaction();
+        try {
+            // 更新分润记录
+            $newFeeSplittingRecord = FeeSplittingService::updateFeeSplittingRecord($feeSplittingRecord, $profitAmount, $ratio);
+            // 更新钱包和流水
+            $wallet = WalletService::getWalletInfoByOriginInfo($feeSplittingRecord->origin_id, $feeSplittingRecord->origin_type);
+            WalletService::updateWalletAndWalletBill($wallet, $feeSplittingRecord, $newFeeSplittingRecord);
+
+            DB::commit();
+            return Result::success($newFeeSplittingRecord);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::info('重新分润失败的LOG', ['data' => $e]);
+            throw new BaseResponseException('重新分润失败');
+        }
     }
 }

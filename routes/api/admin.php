@@ -109,4 +109,5 @@ Route::prefix('admin')
         Route::post('version/del', 'VersionController@del');
 
         Route::get('/feeSplitting/getList', 'FeeSplittingController@getList');
+        Route::post('/feeSplitting/ReFeeSplitting', 'FeeSplittingController@ReFeeSplitting');
     });

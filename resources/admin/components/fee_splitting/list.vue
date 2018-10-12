@@ -138,7 +138,10 @@
                 this.getList();
             },
             feeSplitting(row) {
-
+                api.post('/feeSplitting/ReFeeSplitting', {id: row.id}).then(data => {
+                    this.$message.success('重新分润成功');
+                    row = data;
+                })
             }
         },
         created() {
