@@ -82,9 +82,9 @@ class PayQrcodeController extends Controller
         $oper = OperService::getById($operId);
         if ( $oper->pay_to_platform != Oper::PAY_TO_OPER ) {
 
+
             $signboardName = MerchantService::getSignboardNameById($merchantId);
             $filePath = MiniprogramSceneService::genSceneQrCode($scene, $width,true,$signboardName);
-
             return response()->download($filePath, '分享用户二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
         } else {
             $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
