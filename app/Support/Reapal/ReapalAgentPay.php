@@ -179,6 +179,7 @@ class ReapalAgentPay
         $encryptkey = $reapalMap->decryptKey($resultArr['encryptkey'], $this->merchantPrivateKey);
         $result = $reapalMap->decrypt($resultArr['data'], $encryptkey);
 
+        Log::info('融宝代付异步通知接收到的参数',['result'=>$result]);
         LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_AGENT_PAY_REFUND, $result);
 
         $result = json_decode($result, 1);
