@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\User;
 
 
+use App\DataCacheService;
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Area\Area;
@@ -79,7 +80,8 @@ class MerchantController extends Controller
 
         $userId = request()->get('current_user')->id ?? 0;
 
-        $detail = Merchant::findOrFail($id);
+        //$detail = Merchant::findOrFail($id);
+        $detail = DataCacheService::getMerchantDetail($id);
         $detail->desc_pic_list = $detail->desc_pic_list ? explode(',', $detail->desc_pic_list) : [];
         if($detail->business_time) $detail->business_time = json_decode($detail->business_time, 1);
         if($lng && $lat){
