@@ -282,7 +282,15 @@
                 }
             };
             let validateIdCard = (rule, value, callback) => {
-                if (!(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value))) {
+                let reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+                if (this.form.country_id == 2) {
+                    reg = /(^((\s?[A-Za-z])|([A-Za-z]{2}))\d{6}\((([0−9aA])|([0-9aA]))\)$)/;
+                } else if (this.form.country_id == 3) {
+                    reg = /^[1|5|7][0-9]{6}\([0-9Aa]\)/;
+                } else if (this.form.country_id == 4) {
+                    reg = /^[a-zA-Z][0-9]{9}$/;
+                }
+                if (!(reg.test(value))) {
                     callback(new Error('请输入正确的身份证号码'));
                 }else {
                     callback();
