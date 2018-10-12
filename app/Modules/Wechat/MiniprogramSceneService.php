@@ -243,9 +243,10 @@ class MiniprogramSceneService extends BaseService
      * @param MiniprogramScene $scene
      * @param int $size
      * @param bool $rt_storage_path
+     * @param string $name
      * @return string
      */
-    public static function genSceneQrCode(MiniprogramScene $scene, int $size=375, $rt_storage_path = false)
+    public static function genSceneQrCode(MiniprogramScene $scene, int $size=375, $rt_storage_path = false, string $name = '')
     {
 
         $url = route('scene',['id'=>$scene->id]);
@@ -258,6 +259,9 @@ class MiniprogramSceneService extends BaseService
 
         QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size($size)->generate($url, $path);
         self::addSceneIdToQrCode($path, $scene->id);
+        if ($name) {
+            self::addNameToQrCode($path,$name);
+        }
         $scene->qrcode_url = asset('storage/scene_qrcode/' . $filename);
         $scene->save();
         return $rt_storage_path?$path:$scene->qrcode_url;
@@ -283,6 +287,26 @@ class MiniprogramSceneService extends BaseService
 
         // 将文字添加到画布上
         $image = ImageTool::text($qrCode,  $name, $nameSize, $nameX, $nameY, 'right', '#666666');
+        $image->save($path);
+    }
+
+    public static function addNameToQrCode($path, $name)
+    {
+        if (empty($name)) {
+            return;
+        }
+        $fontSizeRatio = 0.045;
+        $qrCode = Image::make($path);
+        $width = $qrCode->width();
+        $height = $qrCode->height();
+
+        // 计算文字大小
+        $nameSize = intval($fontSizeRatio * $width);
+        $nameX = intval($width / 2);
+        $nameY = intval($fontSizeRatio * $height)+5;
+
+        // 将文字添加到画布上
+        $image = ImageTool::text($qrCode,  $name, $nameSize, $nameX, $nameY,'center','#666666');
         $image->save($path);
     }
 }

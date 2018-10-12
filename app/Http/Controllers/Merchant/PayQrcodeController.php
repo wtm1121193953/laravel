@@ -36,7 +36,8 @@ class PayQrcodeController extends Controller
 
             //如果是支付到平台生成二维码
             if ($oper->pay_to_platform != Oper::PAY_TO_OPER) {
-                $url = MiniprogramSceneService::genSceneQrCode($scene);
+                $signboardName = MerchantService::getSignboardNameById($merchantId);
+                $url = MiniprogramSceneService::genSceneQrCode($scene, 375,false,$signboardName);
             } else {
 
                 $url = WechatService::getMiniprogramAppCodeUrl($scene);
@@ -46,7 +47,8 @@ class PayQrcodeController extends Controller
         } else {
             //如果是支付到平台老的分享码换成二维码
             if ( ($oper->pay_to_platform != Oper::PAY_TO_OPER) && strpos($scene->qrcode_url,'scene_qrcode')===false ) {
-                $url = MiniprogramSceneService::genSceneQrCode($scene);
+                $signboardName = MerchantService::getSignboardNameById($merchantId);
+                $url = MiniprogramSceneService::genSceneQrCode($scene, 375,false,$signboardName);
             } elseif (($oper->pay_to_platform == Oper::PAY_TO_OPER) && strpos($scene->qrcode_url,'app_code')===false) {
                 $url = WechatService::getMiniprogramAppCodeUrl($scene);
             } else {
@@ -80,7 +82,8 @@ class PayQrcodeController extends Controller
         $oper = OperService::getById($operId);
         if ( $oper->pay_to_platform != Oper::PAY_TO_OPER ) {
 
-            $filePath = MiniprogramSceneService::genSceneQrCode($scene, $width,true);
+            $signboardName = MerchantService::getSignboardNameById($merchantId);
+            $filePath = MiniprogramSceneService::genSceneQrCode($scene, $width,true,$signboardName);
 
             return response()->download($filePath, '分享用户二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
         } else {
