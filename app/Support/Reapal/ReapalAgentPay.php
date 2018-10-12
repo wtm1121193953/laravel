@@ -31,7 +31,7 @@ class ReapalAgentPay
     public function __construct()
     {
 
-        //正式商户ID
+        /*//正式商户ID
         $this->merchantId = config('reapal.merchant_id');
         //正式商户邮箱
         $this->sellerEmail = config('reapal.seller_email');
@@ -45,22 +45,22 @@ class ReapalAgentPay
         $this->dsfUrl = config('reapal.dsfUrl');
         $this->charset = config('reapal.charset');
         $this->dsf_sign_type = config('reapal.dsf_sign_type');
-        $this->dsfVersion = config('reapal.dsf_version');
+        $this->dsfVersion = config('reapal.dsf_version');*/
 
 
-        /*//测试商户ID
+        //测试商户ID
         $this->merchantId = '100000000000147';
         //商户邮箱
-        $this->sellerEmail = config('reapal.seller_email');
+        $this->sellerEmail = 'daqian@shoptps.com';
         //商户私钥
-        $this->merchantPrivateKey = resource_path('reapal/cert/test/itrus001_pri.pem');
+        $this->merchantPrivateKey = resource_path('reapal/cert/test/user-rsa.pem');
         //融宝公钥
         $this->reapalPublicKey = resource_path('reapal/cert/test/itrus001.pem');
         $this->apiKey = 'g0be2385657fa355af68b74e9913a1320af82gb7ae5f580g79bffd04a402ba8f';
-        $this->dsfUrl = config('reapal.dsfUrl');
-        $this->charset = config('reapal.charset');
-        $this->dsf_sign_type = config('reapal.dsf_sign_type');
-        $this->dsfVersion = config('reapal.dsf_version');*/
+        $this->dsfUrl = 'http://testagentpay.reapal.com/agentpay/';
+        $this->charset = 'utf-8';
+        $this->dsf_sign_type = 'MD5';
+        $this->dsfVersion = '1.0';
 
     }
 
