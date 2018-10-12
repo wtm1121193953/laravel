@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlertTableMerchantAddBizerIdColumn extends Migration
+class AlertTableOrderAddBizerDivideColumn extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class AlertTableMerchantAddBizerIdColumn extends Migration
      */
     public function up()
     {
-        //
-        Schema::table('merchants', function (Blueprint $table) {
-            $table->integer('bizer_id')->index()->default(0)->comment('业务员ID');
+        Schema::table('orders', function (Blueprint $table) {
+            $table->decimal('bizer_divide')->default(0)->comment('运营中心分成给业务员的比例')->after('bizer_id');
         });
     }
 
@@ -26,10 +25,9 @@ class AlertTableMerchantAddBizerIdColumn extends Migration
      */
     public function down()
     {
-        //
-        Schema::table('merchants', function (Blueprint $table) {
+        Schema::table('orders', function (Blueprint $table) {
             $table->dropColumn([
-                'bizer_id'
+                'bizer_divide',
             ]);
         });
     }

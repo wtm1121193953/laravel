@@ -136,17 +136,21 @@ class FeeSplittingService extends BaseService
         $bizerFeeRatio = 0; // 业务员分润比例
         $bizer = BizerService::getById($order->bizer_id);
         if (!empty($bizer)) {
-            $param = [
-                'operId' => $oper->id,
-                'bizerId' => $bizer->id,
-            ];
-            $operBizer = OperBizerService::getOperBizerByParam($param);
+            if (!$order->bizer_divide) {
+                $param = [
+                    'operId' => $oper->id,
+                    'bizerId' => $bizer->id,
+                ];
+                $operBizer = OperBizerService::getOperBizerByParam($param);
+                $order->bizer_divide = $operBizer->divide;
+                $order->save();
+            }
             if ($operBizer->status == OperBizer::STATUS_SIGNED) {
                 $operFeeRatioInit = UserCreditSettingService::getFeeSplittingRatioToOper($oper);
                 if ($operFeeRatioInit == null || $operFeeRatioInit <= 0) {
                     return;
                 }
-                $bizerFeeRatio = $operFeeRatioInit * $operBizer->divide / 100;
+                $bizerFeeRatio = $operFeeRatioInit * $order->bizer_divide / 100;
                 $operFeeRatio = $operFeeRatioInit - $bizerFeeRatio;
                 if ($operFeeRatio < 0) {
                     return;
@@ -532,13 +536,17 @@ class FeeSplittingService extends BaseService
             }
             $bizer = BizerService::getById($order->bizer_id);
             if (!empty($bizer)) {
-                $param = [
-                    'operId' => $oper->id,
-                    'bizerId' => $bizer->id,
-                ];
-                $operBizer = OperBizerService::getOperBizerByParam($param);
+                if (!$order->bizer_divide) {
+                    $param = [
+                        'operId' => $oper->id,
+                        'bizerId' => $bizer->id,
+                    ];
+                    $operBizer = OperBizerService::getOperBizerByParam($param);
+                    $order->bizer_divide = $operBizer->divide;
+                    $order->save();
+                }
 
-                $bizerFeeRatio = $operFeeRatioInit * $operBizer->divide / 100;
+                $bizerFeeRatio = $operFeeRatioInit * $order->bizer_divide / 100;
                 $operFeeRatio = $operFeeRatioInit - $bizerFeeRatio;
                 if ($operFeeRatio < 0) {
                     return null;
