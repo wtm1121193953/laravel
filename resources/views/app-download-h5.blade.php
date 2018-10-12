@@ -364,33 +364,36 @@
     </div>
 
     {{-- ios --}}
-    <div id="ios-box">
-        <div class="version">
-            <p>版本：{{!empty($ios->version_no) ? $ios->version_no : ""}}<span></span>大小：{{!empty($ios->app_size) ? $ios->app_size : ""}}MB</p>
-            <p>更新时间：{{!empty($ios->update_date) ? $ios->update_date : ""}}<span></span>{{!empty($ios->update_time) ? $ios->update_time : ""}}</p>
+    <?php if ($ios != null){ ?>
+        <div id="ios-box">
+            <div class="version">
+                <p>版本：{{!empty($ios->version_no) ? $ios->version_no : ""}}<span></span>大小：{{!empty($ios->app_size) ? $ios->app_size : ""}}MB</p>
+                <p>更新时间：{{!empty($ios->update_date) ? $ios->update_date : ""}}<span></span>{{!empty($ios->update_time) ? $ios->update_time : ""}}</p>
+            </div>
+            <div class="qrcode">
+                <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(url()->full())) !!}" />
+            </div>
+            <div class="handler">
+                <div id="iphone" class="btn" package-url="{{$ios->package_url}}">iPhone版下载</div>
+            </div>
         </div>
-        <div class="qrcode">
-            <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(url()->full())) !!}" />
-        </div>
-        <div class="handler">
-            <div id="iphone" class="btn" package-url="{{$ios->package_url}}">iPhone版下载</div>
-        </div>
-    </div>
-
+    <?php } ?>
 
     {{-- 安卓 --}}
-    <div id="andriod-box">
-        <div class="version">
-            <p>版本：{{!empty($android->version_no) ? $android->version_no : ""}}<span></span>大小：{{!empty($android->app_size) ? $android->app_size : ""}}MB</p>
-            <p>更新时间：{{!empty($android->update_date) ? $android->update_date : ""}}<span></span>{{!empty($android->update_time) ? $android->update_time : ""}}</p>
+    <?php if ($android != null){ ?>
+        <div id="andriod-box">
+            <div class="version">
+                <p>版本：{{!empty($android->version_no) ? $android->version_no : ""}}<span></span>大小：{{!empty($android->app_size) ? $android->app_size : ""}}MB</p>
+                <p>更新时间：{{!empty($android->update_date) ? $android->update_date : ""}}<span></span>{{!empty($android->update_time) ? $android->update_time : ""}}</p>
+            </div>
+            <div class="qrcode">
+                <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(url()->full())) !!}" />
+            </div>
+            <div class="handler">
+                <div id="android" class="btn" package-url="{{$android->package_url}}">Android版下载</div>
+            </div>
         </div>
-        <div class="qrcode">
-            <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(url()->full())) !!}" />
-        </div>
-        <div class="handler">
-            <div id="android" class="btn" package-url="{{$android->package_url}}">Android版下载</div>
-        </div>
-    </div>
+    <?php } ?>
     
     <div id="tips" class="tips">或者用手机扫描二维码安装</div>
 </div>
