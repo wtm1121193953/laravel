@@ -107,4 +107,6 @@ Route::prefix('admin')
         Route::post('version/add', 'VersionController@add');
         Route::post('version/edit', 'VersionController@edit');
         Route::post('version/del', 'VersionController@del');
+
+        Route::get('/feeSplitting/getList', 'FeeSplittingController@getList');
     });

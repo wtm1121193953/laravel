@@ -134,7 +134,7 @@ class FeeSplittingService extends BaseService
 
         $operFeeRatio = 0;  // 运营中心分润比例
         $bizerFeeRatio = 0; // 业务员分润比例
-        $bizer = BizerService::getById($merchant->bizer_id);
+        $bizer = BizerService::getById($order->bizer_id);
         if (!empty($bizer)) {
             $param = [
                 'operId' => $oper->id,
@@ -420,5 +420,145 @@ class FeeSplittingService extends BaseService
         $orderPureProfit = $orderProfit - $feeSplittingAmountOfUserAndMerchant - $feeSplittingAmountOfOper;
 
         return $orderPureProfit;
+    }
+
+    /**
+     * 获取分润记录列表
+     * @param $params
+     * @param int $pageSize
+     * @param bool $withQuery
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Database\Eloquent\Builder
+     */
+    public static function getFeeSplittingRecordList($params, $pageSize = 15, $withQuery = false)
+    {
+        $originId = array_get($params, 'originId', '');
+        $originType = array_get($params, 'originType', '');
+        $orderId = array_get($params, 'orderId', '');
+        $orderNo = array_get($params, 'orderNo', '');
+        $type = array_get($params, 'type', '');
+        $status = array_get($params, 'status', '');
+
+        $query = FeeSplittingRecord::query();
+        if ($originId) {
+            $query->where('origin_id', $originId);
+        }
+        if ($orderId) {
+            $query->where('order_id', $orderId);
+        }
+        if ($orderNo) {
+            $query->where('order_no', $orderNo);
+        }
+        if ($originType) {
+            $query->where('origin_type', $originType);
+        }
+        if (!empty($type)) {
+            if (is_array($type)) {
+                $query->whereIn('type', $type);
+            } else {
+                $query->where('type', $type);
+            }
+        }
+        if (!empty($status)) {
+            if (is_array($status)) {
+                $query->whereIn('status', $status);
+            } else {
+                $query->where('status', $status);
+            }
+        }
+        $query->orderBy('id', 'desc');
+
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate($pageSize);
+            $data->each(function ($item) {
+                if ($item->origin_type == FeeSplittingRecord::ORIGIN_TYPE_USER) {
+                    $user = UserService::getUserById($item->origin_id);
+                    $item->name = empty($user) ? '' : ($user->name ?: $user->mobile);
+                } elseif ($item->origin_type == FeeSplittingRecord::ORIGIN_TYPE_MERCHANT) {
+                    $item->name = MerchantService::getNameById($item->origin_id) ?: '';
+                } elseif ($item->origin_type == FeeSplittingRecord::ORIGIN_TYPE_OPER) {
+                    $item->name = OperService::getNameById($item->origin_id) ?: '';
+                } elseif ($item->origin_type == FeeSplittingRecord::ORIGIN_TYPE_BIZER) {
+                    $bizer = BizerService::getById($item->origin_id);
+                    $item->name = empty($bizer) ? '' : ($bizer->name ?: $bizer->mobile);
+                } else {
+                    $item->name = '';
+                }
+            });
+
+            return $data;
+        }
+    }
+
+    /**
+     * 通过ID获取记录
+     * @param $id
+     * @return FeeSplittingRecord
+     */
+    public static function getById($id)
+    {
+        $feeSplittingRecord = FeeSplittingRecord::find($id);
+
+        return $feeSplittingRecord;
+    }
+
+    public static function getReFeeSplittingRatio(FeeSplittingRecord $feeSplittingRecord, Order $order)
+    {
+        if ($feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_OPER || $feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_BIZER) {
+            // 通过订单中的merchant_id查找该商户的运营中心（准确点）
+            $merchant = MerchantService::getById($order->merchant_id);
+            $oper = OperService::getById($merchant->oper_id);
+            if (empty($oper)) {
+                return;
+            }
+            if ($oper->pay_to_platform == Oper::PAY_TO_OPER) {
+                return;
+            }
+
+            $operFeeRatio = 0;  // 运营中心分润比例
+            $bizerFeeRatio = 0; // 业务员分润比例
+            $bizer = BizerService::getById($order->bizer_id);
+            if (!empty($bizer)) {
+                $param = [
+                    'operId' => $oper->id,
+                    'bizerId' => $bizer->id,
+                ];
+                $operBizer = OperBizerService::getOperBizerByParam($param);
+
+                $operFeeRatioInit = UserCreditSettingService::getFeeSplittingRatioToOper($oper);
+                if ($operFeeRatioInit == null || $operFeeRatioInit <= 0) {
+                    return;
+                }
+                $bizerFeeRatio = $operFeeRatioInit * $operBizer->divide / 100;
+                $operFeeRatio = $operFeeRatioInit - $bizerFeeRatio;
+                if ($operFeeRatio < 0) {
+                    return;
+                }
+            }
+        }
+
+        if ($feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_SELF) {
+            // 1 自反比例
+            $feeRatio = UserCreditSettingService::getFeeSplittingRatioToSelfSetting(); // 自反的分润比例
+        } elseif ($feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_PARENT) {
+            // 2 返上级比例
+            if ($feeSplittingRecord->origin_type == FeeSplittingRecord::ORIGIN_TYPE_USER) {
+                $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfUserSetting();
+            } else if ($feeSplittingRecord->origin_type == FeeSplittingRecord::ORIGIN_TYPE_MERCHANT) {
+                $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfMerchantSetting($feeSplittingRecord->merchant_level);
+            } else if ($feeSplittingRecord->origin_type == FeeSplittingRecord::ORIGIN_TYPE_OPER) {
+                $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfOperSetting();
+            } else {
+                throw new BaseResponseException();
+            }
+        } elseif ($feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_OPER) {
+            // 3 运营中心分润比例
+        } elseif ($feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_BIZER) {
+            // 4 业务员分润比例
+        }
+        else {
+            throw new ParamInvalidException('分润类型错误');
+        }
     }
 }
