@@ -1,5 +1,5 @@
 <template>
-    <el-form :model="form" size="small" label-width="120px" :rules="formRules" ref="form" @submit.native.prevent>
+    <el-form :model="form" size="small" label-width="165px" :rules="formRules" ref="form" @submit.native.prevent>
 
         <el-col>
             <div class="title">商户激活信息</div>
@@ -366,6 +366,9 @@
                     legal_id_card_pic_b: [
                         {required: true, message: '法人身份证照片 不能为空'},
                     ],
+                    country_id: [
+                        {required: true, message:'法人身份证国别或地区 不能为空'}
+                    ],
                     legal_id_card_num: [
                         {required: true, message: '法人身份证号码 不能为空'},
                         {max: 18, message: '法人身份证号码不能超过18个字'},
@@ -440,6 +443,7 @@
                     this.form.status = parseInt(data.status);
                     this.form.bank_card_type = parseInt(data.bank_card_type);
                     this.form.bizer_id = parseInt(data.bizer_id) != 0 ? parseInt(data.bizer_id) : '';
+                    this.form.country_id = parseInt(data.country_id) != 0 ? parseInt(data.country_id) : '';
                 }else {
                     this.form = deepCopy(defaultForm);
                 }
@@ -478,13 +482,16 @@
                 })
             },
             getCountryList() {
-
+                api.get('/country/list').then(data => {
+                    this.countryList = data;
+                })
             }
         },
         created(){
             this.initForm();
             this.getOperBizMember();
             this.getBankList();
+            this.getCountryList();
         },
         watch: {
             data(){
