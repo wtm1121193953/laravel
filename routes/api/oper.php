@@ -41,6 +41,8 @@ Route::prefix('oper')
         Route::get('/member/statistics/total', 'MemberController@getTotal');
         Route::get('/member/statistics/getTodayAndTotalInviteNumber', 'MemberController@getTodayAndTotalInviteNumber');
 
+        Route::get('/country/list', 'CountryController@getList');
+
         Route::group([], base_path('routes/api/oper/merchant.php'));
         Route::group([], base_path('routes/api/oper/settlements.php'));
         Route::group([], base_path('routes/api/oper/operBizMember.php'));
