@@ -367,8 +367,8 @@
     <?php if ($ios != null){ ?>
         <div id="ios-box">
             <div class="version">
-                <p>版本：{{!empty($ios->version_no) ? $ios->version_no : ""}}<span></span>大小：{{!empty($ios->app_size) ? $ios->app_size : ""}}MB</p>
-                <p>更新时间：{{!empty($ios->update_date) ? $ios->update_date : ""}}<span></span>{{!empty($ios->update_time) ? $ios->update_time : ""}}</p>
+                <p>版本：{{$ios->version_no}}<span></span>大小：{{$ios->app_size}}MB</p>
+                <p>更新时间：{{$ios->update_date}}<span></span>{{$ios->update_time}}</p>
             </div>
             <div class="qrcode">
                 <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(url()->full())) !!}" />
@@ -383,8 +383,8 @@
     <?php if ($android != null){ ?>
         <div id="andriod-box">
             <div class="version">
-                <p>版本：{{!empty($android->version_no) ? $android->version_no : ""}}<span></span>大小：{{!empty($android->app_size) ? $android->app_size : ""}}MB</p>
-                <p>更新时间：{{!empty($android->update_date) ? $android->update_date : ""}}<span></span>{{!empty($android->update_time) ? $android->update_time : ""}}</p>
+                <p>版本：{{$android->version_no}}<span></span>大小：{{$android->app_size}}MB</p>
+                <p>更新时间：{{$android->update_date}}<span></span>{{$android->update_time}}</p>
             </div>
             <div class="qrcode">
                 <img src="data:image/png;base64,{!! base64_encode(QrCode::format('png')->errorCorrection('H')->encoding('UTF-8')->margin(3)->size(375)->generate(url()->full())) !!}" />
