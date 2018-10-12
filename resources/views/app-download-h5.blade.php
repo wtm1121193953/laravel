@@ -432,9 +432,9 @@
     if(/(iPhone|iPad|iPod)/.test(clientType)) {
         //苹果
         //删除
-        parentBox.removeChild(android_box)
+        android_box && parentBox.removeChild(android_box)
 
-        if({{isset($ios) && !empty($ios)}}) {
+        <?php if ($ios != null){ ?>
             //链接
             var url = iosEl.getAttribute('package-url'),
                 action = null
@@ -461,15 +461,15 @@
                 action()
                 lock = false
             })
-        } else {
+        <?php } else { ?>
             parentBox.removeChild(ios_box)
             parentBox.removeChild(tips)
             createNull(parentBox)
-        }
+        <?php } ?>
     } else {
         //安卓
         //删除
-        parentBox.removeChild(ios_box)
+        ios_box && parentBox.removeChild(ios_box)
 
         <?php if ($android != null){ ?>
             //链接
