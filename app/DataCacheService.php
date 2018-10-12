@@ -9,23 +9,20 @@
 namespace App;
 
 use App\Modules\Merchant\Merchant;
-use Illuminate\Support\Facades\Redis;
-use test\Mockery\Fixtures\EmptyTestCaseV5;
+use Illuminate\Support\Facades\Cache;
 
 class DataCacheService extends BaseService
 {
-    const REDIS_KEY_MERCHANT = 'cache:merchant:';
+    const REDIS_KEY_MERCHANT = 'merchant:id:';
 
     public static function getMerchantDetail($id)
     {
         $cache_key = self::REDIS_KEY_MERCHANT . $id;
-        $data = Redis::get($cache_key);
+        $data = Cache::get($cache_key);
         if (empty($data)) {
             $data = Merchant::findOrFail($id);
-            $data = serialize($data);
-            Redis::set($cache_key, $data);
+            Cache::forever($cache_key, $data);
         }
-        $data = @unserialize($data);
         return $data;
     }
 
@@ -34,7 +31,7 @@ class DataCacheService extends BaseService
         if ($ids) {
             foreach ($ids as $id) {
                 $cache_key = self::REDIS_KEY_MERCHANT . $id;
-                Redis::del($cache_key);
+                Cache::forget($cache_key);
             }
         }
     }
