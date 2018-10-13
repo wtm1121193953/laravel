@@ -70,6 +70,7 @@
                         // this.infoWindow.setPosition(marker);
                         // this.infoWindow.open();
                         // this.infoWindow.setContent(`<div class="info-window-title">${poi.name}</div><div class="info-window-address">${poi.address}</div>`)
+                        this.markers.push(marker);
                         this.$emit('marker-change', this.markers);
                     });
                     this.markers.push(marker);
@@ -104,6 +105,7 @@
                     // this.infoWindow.setPosition(marker);
                     // this.infoWindow.open();
                     // this.infoWindow.setContent(`<div class="info-window-title">${poi.name}</div><div class="info-window-address">${poi.address}</div>`)
+                    this.markers.push(marker);
                     this.$emit('marker-change', this.markers);
                 });
 
