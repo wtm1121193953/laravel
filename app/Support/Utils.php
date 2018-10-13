@@ -102,4 +102,70 @@ class Utils
     {
         return $distance >= 1000 ? (number_format($distance / 1000, 1) . 'Km') : ($distance . 'm');
     }
+
+
+    /**
+     * aes 加密
+     * @param $data
+     * @return string
+     */
+    public static function encrypt($data)
+    {
+        $key = 'abcdefghijklmnop'; // 16位（也可以不是16位，但当它大于16位时，7.1的openssl函数会截取前16位，有点坑）
+        $iv = '1234567890123456'; // 16位
+        //$data = openssl_encrypt($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA, self::hexToStr($iv));
+        $data = openssl_encrypt($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA, $iv);
+        $data = base64_encode($data);
+        return $data;
+    }
+
+    /**
+     * aes 解密
+     * @param $data
+     * @return string
+     */
+    public static function decrypt($data)
+    {
+        $key = 'abcdefghijklmnop'; // 16位（也可以不是16位，但当它大于16位时，7.1的openssl函数会截取前16位，有点坑）
+        $iv = '1234567890123456'; // 16位
+        //$decrypted = openssl_decrypt(base64_decode($data), 'AES-128-CBC', $key, OPENSSL_RAW_DATA, self::hexToStr($iv));
+        $decrypted = openssl_decrypt(base64_decode($data), 'AES-128-CBC', $key, OPENSSL_RAW_DATA, $iv);
+
+        return $decrypted;
+    }
+
+    public static function hexToStr($hex)
+    {
+        $string = '';
+        for ($i = 0; $i < strlen($hex) - 1; $i += 2) {
+            $string .= chr(hexdec($hex[$i] . $hex[$i + 1]));
+        }
+        return $string;
+    }
+
+    public static function openssl_encrypt($data, $key = '') {
+        $key = '01234567891234560123456789123456';
+        $key = empty($key) ? config_item('salt') : $key;
+        $l = strlen($key);
+        if ($l < 16)
+            $key = str_repeat($key, ceil(16/$l));
+
+        if ($m = strlen($data)%8)
+            $data .= str_repeat("\x00",  8 - $m);
+        $val = openssl_encrypt($data, 'BF-ECB', $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
+
+        return base64_encode($val);
+    }
+
+    public static function openssl_decrypt($data, $key = '') {
+        $key = '01234567891234560123456789123456';
+        $data = base64_decode($data);
+        $key = empty($key) ? config_item('salt') : $key;
+        $l = strlen($key);
+        if ($l < 16)
+            $key = str_repeat($key, ceil(16/$l));
+
+        $val = openssl_decrypt($data, 'BF-ECB', $key, OPENSSL_RAW_DATA | OPENSSL_NO_PADDING);
+        return $val;
+    }
 }

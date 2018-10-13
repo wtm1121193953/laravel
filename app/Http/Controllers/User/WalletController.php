@@ -280,6 +280,8 @@ class WalletController extends Controller
      */
     public function confirmPassword( Request $request )
     {
+        $password = $request->input('password');
+        $request->attributes->replace(['password'=>Utils::decrypt($password)]);
         $this->validate($request, [
             'password'  =>  'required|numeric'
         ]);
@@ -321,6 +323,8 @@ class WalletController extends Controller
             // 删除有效时间，避免重复提交
             Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
         }
+        $password = $request->input('password');
+        $request->attributes->replace(['password'=>Utils::decrypt($password)]);
         $this->validate($request, [
             'password'  =>  'required|numeric'
         ]);
