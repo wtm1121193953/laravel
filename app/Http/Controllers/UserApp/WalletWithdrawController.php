@@ -15,6 +15,7 @@ use App\Modules\Wallet\WalletService;
 use App\Modules\Wallet\BankCardService;
 use App\Result;
 use App\ResultCode;
+use Illuminate\Http\Request;
 
 class WalletWithdrawController extends Controller
 {
@@ -26,9 +27,10 @@ class WalletWithdrawController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Exception
      */
-    public function withdraw()
+    public function withdraw(Request $request )
     {
-
+        $password = $request->input('password');
+        $request->attributes->replace(['password'=>Utils::decrypt($password)]);
         $this->validate( request(), [
             'card_id'   =>  'required',
             'amount'    =>  'required|numeric|min:100',

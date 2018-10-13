@@ -20,6 +20,7 @@ use App\Modules\Wallet\WalletService;
 use App\Modules\Wallet\ConsumeQuotaService;
 use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Support\Utils;
 use App\Modules\Invite\InviteUserService;
@@ -149,8 +150,10 @@ class WalletController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function confirmPassword()
+    public function confirmPassword(Request $request )
     {
+        $password = $request->input('password');
+        $request->attributes->replace(['password'=>Utils::decrypt($password)]);
         $this->validate(request(), [
             'password' => 'required|numeric'
         ]);
@@ -171,9 +174,10 @@ class WalletController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changePassword()
+    public function changePassword(Request $request )
     {
-
+        $password = $request->input('password');
+        $request->attributes->replace(['password'=>Utils::decrypt($password)]);
         $currentUser = request()->get('current_user');
 
         $wallet = WalletService::getWalletInfoByOriginInfo($currentUser->id, Wallet::ORIGIN_TYPE_USER);

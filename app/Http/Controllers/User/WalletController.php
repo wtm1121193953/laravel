@@ -280,8 +280,6 @@ class WalletController extends Controller
      */
     public function confirmPassword( Request $request )
     {
-        $password = $request->input('password');
-        $request->attributes->replace(['password'=>Utils::decrypt($password)]);
         $this->validate($request, [
             'password'  =>  'required|numeric'
         ]);
