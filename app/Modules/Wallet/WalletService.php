@@ -68,17 +68,76 @@ class WalletService extends BaseService
         return Wallet::find($wallet->id);
     }
 
+    public static function addBalance(Wallet $wallet, $amount, $type, $objId=0)
+    {
+        if($amount < 0){
+            throw new BaseResponseException('增加的金额不能小于零');
+        }
+
+        // 1.添加冻结金额
+        // 2.添加钱包流水
+        $wallet->increment('balance', $amount);  // 更新钱包的冻结金额
+
+        // 钱包流水表 添加钱包流水记录
+        $walletBill = new WalletBill();
+        $walletBill->wallet_id = $wallet->id;
+        $walletBill->origin_id = $wallet->origin_id;
+        $walletBill->origin_type = $wallet->origin_type;
+        $walletBill->bill_no = WalletService::createWalletBillNo();
+        $walletBill->type = $type;
+        $walletBill->obj_id = $objId;
+        $walletBill->inout_type = WalletBill::IN_TYPE;
+        $walletBill->amount = $amount;
+        $walletBill->amount_type = WalletBill::AMOUNT_TYPE_UNFREEZE;
+        $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
+        $walletBill->after_balance = $wallet->balance;
+        $walletBill->save();
+        return $wallet;
+
+    }
+
+    /**
+     * 增加冻结金额
+     * @param Wallet $wallet
+     * @param $amount
+     * @param int $type 交易类型
+     * @param int $objId
+     * @return Wallet
+     */
+    public static function addFreezeBalance(Wallet $wallet, $amount, $type, $objId = 0)
+    {
+        if($amount < 0){
+            throw new BaseResponseException('增加的金额不能小于零');
+        }
+
+        // 1.添加冻结金额
+        // 2.添加钱包流水
+        $wallet->increment('freeze_balance', $amount);  // 更新钱包的冻结金额
+
+        // 钱包流水表 添加钱包流水记录
+        $walletBill = new WalletBill();
+        $walletBill->wallet_id = $wallet->id;
+        $walletBill->origin_id = $wallet->origin_id;
+        $walletBill->origin_type = $wallet->origin_type;
+        $walletBill->bill_no = WalletService::createWalletBillNo();
+        $walletBill->type = $type;
+        $walletBill->obj_id = $objId;
+        $walletBill->inout_type = WalletBill::IN_TYPE;
+        $walletBill->amount = $amount;
+        $walletBill->amount_type = WalletBill::AMOUNT_TYPE_FREEZE;
+        $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
+        $walletBill->after_balance = $wallet->balance;
+        $walletBill->save();
+        return $wallet;
+    }
+
     /**
      * 增加余额
      * @param FeeSplittingRecord $feeSplittingRecord
      * @param Wallet $wallet
      */
-    public static function addFreezeBalance(FeeSplittingRecord $feeSplittingRecord, Wallet $wallet)
+    public static function addFreezeBalanceByFeeSplitting(FeeSplittingRecord $feeSplittingRecord, Wallet $wallet)
     {
-        // 1.添加冻结金额
-        // 2.添加钱包流水
-        $wallet->increment('freeze_balance', $feeSplittingRecord->amount);  // 更新钱包的冻结金额
-
         // 钱包流水表 添加钱包流水记录
         if ($feeSplittingRecord->type == FeeSplittingRecord::TYPE_TO_SELF) {
             $type = WalletBill::TYPE_SELF;
@@ -91,19 +150,8 @@ class WalletService extends BaseService
         } else {
             throw new ParamInvalidException('分润类型参数错误');
         }
-        $walletBill = new WalletBill();
-        $walletBill->wallet_id = $wallet->id;
-        $walletBill->origin_id = $wallet->origin_id;
-        $walletBill->origin_type = $wallet->origin_type;
-        $walletBill->bill_no = WalletService::createWalletBillNo();
-        $walletBill->type = $type;
-        $walletBill->obj_id = $feeSplittingRecord->id;
-        $walletBill->inout_type = WalletBill::IN_TYPE;
-        $walletBill->amount = $feeSplittingRecord->amount;
-        $walletBill->amount_type = WalletBill::AMOUNT_TYPE_FREEZE;
-        $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
-        $walletBill->after_balance = $wallet->balance;
-        $walletBill->save();
+        // 添加冻结金额
+        self::addFreezeBalance($wallet, $feeSplittingRecord->amount, $type, $feeSplittingRecord->id);
     }
 
     /**
@@ -129,12 +177,47 @@ class WalletService extends BaseService
      * 分润退款
      * @param FeeSplittingRecord $feeSplittingRecord
      */
-    public static function refundBalance(FeeSplittingRecord $feeSplittingRecord)
+    public static function minusBalanceByFeeSplitting(FeeSplittingRecord $feeSplittingRecord)
     {
         // todo
         // 1. 判断状态, 若已解冻, 则不能退回
         // 2. 退回冻结金额
         // 3. 添加钱包流水
+    }
+
+    /**
+     * 减少钱包余额
+     * @param Wallet $wallet 钱包对象
+     * @param number $amount 余额
+     * @param int $type 交易类型
+     * @param int $objId 交易来源ID
+     * @return Wallet
+     */
+    public static function minusBalance(Wallet $wallet, $amount, $type, $objId = 0)
+    {
+        if($amount < 0){
+            throw new BaseResponseException('减少的金额不能小于零');
+        }
+
+        // 1.添加冻结金额
+        // 2.添加钱包流水
+        $wallet->decrement('balance', $amount);  // 更新钱包的冻结金额
+
+        // 钱包流水表 添加钱包流水记录
+        $walletBill = new WalletBill();
+        $walletBill->wallet_id = $wallet->id;
+        $walletBill->origin_id = $wallet->origin_id;
+        $walletBill->origin_type = $wallet->origin_type;
+        $walletBill->bill_no = WalletService::createWalletBillNo();
+        $walletBill->type = $type;
+        $walletBill->obj_id = $objId;
+        $walletBill->inout_type = WalletBill::OUT_TYPE;
+        $walletBill->amount = $amount;
+        $walletBill->amount_type = WalletBill::AMOUNT_TYPE_UNFREEZE;
+        $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
+        $walletBill->after_balance = $wallet->balance;
+        $walletBill->save();
+        return $wallet;
     }
 
     /**

@@ -78,7 +78,7 @@ class FeeSplittingService extends BaseService
             // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
             $wallet = WalletService::getWalletInfo($originInfo);
 
-            WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
+            WalletService::addFreezeBalanceByFeeSplitting($feeSplittingRecord, $wallet);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -106,7 +106,7 @@ class FeeSplittingService extends BaseService
             // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
             $wallet = WalletService::getWalletInfo($parent);
 
-            WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
+            WalletService::addFreezeBalanceByFeeSplitting($feeSplittingRecord, $wallet);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -171,7 +171,7 @@ class FeeSplittingService extends BaseService
             // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
             $wallet = WalletService::getWalletInfo($oper);
             if (!empty($feeSplittingRecord)) {
-                WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
+                WalletService::addFreezeBalanceByFeeSplitting($feeSplittingRecord, $wallet);
             }
             DB::commit();
         } catch (\Exception $e) {
@@ -198,7 +198,7 @@ class FeeSplittingService extends BaseService
             // 更新钱包 并 添加钱包流水
             $wallet = WalletService::getWalletInfo($bizer);
             if (!empty($feeSplittingRecord)) {
-                WalletService::addFreezeBalance($feeSplittingRecord, $wallet);
+                WalletService::addFreezeBalanceByFeeSplitting($feeSplittingRecord, $wallet);
             }
             DB::commit();
         } catch (\Exception $e) {
@@ -589,11 +589,12 @@ class FeeSplittingService extends BaseService
      */
     public static function updateFeeSplittingRecord(FeeSplittingRecord $feeSplittingRecord, $profitAmount, $ratio)
     {
-        $feeSplittingRecord->order_profit_amount = $profitAmount;
-        $feeSplittingRecord->ratio = $ratio;
-        $feeSplittingRecord->amount = floor($profitAmount * $ratio) / 100;
-        $feeSplittingRecord->save();
+        $newFeeSplittingRecord = self::getById($feeSplittingRecord->id);
+        $newFeeSplittingRecord->order_profit_amount = $profitAmount;
+        $newFeeSplittingRecord->ratio = $ratio;
+        $newFeeSplittingRecord->amount = floor($profitAmount * $ratio) / 100;
+        $newFeeSplittingRecord->save();
 
-        return $feeSplittingRecord;
+        return $newFeeSplittingRecord;
     }
 }
