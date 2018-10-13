@@ -14,7 +14,7 @@ class TestSettlementAgentPay extends Command
      *
      * @var string
      */
-    protected $signature = 'test:settlementAgentPay {settlementIds?}';
+    protected $signature = 'test:settlementAgentPay {settlementIds}';
 
     /**
      * The console command description.
