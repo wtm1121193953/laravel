@@ -18,10 +18,10 @@ class DataCacheService extends BaseService
     public static function getMerchantDetail($id)
     {
         $cache_key = self::REDIS_KEY_MERCHANT . $id;
-        $data = Cache::get($cache_key);
+        $data = Cache::store('redis')->get($cache_key);
         if (empty($data)) {
             $data = Merchant::findOrFail($id);
-            Cache::forever($cache_key, $data);
+            Cache::store('redis')->forever($cache_key, $data);
         }
         return $data;
     }
@@ -31,7 +31,7 @@ class DataCacheService extends BaseService
         if ($ids) {
             foreach ($ids as $id) {
                 $cache_key = self::REDIS_KEY_MERCHANT . $id;
-                Cache::forget($cache_key);
+                Cache::store('redis')->forget($cache_key);
             }
         }
     }
