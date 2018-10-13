@@ -7,6 +7,7 @@
  */
 namespace App\Http\Controllers\UserApp;
 
+use App\Exceptions\ParamInvalidException;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\Wallet;
 use App\Http\Controllers\Controller;
@@ -15,6 +16,7 @@ use App\Modules\Wallet\WalletService;
 use App\Modules\Wallet\BankCardService;
 use App\Result;
 use App\ResultCode;
+use App\Support\Utils;
 use Illuminate\Http\Request;
 
 class WalletWithdrawController extends Controller
@@ -27,14 +29,16 @@ class WalletWithdrawController extends Controller
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      * @throws \Exception
      */
-    public function withdraw(Request $request )
+    public function withdraw()
     {
-        $password = $request->input('password');
-        $request->attributes->replace(['password'=>Utils::decrypt($password)]);
+        $password = request('password');
+        $password = Utils::decrypt($password);
+        if (!preg_match('/^\d{6}$/',$password)) {
+            throw new ParamInvalidException('密码必须是数字');
+        }
         $this->validate( request(), [
             'card_id'   =>  'required',
-            'amount'    =>  'required|numeric|min:100',
-            'password'  =>  'required'
+            'amount'    =>  'required|numeric|min:100'
         ],[
             'card_id.required'  =>  '银行卡信息有误',
             'amount.min'        =>  '最低提现金额为100',
@@ -47,7 +51,7 @@ class WalletWithdrawController extends Controller
         $wallet = WalletService::getWalletInfo( $obj );
         // 获取银行卡信息
         $card   = BankCardService::getCardById( request()->input('card_id'));
-        $isOk   = WalletWithdrawService::checkWithdrawPasswordByOriginInfo( request()->input('password'), $obj->id, $wallet->origin_type);
+        $isOk   = WalletWithdrawService::checkWithdrawPasswordByOriginInfo( $password, $obj->id, $wallet->origin_type);
         if( !$isOk )
         {
             return Result::error(ResultCode::NO_PERMISSION, '提现密码错误');

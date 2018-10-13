@@ -150,15 +150,15 @@ class WalletController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function confirmPassword(Request $request )
+    public function confirmPassword()
     {
-        $password = $request->input('password');
-        $request->attributes->replace(['password'=>Utils::decrypt($password)]);
-        $this->validate(request(), [
-            'password' => 'required|numeric'
-        ]);
+        $password = request('password');
+        $password = Utils::decrypt($password);
+        if (!preg_match('/^\d{6}$/',$password)) {
+            throw new ParamInvalidException('密码必须是数字');
+        }
         $user = request()->get('current_user');
-        WalletService::checkPayPassword(request()->input('password'), $user->id);
+        WalletService::checkPayPassword($password, $user->id);
         // 记录确认密码时间
         $token = str_random();
         Cache::put('user_pay_password_modify_temp_token_' . $user->id, $token, 3);
@@ -174,10 +174,14 @@ class WalletController extends Controller
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
-    public function changePassword(Request $request )
+    public function changePassword()
     {
-        $password = $request->input('password');
-        $request->attributes->replace(['password'=>Utils::decrypt($password)]);
+        $password = request('password');
+        $password = Utils::decrypt($password);
+        if (!preg_match('/^\d{6}$/',$password)) {
+            throw new ParamInvalidException('密码必须是数字');
+        }
+
         $currentUser = request()->get('current_user');
 
         $wallet = WalletService::getWalletInfoByOriginInfo($currentUser->id, Wallet::ORIGIN_TYPE_USER);
@@ -200,11 +204,8 @@ class WalletController extends Controller
             Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
         }
 
-        $this->validate(request(), [
-            'password' => 'required|numeric'
-        ]);
         // 重置密码入库
-        $res = WalletService::updateWalletWithdrawPassword($wallet, request()->input('password'));
+        $res = WalletService::updateWalletWithdrawPassword($wallet, $password);
         if ($res) {
             return Result::success('重置密码成功');
         }
