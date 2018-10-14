@@ -70,7 +70,8 @@ return [
 
         'verify_code' => [
             'required' => '请输入手机验证码',
-            'size' => '验证码位数为4位',
+            'size' => '验证码位数为:size位',
+            'min' => '验证码位数最少为:min位',
         ],
 
         'captcha' => [

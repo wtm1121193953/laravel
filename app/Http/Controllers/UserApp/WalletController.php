@@ -222,7 +222,7 @@ class WalletController extends Controller
     public function checkVerifyCode()
     {
         $this->validate(request(), [
-            'verify_code' => 'required|min:4'
+            'verify_code' => 'required|size:4'
         ]);
         $verifyCode = request()->get('verify_code');
         $user = request()->get('current_user');
