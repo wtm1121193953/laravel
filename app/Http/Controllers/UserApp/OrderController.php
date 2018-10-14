@@ -202,6 +202,7 @@ class OrderController extends Controller
         $order->pay_price = $goods->price * $number;
         $order->origin_app_type = request()->header('app-type');
         $order->pay_type = $payType;
+        $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->save();
 
@@ -284,6 +285,7 @@ class OrderController extends Controller
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->pay_type = $payType;
+        $order->settlement_rate = $merchant->settlement_rate;
         $order->origin_app_type = request()->header('app-type');
         $order->save();
 
@@ -363,6 +365,7 @@ class OrderController extends Controller
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $price;
 
+        $order->settlement_rate = $merchant->settlement_rate;
         $order->pay_type = $payType;
         $order->remark = request('remark', '');
         $order->pay_target_type =Order::PAY_TARGET_TYPE_PLATFORM;
