@@ -22,7 +22,9 @@ class SceneController extends Controller
         $data = [];
         $data['ios'] = VersionService::getLastVersionByType(Version::APP_TYPE_IOS);
         $data['android'] = VersionService::getLastVersionByType(Version::APP_TYPE_ANDROID);
-        $data['ios']->package_url = "https://itunes.apple.com/cn/app/id1438505884?mt=8";
+        if(!empty($data['ios'])){
+            $data['ios']->package_url = "https://itunes.apple.com/cn/app/id1438505884?mt=8";
+        }
         return view('app-download-h5',$data);
 
     }
