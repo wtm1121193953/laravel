@@ -420,6 +420,11 @@
 
         return flag;
     }
+
+    function getIOSSystemVersion() {
+        let matches = window.navigator.userAgent.match(/OS ([\d]+)(_[\d]+)* like Mac OS X/i);
+        return matches[1] || '';
+    }
     
     //跳转地址
     var lock = false;
@@ -436,14 +441,17 @@
         //删除
         android_box && parentBox.removeChild(android_box)
 
-        <?php if ($ios != null){ ?>
+        @if($ios != null)
             //链接
-            var url = iosEl.getAttribute('package-url'),
+            let url = iosEl.getAttribute('package-url'),
                 action = null
 
             //http:/https: => itms-apps:
-            url = url.replace(/(http\:|https\:)/g, "itms-apps:")
-            
+            let version = getIOSSystemVersion();
+            if(version >= 10) {
+                url = url.replace(/(http\:|https\:)/g, "itms-apps:")
+            }
+
             if(url) {
                 window.location.href = url
                 action = function() {
@@ -463,17 +471,17 @@
                 action()
                 lock = false
             })
-        <?php } else { ?>
+        @else
             ios_box && parentBox.removeChild(ios_box)
             parentBox.removeChild(tips)
             createNull(parentBox)
-        <?php } ?>
+        @endif
     } else {
         //安卓
         //删除
         ios_box && parentBox.removeChild(ios_box)
 
-        <?php if ($android != null){ ?>
+        @if($android != null)
             //链接
             var url = androidEl.getAttribute('package-url'),
                 action = null
@@ -500,11 +508,11 @@
                 action()
                 lock = false
             })
-        <?php } else { ?>
+        @else
             android_box && parentBox.removeChild(android_box)
             parentBox.removeChild(tips)
             createNull(parentBox)
-        <?php } ?>
+        @endif
     }
 
     /**
