@@ -17,6 +17,6 @@ Route::get('/wallet/tpsCredit/detail', 'WalletController@getTpsCreditDetail');
 Route::get('/wallet/withdraw/getPasswordInfo', 'WalletWithdrawController@getWalletPasswordInfo');
 Route::post('/wallet/withdraw/setWalletPassword', 'WalletWithdrawController@setWalletPassword');
 Route::get('/wallet/withdraw/getWithdrawInfo', 'WalletWithdrawController@getWithdrawInfoAndBankInfo');
-Route::post('/wallet/withdraw/withdrawApplication', 'WalletWithdrawController@withdrawApplication')->middleware(AllowWithdrawDate::class);
+Route::post('/wallet/withdraw/withdraw', 'WalletWithdrawController@withdrawApplication')->middleware(AllowWithdrawDate::class);
 Route::get('/wallet/withdraw/getWithdrawDetail', 'WalletWithdrawController@getWithdrawDetail');
 Route::get('/wallet/withdraw/getInvoiceTemplatePath', 'WalletWithdrawController@getInvoiceTemplatePath');

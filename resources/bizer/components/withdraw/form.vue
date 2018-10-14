@@ -242,7 +242,7 @@
             commit() {
                 this.$refs.form.validate(valid => {
                     if (valid) {
-                        api.post('/wallet/withdraw/withdrawApplication', this.form).then(data => {
+                        api.post('/wallet/withdraw/withdraw', this.form).then(data => {
                             this.$message.success('提现申请成功');
                             this.$emit('closeWithdrawDialog');
                             this.$emit('getList');

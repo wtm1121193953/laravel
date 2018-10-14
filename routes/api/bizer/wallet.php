@@ -14,5 +14,5 @@ Route::post('/wallet/withdraw/editBizerIdentityAuditRecord', 'WalletWithdrawCont
 Route::get('/wallet/withdraw/getBankCardAndIdCardInfo', 'WalletWithdrawController@getBankCardAndIdCardInfo');
 
 Route::get('/wallet/withdraw/getWithdrawInfoAndBankInfo', 'WalletWithdrawController@getWithdrawInfoAndBankInfo');
-Route::post('/wallet/withdraw/withdrawApplication', 'WalletWithdrawController@withdrawApplication');
+Route::post('/wallet/withdraw/withdraw', 'WalletWithdrawController@withdrawApplication');
 Route::post('/wallet/withdraw/resetWithdrawPassword', 'WalletWithdrawController@resetWithdrawPassword');
