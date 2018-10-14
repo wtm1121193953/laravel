@@ -182,6 +182,11 @@ return [
         'bank_name'     =>  [
             'required'  =>  '银行不可为空',
             'max'       =>  '银行名不可超过 :max个字'
+        ],
+        'sceneId'  => [
+            'required' => '场景ID不能为空',
+            'integer' => '场景ID必须为整数',
+            'min' => '场景ID不能小于0',
         ]
     ],
 
