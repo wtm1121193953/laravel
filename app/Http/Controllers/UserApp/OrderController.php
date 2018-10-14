@@ -139,9 +139,8 @@ class OrderController extends Controller
 
         //返利金额
         $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordByOrderId($detail->id,FeeSplittingRecord::TYPE_TO_SELF);
-        $detail->fee_splitting_amount = $feeSplittingRecords->amount;
-
         if(!empty($feeSplittingRecords)){
+            $detail->fee_splitting_amount = $feeSplittingRecords->amount;
             $detail->profitAmount = $feeSplittingRecords->order_profit_amount;
         }else{
             $detail->pro = 0;
