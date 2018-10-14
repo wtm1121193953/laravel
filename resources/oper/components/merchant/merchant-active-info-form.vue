@@ -223,7 +223,7 @@
         // 法人信息
         legal_id_card_pic_a: '',
         legal_id_card_pic_b: '',
-        country_id: '',
+        country_id: 1,
         legal_id_card_num: '',
         business_licence_pic_url: '',
         organization_code: '',
@@ -452,7 +452,7 @@
                     this.form.status = parseInt(data.status);
                     this.form.bank_card_type = parseInt(data.bank_card_type);
                     this.form.bizer_id = parseInt(data.bizer_id) != 0 ? parseInt(data.bizer_id) : '';
-                    this.form.country_id = parseInt(data.country_id) != 0 ? parseInt(data.country_id) : '';
+                    this.form.country_id = parseInt(data.country_id) != 0 ? parseInt(data.country_id) : 1;
                 }else {
                     this.form = deepCopy(defaultForm);
                 }
@@ -493,13 +493,6 @@
             getCountryList() {
                 api.get('/country/list').then(data => {
                     this.countryList = data.list;
-                    // 设置默认国别为中国
-                    data.list.forEach(item => {
-                        if(item.name_zh == '中国'){
-                            this.form.country_id = item.id;
-                        }
-                    })
-
                 })
             }
         },
