@@ -143,7 +143,8 @@ class OrderController extends Controller
             $detail->fee_splitting_amount = $feeSplittingRecords->amount;
             $detail->profitAmount = $feeSplittingRecords->order_profit_amount;
         }else{
-            $detail->pro = 0;
+            $detail->fee_splitting_amount = 0;
+            $detail->profitAmount = 0;
         }
 
         //商家详情
