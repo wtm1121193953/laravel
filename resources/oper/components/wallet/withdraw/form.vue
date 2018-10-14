@@ -51,7 +51,7 @@
                             <p>发票邮寄地址：广东省深圳市南山区桃园路田厦金牛广场A座4006  大千生活  联系人：大千生活</p>
                         </li>
                         <li><p>提现成功发起后，7个工作日左右到账。</p></li>
-                        <li><p>每月10号、20号、30号才能提现</p></li>
+                        <li><p>每月{{withdrawableDaysText}}才能提现</p></li>
                         <li><p>最低提现金额100元</p></li>
                     </ol>
                 </div>
@@ -121,7 +121,7 @@
                 },
                 formLoading: false,
                 noWithdraw: true,
-
+                withdrawableDays: '',
 
                 formRules: {
                     amount: [

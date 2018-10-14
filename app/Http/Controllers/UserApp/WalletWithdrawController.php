@@ -64,7 +64,7 @@ class WalletWithdrawController extends Controller
         // 判断当前是否可提现
         $days = WalletWithdrawService::getWithdrawableDays();
         if(!in_array(date('d'), $days)){
-            throw new BaseResponseException('当前日期不可提现', ResultCode::NO_PERMISSION);
+            throw new BaseResponseException('当前日期不可提现');
         }
 
         // 注入银行卡信息
@@ -94,7 +94,7 @@ class WalletWithdrawController extends Controller
             'hasBankCard' => $cards->count() <= 0 ? 0 : 1,
             'balance' => $wallet->balance,
             // 判断现今可否结算
-            'isWithdraw'    =>  true,//(in_array(date('d'), [10,20,30])) ? true:false,
+            'isWithdraw' => in_array(date('d'), WalletWithdrawService::getWithdrawableDays()),
             //显示可提现日期
             'days'    =>  WalletWithdrawService::getWithdrawableDays(),
         ]);
