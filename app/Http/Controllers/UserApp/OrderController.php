@@ -134,20 +134,17 @@ class OrderController extends Controller
             $detail->distance = Utils::getFormativeDistance($distance);
         }
 
-        // 查看分润详情
-        $userFeeSplittingRatioToSelf = FeeSplittingService::getUserFeeSplittingRatioToSelfByMerchantId($detail->merchant_id);
-        $detail->fee_splitting_amount = Utils::getDecimalByNotRounding($detail->pay_price * $userFeeSplittingRatioToSelf, 2);
-
         // 贡献值
         $detail->consume_quota = floor($detail->pay_price);
 
         //返利金额
         $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordByOrderId($detail->id,FeeSplittingRecord::TYPE_TO_SELF);
+        $detail->fee_splitting_amount = $feeSplittingRecords->amount;
 
         if(!empty($feeSplittingRecords)){
-            $detail->profitAmount = $feeSplittingRecords->amount;
+            $detail->profitAmount = $feeSplittingRecords->order_profit_amount;
         }else{
-            $detail->profitAmount = 0;
+            $detail->pro = 0;
         }
 
         //商家详情
