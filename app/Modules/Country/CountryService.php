@@ -36,7 +36,7 @@ class CountryService extends BaseService
      */
     public static function getNameZhById($countryId)
     {
-        $country = self::getById($countryId, ['name']);
+        $country = self::getById($countryId, ['name_zh']);
         return $country ? $country->name_zh : '';
 
     }
