@@ -56,9 +56,9 @@ ALTER TABLE `bank_cards`
     CHANGE COLUMN `origin_type` `origin_type` TINYINT(4) NOT NULL DEFAULT \'1\' COMMENT \'分润用户类型, 1-用户 2-商户 3-运营中心 4-业务员\' AFTER `origin_id`;
 
 INSERT INTO `countries` (`id`, `abbreviation`, `name_en`, `name_zh`, `code`, `flag_icon`, `created_at`, `updated_at`) VALUES (1, \'CN\', \'China\', \'中国\', \'86\', \'https://daqian-public-1257640953.cos.ap-guangzhou.myqcloud.com/a82ff00f39eff54062328b4474c33dbc.png\', \'2018-10-11 17:15:37\', \'2018-10-11 17:15:45\');
-INSERT INTO `countries` (`id`, `abbreviation`, `name_en`, `name_zh`, `code`, `flag_icon`, `created_at`, `updated_at`) VALUES (2, \'HK\', \'Hong Kong\', \'香港\', \'852\', \'https://daqian-public-1257640953.cos.ap-guangzhou.myqcloud.com/389d0451c5c2ff40e88a93588dcbd6f1.png\', \'2018-10-11 17:15:39\', \'2018-10-11 17:15:47\');
-INSERT INTO `countries` (`id`, `abbreviation`, `name_en`, `name_zh`, `code`, `flag_icon`, `created_at`, `updated_at`) VALUES (3, \'MO\', \'Macau\', \'澳门\', \'853\', \'https://daqian-public-1257640953.cos.ap-guangzhou.myqcloud.com/6339bdf0e24c871301d1fc0207e2685f.png\', \'2018-10-11 17:15:40\', \'2018-10-11 17:15:48\');
-INSERT INTO `countries` (`id`, `abbreviation`, `name_en`, `name_zh`, `code`, `flag_icon`, `created_at`, `updated_at`) VALUES (4, \'TW\', \'Taiwan\', \'台湾\', \'886\', \'https://daqian-public-1257640953.cos.ap-guangzhou.myqcloud.com/0e41af2b3ca03d145e7665d0821931fa.png\', \'2018-10-11 17:15:42\', \'2018-10-11 17:15:49\');
+INSERT INTO `countries` (`id`, `abbreviation`, `name_en`, `name_zh`, `code`, `flag_icon`, `created_at`, `updated_at`) VALUES (2, \'HK\', \'Hong Kong\', \'中国香港\', \'852\', \'https://daqian-public-1257640953.cos.ap-guangzhou.myqcloud.com/389d0451c5c2ff40e88a93588dcbd6f1.png\', \'2018-10-11 17:15:39\', \'2018-10-11 17:15:47\');
+INSERT INTO `countries` (`id`, `abbreviation`, `name_en`, `name_zh`, `code`, `flag_icon`, `created_at`, `updated_at`) VALUES (3, \'MO\', \'Macau\', \'中国澳门\', \'853\', \'https://daqian-public-1257640953.cos.ap-guangzhou.myqcloud.com/6339bdf0e24c871301d1fc0207e2685f.png\', \'2018-10-11 17:15:40\', \'2018-10-11 17:15:48\');
+INSERT INTO `countries` (`id`, `abbreviation`, `name_en`, `name_zh`, `code`, `flag_icon`, `created_at`, `updated_at`) VALUES (4, \'TW\', \'Taiwan\', \'中国台湾\', \'886\', \'https://daqian-public-1257640953.cos.ap-guangzhou.myqcloud.com/0e41af2b3ca03d145e7665d0821931fa.png\', \'2018-10-11 17:15:42\', \'2018-10-11 17:15:49\');
             
             
 update areas set parent_id = 820000, path = 3 where parent_id = 82;

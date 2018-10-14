@@ -12,6 +12,6 @@ class CountryController extends Controller
     public function getList()
     {
         $list = CountryServer::getAll();
-        return Result::success($list);
+        return Result::success(['list' => $list]);
     }
 }

@@ -139,19 +139,20 @@
                 <image-upload v-model="form.legal_id_card_pic_b" :limit="1"/>
             </el-form-item>
 
-            <el-form-item prop="country_id" label="法人身份证国别或地区">
-                <el-select v-model="form.country_id" clearable placeholder="请选择">
-                    <el-option
-                        v-for="item in countryList"
-                        :value="item.id"
-                        :label="item.name_zh"
-                        :key="item.id"
-                    ></el-option>
-                </el-select>
-            </el-form-item>
-
-            <el-form-item prop="legal_id_card_num" label="法人身份证号码">
-                <el-input v-model="form.legal_id_card_num"/>
+            <el-form-item label="法人身份证号码">
+                <el-form-item prop="country_id" style="width: 20%; display: inline-block;">
+                    <el-select v-model="form.country_id" placeholder="请选择">
+                        <el-option
+                                v-for="item in countryList"
+                                :value="item.id"
+                                :label="item.name_zh"
+                                :key="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item prop="legal_id_card_num" style="width: 70%; display: inline-block;">
+                    <el-input v-model="form.legal_id_card_num"/>
+                </el-form-item>
             </el-form-item>
 
             <el-form-item prop="business_licence_pic_url" label="营业执照">
@@ -491,7 +492,14 @@
             },
             getCountryList() {
                 api.get('/country/list').then(data => {
-                    this.countryList = data;
+                    this.countryList = data.list;
+                    // 设置默认国别为中国
+                    data.list.forEach(item => {
+                        if(item.name_zh == '中国'){
+                            this.form.country_id = item.id;
+                        }
+                    })
+
                 })
             }
         },
