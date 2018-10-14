@@ -14,6 +14,7 @@ use App\DataCacheService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Bizer\BizerService;
+use App\Modules\Country\CountryService;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
 use App\Modules\Oper\Oper;
@@ -330,6 +331,7 @@ class MerchantService extends BaseService
         }else{
             $merchant->user_follow_status =1;
         }
+        $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
         return $merchant;
     }
 

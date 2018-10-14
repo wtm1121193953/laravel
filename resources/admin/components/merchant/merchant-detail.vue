@@ -171,6 +171,7 @@
                         </el-form-item>
 
                         <el-form-item label="法人身份证号码">
+                            {{data.countryName}}
                             {{data.legal_id_card_num}}
                         </el-form-item>
 
