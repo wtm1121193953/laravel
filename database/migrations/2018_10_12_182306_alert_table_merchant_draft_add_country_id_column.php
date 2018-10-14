@@ -14,7 +14,7 @@ class AlertTableMerchantDraftAddCountryIdColumn extends Migration
     public function up()
     {
         Schema::table('merchant_drafts', function (Blueprint $table) {
-            $table->integer('country_id')->default(0)->comment('国别或地区ID')->after('legal_id_card_pic_b');
+            $table->integer('country_id')->default(1)->comment('国别或地区ID')->after('legal_id_card_pic_b');
         });
     }
 
