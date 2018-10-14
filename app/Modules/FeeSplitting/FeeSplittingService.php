@@ -137,28 +137,30 @@ class FeeSplittingService extends BaseService
         if ($operFeeRatioInit == null || $operFeeRatioInit <= 0) {
             return;
         }
-        $bizer = BizerService::getById($order->bizer_id);
-        if (!empty($bizer)) {
-            if (!$order->bizer_divide) {
-                $param = [
-                    'operId' => $oper->id,
-                    'bizerId' => $bizer->id,
-                ];
-                $operBizer = OperBizerService::getOperBizerByParam($param);
-                if ($operBizer->status == OperBizer::STATUS_SIGNED) {
-                    $order->bizer_divide = $operBizer->divide;
-                    $order->save();
-                    $bizerFeeRatio = $operFeeRatioInit * $order->bizer_divide / 100;
-                    $operFeeRatio = $operFeeRatioInit - $bizerFeeRatio;
-                    if ($operFeeRatio < 0) {
-                        return;
-                    }
-                }
-            }
-        }
 
         DB::beginTransaction();
         try {
+
+            $bizer = BizerService::getById($order->bizer_id);
+            if (!empty($bizer)) {
+                if (!$order->bizer_divide) {
+                    $param = [
+                        'operId' => $oper->id,
+                        'bizerId' => $order->bizer_id,
+                    ];
+                    $operBizer = OperBizerService::getOperBizerByParam($param);
+                    if ($operBizer->status == OperBizer::STATUS_SIGNED) {
+                        $order->bizer_divide = $operBizer->divide;
+                        $order->save();
+                        $bizerFeeRatio = $operFeeRatioInit * $order->bizer_divide / 100;
+                        $operFeeRatio = $operFeeRatioInit - $bizerFeeRatio;
+                        if ($operFeeRatio < 0) {
+                            return;
+                        }
+                    }
+                }
+            }
+
             if ($merchant->bizer_id && $bizerFeeRatio > 0) {
                 // 计算业务员
                 // 如果该商户有业务员，则给业务员分润
