@@ -32,7 +32,7 @@ class WalletWithdrawController extends Controller
     public function withdraw()
     {
         $password = request('password');
-        $password = Utils::decrypt($password);
+        $password = Utils::aesDecrypt($password);
         if (!preg_match('/^\d{6}$/',$password)) {
             throw new ParamInvalidException('密码必须是数字');
         }
@@ -41,7 +41,7 @@ class WalletWithdrawController extends Controller
             'amount'    =>  'required|numeric|min:100'
         ],[
             'card_id.required'  =>  '银行卡信息有误',
-            'amount.min'        =>  '最低提现金额为100',
+            'amount.min'        =>  '最低提现金额为100元',
             'amount.required'   =>  '提现金额不可为空'
         ]);
 
