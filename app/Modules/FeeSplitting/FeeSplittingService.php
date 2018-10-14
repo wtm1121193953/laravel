@@ -145,14 +145,14 @@ class FeeSplittingService extends BaseService
                     'bizerId' => $bizer->id,
                 ];
                 $operBizer = OperBizerService::getOperBizerByParam($param);
-                $order->bizer_divide = $operBizer->divide;
-                $order->save();
-            }
-            if ($operBizer->status == OperBizer::STATUS_SIGNED) {
-                $bizerFeeRatio = $operFeeRatioInit * $order->bizer_divide / 100;
-                $operFeeRatio = $operFeeRatioInit - $bizerFeeRatio;
-                if ($operFeeRatio < 0) {
-                    return;
+                if ($operBizer->status == OperBizer::STATUS_SIGNED) {
+                    $order->bizer_divide = $operBizer->divide;
+                    $order->save();
+                    $bizerFeeRatio = $operFeeRatioInit * $order->bizer_divide / 100;
+                    $operFeeRatio = $operFeeRatioInit - $bizerFeeRatio;
+                    if ($operFeeRatio < 0) {
+                        return;
+                    }
                 }
             }
         }
