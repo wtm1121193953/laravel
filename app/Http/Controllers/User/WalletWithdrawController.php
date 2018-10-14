@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Exceptions\BaseResponseException;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\Wallet;
 use Illuminate\Http\Request;
@@ -49,6 +50,11 @@ class WalletWithdrawController extends Controller
         {
             return Result::error(ResultCode::DB_QUERY_FAIL, '无银行卡信息');
         }
+        // 判断当前是否可提现
+        $days = WalletWithdrawService::getWithdrawableDays();
+        if(!in_array(date('d'), $days)){
+            throw new BaseResponseException('当前日期不可提现', ResultCode::NO_PERMISSION);
+        }
 
         // 注入银行卡信息
         $obj->bank_card_type        = $card->bank_card_type;
@@ -79,7 +85,7 @@ class WalletWithdrawController extends Controller
             // 判断现今可否结算
             'isWithdraw'    =>  true,//(in_array(date('d'), [10,20,30])) ? true:false,
             //显示可提现日期
-            'days'    =>  [10,20,30],
+            'days'    =>  WalletWithdrawService::getWithdrawableDays(),
         ]);
     }
 }

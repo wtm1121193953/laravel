@@ -29,6 +29,15 @@ class WalletWithdrawService extends BaseService
 {
 
     /**
+     * 获取可提现的日期数组, 返回每月的哪些天
+     * @return array
+     */
+    public static function getWithdrawableDays()
+    {
+        return [10, 20, 30];
+    }
+
+    /**
      * 根据id获取提现记录
      * @param $id
      * @param array $fields
