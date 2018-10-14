@@ -322,7 +322,7 @@ class WalletController extends Controller
             Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
         }
         $password = $request->input('password');
-        $request->attributes->replace(['password'=>Utils::decrypt($password)]);
+        $request->attributes->replace(['password'=>Utils::aesDecrypt($password)]);
         $this->validate($request, [
             'password'  =>  'required|numeric'
         ]);

@@ -153,7 +153,7 @@ class WalletController extends Controller
     public function confirmPassword()
     {
         $password = request('password');
-        $password = Utils::decrypt($password);
+        $password = Utils::aesDecrypt($password);
         if (!preg_match('/^\d{6}$/',$password)) {
             throw new ParamInvalidException('密码必须是数字');
         }
@@ -177,7 +177,7 @@ class WalletController extends Controller
     public function changePassword()
     {
         $password = request('password');
-        $password = Utils::decrypt($password);
+        $password = Utils::aesDecrypt($password);
         if (!preg_match('/^\d{6}$/',$password)) {
             throw new ParamInvalidException('密码必须是数字');
         }
