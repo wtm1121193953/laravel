@@ -63,9 +63,6 @@ class V1_4_6 extends Command
             "INSERT INTO areas (area_id,name,path,area_code,spell,letter,first_letter,parent_id)
     values (820000, '澳门特别行政区', 2, '1853', 'AOMENTEBIEXINGZHENGQU', 'AMTBXZQ', 'A', 82),
  (810000, '香港特别行政区', 2, '1852', 'XIANGGANGTEBIEXINGZHENGQU', 'XGTBXZQ', 'X', 81)",
-            "",
-            "",
-            "",
         ];
         foreach ($sqls as $sql) {
             DB::statement($sql);
