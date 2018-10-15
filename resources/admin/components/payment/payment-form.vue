@@ -7,7 +7,7 @@
                         <el-input v-model="form.name"/>
                     </el-form-item>
                     <el-form-item label="支付类型" prop="type">
-                        <el-select v-model="form.type" size="small"  multiple placeholder="请选择" class="w-150">
+                        <el-select v-model="form.type" size="small"  placeholder="请选择" class="w-150">
                             <el-option label="微信支付" value="1"/>
                         </el-select>
                     </el-form-item>
@@ -52,8 +52,8 @@
                         <el-radio :label="1">是</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item prop="config" label="配置信息">
-                    <el-input type="textarea" :rows="5" v-model="form.config" placeholder=""/>
+                <el-form-item prop="configs" label="配置信息">
+                    <el-input type="textarea" :rows="5" v-model="form.configs" placeholder=""/>
                 </el-form-item>
                 <el-form-item>
                     <el-button @click="cancel">取消</el-button>
@@ -72,13 +72,11 @@
         type: '',
         class_name: '',
         logo_url: '',
-        desc: '',
-        package_url: '',
         status: 1,
         on_pc: 0,
         on_miniprogram: 0,
         on_app: 0,
-        config: ''
+        configs: ''
     };
     export default {
         name: 'payment-form',
@@ -126,7 +124,7 @@
 
             },
             handleAvatarSuccess(res, file) {
-                this.form.package_url = file.response.data.url;
+                this.form.logo_url = file.response.data.url;
             },
         },
         created(){

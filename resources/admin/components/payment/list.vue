@@ -1,50 +1,57 @@
 <template>
     <page title="支付方式管理">
         <el-form class="fl" inline size="small">
-            <el-form-item label="" prop="app_type">
-                <el-select v-model="query.app_type">
+            <el-form-item label="" prop="type">
+                <el-select v-model="query.type" placeholder="支付方式类型">
                     <el-option label="全部" value=""/>
-                    <el-option label="Android" value="1"/>
-                    <el-option label="IOS" value="2"/>
+                    <el-option label="微信支付" value="1"/>
                 </el-select>
             </el-form-item>
-            <el-form-item prop="app_name" label="">
-                <el-input v-model="query.app_name" @keyup.enter.native="search" clearable placeholder="应用名称"/>
+            <el-form-item prop="name" label="">
+                <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="支付方式名称"/>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
         </el-form>
-        <el-button class="fr" type="primary" @click="add">添加版本</el-button>
+        <el-button class="fr" type="primary" @click="add">添加支付方式</el-button>
         <el-table :data="list" stripe v-loading="isLoading">
-            <el-table-column prop="id" label="版本ID" width="100px"/>
-            <el-table-column prop="app_name" label="应用名称" />
-            <el-table-column prop="app_type" label="应用类型">
+            <el-table-column prop="id" label="ID" width="100px"/>
+            <el-table-column prop="name" label="名称" />
+            <el-table-column prop="type" label="类型">
+            </el-table-column>
+            <el-table-column prop="logo_url" label="logo">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.app_type === 1">Android</span>
-                    <span v-else-if="scope.row.app_type === 2">IOS</span>
+                    <img class="img" :src="scope.row.logo_url" width="100" height="100"/>
                 </template>
             </el-table-column>
-            <el-table-column prop="app_tag" label="版本标签" />
-            <el-table-column prop="version_no" label="版本号" />
-            <el-table-column prop="version_seq" label="版本序号" />
-            <el-table-column prop="created_at" label="发布时间" />
-            <el-table-column prop="status" label="发布状态">
+            <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1" class="c-warning">暂不发布</span>
-                    <span v-else-if="scope.row.status === 2" class="c-green">已发布</span>
+                    <span v-if="scope.row.status === 2" class="c-warning">暂停</span>
+                    <span v-else-if="scope.row.status === 2" class="c-green">启用</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="force" label="强制更新">
+            <el-table-column prop="on_pc" label="开放pc">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.force === 0">否</span>
-                    <span v-else-if="scope.row.force === 1">是</span>
+                    <span v-if="scope.row.on_pc === 0" class="c-warning">否</span>
+                    <span v-else-if="scope.row.on_pc === 1" class="c-green">是</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="on_app" label="开放app">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.on_app === 0" class="c-warning">否</span>
+                    <span v-else-if="scope.row.on_app === 1" class="c-green">是</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="on_miniprogram" label="开放小程序">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.on_miniprogram === 0" class="c-warning">否</span>
+                    <span v-else-if="scope.row.on_miniprogram === 1" class="c-green">是</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="edit(scope)">修改</el-button>
-                    <el-button type="text" @click="del(scope)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -100,16 +107,6 @@
                     query: {id: scope.row.id}
                 });
             },
-            del(scope){
-                this.$confirm(`确定要删除 ${scope.row.app_name} 吗? `, '温馨提示', {type: 'warning'}).then(() => {
-                    this.isLoading = true;
-                    api.post('/payment/del', {id: scope.row.id}).then(() => {
-                        this.getList();
-                    }).finally(() => {
-                        this.isLoading = false;
-                    })
-                })
-            }
         },
         created(){
             this.getList();

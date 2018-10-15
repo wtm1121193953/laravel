@@ -7,6 +7,7 @@
  */
 namespace App\Http\Controllers\Admin;
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Payment\Payment;
 use App\Modules\Payment\PaymentService;
@@ -33,6 +34,53 @@ class PaymentController extends Controller
 
         $payment = new Payment();
         $payment->name = $request->get('name');
+        $payment->type = $request->get('type');
+        $payment->logo_url = $request->get('logo_url');
+        $payment->class_name = $request->get('class_name');
+        $payment->status = $request->get('status');
+        $payment->on_pc = $request->get('on_pc');
+        $payment->on_miniprogram = $request->get('on_miniprogram');
+        $payment->configs = $request->get('configs');
+
+        if (!$payment->save()) {
+            throw new BaseResponseException('执行失败');
+        }
+        return Result::success('添加成功');
+
+    }
+
+    public function detail(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|min:1',
+        ]);
+        $data = Payment::findOrFail($request->get('id'));
+        return Result::success($data);
+    }
+
+    public function edit(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|min:1',
+            'name' => 'required',
+            'type' => 'required',
+        ]);
+
+        $payment = Payment::findOrFail($request->get('id'));
+        $payment->name = $request->get('name');
+        $payment->type = $request->get('type');
+        $payment->logo_url = $request->get('logo_url');
+        $payment->class_name = $request->get('class_name');
+        $payment->status = $request->get('status');
+        $payment->on_pc = $request->get('on_pc');
+        $payment->on_miniprogram = $request->get('on_miniprogram');
+        $payment->configs = $request->get('configs');
+
+        if (!$payment->save()) {
+            throw new BaseResponseException('执行失败');
+        }
+        return Result::success('更新成功');
+
     }
 
 }

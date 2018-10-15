@@ -15,9 +15,16 @@ use Illuminate\Database\Eloquent\Model;
  * @property tinyInteger on_pc
  * @property tinyInteger on_miniprogram
  * @property tinyInteger on_app
- * @property text config
+ * @property text configs
  */
 class Payment extends Model
 {
     //
+    const TYPE_WECHAT = 1;
+    const TYPE_ALIPAY = 2;
+
+    public static function getAllType()
+    {
+        return [self::TYPE_WECHAT=>'微信支付',self::TYPE_ALIPAY=>'支付宝支付'];
+    }
 }

@@ -1,9 +1,9 @@
 <template>
-    <page title="修改版本" :breadcrumbs="{APP版本管理: '/versions'}" v-loading="loading">
+    <page title="修改支付方式" :breadcrumbs="{支付方式管理: '/payments'}" v-loading="loading">
         <el-col :span="12">
-            <form
-                    v-if="version"
-                    :data="version"
+            <payment-form
+                    v-if="payment"
+                    :data="payment"
                     ref="addForm"
                     @cancel="cancel"
                     @save="doEdit"/>
@@ -13,32 +13,33 @@
 
 <script>
     import api from '../../../assets/js/api'
+    import PaymentForm from "./payment-form";
 
     export default {
         name: "add",
         data(){
             return {
                 loading: false,
-                version: null,
+                payment: null,
                 id: null,
             }
         },
         methods: {
             cancel(){
-                router.push('/versions');
+                router.push('/payments');
             },
             getDetail(){
                 this.loading = true;
-                api.get('/version/detail', {id: this.id}).then(data => {
-                    this.version = data;
+                api.get('/payment/detail', {id: this.id}).then(data => {
+                    this.payment = data;
                 }).finally(() => {
                     this.loading = false;
                 });
             },
             doEdit(data){
                 this.loading = true;
-                api.post('/version/edit', data).then((data) => {
-                    router.push('/versions');
+                api.post('/payment/edit', data).then((data) => {
+                    router.push('/payments');
                 }).finally(() => {
                     this.loading = false;
                 })
@@ -48,12 +49,13 @@
             this.id = this.$route.query.id;
             if(!this.id){
                 this.$message.error('id不能为空');
-                router.push('/versions');
+                router.push('/payments');
                 return false;
             }
             this.getDetail();
         },
         components: {
+            PaymentForm
         }
     }
 </script>
