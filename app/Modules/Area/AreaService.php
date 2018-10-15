@@ -59,6 +59,12 @@ class AreaService
                     ->orWhere('spell', 'like', "$name%")
                     ->orWhere('letter', 'like', "$name%");
             })->get();
+        $list->each(function (Area $item){
+            // 地区搜索时, 如果是区县级, 名字后面加上城市名
+            if($item->path == 3){
+                $item->name = $item->name . '，' . Area::where('area_id', $item->parent_id)->value('name');
+            }
+        });
 
         return $list;
     }
