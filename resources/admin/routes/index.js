@@ -22,6 +22,7 @@ import Version from './version'
 import SettlementPlatfroms from '../components/settlement/platform.vue'
 
 import StatisticsOper from '../components/statistics/oper.vue'
+import payment from "./payment";
 /**
  *
  */
@@ -51,6 +52,7 @@ const routes = [
     ...wallet,
     ...bizer,
     ...Version,
+    ...payment,
 
     // 财务模块
     {
