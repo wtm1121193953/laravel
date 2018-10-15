@@ -153,7 +153,10 @@ class FeeSplittingService extends BaseService
                     'bizerId' => $order->bizer_id,
                 ];
                 $operBizer = OperBizerService::getOperBizerByParam($param);
-                if (!$order->bizer_divide && $operBizer && $operBizer->status == OperBizer::STATUS_SIGNED) {
+                if (empty($operBizer)) {
+                    throw new BaseResponseException('运营中心和业务员的签约信息不存在');
+                }
+                if ($order->bizer_divide == 0 && $operBizer->status == OperBizer::STATUS_SIGNED) {
                     $order->bizer_divide = $operBizer->divide;
                     $order->save();
                 }
