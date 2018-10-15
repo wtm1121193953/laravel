@@ -69,5 +69,9 @@ INSERT INTO areas (area_id,name,path,area_code,spell,letter,first_letter,parent_
         ';
         DB::statement($sql);
         $this->info('执行成功');
+
+        $this->info('清理场景码缓存');
+        DB::update("UPDATE miniprogram_scenes SET qrcode_url = '';");
+        $this->info('清理场景码缓存完成');
     }
 }
