@@ -10,6 +10,7 @@ namespace App\Modules\Area;
 
 
 use App\Support\Utils;
+use function foo\func;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 
@@ -59,6 +60,12 @@ class AreaService
                     ->orWhere('spell', 'like', "$name%")
                     ->orWhere('letter', 'like', "$name%");
             })->get();
+
+        $list->each(function(Area $item){
+            if($item->path == 3){
+                $item->parent = Area::where('area_id', $item->parent_id)->first();
+            }
+        });
 
         return $list;
     }
