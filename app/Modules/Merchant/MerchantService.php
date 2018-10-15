@@ -609,7 +609,10 @@ class MerchantService extends BaseService
                 // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户
                 $areaInfo = Area::where('area_id', $city_id)->where('path', 1)->first();
                 if (empty($areaInfo)) {
-                    $query->where('city_id', $city_id);
+                    $query->where(function(Builder $query)use ($city_id){
+                        $query->where('city_id', $city_id)
+                            ->orWhere('area_id', $city_id);
+                    });
                 } else {
                     $cityIdArray = Area::where('parent_id', $city_id)
                         ->where('path', 2)
@@ -684,17 +687,21 @@ class MerchantService extends BaseService
             $allList = $query->select('id','is_pilot')->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat, $user_key) {
-                $item->distance = $item->is_pilot == 1
-                    ? 100000000
-                    : Lbs::getDistanceOfMerchant($item->id, $user_key, floatval($lng), floatval($lat));
+                $item->distance = Lbs::getDistanceOfMerchant($item->id, $user_key, floatval($lng), floatval($lat));
+
+                if ($item->is_pilot == 1) {
+                    $item->distance += 100000000;
+                }
                 return $item;
             })
                 ->sortBy('distance')
                 ->forPage(request('page', 1), 15)
                 ->values()
                 ->map(function($item) {
-                    $item->distance =  $item->is_pilot == 1 ? '' : Utils::getFormativeDistance($item->distance);
-                    //$merchant = Merchant::find($item->id);
+                    if ($item->is_pilot == 1) {
+                        $item->distance -= 100000000;
+                    }
+                    $item->distance = Utils::getFormativeDistance($item->distance);
                     $merchant = DataCacheService::getMerchantDetail($item->id);
                     $merchant->distance = $item->distance;
                     // 格式化距离

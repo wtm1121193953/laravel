@@ -230,7 +230,7 @@ class OrderService extends BaseService
             $order->save();
             // 核销完订单之后 进行分润操作
             if($order->status == Order::STATUS_FINISHED){
-                OrderFinishedJob::dispatch($order);
+                OrderFinishedJob::dispatch($order)->onQueue('order:finished');
             }
 
             return $order;
