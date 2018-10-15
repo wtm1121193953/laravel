@@ -110,4 +110,10 @@ Route::prefix('admin')
 
         Route::get('/feeSplitting/getList', 'FeeSplittingController@getList');
         Route::post('/feeSplitting/ReFeeSplitting', 'FeeSplittingController@ReFeeSplitting');
+
+        Route::get('payments', 'PaymentController@getList');
+        Route::get('payment/detail', 'PaymentController@detail');
+        Route::post('payment/add', 'PaymentController@add');
+        Route::post('payment/edit', 'PaymentController@edit');
+        Route::post('payment/del', 'PaymentController@del');
     });
