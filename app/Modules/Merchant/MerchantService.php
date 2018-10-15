@@ -684,17 +684,21 @@ class MerchantService extends BaseService
             $allList = $query->select('id','is_pilot')->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat, $user_key) {
-                $item->distance = $item->is_pilot == 1
-                    ? 100000000
-                    : Lbs::getDistanceOfMerchant($item->id, $user_key, floatval($lng), floatval($lat));
+                $item->distance = Lbs::getDistanceOfMerchant($item->id, $user_key, floatval($lng), floatval($lat));
+
+                if ($item->is_pilot == 1) {
+                    $item->distance += 100000000;
+                }
                 return $item;
             })
                 ->sortBy('distance')
                 ->forPage(request('page', 1), 15)
                 ->values()
                 ->map(function($item) {
-                    $item->distance =  $item->is_pilot == 1 ? '' : Utils::getFormativeDistance($item->distance);
-                    //$merchant = Merchant::find($item->id);
+                    if ($item->is_pilot == 1) {
+                        $item->distance -= 100000000;
+                    }
+                    $item->distance = Utils::getFormativeDistance($item->distance);
                     $merchant = DataCacheService::getMerchantDetail($item->id);
                     $merchant->distance = $item->distance;
                     // 格式化距离
