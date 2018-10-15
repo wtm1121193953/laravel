@@ -9,7 +9,7 @@
                 <el-input v-model="query.id" size="small"  placeholder="用户ID"  class="w-200" clearable></el-input>
             </el-form-item>
 
-            <el-form-item prop="name" label="会员名称" >
+            <el-form-item prop="name" label="用户名称" >
                 <el-input v-model="query.name" size="small"  placeholder="会员名称"  class="w-200" clearable></el-input>
             </el-form-item>
             <el-form-item prop="startDate" label="注册时间：开始时间">
@@ -59,8 +59,8 @@
             <el-table-column prop="mobile" label="手机号"/>
             <<el-table-column prop="id" label="用户id"/>
             <el-table-column prop="created_at" label="注册时间"/>
-            <el-table-column prop="name" label="会员名称"/>
-            <el-table-column prop="parent" label="推荐人"/>
+            <el-table-column prop="name" label="用户名称"/>
+            <el-table-column prop="parent" label="分享人"/>
             <el-table-column prop="stauts_val" label="用户状态"/>
             <el-table-column prop="identity_status_text" label="认证身份状态"/>
 

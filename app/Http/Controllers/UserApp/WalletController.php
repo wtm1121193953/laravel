@@ -8,7 +8,11 @@
 
 namespace App\HTTP\Controllers\UserApp;
 
+use App\Exceptions\NoPermissionException;
 use App\Http\Controllers\Controller;
+use App\Modules\FeeSplitting\FeeSplittingService;
+use App\Modules\Merchant\Merchant;
+use App\Modules\Oper\Oper;
 use App\Result;
 use App\ResultCode;
 use App\Modules\Wallet\Wallet;
@@ -16,10 +20,9 @@ use App\Modules\Wallet\WalletService;
 use App\Modules\Wallet\ConsumeQuotaService;
 use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Support\Utils;
-use App\Modules\UserCredit\UserCreditSettingService;
-use App\Modules\Merchant\MerchantService;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Sms\SmsService;
 use App\Exceptions\ParamInvalidException;
@@ -52,6 +55,8 @@ class WalletController extends Controller
         $type = request('type');
         if ($type == '0') {
             $type = '';
+        }elseif ($type == 7){
+            $type = [7,8];
         }
         $bills = WalletService::getBillList([
             'originId' => $value,
@@ -110,9 +115,9 @@ class WalletController extends Controller
             'originId' => $value,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
         ], $pageSize, true);
-        $data = $query->paginate($pageSize);
         // 当月总消费额
         $amount = $query->sum('consume_quota');
+        $data = $query->paginate($pageSize);
 
         return Result::success([
             'list' => $data->items(),
@@ -147,11 +152,13 @@ class WalletController extends Controller
      */
     public function confirmPassword()
     {
-        $this->validate(request(), [
-            'password' => 'required|numeric'
-        ]);
+        $password = request('password');
+        $password = Utils::aesDecrypt($password);
+        if (!preg_match('/^\d{6}$/',$password)) {
+            throw new ParamInvalidException('密码必须是数字');
+        }
         $user = request()->get('current_user');
-        WalletService::checkPayPassword(request()->input('password'), $user->id);
+        WalletService::checkPayPassword($password, $user->id);
         // 记录确认密码时间
         $token = str_random();
         Cache::put('user_pay_password_modify_temp_token_' . $user->id, $token, 3);
@@ -169,6 +176,11 @@ class WalletController extends Controller
      */
     public function changePassword()
     {
+        $password = request('password');
+        $password = Utils::aesDecrypt($password);
+        if (!preg_match('/^\d{6}$/',$password)) {
+            throw new ParamInvalidException('密码必须是数字');
+        }
 
         $currentUser = request()->get('current_user');
 
@@ -192,11 +204,8 @@ class WalletController extends Controller
             Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
         }
 
-        $this->validate(request(), [
-            'password' => 'required|numeric'
-        ]);
         // 重置密码入库
-        $res = WalletService::updateWalletWithdrawPassword($wallet, request()->input('password'));
+        $res = WalletService::updateWalletWithdrawPassword($wallet, $password);
         if ($res) {
             return Result::success('重置密码成功');
         }
@@ -213,7 +222,7 @@ class WalletController extends Controller
     public function checkVerifyCode()
     {
         $this->validate(request(), [
-            'verify_code' => 'required|min:4'
+            'verify_code' => 'required|size:4'
         ]);
         $verifyCode = request()->get('verify_code');
         $user = request()->get('current_user');
@@ -233,14 +242,14 @@ class WalletController extends Controller
      * @param $consume
      * @return float|int
      */
-    private static function getTpsConsumeByConsume($consume)
+    /*private static function getTpsConsumeByConsume($consume)
     {
         $tpsConsume = Utils::getDecimalByNotRounding($consume / 6 / 6.5 / 4, 2);
         return $tpsConsume;
-    }
+    }*/
 
     /**
-     * 我的tps 消费额统计
+     * 我的贡献值统计
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function getTpsConsume()
@@ -248,22 +257,26 @@ class WalletController extends Controller
         $user = request()->get('current_user');
 
         $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
-        $totalTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
+        $totalTpsConsume = !empty($wallet)?($wallet->consume_quota + $wallet->freeze_consume_quota + $wallet->share_consume_quota + $wallet->share_freeze_consume_quota):0;
+
+        $theMonthTpsConsume = ConsumeQuotaService::getConsumeQuotaRecordList([
             'status' => WalletConsumeQuotaRecord::STATUS_REPLACEMENT,
             'originId' => $user->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+            'startDate' => Carbon::now()->startOfMonth(),
+            'endDate' => Carbon::now()->endOfMonth(),
         ], 15, true)->sum('consume_quota');
-        $theMonthTpsConsume = self::getTpsConsumeByConsume($wallet->consume_quota);
 
         return Result::success([
-            'totalTpsConsume' => $totalTpsConsume,
-            'theMonthTpsConsume' => $theMonthTpsConsume,
+            'totalTpsConsume' => Utils::getDecimalByNotRounding($totalTpsConsume, 2),
+            'theMonthTpsConsume' => Utils::getDecimalByNotRounding($theMonthTpsConsume, 2),
             'showReminder' => 1, // 是否显示提示语 0-不显示 1-显示
         ]);
     }
 
     /**
      * 获取tps消费额记录
+     * @deprecated
      */
     public function getTpsConsumeQuotasList()
     {
@@ -296,6 +309,7 @@ class WalletController extends Controller
 
     /**
      * 获取tps消费额详情
+     * @deprecated
      */
     public function getTpsConsumeQuotaDetail()
     {
@@ -318,13 +332,7 @@ class WalletController extends Controller
             'merchantId' => 'required|integer|min:1'
         ]);
         $merchantId = request('merchantId');
-        $feeRatio = UserCreditSettingService::getFeeSplittingRatioToSelfSetting(); // 自反的分润比例
-        $merchant = MerchantService::getById($merchantId);
-        if (empty($merchant)) {
-            throw new BaseResponseException('该商户不存在');
-        }
-        $settlementRate = $merchant->settlement_rate;
-        $ratio = $feeRatio / 100 * ($settlementRate / 100 - ($settlementRate / 100 * 0.06 * 1.12 / 1.06 + $settlementRate / 100 * 0.1 * 0.25 + 0.0068));
+        $ratio = FeeSplittingService::getUserFeeSplittingRatioToSelfByMerchantId($merchantId);
         // 返回的是系数 直接乘以金额就好了
         return Result::success([
             'ratio' => $ratio,

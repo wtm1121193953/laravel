@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 
+use App\Modules\Bizer\BizerService;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperService;
 use App\Modules\User\UserService;
@@ -73,6 +74,18 @@ class WalletWithdrawExport implements FromQuery, WithMapping, WithHeadings
                 '运营中心ID',
                 '提现状态'
             ];
+        } elseif ($this->originType == WalletWithdraw::ORIGIN_TYPE_BIZER) {
+            $array = [
+                '提现时间',
+                '提现编号',
+                '提现金额',
+                '手续费',
+                '到账金额',
+                '业务员',
+                '业务员手机号码',
+                '账户类型',
+                '提现状态'
+            ];
         } else {
             // 批次明细 导出
             $array = [
@@ -122,6 +135,10 @@ class WalletWithdrawExport implements FromQuery, WithMapping, WithHeadings
             } else {
                 $invoiceExpress = '未知';
             }
+        } elseif ($row->origin_type == WalletWithdraw::ORIGIN_TYPE_BIZER) {
+            $bizer = BizerService::getById($row->origin_id);
+            $row->bizer_name = $bizer->name;
+            $row->bizer_mobile = $bizer->mobile;
         }
 
         //账户类型
@@ -189,6 +206,18 @@ class WalletWithdrawExport implements FromQuery, WithMapping, WithHeadings
                 $row->origin_id,
                 $status
             ];
+        } elseif ($this->originType == WalletWithdraw::ORIGIN_TYPE_BIZER) {
+            $array = [
+                $row->created_at,
+                $row->withdraw_no,
+                $row->amount,
+                $row->charge_amount,
+                $row->remit_amount,
+                $row->bizer_name,
+                $row->bizer_mobile,
+                $bankCardType,
+                $status
+            ];
         } else {
             // 批次明细 导出
             $array = [
@@ -196,7 +225,7 @@ class WalletWithdrawExport implements FromQuery, WithMapping, WithHeadings
                 $row->withdraw_no,
                 $row->batch_no,
                 ['', '对公', '对私'][$row->bank_card_type],
-                ['', '用户提现', '商户提现', '运营中心提现'][$row->origin_type],
+                ['', '用户提现', '商户提现', '运营中心提现', '业务员提现'][$row->origin_type],
                 $row->bank_card_open_name,
                 $row->bank_card_no,
                 $row->bank_name,

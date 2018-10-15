@@ -58,6 +58,10 @@ return [
             'required' => '请确认新密码',
             'same' => '两次输入的密码不相符'
         ],
+        'confirmPassword' => [
+            'required' => '请确认密码',
+            'same' => '两次输入的密码不相符'
+        ],
         'verifyCode' => [
             'required' => '请输入验证码',
             'captcha' => '验证码不正确',
@@ -66,7 +70,8 @@ return [
 
         'verify_code' => [
             'required' => '请输入手机验证码',
-            'size' => '验证码位数为4位',
+            'size' => '验证码位数为:size位',
+            'min' => '验证码位数最少为:min位',
         ],
 
         'captcha' => [
@@ -94,6 +99,7 @@ return [
         'mobile' => [
             'required' => '手机号码不能为空',
             'size' => '手机号码位数不正确',
+            'regex' => '手机号码不合法'
         ],
 
         'province_id' => [
@@ -165,18 +171,22 @@ return [
         'bank_card_open_name'   =>  [
             'required'  =>  '持卡人不可为空',
             'max'       =>  '银行名不可超过 :max个字'
-//            ''
         ],
         'bank_card_no'      =>  [
             'required'  =>  '银行卡号不可为空',
             'numeric'   =>  '银行卡号只能是数字',
-            'max'       =>  '银行卡不能大于20位数',
-            'min'       =>  '银行卡不能小于11位数',
+            'max'       =>  '银行卡不能大于:max位数',
+            'min'       =>  '银行卡不能小于:min位数',
             'unique'    =>  '银行卡号已存在，不可重复'
         ],
         'bank_name'     =>  [
             'required'  =>  '银行不可为空',
             'max'       =>  '银行名不可超过 :max个字'
+        ],
+        'sceneId'  => [
+            'required' => '场景ID不能为空',
+            'integer' => '场景ID必须为整数',
+            'min' => '场景ID不能小于0',
         ]
     ],
 

@@ -6,6 +6,7 @@ use App\BaseModel;
 use App\Modules\Area\Area;
 use App\Modules\Oper\Oper;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Merchant
@@ -43,6 +44,8 @@ use Carbon\Carbon;
  * @property string tax_cert_pic_url
  * @property string legal_id_card_pic_a
  * @property string legal_id_card_pic_b
+ * @property integer country_id
+ * @property string corporation_name
  * @property string legal_id_card_num
  * @property string contract_pic_url
  * @property string hygienic_licence_pic_url
@@ -76,10 +79,20 @@ use Carbon\Carbon;
  * @property int mapping_user_id
  * @property int level
  * @property int is_pilot
+ * @property integer bizer_id
+ * @property int user_follows
  *
  */
 class Merchant extends BaseModel
 {
+    use SoftDeletes;
+
+    /**
+     * 需要转换成日期的属性
+     *
+     * @var array
+     */
+    protected $dates = ['deleted_at'];
     //
     /**
      * 未审核(审核中)
@@ -149,6 +162,10 @@ class Merchant extends BaseModel
         return $this->belongsTo(Oper::class);
     }
 
+    public function merchantFollow(){
+        return $this->hasOne(MerchantFollow::class);
+    }
+
     /**
      * 从请求中获取商户池数据, 并填充到当前实例中
      */
@@ -215,6 +232,8 @@ class Merchant extends BaseModel
 
         $this->legal_id_card_pic_a = request('legal_id_card_pic_a','');
         $this->legal_id_card_pic_b = request('legal_id_card_pic_b','');
+        $this->country_id = request('country_id', 0);
+        $this->corporation_name = request('corporation_name', '');
         $this->legal_id_card_num = request('legal_id_card_num','');
         $this->business_licence_pic_url = request('business_licence_pic_url','');
         $this->organization_code = request('organization_code','');
@@ -235,6 +254,9 @@ class Merchant extends BaseModel
         //试点商户
         $this->is_pilot = request('is_pilot', 0);
 
+        //新业务员ID
+        $this->bizer_id = request('bizer_id',0);
+
 
         //////// 没有了的字段
 //        $this->region = request('region');
@@ -242,5 +264,9 @@ class Merchant extends BaseModel
 //        $this->hygienic_licence_pic_url = request('hygienic_licence_pic_url','');
 //        $this->agreement_pic_url = request('agreement_pic_url','');
     }
+
+    /*protected $dispatchesEvents = [
+        'created' => \App\Events\MerchantCreatedEvent::class,
+    ];*/
 
 }

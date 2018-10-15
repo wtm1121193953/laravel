@@ -1,14 +1,14 @@
 <template>
-    <el-form :model="form" size="small" label-width="120px" :rules="formRules" ref="form" @submit.native.prevent>
+    <el-form :model="form" size="small" label-width="165px" :rules="formRules" ref="form" @submit.native.prevent>
 
         <el-col>
             <div class="title">商户激活信息</div>
         </el-col>
         <!-- 商户激活信息左侧块 -->
         <el-col :span="11">
-            <el-form-item prop="oper_biz_member_code" label="业务员">
+            <el-form-item prop="bizer_id" label="签约人">
                 <el-select
-                        v-model="form.oper_biz_member_code"
+                        v-model="form.bizer_id"
                         filterable
                         clearable
                         placeholder="请输入业务员姓名或手机号码"
@@ -16,12 +16,11 @@
                 >
                     <el-option
                             v-for="item in operBizMembers"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.code">
-                        <!--<span class="c-gray">{{item.code}}</span>-->
-                        <span class="c-blue">{{item.name}}</span>
-                        <span class="c-light-gray">{{item.mobile}}</span>
+                            :key="item.bizerId"
+                            :label="item.bizerName + item.bizerMobile"
+                            :value="item.bizerId">
+                        <span class="c-blue">{{item.bizerName}}</span>
+                        <span class="c-light-gray">{{item.bizerMobile}}</span>
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -99,7 +98,7 @@
                 <el-input v-model="form.bank_card_no"/>
             </el-form-item>
             <el-form-item prop="bank_name" label="开户行">
-                <el-select v-model="form.bank_name">
+                <el-select v-model="form.bank_name" filterable placeholder="输入银行名称关键字查找" >
                     <el-option
                             v-for="item in bankList"
                             :value="item.name"
@@ -111,7 +110,7 @@
             <el-form-item prop="sub_bank_name" label="开户行网点名称">
                 <el-input v-model="form.sub_bank_name" placeholder="填写银行网点具体名称，如北京市××分行××支行"/>
             </el-form-item>
-            <el-form-item prop="area" label="开户行网点地址">
+            <el-form-item prop="bank_area" label="开户行网点地址">
                 <el-cascader
                         :options="areaOptions"
                         :props="{
@@ -140,8 +139,23 @@
                 <image-upload v-model="form.legal_id_card_pic_b" :limit="1"/>
             </el-form-item>
 
-            <el-form-item prop="legal_id_card_num" label="法人身份证号码">
-                <el-input v-model="form.legal_id_card_num"/>
+            <el-form-item prop="corporation_name" label="法人姓名">
+                <el-input v-model="form.corporation_name" placeholder="需同身份证一致"/>
+            </el-form-item>
+            <el-form-item label="法人身份证号码">
+                <el-form-item prop="country_id" style="width: 20%; display: inline-block;">
+                    <el-select v-model="form.country_id" placeholder="请选择">
+                        <el-option
+                                v-for="item in countryList"
+                                :value="item.id"
+                                :label="item.name_zh"
+                                :key="item.id"
+                        ></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item prop="legal_id_card_num" style="width: 70%; display: inline-block;">
+                    <el-input v-model="form.legal_id_card_num" placeholder="请输入法人身份证号码"/>
+                </el-form-item>
             </el-form-item>
 
             <el-form-item prop="business_licence_pic_url" label="营业执照">
@@ -188,7 +202,7 @@
 
     let defaultForm = {
         /////// 商户激活信息
-        oper_biz_member_code: '',
+        bizer_id: '',
         brand: '',
         status: 1,
         // business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
@@ -212,6 +226,8 @@
         // 法人信息
         legal_id_card_pic_a: '',
         legal_id_card_pic_b: '',
+        country_id: 1,
+        corporation_name: '',
         legal_id_card_num: '',
         business_licence_pic_url: '',
         organization_code: '',
@@ -271,7 +287,15 @@
                 }
             };
             let validateIdCard = (rule, value, callback) => {
-                if (!(/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(value))) {
+                let reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+                if (this.form.country_id == 2) {
+                    reg = /(^((\s?[A-Za-z])|([A-Za-z]{2}))\d{6}\((([0−9aA])|([0-9aA]))\)$)/;
+                } else if (this.form.country_id == 3) {
+                    reg = /^[1|5|7][0-9]{6}\([0-9Aa]\)/;
+                } else if (this.form.country_id == 4) {
+                    reg = /^[a-zA-Z][0-9]{9}$/;
+                }
+                if (!(reg.test(value))) {
                     callback(new Error('请输入正确的身份证号码'));
                 }else {
                     callback();
@@ -314,7 +338,7 @@
                     ],
                     desc: [
                         {required: true, message: '商家介绍不能为空'},
-                        {max: 50, message: '商家介绍不能超过50个字'}
+                        {max: 100, message: '商家介绍不能超过100个字'}
                     ],
                     settlement_rate: [
                         {required: true, message: '分利比例不能为空'},
@@ -326,7 +350,7 @@
                     ],
                     bank_card_no: [
                         {required: true, message: '银行账号 不能为空'},
-                        {min: 11, max: 20, message: '银行账号 11-20个数字内'}
+                        {min: 8, max: 35, message: '银行账号 8-35个数字内'}
                     ],
                     bank_name: [
                         {required: true, message: '开户行不能为空'}
@@ -354,6 +378,13 @@
                     ],
                     legal_id_card_pic_b: [
                         {required: true, message: '法人身份证照片 不能为空'},
+                    ],
+                    corporation_name: [
+                        {required: true, message: '法人姓名不能为空'},
+                        {max: 15, message: '法人姓名不能超过15个字'},
+                    ],
+                    country_id: [
+                        {required: true, message:'法人身份证国别或地区 不能为空'}
                     ],
                     legal_id_card_num: [
                         {required: true, message: '法人身份证号码 不能为空'},
@@ -401,11 +432,12 @@
                 searchOperBizMemberLoading: false,
                 operBizMembers: [],
                 bankList: [],
+                countryList: [],
             }
         },
         methods: {
             getOperBizMember(){
-                api.get('/operBizMembers/search', {status: 1}).then(data => {
+                api.get('/operBizer/getbizers', {status: 1, sign_status: 1}).then(data => {
                     this.operBizMembers = data.list;
                 })
             },
@@ -427,6 +459,8 @@
                     this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                     this.form.status = parseInt(data.status);
                     this.form.bank_card_type = parseInt(data.bank_card_type);
+                    this.form.bizer_id = parseInt(data.bizer_id) != 0 ? parseInt(data.bizer_id) : '';
+                    this.form.country_id = parseInt(data.country_id) != 0 ? parseInt(data.country_id) : 1;
                 }else {
                     this.form = deepCopy(defaultForm);
                 }
@@ -464,11 +498,17 @@
                     this.bankList = data;
                 })
             },
+            getCountryList() {
+                api.get('/country/list').then(data => {
+                    this.countryList = data.list;
+                })
+            }
         },
         created(){
             this.initForm();
             this.getOperBizMember();
             this.getBankList();
+            this.getCountryList();
         },
         watch: {
             data(){

@@ -54,8 +54,11 @@ class OperController extends Controller
             'tel' => 'required',
             'province_id' => 'required',
             'city_id' => 'required',
+            'bank_card_no' =>  'bail|required|min:8|max:35',
         ]);
-
+        $this->validate(request(),[
+            'bank_card_no' =>  'numeric',
+        ]);
         $oper = OperService::addFromRequest();
 
         return Result::success($oper);
@@ -71,6 +74,10 @@ class OperController extends Controller
             'name' => 'required',
             'province_id' => 'required',
             'city_id' => 'required',
+            'bank_card_no' =>  'bail|required|min:8|max:35',
+        ]);
+        $this->validate(request(),[
+            'bank_card_no' =>  'numeric',
         ]);
         $oper = OperService::editFromRequest(request('id'));
         return Result::success($oper);

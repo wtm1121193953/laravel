@@ -4,8 +4,8 @@
             <el-form label-width="120px" label-position="left" size="small">
                 <el-col :span="12">
                     <el-form-item label="订单类型">
-                        <span v-if="billData.type == 2">下级消费返利</span>
-                        <span v-else-if="billData.type == 4">下级消费返利退款</span>
+                        <span v-if="billData.type == 2">被分享人消费奖励</span>
+                        <span v-else-if="billData.type == 4">被分享人消费奖励退款</span>
                         <span v-else-if="billData.type == 5">交易分润入账</span>
                         <span v-else-if="billData.type == 6">交易分润退款</span>
                         <span v-else>未知 ({{billData.type}})</span>

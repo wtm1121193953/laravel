@@ -32,6 +32,8 @@ Route::prefix('user')
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
         Route::get('merchants', 'MerchantController@getList');
         Route::get('merchant/detail', 'MerchantController@detail');
+        Route::get('merchant/followStatus', 'MerchantFollowController@modifyFollowStatus')->middleware(UserLoginFilter::class);
+        Route::get('merchant/followLists', 'MerchantFollowController@userFollowList')->middleware(UserLoginFilter::class);
 
         Route::get('goods', 'GoodsController@getList');
         Route::get('goods/detail', 'GoodsController@detail');
@@ -55,7 +57,7 @@ Route::prefix('user')
 
         Route::get('scene/info', 'SceneController@getSceneInfo');
 
-        Route::get('credit/payAmountToCreditRatio', 'CreditController@payAmountToCreditRatio')->middleware(UserLoginFilter::class);
+        Route::get('credit/payAmountToCreditRatio', 'CreditController@payAmountToCreditRatio')->middleware(UserLoginFilter::class); //废弃
         Route::get('credit/getCreditList', 'CreditController@getCreditList')->middleware(UserLoginFilter::class);
         Route::get('credit/getUserCredit', 'CreditController@getUserCredit')->middleware(UserLoginFilter::class);
         Route::get('credit/getConsumeQuotaRecordList', 'CreditController@getConsumeQuotaRecordList')->middleware(UserLoginFilter::class);

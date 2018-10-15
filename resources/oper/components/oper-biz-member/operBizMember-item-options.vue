@@ -1,11 +1,11 @@
 <template>
-    <!-- 我的业务员列表项操作 -->
+    <!-- 我的员工列表项操作 -->
     <div>
         <el-button type="text" @click="edit">编辑</el-button>
         <el-button type="text" @click="merchants">业务</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '冻结' : '解冻'}}</el-button>
 
-        <el-dialog title="编辑业务员信息" :visible.sync="isEdit"   :close-on-click-modal="false"    :before-close="handleClose" >
+        <el-dialog title="编辑员工信息" :visible.sync="isEdit"   :close-on-click-modal="false"    :before-close="handleClose" >
             <operBizMember-form  ref="operBizMemberForm" :data="scope.row" @cancel="isEdit = false"   @save="doEdit"/>
         </el-dialog>
 

@@ -6,8 +6,10 @@ use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperBizMember;
+use App\Modules\Bizer\BizerService;
 use App\Result;
 use Illuminate\Database\Eloquent\Builder;
+use App\Modules\Oper\OperBizerService;
 
 /**
  * 原有的业务员操作不再提取到service中, 后面会去掉
@@ -220,4 +222,16 @@ class OperBizMemberController extends Controller
         ]);
     }
 
+    /**
+     * 获取员工列表
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getMemberList()
+    {
+        $operId = request()->get('current_user')->oper_id;
+        $memberNameOrMobile = request('memberNameOrMobile', '');
+        $memberList = OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile, $operId);
+
+        return Result::success($memberList);
+    }
 }

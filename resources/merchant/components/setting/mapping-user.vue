@@ -1,6 +1,6 @@
 <template>
-    <page title="关联大千生活会员账号">
-        <el-alert title="严重警告！每个商户仅只能绑定一次大千生活会员账号，之后不可修改。" type="warning" show-icon></el-alert>
+    <page title="关联大千生活用户账号">
+        <el-alert title="严重警告！每个商户仅只能绑定一次大千生活用户账号，之后不可修改。" type="warning" show-icon></el-alert>
         <el-form :model="formData" v-if="!isBind">
             <el-form-item prop="mobile" label="关联电话号码" label-width="100px">
                 <el-input v-model="formData.mobile" :maxlength="11" size="small" style="width: 150px"></el-input>
@@ -72,7 +72,7 @@
                     this.$message.error('手机号码 或 验证码 不能为空');
                     return false;
                 }
-                this.$confirm('每个商户仅只能绑定一次大千生活会员账号，之后不可修改。确定绑定吗？', '严重警告', {
+                this.$confirm('每个商户仅只能绑定一次大千生活用户账号，之后不可修改。确定绑定吗？', '严重警告', {
                     confirmButtonText: '确定绑定',
                     cancelButtonText: '取消',
                     type: 'warning'

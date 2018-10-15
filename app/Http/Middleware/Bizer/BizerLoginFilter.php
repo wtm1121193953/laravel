@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/4/11
- * Time: 0:31
- */
 
 namespace App\Http\Middleware\Bizer;
 
@@ -23,6 +17,9 @@ class BizerLoginFilter
     protected $publicUrls = [
         'api/bizer/login',
         'api/bizer/logout',
+        'api/bizer/register',
+        'api/bizer/forgot_password',
+        'api/bizer/sms/getVerifyCode',
     ];
 
     /**

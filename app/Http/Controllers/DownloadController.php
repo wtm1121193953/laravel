@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperService;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Modules\Wechat\WechatService;
 use GuzzleHttp\Client;
@@ -86,14 +89,24 @@ class DownloadController extends Controller
         $width = $type == 3 ? 1280 : ($type == 2 ? 430 : 258);
 
         $scene = MiniprogramSceneService::getPayAppCodeByMerchantId($merchantId);
+        $merchant = Merchant::findOrFail($merchantId,['oper_id']);
+        $oper = OperService::getById($merchant['oper_id']);
+        if ( $oper->pay_to_platform != Oper::PAY_TO_OPER ) {
 
-        $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
+            $signboardName = MerchantService::getSignboardNameById($merchantId);
+            $filePath = MiniprogramSceneService::genSceneQrCode($scene, $width,true,$signboardName);
+            return response()->download($filePath, '分享用户二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
+        } else {
+            $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
 
-        $signboardName = MerchantService::getSignboardNameById($merchantId);
+            $signboardName = MerchantService::getSignboardNameById($merchantId);
 
-        WechatService::addNameToAppCode($filePath, $signboardName);
+            WechatService::addNameToAppCode($filePath, $signboardName);
 
-        return response()->download($filePath, '支付小程序码_' . ['', '小', '中', '大'][$type] . '.jpg');
+            return response()->download($filePath, '支付小程序码_' . ['', '小', '中', '大'][$type] . '.jpg');
+        }
+
+
     }
 
     /**

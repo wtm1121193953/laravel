@@ -10,6 +10,7 @@ namespace App\Modules\Merchant;
 
 
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Oper\MyOperBizer;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizMember;
 use Illuminate\Database\Eloquent\Builder;
@@ -136,6 +137,9 @@ class MerchantAuditService extends Service
 
         if ($merchant->oper_biz_member_code) {
             OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
+        }
+        if ($merchant->bizer_id) {
+            MyOperBizer::updateAuditMerchantNumberByCode($merchant->bizer_id);
         }
 
         return $merchant;

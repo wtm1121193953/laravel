@@ -24,6 +24,7 @@ use App\Result;
 use App\Support\Reapal\ReapalPay;
 use Exception;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 
 class PayController extends Controller
 {
@@ -103,12 +104,14 @@ class PayController extends Controller
         }
         // 获取appid对应的运营中心小程序
         $config_platfrom = config('platform');
+
         if ($appid == $config_platfrom['miniprogram']['app_id']) {
             $app = WechatService::getWechatPayAppForPlatform();
-        } else {
+        } elseif($appid == $config_platfrom['wechat_open']['app_id']) {
+            $app = WechatService::getOpenPlatformPayAppFromPlatform();
+        }else{
             $miniprogram = OperMiniprogramService::getByAppid($appid);
-
-            $app = WechatService::getWechatPayAppForOper($miniprogram);
+            $app = WechatService::getWechatPayAppForOper($miniprogram->oper_id);
         }
 
         $response = $app->handlePaidNotify(function ($message, $fail){
@@ -133,7 +136,7 @@ class PayController extends Controller
     public function mockPaySuccess()
     {
         if(App::environment() === 'local' || App::environment() === 'test'){
-            OrderService::paySuccess(request('order_no'), 'mock transaction id', 0, 0);
+            OrderService::paySuccess(request('order_no'), 'mock transaction id', 0, 1);
             return Result::success('模拟支付成功');
         }else {
             abort(404);

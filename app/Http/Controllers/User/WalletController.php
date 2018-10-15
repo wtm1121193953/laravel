@@ -55,6 +55,11 @@ class WalletController extends Controller
         $endDate = request('endDate');
         $type = request('type');
         $user = request()->get('current_user');
+        if ($type == '0') {
+            $type = '';
+        }elseif ($type == 7){
+            $type = [7,8];
+        }
         $bills = WalletService::getBillList([
             'originId' => $user->id,
             'originType' => WalletBill::ORIGIN_TYPE_USER,
@@ -96,14 +101,14 @@ class WalletController extends Controller
      * @param $consume
      * @return float|int
      */
-    private static function getTpsConsumeByConsume($consume)
+    /*private static function getTpsConsumeByConsume($consume)
     {
         $tpsConsume = Utils::getDecimalByNotRounding($consume / 6 / 6.5 , 2);
         return $tpsConsume;
-    }
+    }*/
 
     /**
-     * 我的tps 消费额统计
+     * 我的贡献值统计
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
      */
     public function getTpsConsumeStatistics()
@@ -148,6 +153,7 @@ class WalletController extends Controller
             'status' => $status,
             'originId' => request()->get('current_user')->id,
             'originType' => WalletConsumeQuotaRecord::ORIGIN_TYPE_USER,
+            'consumeQuota' => request('consumeQuota'),
         ], $pageSize, true);
         // 当月总tps消费额
         $amount = $query->sum('consume_quota');
@@ -315,6 +321,8 @@ class WalletController extends Controller
             // 删除有效时间，避免重复提交
             Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
         }
+        $password = $request->input('password');
+        $request->attributes->replace(['password'=>Utils::aesDecrypt($password)]);
         $this->validate($request, [
             'password'  =>  'required|numeric'
         ]);
@@ -337,7 +345,7 @@ class WalletController extends Controller
     public function checkVerifyCode( Request $request )
     {
         $this->validate($request, [
-            'verify_code' => 'required|min:4'
+            'verify_code' => 'required|size:4'
         ]);
         $verifyCode = $request->get('verify_code');
         $user = $request->get('current_user');

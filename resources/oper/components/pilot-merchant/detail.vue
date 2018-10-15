@@ -23,8 +23,8 @@
                     <span v-else-if="data.audit_status === 3" class="c-warning">重新提交审核</span>
                     <span v-else>未知 ({{data.audit_status}})</span>
                 </el-form-item>
-                <el-form-item prop="location" label="商户坐标">
-                    <qmap-choose-point width="60%" height="300px" :shown-markers="[[data.lng, data.lat]]" disabled/>
+                <el-form-item prop="location" label="商户坐标" >
+                    <qmap-choose-point width="60%"  height="300px" :shown-markers="[data.lng,data.lat]" disabled/>
                 </el-form-item>
                 <el-form-item prop="operAddress" label="运营中心地址">
                     {{data.operAddress}}
@@ -36,9 +36,19 @@
                     {{data.address}}
                 </el-form-item>
 
-                <el-form-item prop="oper_biz_member_code" label="业务员">
-                    <template v-if="data.oper_biz_member_code">
-                        {{data.operBizMemberName}}
+                <el-form-item prop="oper_biz_member_code" label="签约人">
+                    <template>
+                                <span v-if="data.bizer_id && data.bizer">
+                                    <span>{{data.bizer.name}}</span>
+                                    <span>{{data.bizer.mobile}}</span>
+                                    <span>(业务员)</span>
+                                </span>
+                        <span v-else-if="data.oper_biz_member_code && data.operBizMember">
+                                    <span>{{data.operBizMember.name}}</span>
+                                    <span>{{data.operBizMember.mobile}}</span>
+                                    <span>(员工)</span>
+                                </span>
+                        <span v-else>无</span>
                     </template>
                 </el-form-item>
                 <el-form-item prop="service_phone" label="客服电话">
@@ -46,7 +56,7 @@
                 </el-form-item>
                 <el-form-item prop="logo" label="商家logo">
                     <div v-viewer>
-                        <img :src="data.logo" alt="商家logo" width="200px" height="100px" />
+                        <img :src="data.logo" alt="商家logo" style="max-width: 200px;" height="100px" />
                     </div>
                 </el-form-item>
                 <el-form-item prop="desc_pic" label="商家介绍图片">
@@ -63,12 +73,26 @@
                     {{data.contacter_phone}}
                 </el-form-item>
 
+                <el-form-item prop="service_phone" label="客服电话" class="w-500">
+                    {{data.service_phone}}
+                </el-form-item>
+                <el-form-item prop="business_licence_pic_url" label="营业执照">
+                    <div class="desc" v-viewer >
+                        <img :src="data.business_licence_pic_url" :key="index" style="max-width: 200px;" height="100px" />
+                    </div>
+                </el-form-item>
+                <el-form-item prop="organization_code" label="营业执照代码">
+                    {{data.organization_code}}
+                </el-form-item>
+
                 <el-col  >
                     <el-form-item >
                         <el-button type="primary" @click="back">返回</el-button>
                     </el-form-item>
 
                 </el-col>
+
+
             </el-form>
 
         </el-col>
@@ -99,7 +123,7 @@
             },
             back(){
                 router.back(-1)
-            },
+            }
         },
         created(){
             this.id = this.$route.query.id;
@@ -111,6 +135,10 @@
         },
         components: {
             QmapChoosePoint,
+
+        },
+        mounted(){
+
         }
     }
 </script>

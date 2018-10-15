@@ -75,8 +75,11 @@ class SettlementPlatformService extends BaseService
             $query->where('merchant_id','=', $params['merchant_id']);
         }
 
-        if (!empty($params['startDate']) && !empty($params['endDate'])) {
+        if (!empty($params['startDate'])) {
             $query->where('created_at', '>=', Carbon::createFromFormat('Y-m-d',$params['startDate'])->startOfDay());
+        }
+
+        if (!empty($params['endDate'])) {
             $query->where('created_at', '<=', Carbon::createFromFormat('Y-m-d',$params['endDate'])->endOfDay());
         }
 
@@ -135,7 +138,7 @@ class SettlementPlatformService extends BaseService
             ->where('status', Order::STATUS_FINISHED )
             ->where('finish_time','<=', $date->endOfDay());
         // 统计所有需结算金额
-        $sum = $query->where('settlement_status', Order::SETTLEMENT_STATUS_NO )->sum('pay_price');
+        $sum = $query->sum('pay_price');
 
         if( $sum<100 ){
             Log::info('商家每日结算时订单金额小于100，跳过结算', [

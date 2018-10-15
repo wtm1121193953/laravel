@@ -104,13 +104,15 @@ class UsersController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $status = request('status');
+        $idCardNo = request('id_card_no');
         $users = UserService::identity([
             'mobile' => $mobile,
             'id' => $id,
             'name' => $name,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'status' => $status
+            'status' => $status,
+            'id_card_no'=>$idCardNo
         ]);
 
         return Result::success([

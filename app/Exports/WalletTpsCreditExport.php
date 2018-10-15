@@ -42,7 +42,7 @@ class WalletTpsCreditExport implements FromQuery, WithHeadings, WithMapping
         return [
             $row->created_at,
             $row->consume_quota_no,
-            '下级贡献',
+            '被分享人贡献',
             $row->consume_user_mobile,
             $row->sync_tps_credit,
             $status,

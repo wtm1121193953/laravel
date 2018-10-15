@@ -51,16 +51,16 @@ class ReapalAgentPay
         /*//测试商户ID
         $this->merchantId = '100000000000147';
         //商户邮箱
-        $this->sellerEmail = config('reapal.seller_email');
+        $this->sellerEmail = 'daqian@shoptps.com';
         //商户私钥
         $this->merchantPrivateKey = resource_path('reapal/cert/test/itrus001_pri.pem');
         //融宝公钥
         $this->reapalPublicKey = resource_path('reapal/cert/test/itrus001.pem');
         $this->apiKey = 'g0be2385657fa355af68b74e9913a1320af82gb7ae5f580g79bffd04a402ba8f';
-        $this->dsfUrl = config('reapal.dsfUrl');
-        $this->charset = config('reapal.charset');
-        $this->dsf_sign_type = config('reapal.dsf_sign_type');
-        $this->dsfVersion = config('reapal.dsf_version');*/
+        $this->dsfUrl = 'http://testagentpay.reapal.com/agentpay/';
+        $this->charset = 'utf-8';
+        $this->dsf_sign_type = 'MD5';
+        $this->dsfVersion = '1.0';*/
 
     }
 
@@ -68,7 +68,7 @@ class ReapalAgentPay
     {
         $reapalMap = new ReapalUtils();
         $result = $reapalMap->send($data, $url, $this->apiKey, $this->reapalPublicKey, $this->merchantId, $this->dsfVersion, $this->dsf_sign_type);
-        Log::info('融宝代付接口返回', ['data' => $data, 'url' => $url,'result' => $result]);
+        Log::info('融宝代付接口返回', ['data' => $data, 'url' => $url, 'apikey'=>$this->apiKey, 'result' => $result]);
         $response = json_decode($result, true);
         $encryptkey = $reapalMap->decryptKey($response['encryptkey'], $this->merchantPrivateKey);
         $result = $reapalMap->decrypt($response['data'], $encryptkey);
@@ -102,7 +102,7 @@ class ReapalAgentPay
             'content' => $content,
         );
 
-        $url = $this->dsfUrl . 'agentpay/pay';
+        $url = $this->dsfUrl . '/agentpay/pay';
         $result = $this->apiPost($url, $paramArr);
 
         LogDbService::reapalPayRequest(3,$batch_no,$paramArr,$result);
@@ -179,6 +179,7 @@ class ReapalAgentPay
         $encryptkey = $reapalMap->decryptKey($resultArr['encryptkey'], $this->merchantPrivateKey);
         $result = $reapalMap->decrypt($resultArr['data'], $encryptkey);
 
+        Log::info('融宝代付异步通知接收到的参数',['result'=>$result]);
         LogDbService::reapalNotify(LogOrderNotifyReapal::TYPE_AGENT_PAY_REFUND, $result);
 
         $result = json_decode($result, 1);

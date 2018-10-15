@@ -9,7 +9,9 @@
 namespace App\Http\Controllers\UserApp;
 
 
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Version\VersionService;
 use App\Result;
 
 class VersionController extends Controller
@@ -21,12 +23,15 @@ class VersionController extends Controller
     public function last()
     {
         $appType = request()->headers->get('app-type');
-        return Result::success([
-            'version' => 'v1.0.2',
-            'force' => '1',
-            'desc' => '更新说明',
-            'app_type' => $appType,
-        ]);
+        $versionNo = request()->headers->get('version');
+
+        $lastVersion = VersionService::getLastVersion($appType, $versionNo);
+        if(empty($lastVersion)){
+            return Result::success('已经是最新版本');
+        }
+
+        $lastVersion->version = $lastVersion->version_no;
+        return Result::success($lastVersion);
     }
 
     /**
@@ -35,33 +40,20 @@ class VersionController extends Controller
     public function getList()
     {
         $appType = request()->headers->get('app-type');
+        $versionNo = request()->headers->get('version');
+
+        $lastVersion = VersionService::getLastVersion($appType, $versionNo);
+
+        $lastVersion->version = $lastVersion->version_no;
+
+        $list = VersionService::getAllEnableVersionsByAppType($appType);
+        $list->each(function($item){
+            $item->version = $item->version_no;
+        });
+
         return Result::success([
-            'last' => [
-                'version' => 'v1.0.2',
-                'force' => '1',
-                'desc' => '更新说明',
-                'app_type' => $appType,
-            ],
-            'versions' => [
-                [
-                    'version' => 'v1.0.0',
-                    'force' => '0',
-                    'desc' => '更新说明',
-                    'app_type' => $appType,
-                ],
-                [
-                    'version' => 'v1.0.1',
-                    'force' => '0',
-                    'desc' => '更新说明',
-                    'app_type' => $appType,
-                ],
-                [
-                    'version' => 'v1.0.2',
-                    'force' => '0',
-                    'desc' => '更新说明',
-                    'app_type' => $appType,
-                ],
-            ]
+            'last' => $lastVersion,
+            'versions' => $list
         ]);
     }
 }

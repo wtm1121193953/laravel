@@ -31,7 +31,7 @@ class AreaService
     {
         $list = Cache::get('cities_group_by_first_letter');
         if(empty($list)){
-            $list = Area::where('path', 2)->orderBy('first_letter')->get();
+            $list = Area::where('path',2)->orderBy('first_letter')->get();
             $list = $list->each(function ($item){
                 $item->name = str_replace('市', '', $item->name);
             })->groupBy('first_letter')->toArray();
@@ -53,17 +53,12 @@ class AreaService
      */
     public static function getCityListByKeyword($name)
     {
-        $specialName = ['澳门'];
-        if (in_array($name, $specialName)) {
-            $list = Area::where('name', 'like', "%$name%")->get();
-        } else {
-            $list = Area::where('path', '<>', 1)
-                ->where(function (Builder $query) use ($name){
-                    $query->where('name', 'like', "%$name%")
-                        ->orWhere('spell', 'like', "$name%")
-                        ->orWhere('letter', 'like', "$name%");
-                })->get();
-        }
+        $list = Area::where('path', '<>', 1)
+            ->where(function (Builder $query) use ($name){
+                $query->where('name', 'like', "%$name%")
+                    ->orWhere('spell', 'like', "$name%")
+                    ->orWhere('letter', 'like', "$name%");
+            })->get();
 
         return $list;
     }

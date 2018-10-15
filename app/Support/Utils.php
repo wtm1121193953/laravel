@@ -35,11 +35,9 @@ class Utils
 
     public static function getRequestContext(Request $request)
     {
-        $attributes = $request->attributes->all();
-        foreach ($attributes as $key => $attribute) {
-            if($attribute instanceof Model){
-                $attributes[$key] = $attribute->toArray();
-            }
+        $currentUser = $request->get('current_user');
+        if($currentUser instanceof Model){
+            $currentUser = $currentUser->toArray();
         }
 
         $data = [
@@ -47,11 +45,11 @@ class Utils
             'fullUrl' => $request->fullUrl(),
             'header' => $request->header(),
             'params' => $request->all(),
-            'attributes' => $attributes,
+            'current_user' => $currentUser,
         ];
-        if($request->hasSession()){
-            $data['session'] = $request->session()->all();
-        }
+//        if($request->hasSession()){
+//            $data['session'] = $request->session()->all();
+//        }
         return $data;
     }
 
@@ -94,4 +92,46 @@ class Utils
         $decimal = number_format($decimal, $decimalQuantity, '.', '');
         return $decimal;
     }
+
+    /**
+     * 格式化距离
+     * @param $distance
+     * @return string
+     */
+    public static function getFormativeDistance($distance)
+    {
+        return $distance >= 1000 ? (number_format($distance / 1000, 1) . 'Km') : ($distance . 'm');
+    }
+
+
+    /**
+     * aes 加密
+     * @param $data
+     * @return string
+     */
+    public static function aesEncrypt($data)
+    {
+        $key = 'abcdefghijklmnop'; // 16位（也可以不是16位，但当它大于16位时，7.1的openssl函数会截取前16位，有点坑）
+        $iv = '1234567890123456'; // 16位
+        //$data = openssl_encrypt($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA, self::hexToStr($iv));
+        $data = openssl_encrypt($data, 'AES-128-CBC', $key, OPENSSL_RAW_DATA, $iv);
+//        $data = base64_encode($data);
+        return $data;
+    }
+
+    /**
+     * aes 解密
+     * @param $data
+     * @return string
+     */
+    public static function aesDecrypt($data)
+    {
+        $key = 'abcdefghijklmnop'; // 16位（也可以不是16位，但当它大于16位时，7.1的openssl函数会截取前16位，有点坑）
+        $iv = '1234567890123456'; // 16位
+        //$decrypted = openssl_decrypt(base64_decode($data), 'AES-128-CBC', $key, OPENSSL_RAW_DATA, self::hexToStr($iv));
+        $decrypted = openssl_decrypt(base64_decode($data), 'AES-128-CBC', $key, OPENSSL_RAW_DATA, $iv);
+
+        return $decrypted;
+    }
+
 }

@@ -108,10 +108,10 @@ class MerchantAccountService extends BaseService
             ],
             [ 'id' => 2, 'name' => '订单管理', 'level' => 1, 'url' => '/merchant/orders',],
 
-            [ 'id' => 3, 'name' => '会员管理', 'level' => 1, 'url' => 'user', 'sub' =>
+            [ 'id' => 3, 'name' => '用户管理', 'level' => 1, 'url' => 'user', 'sub' =>
                 [
-                    [ 'id' => 4, 'name' => '我的会员', 'level' => 2, 'url' => '/merchant/invite/statistics/list', 'pid' => 3,],
-                    [ 'id' => 13, 'name' => '会员分析', 'level' => 2, 'url' => '/merchant/invite/statistics/daily', 'pid' => 3,],
+                    [ 'id' => 4, 'name' => '我的用户', 'level' => 2, 'url' => '/merchant/invite/statistics/list', 'pid' => 3,],
+                    [ 'id' => 13, 'name' => '用户分析', 'level' => 2, 'url' => '/merchant/invite/statistics/daily', 'pid' => 3,],
                 ]
             ],
              [ 'id' => 5, 'name' => '财务管理', 'level' => 1, 'url' => '/merchant/settlements',

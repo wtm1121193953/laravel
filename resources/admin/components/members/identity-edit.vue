@@ -54,7 +54,6 @@
 </template>
 
 <script>
-    import IdentityForm from './identity-form'
     import api from '../../../assets/js/api'
 
     export default {
@@ -115,9 +114,6 @@
             }
             this.getDetail();
         },
-        components: {
-            IdentityForm
-        }
     }
 </script>
 

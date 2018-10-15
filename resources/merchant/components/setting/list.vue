@@ -1,5 +1,5 @@
 <template>
-    <page title="系统配置">
+    <page title="系统配置" v-loading="isLoading">
         <el-form :model="form">
             <el-form-item label="开启单品购买功能">
                 <el-switch
@@ -23,6 +23,7 @@
         name: "list",
         data() {
             return {
+                isLoading: false,
                 form: {
                     dishes_enabled: '0',
                 }
@@ -32,11 +33,14 @@
             save() {
                 api.post('/setting/edit', this.form).then(() => {
                     this.$message.success('保存成功!');
+                    this.getList();
                 })
             },
             getList() {
+                this.isLoading = true;
                 api.get('/setting/getSetting').then(data => {
                     this.form = data.setting;
+                    this.isLoading = false;
                 })
             }
         },

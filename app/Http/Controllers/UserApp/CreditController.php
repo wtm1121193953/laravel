@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Setting\SettingService;
 use App\Modules\User\User;
+use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserConsumeQuotaRecord;
 use App\Modules\UserCredit\UserCredit;
 use App\Modules\UserCredit\UserCreditRecord;
@@ -97,7 +98,7 @@ class CreditController extends Controller
     public function getUserCredit()
     {
         $user = request()->get('current_user');
-        $userCredit = UserCredit::where('user_id', $user->id)->first();
+        $userCredit = UserService::getUserIdCredit($user->id);
 
         return Result::success($userCredit);
     }

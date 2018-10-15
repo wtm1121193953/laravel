@@ -25,14 +25,23 @@ Route::prefix('app/user')
         Route::get('area/cities/groupByFirstLetter', 'AreaController@getCityListGroupByFirstLetter');
         Route::get('area/cities/withHot', 'AreaController@getCitiesWithHot');
         Route::get('area/getByGps', 'AreaController@getAreaByGps');
+        Route::get('area/search', 'AreaController@searchCityList');
 
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
         Route::get('merchants', 'MerchantController@getList');
         Route::get('merchant/detail', 'MerchantController@detail');
+        Route::get('merchant/followStatus', 'MerchantFollowController@modifyFollowStatus')->middleware(UserLoginFilter::class);
+        Route::get('merchant/followLists', 'MerchantFollowController@userFollowList')->middleware(UserLoginFilter::class);
         Route::get('merchant/getDishesCategoryAndGoods', 'DishesController@getDishesCategory'); // 废弃
         Route::get('merchant/getHotDishesGoods', 'DishesController@getHotDishesGoods'); // 废弃
         Route::post('merchant/dishesOrder', 'DishesController@add')->middleware(UserLoginFilter::class); // 废弃
         Route::get('merchant/dishesDetail', 'DishesController@detail')->middleware(UserLoginFilter::class); // 废弃
+
+        Route::get('dishes/category', 'DishesController@getDishesCategory');
+        Route::get('dishes/goods', 'DishesController@getDishesGoods');
+        Route::get('dishes/hot', 'DishesController@getHotDishesGoods');
+        Route::post('dishes/add','DishesController@add')->middleware(UserLoginFilter::class);
+        Route::get('dishes/detail','DishesController@detail')->middleware(UserLoginFilter::class);
 
         Route::get('goods', 'GoodsController@getList');
         Route::get('goods/detail', 'GoodsController@detail');
@@ -56,7 +65,7 @@ Route::prefix('app/user')
 
         Route::get('scene/info', 'SceneController@getSceneInfo');
 
-        Route::get('credit/payAmountToCreditRatio', 'CreditController@payAmountToCreditRatio')->middleware(UserLoginFilter::class);
+        Route::get('credit/payAmountToCreditRatio', 'CreditController@payAmountToCreditRatio')->middleware(UserLoginFilter::class);//废弃
         Route::get('credit/getCreditList', 'CreditController@getCreditList')->middleware(UserLoginFilter::class);
         Route::get('credit/getUserCredit', 'CreditController@getUserCredit')->middleware(UserLoginFilter::class);
         Route::get('credit/getConsumeQuotaRecordList', 'CreditController@getConsumeQuotaRecordList')->middleware(UserLoginFilter::class);
@@ -73,14 +82,18 @@ Route::prefix('app/user')
         Route::post('wallet/confirmPassword', 'WalletController@confirmPassword')->middleware(UserLoginFilter::class);
         Route::post('wallet/checkVerifyCode', 'WalletController@checkVerifyCode')->middleware(UserLoginFilter::class);
         Route::post('wallet/changePassword', 'WalletController@changePassword')->middleware(UserLoginFilter::class);
+        Route::post('wallet/withdraw', 'WalletWithdrawController@withdraw')->middleware(UserLoginFilter::class);
+        // todo 旧接口兼容, 之后需要删掉
         Route::post('wallet/withDraw', 'WalletWithdrawController@withdraw')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getWithdrawConfig', 'WalletWithdrawController@getWithdrawConfig')->middleware(UserLoginFilter::class);
+        // todo 旧接口兼容, 之后需要删掉
         Route::get('wallet/getWithDrawConfig', 'WalletWithdrawController@getWithdrawConfig')->middleware(UserLoginFilter::class);
         Route::get('wallet/getTpsConsume', 'WalletController@getTpsConsume')->middleware(UserLoginFilter::class);
-        Route::get('wallet/getTpsConsumeQuotasList', 'WalletController@getTpsConsumeQuotasList')->middleware(UserLoginFilter::class);
-        Route::get('wallet/getTpsConsumeQuotaDetail', 'WalletController@getTpsConsumeQuotaDetail')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getTpsConsumeQuotasList', 'WalletController@getTpsConsumeQuotasList')->middleware(UserLoginFilter::class);//废弃
+        Route::get('wallet/getTpsConsumeQuotaDetail', 'WalletController@getTpsConsumeQuotaDetail')->middleware(UserLoginFilter::class);//废弃
         Route::get('wallet/getUserFeeSplittingRatioToSelf', 'WalletController@getUserFeeSplittingRatioToSelf')->middleware(UserLoginFilter::class);
-        Route::get('wallet/getTpsCreditStatistics', 'WalletController@getTpsCreditStatistics')->middleware(UserLoginFilter::class);
-        Route::get('wallet/getTpsCreditList', 'WalletController@getTpsCreditList')->middleware(UserLoginFilter::class);
+        Route::get('wallet/getTpsCreditStatistics', 'WalletController@getTpsCreditStatistics')->middleware(UserLoginFilter::class); //未录入接口文档，废弃
+        Route::get('wallet/getTpsCreditList', 'WalletController@getTpsCreditList')->middleware(UserLoginFilter::class);//未录入接口文档，废弃
 
         //app银行卡接口
         Route::post('bankcard/addCard', 'BankCardsController@addCard')->middleware(UserLoginFilter::class);

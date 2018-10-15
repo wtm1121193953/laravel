@@ -1,15 +1,39 @@
 <template>
-    <page title="我的商户" v-loading="isLoading">
+    <page title="商户列表" v-loading="isLoading">
         <el-form class="fl" inline size="small">
-            <el-form-item label="" prop="name">
-                <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="商户名称"/>
-            </el-form-item>
+            <el-form-item prop="createdAt" label="添加时间">
+                <el-date-picker
+                        v-model="query.createdAt"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd">
+                </el-date-picker>
+                <!-- <el-date-picker
+                        class="w-150"
+                        v-model="query.startTime"
+                        type="date"
+                        placeholder="开始日期"
+                        value-format="yyyy-MM-dd 00:00:00"
 
-            <el-form-item prop="signBoardName" label="商户招牌名" >
-                <el-input v-model="query.signBoardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
+                />
+                -
+                <el-date-picker
+                        class="w-150"
+                        v-model="query.endTime"
+                        type="date"
+                        placeholder="结束日期"
+                        value-format="yyyy-MM-dd 23:59:59"
+                /> -->
             </el-form-item>
-
-            <el-form-item prop="merchant_category" label="所属行业">
+            <el-form-item prop="id" label="商户ID">
+                <el-input v-model="query.id" placeholder="请输入商户ID" clearable @keyup.enter.native="search"/>
+            </el-form-item>
+            <el-form-item prop="merchantName" label="商户名称">
+                <el-input v-model="query.merchantName" placeholder="请输入商户名称" clearable @keyup.enter.native="search"/>
+            </el-form-item>
+            <el-form-item prop="merchant_category" label="行业">
                 <el-cascader
                         change-on-select
                         clearable
@@ -23,40 +47,33 @@
                         v-model="query.merchant_category">
                 </el-cascader>
             </el-form-item>
-
-            <el-form-item label="状态" prop="status">
-                <el-select v-model="query.status">
-                    <el-option label="全部" value=""/>
-                    <el-option label="正常" value="1"/>
-                    <el-option label="已冻结" value="2"/>
-                </el-select>
+            <el-form-item prop="cityId" label="所在城市">
+                <el-cascader
+                        change-on-select
+                        clearable
+                        filterable
+                        :options="areaOptions"
+                        :props="{
+                            value: 'id',
+                            label: 'name',
+                            children: 'sub',
+                        }"
+                        v-model="query.cityId">
+                </el-cascader>
             </el-form-item>
-            <el-form-item label="审核状态" prop="audit_status">
-                <el-select v-model="query.audit_status" placeholder="请选择">
-                    <el-option label="全部" value=""/>
-                    <el-option label="待审核" value="-1"/>
-                    <el-option label="审核通过" value="1"/>
-                    <el-option label="审核不通过" value="2"/>
-                    <el-option label="重新提交审核" value="3"/>
+            <el-form-item prop="operId" label="所属运营中心">
+                <el-select v-model="query.operId" filterable clearable >
+                    <el-option v-for="item in operOptions" :key="item.id" :value="item.oper_id" :label="item.operName"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
+                <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
             </el-form-item>
         </el-form>
-        <!--<el-dropdown class="fr" @command="addBtnClick" trigger="click">
-            <el-button type="primary">
-                添加商户<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="from-pool">从商户池添加</el-dropdown-item>
-                <el-dropdown-item command="add">添加新商户</el-dropdown-item>
-            </el-dropdown-menu>
-        </el-dropdown>-->
-        <el-button class="fr" type="primary" @click="add">录入并激活商户</el-button>
+
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
-            <el-table-column prop="id" label="ID"/>
+            <el-table-column prop="id" label="商户ID"/>
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="signboard_name" label="商户招牌名"/>
             <el-table-column prop="categoryPath" label="行业">
@@ -66,60 +83,26 @@
                     </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="city" label="城市">
+            <el-table-column prop="city" label="所在城市">
                 <template slot-scope="scope">
-                    <!--<span> {{ scope.row.province }} </span>-->
+                    <!-- <span> {{ scope.row.province }} </span> -->
                     <span> {{ scope.row.city }} </span>
                     <span> {{ scope.row.area }} </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="operBizMemberName" label="业务员"/>
-            <el-table-column prop="status" label="商户状态">
-                <template slot-scope="scope" v-if="scope.row.audit_status == 1 || scope.row.audit_status == 3">
-                    <span v-if="scope.row.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.status === 2" class="c-danger">已冻结</span>
-                    <span v-else>未知 ({{scope.row.status}})</span>
+            <el-table-column prop="operName" label="所属运营中心"/>
+            <el-table-column prop="divide" label="分成比例">
+                <template slot-scope="scope">
+                    {{scope.row.divide}}%
                 </template>
             </el-table-column>
-            <el-table-column prop="audit_status" label="审核状态">
+            <el-table-column fixed="right" label="操作">
                 <template slot-scope="scope">
-                    <span v-if="parseInt(scope.row.audit_status) === 0" class="c-warning">待审核</span>
-                    <el-popover
-                            v-else-if="scope.row.audit_status === 1"
-                            placement="bottom-start"
-                            width="200px"  trigger="hover"
-                            @show="showMessage(scope)"
-                            :disabled="scope.row.audit_suggestion == ''">
-                        <div   slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
-                        <unaudit-record-reason    :data="auditRecord"  />
-                    </el-popover>
-
-                    <el-popover
-                            v-else-if="parseInt(scope.row.audit_status) === 2"
-                            placement="bottom-start"
-                            width="200px"  trigger="hover"
-                            @show="showMessage(scope)"
-                            :disabled="scope.row.audit_suggestion == ''" >
-                        <div   slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
-                        <unaudit-record-reason    :data="auditRecord"  />
-                    </el-popover>
-
-
-                    <span v-else-if="parseInt(scope.row.audit_status) === 3" class="c-warning">重新提交审核中</span>
-                    <span v-else>未知 ({{scope.row.audit_status}})</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="操作" width="250px">
-                <template slot-scope="scope">
-                    <merchant-item-options
-                            :scope="scope"
-                            :query="query"
-                            @change="itemChanged"
-                            @accountChanged="accountChanged"
-                            @refresh="getList"/>
+                    <el-button type="text" @click="searchorders(scope.row.id)">查看订单</el-button>
                 </template>
             </el-table-column>
         </el-table>
+
         <el-pagination
                 class="fr m-t-20"
                 layout="total, prev, pager, next"
@@ -133,26 +116,26 @@
 <script>
     import api from '../../../assets/js/api'
 
-    import MerchantItemOptions from './merchant-item-options'
-    import MerchantForm from './merchant-form'
-    import UnauditRecordReason from './unaudit-record-reason'
-
     export default {
-        name: "merchant-list",
         data(){
             return {
-                categoryOptions: [],
-                auditRecord:[],
                 isLoading: false,
                 query: {
-                    name: '',
-                    status: '',
-                    page: 1,
-                    audit_status: '',
-                    signBoardName:''
+                    createdAt: '',
+                    // startTime: '',
+                    // endTime: '',
+                    id:'',
+                    merchantName: '',
+                    //merchant_category:'',//自动生成的
+                    //cityId :'',//自动生成的
+                    operId :'',
+                    page: 1
                 },
                 list: [],
                 total: 0,
+                areaOptions:[],
+                operOptions:[],
+                categoryOptions:[],
             }
         },
         computed: {
@@ -160,44 +143,52 @@
         },
         methods: {
             search(){
-                this.query.page = 1;
-                this.getList();
+                let _self = this;
+                _self.query.page = 1;
+                _self.getList();
+            },
+            searchorders(merchant_id){
+                store.commit('setCurrentMenu', '/orders');
+                // router.push({
+                //     name: 'OrderList',
+                //     params: {
+                //         merchantId: merchant_id
+                //     }
+                // });
+                router.push({ path: '/orders', query: { merchantId: merchant_id }})
             },
             getList(){
-                this.isLoading = true;
+                let _self = this;
+                _self.isLoading = true;
                 let params = {};
+                if (_self.query.createdAt && _self.query.createdAt.length > 0 ) {
+                    params.startTime = _self.query.createdAt[0];
+                    params.endTime = _self.query.createdAt[1];
+                }else{
+                    params.startTime = '';
+                    params.endTime = '';
+                }
                 Object.assign(params, this.query);
                 api.get('/merchants', params).then(data => {
-                    this.query.page = params.page;
-                    this.isLoading = false;
-                    this.list = data.list;
-                    this.total = data.total;
+                    _self.query.page = params.page;
+                    // _self.isLoading = false;
+                    _self.list = data.list;
+                    _self.total = data.total;
+                }).catch(() =>{
+                    _self.$message({
+                      message: '请求失败',
+                      type: 'warning'
+                    });
+                }).finally(() => {
+                    _self.isLoading = false;
                 })
-            },
-            itemChanged(index, data){
-                this.getList();
-            },
-            addBtnClick(command){
-                if(command === 'add'){
-                    this.add()
-                }else {
-                    this.$menu.change('/merchant/pool')
-                }
-            },
-            add(){
-                router.push({
-                    path: '/merchant/add',
-                    query: {
-                        type: 'merchant-list'
-                    }
-                });
             },
             showMessage(scope){
                 api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
                     this.auditRecord = [data];
                 })
             },
-
+            
             accountChanged(scope, account){
                 let row = this.list[scope.$index];
                 row.account = account;
@@ -205,34 +196,35 @@
                 this.getList();
             },
         },
-
-
-
-
         created(){
-            api.get('merchant/categories/tree').then(data => {
-                this.categoryOptions = data.list;
+            let _self = this;
+
+            //城市出来后如果有id就选上
+            api.get('area/tree').then(data => {
+                _self.areaOptions = data.list;
             });
-            if (this.$route.params){
-                Object.assign(this.query, this.$route.params);
+            
+            api.get('merchant/opers/tree').then(data => {
+                _self.operOptions = data.list;
+            });
+            api.get('merchant/categories/tree').then(data => {
+                 _self.categoryOptions = data.list;
+             });
+             if (_self.$route.params){
+                 Object.assign(_self.query, _self.$route.params);
+             }
+            if (_self.$route.query) {
+                Object.assign(_self.query,_self.$route.query);
+                _self.$route.query.operId ? _self.query.operId = parseInt(_self.query.operId):'';
             }
-            this.getList();
+            _self.getList();
         },
         components: {
-            MerchantItemOptions,
-            MerchantForm,
-            UnauditRecordReason
+
         }
     }
 </script>
 
 <style scoped>
-    .message{
-        overflow: hidden;
-        text-overflow:ellipsis;
-        white-space: nowrap;
-        width:120px;
-        font-size:12px;
-        color:gray;
-    }
+
 </style>

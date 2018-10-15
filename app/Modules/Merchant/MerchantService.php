@@ -10,19 +10,27 @@ namespace App\Modules\Merchant;
 
 
 use App\BaseService;
+use App\DataCacheService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Bizer\BizerService;
+use App\Modules\Country\CountryService;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
 use App\Modules\Oper\Oper;
+use App\Modules\Oper\OperBizer;
+use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperBizMember;
 use App\Result;
 use App\Support\Lbs;
+use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
+use App\Modules\Area\Area;
 use Illuminate\Support\Collection;
 use App\Modules\Setting\SettingService;
-use App\Modules\Area\Area;
 use App\Modules\Goods\GoodsService;
+
+use App\Modules\Oper\MyOperBizer;
 
 
 class MerchantService extends BaseService
@@ -75,15 +83,24 @@ class MerchantService extends BaseService
     public static function getAllNames(array $data)
     {
         // todo 后期可以对查询结果做缓存
-        $auditStatus = $data['audit_status'];
-        $status = $data['status'];
-        $operId = $data['operId'];
-        $list = Merchant::where(function (Builder $query) use ($operId) {
-            $query->where('oper_id', $operId)
+        $auditStatus = array_get($data, 'audit_status');
+        $status =array_get($data, 'status');
+        $operId =array_get($data, 'operId'); //运营中心ID
+        $bizer_id = array_get($data, 'bizer_id');//业务员ID
+//        $list = Merchant::where(function (Builder $query) use ($operId) {
+//            $query->where('oper_id', $operId)
+//                ->orWhere('audit_oper_id', $operId);
+//        })
+        $list = Merchant::select('id', 'name')
+            ->when(!empty($operId), function (Builder $query) use ($operId) {
+                $query->where('oper_id', $operId)
                 ->orWhere('audit_oper_id', $operId);
-        })
+            })
             ->when($status, function (Builder $query) use ($status) {
                 $query->where('status', $status);
+            })
+            ->when(!empty($bizer_id), function (Builder $query) use ($bizer_id) {
+                $query->where('bizer_id', $bizer_id);
             })
             ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus) {
                 if ($auditStatus == -1) {
@@ -127,8 +144,13 @@ class MerchantService extends BaseService
         $startCreatedAt = array_get($data,'startCreatedAt');
         $endCreatedAt = array_get($data,'endCreatedAt');
 
+        $cityId = array_get($data, "cityId");
+        $bizerIds = array_get($data, "bizer_id");
+        $operBizMemberCodes = array_get($data, 'operBizMemberCodes');
+
         // 全局限制条件
-        $query = Merchant::where('audit_oper_id', '>', 0)->orderByDesc('id');
+        $query = Merchant::where('audit_oper_id', '>', 0)
+            ->orderByDesc('id');
 
         // 筛选条件
         if ($id) {
@@ -152,6 +174,37 @@ class MerchantService extends BaseService
                 $query->whereIn('creator_oper_id', $creatorOperId);
             } else {
                 $query->where('creator_oper_id', $creatorOperId);
+            }
+        }
+
+        if (!empty($bizerIds)) {
+            if (is_array($bizerIds) || $bizerIds instanceof Collection) {
+                $query->whereIn('bizer_id', $bizerIds);
+            } else {
+                $query->where('bizer_id', $bizerIds);
+            }
+        }
+
+        if (!empty($operBizMemberCodes)) {
+            if (is_array($operBizMemberCodes) || $operBizMemberCodes instanceof Collection) {
+                $query->whereIn('oper_biz_member_code', $operBizMemberCodes);
+            } else {
+                $query->where('oper_biz_member_code', $operBizMemberCodes);
+            }
+        }
+
+        if(!empty($cityId)){
+            if(isset($cityId[0]) && $cityId[0]){
+                $province_Id = Area::findOrFail($cityId[0]);
+                $query->where('province_id', $province_Id->area_id);
+            }
+            if(isset($cityId[1]) && $cityId[1]){
+                $city_Id = Area::findOrFail($cityId[1]);
+                $query->where('city_id', $city_Id->area_id);
+            }
+            if(isset($cityId[2]) && $cityId[2]){
+                $area_Id = Area::findOrFail($cityId[2]);
+                $query->where('area_id', $area_Id->area_id);
             }
         }
         if ($status) {
@@ -186,7 +239,7 @@ class MerchantService extends BaseService
             if (count($merchantCategory) == 1) {
                 $merchantCategoryFinalId = MerchantCategory::where('pid', $merchantCategory[0])
                     ->select('id')->get()
-                    ->pluck('id');
+                    ->pluck('id')->toArray();
             } else {
                 $merchantCategoryFinalId = intval($merchantCategory[1]);
             }
@@ -207,7 +260,6 @@ class MerchantService extends BaseService
         } else {
 
             $data = $query->paginate();
-
             $data->each(function ($item) {
                 if ($item->merchant_category_id) {
                     $item->categoryPath = MerchantCategoryService::getCategoryPath($item->merchant_category_id);
@@ -217,7 +269,19 @@ class MerchantService extends BaseService
                 $item->business_time = json_decode($item->business_time, 1);
                 $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
                 $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
-                $item->operBizMemberName = OperBizMember::where('oper_id', $item->operId)->where('code', $item->oper_biz_member_code)->value('name') ?: '无';
+                if ($item->bizer_id) {
+                    $operBizer = OperBizerService::getOperBizerByParam([
+                        'operId' => $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id,
+                        'bizerId' => $item->bizer_id,
+                    ]);
+                    $item->divide = empty($operBizer) ? 0 : $operBizer->divide;
+                }
+                $item->bizer = BizerService::getById($item->bizer_id);
+                $operBizMember = OperBizMember::where('oper_id', $item->operId)
+                    ->where('code', $item->oper_biz_member_code)
+                    ->first();
+                $item->operBizMember = $operBizMember;
+                $item->operBizMemberName = !empty($operBizMember) ? $operBizMember->value('name') : '无';
             });
 
             return $data;
@@ -232,6 +296,7 @@ class MerchantService extends BaseService
     public static function detail($id)
     {
 
+        $userId = request()->get('current_user')->id;
         $merchant = Merchant::findOrFail($id);
         $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
         $merchant->categoryPathText = '';
@@ -249,12 +314,24 @@ class MerchantService extends BaseService
         $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
         $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
         if ($merchant->oper_biz_member_code) {
-            $merchant->operBizMemberName = OperBizMember::where('code', $merchant->oper_biz_member_code)->value('name');
+            $operBizMember = OperBizMember::where('code', $merchant->oper_biz_member_code)->first();
+            $merchant->operBizMember = $operBizMember;
+            $merchant->operBizMemberName = !empty($operBizMember) ? $operBizMember->name : '';
+        }
+        if ($merchant->bizer_id) {
+            $merchant->bizer = BizerService::getById($merchant->bizer_id);
         }
         $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
         }
+        $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
+        if($merchantFollow){
+            $merchant->user_follow_status = 2;
+        }else{
+            $merchant->user_follow_status =1;
+        }
+        $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
         return $merchant;
     }
 
@@ -274,15 +351,16 @@ class MerchantService extends BaseService
             throw new BaseResponseException('该商户不存在');
         }
 
-        if (!empty($merchant->oper_biz_member_code)) {
+        if (!empty($merchant->bizer_id)) {
             // 记录原业务员ID
-            $originOperBizMemberCode = $merchant->oper_biz_member_code;
+            $originOperBizMemberCode = $merchant->bizer_id;
         }
 
         $merchant->fillMerchantPoolInfoFromRequest();
         $merchant->fillMerchantActiveInfoFromRequest();
 
         // 商户名不能重复
+
         $exists = Merchant::where('name', $merchant->name)
             ->where('id', '<>', $merchant->id)->first();
         $existsDraft = MerchantDraft::where('name', $merchant->name)->first();
@@ -323,15 +401,21 @@ class MerchantService extends BaseService
         $merchant->save();
 
         // 更新业务员已激活商户数量
-        if ($merchant->oper_biz_member_code) {
-            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
-            OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
+        if ($merchant->bizer_id) {
+
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
+            MyOperBizer::updateAuditMerchantNumberByCode($merchant->bizer_id);
+
+            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+            //OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
         }
 
         // 如果存在原有的业务员, 并且不等于现有的业务员, 更新原有业务员邀请用户数量
-        if (isset($originOperBizMemberCode) && $originOperBizMemberCode != $merchant->oper_biz_member_code) {
-            OperBizMember::updateActiveMerchantNumberByCode($originOperBizMemberCode);
-            OperBizMember::updateAuditMerchantNumberByCode($originOperBizMemberCode);
+        if (isset($originOperBizMemberCode) && $originOperBizMemberCode != $merchant->bizer_id) {
+            MyOperBizer::updateActiveMerchantNumberByCode($originOperBizMemberCode);
+            MyOperBizer::updateAuditMerchantNumberByCode($originOperBizMemberCode);
+            //OperBizMember::updateActiveMerchantNumberByCode($originOperBizMemberCode);
+            //OperBizMember::updateAuditMerchantNumberByCode($originOperBizMemberCode);
         }
 
         return $merchant;
@@ -371,8 +455,9 @@ class MerchantService extends BaseService
         MerchantAuditService::addAudit($merchant->id, $currentOperId);
 
         // 更新业务员已激活商户数量
-        if ($merchant->oper_biz_member_code) {
-            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        if ($merchant->bizer_id) {
+            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
         }
 
         return $merchant;
@@ -409,8 +494,9 @@ class MerchantService extends BaseService
         MerchantAuditService::addAudit($merchant->id, $operId);
 
         // 更新业务员已激活商户数量
-        if($merchant->oper_biz_member_code){
-            OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+        if($merchant->bizer_id){
+            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
         }
 
         return $merchant;
@@ -474,40 +560,59 @@ class MerchantService extends BaseService
         }
     }
 
-    public static function getListForUserApp(array $params)
+    /**
+     * 获取商家列表可以计算距离
+     * @param array $params
+     * @return array
+     */
+    public static function getListAndDistance(array $params = [])
     {
         $city_id = array_get($params, 'city_id');
         $merchant_category_id = array_get($params, 'merchant_category_id');
         $keyword = array_get($params, 'keyword');
         $lng = array_get($params,'lng');
         $lat = array_get($params, 'lat');
+        $noPilot = array_get($params, 'noPilot',false);//过滤掉试点商户
 
         // 暂时去掉商户列表中的距离限制
-        $radius = request('radius');
+        $radius = array_get($params, 'radius');
         $radius = $radius == 200000 ? 0 : $radius;
         // 价格搜索
-        $lowestPrice = request('lowest_price', 0);
-        $highestPrice = request('highest_price', 0);
+        $lowestPrice = array_get($params,'lowest_price', 0);
+        $highestPrice = array_get($params, 'highest_price', 0);
         if ($lowestPrice && $highestPrice && $lowestPrice > $highestPrice){
             throw new BaseResponseException('搜索条件的最低价格不能高于最高价格');
         }
+        $onlyPayToPlatform = array_get($params, 'onlyPayToPlatform', 0);
 
         $distances = null;
         if($lng && $lat && $radius){
             // 如果经纬度及范围都存在, 则按距离筛选出附近的商家
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
         }
+        $user_key = array_get($params, 'user_key', 0); //终端的唯一表示，用于计算距离
+        $current_oper_id = array_get($params, 'current_oper_id', 0); //是否只看当前运营中心的商户
 
-        // todo 只获取切换到平台的运营中心下的商家信息
-        $query = Merchant::query()
+        //只能查询切换到平台的商户
+        $query = Merchant::where('status', 1)
             ->where('oper_id', '>', 0)
-            ->where('status', 1)
+            ->when($current_oper_id, function (Builder $query) use ($current_oper_id) {
+                $query->where('oper_id', $current_oper_id);
+            })
+            ->when($onlyPayToPlatform, function (Builder $query) {
+                $query->whereHas('oper', function(Builder $query){
+                    $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
+                });
+            })
             ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT])
             ->when($city_id, function(Builder $query) use ($city_id){
                 // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户
                 $areaInfo = Area::where('area_id', $city_id)->where('path', 1)->first();
                 if (empty($areaInfo)) {
-                    $query->where('city_id', $city_id);
+                    $query->where(function(Builder $query)use ($city_id){
+                        $query->where('city_id', $city_id)
+                            ->orWhere('area_id', $city_id);
+                    });
                 } else {
                     $cityIdArray = Area::where('parent_id', $city_id)
                         ->where('path', 2)
@@ -571,25 +676,36 @@ class MerchantService extends BaseService
                             ->where('lowest_amount', '<', $highestPrice);
                     })
                     ->orderBy('lowest_amount');
+            })
+            ->when($noPilot, function (Builder $query) {
+                $query->where('is_pilot', Merchant::NORMAL_MERCHANT);
             });
+
 
         if($lng && $lat){
             // 如果是按距离搜索, 需要在程序中按距离排序
-            $allList = $query->get();
+            $allList = $query->select('id','is_pilot')->get();
             $total = $query->count();
-            $list = $allList->map(function ($item) use ($lng, $lat) {
-                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), $lng, $lat);
+            $list = $allList->map(function ($item) use ($lng, $lat, $user_key) {
+                $item->distance = $item->is_pilot == 1
+                    ? 100000000
+                    : Lbs::getDistanceOfMerchant($item->id, $user_key, floatval($lng), floatval($lat));
                 return $item;
             })
                 ->sortBy('distance')
                 ->forPage(request('page', 1), 15)
                 ->values()
-                ->each(function($item) {
+                ->map(function($item) {
+                    $item->distance =  $item->is_pilot == 1 ? '' : Utils::getFormativeDistance($item->distance);
+                    //$merchant = Merchant::find($item->id);
+                    $merchant = DataCacheService::getMerchantDetail($item->id);
+                    $merchant->distance = $item->distance;
                     // 格式化距离
-                    $item->distance = self::_getFormativeDistance($item->distance);
+                    return $merchant;
                 });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
+            $query->orderBy('is_pilot', 'asc');
             $data = $query->paginate();
             $list = $data->items();
             $total = $data->total();
@@ -612,7 +728,62 @@ class MerchantService extends BaseService
             $item->lowestGoods = GoodsService::getLowestPriceGoodsForMerchant($item->id, 2);
         });
 
-        return Result::success(['list' => $list, 'total' => $total]);
+        return ['list' => $list, 'total' => $total];
+    }
+
+    /**
+     * 获取商家详情
+     * @param array $ids
+     * @param float $lng
+     * @param float $lat
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public static function getListByIds(array $ids = [],  float $lng = 0, float $lat=0)
+    {
+        if (empty($ids)) {
+            return [];
+        }
+        //只能查询切换到平台的商户
+        $query = Merchant::query()
+            ->whereIn('id', $ids)
+            ->where('status', 1)
+            ->whereHas('oper', function(Builder $query){
+                $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
+            })
+            ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT]);
+
+        $list = $query->get();
+
+        if($lng && $lat){
+            // 如果是按距离搜索, 需要在程序中按距离排序
+
+            $allList = $list;
+            $list = $allList->map(function ($item) use ($lng, $lat) {
+                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
+                $item->distance = Utils::getFormativeDistance($item->distance);
+                return $item;
+            });
+        }
+
+        // 补充商家其他信息
+        $list = collect($list);
+        $list->each(function ($item){
+            $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
+            if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
+            $category = MerchantCategory::find($item->merchant_category_id);
+            $item->merchantCategoryName = $category->name;
+            // 最低消费
+            $item->lowestAmount = MerchantService::getLowestPriceForMerchant($item->id);
+            // 兼容v1.0.0版客服电话字段
+            $item->contacter_phone = $item->service_phone;
+            // 商户评级字段，暂时全部默认为5星
+            $item->grade = 5;
+            // 首页商户列表，显示价格最低的n个团购商品
+            $item->lowestGoods = GoodsService::getLowestPriceGoodsForMerchant($item->id, 2);
+        });
+
+        return $list;
+
     }
 
     public static function userAppMerchantDetial($data)
@@ -627,9 +798,9 @@ class MerchantService extends BaseService
         if($lng && $lat){
             $currentUser = request()->get('current_user');
             $tempToken = empty($currentUser) ? str_random() : $currentUser->id;
-            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, $lng, $lat);
+            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, floatval($lng), floatval($lat));
             // 格式化距离
-            $detail->distance = self::_getFormativeDistance($distance);
+            $detail->distance = Utils::getFormativeDistance($distance);
         }
         $category = MerchantCategory::find($detail->merchant_category_id);
         $detail->merchantCategoryName = $category->name;
@@ -639,11 +810,6 @@ class MerchantService extends BaseService
         $detail->contacter_phone = $detail->service_phone;
 
         return $detail;
-    }
-
-    private static function _getFormativeDistance($distance)
-    {
-        return $distance >= 1000 ? (number_format($distance / 1000, 1) . '千米') : ($distance . '米');
     }
 
     /**

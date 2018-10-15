@@ -17,10 +17,13 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
 use App\Modules\User\User;
+use App\Modules\Wechat\MiniprogramScene;
 use App\Modules\Wechat\MiniprogramSceneService;
 use App\Support\Utils;
 use function foo\func;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class InviteChannelService extends BaseService
 {
@@ -130,7 +133,7 @@ class InviteChannelService extends BaseService
         $originName = '';
         if($originType == 1){
             $user = User::findOrFail($originId);
-            $originName = $user->name ?: Utils::getHalfHideMobile($user->mobile);
+            $originName = Utils::getHalfHideMobile($user->mobile);
         }else if($originType == 2){
             $originName = Merchant::where('id', $originId)->value('signboard_name');
         }else if($originType == 3){
@@ -263,6 +266,31 @@ class InviteChannelService extends BaseService
             $data = $query->get();
             return $data;
         }
+    }
+
+    /**
+     * 获取运营中心的所有邀请渠道
+     * @param $oper_id
+     */
+    public static function allOperInviteChannel($oper_id, $ori = false)
+    {
+        $data = InviteChannel::select('id','name')
+            ->where('origin_id','=',$oper_id)
+            ->where('origin_type','=',3)
+            ->orderByDesc('id')->get();
+
+        if ($ori) {
+            return $data->toArray();
+        }
+        $rt = [];
+        if ($data) {
+            foreach ($data as $v) {
+                $rt[$v->id] = $v->name;
+            }
+        }
+
+        return $rt;
+
     }
 
 }

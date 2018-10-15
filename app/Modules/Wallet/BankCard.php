@@ -26,6 +26,7 @@ class BankCard extends BaseModel
     const ORIGIN_TYPE_USER = 1; // 用户
     const ORIGIN_TYPE_MERCHANT = 2; // 商户
     const ORIGIN_TYPE_OPER = 3; // 运营中心
+    const ORIGIN_TYPE_BIZER = 4; // 业务员
 
     /**
      * 银行账户类型 1-公司账户 2-个人账户

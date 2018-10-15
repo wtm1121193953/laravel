@@ -274,10 +274,11 @@ class ConsumeQuotaService extends BaseService
         $originId = array_get($param, 'originId', 0);
         $originType = array_get($param, 'originType', 0);
         $type = array_get($param, 'type', '');
-        /*$syncTpsCredit = array_get($param, 'syncTpsCredit', false);
-        $tpsConsumeQuota = array_get($param, 'tpsConsumeQuota', false);*/
+//        $syncTpsCredit = array_get($param, 'syncTpsCredit', false);
+        $consumeQuota = array_get($param, 'consumeQuota', 0);
 
-        $query = WalletConsumeQuotaRecord::query();
+        $query = WalletConsumeQuotaRecord::query()
+            ->where('consume_quota','>',0);
         if ($originId) {
             $query->where('origin_id', $originId);
         }
@@ -295,10 +296,10 @@ class ConsumeQuotaService extends BaseService
         }
         /*if ($syncTpsCredit) {
             $query->where('sync_tps_credit', '>', 0);
-        }
-        if ($tpsConsumeQuota) {
-            $query->where('tps_consume_quota', '>', 0);
         }*/
+        if ($consumeQuota) {
+            $query->where('consume_quota', '>', 0);
+        }
 
         if ($startDate) $startDate = date('Y-m-d 00:00:00', strtotime($startDate));
         if ($endDate) $endDate = date('Y-m-d 23:59:59', strtotime($endDate));

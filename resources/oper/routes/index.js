@@ -7,6 +7,7 @@ import welcome from '../components/welcome.vue'
 import merchant from './merchant'
 import settlements from './settlements'
 import operBizMembers from './operBizMember'
+import bizer from './bizer'
 import wallet from './wallet'
 
 import OrderList from '../components/order/list'
@@ -21,6 +22,8 @@ import SettingMappingUser from '../components/setting/mapping-user'
 
 //系统设置
 import TpsBind from '../components/setting/tps-bind'
+import MemberList from '../components/member/list'
+import MemberStatistics from '../components/member/statistics'
 
 /**
  *
@@ -33,6 +36,7 @@ const routes = [
     ...settlements,
     ...operBizMembers,
     ...wallet,
+    ...bizer,
 
     // 订单模块
     {
@@ -44,12 +48,14 @@ const routes = [
     },
 
 
-    // 我的会员
+    // 我的用户
     {
         path: '/',
         component: Home,
         children: [
             {path: 'invite/statistics/daily', component: InviteStatisticsDaily, name: 'InviteStatisticsDaily'},
+            {path: 'member/index', component: MemberList, name: 'MemberList'},
+            {path: 'member/statistics', component: MemberStatistics, name: 'MemberStatistics'},
         ]
     },
 

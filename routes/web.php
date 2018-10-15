@@ -20,6 +20,7 @@ Route::get('/', function () {
     return redirect('/merchant');
 });
 
+Route::view('/developer', 'developer');
 // 后端页面
 Route::get('/admin', function () {
     return view('admin');
@@ -45,6 +46,7 @@ Route::get('/merchant-h5', function () {
     return view('user-h5');
 });*/
 
+
 // 业务员端
 Route::get('/bizer', function () {
     return view('bizer');
@@ -57,3 +59,7 @@ Route::get('/miniprogram_bridge/pay', 'PayController@miniprogramPayBridgeByH5');
 
 Route::post('/upload/image', 'UploadController@image');
 Route::get('/download', 'DownloadController@download');
+Route::get('/scene', 'SceneController@index')->name('scene');
+
+// app引导下载h5页面
+Route::get('/app-download-h5', 'SceneController@index');

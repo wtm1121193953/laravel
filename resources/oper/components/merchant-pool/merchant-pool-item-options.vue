@@ -3,6 +3,7 @@
     <div>
         <el-button v-if="user.oper_id === scope.row.creator_oper_id" type="text" @click="edit">编辑</el-button>
         <el-button type="text" @click="addFromPool">激活商户</el-button>
+        <el-button v-if="user.oper_id === scope.row.creator_oper_id" type="text" @click="del">删除</el-button>
     </div>
 </template>
 
@@ -33,6 +34,14 @@
                         id: this.scope.row.id,
                     }
                 })
+            },
+            del(){
+                this.$confirm(`确定删除吗?`).then(() => {
+                    api.post('/merchant/pool/del', {id: this.scope.row.id}).then(data => {
+                        this.$alert(' 操作成功');
+                        this.$emit('refresh')
+                    })
+                });
             },
             addFromPool(){
                 router.push({

@@ -224,7 +224,7 @@
         var loader = document.getElementById('bootstrap-loader');
         loader.parentNode.removeChild(loader);
     });
-
+/*
     //返回true表示为pc端打开，返回false表示为手机端打开  
     function checkClient() {   
         var userAgentInfo = navigator.userAgent;
@@ -243,7 +243,7 @@
         //手机端
         var href = window.location.href;
         window.location.href = href.replace('merchant', 'merchant-h5')
-    }
+    }*/
 </script>
 
 <div id="app">

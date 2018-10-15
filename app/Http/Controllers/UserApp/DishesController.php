@@ -16,6 +16,7 @@ use App\Modules\Dishes\DishesGoodsService;
 use App\Modules\Dishes\DishesService;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Result;
+use Illuminate\Support\Facades\Log;
 
 class DishesController extends Controller
 {
@@ -110,6 +111,7 @@ class DishesController extends Controller
         if (is_string($dishesList)) {
             $dishesList = json_decode($dishesList, true);
         }
+        Log::info('disesList11',['diesList' => $dishesList]);
 
         $merchantId = request('merchant_id');
         if (empty($dishesList)) {

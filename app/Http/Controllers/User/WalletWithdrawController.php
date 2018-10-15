@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Exceptions\BaseResponseException;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\Wallet;
 use Illuminate\Http\Request;
@@ -39,7 +40,7 @@ class WalletWithdrawController extends Controller
         // 获取钱包信息
         $wallet = WalletService::getWalletInfo( $obj );
         // 获取银行卡信息
-        $card   = BankCardService::getCardById( $request->input('card_id'), $obj );
+        $card   = BankCardService::getCardById( $request->input('card_id'));
         $isOk   = WalletWithdrawService::checkWithdrawPasswordByOriginInfo( $request->input('password'), $obj->id, $wallet->origin_type);
         if( !$isOk )
         {
@@ -48,6 +49,11 @@ class WalletWithdrawController extends Controller
         if( !$card )
         {
             return Result::error(ResultCode::DB_QUERY_FAIL, '无银行卡信息');
+        }
+        // 判断当前是否可提现
+        $days = WalletWithdrawService::getWithdrawableDays();
+        if(!in_array(date('d'), $days)){
+            throw new BaseResponseException('当前日期不可提现');
         }
 
         // 注入银行卡信息
@@ -71,13 +77,15 @@ class WalletWithdrawController extends Controller
         // 获取用户可提现金额
 
         return Result::success([
-            'withdrawRatio' => UserCreditSettingService::getUserWithdrawChargeRatio()/100,
+            'withdrawRatio' => UserCreditSettingService::getUserWithdrawChargeRatio() / 100,
             'minAmount' => 100,
             'isSetWithdrawPassword' => empty($wallet->withdraw_password) ? 0 : 1,
             'hasBankCard' => $cards->count() <= 0 ? 0 : 1,
             'balance' => $wallet->balance,
             // 判断现今可否结算
-            'isWithdraw'    =>  (in_array(date('d'), [10,20,30])) ? true:false,
+            'isWithdraw' => in_array(date('d'), WalletWithdrawService::getWithdrawableDays()),
+            //显示可提现日期
+            'days' => WalletWithdrawService::getWithdrawableDays(),
         ]);
     }
 }

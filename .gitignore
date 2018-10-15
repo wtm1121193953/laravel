@@ -1,7 +1,6 @@
 /node_modules
 /public/hot
 /public/storage
-/storage/*.key
 /vendor
 /.idea
 /.vscode
@@ -12,3 +11,4 @@ npm-debug.log
 yarn-error.log
 .env
 /package-lock.json
+/nbproject/

@@ -26,37 +26,21 @@ class RequestLog
         $response = $next($request);;
 
         // 如果非生产环境, 记录请求日志
+        $logData = [ 'request' => Utils::getRequestContext($request), ];
         if(!App::environment('production')){
-            $attributes = $request->attributes->all();
-            foreach ($attributes as $key => $attribute) {
-                if($attribute instanceof Model){
-                    $attributes[$key] = $attribute->toArray();
-                }
-            }
-            $logData = [
-                'request' => Utils::getRequestContext($request),
-                'response' => [
-                    'statusCode' => $response->getStatusCode(),
-                    'content' => json_decode($response->getContent(), 1) ?? $response->getContent(),
-                ],
+            $logData['response'] = [
+                'statusCode' => $response->getStatusCode(),
+                'content' => json_decode($response->getContent(), 1) ?? $response->getContent(),
             ];
-            Log::debug('request listen ', $logData);
         }
+        Log::info('request listen ', $logData);
 
         // 如果是错误请求, 记录错误日志
         if($response instanceof JsonResponse){
             $responseData = json_decode($response->getContent(), 1);
             if(
-                /*!(
-                    $request->is('api/oper/inviteChannel/downloadInviteQrcode')
-                    || $request->is('api/merchant/inviteChannel/downloadInviteQrcode')
-                    || $request->is('api/pay/notify')
-                    || $request->is('api/pay/reapalPayNotify')
-                    || $request->is('api/download')
-                )
-                &&*/ !(
-                isset($responseData['code']) &&
-                in_array($responseData['code'], [
+                !isset($responseData['code']) ||
+                !in_array($responseData['code'], [
                     ResultCode::SUCCESS,
                     ResultCode::PARAMS_INVALID,
                     ResultCode::UNLOGIN,
@@ -65,14 +49,7 @@ class RequestLog
                     ResultCode::ACCOUNT_NOT_FOUND,
                     ResultCode::ACCOUNT_PASSWORD_ERROR,
                 ])
-            )
             ){
-                $attributes = $request->attributes->all();
-                foreach ($attributes as $key => $attribute) {
-                    if($attribute instanceof Model){
-                        $attributes[$key] = $attribute->toArray();
-                    }
-                }
                 $logData = [
                     'request' => Utils::getRequestContext($request),
                     'response' => [

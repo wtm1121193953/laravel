@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: 57458
@@ -7,7 +8,6 @@
  */
 
 namespace App\Modules\Oper;
-
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
@@ -100,21 +100,33 @@ class OperService extends BaseService
         $name = array_get($params, 'name');
         $status = array_get($params, 'status');
         $tel = array_get($params, 'tel');
+        $contacter = array_get($params, 'contacter');
+        $provinceId = array_get($params, 'province_id');
+        $cityId = array_get($params, 'city_id');
 
         $data = Oper::when($status, function (Builder $query) use ($status) {
-            $query->where('status', $status);
-        })
-            ->when($name, function (Builder $query) use ($name) {
-                $query->where('name', 'like', "%$name%");
-            })
-            ->when($tel, function (Builder $query) use ($tel) {
-                $query->where('tel', 'like', "%$tel%");
-            })
-            ->orderBy('id', 'desc')
-            ->select($fields)
-            ->get();
+                    $query->where('status', $status);
+                })
+                ->when($name, function (Builder $query) use ($name) {
+                    $query->where('name', 'like', "%$name%");
+                })
+                ->when($tel, function (Builder $query) use ($tel) {
+                    $query->where('tel', 'like', "%$tel%");
+                })
+                ->when($contacter, function (Builder $query) use ($contacter) {
+                    $query->where('contacter', 'like', "%$contacter%");
+                })
+                ->when($provinceId, function (Builder $query) use ($provinceId) {
+                    $query->where('province_id', $provinceId);
+                })
+                ->when($cityId, function (Builder $query) use ($cityId) {
+                    $query->where('city_id', $cityId);
+                })
+                ->orderBy('id', 'desc')
+                ->select($fields)
+                ->get();
 
-        if(!$base){
+        if (!$base) {
             $data->each(function ($item) {
                 $item->account = OperAccountService::getByOperId($item->id) ?: null;
                 $item->miniprogram = OperMiniprogramService::getByOperId($item->id) ?: null;
@@ -277,6 +289,7 @@ class OperService extends BaseService
         return $oper;
     }
 
+
     /**
      * 根据运营中心名获取运营中心某个字段的数组
      * @param $operName
@@ -290,5 +303,19 @@ class OperService extends BaseService
             ->get()
             ->pluck($field);
         return $arr;
+    }
+
+    public static function allOpers()
+    {
+        return Oper::select('id','name')->get()->toArray();
+    }
+
+    /**
+     * 获取所有合作的运营商
+     * @return array
+     */
+    public static function allNormalOpers()
+    {
+        return Oper::select('id','name')->where('status','=',Oper::STATUS_NORMAL)->get()->toArray();
     }
 }

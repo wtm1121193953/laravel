@@ -42,6 +42,8 @@ use Illuminate\Support\Carbon;
  * @property string tax_cert_pic_url
  * @property string legal_id_card_pic_a
  * @property string legal_id_card_pic_b
+ * @property integer country_id
+ * @property string corporation_name
  * @property string legal_id_card_num
  * @property string contract_pic_url
  * @property string hygienic_licence_pic_url
@@ -143,6 +145,8 @@ class MerchantDraft extends BaseModel
 
         $this->legal_id_card_pic_a = request('legal_id_card_pic_a','');
         $this->legal_id_card_pic_b = request('legal_id_card_pic_b','');
+        $this->country_id = request('country_id', 0);
+        $this->corporation_name = request('corporation_name', '');
         $this->legal_id_card_num = request('legal_id_card_num','');
         $this->business_licence_pic_url = request('business_licence_pic_url','');
         $this->organization_code = request('organization_code','');
@@ -157,7 +161,8 @@ class MerchantDraft extends BaseModel
         $this->oper_salesman = request('oper_salesman','');
         $this->site_acreage = request('site_acreage','');
         $this->employees_number = request('employees_number','');
-
+        //新业务员ID
+        $this->bizer_id = request('bizer_id',0);
 
         //////// 没有了的字段
 //        $this->region = request('region');

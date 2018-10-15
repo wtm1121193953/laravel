@@ -45,14 +45,16 @@ class GoodsService extends BaseService
      * @param int $number 要获取的商品个数
      * @return Goods[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getLowestPriceGoodsForMerchant($merchantId, $number)
+    public static function getLowestPriceGoodsForMerchant($merchantId, $number = null)
     {
         $list = Goods::where('merchant_id', $merchantId)
             ->where('status', Goods::STATUS_ON)
-            ->orderBy('sort', 'desc')
-            ->limit($number)
-            ->get();
-        return $list;
+            ->orderBy('sort', 'desc');
+        if($number){
+            $list->limit($number);
+        }
+        $data = $list->get();
+        return $data;
     }
 
     /**
@@ -306,7 +308,10 @@ class GoodsService extends BaseService
     public static function userGoodsList($merchant_id)
     {
         $merchant = Merchant::findOrFail($merchant_id);
-        $list = Goods::where('merchant_id', $merchant_id)->get();
+        $list = Goods::where('merchant_id', $merchant_id)
+            ->where('status', Goods::STATUS_ON)
+            ->orderBy('sort', 'desc')
+            ->get();
         $list->each(function ($item) use ($merchant) {
             $item->pic_list = $item->pic_list ? explode(',', $item->pic_list) : [];
             $item->business_time = json_decode($merchant->business_time, 1);

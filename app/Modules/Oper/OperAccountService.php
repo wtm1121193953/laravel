@@ -117,7 +117,13 @@ class OperAccountService extends BaseService
             [ 'id' => 4, 'name' => '人员管理', 'level' => 1, 'url' => 'user', 'sub' =>
                 [
 //                    [ 'id' => 5, 'name' => '我的会员', 'level' => 2, 'url' => '/oper/invite/statistics/daily', 'pid' => 4,],
-                    [ 'id' => 6, 'name' => '我的业务员', 'level' => 2, 'url' => '/oper/operBizMembers', 'pid' => 4,],
+                    [ 'id' => 6, 'name' => '我的员工', 'level' => 2, 'url' => '/oper/operBizMembers', 'pid' => 4,]
+                ]
+            ],
+            [ 'id' => 30, 'name' => '业务员管理', 'level' => 1, 'url' => 'bizer', 'sub' =>
+                [
+                    [ 'id' => 31, 'name' => '我的业务员', 'level' => 2, 'url' => '/oper/bizers', 'pid' => 30,],
+                    [ 'id' => 32, 'name' => '业务员申请', 'level' => 2, 'url' => '/oper/bizerRecord', 'pid' => 30,],
                 ]
             ],
 
@@ -131,6 +137,12 @@ class OperAccountService extends BaseService
             ],
 
             [ 'id' => 7, 'name' => '财务管理', 'level' => 1, 'url' => '/oper/settlements',],
+            [ 'id' => 40, 'name' => '用户管理', 'level' => 1, 'url' => 'member', 'sub' =>
+                [
+                    [ 'id' => 41, 'name' => '我的用户', 'level' => 2, 'url' => '/member/index', 'pid' => 40,],
+                    [ 'id' => 42, 'name' => '用户统计', 'level' => 2, 'url' => '/member/statistics', 'pid' => 40,],
+                ]
+            ],
             [ 'id' => 8, 'name' => '推广渠道', 'level' => 1, 'url' => 'material', 'sub' =>
                 [
                     [ 'id' => 9, 'name' => '渠道列表', 'level' => 2, 'url' => '/oper/invite-channel', 'pid' => 8,],

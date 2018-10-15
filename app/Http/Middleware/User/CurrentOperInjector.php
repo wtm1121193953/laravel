@@ -39,7 +39,13 @@ class CurrentOperInjector
 //            $appid = 'wx1abb4cf60ffea6c9';
         }
 
-        if($appid != config('platform.miniprogram.app_id')){
+        if($appid == config('platform.miniprogram.app_id')){
+            // 官方小程序
+            $request->attributes->add(['current_oper_id' => 0]);
+        }else if($appid == config('platform.miniprogram.old.app_id')) {
+            // 旧的官方小程序
+            $request->attributes->add(['current_oper_id' => -1]);
+        }else {
             $operId = OperMiniprogram::where('appid', $appid)->value('oper_id');
             if(empty($operId)){
                 throw new BaseResponseException('微信小程序appid错误', ResultCode::WECHAT_APPID_INVALID);
@@ -47,8 +53,6 @@ class CurrentOperInjector
             $oper = Oper::findOrFail($operId);
             $request->attributes->add(['current_oper' => $oper]);
             $request->attributes->add(['current_oper_id' => $oper->id]);
-        }else {
-            $request->attributes->add(['current_oper_id' => 0]);
         }
 
         return $next($request);
