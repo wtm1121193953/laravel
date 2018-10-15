@@ -8,8 +8,8 @@
 namespace App\Modules\Payment;
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
-use test\Mockery\Fixtures\EmptyTestCaseV5;
 
 class PaymentService extends BaseService
 {
@@ -24,6 +24,12 @@ class PaymentService extends BaseService
     }
 
 
+    /**
+     * 获取可用支付方式
+     * @param int $type 支付方式类型
+     * @param int $terminal 终端 1 pc 2 app 3 小程序
+     * @return mixed
+     */
     public static function getPayment(int $type, int $terminal)
     {
         $terminals = [
@@ -40,7 +46,10 @@ class PaymentService extends BaseService
             ->where($terminals[$terminal],'1')
             ->get();
 
-        dd($payment);
+        if (count($payment) !== 1) {
+            throw new BaseResponseException('支付方式配置有误');
+        }
 
+        return $payment[0];
     }
 }
