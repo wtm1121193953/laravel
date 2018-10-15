@@ -15,6 +15,7 @@ class AlertTableMerchantAddCountryIdColumn extends Migration
     {
         Schema::table('merchants', function (Blueprint $table) {
             $table->integer('country_id')->default(1)->comment('国别或地区ID')->after('legal_id_card_pic_b');
+            $table->string('corporation_name')->default('')->comment('法人姓名')->after('country_id');
         });
     }
 
@@ -28,6 +29,7 @@ class AlertTableMerchantAddCountryIdColumn extends Migration
         Schema::table('merchants', function (Blueprint $table) {
             $table->dropColumn([
                 'country_id',
+                'corporation_name'
             ]);
         });
     }
