@@ -77,9 +77,16 @@ class UserService extends BaseService
             }
             InviteUserService::bindInviter($user->id, $inviteChannel);
         }
+        // 如果用户存在旧token，则清除，限制用户只能登陆1终端
+        if( Cache::has('user_id_to_token_' . $user->id)){
+            $oldToken = Cache::get('user_id_to_token_' . $user->id);
+            Cache::forget('user_id_to_token_' . $user->id);
+            Cache::forget('token_to_user_' . $oldToken);
+        }
         // 生成token并返回
         $token = str_random(64);
         Cache::put('token_to_user_' . $token, $user, 60 * 24 * 30);
+        Cache::put('user_id_to_token_' . $user->id, $token, 60 * 24 * 30);
 
         DB::commit();
 
