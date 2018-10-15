@@ -59,7 +59,7 @@ class OrderPaidJob implements ShouldQueue
 
         // 如果订单是已完成的状态, 分发一个订单完成的任务
         if($this->order->status == Order::STATUS_FINISHED){
-            OrderFinishedJob::dispatch($this->order);
+            OrderFinishedJob::dispatch($this->order)->onQueue('order:finished');
         }
     }
 

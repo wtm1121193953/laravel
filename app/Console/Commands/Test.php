@@ -141,7 +141,7 @@ dd('ok');
 //            $order->settlement_rate = 20;
 //            $order->save();
             $this->info($order->id);
-            OrderFinishedJob::dispatch($order);
+            OrderFinishedJob::dispatch($order)->onQueue('order:finished');
         }
         dd('ok');
 
