@@ -45,8 +45,10 @@ class UserService extends BaseService
     public static function userAppLogin($mobile, $verifyCode)
     {
         DB::beginTransaction();
+        // 正式环境开放一个手机号,用于ios审核
+        $needSkipVerifyCode = !App::environment('production') || $mobile == '18038019967';
         // 非正式环境时, 验证码为6666为通过验证
-        if(App::environment('production') || $verifyCode != '6666'){
+        if(! ($needSkipVerifyCode && $verifyCode == '6666') ){
             $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
                 ->where('verify_code', $verifyCode)
                 ->where('status', 1)
