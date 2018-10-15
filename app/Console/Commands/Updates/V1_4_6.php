@@ -38,7 +38,7 @@ class V1_4_6 extends Command
      */
     public function handle()
     {
-        $sqls = [
+        /*$sqls = [
             "ALTER TABLE `wallets` CHANGE COLUMN `origin_type` `origin_type` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '用户类型 1-用户 2-商户 3-运营中心 4-业务员' AFTER `origin_id`",
             "ALTER TABLE `fee_splitting_records`
     CHANGE COLUMN `origin_type` `origin_type` TINYINT(4) NOT NULL DEFAULT '1' COMMENT '分润用户类型, 1-用户 2-商户 3-运营中心 4-业务员' AFTER `origin_id`",
@@ -67,7 +67,7 @@ class V1_4_6 extends Command
         foreach ($sqls as $sql) {
             DB::statement($sql);
         }
-        $this->info('执行成功');
+        $this->info('执行成功');*/
 
         $this->info('清理场景码缓存');
         DB::update("UPDATE miniprogram_scenes SET qrcode_url = ''");
