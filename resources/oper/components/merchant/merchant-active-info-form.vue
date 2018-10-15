@@ -140,7 +140,7 @@
             </el-form-item>
 
             <el-form-item prop="corporation_name" label="法人姓名">
-                <el-input v-model="form.corporation_name"/>
+                <el-input v-model="form.corporation_name" placeholder="需同身份证一致"/>
             </el-form-item>
             <el-form-item label="法人身份证号码">
                 <el-form-item prop="country_id" style="width: 20%; display: inline-block;">
@@ -154,7 +154,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item prop="legal_id_card_num" style="width: 70%; display: inline-block;">
-                    <el-input v-model="form.legal_id_card_num"/>
+                    <el-input v-model="form.legal_id_card_num" placeholder="请输入法人身份证号码"/>
                 </el-form-item>
             </el-form-item>
 
