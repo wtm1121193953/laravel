@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlertTableMerchantDraftAddBizerIdColumn extends Migration
+class AlertSettlementPlatformsTableAddType extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AlertTableMerchantDraftAddBizerIdColumn extends Migration
      */
     public function up()
     {
-        Schema::table('merchant_drafts', function (Blueprint $table) {
-            $table->integer('bizer_id')->index()->default(0)->comment('业务员ID')->after('level');
+        Schema::table('settlement_platforms', function (Blueprint $table) {
+            $table->integer('type')->default(1)->comment('结算类型 1-手动打款，2-融宝代付')->after('end_date');
         });
     }
 
@@ -25,9 +25,9 @@ class AlertTableMerchantDraftAddBizerIdColumn extends Migration
      */
     public function down()
     {
-        Schema::table('merchant_drafts', function (Blueprint $table) {
+        Schema::table('settlement_platforms', function (Blueprint $table) {
             $table->dropColumn([
-                'bizer_id'
+                'type',
             ]);
         });
     }

@@ -170,6 +170,9 @@
                             <preview-img :url="data.legal_id_card_pic_b" width="200px" height="100px"/> -->
                         </el-form-item>
 
+                        <el-form-item label="法人姓名">
+                            {{data.corporation_name}}
+                        </el-form-item>
                         <el-form-item label="法人身份证号码">
                             （{{data.countryName}}）
                             {{data.legal_id_card_num}}
