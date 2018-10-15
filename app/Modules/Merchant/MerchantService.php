@@ -609,7 +609,10 @@ class MerchantService extends BaseService
                 // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户
                 $areaInfo = Area::where('area_id', $city_id)->where('path', 1)->first();
                 if (empty($areaInfo)) {
-                    $query->where('city_id', $city_id);
+                    $query->where(function(Builder $query)use ($city_id){
+                        $query->where('city_id', $city_id)
+                            ->orWhere('area_id', $city_id);
+                    });
                 } else {
                     $cityIdArray = Area::where('parent_id', $city_id)
                         ->where('path', 2)
