@@ -8,6 +8,8 @@
 
 namespace App\Support\Reapal;
 
+use Illuminate\Support\Facades\Log;
+
 class ReapalUtils
 {
 
@@ -192,6 +194,7 @@ class ReapalUtils
         //print_r($paramArr);exit;
         $request['data'] = $this->encrypt(json_encode($paramArr), $generateAESKey);
         $request['version'] = $version;
+        Log::info('send 方法返回参数：', ['request' => $request]);
         return $this->sendHttpRequest($request, $url);
     }
 
