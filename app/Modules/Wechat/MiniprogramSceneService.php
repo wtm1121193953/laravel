@@ -249,7 +249,7 @@ class MiniprogramSceneService extends BaseService
     public static function genSceneQrCode(MiniprogramScene $scene, int $size=375, $rt_storage_path = false, string $name = '')
     {
 
-        $url = env('APP_URL') . "/scene?id={$scene->id}";
+        $url = route('scene',['id'=>$scene->id]);
         $dir = storage_path('app/public/scene_qrcode/');
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
