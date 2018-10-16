@@ -18,7 +18,11 @@ class PaymentController extends Controller
 {
     public function getList()
     {
-        $data = PaymentService::getList();
+        $params = [
+            'name' => request()->get('name'),
+            'type' => request()->get('type'),
+        ];
+        $data = PaymentService::getList($params);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -41,6 +45,9 @@ class PaymentController extends Controller
         $payment->on_pc = $request->get('on_pc');
         $payment->on_miniprogram = $request->get('on_miniprogram');
         $payment->configs = $request->get('configs');
+        if (empty($payment->configs)) {
+            $payment->configs = '';
+        }
 
         if (!$payment->save()) {
             throw new BaseResponseException('执行失败');
@@ -75,12 +82,21 @@ class PaymentController extends Controller
         $payment->on_pc = $request->get('on_pc');
         $payment->on_miniprogram = $request->get('on_miniprogram');
         $payment->configs = $request->get('configs');
+        if (empty($payment->configs)) {
+            $payment->configs = '';
+        }
 
         if (!$payment->save()) {
             throw new BaseResponseException('执行失败');
         }
         return Result::success('更新成功');
 
+    }
+
+    public function getPaymentTypes()
+    {
+        $types = Payment::getAllType();
+        return Result::success($types);
     }
 
 }

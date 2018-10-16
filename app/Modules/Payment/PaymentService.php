@@ -10,16 +10,34 @@ namespace App\Modules\Payment;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use Illuminate\Database\Eloquent\Builder;
 
 class PaymentService extends BaseService
 {
 
     public static function getList(array $params=[])
     {
-        $query = Payment::query();
+
+        $query = Payment::query()
+            ->when($params['name'],function (Builder $query) use($params) {
+                $query->where('name','like',"%{$params['name']}%");
+            })
+            ->when($params['type'],function (Builder $query) use ($params) {
+                $query->where('type',$params['type']);
+            })
+        ;
+
 
         $query->orderBy('id','desc');
         $data = $query->paginate();
+        if ($data) {
+            $types = Payment::getAllType();
+            $data->each(function ($item) use ($types) {
+
+                $item->type_val = $types[$item->type];
+
+            });
+        }
         return $data;
     }
 
