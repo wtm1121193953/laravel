@@ -11,7 +11,6 @@ namespace App\Support\Reapal;
 
 use App\Modules\Log\LogDbService;
 use App\Modules\Log\LogOrderNotifyReapal;
-use App\Modules\Settlement\SettlementPayBatch;
 use Illuminate\Support\Facades\Log;
 
 class ReapalAgentPay
@@ -89,7 +88,18 @@ class ReapalAgentPay
     {
         $nowTime = date('Y-m-d H:i:s');
 
-        /*$content = '1,62220215080205389633,jack-cooper,工商银行,分行,支行,私,0.01,CNY,北京,北京,18910116131,身份证,420321199202150718,0001,12306,hehe,200100000001422,67180118000001421|2,62220215080205389634,jack,工商银行,分行,支行,私,0.11,CNY,北京,北京,18910116133,身份证,420321199202150728,0002,12307,hehe2,200100000001423,67180118000001422|3,62220215080205389635,cooper,工商银行,分行,支行,私,0.1,CNY,北京,北京,18910116134,身份证,420321199202150729,0003,12308,hehe3,200100000001424,67180118000001423|';*/
+        /*$content = '1,62220215080205389633,jack-cooper,工商银行,分行,支行,私,0.01,CNY,北京,北京,18910116131,身份证,420321199202150718,0001,12306,hehe,200100000001422,67180118000001421|2,62220215080205389634,jack,工商银行,分行,支行,私,0.11,CNY,北京,北京,18910116133,身份证,420321199202150728,0002,12307,hehe2,200100000001423,67180118000001422|3,62220215080205389635,cooper,工商银行,分行,支行,私,0.1,CNY,北京,北京,18910116134,身份证,420321199202150729,0003,12308,hehe3,200100000001424,67180118000001423|';
+
+       $paramArr = array(
+            'charset' => $this->charset,
+            'notify_url' => url('/api/agentPay/reapalNotify'),
+            'trans_time' => $nowTime,
+            'batch_no' => "1808297425312993",
+            'batch_count' => 3,
+            'batch_amount' => 0.22,
+            'pay_type' => 1,
+            'content' => $content,
+        );*/
 
         $paramArr = array(
             'charset' => $this->charset,
