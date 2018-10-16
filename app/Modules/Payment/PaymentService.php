@@ -36,6 +36,7 @@ class PaymentService extends BaseService
 
                 $item->type_val = $types[$item->type];
 
+
             });
         }
         return $data;

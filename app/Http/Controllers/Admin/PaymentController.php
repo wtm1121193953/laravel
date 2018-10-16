@@ -49,7 +49,19 @@ class PaymentController extends Controller
         if (empty($payment->configs)) {
             $payment->configs = '';
         } else {
-
+            $lines = explode("\n",$payment->configs);
+            $configs = [];
+            foreach ($lines as $l) {
+                if (empty($l)) {
+                    continue;
+                }
+                $kv = explode(':',$l);
+                if (count($kv) !== 2) {
+                    throw new ParamInvalidException('配置信息格式错误');
+                }
+                $configs[$kv[0]] = $kv[1];
+            }
+            $payment->configs = json_encode($configs);
         }
 
         if (!$payment->save()) {
@@ -65,6 +77,15 @@ class PaymentController extends Controller
             'id' => 'required|integer|min:1',
         ]);
         $data = Payment::findOrFail($request->get('id'));
+        if (!empty($data->configs)) {
+            $arr = json_decode($data->configs);
+            $configs = [];
+            foreach ($arr as $k=>$v) {
+                $configs[] = "{$k}:{$v}";
+            }
+            $configs = implode("\n",$configs);
+            $data->configs = $configs;
+        }
         return Result::success($data);
     }
 
@@ -100,7 +121,7 @@ class PaymentController extends Controller
                 }
                 $configs[$kv[0]] = $kv[1];
             }
-            $payment = json_encode($configs);
+            $payment->configs = json_encode($configs);
         }
 
         if (!$payment->save()) {
