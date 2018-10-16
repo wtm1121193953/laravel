@@ -8,6 +8,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Payment\Payment;
 use App\Modules\Payment\PaymentService;
@@ -47,6 +48,8 @@ class PaymentController extends Controller
         $payment->configs = $request->get('configs');
         if (empty($payment->configs)) {
             $payment->configs = '';
+        } else {
+
         }
 
         if (!$payment->save()) {
@@ -84,6 +87,20 @@ class PaymentController extends Controller
         $payment->configs = $request->get('configs');
         if (empty($payment->configs)) {
             $payment->configs = '';
+        } else {
+            $lines = explode("\n",$payment->configs);
+            $configs = [];
+            foreach ($lines as $l) {
+                if (empty($l)) {
+                    continue;
+                }
+                $kv = explode(':',$l);
+                if (count($kv) !== 2) {
+                    throw new ParamInvalidException('配置信息格式错误');
+                }
+                $configs[$kv[0]] = $kv[1];
+            }
+            $payment = json_encode($configs);
         }
 
         if (!$payment->save()) {
