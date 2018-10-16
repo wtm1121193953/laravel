@@ -316,6 +316,27 @@
             margin-top: 1.5rem;
             line-height: 0.6rem;
         }
+
+        #app #open {
+            padding: 0.32rem 1.37rem 0.32rem 0.32rem;
+            display: none;
+            background: #343434;
+            font-size: 0.28rem;
+            color: #7a7a7a;
+            position: relative;
+        }
+
+        #app #open:after {
+            content: '';
+            position: absolute;
+            top: 0.1rem;
+            right: 0.42rem;
+            width: 0.85rem;
+            height: 0.63rem;
+            background: url({{ asset('static/img/icon_guide.png') }}) no-repeat center;
+            background-size: 100% 100%;
+            -webkit-background-size: 100% 100%;
+        }
     </style>
     <script>
         (function(doc, win) {
@@ -360,6 +381,8 @@
 </div>
 
 <div id="app">
+    <div id="open"></div>
+
     <div class="header">
         <img src="{{ asset('static/img/app-logo.png') }}" />
         <p>大千生活</p>
@@ -400,6 +423,26 @@
     <div id="tips" class="tips">或者用手机扫描二维码安装</div>
 </div>
 <script>
+    /**
+     * 下载引导浏览器打开
+     */
+    window.onload = function() {
+        var openEl = document.getElementById('open')
+        if(navigator.userAgent.match(/MicroMessenger/g)) {
+            //微信打开
+            openEl.style.display = 'block'
+            var txt = ''
+
+            if(/(iPhone|iPad|iPod)/.test(clientType)) {
+                txt = document.createTextNode("点击右上角按钮，然后在弹窗的菜单中，点击在Safari中打开，即可安装。")
+            } else {
+                txt = document.createTextNode("点击右上角按钮，然后在弹窗的菜单中，点击在浏览器中打开，即可安装。")
+            }
+
+            openEl.appendChild(txt)
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         var loader = document.getElementById('bootstrap-loader');
         loader.parentNode.removeChild(loader);
