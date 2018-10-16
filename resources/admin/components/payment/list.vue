@@ -4,7 +4,8 @@
             <el-form-item label="" prop="type">
                 <el-select v-model="query.type" placeholder="支付方式类型">
                     <el-option label="全部" value=""/>
-                    <el-option label="微信支付" value="1"/>
+                    <el-option label="微信" value="1"/>
+                    <el-option label="支付宝" value="2"/>
                 </el-select>
             </el-form-item>
             <el-form-item prop="name" label="">
@@ -18,7 +19,7 @@
         <el-table :data="list" stripe v-loading="isLoading">
             <el-table-column prop="id" label="ID" width="100px"/>
             <el-table-column prop="name" label="名称" />
-            <el-table-column prop="type" label="类型">
+            <el-table-column prop="type_val" label="类型">
             </el-table-column>
             <el-table-column prop="logo_url" label="logo">
                 <template slot-scope="scope">
@@ -28,7 +29,7 @@
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 2" class="c-warning">暂停</span>
-                    <span v-else-if="scope.row.status === 2" class="c-green">启用</span>
+                    <span v-else-if="scope.row.status === 1" class="c-green">启用</span>
                 </template>
             </el-table-column>
             <el-table-column prop="on_pc" label="开放pc">

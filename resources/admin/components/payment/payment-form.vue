@@ -7,8 +7,9 @@
                         <el-input v-model="form.name"/>
                     </el-form-item>
                     <el-form-item label="支付类型" prop="type">
-                        <el-select v-model="form.type" size="small"  placeholder="请选择" class="w-150">
-                            <el-option label="微信支付" value="1"/>
+                        <el-select v-model="form.type" placeholder="请选择">
+                            <el-option label="微信" :value="1"/>
+                            <el-option label="支付宝" :value="2"/>
                         </el-select>
                     </el-form-item>
                 </el-col>

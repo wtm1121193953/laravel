@@ -749,12 +749,7 @@ class MerchantService extends BaseService
         }
         //只能查询切换到平台的商户
         $query = Merchant::query()
-            ->whereIn('id', $ids)
-            ->where('status', 1)
-            ->whereHas('oper', function(Builder $query){
-                $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
-            })
-            ->whereIn('audit_status', [Merchant::AUDIT_STATUS_SUCCESS, Merchant::AUDIT_STATUS_RESUBMIT]);
+            ->whereIn('id', $ids);
 
         $list = $query->get();
 
