@@ -45,7 +45,7 @@ class MerchantController extends Controller
 
         if (empty($data['total']) && $appType == 2) {
             $list = MerchantService::getListByIds([62,63964],request('lng'),request('lat'));
-            $data = ['list' => $list, 'total' => 1];
+            $data = ['list' => $list, 'total' => 2];
         }
 
 
