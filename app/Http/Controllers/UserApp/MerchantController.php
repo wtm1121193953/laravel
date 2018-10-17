@@ -28,6 +28,7 @@ class MerchantController extends Controller
 
     public function getList()
     {
+        $appType = request()->headers->get('app-type');
 
         $data = MerchantService::getListAndDistance([
             'city_id' => request('city_id'),
@@ -41,6 +42,12 @@ class MerchantController extends Controller
             'user_key' => request()->get('current_device_no'),
             'onlyPayToPlatform' => 1,
         ]);
+        
+        if (empty($data['total']) && $appType == 2) {
+            $list = MerchantService::getListByIds([5]);
+            $data = ['list' => $list, 'total' => 1];
+        }
+
 
         return Result::success($data);
     }
