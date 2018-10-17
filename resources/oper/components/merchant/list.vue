@@ -119,7 +119,7 @@
                     </el-popover>
 
 
-                    <span v-else-if="parseInt(scope.row.audit_status) === 3" class="c-warning">重新提交审核中</span>
+                    <span v-else-if="parseInt(scope.row.audit_status) === 3" class="c-warning">审核中</span>
                     <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
             </el-table-column>
