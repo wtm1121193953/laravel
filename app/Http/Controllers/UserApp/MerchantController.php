@@ -42,9 +42,9 @@ class MerchantController extends Controller
             'user_key' => request()->get('current_device_no'),
             'onlyPayToPlatform' => 1,
         ]);
-        
+
         if (empty($data['total']) && $appType == 2) {
-            $list = MerchantService::getListByIds([5]);
+            $list = MerchantService::getListByIds([5],request('lng'),request('lat'));
             $data = ['list' => $list, 'total' => 1];
         }
 
