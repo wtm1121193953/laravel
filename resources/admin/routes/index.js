@@ -18,6 +18,7 @@ import withdraw from './withdraw'
 import wallet from './wallet'
 import bizer from './bizer'
 import Version from './version'
+import OrderList from '../components/order/list'
 
 import SettlementPlatfroms from '../components/settlement/platform.vue'
 
@@ -68,6 +69,14 @@ const routes = [
         component: Home,
         children: [
             {path: '/statistics/oper', component: StatisticsOper, name: 'StatisticsOper'},
+        ]
+    },
+    // 订单列表,
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: '/orders', component: OrderList, name: 'OrderList'},
         ]
     },
     {

@@ -116,4 +116,6 @@ Route::prefix('admin')
         Route::post('payment/add', 'PaymentController@add');
         Route::post('payment/edit', 'PaymentController@edit');
         Route::post('payment/del', 'PaymentController@del');
+
+        Route::get('orders','OrderController@getList');
     });
