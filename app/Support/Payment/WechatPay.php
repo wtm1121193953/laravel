@@ -7,6 +7,13 @@
  */
 namespace App\Support\Payment;
 
+use App\Modules\Log\LogDbService;
+use App\Modules\Oper\OperMiniprogramService;
+use App\Modules\Order\Order;
+use App\Modules\Order\OrderService;
+use App\Modules\Wechat\WechatService;
+use test\Mockery\Fixtures\EmptyTestCaseV5;
+
 class WechatPay extends PayBase
 {
     public function doNotify()
@@ -14,6 +21,9 @@ class WechatPay extends PayBase
         $str = request()->getContent();
         LogDbService::wechatNotify($str);
         $xml = simplexml_load_string($str);
+        if (empty($str)) {
+            return '';
+        }
         // 获取aphid
         foreach ($xml->children() as $child) {
             if(strtolower($child->getName()) == 'appid'){

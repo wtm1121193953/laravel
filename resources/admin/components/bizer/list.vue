@@ -9,8 +9,8 @@
                 <el-input v-model="query.id" size="small"  placeholder="业务员ID"  class="w-200" clearable></el-input>
             </el-form-item>
 
-            <el-form-item prop="name" label="业务员姓名" >
-                <el-input v-model="query.name" size="small"  placeholder="业务员姓名"  class="w-200" clearable></el-input>
+            <el-form-item prop="name" label="业务员昵称" >
+                <el-input v-model="query.name" size="small"  placeholder="业务员昵称"  class="w-200" clearable></el-input>
             </el-form-item>
             <el-form-item label="注册时间">
                 <el-date-picker
@@ -58,7 +58,7 @@
             <el-table-column prop="mobile" label="业务员手机号码"/>
             <<el-table-column prop="id" label="ID"/>
             <el-table-column prop="created_at" label="注册时间"/>
-            <el-table-column prop="name" label="姓名"/>
+            <el-table-column prop="name" label="昵称"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1" class="c-green">正常</span>
@@ -68,22 +68,27 @@
             </el-table-column>
             <el-table-column prop="identity_status" label="认证身份状态">
                 <template slot-scope="scope">
-                    <template v-if="scope.row.bizer_identity_audit_record">
+                    <span v-if="scope.row.bizer_identity_audit_record">
                         <span v-if="scope.row.bizer_identity_audit_record.status == 1">待审核</span>
-                        <template v-else>
+                        <span v-else>
+                            <span v-if="!scope.row.bizer_identity_audit_record.reason">
+                                <span v-if="parseInt(scope.row.bizer_identity_audit_record.status) == 2" class="c-green">审核通过</span>
+                                <span v-else-if="parseInt(scope.row.bizer_identity_audit_record.status) == 3" class="c-danger">审核不通过</span>
+                                <span v-else class="c-danger">未知状态</span>
+                            </span>
                             <el-popover
-                                    v-if="scope.row.bizer_identity_audit_record.reason"
-                                    placement="right-start"
-                                    trigger="hover"
-                                    :content="scope.row.bizer_identity_audit_record.reason">
+                                v-else
+                                placement="right-start"
+                                trigger="hover"
+                                :content="scope.row.bizer_identity_audit_record.reason">
                                 <span slot="reference">
-                                    <span v-if="parseInt(scope.row.bizer_identity_audit_record.status) === 2" class="c-green">审核通过</span>
-                                    <span v-else-if="parseInt(scope.row.bizer_identity_audit_record.status) === 3" class="c-danger">审核不通过</span>
+                                    <span v-if="parseInt(scope.row.bizer_identity_audit_record.status) == 2" class="c-green">审核通过</span>
+                                    <span v-else-if="parseInt(scope.row.bizer_identity_audit_record.status) == 3" class="c-danger">审核不通过</span>
                                     <span v-else class="c-danger">未知状态</span>
                                 </span>
                             </el-popover>
-                        </template>
-                    </template>
+                        </span>
+                    </span>
                     <span v-else class="c-gray">未提交</span>
                 </template>
             </el-table-column>

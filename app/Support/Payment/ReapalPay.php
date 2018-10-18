@@ -7,6 +7,8 @@
  */
 namespace App\Support\Payment;
 
+use App\Modules\Log\LogDbService;
+
 class ReapalPay extends PayBase
 {
 
