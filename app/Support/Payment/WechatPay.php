@@ -9,6 +9,7 @@ namespace App\Support\Payment;
 
 use App\Modules\Log\LogDbService;
 use App\Modules\Oper\OperMiniprogramService;
+use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
 use App\Modules\Wechat\WechatService;
 use test\Mockery\Fixtures\EmptyTestCaseV5;
