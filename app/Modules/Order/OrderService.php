@@ -21,6 +21,7 @@ use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Platform\PlatformTradeRecord;
 use App\Modules\Sms\SmsService;
 use App\Modules\User\User;
 use App\Modules\Oper\Oper;
@@ -128,7 +129,7 @@ class OrderService extends BaseService
                 $query->where('status', $status);
             }
         }
-        if ($params['platform_only']) {
+        if (!empty($params['platform_only'])) {
             $query->where('pay_target_type',2);
         }
         //if($type== 1 && $goodsName)
@@ -406,6 +407,20 @@ class OrderService extends BaseService
                 $orderPay->amount = $totalFee;
                 $orderPay->save();
                 OrderPaidJob::dispatch($order);
+
+                if ($order->pay_target_type != Order::PAY_TARGET_TYPE_OPER ) {
+                    $platform_trade_record = new PlatformTradeRecord();
+                    $platform_trade_record->type = PlatformTradeRecord::TYPE_PAY;
+                    $platform_trade_record->pay_id = 1;
+                    $platform_trade_record->trade_amount = $totalFee;
+                    $platform_trade_record->trade_time = '';
+                    $platform_trade_record->trade_no = '';
+                    $platform_trade_record->order_no = '';
+                    $platform_trade_record->oper_id = '';
+                    $platform_trade_record->merchant_id = '';
+                    $platform_trade_record->remark = '';
+                }
+
                 DB::commit();
             }catch (\Exception $e){
                 DB::rollBack();
