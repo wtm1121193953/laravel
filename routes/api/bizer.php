@@ -23,6 +23,7 @@ Route::prefix('bizer')
         Route::get('merchant/opers/tree', 'MerchantController@allOperNames');
         
         Route::get('orders', 'OrderController@getList');
+        Route::get('order/export', 'OrderController@export');
         Route::get('merchant/allMerchantNames', 'OrderController@allMerchantNames');
         Route::get('opersRecord', 'OperRecordController@getList');
         

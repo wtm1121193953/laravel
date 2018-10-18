@@ -77,4 +77,16 @@ class DishesService extends BaseService
 
         return $list;
     }
+
+    /**
+     * 通过单品id获取订单单品列表
+     * @param $dishes_id
+     * @return DishesItem[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getDishesItemsByDishesId($dishes_id)
+    {
+        $dishesItems = DishesItem::where('dishes_id', $dishes_id)->get();
+
+        return $dishesItems;
+    }
 }

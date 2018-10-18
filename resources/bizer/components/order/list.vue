@@ -17,10 +17,11 @@
                         type="date"
                         placeholder="结束日期"
                         value-format="yyyy-MM-dd 23:59:59"
+                        :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(query.startTime)}}"
                 />
             </el-form-item>
-            <el-form-item prop="orderId" label="订单号">
-                <el-input v-model="query.orderId" placeholder="请输入订单号" clearable @keyup.enter.native="search"/>
+            <el-form-item prop="orderNo" label="订单号">
+                <el-input v-model="query.orderNo" placeholder="请输入订单号" clearable @keyup.enter.native="search"/>
             </el-form-item>
             <el-form-item prop="order_type" label="订单类型">
                 <el-select v-model="query.order_type" class="w-100" clearable>
@@ -45,6 +46,9 @@
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="success" @click="exportExcel">导出订单</el-button>
             </el-form-item>
         </el-form>
 
@@ -171,7 +175,7 @@
                     // createdAt: '',
                     startTime: '',
                     endTime :'',
-                    orderId: '',
+                    orderNo: '',
                     order_type: '',
                     goodsName: '',
                     merchantName: '',
@@ -224,6 +228,30 @@
                     num = num + item.number;
                 })
                 return num;
+            },
+            exportExcel() {
+                let data = this.query;
+
+                let day = 0;
+                if (data.startTime && data.endTime) {
+                    day = (new Date(data.endTime) - new Date(data.startTime)) / 24 / 3600 / 1000;
+                }
+                if (!data.startTime || !data.endTime || day > 31) {
+                    this.$message.warning('一次最多只能下载一个月的数据');
+                    return;
+                }
+                
+                let param = [];
+                Object.keys(data).forEach((key) => {
+                    let value = data[key];
+                    if (typeof value === 'undefined' || value == null) {
+                        value = '';
+                    }
+                    param.push([key, encodeURIComponent(value)].join('='));
+                });
+                let uri = param.join('&');
+
+                location.href = `/api/bizer/order/export?${uri}`;
             }
         },
         created(){
