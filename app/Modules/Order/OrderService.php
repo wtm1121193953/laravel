@@ -424,6 +424,7 @@ class OrderService extends BaseService
                     $platform_trade_record->oper_id = $order->oper_id;
                     $platform_trade_record->merchant_id = $order->merchant_id;
                     $platform_trade_record->remark = '';
+                    $platform_trade_record->save();
                 }
 
                 DB::commit();
