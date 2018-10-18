@@ -11,8 +11,11 @@
                 <el-form-item label="注册时间">
                     {{info.created_at}}
                 </el-form-item>
-                <el-form-item label="姓名">
+                <el-form-item label="昵称">
                     {{info.name}}
+                </el-form-item>
+                <el-form-item label="身份证姓名">
+                    {{info.bizerIdentityAuditRecord ? info.bizerIdentityAuditRecord.name: ''}}
                 </el-form-item>
                 <el-form-item label="身份证号码">
                     {{info.bizerIdentityAuditRecord ? info.bizerIdentityAuditRecord.id_card_no: ''}}

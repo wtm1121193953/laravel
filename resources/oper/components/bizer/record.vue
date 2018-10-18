@@ -5,7 +5,7 @@
                 <el-col>
                     <el-table :data="list" stripe>
                         <el-table-column prop="created_at" label="申请签约时间"/>
-                        <el-table-column prop="name" label="姓名">
+                        <el-table-column prop="name" label="昵称">
                             <template slot-scope="scope">
                                 <span> {{ scope.row.bizerInfo.name }} </span>
                             </template>
@@ -40,7 +40,7 @@
                 <el-col>
                     <el-table :data="rejectList" stripe>
                         <el-table-column prop="apply_time" label="申请签约时间"/>
-                        <el-table-column prop="name" label="姓名">
+                        <el-table-column prop="name" label="昵称">
                             <template slot-scope="scope">
                                 <span> {{ scope.row.bizerInfo.name }} </span>
                             </template>

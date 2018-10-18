@@ -44,7 +44,7 @@
                 <el-input v-model="query.memberNameOrMobile" size="small"  placeholder="请输入员工姓名或手机号码搜索"  clearable></el-input>
             </el-form-item>
             <el-form-item prop="bizerNameOrMobile" label="业务员"  >
-                <el-input v-model="query.bizerNameOrMobile" size="small"  placeholder="请输入业务员姓名或手机号码搜索"  clearable></el-input>
+                <el-input v-model="query.bizerNameOrMobile" size="small"  placeholder="请输入业务员昵称或手机号码搜索"  clearable></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>

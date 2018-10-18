@@ -6,7 +6,7 @@
                     {{scope.row.created_at.substr(0, 16)}}
                 </template>
             </el-table-column>
-            <el-table-column prop="bizerInfo.name" label="姓名"/>
+            <el-table-column prop="bizerInfo.name" label="昵称"/>
             <el-table-column prop="bizerInfo.mobile" label="手机号"/>
             <el-table-column prop="divide" label="业务员分成"/>
             <el-table-column prop="activeNum" label="发展商户（家）"/>
