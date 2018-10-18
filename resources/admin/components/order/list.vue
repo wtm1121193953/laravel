@@ -7,6 +7,12 @@
             <el-form-item label="手机号">
                 <el-input type="text" clearable v-model="query.mobile" class="w-150"/>
             </el-form-item>
+            <el-form-item label="所属运营中心">
+                <el-select v-model="query.oper_id" filterable clearable >
+                    <el-option value="" label="全部"/>
+                    <el-option v-for="item in opers" :key="item.id" :value="item.id" :label="item.name"/>
+                </el-select>
+            </el-form-item>
             <el-form-item label="所属商户">
                 <el-select v-model="query.merchantId" filterable clearable >
                     <el-option value="" label="全部"/>
@@ -64,8 +70,11 @@
             <el-form-item>
                 <el-button type="primary" class="m-l-30" @click="exportExcel">导出Excel</el-button>
             </el-form-item>
+            <el-form-item>
+                <el-checkbox v-model="query.platform_only" @change="search">只看支付到平台的订单</el-checkbox>
+            </el-form-item>
         </el-form>
-        <el-table :data="list" stripe>
+        <el-table :data="list" stripe v-loading="isLoading">
             <el-table-column type="expand">
                 <template slot-scope="scope">
                     <el-col :span="14">
@@ -163,15 +172,18 @@
                     page: 1,
                     orderNo: '',
                     mobile: '',
+                    oper_id: '',
                     merchantId: '',
                     timeType: 'payTime',
                     startTime: '',
                     endTime: '',
                     status: '',
                     type: '',
+                    platform_only:false,
                 },
                 list: [],
                 total: 0,
+                opers:[],
                 merchants: [],
             }
         },
@@ -199,9 +211,10 @@
                     this.total = data.total;
                 })
             },
-            getMerchants(){
-                api.get('/merchant/allNames').then(data => {
-                    this.merchants = data.list;
+            getOptions(){
+                api.get('/getOptions').then(data => {
+                    this.opers = data.list.opers;
+                    this.merchants = data.list.merchants;
                 })
             },
             getNumber(row) {
@@ -214,7 +227,7 @@
         },
         created(){
             this.getList();
-            this.getMerchants();
+            this.getOptions();
         },
         components: {
         }

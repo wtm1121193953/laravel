@@ -118,4 +118,6 @@ Route::prefix('admin')
         Route::post('payment/del', 'PaymentController@del');
 
         Route::get('orders','OrderController@getList');
+        Route::get('getOptions','OrderController@getOptions');
+        Route::get('order/export','OrderController@export');
     });

@@ -128,6 +128,9 @@ class OrderService extends BaseService
                 $query->where('status', $status);
             }
         }
+        if ($params['platform_only']) {
+            $query->where('pay_target_type',2);
+        }
         //if($type== 1 && $goodsName)
         if($goodsName){
             $query->where('goods_name', 'like', "%$goodsName%");
