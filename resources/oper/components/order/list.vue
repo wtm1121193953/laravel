@@ -2,14 +2,13 @@
     <page title="订单管理" v-loading="isLoading">
         <el-form inline :model="query" size="small">
             <el-form-item label="订单号">
-                <el-input type="text" clearable v-model="query.orderNo"/>
+                <el-input type="text" clearable v-model="query.orderNo" placeholder="输入订单号"/>
             </el-form-item>
             <el-form-item label="手机号">
-                <el-input type="text" clearable v-model="query.mobile" class="w-150"/>
+                <el-input type="text" clearable v-model="query.mobile" placeholder="输入手机号" class="w-150"/>
             </el-form-item>
             <el-form-item label="所属商户">
-                <el-select v-model="query.merchantId" filterable clearable >
-                    <el-option value="" label="全部"/>
+                <el-select v-model="query.merchantId" placeholder="输入商户ID或商户名" filterable clearable >
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
             </el-form-item>
