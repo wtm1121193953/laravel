@@ -18,5 +18,5 @@ abstract class PayBase
 
     }
 
-    abstract protected function doNotify();
+    abstract public function doNotify();
 }

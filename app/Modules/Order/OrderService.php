@@ -344,11 +344,15 @@ class OrderService extends BaseService
      * @param $transactionId
      * @param $totalFee
      * @param int $payType
+     * @param datetime $payTime 支付时间
      * @return bool
      * @throws \Exception
      */
-    public static function paySuccess($orderNo, $transactionId, $totalFee, $payType = Order::PAY_TYPE_WECHAT)
+    public static function paySuccess($orderNo, $transactionId, $totalFee, $payType = Order::PAY_TYPE_WECHAT, $payTime='')
     {
+        if (empty($payTime)) {
+            $payTime = Carbon::now();
+        }
         // 处理订单支付成功逻辑
         $order = OrderService::getInfoByOrderNo($orderNo);
 
@@ -360,7 +364,7 @@ class OrderService extends BaseService
             DB::beginTransaction();
             try{
                 $order->pay_type = $payType;
-                $order->pay_time = Carbon::now(); // 更新支付时间为当前时间
+                $order->pay_time = $payTime; // 更新支付时间为当前时间
                 if($order->type == Order::TYPE_SCAN_QRCODE_PAY){
                     // 如果是扫码付款, 直接改变订单状态为已完成
                     $order->status = Order::STATUS_FINISHED;
@@ -408,16 +412,17 @@ class OrderService extends BaseService
                 $orderPay->save();
                 OrderPaidJob::dispatch($order);
 
+                //如果是支付到平台的订单，产生一条交易流水
                 if ($order->pay_target_type != Order::PAY_TARGET_TYPE_OPER ) {
                     $platform_trade_record = new PlatformTradeRecord();
                     $platform_trade_record->type = PlatformTradeRecord::TYPE_PAY;
                     $platform_trade_record->pay_id = 1;
                     $platform_trade_record->trade_amount = $totalFee;
-                    $platform_trade_record->trade_time = '';
-                    $platform_trade_record->trade_no = '';
-                    $platform_trade_record->order_no = '';
-                    $platform_trade_record->oper_id = '';
-                    $platform_trade_record->merchant_id = '';
+                    $platform_trade_record->trade_time = $payTime;
+                    $platform_trade_record->trade_no = $transactionId;
+                    $platform_trade_record->order_no = $orderNo;
+                    $platform_trade_record->oper_id = $order->oper_id;
+                    $platform_trade_record->merchant_id = $order->merchant_id;
                     $platform_trade_record->remark = '';
                 }
 
