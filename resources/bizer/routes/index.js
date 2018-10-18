@@ -5,6 +5,7 @@ import refresh from '../components/refresh.vue'
 import Home from '../components/home.vue'
 import ErrorPage from '../components/404.vue'
 import welcome from '../components/welcome.vue'
+import message from './message'
 
 
 
@@ -23,6 +24,8 @@ const routes = [
             {path: '/register', component: RegisterForm, name: 'RegisterForm'},
         ]
     },
+    ...message,
+
     {
         path: '/',
         component: Home,

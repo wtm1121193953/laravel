@@ -43,6 +43,10 @@ Route::any('/app/user/pay/mockPaySuccess', 'PayController@mockPaySuccess');
 // 支付宝支付回调
 Route::any('/pay/alipayNotify', 'PayController@alipayNotify');
 
+Route::get('/admin/message/systems', 'Admin\MessageSystemController@getSystems');
+Route::post('/admin/message/addSystems', 'Admin\MessageSystemController@addMessage');
+
+Route::get('/bizer/message/systems', 'Admin\MessageSystemController@getSystems');
 /**
  * 加载后台接口路由
  */
