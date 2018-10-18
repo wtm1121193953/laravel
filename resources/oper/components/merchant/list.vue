@@ -1,7 +1,13 @@
 <template>
     <page title="我的商户" v-loading="isLoading">
         <el-form class="fl" inline size="small">
-            <el-form-item label="" prop="name">
+            <el-form-item label="商户ID">
+                <el-select v-model="query.merchantId" placeholder="输入商户ID或商户名" filterable clearable >
+                    <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
+                </el-select>
+            </el-form-item>
+
+            <el-form-item label="商户名称" prop="name">
                 <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="商户名称"/>
             </el-form-item>
 
@@ -64,7 +70,7 @@
 
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
-            <el-table-column prop="id" label="ID"/>
+            <el-table-column prop="id" label="商户ID"/>
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="signboard_name" label="商户招牌名"/>
             <el-table-column prop="categoryPath" label="行业">
@@ -160,6 +166,7 @@
                 isLoading: false,
                 query: {
                     name: '',
+                    merchantId: '',
                     status: '',
                     page: 1,
                     audit_status: '',
@@ -169,6 +176,7 @@
                 },
                 list: [],
                 total: 0,
+                merchants: [],
             }
         },
         computed: {
@@ -220,6 +228,12 @@
                 this.list.splice(scope.$index, 1, row);
                 this.getList();
             },
+
+            getMerchants(){
+                api.get('/merchant/allNames').then(data => {
+                    this.merchants = data.list;
+                })
+            },
         },
 
 
@@ -232,6 +246,7 @@
             if (this.$route.params){
                 Object.assign(this.query, this.$route.params);
             }
+            this.getMerchants();
             this.getList();
         },
         components: {

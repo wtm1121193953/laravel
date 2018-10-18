@@ -36,6 +36,7 @@ class MerchantController extends Controller
             'operId' => request()->get('current_user')->oper_id,
             'creatorOperId' => request('creatorOperId'),
             'name' => request('name'),
+            'merchantId' => request('merchantId'),
             'signboardName' => request('signboardName'),
             'status' => request('status'),
             'auditStatus' => request('audit_status'),
