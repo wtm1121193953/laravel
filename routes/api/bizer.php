@@ -13,6 +13,7 @@ Route::prefix('bizer')
         Route::post('logout', 'SelfController@logout');
         Route::post('register', 'SelfController@register');
         Route::post('forgot_password', 'SelfController@forgotPassword');
+        Route::post('changeName', 'SelfController@changeName');
         
         Route::get('merchants', 'MerchantController@getList');
         Route::get('sms/getVerifyCode', 'SmsController@sendVerifyCode');

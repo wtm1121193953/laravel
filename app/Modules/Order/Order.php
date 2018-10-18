@@ -132,7 +132,7 @@ class Order extends BaseModel
 
     public static function getPayTypeText($payType)
     {
-        return ['', '微信支付', '支付宝支付'][$payType];
+        return ['', '微信支付', '支付宝支付','融宝支付'][$payType];
     }
 
     public static function getPayTargetTypeText($payTargetType)

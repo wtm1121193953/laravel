@@ -173,7 +173,10 @@ class OrderController extends Controller
 
         $user = request()->get('current_user');
 
-        $merchant = Merchant::findOrFail($goods->merchant_id);
+        $merchant = MerchantService::getById($goods->merchant_id);
+        if($merchant->status == Merchant::STATUS_OFF){
+            throw new BaseResponseException('商家异常，请联系商家');
+        }
         $oper = Oper::find($merchant->oper_id);
         if (empty($oper)) {
             throw new DataNotFoundException('该商户的运营中心不存在！');
@@ -237,8 +240,10 @@ class OrderController extends Controller
         $dishes = Dishes::findOrFail($dishesId);
         $userIdByDish = $dishes->user_id;
         $user = request()->get('current_user');
-        $merchant = Merchant::findOrFail($dishes->merchant_id);
-
+        $merchant = MerchantService::getById($dishes->merchant_id);
+        if($merchant->status == Merchant::STATUS_OFF){
+            throw new BaseResponseException('商家异常，请联系商家');
+        }
         $oper = Oper::find($merchant->oper_id);
         if (empty($oper)) {
             throw new DataNotFoundException('该商户的运营中心不存在！');
@@ -336,9 +341,12 @@ class OrderController extends Controller
             throw new ParamInvalidException('价格不合法');
         }
         $user = request()->get('current_user');
-        $merchant = Merchant::find(request('merchant_id'));
+        $merchant = MerchantService::getById(request('merchant_id'));
         if (empty($merchant)) {
             throw new DataNotFoundException('商户信息不存在！');
+        }
+        if($merchant->status == Merchant::STATUS_OFF){
+            throw new BaseResponseException('商家异常，请联系商家');
         }
         $oper = Oper::find($merchant->oper_id);
         if (empty($oper)) {
@@ -404,6 +412,11 @@ class OrderController extends Controller
         ]);
         $orderNo = request('order_no');
         $order = Order::where('order_no', $orderNo)->first();
+
+        $merchant = MerchantService::getById($order->merchant_id);
+        if($merchant->status == Merchant::STATUS_OFF){
+            throw new BaseResponseException('商家异常，请联系商家');
+        }
 
         if ($order->status == Order::STATUS_PAID) {
             throw new ParamInvalidException('该订单已支付');

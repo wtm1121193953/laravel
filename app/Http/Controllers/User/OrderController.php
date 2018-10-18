@@ -161,7 +161,10 @@ class OrderController extends Controller
         $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
         $user = request()->get('current_user');
 
-        $merchant = Merchant::findOrFail($goods->merchant_id);
+        $merchant = MerchantService::getById($goods->merchant_id);
+        if($merchant->status == Merchant::STATUS_OFF){
+            throw new BaseResponseException('商家异常，请联系商家');
+        }
         $merchant_oper = Oper::findOrFail($merchant->oper_id);
         $currentOperId = request()->get('current_oper_id');
 
@@ -231,7 +234,10 @@ class OrderController extends Controller
         $dishes = Dishes::findOrFail($dishesId);
         $userIdByDish = $dishes->user_id;
         $user = request()->get('current_user');
-        $merchant = Merchant::findOrFail($dishes->merchant_id);
+        $merchant = MerchantService::getById($dishes->merchant_id);
+        if($merchant->status == Merchant::STATUS_OFF){
+            throw new BaseResponseException('商家异常，请联系商家');
+        }
         $currentOperId = request()->get('current_oper_id');
 
         if ($userIdByDish != $user->id) {
@@ -369,9 +375,12 @@ class OrderController extends Controller
         }
         $user = request()->get('current_user');
         $currentOperId = request()->get('current_oper_id');
-        $merchant = Merchant::find(request('merchant_id'));
+        $merchant = MerchantService::getById(request('merchant_id'));
         if(empty($merchant)){
             throw new DataNotFoundException('商户信息不存在！');
+        }
+        if($merchant->status == Merchant::STATUS_OFF){
+            throw new BaseResponseException('商家异常，请联系商家');
         }
         $merchant_oper = Oper::find($merchant->oper_id);
         if (empty($merchant_oper)) {
@@ -439,6 +448,10 @@ class OrderController extends Controller
         ]);
         $orderNo = request('order_no');
         $order = Order::where('order_no', $orderNo)->firstOrFail();
+        $merchant = MerchantService::getById($order->merchant_id);
+        if($merchant->status == Merchant::STATUS_OFF){
+            throw new BaseResponseException('商家异常，请联系商家');
+        }
 
         if ($order->status == Order::STATUS_PAID || $order->status == Order::STATUS_FINISHED) {
             throw new BaseResponseException('订单已支付，请重新发起订单');
@@ -464,7 +477,6 @@ class OrderController extends Controller
                 $sdkConfig = null;
             }
         }else {
-            $merchant = MerchantService::getById($order->merchant_id);
             $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
             if($isOperSelf == 1) {
                 $sdkConfig = $this->_wechatUnifyPayToOper($order);
