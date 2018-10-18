@@ -66,6 +66,9 @@ class MerchantController extends Controller
             'operId' => request()->get('current_user')->oper_id,
         ];
         $list = MerchantService::getAllNames($data);
+        foreach ($list as $key){
+            $key->name = $key->id.":".$key->name;
+        }
         return Result::success([
             'list' => $list
         ]);
