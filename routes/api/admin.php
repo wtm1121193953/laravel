@@ -79,6 +79,8 @@ Route::prefix('admin')
         Route::post('/tps/bindAccount', 'TpsBindController@bindAccount');
         Route::post('/tps/sendVerifyCode', 'TpsBindController@sendVerifyCode');
 
+        Route::get('/country/list', 'CountryController@getList');
+
         Route::group([], base_path('routes/api/admin/goods.php'));
         Route::group([], base_path('routes/api/admin/oper.php'));
         Route::group([], base_path('routes/api/admin/oper_account.php'));
