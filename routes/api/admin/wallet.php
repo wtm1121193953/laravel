@@ -24,3 +24,5 @@ Route::post('/wallet/list/changeStatus', 'WalletController@changeWalletStatus');
 
 Route::get('/wallet/bill/list', 'WalletController@getWalletBillList');
 Route::get('/wallet/bill/exportExcel', 'WalletController@walletBillExportExcel');
+
+Route::get('/wallet/bank/list', 'WalletController@getBankList');

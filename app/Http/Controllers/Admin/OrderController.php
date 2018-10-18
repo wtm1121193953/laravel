@@ -7,7 +7,11 @@
  */
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\OperOrderExport;
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\OperService;
 use App\Modules\Order\OrderService;
 use App\Result;
 
@@ -42,14 +46,24 @@ class OrderController extends Controller
             'endFinishTime' => $endFinishTime ?? null,
             'status' => $status,
             'type' => $type,
+            'platform_only' => request('platform_only')=='true',
         ]);
 
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
 
-
+    public function getOptions()
+    {
+        $opers = OperService::allOpers();
+        $merchants = MerchantService::getAllNames([]);
+        $list['opers'] = $opers;
+        $list['merchants'] = $merchants->toArray();
+        return Result::success([
+            'list' => $list
+        ]);
     }
 
     /**
@@ -85,6 +99,7 @@ class OrderController extends Controller
             'endFinishTime' => $endFinishTime ?? null,
             'status' => $status,
             'type' => $type,
+            'platform_only' => request('platform_only')=='true',
         ], true);
 
         $list = $query->orderByDesc('id')

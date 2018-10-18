@@ -132,13 +132,14 @@
                               <div   slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
                                 <unaudit-record-reason    :data="auditRecord"  />
                           </el-popover>
-                    <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
+                    <span v-else-if="scope.row.audit_status === 3" class="c-warning">重新提交审核</span>
                     <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
              </el-table-column>
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
+                    <el-button type="text" @click="edit(scope)">编辑</el-button>
                     <el-button v-if="parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="changeStatus(scope.row)">{{parseInt(scope.row.status) === 1 ? '冻结' : '解冻'}}</el-button>
                     <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
                         <el-button type="text" @click="detail(scope,3)">审核</el-button>
@@ -258,6 +259,17 @@
                         id: scope.row.id,
                         auditType: type,
                         isAudit: this.isAudit,
+                    },
+                    params: self.query,
+                })
+            },
+            edit(scope){
+                let self = this;
+                router.push({
+                    path: 'merchant/edit',
+                    name: 'MerchantEdit',
+                    query: {
+                        id: scope.row.id
                     },
                     params: self.query,
                 })

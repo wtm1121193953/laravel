@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\WalletBillExport;
 use App\Exports\WalletExport;
 use App\Http\Controllers\Controller;
+use App\Modules\Wallet\BankCardService;
 use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletBill;
 use App\Modules\Wallet\WalletService;
@@ -138,5 +139,15 @@ class WalletController extends Controller
         $query = WalletService::getBillList($param, $pageSize, true);
 
         return (new WalletBillExport($query, $originType))->download('交易流水.xlsx');
+    }
+
+    /**
+     * 获取银行列表
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function getBankList()
+    {
+        $list = BankCardService::getBankList(true);
+        return Result::success($list);
     }
 }

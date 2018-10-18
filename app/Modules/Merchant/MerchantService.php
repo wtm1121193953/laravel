@@ -339,9 +339,10 @@ class MerchantService extends BaseService
      * 编辑商户
      * @param $id
      * @param $currentOperId
+     * @param string $auditStauts
      * @return Merchant
      */
-    public static function edit($id,$currentOperId)
+    public static function edit($id,$currentOperId,$auditStauts = '')
     {
 
         $merchant = Merchant::where('id', $id)
@@ -382,21 +383,29 @@ class MerchantService extends BaseService
             if ($merchant->is_pilot && $merchant->desc) {
                 $merchant->oper_id = 0;
                 $merchant->is_pilot = Merchant::NORMAL_MERCHANT;
-                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+                //$merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
             } else {
                 MerchantAuditService::addAudit($merchant->id, $currentOperId, Merchant::AUDIT_STATUS_RESUBMIT);
-                $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
+                //$merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
             }
         } else {
             // 如果当前商户没有所属运营中心，且是试点商户，且有商户描述，则是待审核状态下的补全资料，修改商户为正常商户
             if ($merchant->is_pilot && $merchant->desc) {
                 $merchant->is_pilot = Merchant::NORMAL_MERCHANT;
-                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+                //$merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
             } else {
                 MerchantAuditService::addAudit($merchant->id, $currentOperId);
-                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+                //$merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
             }
         }
+        //编辑商户，除审核通过的商户编辑完成直接默认审核通过外，其他状态的商户编辑后都是待审核
+
+        if($auditStauts != Merchant::AUDIT_STATUS_SUCCESS){
+            $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+        }else{
+            $merchant->audit_status = Merchant::AUDIT_STATUS_SUCCESS;
+        }
+
 
         $merchant->save();
 

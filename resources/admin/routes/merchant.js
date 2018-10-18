@@ -3,6 +3,7 @@ import Home from '../components/home'
 import MerchantList from '../components/merchant/list.vue'
 import MerchantUnauditList from '../components/merchant/unaudit-list.vue'
 import MerchantDetail from '../components/merchant/detail'
+import MerchantEdit from '../components/merchant/edit'
 
 import MerchantCategoryList from '../components/merchant-category/list'
 
@@ -25,6 +26,7 @@ export default [
             {path: '/merchants', component: MerchantList, name: 'MerchantList'},
             {path: '/merchant/unaudits', component: MerchantUnauditList, name: 'MerchantUnauditList'},
             {path: '/merchant/detail', component: MerchantDetail, name: 'MerchantDetail'},
+            {path: '/merchant/edit', component: MerchantEdit, name: 'MerchantEdit'},
 
             {path: '/merchant/categories', component: MerchantCategoryList, name: 'MerchantCategoryList'},
 
