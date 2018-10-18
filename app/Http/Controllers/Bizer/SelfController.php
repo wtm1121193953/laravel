@@ -7,6 +7,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\PasswordErrorException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Bizer\BizerService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Bizer\Bizer;
@@ -219,6 +220,26 @@ class SelfController extends Controller {
                 ]
             ],
         ];
+    }
+
+    /**
+     * 修改业务员昵称
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changeName()
+    {
+        $bizer = request()->get('current_user');
+        if (empty($bizer)) {
+            throw new BaseResponseException('请先登录');
+        }
+        $this->validate(request(), [
+            'name' => 'required|max:10'
+        ]);
+        $id = $bizer->id;
+        $name = request('name');
+        $bizer = BizerService::changeName($id, $name);
+
+        return Result::success($bizer);
     }
 
 }

@@ -324,4 +324,22 @@ class BizerService extends BaseService
         })->get();
         return $list;
     }
+
+    /**
+     * 修改业务员昵称
+     * @param $id
+     * @param $name
+     * @return Bizer
+     */
+    public static function changeName($id, $name)
+    {
+        $bizer = Bizer::find($id);
+        if (empty($bizer)) {
+            throw new BaseResponseException('该业务员不存在');
+        }
+        $bizer->name = $name;
+        $bizer->save();
+
+        return $bizer;
+    }
 }

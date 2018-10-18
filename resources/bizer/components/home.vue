@@ -31,6 +31,10 @@
                             </el-dropdown-menu>
                         </el-dropdown>
                     </div>
+                    <div class="fr" style="margin-right: 20px">
+                        <span>{{user.name}}</span>
+                        <el-button type="text" @click="changeName"><i class="el-icon-edit"></i></el-button>
+                    </div>
                 </el-main>
 
             </el-container>
@@ -232,6 +236,23 @@
                     }
                 })
             },
+            changeName() {
+                this.$prompt('', '请输入修改的昵称', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    center: true,
+                    inputValidator: (val) => {if (!val || val.length > 10) return '请输入昵称，10字以内' }
+                }).then(({value}) => {
+                    let param = {
+                        id: this.user.id,
+                        name: value,
+                    };
+                    api.post('/changeName', param).then(data => {
+                        this.user.name = data.name;
+                        this.$message.success('修改昵称成功');
+                    })
+                }).catch(() => {});
+            }
         },
         created() {
             this.getTitleAndLogo();
