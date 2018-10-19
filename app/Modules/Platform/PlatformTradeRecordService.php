@@ -4,6 +4,7 @@ namespace App\Modules\Platform;
 
 use App\BaseService;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class PlatformTradeRecordService extends BaseService
 {
@@ -54,6 +55,7 @@ class PlatformTradeRecordService extends BaseService
         $data = $query->paginate();
 
 
+
         return $data;
     }
 
@@ -63,5 +65,44 @@ class PlatformTradeRecordService extends BaseService
             $date = date('Y-m-d',strtotime('-1 day'));
         }
 
+        $query = PlatformTradeRecord::select(DB::raw('pay_id,type,count(*) c,sum(trade_amount) s'))
+            ->where('trade_time','>=','2018-10-19 00:00:00')
+            ->where('trade_time','<=','2018-10-19 23:59:59')
+            ->groupBy('pay_id','type')
+        ;
+
+        $data = $query->get();
+        $format = [];
+        if (!empty($data)) {
+
+            foreach ($data as $d) {
+
+                if ($d->type == 1) {
+                    $format[$date][$d->pay_id]['pay_amount'] = $d->s;
+                    $format[$date][$d->pay_id]['pay_count'] = $d->c;
+                } else {
+                    $format[$date][$d->pay_id]['refund_amount'] = $d->s;
+                    $format[$date][$d->pay_id]['refund_count'] = $d->c;
+                }
+
+            }
+
+            foreach ($format as $k1 => $v1) {
+                foreach ($v1 as $k2=>$v2) {
+                    $where['sum_date'] = $k1;
+                    $where['pay_id'] = $k2;
+
+                    $row['sum_date'] = $k1;
+                    $row['pay_id'] = $k2;
+                    $row['pay_amount'] = $v2['pay_amount'] ?? 0;
+                    $row['pay_count'] = $v2['pay_count'] ?? 0;
+                    $row['refund_amount'] = $v2['refund_amount']?? 0;
+                    $row['refund_count'] = $v2['refund_count']?? 0;
+
+                    //dd($row);
+                    PlatformTradeRecordsDaily::updateOrCreate($where,$row);
+                }
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ImageMigrationToCOSJob;
 use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
+use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
 use App\Jobs\Schedule\SettlementAgentPayDaily;
 
 use App\Jobs\Schedule\SettlementDaily;
@@ -75,6 +76,8 @@ class Test extends Command
      */
     public function handle()
     {
+        PlatformTradeRecordsDailyJob::dispatch();
+        dd('ok');
         $param = [
             'title' => 'test_title',
             'body' => 'testBody',

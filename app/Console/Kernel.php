@@ -6,6 +6,7 @@ use App\Jobs\Schedule\AutoDownGoodsJob;
 use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Jobs\Schedule\OrderAutoFinished;
 use App\Jobs\Schedule\OrderExpired;
+use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
 use App\Jobs\Schedule\SettlementAgentPayDaily;
 use App\Jobs\Schedule\SettlementDaily;
 use App\Jobs\Schedule\SettlementWeekly;
@@ -56,6 +57,8 @@ class Kernel extends ConsoleKernel
 //        $schedule->job(new SettlementAgentPayDaily())->dailyAt('08:00');
         /**团购商品过期自动下架*/
         $schedule->job(AutoDownGoodsJob::class)->daily();
+        //平台交易汇总
+        $schedule->job( new PlatformTradeRecordsDailyJob((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s')))->daily();
     }
 
     /**
