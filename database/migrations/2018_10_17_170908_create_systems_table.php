@@ -16,7 +16,7 @@ class CreateSystemsTable extends Migration
         Schema::create('message_system', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title')->default('')->comment('标题');
-            $table->text('content')->default('')->comment('内容');
+            $table->text('content')->comment('内容');
             $table->string('object_type')->default(1)->comment('接受对象类型 1：用户端；2：商户端；3：业务员；4：运营中心；多个用,分割');
             $table->timestamps();
         });
