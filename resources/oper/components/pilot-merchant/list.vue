@@ -48,6 +48,7 @@
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
+            <el-button type="primary" size="small" class="m-l-30" @click="exportExcel">导出Excel</el-button>
         </el-form>
         <el-button class="fr" type="primary" @click="add">录入试点商户</el-button>
         <el-table :data="list" stripe>
@@ -161,6 +162,13 @@
 
         },
         methods: {
+            exportExcel(){
+                let array = [];
+                for (let key in this.query){
+                    array.push(key + '=' + this.query[key]);
+                }
+                location.href = '/api/oper/merchant/export?' + array.join('&');
+            },
             search(){
                 this.query.page = 1;
                 this.getList();
