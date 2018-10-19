@@ -337,6 +337,7 @@ class MerchantService extends BaseService
         $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
+            $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
         }
         $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
         if($merchantFollow){
