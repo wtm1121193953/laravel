@@ -47,6 +47,17 @@
                         <el-option label="重新提交审核" value="3"/>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="结算周期" prop="settlementCycleType">
+                    <el-select v-model="query.settlementCycleType" size="small" placeholder="请选择" class="w-150">
+                        <el-option label="全部" value=""/>
+                        <el-option label="周结" value="1"/>
+                        <!--<el-option label="半月结" value="2"/>-->
+                        <el-option label="月结" value="3"/>
+                        <!--<el-option label="半年结" value="4"/>-->
+                        <!--<el-option label="年结" value="5"/>-->
+                        <el-option label="T+1" value="6"/>
+                    </el-select>
+                </el-form-item>
                 <el-form-item prop="operId" label="激活运营中心ID"  >
                     <el-input v-model="query.operId" size="small"   placeholder="激活运营中心ID"  class="w-100" clearable />
                 </el-form-item>
@@ -135,8 +146,13 @@
                     <span v-else-if="scope.row.audit_status === 3" class="c-warning">重新提交审核</span>
                     <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
-             </el-table-column>
-            <el-table-column label="操作" width="150px">
+                </el-table-column>
+                <el-table-column prop="settlement_cycle_type" label="结算周期">
+                    <template slot-scope="scope">
+                        <span>{{ {1: '周结', 2: '半月结', 3: '月结', 4: '半年结', 5: '年结', 6: 'T+1',}[scope.row.settlement_cycle_type] }}</span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
                     <el-button type="text" @click="edit(scope)">编辑</el-button>
@@ -198,6 +214,7 @@
                     endDate: '',
                     operName:'',
                     operId:'',
+                    settlementCycleType:'',
                     creatorOperName:'',
                     creatorOperId:'',
                     memberNameOrMobile: '',
@@ -301,7 +318,7 @@
                 if (this.query.startDate && this.query.endDate) {
                     day = (new Date(this.query.endDate) - new Date(this.query.startDate)) / 24 / 3600 / 1000;
                 }
-                if (!this.query.startDate || !this.query.endDate || day > 31) {
+                if (day > 31) {
                     this.$message.warning('您导出的数据量太大，请按月导出');
                     return;
                 }

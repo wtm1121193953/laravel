@@ -139,6 +139,7 @@ class MerchantService extends BaseService
         $merchantId = array_get($data,'merchantId');
         $signboardName = array_get($data,'signboardName');
         $status = array_get($data,'status');
+        $settlementCycleType = array_get($data,'settlementCycleType');
         $auditStatus = array_get($data,'auditStatus');
         $merchantCategory = array_get($data,'merchantCategory');
         $isPilot = array_get($data,'isPilot');
@@ -211,6 +212,10 @@ class MerchantService extends BaseService
         if ($status) {
             $query->where('status', $status);
         }
+        if ($settlementCycleType) {
+            $query->where('settlement_cycle_type', $settlementCycleType);
+        }
+
         if (!empty($auditStatus)) {
             if (is_array($auditStatus) || $auditStatus instanceof Collection) {
                 $query->whereIn('audit_status', $auditStatus);
