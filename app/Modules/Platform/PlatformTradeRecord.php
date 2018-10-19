@@ -2,6 +2,9 @@
 
 namespace App\Modules\Platform;
 
+use App\Modules\Merchant\Merchant;
+use App\Modules\Oper\Oper;
+use App\Modules\User\User;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -23,4 +26,19 @@ class PlatformTradeRecord extends Model
     //
     const TYPE_PAY = 1;
     const TYPE_REFUND = 2;
+
+    public function oper()
+    {
+        return $this->belongsTo(Oper::class);
+    }
+
+    public function merchant()
+    {
+        return $this->belongsTo(Merchant::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
