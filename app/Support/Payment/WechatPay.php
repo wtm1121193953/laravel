@@ -17,6 +17,7 @@ use App\Modules\Order\OrderService;
 use App\Modules\Platform\PlatformTradeRecord;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use Illuminate\Support\Facades\Log;
 
 class WechatPay extends PayBase
 {
