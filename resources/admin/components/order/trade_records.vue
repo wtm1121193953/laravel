@@ -55,11 +55,6 @@
             <el-table-column prop="merchant.name" label="交易商户"/>
             <el-table-column prop="oper.name" label="所属运营中心"/>
             <el-table-column prop="user.mobile" label="用户"/>
-            <el-table-column label="操作" width="150px">
-                <template slot-scope="scope">
-                    <el-button type="text" @click="">明细</el-button>
-                </template>
-            </el-table-column>
         </el-table>
 
         <el-pagination

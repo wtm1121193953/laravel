@@ -8,7 +8,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exports\PlatformTradeRecordsDailyExport;
-use App\Exports\PlatformTradeRecordsExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Platform\PlatformTradeRecordsDailyService;
 use App\Result;
