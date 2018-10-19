@@ -8,6 +8,9 @@
 namespace App\Support\Payment;
 
 use App\Exceptions\BaseResponseException;
+use App\Modules\Dishes\DishesGoods;
+use App\Modules\Dishes\DishesItem;
+use App\Modules\Goods\Goods;
 use App\Modules\Log\LogDbService;
 use App\Modules\Oper\OperMiniprogramService;
 use App\Modules\Order\Order;
@@ -139,5 +142,27 @@ class WechatPay extends PayBase
             throw new BaseResponseException('微信退款失败');
         }
 
+    }
+
+    /**
+     * 退款返还商品数量
+     * @param $order
+     */
+    private function decSellNumber($order)
+    {
+        if ($order->type == Order::TYPE_GROUP_BUY) {
+            Goods::where('id', $order->goods_id)
+                ->where('merchant_id', $order->merchant_id)
+                ->decrement('sell_number', $order->buy_number);
+        } elseif ($order->type == Order::TYPE_DISHES) {
+            $dishesItems = DishesItem::where('merchant_id', $order->merchant_id)
+                ->where('dishes_id', $order->dishes_id)
+                ->get();
+            foreach ($dishesItems as $item) {
+                DishesGoods::where('id', $item->dishes_goods_id)
+                    ->where('merchant_id', $item->merchant_id)
+                    ->decrement('sell_number', $item->number);
+            }
+        }
     }
 }
