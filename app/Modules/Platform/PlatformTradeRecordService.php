@@ -56,4 +56,12 @@ class PlatformTradeRecordService extends BaseService
 
         return $data;
     }
+
+    public static function daily($date='')
+    {
+        if (empty($date)) {
+            $date = date('Y-m-d',strtotime('-1 day'));
+        }
+
+    }
 }
