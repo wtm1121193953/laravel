@@ -14,6 +14,7 @@ Route::get('/merchant/audit/record/newest', 'MerchantController@getNewestAuditRe
 Route::post('/merchant/add', 'MerchantController@add');
 Route::post('/merchant/edit', 'MerchantController@edit');
 Route::post('/merchant/changeStatus', 'MerchantController@changeStatus');
+Route::get('/merchant/export', 'MerchantController@export');
 //Route::post('/merchant/del', 'MerchantController@del');
 
 Route::post('/merchant/createAccount', 'MerchantController@createAccount');

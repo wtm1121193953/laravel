@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string order_no
  * @property number oper_id
  * @property number merchant_id
+ * @property number user_id
  * @property string remark
  */
 class PlatformTradeRecord extends Model
