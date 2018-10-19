@@ -23,6 +23,7 @@ class CreatePlatformTradeRecordsTable extends Migration
             $table->string('order_no',30)->default('')->comment('订单号');
             $table->integer('oper_id')->default(0)->comment('运营中心id');
             $table->integer('merchant_id')->default(0)->comment('商户id');
+            $table->integer('user_id')->default(0)->comment('用户id');
             $table->string('remark',100)->default('')->comment('备注');
             $table->timestamps();
         });
