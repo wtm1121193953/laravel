@@ -74,9 +74,7 @@ class WechatPay extends PayBase
     public function refund()
     {
 
-        $this->validate(request(), [
-            'order_no' => 'required'
-        ]);
+
         $orderNo = request('order_no');
         $order = Order::where('order_no', $orderNo)->firstOrFail();
         if($order->status != Order::STATUS_PAID){
