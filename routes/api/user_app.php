@@ -117,4 +117,4 @@ Route::prefix('app/user')
 
     });
 
-    Route::get('app/user/message/systems', 'Admin\MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
+    Route::get('app/user/message/systems', 'Admin\MessageSystemController@getSystems')->middleware('user_app',UserLoginFilter::class);
