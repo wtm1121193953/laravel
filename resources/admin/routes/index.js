@@ -18,6 +18,7 @@ import withdraw from './withdraw'
 import wallet from './wallet'
 import bizer from './bizer'
 import Version from './version'
+import message from './message'
 import OrderList from '../components/order/list'
 
 import SettlementPlatfroms from '../components/settlement/platform.vue'
@@ -54,6 +55,7 @@ const routes = [
     ...bizer,
     ...Version,
     ...payment,
+    ...message,
 
     // 财务模块
     {
