@@ -476,7 +476,7 @@ class OrderController extends Controller
         $this->validate(request(), [
             'order_no' => 'required'
         ]);
-        $m = new WechatPay(request()->get('app-type'));
+        $m = new WechatPay();
         return $m->refund();
 
     }

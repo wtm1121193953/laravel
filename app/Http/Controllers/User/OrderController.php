@@ -504,7 +504,7 @@ class OrderController extends Controller
         $this->validate(request(), [
             'order_no' => 'required'
         ]);
-        $m = new WechatPay(PayBase::APP_TYPE_MINIPROGRAM);
+        $m = new WechatPay();
         $m->refund();
 
     }

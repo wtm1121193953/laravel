@@ -21,9 +21,9 @@ use Illuminate\Support\Facades\Log;
 
 class WechatPay extends PayBase
 {
-    public function __construct($app_type)
+    public function __construct()
     {
-        parent::__construct($app_type);
+        parent::__construct();
     }
 
     public function doNotify()
