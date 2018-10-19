@@ -111,4 +111,10 @@ Route::prefix('app/user')
         Route::post('identity/record/modRecord', 'UserIdentityAuditRecordController@modRecord')->middleware(UserLoginFilter::class);
         Route::get('identity/record/getRecord', 'UserIdentityAuditRecordController@getRecord')->middleware(UserLoginFilter::class);
 
+        Route::get('message/notices', 'MessageController@getNotices')->middleware(UserLoginFilter::class);
+        Route::get('message/noticesNum', 'MessageController@getNeedViewNum')->middleware(UserLoginFilter::class);
+        Route::get('message/noticesDetail', 'MessageController@getNoticeDetail')->middleware(UserLoginFilter::class);
+
     });
+
+    Route::get('app/user/message/systems', 'Admin\MessageSystemController@getSystems')->middleware(UserLoginFilter::class);

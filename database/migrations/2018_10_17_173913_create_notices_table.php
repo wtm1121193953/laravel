@@ -15,9 +15,9 @@ class CreateNoticesTable extends Migration
     {
         Schema::create('message_notice', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('u_id')->default(1)->comment('用户ID');
+            $table->integer('user_id')->default(1)->comment('用户ID');
             $table->string('title')->default('')->comment('标题');
-            $table->text('content')->default('')->comment('内容');
+            $table->text('content')->comment('内容');
             $table->tinyinteger('is_read')->dafault(1)->comment('是否阅读 1：未读；2：已阅-用于记录是否查看详情');
             $table->tinyinteger('is_view')->default(1)->comment('是否阅览 1：未阅；2：已阅-用于统计小红圈数');
             $table->timestamps();
