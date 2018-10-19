@@ -138,6 +138,14 @@ class OrderController extends Controller
         ]);
     }
 
+    public function recordDetail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+
+    }
+
     public function platformTradeRecordsExport()
     {
 

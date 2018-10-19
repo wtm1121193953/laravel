@@ -11,7 +11,7 @@
             <el-table-column prop="created_at" label="结算时间" align="center"/>
             <el-table-column min-width="125%" prop="settlement_cycle" label="结算周期" align="center">
                 <template slot-scope="scope">
-                    {{scope.row.date}} 00:00:00 至 {{scope.row.date}} 23:59:59
+                    {{scope.row.start_date}} 至 {{scope.row.end_date}}
                 </template>
             </el-table-column>
             <el-table-column prop="amount" label="订单金额 ¥" align="center"/>
@@ -33,7 +33,6 @@
             </el-table-column>
             <el-table-column label="操作" width="300px" align="center">
                 <template slot-scope="scope">
-                    <el-button type="text" v-if="parseInt(scope.row.status) === 2" @click="showDownload(scope, 'cash')">下载回款单</el-button>
                     <el-button type="text" v-if="parseInt(scope.row.status) === 2 && parseInt(scope.row.invoice_type) === 1" @click="showDownload(scope, 'invoice')">下载电子发票</el-button>
                     <el-button type="text" v-if="parseInt(scope.row.status) === 2 && parseInt(scope.row.invoice_type) === 2" @click="showLogistics(scope)">查看纸质发票物流</el-button>
                     <el-button type="text" @click="showOrders(scope)">查看结算详情</el-button>
