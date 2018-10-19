@@ -7,15 +7,24 @@
  */
 namespace App\Support\Payment;
 
+use App\Exceptions\BaseResponseException;
 use App\Modules\Log\LogDbService;
 use App\Modules\Oper\OperMiniprogramService;
 use App\Modules\Order\Order;
+use App\Modules\Order\OrderPay;
+use App\Modules\Order\OrderRefund;
 use App\Modules\Order\OrderService;
+use App\Modules\Platform\PlatformTradeRecord;
 use App\Modules\Wechat\WechatService;
-use test\Mockery\Fixtures\EmptyTestCaseV5;
+use App\Result;
 
 class WechatPay extends PayBase
 {
+    public function __construct($app_type)
+    {
+        parent::__construct($app_type);
+    }
+
     public function doNotify()
     {
         $str = request()->getContent();
@@ -56,5 +65,79 @@ class WechatPay extends PayBase
             return false;
         });
         return $response;
+    }
+
+    /**
+     * @return mixed
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     */
+    public function refund()
+    {
+
+        $this->validate(request(), [
+            'order_no' => 'required'
+        ]);
+        $orderNo = request('order_no');
+        $order = Order::where('order_no', $orderNo)->firstOrFail();
+        if($order->status != Order::STATUS_PAID){
+            throw new BaseResponseException('订单状态不允许退款');
+        }
+        if ($order->pay_type != Order::PAY_TYPE_WECHAT) {
+            throw new BaseResponseException('不是微信支付的订单');
+        }
+        // 查询支付记录
+        $orderPay = OrderPay::where('order_id', $order->id)->firstOrFail();
+        // 生成退款单
+        $orderRefund = new OrderRefund();
+        $orderRefund->order_id = $order->id;
+        $orderRefund->order_no = $order->order_no;
+        $orderRefund->amount = $orderPay->amount;
+        $orderRefund->save();
+
+
+        if($order->origin_app_type == Order::ORIGIN_APP_TYPE_MINIPROGRAM){
+            $payApp = WechatService::getWechatPayAppForPlatform();
+        }else{
+            // 获取平台的微信支付实例
+            $payApp = WechatService::getOpenPlatformPayAppFromPlatform();
+        }
+        $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->id, $orderPay->amount * 100, $orderPay->amount * 100, [
+            'refund_desc' => '用户发起退款',
+        ]);
+        if ($result['return_code'] === 'SUCCESS' && array_get($result, 'result_code') === 'SUCCESS') {
+            // 微信退款成功
+            $orderRefund->refund_id = $result['refund_id'];
+            $orderRefund->status = 2;
+            $orderRefund->save();
+
+            $order->status = Order::STATUS_REFUNDED;
+            $order->refund_time = Carbon::now();
+            $order->refund_price = $orderPay->amount;
+            $order->save();
+            $this->decSellNumber($order);
+
+            $platform_trade_record = new PlatformTradeRecord();
+            $platform_trade_record->type = PlatformTradeRecord::TYPE_REFUND;
+            $platform_trade_record->pay_id = 1;
+            $platform_trade_record->trade_amount = $orderPay->amount;
+            $platform_trade_record->trade_time = $order->refund_time;
+            $platform_trade_record->trade_no = $orderRefund->refund_id;
+            $platform_trade_record->order_no = $orderNo;
+            $platform_trade_record->oper_id = $order->oper_id;
+            $platform_trade_record->merchant_id = $order->merchant_id;
+            $platform_trade_record->remark = '';
+            $platform_trade_record->save();
+            return Result::success($orderRefund);
+        } else {
+            Log::error('微信退款失败 :', [
+                'result' => $result,
+                'params' => [
+                    'orderPay' => $orderPay->toArray(),
+                    'orderRefund' => $orderRefund->toArray(),
+                ]
+            ]);
+            throw new BaseResponseException('微信退款失败');
+        }
+
     }
 }
