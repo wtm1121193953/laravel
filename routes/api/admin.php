@@ -122,4 +122,7 @@ Route::prefix('admin')
         Route::get('orders','OrderController@getList');
         Route::get('getOptions','OrderController@getOptions');
         Route::get('order/export','OrderController@export');
+
+        Route::get('trade_records','OrderController@platformTradeRecords');
+        Route::get('trade_records/export','OrderController@platformTradeRecordsExport');
     });

@@ -18,7 +18,9 @@ import withdraw from './withdraw'
 import wallet from './wallet'
 import bizer from './bizer'
 import Version from './version'
+import message from './message'
 import OrderList from '../components/order/list'
+import TradeRecords from '../components/order/trade_records'
 
 import SettlementPlatfroms from '../components/settlement/platform.vue'
 
@@ -54,6 +56,7 @@ const routes = [
     ...bizer,
     ...Version,
     ...payment,
+    ...message,
 
     // 财务模块
     {
@@ -77,6 +80,7 @@ const routes = [
         component: Home,
         children: [
             {path: '/orders', component: OrderList, name: 'OrderList'},
+            {path: '/trade/records', component: TradeRecords, name: 'TradeRecords'},
         ]
     },
     {

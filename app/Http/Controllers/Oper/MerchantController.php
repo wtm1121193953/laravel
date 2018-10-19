@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Oper;
 
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
+use App\Exports\OperMerchantExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Bizer\BizerService;
 use App\Modules\Merchant\Merchant;
@@ -36,6 +37,7 @@ class MerchantController extends Controller
             'operId' => request()->get('current_user')->oper_id,
             'creatorOperId' => request('creatorOperId'),
             'name' => request('name'),
+            'merchantId' => request('merchantId'),
             'signboardName' => request('signboardName'),
             'status' => request('status'),
             'auditStatus' => request('audit_status'),
@@ -53,6 +55,47 @@ class MerchantController extends Controller
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
+
+    /**
+     * 导出商户
+     */
+    public function export(){
+        $memberNameOrMobile = request('memberNameOrMobile');
+        $bizerNameOrMobile = request('bizerNameOrMobile');
+
+        $operBizMemberCodes = $memberNameOrMobile ? OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile)->pluck('code') : '';
+        $bizerIds = $bizerNameOrMobile ? BizerService::getBizersByNameOrMobile($bizerNameOrMobile)->pluck('id') : '';
+
+        $data = [
+            'id' => request('id'),
+            'operId' => request()->get('current_user')->oper_id,
+            'creatorOperId' => request('creatorOperId'),
+            'name' => request('name'),
+            'merchantId' => request('merchantId'),
+            'signboardName' => request('signboardName'),
+            'status' => request('status'),
+            'auditStatus' => request('audit_status'),
+            'merchantCategory' => request('merchant_category'),
+            'isPilot' => request('isPilot'),
+            'startCreatedAt' => request('startCreatedAt'),
+            'endCreatedAt' => request('endCreatedAt'),
+            'bizer_id' => $bizerIds,
+            'operBizMemberCodes' => $operBizMemberCodes,
+        ];
+
+        $query = MerchantService::getList($data,true);
+
+        $list = $query->get();
+
+        if(request('isPilot')){
+            $downloadName = '试点商户列表';
+        }else{
+            $downloadName = '我的商户列表';
+        }
+
+        return (new OperMerchantExport($list))->download($downloadName.'.xlsx');
+
     }
 
     /**

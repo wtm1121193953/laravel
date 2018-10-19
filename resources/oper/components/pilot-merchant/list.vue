@@ -1,8 +1,14 @@
 <template>
     <page title="试点商户管理" v-loading="isLoading">
         <el-form class="fl" inline size="small">
-            <el-form-item label="" prop="name">
-                <el-input v-model="query.name" @keyup.enter.native="search" size="small" clearable class="w-200" placeholder="商户名称"/>
+            <el-form-item label="商户ID">
+                <el-select v-model="query.merchantId" placeholder="输入商户ID或商户名" filterable clearable >
+                    <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
+                </el-select>
+            </el-form-item>
+
+            <el-form-item label="商户名称" prop="name">
+                <el-input v-model="query.name" @keyup.enter.native="search" clearable placeholder="商户名称"/>
             </el-form-item>
 
             <el-form-item prop="signboardName" label="商户招牌名" >
@@ -42,11 +48,12 @@
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
+            <el-button type="primary" size="small" class="m-l-30" @click="exportExcel">导出Excel</el-button>
         </el-form>
         <el-button class="fr" type="primary" @click="add">录入试点商户</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
-            <el-table-column prop="id" label="ID"/>
+            <el-table-column prop="id" label="商户ID"/>
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="signboard_name" label="商户招牌名"/>
             <el-table-column prop="categoryPath" label="行业">
@@ -139,6 +146,7 @@
                 isLoading: false,
                 query: {
                     name: '',
+                    merchantId: '',
                     status: '',
                     page: 1,
                     audit_status: '',
@@ -147,12 +155,20 @@
                 },
                 list: [],
                 total: 0,
+                merchants: [],
             }
         },
         computed: {
 
         },
         methods: {
+            exportExcel(){
+                let array = [];
+                for (let key in this.query){
+                    array.push(key + '=' + this.query[key]);
+                }
+                location.href = '/api/oper/merchant/export?' + array.join('&');
+            },
             search(){
                 this.query.page = 1;
                 this.getList();
@@ -179,6 +195,11 @@
                     this.auditRecord = [data];
                 })
             },
+            getMerchants(){
+                api.get('/merchant/allNames').then(data => {
+                    this.merchants = data.list;
+                })
+            },
         },
         created(){
             api.get('merchant/categories/tree').then(data => {
@@ -187,6 +208,7 @@
             if (this.$route.params){
                 Object.assign(this.query, this.$route.params);
             }
+            this.getMerchants();
             this.getList();
         },
         components: {

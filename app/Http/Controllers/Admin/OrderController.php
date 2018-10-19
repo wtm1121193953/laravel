@@ -8,11 +8,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exports\OperOrderExport;
+use App\Exports\PlatformTradeRecordsExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperService;
 use App\Modules\Order\OrderService;
+use App\Modules\Platform\PlatformTradeRecord;
+use App\Modules\Platform\PlatformTradeRecordService;
 use App\Result;
 
 class OrderController extends Controller
@@ -112,5 +115,44 @@ class OrderController extends Controller
         });
 
         return (new OperOrderExport($list))->download('订单列表.xlsx');
+    }
+
+    public function platformTradeRecords()
+    {
+
+        $params = [
+            'order_no' => request('order_no'),
+            'trade_no' => request('trade_no'),
+            'oper_id' => request('oper_id'),
+            'merchant_id' => request('merchant_id'),
+            'startTime' => request('startTime'),
+            'endTime' => request('endTime'),
+            'mobile' => request('mobile'),
+        ];
+
+        $data = PlatformTradeRecordService::getList($params);
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
+    }
+
+    public function platformTradeRecordsExport()
+    {
+
+        $params = [
+            'order_no' => request('order_no'),
+            'trade_no' => request('trade_no'),
+            'oper_id' => request('oper_id'),
+            'merchant_id' => request('merchant_id'),
+            'startTime' => request('startTime'),
+            'endTime' => request('endTime'),
+            'mobile' => request('mobile'),
+        ];
+
+        $data = PlatformTradeRecordService::getList($params,true);
+        return (new PlatformTradeRecordsExport($data, $params))->download(' 平台交易记录.xlsx');
+
     }
 }

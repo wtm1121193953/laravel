@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Modules\Message\MessageSystem;
+use App\Modules\Message\MessageSystemService;
+use App\Result;
+use App\ResultCode;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
+/**
+ * Class MessageController
+ * 系统消息
+ * @package App\Http\Controllers\Admin
+ */
+class MessageSystemController extends Controller
+{
+    public function getSystems(Request $request)
+    {
+        $allowQueryColumns = ['start_time', 'end_time', 'content', 'object_type'];
+        $params = [];                                               // 待查询字段
+        foreach ($allowQueryColumns as $k => $v) {
+            $params[$v] = $request->get($v, null);
+        }
+        $uri = $request->getRequestUri();
+        if (strpos($uri,'bizer')){
+            // 如果由业务员请求
+            $params['object_type'] = MessageSystem::OB_TYPE_BIZER;
+        }else if(strpos($uri,'user')){
+            // 用户端
+            $params['object_type'] = MessageSystem::OB_TYPE_USER;
+        }else if(strpos($uri, 'merchant')){
+            // 商户端
+            $params['object_type'] = MessageSystem::OB_TYPE_MERCHANT;
+        }
+
+        $data = MessageSystemService::getList($params);
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
+    }
+
+    public function addMessage(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|max:20',
+            'content' => 'required|max:2000',
+            'object_type' => 'required|array'
+        ], [
+            'title.required' => '标题不可为空',
+            'content.required' => '内容不可为空',
+            'object_type.required' => '角色不可为空',
+            'object_type.array' => '数据不合法',
+            'title.max' => '标题不能超过 :max 个字',
+            'content.max' => '内容不能超过 :max 个字'
+        ]);
+        $system = MessageSystemService::createSystem($request->all());
+        return Result::success($system);
+    }
+}

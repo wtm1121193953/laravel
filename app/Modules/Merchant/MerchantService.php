@@ -136,6 +136,7 @@ class MerchantService extends BaseService
         $operId = array_get($data,'operId');
         $creatorOperId = array_get($data,'creatorOperId');
         $name = array_get($data,'name');
+        $merchantId = array_get($data,'merchantId');
         $signboardName = array_get($data,'signboardName');
         $status = array_get($data,'status');
         $auditStatus = array_get($data,'auditStatus');
@@ -231,6 +232,13 @@ class MerchantService extends BaseService
         }
         if ($name) {
             $query->where('name', 'like', "%$name%");
+        }
+        if(!empty($merchantId)){
+            if (is_array($merchantId) || $merchantId instanceof Collection) {
+                $query->whereIn('id', $merchantId);
+            } else {
+                $query->where('id', $merchantId);
+            }
         }
         if ($signboardName) {
             $query->where('signboard_name', 'like', "%$signboardName%");
