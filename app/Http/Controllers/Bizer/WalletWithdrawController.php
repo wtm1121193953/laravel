@@ -162,6 +162,7 @@ class WalletWithdrawController extends Controller
         return Result::success([
             'identityAuditRecord' => $identityAuditRecord,
             'bankCard' => $bankCard,
+            'bizer' => $bizer,
         ]);
     }
 
@@ -248,5 +249,26 @@ class WalletWithdrawController extends Controller
         WalletService::updateWalletWithdrawPassword($wallet, $password);
 
         return Result::success();
+    }
+
+    /**
+     * 编辑银行卡
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function editBizerBankCard()
+    {
+        $this->validate(request(), [
+            'bank_card_no' => 'required|min:8|max:35',
+            'bank_name' => 'required',
+        ]);
+        $bizer = request()->get('current_user');
+        if (empty($bizer)) throw new BaseResponseException('请先登录');
+        $params = [
+            'bankCardNo' => request('bank_card_no'),
+            'bankName' => request('bank_name'),
+        ];
+        $bankCard = BankCardService::editBankCard($bizer->id, BankCard::ORIGIN_TYPE_BIZER, $params);
+
+        return Result::success($bankCard);
     }
 }

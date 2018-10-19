@@ -189,4 +189,24 @@ class BankCardService extends BaseService
             ->first();
         return $bankCard;
     }
+
+    /**
+     * 修改银行卡
+     * @param $originId
+     * @param $originType
+     * @param $params
+     * @return BankCard
+     */
+    public static function editBankCard($originId, $originType, $params)
+    {
+        $bankCardNo = array_get($params, 'bankCardNo');
+        $bankName = array_get($params, 'bankName');
+
+        $bankCard = self::getBankCardByOriginInfo($originId, $originType);
+        $bankCard->bank_card_no = $bankCardNo;
+        $bankCard->bank_name = $bankName;
+        $bankCard->save();
+
+        return $bankCard;
+    }
 }
