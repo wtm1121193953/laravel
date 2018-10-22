@@ -118,9 +118,9 @@
                         <el-form-item prop="desc_pic" label="商家介绍">
                             {{data.desc}}
                         </el-form-item>
-                        <el-form-item label="结算周期">
+                        <!--<el-form-item label="结算周期">
                             {{ {1: '周结', 2: '半月结', 3: '月结', 4: '半年结', 5: '年结', 6: 'T+1',}[data.settlement_cycle_type] }}
-                        </el-form-item>
+                        </el-form-item>-->
                         <el-form-item label="分利比例">
                             {{ data.settlement_rate }} %
                         </el-form-item>

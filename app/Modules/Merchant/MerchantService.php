@@ -213,7 +213,7 @@ class MerchantService extends BaseService
             $query->where('status', $status);
         }
         if ($settlementCycleType) {
-            $query->where('settlement_cycle_type', $settlementCycleType);
+            $query->whereIn('settlement_cycle_type', $settlementCycleType);
         }
 
         if (!empty($auditStatus)) {
