@@ -203,7 +203,7 @@ class BizerController extends Controller
         $this->validate(request(), [
             'operId' => 'required|integer|min:1',
             'bizerId' => 'required|integer|min:1',
-            'divide' => 'integer|min:0|max:100',
+            'divide' => 'required|min:0|max:100',
         ]);
         $operId = request('operId');
         $bizerId = request('bizerId');

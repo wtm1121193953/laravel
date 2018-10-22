@@ -41,7 +41,7 @@ class PlatformController extends Controller
 
         $data = PlatformTradeRecordsDailyService::getList($params,true);
 
-        return (new PlatformTradeRecordsDailyExport($data, $params))->download(' 平台交易记录.xlsx');
+        return (new PlatformTradeRecordsDailyExport($data, $params))->download('交易汇总表.xlsx');
 
     }
 }

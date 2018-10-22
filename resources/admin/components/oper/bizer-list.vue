@@ -2,10 +2,10 @@
     <page title="签约业务员" :breadcrumbs="{运营中心管理: '/opers'}">
         <el-form class="fl" inline :model="query" ref="query" size="small">
             <el-form-item prop="mobile" label="业务员手机号码">
-                <el-input v-model="query.mobile" clearable/>
+                <el-input v-model="query.mobile" clearable placeholder="业务员手机号码"/>
             </el-form-item>
             <el-form-item prop="name" label="业务员昵称">
-                <el-input v-model="query.name" clearable/>
+                <el-input v-model="query.name" clearable placeholder="业务员昵称"/>
             </el-form-item>
             <el-form-item>
                 <el-button @click="search" type="primary"><i class="el-icon-search"></i>搜索</el-button>
@@ -19,6 +19,7 @@
             </el-table-column>
             <el-table-column prop="operInfo.name" label="运营中心名称"></el-table-column>
             <el-table-column prop="bizerInfo.name" label="业务员昵称"></el-table-column>
+            <el-table-column prop="bizerInfo.mobile" label="业务员手机号码"></el-table-column>
             <el-table-column prop="bizerLog.created_at" label="签约时间"></el-table-column>
             <el-table-column prop="divide" label="分成比例"></el-table-column>
             <el-table-column label="操作">
