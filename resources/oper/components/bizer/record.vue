@@ -72,9 +72,9 @@
                 <el-form-item>
                     确定签约业务员<span class="c-danger">{{detailOption.bizerInfo.name}}</span>
                 </el-form-item>
-                <el-form-item label="分成" prop="divide">
+                <!--<el-form-item label="分成" prop="divide">
                     <el-input v-model="formSigning.divide" auto-complete="off" style="width:90%;"/> %
-                </el-form-item>
+                </el-form-item>-->
                 <el-form-item label="原因" prop="note">
                     <el-input type="textarea" v-model="formSigning.note" auto-complete="off" placeholder="最多50个字" style="width:90%;"/>
                 </el-form-item>
@@ -136,7 +136,7 @@
                 dialogRefusalFormVisible: false,
                 formSigning: {
                     status: 1,
-                    divide: '',
+                    // divide: '',
                     note: ''
                 },
                 formRefusal: {
@@ -144,9 +144,9 @@
                     note: ''
                 },
                 rules: {
-                    divide: [
+                    /*divide: [
                         {required: true, validator: validateDivided, trigger: 'blur'}
-                    ],
+                    ],*/
                     note: [
                         {max: 50, message: '原因不能超过50个字'},
                     ]
@@ -209,7 +209,7 @@
                     _self.$refs.formSigning.validate(valid => {
                         if (valid) {
                             _self.formSigning.id = this.detailOption.id;
-                            _self.formSigning.divide = parseFloat(_self.formSigning.divide);
+                            // _self.formSigning.divide = parseFloat(_self.formSigning.divide);
                             params = _self.formSigning;
                             isValid = true;
                         }else{

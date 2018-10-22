@@ -7,6 +7,7 @@ use App\Exceptions\BaseResponseException;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Bizer\BizerService;
+use Illuminate\Support\Collection;
 
 class OperBizerService extends BaseService {
 
@@ -64,8 +65,12 @@ class OperBizerService extends BaseService {
         if (is_string($fields)) {
             $fields = explode(',', preg_replace('# #', '', $fields));
         }
-        $data = OperBizer::when($bizerId, function (Builder $query) use ($bizerId) {
-                    $query->where('bizer_id', $bizerId);
+        $data = OperBizer::when(!empty($bizerId), function (Builder $query) use ($bizerId) {
+                    if (is_array($bizerId) || $bizerId instanceof Collection) {
+                        $query->whereIn('bizer_id', $bizerId);
+                    } else {
+                        $query->where('bizer_id', $bizerId);
+                    }
                 })
                 ->when(!empty($operIds), function (Builder $query) use ($operIds) {
                     if(is_array($operIds)){
@@ -94,6 +99,11 @@ class OperBizerService extends BaseService {
             $data->each(function ($item) {
                 $item->operInfo = OperService::getById($item->oper_id, 'name,contacter,tel,province,city') ?: null;
                 $item->bizerInfo = BizerService::getById($item->bizer_id, 'name,mobile,status') ?: null;
+                $item->bizerLog = OperBizerLog::where('oper_id', $item->oper_id)
+                    ->where('bizer_id', $item->bizer_id)
+                    ->where('status', OperBizerLog::STATUS_SIGNED)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
             });
         }
 
@@ -332,4 +342,24 @@ class OperBizerService extends BaseService {
             return $data;
         }
     }
+
+    /**
+     * 更新运营中心关联业务员的分成比例
+     * @param $operId
+     * @param $bizerId
+     * @param $divide
+     * @return OperBizer|Builder|\Illuminate\Database\Eloquent\Model|null|object
+     */
+    public static function updateOperBizerDivide($operId, $bizerId, $divide)
+    {
+        $operBizer = self::getOperBizerByParam(compact('operId', 'bizerId'));
+
+        if (empty($operBizer)) throw new BaseResponseException('该运营中心与此业务员的关联关系不存在');
+
+        $operBizer->divide = number_format($divide, 2);
+        $operBizer->save();
+
+        return $operBizer;
+    }
+
 }
