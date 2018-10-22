@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\UserApp;
 
 use App\Modules\Message\MessageNoticeService;
+use App\Modules\Message\MessageSystemService;
 use App\Result;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -44,6 +45,18 @@ class MessageController extends Controller
         $notice = MessageNoticeService::getNoticeDetailByUserIdNId($user->id,$request->get('id'));
         return Result::success([
            'data'   =>  $notice
+        ]);
+    }
+
+    public function getSystemDetail( Request $request)
+    {
+        $this->validate($request,['id'=>'required|numeric'],[
+            'id.required'=>'参数不合法',
+            'id.numeric'=>'参数不合法'
+        ]);
+        $system = MessageSystemService::getSystemDetailById($request->get('id'));
+        return Result::success([
+            'data'   =>  $system
         ]);
     }
 
