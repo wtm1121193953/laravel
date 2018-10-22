@@ -1,5 +1,5 @@
 <template>
-    <page title="签约业务员">
+    <page title="签约业务员" :breadcrumbs="{运营中心管理: '/opers'}">
         <el-form class="fl" inline :model="query" ref="query" size="small">
             <el-form-item prop="mobile" label="业务员手机号码">
                 <el-input v-model="query.mobile" clearable/>
