@@ -51,6 +51,10 @@ class MerchantController extends Controller
             $auditStatus = explode(',', $auditStatus);
         }
 
+        if(is_string($settlementCycleType)){
+            $settlementCycleType = explode(',', $settlementCycleType);
+        }
+
         $operId = request('operId');
 
         // 根据输入的运营中心名称获取所属运营中心ID列表
