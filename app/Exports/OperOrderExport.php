@@ -93,7 +93,7 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
             $row->user_name,
             $row->notify_mobile,
             Order::getStatusText($row->status),
-            $payments[$row->pay_type],
+            $payments[$row->pay_type]??'未支付',
             $row->pay_price,
             $row->pay_time,
             Order::getPayTargetTypeText($row->pay_target_type),
