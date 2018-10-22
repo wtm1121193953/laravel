@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Updates;
 
+use App\Modules\Oper\OperBizer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -44,6 +45,16 @@ class V1_4_6 extends Command
         ];
 
         DB::statement($sql);
+
+
+        OperBizer::chunk(1000, function ($operBizers) {
+            foreach ($operBizers as $operBizer) {
+                $operBizer->divide = number_format(20, 2);
+                $operBizer->save();
+            }
+        });
+
+
         $this->info('执行成功');
     }
 }
