@@ -123,6 +123,10 @@ Route::prefix('admin')
         Route::get('getOptions','OrderController@getOptions');
         Route::get('order/export','OrderController@export');
 
+
+        Route::get('message/systems', 'MessageSystemController@getSystems');
+        Route::post('message/addSystems', 'MessageSystemController@addMessage');
+
         Route::get('trade_records','OrderController@platformTradeRecords');
         Route::get('trade_records/export','OrderController@platformTradeRecordsExport');
         Route::get('trade_records_daily','PlatformController@getDailyList');
