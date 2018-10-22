@@ -139,6 +139,7 @@ class MerchantService extends BaseService
         $merchantId = array_get($data,'merchantId');
         $signboardName = array_get($data,'signboardName');
         $status = array_get($data,'status');
+        $settlementCycleType = array_get($data,'settlementCycleType');
         $auditStatus = array_get($data,'auditStatus');
         $merchantCategory = array_get($data,'merchantCategory');
         $isPilot = array_get($data,'isPilot');
@@ -211,6 +212,10 @@ class MerchantService extends BaseService
         if ($status) {
             $query->where('status', $status);
         }
+        if ($settlementCycleType) {
+            $query->where('settlement_cycle_type', $settlementCycleType);
+        }
+
         if (!empty($auditStatus)) {
             if (is_array($auditStatus) || $auditStatus instanceof Collection) {
                 $query->whereIn('audit_status', $auditStatus);
@@ -332,6 +337,7 @@ class MerchantService extends BaseService
         $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
+            $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
         }
         $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
         if($merchantFollow){
@@ -382,6 +388,18 @@ class MerchantService extends BaseService
         $existsDraft = MerchantDraft::where('signboard_name', $merchant->signboard_name)->first();
         if ($exists || $existsDraft) {
             throw new ParamInvalidException('招牌名称不能重复');
+        }
+
+        if($merchant->settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE){
+            if($merchant->bank_card_type == Merchant::BANK_CARD_TYPE_COMPANY){
+                if($merchant->name != $merchant->bank_open_name){
+                    throw new ParamInvalidException('提交失败，申请T+1结算，商户名称需和开户名一致');
+                }
+            }elseif($merchant->bank_card_type == Merchant::BANK_CARD_TYPE_PEOPLE){
+                if($merchant->corporation_name != $merchant->bank_open_name){
+                    throw new ParamInvalidException('提交失败，申请T+1结算，营业执照及法人姓名需和开户名一致');
+                }
+            }
         }
 
         if ($merchant->oper_id > 0) {

@@ -40,6 +40,7 @@ class MerchantController extends Controller
         $name = request('name');
         $signboardName = request('signboardName');
         $status = request('status');
+        $settlementCycleType = request('settlementCycleType');
         $auditStatus = request('auditStatus');
         $merchantCategory = request('merchantCategory');
         $memberNameOrMobile = request('memberNameOrMobile');
@@ -75,6 +76,7 @@ class MerchantController extends Controller
             'signboardName' => $signboardName,
             'creatorOperId' => $createOperIds ?? $creatorOperId,
             'status' => $status,
+            'settlementCycleType' => $settlementCycleType,
             'auditStatus' => $auditStatus,
             'merchantCategory' => $merchantCategory,
             'isPilot' => $isPilot,
@@ -186,6 +188,7 @@ class MerchantController extends Controller
         $endDate = request('endDate');
         $name = request('name');
         $status = request('status');
+        $settlementCycleType = request('settlementCycleType');
         $auditStatus = request('auditStatus');
         $signboardName = request('signboardName');
         if ($auditStatus || $auditStatus==="0"){
@@ -199,7 +202,7 @@ class MerchantController extends Controller
         $merchantCategory = request('merchantCategory', '');
         $isPilot = request('isPilot', 0);
 
-        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name, $status, $auditStatus, $operId, $operName, $merchantCategory, $isPilot))->download('商户列表.xlsx');
+        return (new MerchantExport($id, $startDate, $endDate,$signboardName, $name, $status, $settlementCycleType, $auditStatus, $operId, $operName, $merchantCategory, $isPilot))->download('商户列表.xlsx');
     }
 
     /**

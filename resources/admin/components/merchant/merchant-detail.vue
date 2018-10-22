@@ -13,6 +13,15 @@
                         <span v-else-if="data.status === 2" class="c-danger">已冻结</span>
                         <span v-else>未知 ({{data.status}})</span>
                     </el-form-item>
+                    <el-form-item prop="settlement_cycle_type" label="结算周期">
+                        <span v-if="data.settlement_cycle_type === 1" class="c-green">周结</span>
+                        <span v-else-if="data.settlement_cycle_type === 2" class="c-green">半月结</span>
+                        <span v-else-if="data.settlement_cycle_type === 3" class="c-green">月结</span>
+                        <span v-else-if="data.settlement_cycle_type === 4" class="c-green">半年结</span>
+                        <span v-else-if="data.settlement_cycle_type === 5" class="c-green">年结</span>
+                        <span v-else-if="data.settlement_cycle_type === 6" class="c-green">T+1</span>
+                        <span v-else>未知</span>
+                    </el-form-item>
                     <el-form-item prop="id" label="商户ID">{{data.id}}</el-form-item>
                     <el-form-item v-if="data.operName" prop="operName" label="运营中心">{{data.operName}}</el-form-item>
                     <el-form-item prop="name" label="商户名称">{{data.name}}</el-form-item>
@@ -34,8 +43,8 @@
                 <el-col :span="12" :offset="1">
                     <el-form-item prop="audit_status" label="审核状态">
                         <span v-if="data.audit_status === 0" class="c-warning">待审核</span>
-                        <span v-else-if="data.audit_status === 1" class="c-green">审核通过({{data.active_time}})</span>
-                        <span v-else-if="data.audit_status === 2" class="c-danger">审核不通过</span>
+                        <span v-else-if="data.audit_status === 1" class="c-green">审核通过 {{data.audit_suggestion}}</span>
+                        <span v-else-if="data.audit_status === 2" class="c-danger">审核不通过 {{data.audit_suggestion}}</span>
                         <span v-else-if="data.audit_status === 3" class="c-warning">重新提交审核</span>
                         <span v-else>未知 ({{data.audit_status}})</span>
                     </el-form-item>
@@ -110,7 +119,7 @@
                             {{data.desc}}
                         </el-form-item>
                         <el-form-item label="结算周期">
-                            {{ {1: '周结', 2: '半月结', 3: '月结', 4: '半年结', 5: '年结',}[data.settlement_cycle_type] }}
+                            {{ {1: '周结', 2: '半月结', 3: '月结', 4: '半年结', 5: '年结', 6: 'T+1',}[data.settlement_cycle_type] }}
                         </el-form-item>
                         <el-form-item label="分利比例">
                             {{ data.settlement_rate }} %
@@ -193,12 +202,12 @@
                                 <preview-img :url="pic" width="200px" height="100px"/>
                             </template> -->
                         </el-form-item>
-                        <el-col v-if="type != 'poolOnly' ">
+                        <!--<el-col v-if="type != 'poolOnly' ">
                             <el-form-item prop="audit_suggestion" label="审核意见">
                                 <el-input v-if="(data.audit_status == 0 || data.audit_status == 3) && auditType == 3" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
                                 <span v-else>{{data.audit_suggestion}}</span>
                             </el-form-item>
-                        </el-col>
+                        </el-col>-->
                     </el-col>
 
 

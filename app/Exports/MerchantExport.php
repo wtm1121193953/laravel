@@ -28,6 +28,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
     protected $endDate;
     protected $name;
     protected $status;
+    protected $settlementCycleType;
     protected $auditStatus;
     protected $operId;
     protected $operName;
@@ -37,13 +38,14 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
     protected $merchantCategory;
     protected $isPilot;
 
-    public function __construct($id = '', $startDate = '',$endDate = '',$signboardName='', $name = '', $status = '', $auditStatus = [], $operId = '', $operName = '', $merchantCategory = [], $isPilot = 0)
+    public function __construct($id = '', $startDate = '',$endDate = '',$signboardName='', $name = '', $status = '', $settlementCycleType = '', $auditStatus = [], $operId = '', $operName = '', $merchantCategory = [], $isPilot = 0)
     {
         $this->id = $id;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
         $this->name = $name;
         $this->status = $status;
+        $this->settlementCycleType = $settlementCycleType;
         $this->auditStatus = $auditStatus;
         $this->operId = $operId;
         $this->operName = $operName;
@@ -65,6 +67,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
         $endDate = $this->endDate;
         $name = $this->name;
         $status = $this->status;
+        $settlementCycleType = $this->settlementCycleType;
         $auditStatus = $this->auditStatus;
         if(empty($auditStatus)){
             $auditStatus=["0","1","2","3"];
@@ -99,6 +102,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             'operId' => $operIds ?? $operId,
             'creatorOperId' => $createOperIds ?? $creatorOperId,
             'status' => $status,
+            'settlementCycleType' => $settlementCycleType,
             'auditStatus' => $auditStatus,
             'merchantCategory' => $merchantCategory,
             'isPilot' => $isPilot,
@@ -129,6 +133,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             $this->getCategoryPathName($data->merchant_category_id),
             $data->city . ' ' . $data->area,
             ['待审核', '审核通过', '审核不通过', '重新提交审核'][$data->audit_status],
+            ['', '周结', '半月结', '月结', '半年结', '年结', 'T+1'][$data->settlement_cycle_type],
         ];
     }
 
@@ -182,6 +187,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             '行业',
             '城市',
             '审核状态',
+            '结算周期',
         ];
     }
 }

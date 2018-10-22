@@ -125,4 +125,6 @@ Route::prefix('admin')
 
         Route::get('trade_records','OrderController@platformTradeRecords');
         Route::get('trade_records/export','OrderController@platformTradeRecordsExport');
+        Route::get('trade_records_daily','PlatformController@getDailyList');
+        Route::get('trade_records_daily/export','PlatformController@dailyListExport');
     });

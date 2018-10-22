@@ -70,12 +70,12 @@
                 <el-input type="textarea" :rows="5" v-model="form.desc"/>
             </el-form-item>
             <el-form-item prop="settlement_cycle_type" required label="结算周期">
-                <el-select :disabled="!!data && data.audit_oper_id != 0" v-model="form.settlement_cycle_type" placeholder="请选择">
-                    <el-option label="周结" :value="1"/>
-                    <!--<el-option label="半月结" :value="2"/>
+                <el-select v-if="form.isPayToPlatform" v-model="form.settlement_cycle_type" placeholder="请选择">
                     <el-option label="月结" :value="3"/>
-                    <el-option label="半年结" :value="4"/>
-                    <el-option label="年结" :value="5"/>-->
+                    <el-option label="T+1" :value="6"/>
+                </el-select>
+                <el-select v-else v-model="form.settlement_cycle_type" placeholder="请选择">
+                    <el-option label="周结" :value="1"/>
                 </el-select>
             </el-form-item>
             <el-form-item prop="settlement_rate" required label="分利比例">
@@ -243,6 +243,9 @@
 
         //是否是试点商户的字段
         is_pilot: 0,
+
+        //判断是否切换到平台
+        isPayToPlatform: '',
 
         //////// 没有了的字段
         invoice_title: '',
@@ -428,6 +431,9 @@
                         {max: 50, message: '商户员工人数 不能超过50个字'},
                         {validator: validateNumber}
                     ],
+                    settlement_cycle_type: [
+                        {required: true, message: '结算周期 不能为空'},
+                    ],
                 },
                 searchOperBizMemberLoading: false,
                 operBizMembers: [],
@@ -455,8 +461,16 @@
                     }else {
                         this.form.bank_area = [parseInt(data.bank_province_id), parseInt(data.bank_city_id), parseInt(data.bank_area_id)];
                     }
+                    if(data.isPayToPlatform){
+                        if(parseInt(data.settlement_cycle_type) == 1){
+                            this.form.settlement_cycle_type = '';
+                        }else{
+                            this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
+                        }
+                    }else{
+                        this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
+                    }
                     this.form.region = parseInt(data.region);
-                    this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                     this.form.status = parseInt(data.status);
                     this.form.bank_card_type = parseInt(data.bank_card_type);
                     this.form.bizer_id = parseInt(data.bizer_id) != 0 ? parseInt(data.bizer_id) : '';

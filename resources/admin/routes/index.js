@@ -21,6 +21,7 @@ import Version from './version'
 import message from './message'
 import OrderList from '../components/order/list'
 import TradeRecords from '../components/order/trade_records'
+import TradeRecordsDaily from '../components/order/trade_records_daily';
 
 import SettlementPlatfroms from '../components/settlement/platform.vue'
 
@@ -81,6 +82,7 @@ const routes = [
         children: [
             {path: '/orders', component: OrderList, name: 'OrderList'},
             {path: '/trade/records', component: TradeRecords, name: 'TradeRecords'},
+            {path: '/trade/records_daily', component: TradeRecordsDaily, name: 'TradeRecordsDaily'},
         ]
     },
     {
