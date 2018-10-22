@@ -160,4 +160,57 @@ class BizerController extends Controller
             flush();
         }
     }
+
+    /**
+     * 获取运营中心签约的业务员列表
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getOperBizerList() {
+        $this->validate(request(), [
+            'operId' => 'required'
+        ]);
+        $bizerMobile = request('mobile', '');
+        $bizerName = request('name', '');
+        $bizerIds = [];
+        if ($bizerMobile || $bizerName) {
+            $param = [
+                'mobile' => $bizerMobile,
+                'name' => $bizerName,
+                ];
+            $bizerIds = BizerService::getBizerList($param, 15, true)->get()->pluck('id');
+        }
+
+        $where =[
+            "oper_ids" => request('operId'),//登录所属运营中心ID
+            "status" => OperBizer::STATUS_SIGNED,//查询业务员的状态
+            "bizer_id" => $bizerIds,
+        ];
+
+        $data = OperBizerService::getList($where);
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
+    }
+
+    /**
+     * 设置分成比例
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function setOperBizerDivide()
+    {
+        $this->validate(request(), [
+            'operId' => 'required|integer|min:1',
+            'bizerId' => 'required|integer|min:1',
+            'divide' => 'integer|min:0|max:100',
+        ]);
+        $operId = request('operId');
+        $bizerId = request('bizerId');
+        $divide = request('divide');
+
+        $operBizer = OperBizerService::updateOperBizerDivide($operId, $bizerId, $divide);
+
+        return Result::success($operBizer);
+    }
 }
