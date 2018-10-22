@@ -45,7 +45,6 @@ Route::any('/pay/alipayNotify', 'PayController@alipayNotify');
 
 
 
-Route::get('/bizer/message/systems', 'Admin\MessageSystemController@getSystems');
 /**
  * 加载后台接口路由
  */
