@@ -46,6 +46,17 @@
                     <el-option label="重新提交审核" value="3"/>
                 </el-select>
             </el-form-item>
+            <el-form-item v-if="isPayToPlatform" label="结算周期" prop="settlementCycleType">
+                <el-select v-model="query.settlementCycleType" size="small" placeholder="请选择" class="w-150">
+                    <el-option label="全部" value=""/>
+                    <!--<el-option label="周结" value="1"/>-->
+                    <!--<el-option label="半月结" value="2"/>-->
+                    <el-option label="月结" value="3"/>
+                    <!--<el-option label="半年结" value="4"/>-->
+                    <!--<el-option label="年结" value="5"/>-->
+                    <el-option label="T+1" value="6"/>
+                </el-select>
+            </el-form-item>
             <el-form-item prop="memberNameOrMobile" label="我的员工"  >
                 <el-input v-model="query.memberNameOrMobile" size="small"  placeholder="请输入员工姓名或手机号码搜索"  clearable></el-input>
             </el-form-item>
@@ -131,6 +142,11 @@
                     <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
             </el-table-column>
+            <el-table-column prop="settlement_cycle_type" label="结算周期">
+                <template slot-scope="scope">
+                    <span>{{ {1: '周结', 2: '半月结', 3: '月结', 4: '半年结', 5: '年结', 6: 'T+1',}[scope.row.settlement_cycle_type] }}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
                     <merchant-item-options
@@ -166,12 +182,14 @@
                 categoryOptions: [],
                 auditRecord:[],
                 isLoading: false,
+                isPayToPlatform: false,
                 query: {
                     name: '',
                     merchantId: '',
                     status: '',
                     page: 1,
                     audit_status: '',
+                    settlementCycleType:'',
                     signboardName:'',
                     memberNameOrMobile: '',
                     bizerNameOrMobile: '',
@@ -205,6 +223,7 @@
                     this.isLoading = false;
                     this.list = data.list;
                     this.total = data.total;
+                    this.isPayToPlatform = data.isPayToPlatform;
                 })
             },
             itemChanged(index, data){

@@ -13,7 +13,9 @@ use App\Modules\Merchant\MerchantAccountService;
 use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizerService;
+use App\Modules\Oper\OperService;
 use App\Result;
 
 
@@ -32,6 +34,9 @@ class MerchantController extends Controller
         $operBizMemberCodes = $memberNameOrMobile ? OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile)->pluck('code') : '';
         $bizerIds = $bizerNameOrMobile ? BizerService::getBizersByNameOrMobile($bizerNameOrMobile)->pluck('id') : '';
 
+        $oper = OperService::getById(request()->get('current_user')->oper_id);
+        $isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
+
         $data = [
             'id' => request('id'),
             'operId' => request()->get('current_user')->oper_id,
@@ -40,6 +45,7 @@ class MerchantController extends Controller
             'merchantId' => request('merchantId'),
             'signboardName' => request('signboardName'),
             'status' => request('status'),
+            'settlementCycleType' => request('settlementCycleType'),
             'auditStatus' => request('audit_status'),
             'merchantCategory' => request('merchant_category'),
             'isPilot' => request('isPilot'),
@@ -54,6 +60,7 @@ class MerchantController extends Controller
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
+            'isPayToPlatform' => $isPayToPlatform,
         ]);
     }
 
@@ -75,6 +82,7 @@ class MerchantController extends Controller
             'merchantId' => request('merchantId'),
             'signboardName' => request('signboardName'),
             'status' => request('status'),
+            'settlementCycleType' => request('settlementCycleType'),
             'auditStatus' => request('audit_status'),
             'merchantCategory' => request('merchant_category'),
             'isPilot' => request('isPilot'),
