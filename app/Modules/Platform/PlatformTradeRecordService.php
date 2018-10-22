@@ -55,6 +55,11 @@ class PlatformTradeRecordService extends BaseService
         $data = $query->paginate();
 
 
+        $data->each(function ($item) {
+            if ($item->type == 2) {
+                $item->trade_amount = '-' . $item->trade_amount;
+            }
+        });
 
         return $data;
     }

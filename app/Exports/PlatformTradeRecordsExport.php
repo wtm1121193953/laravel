@@ -65,6 +65,9 @@ class PlatformTradeRecordsExport implements FromQuery, WithHeadings, WithMapping
     public function map($row): array
     {
         $types = PlatformTradeRecord::getAllType();
+        if ($row->type == 2) {
+            $row->trade_amount = '-' . $row->trade_amount;
+        }
         return [
             $row->trade_time,
             $row->trade_no,
