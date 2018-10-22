@@ -11,7 +11,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="所属商户">
-                <el-select v-model="query.merchantId" filterable clearable >
+                <el-select v-model="query.merchant_id" filterable clearable >
                     <el-option value="" label="全部"/>
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
