@@ -63,7 +63,7 @@ class MessageSystemService extends BaseService
 
     public static function getSystemDetailById($id)
     {
-        $system = MessageNotice::where('id',$id)->first();
+        $system = MessageSystem::where('id',$id)->first();
         if(!$system){
             throw new BaseResponseException('找不到该消息');
         }
