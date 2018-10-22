@@ -79,6 +79,7 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
      */
     public function map($row): array
     {
+        $payments = Payment::getAllType();
         return [
             $row->merchant_id,
             $row->merchant_name,
@@ -92,7 +93,7 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
             $row->user_name,
             $row->notify_mobile,
             Order::getStatusText($row->status),
-            $row->pay_type_name,
+            $payments[$row->pay_type],
             $row->pay_price,
             $row->pay_time,
             Order::getPayTargetTypeText($row->pay_target_type),
