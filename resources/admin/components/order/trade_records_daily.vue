@@ -32,7 +32,7 @@
             <el-table-column prop="sum_date" label="交易日"/>
             <el-table-column prop="pays" label="实收金额/笔数"/>
             <el-table-column prop="refunds" label="退款金额/笔数"/>
-            <el-table-column prop="income" label="收益¥"/>
+            <el-table-column prop="income" label="收益"/>
             <el-table-column prop="updated_at" label="统计时间"/>
         </el-table>
 
