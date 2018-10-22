@@ -39,10 +39,8 @@ class V1_4_6 extends Command
      */
     public function handle()
     {
-        $sql = [
-            "ALTER TABLE `admin_auth_rules`
-	CHANGE COLUMN `url_all` `url_all` VARCHAR(1000) NOT NULL DEFAULT '' COMMENT '权限全部菜单地址, 使用逗号分隔' COLLATE 'utf8mb4_unicode_ci' AFTER `url`",
-        ];
+        $sql = "ALTER TABLE `admin_auth_rules`
+	CHANGE COLUMN `url_all` `url_all` VARCHAR(1000) NOT NULL DEFAULT '' COMMENT '权限全部菜单地址, 使用逗号分隔' COLLATE 'utf8mb4_unicode_ci' AFTER `url`";
 
         DB::statement($sql);
 
