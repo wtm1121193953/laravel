@@ -70,7 +70,7 @@
                 <el-input type="textarea" :rows="5" v-model="form.desc"/>
             </el-form-item>
             <el-form-item prop="settlement_cycle_type" required label="结算周期">
-                <el-select v-if="form.isPayToPlatform" v-model="form.settlement_cycle_type" placeholder="请选择">
+                <el-select v-if="isPayToPlatform" v-model="form.settlement_cycle_type" placeholder="请选择">
                     <el-option label="月结" :value="3"/>
                     <el-option label="T+1" :value="6"/>
                 </el-select>
@@ -211,7 +211,7 @@
         logo: '',
         desc_pic_list: [],
         desc: '',
-        settlement_cycle_type: 1,
+        settlement_cycle_type: '',
         settlement_rate: 0,
         // 银行卡信息
         bank_card_type: 1,
@@ -243,9 +243,6 @@
 
         //是否是试点商户的字段
         is_pilot: 0,
-
-        //判断是否切换到平台
-        isPayToPlatform: '',
 
         //////// 没有了的字段
         invoice_title: '',
@@ -439,6 +436,7 @@
                 operBizMembers: [],
                 bankList: [],
                 countryList: [],
+                isPayToPlatform: false,
             }
         },
         methods: {
@@ -468,7 +466,11 @@
                             this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                         }
                     }else{
-                        this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
+                        if(parseInt(data.settlement_cycle_type) != 1){
+                            this.form.settlement_cycle_type = '';
+                        }else{
+                            this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
+                        }
                     }
                     this.form.region = parseInt(data.region);
                     this.form.status = parseInt(data.status);
@@ -516,6 +518,11 @@
                 api.get('/country/list').then(data => {
                     this.countryList = data.list;
                 })
+            },
+            getIsPayToPlatform() {
+                api.get('/merchant/isPayToPlatform',{operId: this.data.oper_id}).then(data => {
+                    this.isPayToPlatform = data;
+                })
             }
         },
         created(){
@@ -523,6 +530,7 @@
             this.getOperBizMember();
             this.getBankList();
             this.getCountryList();
+            this.getIsPayToPlatform();
         },
         watch: {
             data(){
