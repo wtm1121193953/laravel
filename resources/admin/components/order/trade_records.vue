@@ -48,10 +48,10 @@
         </el-form>
         <el-table :data="list" stripe v-loading="isLoading">
             <el-table-column prop="trade_time" label="交易时间"/>
-            <el-table-column prop="trade_no" label="交易流水"/>
-            <el-table-column prop="order_no" label="订单编号"/>
-            <el-table-column prop="trade_amount" label="交易金额¥"/>
-            <el-table-column prop="type" label="交易类型">
+            <el-table-column prop="trade_no" label="交易流水" width="300px"/>
+            <el-table-column prop="order_no" label="订单编号" width="200px"/>
+            <el-table-column prop="trade_amount" label="交易金额¥" width="100px"/>
+            <el-table-column prop="type" label="交易类型" width="100px">
                 <template slot-scope="scope">
                     <span v-if="scope.row.type === 1" class="c-green">支付</span>
                     <span v-else-if="scope.row.type === 2" class="c-warning">退款</span>
