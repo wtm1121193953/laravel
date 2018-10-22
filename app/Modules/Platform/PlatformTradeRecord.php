@@ -41,4 +41,9 @@ class PlatformTradeRecord extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public static function getAllType()
+    {
+        return [self::TYPE_PAY=>'支付',self::TYPE_REFUND=>'退款'];
+    }
 }

@@ -7,6 +7,7 @@
  */
 
 namespace App\Exports;
+use App\Modules\Platform\PlatformTradeRecord;
 use Illuminate\Database\Query\Builder;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -63,12 +64,13 @@ class PlatformTradeRecordsExport implements FromQuery, WithHeadings, WithMapping
      */
     public function map($row): array
     {
+        $types = PlatformTradeRecord::getAllType();
         return [
             $row->trade_time,
             $row->trade_no,
             $row->order_no,
             $row->trade_amount,
-            $row->type,
+            $types[$row->type],
             $row->merchant->name,
             $row->oper->name,
             $row->user->mobile,
