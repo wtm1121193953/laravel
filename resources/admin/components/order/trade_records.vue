@@ -11,7 +11,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="所属商户">
-                <el-select v-model="query.merchantId" filterable clearable >
+                <el-select v-model="query.merchant_id" filterable clearable >
                     <el-option value="" label="全部"/>
                     <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
                 </el-select>
@@ -48,10 +48,15 @@
         </el-form>
         <el-table :data="list" stripe v-loading="isLoading">
             <el-table-column prop="trade_time" label="交易时间"/>
-            <el-table-column prop="trade_no" label="交易流水"/>
-            <el-table-column prop="order_no" label="订单编号"/>
-            <el-table-column prop="trade_amount" label="交易金额¥"/>
-            <el-table-column prop="type" label="交易类型"/>
+            <el-table-column prop="trade_no" label="交易流水" width="300px"/>
+            <el-table-column prop="order_no" label="订单编号" width="200px"/>
+            <el-table-column prop="trade_amount" label="交易金额¥" width="100px"/>
+            <el-table-column prop="type" label="交易类型" width="100px">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.type === 1" class="c-green">支付</span>
+                    <span v-else-if="scope.row.type === 2" class="c-warning">退款</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="merchant.name" label="交易商户"/>
             <el-table-column prop="oper.name" label="所属运营中心"/>
             <el-table-column prop="user.mobile" label="用户"/>

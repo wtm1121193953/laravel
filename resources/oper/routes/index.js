@@ -16,6 +16,7 @@ import InviteChannelList from '../components/invite-channel/list'
 import InviteRecords from '../components/invite-record/list'
 
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
+import message from './message'
 
 //系统设置
 import SettingMappingUser from '../components/setting/mapping-user'
@@ -37,7 +38,7 @@ const routes = [
     ...operBizMembers,
     ...wallet,
     ...bizer,
-
+    ...message,
     // 订单模块
     {
         path: '/',

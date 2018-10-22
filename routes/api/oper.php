@@ -49,3 +49,4 @@ Route::prefix('oper')
         Route::group([], base_path('routes/api/oper/mapping_user.php'));
         Route::group([], base_path('routes/api/oper/wallet.php'));
     });
+Route::get('/oper/message/systems', 'Admin\MessageSystemController@getSystems')->middleware('oper');

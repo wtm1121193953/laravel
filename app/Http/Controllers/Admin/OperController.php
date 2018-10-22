@@ -134,7 +134,7 @@ class OperController extends Controller
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
-            'bizerDivide' => 'required|integer|max:100|min:0'
+            'bizerDivide' => 'required|max:100|min:0'
         ]);
         $bizerDivide = request('bizerDivide');
         $operId = request('id');

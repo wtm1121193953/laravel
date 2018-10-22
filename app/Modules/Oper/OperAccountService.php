@@ -114,6 +114,11 @@ class OperAccountService extends BaseService
 
             ],
             [ 'id' => 10, 'name' => '订单管理', 'level' => 1, 'url' => '/oper/orders' ],
+            ['id' => 61, 'name' => '消息管理', 'level' => 1, 'url' => '', 'sub' =>
+                [
+                    ['id' => 60, 'name' => '系统消息', 'level' => 2, 'url' => '/message/systems', 'pid' => 61],
+                ]
+            ],
             [ 'id' => 4, 'name' => '人员管理', 'level' => 1, 'url' => 'user', 'sub' =>
                 [
 //                    [ 'id' => 5, 'name' => '我的会员', 'level' => 2, 'url' => '/oper/invite/statistics/daily', 'pid' => 4,],
