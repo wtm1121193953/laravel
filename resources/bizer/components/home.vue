@@ -249,6 +249,7 @@
                     };
                     api.post('/changeName', param).then(data => {
                         this.user.name = data.name;
+                        store.commit('setUser', data);
                         this.$message.success('修改昵称成功');
                     })
                 }).catch(() => {});

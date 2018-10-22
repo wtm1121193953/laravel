@@ -4,8 +4,8 @@
             <el-form-item prop="bizerMobile" label="业务员手机号">
                 <el-input v-model="form.bizerMobile" clearable placeholder="请输入手机号码"/>
             </el-form-item>
-            <el-form-item prop="bizerName" label="业务员姓名">
-                <el-input v-model="form.bizerName" clearable placeholder="业务员姓名"/>
+            <el-form-item prop="bizerName" label="业务员昵称">
+                <el-input v-model="form.bizerName" clearable placeholder="业务员昵称"/>
             </el-form-item>
             <el-form-item prop="userId" label="业务员ID">
                 <el-input v-model="form.bizerId" clearable placeholder="业务员ID" class="w-100"/>
