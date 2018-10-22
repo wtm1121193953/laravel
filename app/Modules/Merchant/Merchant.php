@@ -127,6 +127,7 @@ class Merchant extends BaseModel
     const SETTLE_MONTHLY = 3; // 月结
     const SETTLE_HALF_YEARLY = 4; // 半年结
     const SETTLE_YEARLY = 5; // 年结
+    const SETTLE_DAY_ADD_ONE = 6; // T+1
 
     /**
      * 试点商户
