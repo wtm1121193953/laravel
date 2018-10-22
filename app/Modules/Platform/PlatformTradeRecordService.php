@@ -55,6 +55,11 @@ class PlatformTradeRecordService extends BaseService
         $data = $query->paginate();
 
 
+        $data->each(function ($item) {
+            if ($item->type == 2) {
+                $item->trade_amount = '-' . $item->trade_amount;
+            }
+        });
 
         return $data;
     }
@@ -66,8 +71,8 @@ class PlatformTradeRecordService extends BaseService
         }
 
         $query = PlatformTradeRecord::select(DB::raw('pay_id,type,count(*) c,sum(trade_amount) s'))
-            ->where('trade_time','>=','2018-10-19 00:00:00')
-            ->where('trade_time','<=','2018-10-19 23:59:59')
+            ->where('trade_time','>=',$date . ' 00:00:00')
+            ->where('trade_time','<=',$date . ' 23:59:59')
             ->groupBy('pay_id','type')
         ;
 

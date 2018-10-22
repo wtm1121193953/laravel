@@ -37,8 +37,8 @@
         </el-form>
 
         <el-table :data="list" stripe>
-            <el-table-column prop="created_at" label="添加时间"/>
-            <el-table-column prop="title" label="标题"/>
+            <el-table-column width="250" prop="created_at" label="添加时间"/>
+            <el-table-column width="250" prop="title" label="标题"/>
             <el-table-column prop="content" label="内容">
                 <template slot-scope="scope">
                     {{scope.row.content.substr(0, 10)}}

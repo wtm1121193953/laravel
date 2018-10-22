@@ -60,4 +60,13 @@ class MessageSystemService extends BaseService
             ->paginate();
         return $data;
     }
+
+    public static function getSystemDetailById($id)
+    {
+        $system = MessageSystem::where('id',$id)->first();
+        if(!$system){
+            throw new BaseResponseException('找不到该消息');
+        }
+        return $system;
+    }
 }

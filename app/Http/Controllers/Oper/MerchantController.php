@@ -106,6 +106,7 @@ class MerchantController extends Controller
         $data = [
             'audit_status' => request('audit_status'),
             'status' => request('status'),
+            'isPilot' => request('isPilot'),
             'operId' => request()->get('current_user')->oper_id,
         ];
         $list = MerchantService::getAllNames($data);

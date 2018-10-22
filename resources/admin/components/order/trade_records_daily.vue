@@ -1,7 +1,7 @@
 <template>
     <page title="交易汇总" v-loading="isLoading">
         <el-form inline :model="query" size="small">
-            <el-form-item label="交易时间">
+            <el-form-item label="交易日">
                 <el-date-picker
                         class="w-150"
                         v-model="query.startTime"
@@ -32,7 +32,7 @@
             <el-table-column prop="sum_date" label="交易日"/>
             <el-table-column prop="pays" label="实收金额/笔数"/>
             <el-table-column prop="refunds" label="退款金额/笔数"/>
-            <el-table-column prop="income" label="收益¥"/>
+            <el-table-column prop="income" label="收益"/>
             <el-table-column prop="updated_at" label="统计时间"/>
         </el-table>
 
@@ -49,6 +49,9 @@
 <script>
     import api from '../../../assets/js/api'
 
+    const time = new Date()
+    const day = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate()
+
     export default {
         name: "trade-records",
         data(){
@@ -59,8 +62,8 @@
                     order_no: '',
                     oper_id: '',
                     merchant_id: '',
-                    startTime: '',
-                    endTime: '',
+                    startTime: day,
+                    endTime: day,
                     mobile: '',
                 },
                 list: [],

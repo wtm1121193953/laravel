@@ -49,7 +49,7 @@ class PlatformTradeRecordsDailyExport implements FromQuery, WithHeadings, WithMa
             '交易日',
             '实收金额/笔数',
             '退款金额/笔数',
-            '收益¥',
+            '收益',
             '统计时间',
         ];
     }

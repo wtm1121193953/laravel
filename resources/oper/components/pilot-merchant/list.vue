@@ -196,7 +196,7 @@
                 })
             },
             getMerchants(){
-                api.get('/merchant/allNames').then(data => {
+                api.get('/merchant/allNames', {isPilot: 1}).then(data => {
                     this.merchants = data.list;
                 })
             },

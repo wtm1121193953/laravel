@@ -6,7 +6,7 @@ use App\Modules\Oper\OperBizer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class V1_4_6 extends Command
+class V1_4_7 extends Command
 {
     /**
      * The name and signature of the console command.
