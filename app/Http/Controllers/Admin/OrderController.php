@@ -25,6 +25,7 @@ class OrderController extends Controller
     {
         $orderNo = request('orderNo');
         $mobile = request('mobile');
+        $oper_id = request('oper_id');
         $merchantId = request('merchantId');
         $timeType = request('timeType', 'payTime');
         $startTime = request('startTime');
@@ -41,6 +42,7 @@ class OrderController extends Controller
         }
 
         $data = OrderService::getList([
+            'operId' => $oper_id,
             'merchantId' => $merchantId,
             'orderNo' => $orderNo,
             'notifyMobile' => $mobile,
@@ -78,12 +80,13 @@ class OrderController extends Controller
     {
         $orderNo = request('orderNo');
         $mobile = request('mobile');
+        $oper_id = request('oper_id');
         $merchantId = request('merchantId');
         $timeType = request('timeType', 'payTime');
         $startTime = request('startTime');
         $endTime = request('endTime');
-        $type = request('type');
         $status = request('status');
+        $type = request('type');
 
         if($timeType == 'payTime'){
             $startPayTime = $startTime;
@@ -94,7 +97,7 @@ class OrderController extends Controller
         }
 
         $query = OrderService::getList([
-            'operId' => request()->get('current_user')->oper_id,
+            'operId' => $oper_id,
             'merchantId' => $merchantId,
             'orderNo' => $orderNo,
             'notifyMobile' => $mobile,
