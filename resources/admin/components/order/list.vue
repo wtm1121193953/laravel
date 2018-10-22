@@ -33,8 +33,6 @@
             <el-form-item label="订单状态">
                 <el-select v-model="query.status" class="w-100" clearable>
                     <el-option label="全部" value=""/>
-                    <el-option label="未支付" :value="1"/>
-                    <el-option label="已关闭[超时自动关闭]" :value="3"/>
                     <el-option label="已支付" :value="4"/>
                     <el-option label="已退款" :value="6"/>
                     <el-option label="已完成" :value="7"/>
@@ -108,8 +106,9 @@
                 </template>
             </el-table-column>
             <el-table-column prop="id" label="ID"/>
+            <el-table-column prop="oper.name" label="所属运营中心"/>
             <el-table-column prop="merchant_name" label="所属商户"/>
-            <el-table-column prop="created_at" label="创建时间"/>
+            <el-table-column prop="pay_time" label="支付时间"/>
             <el-table-column prop="order_no" label="订单号"/>
             <el-table-column prop="type" label="订单类型">
                 <template slot-scope="scope">
@@ -148,6 +147,7 @@
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
+            <el-table-column prop="pay_type_name" label="支付方式"/>
         </el-table>
 
         <el-pagination

@@ -9,6 +9,7 @@
 namespace App\Exports;
 
 use App\Modules\Order\Order;
+use App\Modules\Payment\Payment;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -91,7 +92,7 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
             $row->user_name,
             $row->notify_mobile,
             Order::getStatusText($row->status),
-            Order::getPayTypeText($row->pay_type),
+            $row->pay_type_name,
             $row->pay_price,
             $row->pay_time,
             Order::getPayTargetTypeText($row->pay_target_type),

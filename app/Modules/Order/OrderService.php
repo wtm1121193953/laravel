@@ -21,6 +21,7 @@ use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Payment\Payment;
 use App\Modules\Platform\PlatformTradeRecord;
 use App\Modules\Sms\SmsService;
 use App\Modules\User\User;
@@ -128,6 +129,9 @@ class OrderService extends BaseService
             } else {
                 $query->where('status', $status);
             }
+        } elseif (!empty($params['from_saas'])) {
+            //saas只看 已支付、已完成、已退款的
+            $query->whereIn('status', [Order::STATUS_PAID,Order::STATUS_REFUNDING,Order::STATUS_REFUNDED,Order::STATUS_FINISHED]);
         }
         if (!empty($params['platform_only'])) {
             $query->where('pay_target_type',2);
@@ -143,6 +147,7 @@ class OrderService extends BaseService
             });
         }
 
+        $query->with('oper:id,name');
         $query->orderBy('id', 'desc');
 
         if ($getWithQuery) {
@@ -153,6 +158,7 @@ class OrderService extends BaseService
 
         $merchantIds = $data->pluck('merchant_id');
         $merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
+        $payments = Payment::getAllType();
         foreach ($data as $key => $item) {
             $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
             $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
@@ -163,6 +169,7 @@ class OrderService extends BaseService
             }
             $item->items = OrderItem::where('order_id', $item->id)->get();
             $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
+            $item->pay_type_name = $payments[$item->pay_type]??'';
         }
 
         return $data;

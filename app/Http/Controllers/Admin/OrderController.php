@@ -14,6 +14,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperService;
 use App\Modules\Order\OrderService;
+use App\Modules\Payment\Payment;
 use App\Modules\Platform\PlatformTradeRecord;
 use App\Modules\Platform\PlatformTradeRecordService;
 use App\Result;
@@ -50,6 +51,7 @@ class OrderController extends Controller
             'status' => $status,
             'type' => $type,
             'platform_only' => request('platform_only')=='true',
+            'from_saas' => 1
         ]);
 
         return Result::success([
@@ -103,6 +105,7 @@ class OrderController extends Controller
             'status' => $status,
             'type' => $type,
             'platform_only' => request('platform_only')=='true',
+            'from_saas' => 1
         ], true);
 
         $list = $query->orderByDesc('id')
@@ -110,8 +113,10 @@ class OrderController extends Controller
             ->get();
         $merchantIds = $list->pluck('merchant_id');
         $merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
-        $list->each(function($item) use ($merchants){
+        $payments = Payment::getAllType();
+        $list->each(function($item) use ($merchants,$payments){
             $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
+            $item->pay_type_name = $payments[$item->pay_type]??'';
         });
 
         return (new OperOrderExport($list))->download('订单列表.xlsx');

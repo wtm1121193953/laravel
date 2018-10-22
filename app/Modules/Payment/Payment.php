@@ -22,9 +22,10 @@ class Payment extends Model
     //
     const TYPE_WECHAT = 1;
     const TYPE_ALIPAY = 2;
+    const TYPE_REAPAL = 3;
 
     public static function getAllType()
     {
-        return [self::TYPE_WECHAT=>'微信支付',self::TYPE_ALIPAY=>'支付宝支付'];
+        return [self::TYPE_WECHAT=>'微信支付',self::TYPE_ALIPAY=>'支付宝支付',self::TYPE_REAPAL=>'融宝支付'];
     }
 }
