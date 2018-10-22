@@ -57,7 +57,6 @@ class OperMerchantExport implements FromCollection, WithMapping, WithHeadings
             '签约人',
             '商户状态',
             '审核状态',
-            '结算周期',
         ];
     }
 
@@ -79,7 +78,6 @@ class OperMerchantExport implements FromCollection, WithMapping, WithHeadings
             ($data->bizer_id!=0) ? $this->getOperBizersName($data->bizer_id) :$this->getOperBizMemberName($data->operId,$data->oper_biz_member_code),
             ['', '正常', '禁用'][$data->status],
             ['待审核', '审核通过', '审核不通过', '重新提交审核'][$data->audit_status],
-            ['', '周结', '半月结', '月结', '半年结', '年结', 'T+1'][$data->settlement_cycle_type],
         ];
     }
 
