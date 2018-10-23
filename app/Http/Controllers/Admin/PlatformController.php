@@ -39,6 +39,13 @@ class PlatformController extends Controller
             'endTime' => request('endTime'),
         ];
 
+        if ($params['startTime'] == 'null') {
+            $params['startTime'] = '';
+        }
+        if ($params['endTime'] == 'null') {
+            $params['endTime'] = '';
+        }
+
         $data = PlatformTradeRecordsDailyService::getList($params,true);
 
         return (new PlatformTradeRecordsDailyExport($data, $params))->download('交易汇总表.xlsx');
