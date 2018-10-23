@@ -42,9 +42,7 @@ class MessageController extends Controller
         ]);
         $user = $request->get('current_user');
         $notice = MessageNoticeService::getNoticeDetailByUserIdNId($user->id,$request->get('id'));
-        return Result::success([
-           'data'   =>  $notice
-        ]);
+        return Result::success($notice);
     }
 
 }
