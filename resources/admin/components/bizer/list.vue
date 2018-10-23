@@ -56,7 +56,7 @@
         </el-form>
         <el-table :data="list" stripe>
             <el-table-column prop="mobile" label="业务员手机号码"/>
-            <<el-table-column prop="id" label="ID"/>
+            <el-table-column prop="id" label="ID"/>
             <el-table-column prop="created_at" label="注册时间"/>
             <el-table-column prop="name" label="昵称"/>
             <el-table-column prop="status" label="状态">

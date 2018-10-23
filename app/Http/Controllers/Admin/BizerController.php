@@ -132,7 +132,7 @@ class BizerController extends Controller
         header('Content-Disposition: attachment;filename="' . $fileName . '.csv"');
 
         $fp = fopen('php://output', 'a');
-        $title = ['提交认证时间', '手机号码', '业务员ID', '注册时间', '姓名', '身份证号码', '用户状态', '身份认证状态'];
+        $title = ['提交认证时间', '手机号码', '业务员ID', '注册时间', '昵称', '身份证号码', '用户状态', '身份认证状态'];
         foreach ($title as $key => $value) {
             $title[$key] = iconv('UTF-8', 'GBK', $value);
         }
