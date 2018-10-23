@@ -2,7 +2,7 @@
     <page title="交易记录" v-loading="isLoading">
         <el-form inline :model="query" size="small">
             <el-form-item label="订单号">
-                <el-input type="text" clearable v-model="query.order_no"/>
+                <el-input type="text" clearable v-model="query.order_no" placeholder="请输入订单号"/>
             </el-form-item>
             <el-form-item label="所属运营中心">
                 <el-select v-model="query.oper_id" filterable clearable >
@@ -35,7 +35,7 @@
                 />
             </el-form-item>
             <el-form-item label="用户">
-                <el-input type="text" clearable v-model="query.mobile"/>
+                <el-input type="text" clearable v-model="query.mobile" placeholder="请输入用户手机"/>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search">
