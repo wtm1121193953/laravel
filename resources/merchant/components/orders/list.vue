@@ -95,6 +95,14 @@
                     <span v-else class="c-danger">未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
+            <el-table-column prop="pay_type" label="支付方式">
+                <template slot-scope="scope">
+                    <span v-if="parseInt(scope.row.pay_type) === 1">微信</span>
+                    <span v-else-if="parseInt(scope.row.pay_type) === 2">支付宝</span>
+                    <span v-else-if="parseInt(scope.row.pay_type) === 3">融宝</span>
+                    <span v-else>未知 ({{scope.row.pay_type}})</span>
+                </template>
+            </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="showDetail(scope.row)">查看详情</el-button>
@@ -150,6 +158,7 @@
                     type: '',
                     status: '',
                     goodsName: '',
+                    pay_type: '',
                 },
                 total: 0,
                 order: {},
