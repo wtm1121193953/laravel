@@ -89,7 +89,7 @@
 
         <el-dialog title="添加运营中心" :visible.sync="dialogFormVisible" width="30%">
             <el-form label-width="120px" ref="addRegionData" :model="addRegionData" :rules="addRegionDataRules">
-                <el-form-item label="姓名">
+                <el-form-item label="昵称">
                     {{ user.name }}
                 </el-form-item>
                 <el-form-item label="电话">
