@@ -62,7 +62,7 @@ class PaperMachine{
         foreach ($needColumns as $k => $v) {
             if(is_object($userInfo)){
                 if($userInfo->$v){
-                    $string .= $userInfo[$v];
+                    $string .= $userInfo->$v;
                 }
             }else{
                 if($userInfo[$v]){
