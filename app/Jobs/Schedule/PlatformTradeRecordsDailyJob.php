@@ -8,6 +8,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 
 class PlatformTradeRecordsDailyJob implements ShouldQueue
 {
@@ -30,7 +31,7 @@ class PlatformTradeRecordsDailyJob implements ShouldQueue
      */
     public function handle()
     {
-        Log::info('平台交易汇总统计 :Start');
+        Log::info('平台交易汇总统计 :Start' . $this->date);
         PlatformTradeRecordService::daily($this->date);
         Log::info('平台交易汇总统计 :end');
     }

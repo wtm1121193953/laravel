@@ -68,7 +68,10 @@ class PlatformTradeRecordService extends BaseService
     {
         if (empty($date)) {
             $date = date('Y-m-d',strtotime('-1 day'));
+        } else {
+            $date = date('Y-m-d',strtotime($date));
         }
+
 
         $query = PlatformTradeRecord::select(DB::raw('pay_id,type,count(*) c,sum(trade_amount) s'))
             ->where('trade_time','>=',$date . ' 00:00:00')
