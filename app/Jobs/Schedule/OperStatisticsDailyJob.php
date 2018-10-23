@@ -44,7 +44,7 @@ class OperStatisticsDailyJob implements ShouldQueue
      */
     public function handle()
     {
-        Log::info('生成运营中心营销统计数据 :Start' . $this->endTime);
+        Log::info('生成运营中心营销统计数据 :Start');
 
         OperStatisticsService::statistics($this->endTime);
 
