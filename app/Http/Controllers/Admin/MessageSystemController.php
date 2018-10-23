@@ -33,6 +33,9 @@ class MessageSystemController extends Controller
         }else if(strpos($uri, 'merchant')){
             // 商户端
             $params['object_type'] = MessageSystem::OB_TYPE_MERCHANT;
+        }else if(strpos($uri, 'oper')){
+            // 商户端
+            $params['object_type'] = MessageSystem::OB_TYPE_OPER;
         }
 
         $data = MessageSystemService::getList($params);

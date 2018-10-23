@@ -11,6 +11,8 @@ Route::get('/merchant/getMerchantById', 'MerchantController@detail');
 
 Route::get('/merchant/audit/record/newest', 'MerchantController@getNewestAuditRecord');
 
+Route::get('/merchant/isPayToPlatform', 'MerchantController@isPayToPlatform');
+
 Route::post('/merchant/add', 'MerchantController@add');
 Route::post('/merchant/edit', 'MerchantController@edit');
 Route::post('/merchant/changeStatus', 'MerchantController@changeStatus');

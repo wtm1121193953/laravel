@@ -25,6 +25,7 @@ use App\Result;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -65,13 +66,12 @@ class LoginController extends Controller
             $wxUserInfo = json_decode(request('userInfo'));
             // 验证通过, 查询当前用户是否存在, 不存在则创建用户
             $user = User::where('mobile', $mobile)->first();
+            $isFirstSign = null;
             if(!$user){
                 $user = new User();
                 $user->mobile = $mobile;
                 //判断是否是新用户注册，1：是，null：不是
                 $isFirstSign = 1;
-            }else{
-                $isFirstSign = null;
             }
             if ($wxUserInfo) {
                 $user->wx_nick_name = $wxUserInfo->nickName;
@@ -126,6 +126,16 @@ class LoginController extends Controller
 
         $user->level_text = User::getLevelText($user->level);
         $user->sign_status = $isFirstSign;
+        // 添加传送消息到出纸机
+        if($isFirstSign==1){
+            $paperMachine = new \App\Support\PaperMachine();
+            $paperMachine->createUserId($wxUserInfo);
+            $data = $paperMachine->send('http://testpay.yiqiniubi.com/api/merb/theGreatLifePlaceOrder');
+            Log::info('发送出纸信号回调：',[
+                'data'      =>  $data,
+                'wxInfo'    =>  request('userInfo')
+            ]);
+        }
         return Result::success([
             'userInfo' => $user
         ]);

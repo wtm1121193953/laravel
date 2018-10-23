@@ -30,3 +30,5 @@ Route::prefix('bizer')
         Route::group([], base_path('routes/api/bizer/oper.php'));
         Route::group([], base_path('routes/api/bizer/wallet.php'));
     });
+
+Route::get('/bizer/message/systems', 'Admin\MessageSystemController@getSystems')->middleware('bizer');
