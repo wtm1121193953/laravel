@@ -1,11 +1,7 @@
 <template>
     <page title="">
-        <el-row :span="24" >
-            <h1 style="font-size:20px;text-align:center;">{{detail.title}}</h1>
-        </el-row>
-        <el-row :span="24">
-            <p>{{detail.content}}</p>
-        </el-row>
+        <h1 style="font-size:20px;text-align:center;">{{detail.title}}</h1>
+        <p>{{detail.content}}</p>
         <p style="text-align:right">{{detail.createdAt}}</p>
     </page>
 </template>
