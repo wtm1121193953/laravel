@@ -1,12 +1,12 @@
 <template>
     <page title="">
-        <p style="text-align:right">{{detail.createdAt}}</p>
         <el-row :span="24" >
             <h1 style="font-size:20px;text-align:center;">{{detail.title}}</h1>
         </el-row>
         <el-row :span="24">
             <p>{{detail.content}}</p>
         </el-row>
+        <p style="text-align:right">{{detail.createdAt}}</p>
     </page>
 </template>
 
@@ -44,5 +44,9 @@
 </script>
 
 <style scoped>
+    p{
+        white-space: pre;
+        line-height: 1.5;
+    }
 
 </style>

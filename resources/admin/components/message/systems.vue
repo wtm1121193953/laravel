@@ -82,7 +82,7 @@
             </span>
         </el-dialog>
 
-        <el-dialog title="详情" :visible.sync="isShowSystemDetail"  width="60%">
+        <el-dialog title="" :visible.sync="isShowSystemDetail"  width="60%">
             <detail :scope="detailData"/>
         </el-dialog>
         <el-pagination
