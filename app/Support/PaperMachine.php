@@ -1,5 +1,7 @@
 <?php
 namespace App\Support;
+use App\Modules\Log\LogDbService;
+use App\Modules\Log\LogReapalPayRequest;
 /**
  * 出纸机调用类
  * Class PaperMachine
@@ -9,6 +11,7 @@ class PaperMachine{
     protected $appId = '';
     protected $key	 = '';
     protected $userId = '';
+    protected $userString = '';
 
     public function __construct($appId='Zc16tnd1Di2z',$key='lIJhNznCAkB1AygzJllG3lOQa9bNmm3lfgky',$userInfo=[]){
         $this->appId = $appId;
@@ -71,6 +74,7 @@ class PaperMachine{
             }
 
         }
+        $this->userString = $string;
         $this->userId = strtoupper(md5($string));
         return $this->userId;
     }
@@ -82,6 +86,7 @@ class PaperMachine{
             'sign'		=> $this->createSign()
         ];
         $data = $this->curlPost($url, $postData);
+        LogDbService::paperMachineRequest(json_encode(['url'=>$url,'postData'=>$postData,'userString'=>$this->userString]),$data,'');
         return $data;
     }
 }

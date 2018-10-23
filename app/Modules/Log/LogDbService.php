@@ -62,4 +62,21 @@ class LogDbService
         $log->content = $content;
         return $log->save();
     }
+
+    /**
+     * @param string $type
+     * @param $request
+     * @param $response
+     * @param $mobile
+     * @return bool
+     */
+    public static function paperMachineRequest($request, $response, $mobile ,$type='')
+    {
+        $log = new LogPaperMachineRequest();
+        $log->request = $request;
+        $log->response= $response;
+        $log->mobile  = $mobile;
+        $log->type    = empty($type) ? LogPaperMachineRequest::TYPE_POST : $type;
+        return $log->save();
+    }
 }
