@@ -60,9 +60,16 @@ class PaperMachine{
         $needColumns = ['nickName','gender','country','province','city'];
         $string = '';
         foreach ($needColumns as $k => $v) {
-            if($userInfo[$v]){
-                $string .= $userInfo[$v];
+            if(is_object($userInfo)){
+                if($userInfo->$v){
+                    $string .= $userInfo[$v];
+                }
+            }else{
+                if($userInfo[$v]){
+                    $string .= $userInfo[$v];
+                }
             }
+
         }
         $this->userId = strtoupper(md5($string));
         return $this->userId;
