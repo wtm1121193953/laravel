@@ -36,7 +36,7 @@
             <el-table-column width="250" prop="title" label="标题"/>
             <el-table-column prop="content" label="内容">
                 <template slot-scope="scope">
-                    {{scope.row.content.substr(0, 10)}}
+                    {{scope.row.content.substr(0, 55)}}
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="250px">
