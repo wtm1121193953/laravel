@@ -23,6 +23,7 @@ import SettingMappingUser from '../components/setting/mapping-user.vue'
 //setting 商户系统配置
 import Setting from '../components/setting/list.vue'
 import TpsBind from '../components/setting/tps-bind.vue'
+import message from './message'
 
 /**
  *
@@ -36,7 +37,7 @@ const routes = [
     ...dishesCategory,
     ...dishesGoods,
     ...wallet,
-
+    ...message,
     // 我的用户
     {
         path: '/',
