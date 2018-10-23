@@ -71,7 +71,7 @@
             </el-form-item>
             <el-form-item prop="settlement_cycle_type" required label="结算周期">
                 <el-select v-if="isPayToPlatform" v-model="form.settlement_cycle_type" placeholder="请选择">
-                    <el-option label="月结" :value="3"/>
+                    <el-option :disabled="form.settlement_cycle_type = 6" label="月结" :value="3"/>
                     <el-option label="T+1" :value="6"/>
                 </el-select>
                 <el-select v-else v-model="form.settlement_cycle_type" placeholder="请选择">
@@ -460,7 +460,7 @@
                         this.form.bank_area = [parseInt(data.bank_province_id), parseInt(data.bank_city_id), parseInt(data.bank_area_id)];
                     }
                     if(data.isPayToPlatform){
-                        if(parseInt(data.settlement_cycle_type) == 1){
+                        if(parseInt(data.settlement_cycle_type) == 1 || parseInt(data.settlement_cycle_type) == 7){
                             this.form.settlement_cycle_type = '';
                         }else{
                             this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
@@ -520,7 +520,7 @@
                 })
             },
             getIsPayToPlatform() {
-                api.get('/merchant/isPayToPlatform',{operId: this.data.oper_id}).then(data => {
+                api.get('/merchant/isPayToPlatform',{operId: this.data.audit_oper_id}).then(data => {
                     this.isPayToPlatform = data;
                 })
             }

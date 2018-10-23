@@ -68,6 +68,7 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
             'finish_time' => '订单核销时间',
             'created_at' => '创建时间',
             'origin_app_type' => '下单客户端类型',
+            'remark' => '备注',
         ];
     }
 
@@ -102,6 +103,7 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
             $row->finish_time,
             $row->created_at,
             Order::getOriginAppTypeText($row->origin_app_type),
+            $row->remark,
         ];
     }
 

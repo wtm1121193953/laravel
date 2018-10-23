@@ -42,3 +42,4 @@ Route::prefix('merchant')
         Route::group([], base_path('routes/api/merchant/dishes.php'));
         Route::group([], base_path('routes/api/merchant/wallet.php'));
     });
+Route::get('/merchant/message/systems', 'Admin\MessageSystemController@getSystems')->middleware('merchant');

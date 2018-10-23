@@ -69,15 +69,6 @@
             <el-form-item prop="desc" label="商家介绍">
                 <el-input type="textarea" :rows="5" v-model="form.desc"/>
             </el-form-item>
-            <el-form-item prop="settlement_cycle_type" required label="结算周期">
-                <el-select v-if="isPayToPlatform" v-model="form.settlement_cycle_type" placeholder="请选择">
-                    <el-option label="月结" :value="3"/>
-                    <el-option label="T+1" :value="6"/>
-                </el-select>
-                <el-select v-else v-model="form.settlement_cycle_type" placeholder="请选择">
-                    <el-option label="周结" :value="1"/>
-                </el-select>
-            </el-form-item>
             <el-form-item prop="settlement_rate" required label="分利比例">
                 <el-input-number v-model="form.settlement_rate" :min="0" :max="100"/>
                 <div>返利百分比,如20%请填写20</div>
@@ -436,7 +427,6 @@
                 operBizMembers: [],
                 bankList: [],
                 countryList: [],
-                isPayToPlatform: false,
             }
         },
         methods: {
@@ -458,19 +448,6 @@
                         this.form.bank_area = [];
                     }else {
                         this.form.bank_area = [parseInt(data.bank_province_id), parseInt(data.bank_city_id), parseInt(data.bank_area_id)];
-                    }
-                    if(data.isPayToPlatform){
-                        if(parseInt(data.settlement_cycle_type) == 1){
-                            this.form.settlement_cycle_type = '';
-                        }else{
-                            this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
-                        }
-                    }else{
-                        if(parseInt(data.settlement_cycle_type) != 1){
-                            this.form.settlement_cycle_type = '';
-                        }else{
-                            this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
-                        }
                     }
                     this.form.region = parseInt(data.region);
                     this.form.status = parseInt(data.status);
@@ -519,18 +496,12 @@
                     this.countryList = data.list;
                 })
             },
-            getIsPayToPlatform() {
-                api.get('/merchant/isPayToPlatform').then(data => {
-                    this.isPayToPlatform = data;
-                })
-            }
         },
         created(){
             this.initForm();
             this.getOperBizMember();
             this.getBankList();
             this.getCountryList();
-            this.getIsPayToPlatform();
         },
         watch: {
             data(){

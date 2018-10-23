@@ -34,9 +34,9 @@
         <el-table :data="list" stripe>
             <el-table-column width="250" prop="created_at" label="添加时间"/>
             <el-table-column width="250" prop="title" label="标题"/>
-            <el-table-column prop="content" label="内容">
+            <el-table-column :show-overflow-tooltip="true" prop="content" label="内容">
                 <template slot-scope="scope">
-                    {{scope.row.content.substr(0, 10)}}
+                    {{scope.row.content}}
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="250px">
@@ -48,7 +48,7 @@
 
 
 
-        <el-dialog title="详情" :visible.sync="isShowSystemDetail"  width="60%">
+        <el-dialog title="" :visible.sync="isShowSystemDetail"  width="60%">
             <detail :scope="detailData"/>
         </el-dialog>
         <el-pagination

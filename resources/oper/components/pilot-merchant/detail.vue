@@ -51,9 +51,6 @@
                         <span v-else>无</span>
                     </template>
                 </el-form-item>
-                <el-form-item prop="service_phone" label="客服电话">
-                    {{data.service_phone}}
-                </el-form-item>
                 <el-form-item prop="logo" label="商家logo">
                     <div v-viewer>
                         <img :src="data.logo" alt="商家logo" style="max-width: 200px;" height="100px" />

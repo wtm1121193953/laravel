@@ -19,7 +19,7 @@
                         <span v-else-if="data.settlement_cycle_type === 4" class="c-green">半年结</span>
                         <span v-else-if="data.settlement_cycle_type === 5" class="c-green">年结</span>
                         <span v-else-if="data.settlement_cycle_type === 6" class="c-green">T+1</span>
-                        <span v-else>未知</span>
+                        <span v-else class="c-green">未知</span>
                     </el-form-item>
                     <el-form-item prop="id" label="商户ID">{{data.id}}</el-form-item>
                     <el-form-item v-if="data.operName" prop="operName" label="运营中心">{{data.operName}}</el-form-item>
@@ -119,7 +119,7 @@
                             {{data.desc}}
                         </el-form-item>
                         <el-form-item label="结算周期">
-                            {{ {1: '周结', 2: '半月结', 3: '月结', 4: '半年结', 5: '年结', 6: 'T+1',}[data.settlement_cycle_type] }}
+                            {{ {1: '周结', 2: '半月结', 3: '月结', 4: '半年结', 5: '年结', 6: 'T+1', 7: '未知',}[data.settlement_cycle_type] }}
                         </el-form-item>
                         <el-form-item label="分利比例">
                             {{ data.settlement_rate }} %

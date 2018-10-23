@@ -29,19 +29,14 @@
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
-
-            <el-form-item>
-                <el-button type="primary" @click="add">+添加消息</el-button>
-            </el-form-item>
-
         </el-form>
 
         <el-table :data="list" stripe>
             <el-table-column width="250" prop="created_at" label="添加时间"/>
             <el-table-column width="250" prop="title" label="标题"/>
-            <el-table-column prop="content" label="内容">
+            <el-table-column :show-overflow-tooltip="true" prop="content" label="内容">
                 <template slot-scope="scope">
-                    {{scope.row.content.substr(0, 10)}}
+                    {{scope.row.content}}
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="250px">
@@ -52,35 +47,6 @@
         </el-table>
 
 
-        <el-dialog
-                title="添加消息"
-                :visible.sync="addDialog"
-                width="30%"
-                center
-                :close-on-click-modal="false"
-                :close-on-press-escape="false"
-        >
-            <el-form :model="addForm" ref="addForm" :rules="addFormRules" size="small" label-width="80px">
-                <el-form-item prop="title" label="标题">
-                    <el-input type="text" :rows="2" placeholder="请输入20个字以内的标题" v-model="addForm.title"/>
-                </el-form-item>
-                <el-form-item prop="object_type" label="角色">
-                    <el-checkbox-group v-model="addForm.object_type" >
-                        <!--<el-checkbox :label="1" :key="1">用户端</el-checkbox>-->
-                        <el-checkbox :label="2" :key="2">商户端</el-checkbox>
-                        <el-checkbox :label="3" :key="3">业务员</el-checkbox>
-                        <el-checkbox :label="4" :key="4">运营中心</el-checkbox>
-                    </el-checkbox-group>
-                </el-form-item>
-                <el-form-item prop="content" label="内容">
-                    <el-input type="textarea" :rows="2" placeholder="限2000个字" v-model="addForm.content"/>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="cancel">取 消</el-button>
-                <el-button type="primary" @click="commit">确 定</el-button>
-            </span>
-        </el-dialog>
 
         <el-dialog title="" :visible.sync="isShowSystemDetail"  width="60%">
             <detail :scope="detailData"/>
@@ -109,30 +75,10 @@
                 isLoading: false,
                 query: {
                     page: 1,
-                },
-                addForm:{
-                    object_type:[],
-                    title:'',
-                    content:''
-
+                    object_type:3
                 },
                 list: [],
                 total: 0,
-                addDialog: false,
-
-                addFormRules: {
-                    object_type: [
-                        {required: true, message: '批次类型不能为空'}
-                    ],
-                    content: [
-                        {required: true, message: '内容不能为空'},
-                        {max: 20000, message: '内容不能超过2000个字'},
-                    ],
-                    title: [
-                        {required:true, message:'标题不能为空'},
-                        {max:20, message:'标题不能超过20个字'}
-                    ],
-                }
             }
         },
         computed: {
@@ -148,18 +94,11 @@
             search(){
                 this.getList();
             },
-            cancel(){
-                this.addDialog= false;
-            },
             commit(){
                 api.post('/message/addSystems', this.addForm ).then(data=>{
-                    this.addDialog=false;
                     this.getList();
                 });
                 console.log('addForm',this.addForm);
-            },
-            add(){
-                this.addDialog=true;
             },
             showDetail( data ){
                 this.detailData = data;
@@ -178,5 +117,4 @@
 </script>
 
 <style scoped>
-
 </style>

@@ -53,6 +53,16 @@ class MerchantController extends Controller
 
         $data = MerchantService::getList($data);
 
+        $isPayToPlatform = $this->isPayToPlatform();
+        foreach ($data as $key){
+            if($isPayToPlatform){
+                $key->settlement_cycle_type = 7;//运营中心切换到平台，显示为未知
+            }else{
+                $key->settlement_cycle_type = 1;//运营中心切未换到平台，显示为周结
+            }
+
+        }
+
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
@@ -89,6 +99,16 @@ class MerchantController extends Controller
         $query = MerchantService::getList($data,true);
 
         $list = $query->get();
+
+        $isPayToPlatform = $this->isPayToPlatform();
+        foreach ($list as $key){
+            if($isPayToPlatform){
+                $key->settlement_cycle_type = 7;//运营中心切换到平台，显示为未知
+            }else{
+                $key->settlement_cycle_type = 1;//运营中心切未换到平台，显示为周结
+            }
+
+        }
 
         if(request('isPilot')){
             $downloadName = '试点商户列表';
@@ -130,6 +150,15 @@ class MerchantController extends Controller
             'id' => 'required|integer|min:1'
         ]);
         $merchant = MerchantService::detail(request('id'));
+
+        $isPayToPlatform = $this->isPayToPlatform();
+
+        if($isPayToPlatform){
+            $merchant->settlement_cycle_type = 7;//运营中心切换到平台，显示为未知
+        }else{
+            $merchant->settlement_cycle_type = 1;//运营中心切未换到平台，显示为周结
+        }
+
         return Result::success($merchant);
     }
 
@@ -331,7 +360,7 @@ class MerchantController extends Controller
 
         $isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
 
-        return Result::success($isPayToPlatform);
+        return $isPayToPlatform;
     }
 
 
