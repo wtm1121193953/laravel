@@ -459,6 +459,7 @@
                     }else {
                         this.form.bank_area = [parseInt(data.bank_province_id), parseInt(data.bank_city_id), parseInt(data.bank_area_id)];
                     }
+                    console.log("222:",data.isPayToPlatform);
                     if(data.isPayToPlatform){
                         if(parseInt(data.settlement_cycle_type) == 1){
                             this.form.settlement_cycle_type = '';
