@@ -25,6 +25,7 @@ use App\Result;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
@@ -130,7 +131,10 @@ class LoginController extends Controller
             $paperMachine = new \App\Support\PaperMachine();
             $paperMachine->createUserId($wxUserInfo);
             $data = $paperMachine->send('http://testpay.yiqiniubi.com');
-            \Log::info('发送出纸信号回调：'.$data.',|wxinfo:'.request('userInfo'));
+            Log::info('发送出纸信号回调：',[
+                'data'      =>  $data,
+                'wxInfo'    =>  request('userInfo')
+            ]);
         }
         return Result::success([
             'userInfo' => $user
