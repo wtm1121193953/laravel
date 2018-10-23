@@ -126,4 +126,22 @@ class OperController extends Controller
         return Result::success($oper);
     }
 
+    /**
+     * 设置业务员分润比例 修改oper和oper_bizer中的比例
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function setOperBizerDivide()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'bizerDivide' => 'required|max:100|min:0'
+        ]);
+        $bizerDivide = request('bizerDivide');
+        $operId = request('id');
+
+        $oper = OperService::setOperBizerDivide($operId, $bizerDivide);
+
+        return Result::success($oper);
+    }
+
 }

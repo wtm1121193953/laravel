@@ -318,4 +318,28 @@ class OperService extends BaseService
     {
         return Oper::select('id','name')->where('status','=',Oper::STATUS_NORMAL)->get()->toArray();
     }
+
+    /**
+     * 修改oper和oper_bizer中的比例
+     * @param $operId
+     * @param $bizerDivide
+     * @return Oper
+     */
+    public static function setOperBizerDivide($operId, $bizerDivide)
+    {
+        $oper = self::getById($operId);
+        $oper->bizer_divide = number_format($bizerDivide, 2);
+        $oper->save();
+
+        OperBizer::chunk(1000, function ($operBizers) use ($operId, $bizerDivide) {
+            foreach ($operBizers as $operBizer) {
+                if ($operBizer->oper_id == $operId) {
+                    $operBizer->divide = number_format($bizerDivide, 2);
+                    $operBizer->save();
+                }
+            }
+        });
+
+        return $oper;
+    }
 }

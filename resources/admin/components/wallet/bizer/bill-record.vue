@@ -43,7 +43,7 @@
             <el-table-column prop="created_at" label="交易时间"></el-table-column>
             <el-table-column prop="bill_no" label="交易号"></el-table-column>
             <el-table-column prop="bizer_mobile" label="业务员手机号码"></el-table-column>
-            <el-table-column prop="bizer_name" label="业务员姓名"></el-table-column>
+            <el-table-column prop="bizer_name" label="业务员昵称"></el-table-column>
             <el-table-column prop="type" label="交易类型">
                 <template slot-scope="scope">
                     <span v-if="scope.row.type == 1">自己消费奖励</span>

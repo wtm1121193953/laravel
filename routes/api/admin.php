@@ -66,6 +66,7 @@ Route::prefix('admin')
         Route::get('merchant/download', 'MerchantController@downloadExcel');
         Route::post('merchant/changeStatus', 'MerchantController@changeStatus');
         Route::post('merchant/edit', 'MerchantController@edit');
+        Route::get('/merchant/isPayToPlatform', 'MerchantController@isPayToPlatform');
 
         Route::get('merchant/audit/list', 'MerchantController@getAuditList');
         Route::get('merchant/audit/record/newest', 'MerchantController@getNewestAuditRecord');
@@ -122,6 +123,10 @@ Route::prefix('admin')
         Route::get('orders','OrderController@getList');
         Route::get('getOptions','OrderController@getOptions');
         Route::get('order/export','OrderController@export');
+
+
+        Route::get('message/systems', 'MessageSystemController@getSystems');
+        Route::post('message/addSystems', 'MessageSystemController@addMessage');
 
         Route::get('trade_records','OrderController@platformTradeRecords');
         Route::get('trade_records/export','OrderController@platformTradeRecordsExport');

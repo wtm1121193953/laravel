@@ -209,6 +209,7 @@ class OrderController extends Controller
         $order->pay_type = $payType;
         $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
+        $order->bizer_id = $merchant->bizer_id;
         $order->save();
 
         // 如果是微信支付
@@ -294,6 +295,7 @@ class OrderController extends Controller
         $order->pay_type = $payType;
         $order->settlement_rate = $merchant->settlement_rate;
         $order->origin_app_type = request()->header('app-type');
+        $order->bizer_id = $merchant->bizer_id;
         $order->save();
 
         // 如果是微信支付
@@ -380,6 +382,7 @@ class OrderController extends Controller
         $order->remark = request('remark', '');
         $order->pay_target_type =Order::PAY_TARGET_TYPE_PLATFORM;
         $order->origin_app_type = request()->header('app-type');
+        $order->bizer_id = $merchant->bizer_id;
         $order->save();
 
         if ($payType == 1) {

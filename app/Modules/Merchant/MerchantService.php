@@ -85,17 +85,15 @@ class MerchantService extends BaseService
         // todo 后期可以对查询结果做缓存
         $auditStatus = array_get($data, 'audit_status');
         $status =array_get($data, 'status');
+        $isPilot =array_get($data, 'isPilot');//是否为试点商户
         $operId =array_get($data, 'operId'); //运营中心ID
         $bizer_id = array_get($data, 'bizer_id');//业务员ID
 //        $list = Merchant::where(function (Builder $query) use ($operId) {
 //            $query->where('oper_id', $operId)
 //                ->orWhere('audit_oper_id', $operId);
 //        })
-        $list = Merchant::select('id', 'name')
-            ->when(!empty($operId), function (Builder $query) use ($operId) {
-                $query->where('oper_id', $operId)
-                ->orWhere('audit_oper_id', $operId);
-            })
+
+        $data = Merchant::select('id', 'name')
             ->when($status, function (Builder $query) use ($status) {
                 $query->where('status', $status);
             })
@@ -107,10 +105,22 @@ class MerchantService extends BaseService
                     $auditStatus = 0;
                 }
                 $query->where('audit_status', $auditStatus);
-            })
-            ->orderBy('updated_at', 'desc')
-            ->select('id', 'name')
-            ->get();
+            });
+
+            if ($operId) {
+                $data->where(function (Builder $query) use ($operId) {
+                    $query->where('oper_id', $operId)
+                        ->orWhere('audit_oper_id', $operId);
+                });
+            }
+
+            if($isPilot){
+                $data->where('is_pilot', Merchant::PILOT_MERCHANT);
+            }else{
+                $data->where('is_pilot', Merchant::NORMAL_MERCHANT);
+            }
+
+            $list = $data->orderBy('updated_at', 'desc')->get();
 
         return $list;
     }
@@ -213,7 +223,7 @@ class MerchantService extends BaseService
             $query->where('status', $status);
         }
         if ($settlementCycleType) {
-            $query->where('settlement_cycle_type', $settlementCycleType);
+            $query->whereIn('settlement_cycle_type', $settlementCycleType);
         }
 
         if (!empty($auditStatus)) {

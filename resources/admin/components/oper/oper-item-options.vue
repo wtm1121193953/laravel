@@ -9,6 +9,8 @@
         <el-button type="text" @click="editMiniprogramDialog = true">{{!scope.row.miniprogram ? '配置小程序' : '修改小程序配置'}}</el-button>
         <el-button v-if="scope.row.miniprogram" type="text" @click="uploadCert">上传支付证书</el-button>
         <el-button type="text" v-if="hasRule('/api/admin/oper/changePayToPlatform')" @click="showModifyPayToPlatformDialog = true">支付到平台设置</el-button>
+        <el-button type="text" @click="bizerList">业务员</el-button>
+        <el-button type="text" @click="showBizerDivide = true">业务员分成</el-button>
 
         <el-dialog title="编辑小程序配置信息" :visible.sync="editMiniprogramDialog">
             <miniprogram-form
@@ -104,6 +106,15 @@
                 </el-col>
             </el-row>
         </el-dialog>
+
+        <el-dialog title="业务员分成比例" center :visible.sync="showBizerDivide" width="20%">
+            <el-input-number size="small" v-model="bizerDivideNumber" :precision="2" :max="100" style="width: 80%"/>%
+            <p class="tips">设置业务员的统一分成比例，包括已签约的</p>
+            <span slot="footer" class="dialog-footer">
+                <el-button size="small" @click="showBizerDivide = false">取 消</el-button>
+                <el-button size="small" type="primary" @click="bizerDivide">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -166,6 +177,9 @@
                 editMiniprogramDialog: false,
                 showUploadCertDialog: false,
                 certUploadUrl: '/api/admin/miniprogram/uploadCert',
+
+                showBizerDivide: false,
+                bizerDivideNumber: this.scope.row.bizer_divide,
             }
         },
         computed: {
@@ -309,6 +323,24 @@
                     })
                 }).catch(() => {
                     this.$message.info('已取消');
+                })
+            },
+            bizerDivide() {
+                let param = {
+                    id: this.scope.row.id,
+                    bizerDivide: this.bizerDivideNumber,
+                }
+                api.post('/oper/setOperBizerDivide', param).then(data => {
+                    this.showBizerDivide = false;
+                    this.$message.success('分成比例设置成功');
+                })
+            },
+            bizerList() {
+                router.push({
+                    path: '/oper/bizer/list',
+                    query: {
+                        operId: this.scope.row.id,
+                    }
                 })
             }
         },

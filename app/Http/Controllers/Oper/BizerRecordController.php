@@ -8,6 +8,7 @@ use App\Modules\Oper\OperBizerLog;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperBizer;
 
+use App\Modules\Oper\OperService;
 use App\Result;
 use Illuminate\Support\Facades\DB;
 
@@ -42,21 +43,18 @@ class BizerRecordController extends Controller {
         $validate = array(
             'id' => 'required|integer|min:1',
             'status' => 'required|integer',
-            'divide' => 'required',
         );
-        if(request('status')=='-1'){
-            unset($validate["divide"]);
-        }
+
         $this->validate(request(),$validate);
 
         $id = request('id');
         $status = request('status');
         $note = request('note', '');
-        $divide = request('divide', 0);
 
         DB::beginTransaction();
         try {
             $operBizer = OperBizer::findOrFail($id);
+            $divide = OperService::getById($operBizer->oper_id)->bizer_divide;
             $operBizer->status = $status;
             $operBizer->note = $note;
             //签约成功，更新签约时间,分成比例

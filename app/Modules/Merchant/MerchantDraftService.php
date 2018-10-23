@@ -10,6 +10,7 @@ namespace App\Modules\Merchant;
 
 use App\BaseService;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizMember;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -75,6 +76,11 @@ class MerchantDraftService extends BaseService
         $merchantDraft->categoryPathOnlyEnable = $merchantDraft->merchant_category_id ? MerchantCategoryService::getCategoryPath($merchantDraft->merchant_category_id, true) : [];
         $merchantDraft->account = MerchantAccount::where('merchant_id', $merchantDraft->id)->first();
         $merchantDraft->business_time = json_decode($merchantDraft->business_time);
+        $oper = Oper::where('id', $merchantDraft->oper_id > 0 ? $merchantDraft->oper_id : $merchantDraft->audit_oper_id)->first();
+        if ($oper) {
+            $merchantDraft->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
+            $merchantDraft->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
+        }
 
         return $merchantDraft;
     }

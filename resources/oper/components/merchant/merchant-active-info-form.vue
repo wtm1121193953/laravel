@@ -70,12 +70,12 @@
                 <el-input type="textarea" :rows="5" v-model="form.desc"/>
             </el-form-item>
             <el-form-item prop="settlement_cycle_type" required label="结算周期">
-                <el-select :disabled="!!data && data.audit_oper_id != 0" v-model="form.settlement_cycle_type" placeholder="请选择">
-                    <el-option label="周结" :value="1"/>
-                    <!--<el-option label="半月结" :value="2"/>
+                <el-select v-if="isPayToPlatform" v-model="form.settlement_cycle_type" placeholder="请选择">
                     <el-option label="月结" :value="3"/>
-                    <el-option label="半年结" :value="4"/>
-                    <el-option label="年结" :value="5"/>-->
+                    <el-option label="T+1" :value="6"/>
+                </el-select>
+                <el-select v-else v-model="form.settlement_cycle_type" placeholder="请选择">
+                    <el-option label="周结" :value="1"/>
                 </el-select>
             </el-form-item>
             <el-form-item prop="settlement_rate" required label="分利比例">
@@ -211,7 +211,7 @@
         logo: '',
         desc_pic_list: [],
         desc: '',
-        settlement_cycle_type: 1,
+        settlement_cycle_type: '',
         settlement_rate: 0,
         // 银行卡信息
         bank_card_type: 1,
@@ -428,11 +428,15 @@
                         {max: 50, message: '商户员工人数 不能超过50个字'},
                         {validator: validateNumber}
                     ],
+                    settlement_cycle_type: [
+                        {required: true, message: '结算周期 不能为空'},
+                    ],
                 },
                 searchOperBizMemberLoading: false,
                 operBizMembers: [],
                 bankList: [],
                 countryList: [],
+                isPayToPlatform: false,
             }
         },
         methods: {
@@ -455,8 +459,20 @@
                     }else {
                         this.form.bank_area = [parseInt(data.bank_province_id), parseInt(data.bank_city_id), parseInt(data.bank_area_id)];
                     }
+                    if(data.isPayToPlatform){
+                        if(parseInt(data.settlement_cycle_type) == 1){
+                            this.form.settlement_cycle_type = '';
+                        }else{
+                            this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
+                        }
+                    }else{
+                        if(parseInt(data.settlement_cycle_type) != 1){
+                            this.form.settlement_cycle_type = '';
+                        }else{
+                            this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
+                        }
+                    }
                     this.form.region = parseInt(data.region);
-                    this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
                     this.form.status = parseInt(data.status);
                     this.form.bank_card_type = parseInt(data.bank_card_type);
                     this.form.bizer_id = parseInt(data.bizer_id) != 0 ? parseInt(data.bizer_id) : '';
@@ -502,6 +518,11 @@
                 api.get('/country/list').then(data => {
                     this.countryList = data.list;
                 })
+            },
+            getIsPayToPlatform() {
+                api.get('/merchant/isPayToPlatform').then(data => {
+                    this.isPayToPlatform = data;
+                })
             }
         },
         created(){
@@ -509,6 +530,7 @@
             this.getOperBizMember();
             this.getBankList();
             this.getCountryList();
+            this.getIsPayToPlatform();
         },
         watch: {
             data(){

@@ -48,8 +48,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="结算周期" prop="settlementCycleType">
-                    <el-select v-model="query.settlementCycleType" size="small" placeholder="请选择" class="w-150">
-                        <el-option label="全部" value=""/>
+                    <el-select v-model="query.settlementCycleType" size="small" multiple placeholder="请选择" class="w-150">
                         <el-option label="周结" value="1"/>
                         <!--<el-option label="半月结" value="2"/>-->
                         <el-option label="月结" value="3"/>

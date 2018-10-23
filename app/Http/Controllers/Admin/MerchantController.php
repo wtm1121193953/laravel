@@ -19,6 +19,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperService;
 use App\Result;
@@ -49,6 +50,10 @@ class MerchantController extends Controller
 
         if(is_string($auditStatus)){
             $auditStatus = explode(',', $auditStatus);
+        }
+
+        if(is_string($settlementCycleType)){
+            $settlementCycleType = explode(',', $settlementCycleType);
         }
 
         $operId = request('operId');
@@ -302,4 +307,16 @@ class MerchantController extends Controller
         }
 
     }
+
+    //判断运营中心是否切换到平台
+    public function isPayToPlatform(){
+
+        $operId = request('operId');
+        $oper = OperService::getById($operId);
+
+        $isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
+
+        return Result::success($isPayToPlatform);
+    }
+
 }

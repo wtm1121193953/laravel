@@ -4,6 +4,7 @@ namespace App\Modules\Order;
 
 use App\BaseModel;
 use App\Exceptions\BaseResponseException;
+use App\Modules\Oper\Oper;
 use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use Carbon\Carbon;
 
@@ -156,4 +157,9 @@ class Order extends BaseModel
     /*protected $dispatchesEvents = [
         'updated' => \App\Events\OrdersUpdatedEvent::class,
     ];*/
+
+    public function oper()
+    {
+        return $this->belongsTo(Oper::class);
+    }
 }

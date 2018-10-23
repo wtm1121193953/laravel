@@ -241,6 +241,7 @@
                         api.post('/wallet/withdraw/editBizerBankCard', this.form2).then(data => {
                             this.form.bank_card_no = data.bank_card_no;
                             this.form.bank_name = data.bank_name;
+                            this.$message.success('修改银行卡成功');
                             this.showBankCardDialog = false;
                             this.$refs.form2.resetFields();
                         })
