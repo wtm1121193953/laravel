@@ -57,7 +57,7 @@ class PaperMachine{
     }
 
     public function createUserId($userInfo){
-        $needColumns = ['nickname','sex','country','province','city'];
+        $needColumns = ['nickName','gender','country','province','city'];
         $string = '';
         foreach ($needColumns as $k => $v) {
             if($userInfo[$v]){
