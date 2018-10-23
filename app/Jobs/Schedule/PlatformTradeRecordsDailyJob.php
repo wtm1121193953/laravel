@@ -30,6 +30,8 @@ class PlatformTradeRecordsDailyJob implements ShouldQueue
      */
     public function handle()
     {
+        Log::info('平台交易汇总统计 :Start');
         PlatformTradeRecordService::daily($this->date);
+        Log::info('平台交易汇总统计 :end');
     }
 }
