@@ -24,7 +24,7 @@
         </el-form>
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="bizer_mobile" label="业务员手机号码"></el-table-column>
-            <el-table-column prop="bizer_name" label="业务员姓名"></el-table-column>
+            <el-table-column prop="bizer_name" label="业务员昵称"></el-table-column>
             <el-table-column prop="origin_id" label="业务员ID"></el-table-column>
             <el-table-column prop="amount" label="账户余额">
                 <template slot-scope="scope">

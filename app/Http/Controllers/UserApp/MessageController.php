@@ -43,9 +43,7 @@ class MessageController extends Controller
         ]);
         $user = $request->get('current_user');
         $notice = MessageNoticeService::getNoticeDetailByUserIdNId($user->id,$request->get('id'));
-        return Result::success([
-           'data'   =>  $notice
-        ]);
+        return Result::success($notice);
     }
 
     public function getSystemDetail( Request $request)
@@ -55,9 +53,7 @@ class MessageController extends Controller
             'id.numeric'=>'参数不合法'
         ]);
         $system = MessageSystemService::getSystemDetailById($request->get('id'));
-        return Result::success([
-            'data'   =>  $system
-        ]);
+        return Result::success($system);
     }
 
 }

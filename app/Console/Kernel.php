@@ -60,7 +60,7 @@ class Kernel extends ConsoleKernel
         //平台交易汇总
         $schedule->job( new PlatformTradeRecordsDailyJob((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s')))->daily();
         //平台交易汇总 (每1分钟执行)
-        $schedule->job( new PlatformTradeRecordsDailyJob(Carbon::now()->endOfDay()->format('Y-m-d H:i:s')))->everyMinute();
+        $schedule->job( new PlatformTradeRecordsDailyJob(Carbon::now()->endOfDay()->format('Y-m-d H:i:s')))->everyFiveMinutes();
     }
 
     /**
