@@ -56,7 +56,7 @@
 
         <el-dialog
                 center
-                title="忘记密码"
+                title="修改体现密码"
                 :visible.sync="showForgetPasswordDialog"
                 :modal-append-to-body="false"
                 :append-to-body="true"
@@ -306,6 +306,7 @@
                         api.post('/wallet/withdraw/resetWithdrawPassword', this.setPasswordForm).then(() => {
                             this.$message.success('修改提现密码成功');
                             this.showSetPasswordDialog = false;
+                            location.reload();
                         })
                     }
                 })

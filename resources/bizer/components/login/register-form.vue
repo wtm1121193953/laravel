@@ -77,7 +77,7 @@
                         {validator: validateMobile, trigger: 'blur'}
                     ],
                     name: [
-                        {required: true, message: '姓名不能为空', trigger: 'blur'},
+                        {required: true, message: '昵称不能为空', trigger: 'blur'},
                     ],
                     verify_code: [
                         {required: true, message: '请输入验证码', trigger: 'blur'},
