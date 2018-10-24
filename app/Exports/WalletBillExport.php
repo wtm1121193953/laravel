@@ -74,7 +74,7 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
                 '交易时间',
                 '交易号',
                 '业务员手机号码',
-                '业务员姓名',
+                '业务员昵称',
                 '交易类型',
                 '账户交易金额',
                 '账户余额'
