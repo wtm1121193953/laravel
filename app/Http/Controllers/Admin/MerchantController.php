@@ -199,6 +199,9 @@ class MerchantController extends Controller
         if ($auditStatus || $auditStatus==="0"){
             $auditStatus = explode(',', $auditStatus);
         }
+        if(is_string($settlementCycleType)){
+            $settlementCycleType = explode(',', $settlementCycleType);
+        }
         $operId = request('operId');
         $operName = request('operName');
 //        $creatorOperId = request('creatorOperId');
