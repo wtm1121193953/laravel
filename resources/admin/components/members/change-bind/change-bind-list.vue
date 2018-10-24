@@ -163,13 +163,19 @@
                             spinner: 'el-icon-loading',
                             background: 'rgba(0, 0, 0, 0.7)'
                         });
-                        api.post('users/changeBind', param).then(data => {
-                            loading.close();
-                            let message = '换绑完成, 共换绑' + (data.successCount + data.errorCount) + '个用户, 其中换绑成功' + data.successCount + '个, 换绑失败' + data.errorCount + '个。';
-                            this.$alert(message);
-                            this.getList();
+                        api.post('users/changeBind', param, false).then(res => {
+                            if (res.code === 0) {
+                                let data = res.data;
+                                loading.close();
+                                let message = '换绑完成, 共换绑' + (data.successCount + data.errorCount) + '个用户, 其中换绑成功' + data.successCount + '个, 换绑失败' + data.errorCount + '个。';
+                                this.$alert(message);
+                                this.getList();
+                            } else {
+                                this.$message.error(res.message);
+                                loading.close();
+                            }
                             this.cancel();
-                        })
+                        });
                     }
                 });
             },
