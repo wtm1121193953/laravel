@@ -172,7 +172,7 @@ class InviteUserService
             $inviteUserBatchChangedRecord->invite_channel_name = $oldInviteChannel->name;
             $inviteUserBatchChangedRecord->invite_channel_remark = $oldInviteChannel->remark;
             $inviteUserBatchChangedRecord->invite_channel_oper_id = $oldInviteChannel->oper_id;
-            $operName = OperService::getNameById($oldInviteChannel->oper_id);
+            $operName = OperService::getNameById($oldInviteChannel->oper_id) ?: '';
             $inviteUserBatchChangedRecord->invite_channel_oper_name = $operName;
             $inviteUserBatchChangedRecord->new_invite_channel_id = $newInviteChannel->id;
 

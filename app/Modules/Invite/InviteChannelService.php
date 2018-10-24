@@ -242,11 +242,15 @@ class InviteChannelService extends BaseService
      * @param bool $withQuery
      * @return InviteChannel|InviteChannel[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getOperInviteChannels(array $params=[], $withQuery = false)
+    public static function getInviteChannels(array $params=[], $withQuery = false)
     {
         $operName = array_get($params, 'operName');
         $inviteChannelName = array_get($params, 'inviteChannelName');
-        $query = InviteChannel::where('origin_type', InviteChannel::ORIGIN_TYPE_OPER)
+        $originType = array_get($params, 'originType');
+
+        $query = InviteChannel::when($originType, function (Builder $query) use ($originType) {
+                $query->where('origin_type', $originType);
+            })
             ->when($operName, function (Builder $query) use ($operName) {
                 $operIds = Oper::where('name', 'like', "%$operName%")
                     ->select('id')
@@ -271,6 +275,8 @@ class InviteChannelService extends BaseService
     /**
      * 获取运营中心的所有邀请渠道
      * @param $oper_id
+     * @param bool $ori
+     * @return array
      */
     public static function allOperInviteChannel($oper_id, $ori = false)
     {

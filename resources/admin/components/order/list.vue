@@ -105,11 +105,11 @@
                     </el-col>
                 </template>
             </el-table-column>
-            <el-table-column prop="id" label="ID"/>
+            <el-table-column prop="id" label="ID" width="80px"/>
             <el-table-column prop="oper.name" label="所属运营中心"/>
             <el-table-column prop="merchant_name" label="所属商户"/>
             <el-table-column prop="pay_time" label="支付时间"/>
-            <el-table-column prop="order_no" label="订单号"/>
+            <el-table-column prop="order_no" label="订单号" width="200px"/>
             <el-table-column prop="type" label="订单类型">
                 <template slot-scope="scope">
                     <span v-if="scope.row.type == 1">团购</span>

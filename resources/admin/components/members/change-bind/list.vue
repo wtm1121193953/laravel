@@ -12,8 +12,18 @@
             </el-form-item>
         </el-form>
         <el-table :data="list" v-loading="tableLoading" stripe>
+            <el-table-column prop="id" label="渠道ID"></el-table-column>
             <el-table-column prop="operName" label="运营中心名称" width="350px"/>
             <el-table-column prop="name" label="渠道名称" width="350px"/>
+            <el-table-column prop="origin_id" label="推广人ID"></el-table-column>
+            <el-table-column prop="origin_type" label="推广人类型">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.origin_type == 1">用户</span>
+                    <span v-else-if="scope.row.origin_type == 2">商户</span>
+                    <span v-else-if="scope.row.origin_type == 3">运营中心</span>
+                    <span v-else>其他({{scope.row.origin_type}})</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="invite_user_records_count" label="注册人数">
                 <template slot-scope="scope">
