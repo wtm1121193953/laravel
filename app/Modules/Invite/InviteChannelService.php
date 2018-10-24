@@ -244,11 +244,19 @@ class InviteChannelService extends BaseService
      */
     public static function getInviteChannels(array $params=[], $withQuery = false)
     {
-        $operName = array_get($params, 'operName');
-        $inviteChannelName = array_get($params, 'inviteChannelName');
-        $originType = array_get($params, 'originType');
+        $operName = array_get($params, 'operName', '');
+        $inviteChannelName = array_get($params, 'inviteChannelName', '');
+        $originType = array_get($params, 'originType', '');
+        $originIds = array_get($params, 'originIds', []);
 
-        $query = InviteChannel::when($originType, function (Builder $query) use ($originType) {
+        $query = InviteChannel::when(!empty($originIds), function (Builder $query) use ($originIds) {
+                if (is_array($originIds)) {
+                    $query->whereIn('origin_id', $originIds);
+                } else {
+                    $query->where('origin_id', $originIds);
+                }
+            })
+            ->when($originType, function (Builder $query) use ($originType) {
                 $query->where('origin_type', $originType);
             })
             ->when($operName, function (Builder $query) use ($operName) {
