@@ -71,11 +71,13 @@
             </el-form-item>
             <el-form-item prop="settlement_cycle_type" required label="结算周期">
                 <el-select v-if="isPayToPlatform" v-model="form.settlement_cycle_type" placeholder="请选择">
-                    <el-option :disabled="form.settlement_cycle_type = 6" label="月结" :value="3"/>
+                    <el-option :disabled="form.settlement_cycle_type > 3" label="月结" :value="3"/>
                     <el-option label="T+1" :value="6"/>
                 </el-select>
                 <el-select v-else v-model="form.settlement_cycle_type" placeholder="请选择">
-                    <el-option label="周结" :value="1"/>
+                    <el-option :disabled="form.settlement_cycle_type > 1" label="周结" :value="1"/>
+                    <el-option :disabled="form.settlement_cycle_type > 3" label="月结" :value="3"/>
+                    <el-option label="T+1" :value="6"/>
                 </el-select>
             </el-form-item>
             <el-form-item prop="settlement_rate" required label="分利比例">
@@ -461,12 +463,6 @@
                     }
                     if(data.isPayToPlatform){
                         if(parseInt(data.settlement_cycle_type) == 1 || parseInt(data.settlement_cycle_type) == 7){
-                            this.form.settlement_cycle_type = '';
-                        }else{
-                            this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
-                        }
-                    }else{
-                        if(parseInt(data.settlement_cycle_type) != 1){
                             this.form.settlement_cycle_type = '';
                         }else{
                             this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
