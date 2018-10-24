@@ -53,13 +53,13 @@ class V1_4_7 extends Command
             }
         });
 
-        Merchant::where('audit_status',3)
+        /*Merchant::where('audit_status',3)
             ->chunk(1000,function ($merchants){
             foreach ($merchants as $merchant){
                 $merchant->audit_status = 0;
                 $merchant->save();
             }
-        });
+        });*/
 
 
         $this->info('执行成功');
