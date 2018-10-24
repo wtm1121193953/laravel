@@ -232,11 +232,21 @@ class UsersController extends Controller
     {
         $operName = request('operName', '');
         $inviteChannelName = request('inviteChannelName', '');
+        $originType = request('originType', '');
+        $mobile = request('mobile', '');
         $pageSize = request('pageSize', 15);
+
+        $originIds = [];
+        if ($mobile) {
+            $originIds = UserService::getUserColumnArrayByMobile($mobile, 'id');
+            $originType = InviteChannel::ORIGIN_TYPE_USER;
+        }
 
         $query = InviteChannelService::getInviteChannels([
             'operName' => $operName,
-            'inviteChannelName' => $inviteChannelName
+            'inviteChannelName' => $inviteChannelName,
+            'originType' => $originType,
+            'originIds' => $originIds,
         ], true);
         $data = $query->paginate($pageSize);
         $data->each(function ($item) {

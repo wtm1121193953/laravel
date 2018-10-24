@@ -7,6 +7,16 @@
             <el-form-item label="渠道名称">
                 <el-input v-model="query.inviteChannelName" placeholder="请输入渠道名称" clearable/>
             </el-form-item>
+            <el-form-item label="推广人类型">
+                <el-select v-model="query.originType" class="w-100" clearable>
+                    <el-option label="用户" :value="1"></el-option>
+                    <el-option label="商户" :value="2"></el-option>
+                    <el-option label="运营中心" :value="3"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="推广人用户手机号码" v-if="query.originType == 1">
+                <el-input v-model="query.mobile" clearable/>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search">搜 索</el-button>
             </el-form-item>
@@ -59,6 +69,8 @@
                 query: {
                     operName: '',
                     inviteChannelName: '',
+                    originType: '',
+                    mobile: '',
                     page: 1,
                     pageSize: 15,
                 },
