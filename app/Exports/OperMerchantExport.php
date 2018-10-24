@@ -27,10 +27,12 @@ class OperMerchantExport implements FromCollection, WithMapping, WithHeadings
     use Exportable;
 
     protected $collection;
+    protected $isPilot;
 
-    public function __construct($collection)
+    public function __construct($collection,$isPilot = '')
     {
         $this->collection = $collection;
+        $this->isPilot = $isPilot;
     }
 
     /**
@@ -57,7 +59,7 @@ class OperMerchantExport implements FromCollection, WithMapping, WithHeadings
             '签约人',
             '商户状态',
             '审核状态',
-            '结算周期',
+            $this->isPilot ? '' : '结算周期',
         ];
     }
 
@@ -79,7 +81,7 @@ class OperMerchantExport implements FromCollection, WithMapping, WithHeadings
             ($data->bizer_id!=0) ? $this->getOperBizersName($data->bizer_id) :$this->getOperBizMemberName($data->oper_id > 0 ? $data->oper_id : $data->audit_oper_id,$data->oper_biz_member_code),
             ['', '正常', '禁用'][$data->status],
             ['待审核', '审核通过', '审核不通过', '重新提交审核'][$data->audit_status],
-            ['', '周结', '半月结', '月结', '半年结', '年结', 'T+1', '未知'][$data->settlement_cycle_type],
+            $this->isPilot ? '' : ['', '周结', '半月结', '月结', '半年结', '年结', 'T+1', '未知'][$data->settlement_cycle_type],
         ];
     }
 
