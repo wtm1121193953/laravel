@@ -8,7 +8,7 @@
                             type="date"
                             placeholder="选择开始日期"
                             format="yyyy 年 MM 月 dd 日"
-                            value-format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd 00:00:00"
                     ></el-date-picker>
                     <span>—</span>
                     <el-date-picker
@@ -16,8 +16,8 @@
                             type="date"
                             placeholder="选择结束日期"
                             format="yyyy 年 MM 月 dd 日"
-                            value-format="yyyy-MM-dd"
-                            :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(query.startDate) - 8.64e7}}"
+                            value-format="yyyy-MM-dd 23:59:59"
+                            :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(query.start_time)}}"
                     ></el-date-picker>
                 </el-form-item>
             </el-form-item>
@@ -75,6 +75,8 @@
                 isLoading: false,
                 query: {
                     page: 1,
+                    start_time: '',
+                    end_time: '',
                     object_type:3
                 },
                 list: [],
@@ -116,6 +118,11 @@
     }
 </script>
 
-<style scoped>
-
+<style>
+    .el-tooltip__popper.is-dark{
+        max-width:85%;
+    }
+    .el-tooltip__popper.is-dark{
+        width:85%;
+    }
 </style>

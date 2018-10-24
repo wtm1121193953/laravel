@@ -130,7 +130,7 @@ class LoginController extends Controller
         if($isFirstSign==1){
             $paperMachine = new \App\Support\PaperMachine();
             $paperMachine->createUserId($wxUserInfo);
-            $paperMachine->send('http://testpay.yiqiniubi.com/api/merb/theGreatLifePlaceOrder');
+            $paperMachine->send('http://pay.gxzhijinji.com/api/merb/theGreatLifePlaceOrder');
         }
         return Result::success([
             'userInfo' => $user

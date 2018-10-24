@@ -116,5 +116,11 @@
     }
 </script>
 
-<style scoped>
+<style>
+    .el-tooltip__popper.is-dark{
+        max-width:85%;
+    }
+    .el-tooltip__popper.is-dark{
+        width:85%;
+    }
 </style>

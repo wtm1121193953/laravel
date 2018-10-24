@@ -13,7 +13,7 @@ class PaperMachine{
     protected $userId = '';
     protected $userString = '';
 
-    public function __construct($appId='Zc16tnd1Di2z',$key='lIJhNznCAkB1AygzJllG3lOQa9bNmm3lfgky',$userInfo=[]){
+    public function __construct($appId='uY3MiF9cgior',$key='JNrDUihW65SGsSXNGtzBc9eMDUgtnzZl',$userInfo=[]){
         $this->appId = $appId;
         $this->key 	 = $key;
         if(!empty($userInfo)){
