@@ -2,10 +2,10 @@
     <page title="订单管理" v-loading="isLoading">
         <el-form inline :model="query" size="small">
             <el-form-item label="订单号">
-                <el-input type="text" clearable v-model="query.orderNo"/>
+                <el-input type="text" clearable placeholder="请输入订单号" v-model="query.orderNo"/>
             </el-form-item>
             <el-form-item label="手机号">
-                <el-input type="text" clearable v-model="query.mobile" class="w-150"/>
+                <el-input type="text" clearable placeholder="请输入手机号" v-model="query.mobile" class="w-150"/>
             </el-form-item>
             <el-form-item label="所属运营中心">
                 <el-select v-model="query.oper_id" filterable clearable >

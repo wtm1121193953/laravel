@@ -51,7 +51,7 @@
                         <span v-else-if="data.bank_card_type == 2">个人</span>
                         <span v-else>未知</span>
                     </el-form-item>
-                    <el-form-item label="提现业务员姓名">
+                    <el-form-item label="提现业务员昵称">
                         {{data.bizer_name}}
                     </el-form-item>
                     <el-form-item label="备注">

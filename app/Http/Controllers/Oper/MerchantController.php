@@ -53,7 +53,7 @@ class MerchantController extends Controller
 
         $data = MerchantService::getList($data);
 
-        $isPayToPlatform = $this->isPayToPlatform();
+        /*$isPayToPlatform = $this->isPayToPlatform();
         foreach ($data as $key){
             if($isPayToPlatform){
                 $key->settlement_cycle_type = 7;//运营中心切换到平台，显示为未知
@@ -61,7 +61,7 @@ class MerchantController extends Controller
                 $key->settlement_cycle_type = 1;//运营中心切未换到平台，显示为周结
             }
 
-        }
+        }*/
 
         return Result::success([
             'list' => $data->items(),
@@ -116,7 +116,7 @@ class MerchantController extends Controller
             $downloadName = '我的商户列表';
         }
 
-        return (new OperMerchantExport($list))->download($downloadName.'.xlsx');
+        return (new OperMerchantExport($list,request('isPilot')))->download($downloadName.'.xlsx');
 
     }
 

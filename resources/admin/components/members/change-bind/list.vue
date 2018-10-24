@@ -7,13 +7,33 @@
             <el-form-item label="渠道名称">
                 <el-input v-model="query.inviteChannelName" placeholder="请输入渠道名称" clearable/>
             </el-form-item>
+            <el-form-item label="推广人类型">
+                <el-select v-model="query.originType" class="w-100" clearable>
+                    <el-option label="用户" :value="1"></el-option>
+                    <el-option label="商户" :value="2"></el-option>
+                    <el-option label="运营中心" :value="3"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="推广人用户手机号码" v-if="query.originType == 1">
+                <el-input v-model="query.mobile" clearable/>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search">搜 索</el-button>
             </el-form-item>
         </el-form>
         <el-table :data="list" v-loading="tableLoading" stripe>
+            <el-table-column prop="id" label="渠道ID"></el-table-column>
             <el-table-column prop="operName" label="运营中心名称" width="350px"/>
             <el-table-column prop="name" label="渠道名称" width="350px"/>
+            <el-table-column prop="origin_id" label="推广人ID"></el-table-column>
+            <el-table-column prop="origin_type" label="推广人类型">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.origin_type == 1">用户</span>
+                    <span v-else-if="scope.row.origin_type == 2">商户</span>
+                    <span v-else-if="scope.row.origin_type == 3">运营中心</span>
+                    <span v-else>其他({{scope.row.origin_type}})</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="invite_user_records_count" label="注册人数">
                 <template slot-scope="scope">
@@ -49,6 +69,8 @@
                 query: {
                     operName: '',
                     inviteChannelName: '',
+                    originType: '',
+                    mobile: '',
                     page: 1,
                     pageSize: 15,
                 },

@@ -180,8 +180,10 @@
 <style>
     .el-tooltip__popper.is-dark{
         max-width:85%;
+        display: none;
     }
     .el-tooltip__popper.is-dark{
         width:85%;
+        display: none;
     }
 </style>

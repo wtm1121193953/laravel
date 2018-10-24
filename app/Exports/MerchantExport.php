@@ -133,7 +133,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             $this->getCategoryPathName($data->merchant_category_id),
             $data->city . ' ' . $data->area,
             ['待审核', '审核通过', '审核不通过', '重新提交审核'][$data->audit_status],
-            ['', '周结', '半月结', '月结', '半年结', '年结', 'T+1'][$data->settlement_cycle_type],
+            $this->isPilot ? '' : ['', '周结', '半月结', '月结', '半年结', '年结', 'T+1', '未知'][$data->settlement_cycle_type],
         ];
     }
 
@@ -187,7 +187,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             '行业',
             '城市',
             '审核状态',
-            '结算周期',
+            $this->isPilot ? '' : '结算周期',
         ];
     }
 }

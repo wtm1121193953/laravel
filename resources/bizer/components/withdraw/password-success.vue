@@ -56,7 +56,7 @@
 
         <el-dialog
                 center
-                title="修改体现密码"
+                title="修改提现密码"
                 :visible.sync="showForgetPasswordDialog"
                 :modal-append-to-body="false"
                 :append-to-body="true"

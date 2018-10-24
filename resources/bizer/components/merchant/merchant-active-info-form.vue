@@ -13,7 +13,7 @@
                         remote
                         reserve-keyword
                         clearable
-                        placeholder="请输入业务员姓名或手机号码"
+                        placeholder="请输入业务员昵称或手机号码"
                         :remote-method="searchOperBizMember"
                         :loading="searchOperBizMemberLoading"
                         @clear="resetCode"

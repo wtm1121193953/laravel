@@ -75,7 +75,7 @@ class WalletExport implements FromQuery, WithMapping, WithHeadings
         } elseif ($this->originType == Wallet::ORIGIN_TYPE_BIZER) {
             $array = [
                 '业务员手机号码',
-                '业务员姓名',
+                '业务员昵称',
                 '业务员ID',
                 '账户余额',
                 '可提现金额',

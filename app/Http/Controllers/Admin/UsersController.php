@@ -232,11 +232,21 @@ class UsersController extends Controller
     {
         $operName = request('operName', '');
         $inviteChannelName = request('inviteChannelName', '');
+        $originType = request('originType', '');
+        $mobile = request('mobile', '');
         $pageSize = request('pageSize', 15);
 
-        $query = InviteChannelService::getOperInviteChannels([
+        $originIds = [];
+        if ($mobile) {
+            $originIds = UserService::getUserColumnArrayByMobile($mobile, 'id');
+            $originType = InviteChannel::ORIGIN_TYPE_USER;
+        }
+
+        $query = InviteChannelService::getInviteChannels([
             'operName' => $operName,
-            'inviteChannelName' => $inviteChannelName
+            'inviteChannelName' => $inviteChannelName,
+            'originType' => $originType,
+            'originIds' => $originIds,
         ], true);
         $data = $query->paginate($pageSize);
         $data->each(function ($item) {
@@ -288,40 +298,48 @@ class UsersController extends Controller
     {
         $this->validate(request(), [
             'isAll' => 'required',
-            'mobile' => 'required',
+            'channelIdOrMobile' => 'required',
+            'type' => 'required',
         ]);
         // 接受参数
         $isAll = request('isAll', false);
-        $mobile = request('mobile');
+        $type = request('type');
+        $channelIdOrMobile = request('channelIdOrMobile');
         $inviteUserRecordIds = request('inviteUserRecordIds', []);
         $inviteChannelId = request('inviteChannelId', 0);
         $currentUser = request()->get('current_user');
 
-        // 获取要换绑的目标用户
-        $user = UserService::getUserByMobile($mobile);
-        if (empty($user)) {
-            throw new BaseResponseException('换绑的用户不存在');
-        }
-
-        // 获取原邀请渠道
-        $oldInviteChannel = InviteChannelService::getById($inviteChannelId);
-        if (empty($oldInviteChannel)) {
-            throw new BaseResponseException('原邀请渠道不存在');
-        }
-
-        // 获取需要换绑的邀请记录
-        if ($isAll) {
-            $query = InviteUserService::getInviteRecordsByInviteChannelId($inviteChannelId, [], true);
-            $inviteUserRecords = $query->get();  //需换绑的记录
-        } else {
-            $inviteUserRecords = InviteUserService::getInviteRecordsByIds($inviteUserRecordIds); //需换绑的记录
-        }
-
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
-            // 查找换绑后的邀请渠道，没有则创建新的邀请渠道, 创建邀请渠道时, 使用固定的运营中心ID
-            $fixedOperId = App::environment('production') ? 1 : 3;
-            $newInviteChannel = InviteChannelService::getByOriginInfo($user->id, InviteChannel::ORIGIN_TYPE_USER, $fixedOperId);
+            // 获取原邀请渠道
+            $oldInviteChannel = InviteChannelService::getById($inviteChannelId);
+            if (empty($oldInviteChannel)) {
+                throw new BaseResponseException('原邀请渠道不存在');
+            }
+
+            // 获取需要换绑的邀请记录
+            if ($isAll) {
+                $query = InviteUserService::getInviteRecordsByInviteChannelId($inviteChannelId, [], true);
+                $inviteUserRecords = $query->get();  //需换绑的记录
+            } else {
+                $inviteUserRecords = InviteUserService::getInviteRecordsByIds($inviteUserRecordIds); //需换绑的记录
+            }
+            // 获取要换绑的目标用户
+            if ($type == InviteChannel::ORIGIN_TYPE_USER) {
+                $user = UserService::getUserByMobile($channelIdOrMobile);
+                if (empty($user)) {
+                    throw new BaseResponseException('换绑的用户不存在');
+                }
+
+                // 查找换绑后的邀请渠道，没有则创建新的邀请渠道, 创建邀请渠道时, 使用固定的运营中心ID
+                $fixedOperId = App::environment('production') ? 1 : 3;
+                $newInviteChannel = InviteChannelService::getByOriginInfo($user->id, InviteChannel::ORIGIN_TYPE_USER, $fixedOperId);
+            } else {
+                $newInviteChannel = InviteChannelService::getById($channelIdOrMobile);
+                if (empty($newInviteChannel)) {
+                    throw new BaseResponseException('换绑的新渠道不存在');
+                }
+            }
 
             //首先操作invite_user_change_bind_records表，写入换绑记录
             $inviteUserBatchChangedRecord = InviteUserService::batchChangeInviter($oldInviteChannel, $newInviteChannel, $currentUser, $inviteUserRecords);
