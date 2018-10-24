@@ -71,6 +71,7 @@
             </el-form-item>
             <el-form-item v-if="isPayToPlatform" prop="settlement_cycle_type" required label="结算周期">
                 <el-select v-model="form.settlement_cycle_type" placeholder="请选择">
+                    <el-option :disabled="form.settlement_cycle_type > 1" label="周结" :value="1"/>
                     <el-option :disabled="form.settlement_cycle_type > 3" label="月结" :value="3"/>
                     <el-option label="T+1" :value="6"/>
                 </el-select>
@@ -208,7 +209,7 @@
         logo: '',
         desc_pic_list: [],
         desc: '',
-        settlement_cycle_type: '',
+        settlement_cycle_type: 1,
         settlement_rate: 0,
         // 银行卡信息
         bank_card_type: 1,
@@ -457,7 +458,7 @@
                         this.form.bank_area = [parseInt(data.bank_province_id), parseInt(data.bank_city_id), parseInt(data.bank_area_id)];
                     }
                     if(data.isPayToPlatform){
-                        if(parseInt(data.settlement_cycle_type) == 1 || parseInt(data.settlement_cycle_type) == 7){
+                        if(parseInt(data.settlement_cycle_type) == 7){
                             this.form.settlement_cycle_type = '';
                         }else{
                             this.form.settlement_cycle_type = parseInt(data.settlement_cycle_type);
