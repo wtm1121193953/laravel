@@ -131,9 +131,18 @@ class Order extends BaseModel
         return ['', '未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成[不可退款]'][$status];
     }
 
-    public static function getPayTypeText($payType)
-    {
-        return ['', '微信支付', '支付宝支付','融宝支付'][$payType];
+    public static function getPayTypeText($payType){
+        if($payType ==1){
+            $payTypeText = '微信';
+        }elseif($payType == 2){
+            $payTypeText = '支付宝';
+        }elseif($payType == 3){
+            $payTypeText = '融宝';
+        }else{
+            $payTypeText = '未知('.$payType.')';
+        }
+
+        return $payTypeText;
     }
 
     public static function getPayTargetTypeText($payTargetType)

@@ -8,6 +8,7 @@
 
 namespace App\Exports;
 
+use App\Modules\Order\Order;
 use Illuminate\Database\Query\Builder;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -66,15 +67,7 @@ class MerchantOrderExport implements FromQuery, WithHeadings, WithMapping
         }else{
             $goosName = $row-> goods_name;
         }
-        if($row->pay_type ==1){
-            $payType = '微信';
-        }elseif($row->pay_type == 2){
-            $payType = '支付宝';
-        }elseif($row->pay_type == 3){
-            $payType = '融宝';
-        }else{
-            $payType = '未知('.$row->pay_type.')';
-        }
+
         return [
             $row->id,
             $row->created_at,
@@ -84,7 +77,7 @@ class MerchantOrderExport implements FromQuery, WithHeadings, WithMapping
             $row->pay_price,
             $row->notify_mobile,
             ['','未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成'][$row->status],
-            $payType
+            Order::getPayTypeText($row->pay_type),
         ];
     }
 }
