@@ -29,6 +29,24 @@
                 :page-size="15"
                 :total="total"/>
 
+        <el-dialog title="换绑" :visible.sync="showChangeBindDialog" width="20%">
+            <el-form :model="form" ref="form" :rules="formRules" size="small">
+                <el-form-item prop="type" label="换绑渠道类型">
+                    <el-radio-group v-model="form.type">
+                        <el-radio :label="1">用户</el-radio>
+                        <el-radio :label="2">商户</el-radio>
+                        <el-radio :label="3">运营中心</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item prop="channelIdOrMobile" label="运营和商户的渠道ID或用户手机号码">
+                    <el-input v-model="form.channelIdOrMobile"/>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="cancel">取消</el-button>
+                    <el-button type="primary" @click="commitChangeBind">确定绑定</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
     </page>
 </template>
 
@@ -38,6 +56,22 @@
     export default {
         name: "change-bind-list",
         data() {
+            let validateChannelIdOrMobile = (rule, value, callback) => {
+                if (this.form.type == 1) {
+                    if (!(/^1[3456789]\d{9}$/).test(value)) {
+                        callback(new Error('手机号码格式不正确'))
+                    } else {
+                        callback();
+                    }
+                } else {
+                    if (isNaN(value)) {
+                        callback(new Error('请填写正确的渠道ID'));
+                    } else {
+                        callback();
+                    }
+                }
+            };
+
             return {
                 inviteChannelId: '',
                 list: [],
@@ -48,6 +82,20 @@
                 },
                 tableLoading: false,
                 multipleSelection: [],
+
+                showChangeBindDialog: false,
+                isAll: false,
+                inviteUserRecordIds: [],
+                form: {
+                    type: 1,
+                    channelIdOrMobile: '',
+                },
+                formRules: {
+                    channelIdOrMobile: [
+                        {required: true, message: '运营和商户的渠道ID或用户手机号码 不能为空'},
+                        {validator: validateChannelIdOrMobile}
+                    ]
+                }
             }
         },
         methods: {
@@ -66,6 +114,10 @@
             },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
+            },
+            resetParam() {
+                this.isAll = false;
+                this.inviteUserRecordIds = [];
             },
             changeBind(isAll = false) {
                 let length = isAll ? this.total : this.multipleSelection.length;
@@ -87,33 +139,44 @@
                     type: 'warning',
                     center: true
                 }).then(() => {
-                    this.commitChangeBind(isAll, inviteUserRecordIds);
+                    this.isAll = isAll;
+                    this.inviteUserRecordIds = inviteUserRecordIds;
+                    this.showChangeBindDialog = true;
                 }).catch(() => {
-
+                    this.resetParam();
                 });
             },
-            commitChangeBind(isAll, inviteUserRecordIds = []) {
-                this.$prompt('绑定新帐号', '警告', {
-                    confirmButtonText: '确定绑定',
-                    cancelButtonText: '取消',
-                    inputPattern: /^1[3456789]\d{9}$/,
-                    inputErrorMessage: '手机号码格式不正确',
-                    inputPlaceholder: '输入换绑新用户的手机号码',
-                }).then(({ value }) => {
-                    let param = {
-                        isAll: isAll,
-                        mobile: value,
-                        inviteUserRecordIds: inviteUserRecordIds,
-                        inviteChannelId: this.inviteChannelId,
-                    };
-                    api.post('users/changeBind', param).then(data => {
-                        let message = '换绑完成, 共换绑' + (data.successCount + data.errorCount) + '个用户, 其中换绑成功' + data.successCount + '个, 换绑失败' + data.errorCount + '个。';
-                        this.$alert(message);
-                        this.getList();
-                    })
-                }).catch(() => {
-
+            commitChangeBind() {
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        this.showChangeBindDialog = false;
+                        let param = {
+                            isAll: this.isAll,
+                            type: this.form.type,
+                            channelIdOrMobile: this.form.channelIdOrMobile,
+                            inviteUserRecordIds: this.inviteUserRecordIds,
+                            inviteChannelId: this.inviteChannelId,
+                        };
+                        const loading = this.$loading({
+                            lock: true,
+                            text: '换绑中，请稍后...',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.7)'
+                        });
+                        api.post('users/changeBind', param).then(data => {
+                            loading.close();
+                            let message = '换绑完成, 共换绑' + (data.successCount + data.errorCount) + '个用户, 其中换绑成功' + data.successCount + '个, 换绑失败' + data.errorCount + '个。';
+                            this.$alert(message);
+                            this.getList();
+                            this.cancel();
+                        })
+                    }
                 });
+            },
+            cancel() {
+                this.showChangeBindDialog = false;
+                this.resetParam();
+                this.$refs.form.resetFields();
             }
         },
         created(){
