@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Updates;
 
+use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperBizer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -49,6 +50,14 @@ class V1_4_7 extends Command
             foreach ($operBizers as $operBizer) {
                 $operBizer->divide = number_format(20, 2);
                 $operBizer->save();
+            }
+        });
+
+        Merchant::where('audit_status',3)
+            ->chunk(1000,function ($merchants){
+            foreach ($merchants as $merchant){
+                $merchant->audit_status = 0;
+                $merchant->save();
             }
         });
 

@@ -26,6 +26,6 @@ class Payment extends Model
 
     public static function getAllType()
     {
-        return [self::TYPE_WECHAT=>'微信支付',self::TYPE_ALIPAY=>'支付宝支付',self::TYPE_REAPAL=>'融宝支付'];
+        return [self::TYPE_WECHAT=>'微信',self::TYPE_ALIPAY=>'支付宝',self::TYPE_REAPAL=>'融宝'];
     }
 }

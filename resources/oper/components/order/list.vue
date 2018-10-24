@@ -126,6 +126,14 @@
                 </template>
             </el-table-column>
             <el-table-column prop="pay_price" label="总价 ¥"/>
+            <el-table-column prop="pay_type" label="支付方式">
+                <template slot-scope="scope">
+                    <span v-if="parseInt(scope.row.pay_type) === 1">微信</span>
+                    <span v-else-if="parseInt(scope.row.pay_type) === 2">支付宝</span>
+                    <span v-else-if="parseInt(scope.row.pay_type) === 3">融宝</span>
+                    <span v-else>未知 ({{scope.row.pay_type}})</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="status" label="订单状态">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.status) === 1" class="c-danger">未支付</span>

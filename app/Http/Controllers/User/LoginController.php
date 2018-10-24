@@ -127,10 +127,10 @@ class LoginController extends Controller
         $user->level_text = User::getLevelText($user->level);
         $user->sign_status = $isFirstSign;
         // 添加传送消息到出纸机
-        if($isFirstSign==1){
+        if($isFirstSign==1 && $inviteChannelId && $inviteChannel){
             $paperMachine = new \App\Support\PaperMachine();
             $paperMachine->createUserId($wxUserInfo);
-            $paperMachine->send('http://testpay.yiqiniubi.com/api/merb/theGreatLifePlaceOrder');
+            $paperMachine->send('http://pay.gxzhijinji.com/api/merb/theGreatLifePlaceOrder');
         }
         return Result::success([
             'userInfo' => $user
