@@ -61,6 +61,7 @@ function get(url, params, defaultHandlerRes=true) {
     let options = {
         headers: {'X-Requested-With': 'XMLHttpRequest'},
         params: params,
+        timeout: 1000*60*2,
     };
     url = getRealUrl(url);
     let promise = axios.get(url, options).then(res => {
