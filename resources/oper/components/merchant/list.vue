@@ -43,7 +43,7 @@
                     <el-option label="待审核" value="-1"/>
                     <el-option label="审核通过" value="1"/>
                     <el-option label="审核不通过" value="2"/>
-                    <!--<el-option label="重新提交审核" value="3"/>-->
+                    <el-option label="重新提交审核" value="3"/>
                 </el-select>
             </el-form-item>
             <el-form-item prop="memberNameOrMobile" label="我的员工"  >

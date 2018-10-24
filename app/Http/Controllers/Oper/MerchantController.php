@@ -116,7 +116,7 @@ class MerchantController extends Controller
             $downloadName = '我的商户列表';
         }
 
-        return (new OperMerchantExport($list))->download($downloadName.'.xlsx');
+        return (new OperMerchantExport($list,request('isPilot')))->download($downloadName.'.xlsx');
 
     }
 
