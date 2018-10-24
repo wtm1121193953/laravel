@@ -123,9 +123,10 @@ class InviteUserService
      * 解绑用户邀请关系
      * @param InviteUserRecord $inviteRecord
      * @param int $batchChangedRecordId
+     * @param bool $updateDailyStat
      * @throws \Exception
      */
-    public static function unbindInviter(InviteUserRecord $inviteRecord, $batchChangedRecordId = 0)
+    public static function unbindInviter(InviteUserRecord $inviteRecord, $batchChangedRecordId = 0, $updateDailyStat = true)
     {
         // 删除邀请记录
         $inviteRecord->delete();
@@ -144,9 +145,10 @@ class InviteUserService
         $inviteUserUnbindRecord->old_invite_user_record = $inviteRecord->toJson();
         $inviteUserUnbindRecord->save();
 
-        // 更新用户邀请数量统计
-        InviteStatisticsService::updateDailyStatByOriginInfoAndDate($inviteRecord->origin_id, $inviteRecord->origin_type, date('Y-m-d', strtotime($inviteRecord->created_at)));
-
+        if ($updateDailyStat) {
+            // 更新用户邀请数量统计
+            InviteStatisticsService::updateDailyStatByOriginInfoAndDate($inviteRecord->origin_id, $inviteRecord->origin_type, date('Y-m-d', strtotime($inviteRecord->created_at)));
+        }
     }
 
     /**
@@ -253,7 +255,7 @@ class InviteUserService
         try {
 
             // 解绑旧的邀请关系
-            self::unbindInviter($inviteUserRecord, $inviteUserBatchChangedRecordId);
+            self::unbindInviter($inviteUserRecord, $inviteUserBatchChangedRecordId, false);
 
             // 保存新的邀请记录
             $newInviteRecord = new InviteUserRecord();

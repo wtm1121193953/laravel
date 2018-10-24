@@ -309,7 +309,6 @@ class UsersController extends Controller
         $inviteChannelId = request('inviteChannelId', 0);
         $currentUser = request()->get('current_user');
 
-        set_time_limit(0);
         DB::beginTransaction();
         try {
             // 获取原邀请渠道
