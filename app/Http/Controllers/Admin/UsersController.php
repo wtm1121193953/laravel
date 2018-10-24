@@ -296,6 +296,7 @@ class UsersController extends Controller
      */
     public function changeBind()
     {
+        set_time_limit(0);
         $this->validate(request(), [
             'isAll' => 'required',
             'channelIdOrMobile' => 'required',
