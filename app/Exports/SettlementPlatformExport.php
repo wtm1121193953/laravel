@@ -68,7 +68,7 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
             $sub_bank_name = $bank_info[0];
         } else {
             $bank_name = $bank_info[0];
-            $bank_name = $bank_info[1];
+            $sub_bank_name = $bank_info[1];
         }
         return [
             $row->merchant->id??0,
