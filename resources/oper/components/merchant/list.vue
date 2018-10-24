@@ -131,11 +131,11 @@
                     <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="settlement_cycle_type" label="结算周期">
+            <!--<el-table-column prop="settlement_cycle_type" label="结算周期">
                 <template slot-scope="scope">
                     <span>{{ {1: '周结', 2: '半月结', 3: '月结', 4: '半年结', 5: '年结', 6: 'T+1', 7: '未知',}[scope.row.settlement_cycle_type] }}</span>
                 </template>
-            </el-table-column>
+            </el-table-column>-->
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
                     <merchant-item-options
