@@ -47,6 +47,7 @@ class MerchantOrderExport implements FromQuery, WithHeadings, WithMapping
             '总价￥',
             '手机号',
             '订单状态',
+            '支付方式',
         ];
     }
 
@@ -65,6 +66,15 @@ class MerchantOrderExport implements FromQuery, WithHeadings, WithMapping
         }else{
             $goosName = $row-> goods_name;
         }
+        if($row->pay_type ==1){
+            $payType = '微信';
+        }elseif($row->pay_type == 2){
+            $payType = '支付宝';
+        }elseif($row->pay_type == 3){
+            $payType = '融宝';
+        }else{
+            $payType = '未知('.$row->pay_type.')';
+        }
         return [
             $row->id,
             $row->created_at,
@@ -73,7 +83,8 @@ class MerchantOrderExport implements FromQuery, WithHeadings, WithMapping
             $goosName,
             $row->pay_price,
             $row->notify_mobile,
-            ['','未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成'][$row->status]
+            ['','未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成'][$row->status],
+            $payType
         ];
     }
 }
