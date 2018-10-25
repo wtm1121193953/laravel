@@ -15,7 +15,7 @@
             </div>
         </div>
         <el-dialog :visible.sync="showExample" width="290px">
-            <div class="example-title">注册二维码</div>
+            <div class="example-title">分享用户二维码</div>
             <img class="image" :src="qrcodeUrl" alt="">
         </el-dialog>
     </page>
