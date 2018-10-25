@@ -153,7 +153,7 @@
                 this.isShowSettlementDetail = true;
             },
             downloadExcel() {
-                let message = '确定要导出当前筛选的商户列表么？'
+                let message = '确定要导出当前筛选的数据么？'
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
                 this.$confirm(message).then(() => {

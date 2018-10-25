@@ -83,7 +83,10 @@ class SettlementPlatformService extends BaseService
             $query->where('created_at', '<=', Carbon::createFromFormat('Y-m-d',$params['endDate'])->endOfDay());
         }
 
-        if (is_array($params['status']) || $params['status'] instanceof Collection) {
+        if (!empty($params['status'])) {
+            if (!is_array($params['status'])) {
+                $params['status'] = explode(',',$params['status']);
+            }
             $query->whereIn('status', $params['status']);
         }
 
