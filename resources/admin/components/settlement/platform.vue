@@ -20,7 +20,7 @@
                 <el-form-item label="结算单生成时间">
                     <el-date-picker
                             class="w-150"
-                            v-model="query.startTime"
+                            v-model="query.startDate"
                             type="date"
                             placeholder="开始日期"
                             value-format="yyyy-MM-dd"
@@ -29,7 +29,7 @@
                     -
                     <el-date-picker
                             class="w-150"
-                            v-model="query.endTime"
+                            v-model="query.endDate"
                             type="date"
                             placeholder="结束日期"
                             value-format="yyyy-MM-dd"
