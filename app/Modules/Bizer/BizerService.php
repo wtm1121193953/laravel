@@ -143,6 +143,7 @@ class BizerService extends BaseService
         $mobile = array_get($params, 'mobile', '');
         $id = array_get($params, 'id', 0);
         $name = array_get($params, 'name', '');
+        $identityName = array_get($params, 'identityName', '');
         $bizerStartDate = array_get($params, 'startDate', '');
         $bizerEndDate = array_get($params, 'endDate', '');
         $status = array_get($params, 'status', 0);
@@ -171,7 +172,10 @@ class BizerService extends BaseService
             $query->where('status', $status);
         }
         if (($identityStatus && !empty($identityStatus)) || $identityStartDate || $identityEndDate) {
-            $query->whereHas('bizerIdentityAuditRecord', function (Builder $query) use ($identityStatus, $identityStartDate, $identityEndDate) {
+            $query->whereHas('bizerIdentityAuditRecord', function (Builder $query) use ($identityStatus, $identityStartDate, $identityEndDate, $identityName) {
+                if ($identityName) {
+                    $query->where('name', 'like', "%$identityName%");
+                }
                 if ($identityStatus) {
                     if (is_array($identityStatus) && !empty($identityStatus)) {
                         $query->whereIn('status', $identityStatus);
