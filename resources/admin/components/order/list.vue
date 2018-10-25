@@ -187,18 +187,21 @@
                     this.isLoading = false;
                     this.list = data.list;
                     this.total = data.total;
+                }).catch(err => {
+                    console.log(err)
                 })
             },
             getOptions(){
                 api.get('/getOptions').then(data => {
                     this.opers = data.list.opers;
                     this.merchants = data.list.merchants;
+                }).catch(err => {
+                    console.log(err)
                 })
             }
         },
         created(){
-            this.getOptions();
-            this.getList();
+
         },
         components: {
         }
