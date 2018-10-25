@@ -8,8 +8,8 @@
                 <el-input v-model="query.id" placeholder="业务员ID"  class="w-200" clearable></el-input>
             </el-form-item>
 
-            <el-form-item prop="name" label="昵称" >
-                <el-input v-model="query.name" placeholder="昵称"  class="w-200" clearable></el-input>
+            <el-form-item prop="identityName" label="姓名" >
+                <el-input v-model="query.identityName" placeholder="姓名"  class="w-200" clearable></el-input>
             </el-form-item>
             <el-form-item label="注册时间">
                 <el-date-picker
@@ -89,7 +89,11 @@
             <el-table-column prop="mobile" label="手机号码"/>
             <el-table-column prop="id" label="业务员ID"/>
             <el-table-column prop="created_at" label="注册时间"/>
-            <el-table-column prop="name" label="昵称"/>
+            <el-table-column prop="name" label="姓名">
+                <template slot-scope="scope">
+                    <span>{{scope.row.bizer_identity_audit_record ? scope.row.bizer_identity_audit_record.name : ''}}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="bizer_identity_audit_record.id_card_no" label="身份证号码" width="200"/>
             <el-table-column prop="bizer_identity_audit_record.front_pic" label="身份证正面">
                 <template slot-scope="scope">
@@ -190,7 +194,7 @@
                     pageSize: 15,
                     mobile: '',
                     id: '',
-                    name: '',
+                    identityName: '',
                     startDate: '',
                     endDate: '',
                     identityStartDate: '',

@@ -59,6 +59,11 @@
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="created_at" label="注册时间"/>
             <el-table-column prop="name" label="昵称"/>
+            <el-table-column prop="name" label="姓名">
+                <template slot-scope="scope">
+                    <span>{{scope.row.bizer_identity_audit_record ? scope.row.bizer_identity_audit_record.name : ''}}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1" class="c-green">正常</span>
