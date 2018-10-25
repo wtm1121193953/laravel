@@ -28,7 +28,7 @@
                         value-format="yyyy-MM-dd 23:59:59"
                 />
             </el-form-item>
-            <el-form-item label="用户">
+            <el-form-item label="用户ID">
                 <el-input type="text" clearable v-model="query.user_id" placeholder="请输入用户ID"/>
             </el-form-item>
             <el-form-item>
@@ -53,7 +53,7 @@
             </el-table-column>
             <el-table-column prop="merchant.name" label="交易商户"/>
             <el-table-column prop="oper.name" label="所属运营中心"/>
-            <el-table-column prop="user_id" label="用户"/>
+            <el-table-column prop="user_id" label="用户ID"/>
         </el-table>
 
         <el-pagination

@@ -53,7 +53,7 @@ class PlatformTradeRecordsExport implements FromQuery, WithHeadings, WithMapping
             '交易类型',
             '交易商户',
             '所属运营中心',
-            '用户',
+            '用户ID',
         ];
     }
 
