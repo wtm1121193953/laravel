@@ -7,19 +7,12 @@
             <el-form-item label="手机号">
                 <el-input type="text" clearable placeholder="请输入手机号" v-model="query.mobile" class="w-150"/>
             </el-form-item>
-            <el-form-item label="所属运营中心">
-                <el-select v-model="query.oper_id" filterable clearable >
-                    <el-option value="" label="全部"/>
-                    <el-option v-for="item in opers" :key="item.id" :value="item.id" :label="item.name"/>
-                </el-select>
+            <el-form-item label="所属运营中心ID">
+                <el-input type="text" clearable placeholder="请输入所属运营中心ID" v-model="query.oper_id" class="w-150"/>
             </el-form-item>
-            <el-form-item label="所属商户">
-                <el-select v-model="query.merchantId" filterable clearable >
-                    <el-option value="" label="全部"/>
-                    <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
-                </el-select>
+            <el-form-item label="所属商户ID">
+                <el-input type="text" clearable placeholder="请输入所属商户ID" v-model="query.merchantId" class="w-150"/>
             </el-form-item>
-
             <el-form-item label="订单类型">
                 <el-select v-model="query.type" class="w-100" clearable>
                     <el-option label="全部" value=""/>
@@ -227,7 +220,6 @@
         },
         created(){
             this.getList();
-            this.getOptions();
         },
         components: {
         }
