@@ -74,7 +74,7 @@ class V1_4_7 extends Command
         SettlementPlatform::chunk(1000,function ($sps) {
             foreach ($sps as $sp) {
                 $merchant = Merchant::find($sp->merchant_id) ;
-                if (!empty($merchant)) {
+                if (!empty($merchant->bank_name)) {
                     $sp->sub_bank_name = $merchant->bank_name . '|' . $sp->sub_bank_name;
                     $sp->save();
                 }
