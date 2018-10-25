@@ -73,7 +73,7 @@
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item prop="content" label="内容">
-                    <el-input type="textarea" :rows="2" placeholder="限2000个字" v-model="addForm.content"/>
+                    <el-input type="textarea" :rows="20" placeholder="限2000个字" v-model="addForm.content"/>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">

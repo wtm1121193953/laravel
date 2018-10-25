@@ -40,6 +40,11 @@ class V1_4_7 extends Command
      */
     public function handle()
     {
+
+        $sql = 'update admin_auth_rules  set pid=5 where id=38;';
+
+        DB::statement($sql);
+
         $sql = "ALTER TABLE `admin_auth_rules`
 	CHANGE COLUMN `url_all` `url_all` VARCHAR(1000) NOT NULL DEFAULT '' COMMENT '权限全部菜单地址, 使用逗号分隔' COLLATE 'utf8mb4_unicode_ci' AFTER `url`";
 
