@@ -17,26 +17,23 @@
                     <el-input v-model="query.merchant_id" size="small"  placeholder="商户ID"  class="w-100" clearable></el-input>
                 </el-form-item>
 
-                <el-form-item prop="startDate" label="结算单生成时间：开始时间">
+                <el-form-item label="结算单生成时间">
                     <el-date-picker
-                            v-model="query.startDate"
+                            class="w-150"
+                            v-model="query.startTime"
                             type="date"
-                            size="small"
-                            placeholder="选择开始日期"
-                            format="yyyy 年 MM 月 dd 日"
+                            placeholder="开始日期"
                             value-format="yyyy-MM-dd"
-                    ></el-date-picker>
-                </el-form-item>
-                <el-form-item prop="startDate" label="结束时间">
+
+                    />
+                    -
                     <el-date-picker
-                            v-model="query.endDate"
+                            class="w-150"
+                            v-model="query.endTime"
                             type="date"
-                            size="small"
-                            placeholder="选择结束日期"
-                            format="yyyy 年 MM 月 dd 日"
+                            placeholder="结束日期"
                             value-format="yyyy-MM-dd"
-                            :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(query.startDate) - 8.64e7}}"
-                    ></el-date-picker>
+                    />
                 </el-form-item>
                 <el-form-item label="结算状态" prop="status">
                     <el-select v-model="query.status" size="small"  multiple placeholder="请选择" class="w-150">
