@@ -95,7 +95,7 @@ class DownloadController extends Controller
 
             $signboardName = MerchantService::getSignboardNameById($merchantId);
             $filePath = MiniprogramSceneService::genSceneQrCode($scene, $width,true,$signboardName);
-            return response()->download($filePath, '分享用户二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
+            return response()->download($filePath, '支付二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
         } else {
             $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
 
