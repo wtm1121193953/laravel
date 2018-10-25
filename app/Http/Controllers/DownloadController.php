@@ -103,7 +103,7 @@ class DownloadController extends Controller
 
             WechatService::addNameToAppCode($filePath, $signboardName);
 
-            return response()->download($filePath, '支付小程序码_' . ['', '小', '中', '大'][$type] . '.jpg');
+            return response()->download($filePath, '支付二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
         }
 
 
