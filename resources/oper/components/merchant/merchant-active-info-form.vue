@@ -202,7 +202,7 @@
         logo: '',
         desc_pic_list: [],
         desc: '',
-        settlement_cycle_type: '',
+        settlement_cycle_type: 1,
         settlement_rate: 0,
         // 银行卡信息
         bank_card_type: 1,
@@ -418,9 +418,6 @@
                         {required: true, message: '商户员工人数 不能为空'},
                         {max: 50, message: '商户员工人数 不能超过50个字'},
                         {validator: validateNumber}
-                    ],
-                    settlement_cycle_type: [
-                        {required: true, message: '结算周期 不能为空'},
                     ],
                 },
                 searchOperBizMemberLoading: false,
