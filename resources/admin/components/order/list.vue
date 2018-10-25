@@ -1,5 +1,5 @@
 <template>
-    <page title="订单管理" v-loading="isLoading">
+    <page title="订单管理">
         <el-form inline :model="query" size="small">
             <el-form-item label="订单号">
                 <el-input type="text" clearable placeholder="请输入订单号" v-model="query.orderNo"/>

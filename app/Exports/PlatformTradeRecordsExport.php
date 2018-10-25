@@ -76,7 +76,7 @@ class PlatformTradeRecordsExport implements FromQuery, WithHeadings, WithMapping
             $types[$row->type],
             $row->merchant->name,
             $row->oper->name,
-            $row->user->mobile,
+            $row->user_id,
         ];
     }
 }
