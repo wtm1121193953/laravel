@@ -34,11 +34,11 @@
                 <el-form-item prop="type" label="换绑渠道类型">
                     <el-radio-group v-model="form.type">
                         <el-radio :label="1">用户</el-radio>
-                        <el-radio :label="2">商户</el-radio>
-                        <el-radio :label="3">运营中心</el-radio>
+                        <el-radio :label="2" v-if="hasRule('/api/admin/users/changeBindAdmin')">商户</el-radio>
+                        <el-radio :label="3" v-if="hasRule('/api/admin/users/changeBindAdmin')">运营中心</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item prop="channelIdOrMobile" label="运营和商户的渠道ID或用户手机号码">
+                <el-form-item prop="channelIdOrMobile" :label="hasRule('/api/admin/users/changeBindAdmin') ? '运营和商户的渠道ID或用户手机号码' : '用户手机号码'">
                     <el-input v-model="form.channelIdOrMobile"/>
                 </el-form-item>
                 <el-form-item>
