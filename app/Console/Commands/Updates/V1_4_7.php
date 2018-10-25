@@ -75,7 +75,7 @@ class V1_4_7 extends Command
             foreach ($sps as $sp) {
                 $merchant = Merchant::find($sp->merchant_id) ;
                 if (!empty($merchant->bank_name)) {
-                    $sp->sub_bank_name = $merchant->bank_name . '|' . $sp->sub_bank_name;
+                    $sp->bank_open_address = $merchant->bank_province . $merchant->bank_city . $merchant->bank_area .'|' .$sp->bank_open_address;
                     $sp->save();
                 }
 
