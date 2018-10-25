@@ -55,7 +55,7 @@
         <el-dialog
                 title="添加消息"
                 :visible.sync="addDialog"
-                width="30%"
+                width="60%"
                 center
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
