@@ -8,6 +8,7 @@ use App\Result;
 use App\ResultCode;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class MessageController
@@ -30,11 +31,18 @@ class MessageSystemController extends Controller
         }else if(strpos($uri,'user')){
             // 用户端
             $params['object_type'] = MessageSystem::OB_TYPE_USER;
+            // 添加用户最后查阅时间
+            $cacheKey = 'message_last_read_time'.$request->get('current_user')->id;
+            if(Cache::has($cacheKey)){
+                Cache::forget($cacheKey);
+            }
+            Cache::put($cacheKey,date('Y-m-d H:i:s'), 60*24*30);
+
         }else if(strpos($uri, 'merchant')){
             // 商户端
             $params['object_type'] = MessageSystem::OB_TYPE_MERCHANT;
         }else if(strpos($uri, 'oper')){
-            // 商户端
+            // 运营中心
             $params['object_type'] = MessageSystem::OB_TYPE_OPER;
         }
 
