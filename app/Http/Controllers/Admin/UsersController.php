@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\InviteStatisticsDailyUpdateByOriginInfoAndDate;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
+use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
@@ -212,7 +213,7 @@ class UsersController extends Controller
 
                 InviteUserService::unbindInviter($record);
 
-                InviteStatisticsDailyUpdateByOriginInfoAndDate::dispatch($record->origin_id, $record->origin_type, Carbon::createFromFormat('Y-m-d', $record->created_at->format('Y-m-d')));
+                InviteStatisticsService::updateDailyStatByOriginInfoAndDate($record->origin_id, $record->origin_type, Carbon::createFromFormat('Y-m-d', $record->created_at->format('Y-m-d')));
 
                 DB::commit();
 
