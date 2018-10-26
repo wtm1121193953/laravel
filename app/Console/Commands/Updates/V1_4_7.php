@@ -71,6 +71,7 @@ class V1_4_7 extends Command
             }
         });*/
 
+        /*
         SettlementPlatform::chunk(1000,function ($sps) {
             foreach ($sps as $sp) {
                 $merchant = Merchant::find($sp->merchant_id) ;
@@ -81,6 +82,16 @@ class V1_4_7 extends Command
 
             }
         });
+
+        */
+
+        $sql = 'UPDATE orders set settlement_status=1 where settlement_id=159;';
+
+        DB::statement($sql);
+
+        $sql = 'delete from settlement_platforms where id=159;';
+
+        DB::statement($sql);
 
         $this->info('执行成功');
     }
