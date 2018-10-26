@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/5/12
- * Time: 23:04
- */
 
 namespace App\Modules\Invite;
 
@@ -17,8 +11,6 @@ use App\Modules\Admin\AdminUser;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
-use App\Modules\Tps\TpsBind;
-use App\Modules\Tps\TpsBindService;
 use App\Modules\User\User;
 use App\Modules\User\UserService;
 use App\ResultCode;
