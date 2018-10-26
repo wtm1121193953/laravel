@@ -10,6 +10,7 @@ namespace App\Modules\Invite;
 
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Jobs\InviteStatisticsDailyUpdateByOriginInfoAndDate;
 use App\Jobs\MerchantLevelComputeJob;
 use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Modules\Admin\AdminUser;
@@ -123,6 +124,7 @@ class InviteUserService
      * 解绑用户邀请关系
      * @param InviteUserRecord $inviteRecord
      * @param int $batchChangedRecordId
+     * @return InviteUserUnbindRecord
      * @throws \Exception
      */
     public static function unbindInviter(InviteUserRecord $inviteRecord, $batchChangedRecordId = 0)
@@ -144,9 +146,7 @@ class InviteUserService
         $inviteUserUnbindRecord->old_invite_user_record = $inviteRecord->toJson();
         $inviteUserUnbindRecord->save();
 
-        // 更新用户邀请数量统计
-        InviteStatisticsService::updateDailyStatByOriginInfoAndDate($inviteRecord->origin_id, $inviteRecord->origin_type, date('Y-m-d', strtotime($inviteRecord->created_at)));
-
+        return $inviteUserUnbindRecord;
     }
 
     /**
@@ -189,11 +189,15 @@ class InviteUserService
             $changeBindNumber = 0;
             $changeBindErrorNumber = 0;
             $needStatisticsDate = []; //需要统计的日期
+            $originId = 0;
+            $originType = 0;
             // 循环遍历需换绑的记录，在解绑表invite_user_unbind_records中加入解绑记录;
             // 添加新的邀请记录在invite_user_records中,并删除记录表中的旧记录
             foreach ($inviteUserRecords as $inviteUserRecord) {
                 $date = $inviteUserRecord->created_at->format('Y-m-d');
                 $needStatisticsDate[$date] = $date;
+                $originId = $inviteUserRecord->origin_id;
+                $originType = $inviteUserRecord->origin_type;
 
                 try {
                     InviteUserService::changeInviter($inviteUserRecord, $newInviteChannel, $inviteUserBatchChangedRecord->id);
@@ -217,6 +221,9 @@ class InviteUserService
         if (!empty($needStatisticsDate)) {
             foreach ($needStatisticsDate as $date) {
                 InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', $date));
+                if ($originId && $originType) {
+                    InviteStatisticsDailyUpdateByOriginInfoAndDate::dispatch($originId, $originType, $date);
+                }
             }
         }
 
