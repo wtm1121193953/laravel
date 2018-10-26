@@ -222,7 +222,7 @@ class InviteUserService
             foreach ($needStatisticsDate as $date) {
                 InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', $date));
                 if ($originId && $originType) {
-                    InviteStatisticsDailyUpdateByOriginInfoAndDate::dispatch($originId, $originType, $date);
+                    InviteStatisticsDailyUpdateByOriginInfoAndDate::dispatch($originId, $originType, Carbon::createFromFormat('Y-m-d', $date));
                 }
             }
         }
