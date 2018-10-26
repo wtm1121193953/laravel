@@ -7,19 +7,12 @@
             <el-form-item label="手机号">
                 <el-input type="text" clearable placeholder="请输入手机号" v-model="query.mobile" class="w-150"/>
             </el-form-item>
-            <el-form-item label="所属运营中心">
-                <el-select v-model="query.oper_id" filterable clearable >
-                    <el-option value="" label="全部"/>
-                    <el-option v-for="item in opers" :key="item.id" :value="item.id" :label="item.name"/>
-                </el-select>
+            <el-form-item label="所属运营中心ID">
+                <el-input type="text" clearable placeholder="请输入所属运营中心ID" v-model="query.oper_id" class="w-150"/>
             </el-form-item>
-            <el-form-item label="所属商户">
-                <el-select v-model="query.merchantId" filterable clearable >
-                    <el-option value="" label="全部"/>
-                    <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
-                </el-select>
+            <el-form-item label="所属商户ID">
+                <el-input type="text" clearable placeholder="请输入所属商户ID" v-model="query.merchantId" class="w-150"/>
             </el-form-item>
-
             <el-form-item label="订单类型">
                 <el-select v-model="query.type" class="w-100" clearable>
                     <el-option label="全部" value=""/>
@@ -90,6 +83,13 @@
                                 <span>{{ scope.row.notify_mobile }}</span>
                             </el-form-item>
 
+                            <el-form-item label="商品信息：" v-if="scope.row.type == 3">
+                                <div v-for="(item, index) in scope.row.dishes_items" :key="index">
+                                    <span>{{item.dishes_goods_name}}</span>&nbsp;&nbsp;&nbsp;
+                                    <span>¥{{item.dishes_goods_sale_price}}</span>&nbsp;&nbsp;&nbsp;
+                                    <span>×{{item.number}}</span><br/>
+                                </div>
+                            </el-form-item>
 
                             <el-form-item label="备注">
                                 <span>{{ scope.row.remark }}</span>
@@ -111,7 +111,22 @@
                     <span v-else>未知({{scope.row.type}})</span>
                 </template>
             </el-table-column>
-
+            <el-table-column prop="goods_name" label="商品名称">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.type == 3 && scope.row.dishes_items.length == 1">
+                        {{scope.row.dishes_items[0].dishes_goods_name}}
+                    </span>
+                    <span v-else-if="scope.row.type == 3 && scope.row.dishes_items.length > 1">
+                        {{scope.row.dishes_items[0].dishes_goods_name}}等{{getNumber(scope.row.dishes_items)}}件商品
+                    </span>
+                    <span v-else-if="scope.row.type == 2">
+                        无
+                    </span>
+                    <span v-else>
+                        {{scope.row.goods_name}}
+                    </span>
+                </template>
+            </el-table-column>
             <el-table-column prop="pay_price" label="总价 ¥"/>
             <el-table-column prop="status" label="订单状态">
                 <template slot-scope="scope">
@@ -194,10 +209,16 @@
                     this.opers = data.list.opers;
                     this.merchants = data.list.merchants;
                 })
+            },
+            getNumber(row) {
+                let num = 0;
+                row.forEach(function (item) {
+                    num = num + item.number;
+                })
+                return num;
             }
         },
         created(){
-            this.getOptions();
             this.getList();
         },
         components: {

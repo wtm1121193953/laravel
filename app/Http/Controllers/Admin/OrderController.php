@@ -135,7 +135,7 @@ class OrderController extends Controller
             'merchant_id' => request('merchant_id'),
             'startTime' => request('startTime'),
             'endTime' => request('endTime'),
-            'mobile' => request('mobile'),
+            'user_id' => request('user_id'),
         ];
 
         $data = PlatformTradeRecordService::getList($params);
@@ -164,7 +164,7 @@ class OrderController extends Controller
             'merchant_id' => request('merchant_id'),
             'startTime' => request('startTime'),
             'endTime' => request('endTime'),
-            'mobile' => request('mobile'),
+            'user_id' => request('user_id'),
         ];
 
         $data = PlatformTradeRecordService::getList($params,true);

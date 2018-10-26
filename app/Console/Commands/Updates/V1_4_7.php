@@ -4,6 +4,7 @@ namespace App\Console\Commands\Updates;
 
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\OperBizer;
+use App\Modules\Settlement\SettlementPlatform;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -41,6 +42,7 @@ class V1_4_7 extends Command
     public function handle()
     {
 
+        /*
         $sql = 'update admin_auth_rules  set pid=5 where id=38;';
 
         DB::statement($sql);
@@ -58,6 +60,9 @@ class V1_4_7 extends Command
             }
         });
 
+        */
+
+
         /*Merchant::where('audit_status',3)
             ->chunk(1000,function ($merchants){
             foreach ($merchants as $merchant){
@@ -66,6 +71,16 @@ class V1_4_7 extends Command
             }
         });*/
 
+        SettlementPlatform::chunk(1000,function ($sps) {
+            foreach ($sps as $sp) {
+                $merchant = Merchant::find($sp->merchant_id) ;
+                if (!empty($merchant->bank_province)) {
+                    $sp->bank_open_address = $merchant->bank_province . $merchant->bank_city . $merchant->bank_area .'|' .$sp->bank_open_address;
+                    $sp->save();
+                }
+
+            }
+        });
 
         $this->info('执行成功');
     }
