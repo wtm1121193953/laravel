@@ -371,7 +371,7 @@ class MerchantService extends BaseService
     {
 
         $merchant = Merchant::where('id', $id)
-            ->where('audit_oper_id', $currentOperId)
+            //->where('audit_oper_id', $currentOperId)
             ->first();
         if (empty($merchant)) {
             throw new BaseResponseException('该商户不存在');
