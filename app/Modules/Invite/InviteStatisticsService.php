@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/5/13
- * Time: 0:11
- */
 
 namespace App\Modules\Invite;
 
