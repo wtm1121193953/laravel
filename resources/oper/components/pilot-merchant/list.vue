@@ -43,6 +43,7 @@
                     <el-option label="待审核" value="-1"/>
                     <el-option label="审核通过" value="1"/>
                     <el-option label="审核不通过" value="2"/>
+                    <el-option label="重新提交审核" value="3"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -107,7 +108,7 @@
                     </el-popover>
 
 
-                    <span v-else-if="parseInt(scope.row.audit_status) === 3" class="c-warning">重新提交审核中</span>
+                    <span v-else-if="parseInt(scope.row.audit_status) === 3" class="c-warning">重新提交审核</span>
                     <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
             </el-table-column>
