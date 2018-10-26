@@ -95,7 +95,7 @@ class V1_4_7 extends Command
         DB::statement($sql);
 
         */
-        $sql = 'update merchants set audit_status=0 where id=72989;';
+        $sql = 'update merchants set audit_status=0 where id=49671;';
 
         DB::statement($sql);
         $this->info('执行成功');
