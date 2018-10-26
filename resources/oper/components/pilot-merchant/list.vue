@@ -54,7 +54,7 @@
         <el-button class="fr" type="primary" @click="add">录入试点商户</el-button>
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
-            <el-table-column prop="id" label="商户ID"/>
+            <el-table-column prop="id" width="80" label="商户ID"/>
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="signboard_name" label="商户招牌名"/>
             <el-table-column prop="categoryPath" label="行业">
