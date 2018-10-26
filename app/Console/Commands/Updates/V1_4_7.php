@@ -85,6 +85,7 @@ class V1_4_7 extends Command
 
         */
 
+        /*
         $sql = 'UPDATE orders set settlement_status=1 where settlement_id=159;';
 
         DB::statement($sql);
@@ -93,6 +94,10 @@ class V1_4_7 extends Command
 
         DB::statement($sql);
 
+        */
+        $sql = 'update merchants set audit_status=0 where id=72989;';
+
+        DB::statement($sql);
         $this->info('执行成功');
     }
 }
