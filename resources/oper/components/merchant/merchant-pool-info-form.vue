@@ -224,6 +224,9 @@
                     }
                 }
             });
+            api.get('area/tree').then(data => {
+                this.areaOptions = data.list;
+            });
             this.initForm();
         },
         watch: {
