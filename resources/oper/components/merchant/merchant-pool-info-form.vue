@@ -97,7 +97,6 @@
         props: {
             data: Object,
             readonly: {type: Boolean, default: false}, // 商户录入信息是否只读
-            areaOptions: Array,
         },
         computed:{
 
@@ -108,6 +107,7 @@
                 currentPreviewImage: '',
                 form: deepCopy(defaultForm),
                 categoryOptions: [],
+                areaOptions: [],
                 formRules: {
                     name: [
                         {required: true, message: '商户名称不能为空', trigger: 'change'},
