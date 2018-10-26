@@ -369,6 +369,9 @@ class MerchantService extends BaseService
      */
     public static function edit($id, $currentOperId, $auditStauts = '', $isAdmin = false)
     {
+        if(empty($currentOperId)){
+            $currentOperId = 0;
+        }
 
         $merchant = Merchant::where('id', $id)
             //->where('audit_oper_id', $currentOperId)
