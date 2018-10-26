@@ -134,19 +134,20 @@ class SettlementPlatformService extends BaseService
      * @return bool [bool]
      * @throws \Exception
      */
-    public static function settlement( $merchant, $date, $type )
+    //public static function settlement( $merchant, $date, $type )
+    public static function settlement( $merchant, $date)
     {
-        $pay_type = [];
+        /*$pay_type = [];
         if($type == SettlementPlatform::TYPE_DEFAULT){
             $pay_type = [Order::PAY_TYPE_WECHAT];
         }elseif ($type == SettlementPlatform::TYPE_AGENT){
             $pay_type = [Order::PAY_TYPE_REAPAL];
-        }
+        }*/
         $query = Order::where('merchant_id', $merchant->id)
             ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
             ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
             ->where('status', Order::STATUS_FINISHED )
-            ->whereIn('type', $pay_type)
+            //->whereIn('pay_type', $pay_type)
             ->where('finish_time','<=', $date->endOfDay());
         // 统计所有需结算金额
         $sum = $query->sum('pay_price');
@@ -177,7 +178,8 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform->merchant_id = $merchant->id;
             $settlementPlatform->start_date = $start_date;
             $settlementPlatform->end_date = $end_date;
-            $settlementPlatform->type = $type;
+            //$settlementPlatform->type = $type;
+            $settlementPlatform->type = 1;
             $settlementPlatform->settlement_no = $settlementNum;
             $settlementPlatform->settlement_rate = $merchant->settlement_rate;
             $settlementPlatform->bank_open_name = $merchant->bank_open_name;
