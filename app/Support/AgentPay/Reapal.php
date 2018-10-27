@@ -29,19 +29,21 @@ class Reapal extends AgentPayBase
 
     public function __construct()
     {
+
+        $this->_class_name = basename (__CLASS__);
         parent::__construct();
 
         //正式商户ID
-        $this->merchantId = '100000001304400';
+        $this->merchantId = $this->_configs['merchantId'];
         //正式商户邮箱
-        $this->sellerEmail = 'evan.li@daqian520.com';
+        $this->sellerEmail = $this->_configs['sellerEmail'];
 
         //商户私钥
         $this->merchantPrivateKey = resource_path('reapal/cert/user-rsa.pem');
         //融宝公钥
         $this->reapalPublicKey = resource_path('reapal/cert/itrus001.pem');
 
-        $this->apiKey = '0f45d96ba3f4685f4f4abb7ca1133e686740e65be1d9983e7a4ga202ac6e852g';
+        $this->apiKey = $this->_configs['apiKey'];
         $this->dsfUrl = 'https://agentpay.reapal.com';
         $this->charset = 'utf-8';
         $this->dsf_sign_type = 'MD5';
