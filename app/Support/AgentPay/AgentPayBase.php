@@ -12,16 +12,17 @@ use App\Modules\Payment\AgentPay;
 
 abstract class AgentPayBase
 {
-    protected $_configs = [];
-    protected $_class_name = '';
+    protected $_configs = [];//配置信息
+    protected $_class_name = '';//当前代付的类名
+    protected $_angetpay_info = '';//代付信息
     public function __construct()
     {
-        $m = AgentPay::where('class_name',$this->_class_name)->first();
+        $this->_angetpay_info = AgentPay::where('class_name',$this->_class_name)->first();
 
-        if (empty($m)) {
+        if (empty($this->_angetpay_info)) {
             throw new ParamInvalidException('代付类名配置错误');
         }
 
-        $this->_configs = json_decode($m->configs, true);
+        $this->_configs = json_decode($this->_angetpay_info->configs, true);
     }
 }
