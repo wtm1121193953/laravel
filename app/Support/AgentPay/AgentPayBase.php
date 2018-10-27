@@ -9,6 +9,7 @@ namespace App\Support\AgentPay;
 
 abstract class AgentPayBase
 {
+    protected $__config = [];
     public function __construct()
     {
     }

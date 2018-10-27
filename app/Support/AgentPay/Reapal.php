@@ -11,6 +11,7 @@ class Reapal extends AgentPayBase
 {
     public function __construct()
     {
+        $this->__config['k1'] = 'v1';
         parent::__construct();
     }
 }
