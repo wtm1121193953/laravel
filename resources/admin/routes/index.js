@@ -27,6 +27,7 @@ import SettlementPlatfroms from '../components/settlement/platform.vue'
 
 import StatisticsOper from '../components/statistics/oper.vue'
 import payment from "./payment";
+import agentpay from "./agentpay";
 /**
  *
  */
@@ -58,6 +59,7 @@ const routes = [
     ...Version,
     ...payment,
     ...message,
+    ...agentpay,
 
     // 财务模块
     {

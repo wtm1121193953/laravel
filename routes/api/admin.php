@@ -120,6 +120,12 @@ Route::prefix('admin')
         Route::post('payment/edit', 'PaymentController@edit');
         Route::post('payment/del', 'PaymentController@del');
 
+        Route::get('agentpays', 'AgentPayController@getList');
+        Route::get('agentpay/detail', 'AgentPayController@detail');
+        Route::post('agentpay/add', 'AgentPayController@add');
+        Route::post('agentpay/edit', 'AgentPayController@edit');
+        Route::post('agentpay/del', 'AgentPayController@del');
+
         Route::get('orders','OrderController@getList');
         Route::get('getOptions','OrderController@getOptions');
         Route::get('order/export','OrderController@export');

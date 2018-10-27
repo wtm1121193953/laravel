@@ -1,5 +1,5 @@
 <template>
-    <page title="添加支付方式" :breadcrumbs="{支付方式管理: '/payments'}" v-loading="loading">
+    <page title="添加代付方式" :breadcrumbs="{代付方式管理: '/agentpays'}" v-loading="loading">
         <el-col :span="12">
             <payment-form
                     ref="addForm"
@@ -24,13 +24,13 @@
         },
         methods: {
             cancel(){
-                router.push('/payments');
+                router.push('/agentpays');
             },
             doAdd(data){
                 this.loading = true;
-                api.post('/payment/add', data).then(() => {
+                api.post('/agentpay/add', data).then(() => {
                     this.$refs.addForm.resetForm();
-                    router.push('/payments');
+                    router.push('/agentpays');
                 }).finally(() => {
                     this.loading = false;
                 })
