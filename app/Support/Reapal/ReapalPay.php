@@ -29,21 +29,21 @@ class ReapalPay
     public function __construct()
     {
 
-        //测试商户ID
-        $this->merchantId = config('reapal.merchant_id');
-        //测试商户邮箱
-        $this->sellerEmail = config('reapal.seller_email');
+        //正式商户ID
+        $this->merchantId = '100000001304400';
+        //正式商户邮箱
+        $this->sellerEmail = 'evan.li@daqian520.com';
+        $this->apiKey = '0f45d96ba3f4685f4f4abb7ca1133e686740e65be1d9983e7a4ga202ac6e852g';
 
         //商户私钥
-        $this->merchantPrivateKey = config('reapal.merchantPrivateKey');
+        $this->merchantPrivateKey = resource_path('reapal/cert/user-rsa.pem');
         //融宝公钥
-        $this->reapalPublicKey = config('reapal.reapalPublicKey');
+        $this->reapalPublicKey = resource_path('reapal/cert/itrus001.pem');
 
-        $this->apiKey = config('reapal.apiKey');
-        $this->charset = config('reapal.charset');
-        $this->apiUrl = config('reapal.api_url');
-        $this->apiVersion = config('reapal.api_version');
-        $this->api_sign_type = config('reapal.api_sign_type');
+        $this->charset = 'utf-8';
+        $this->apiUrl = 'http://api.reapal.com';
+        $this->apiVersion = '4.0.1';
+        $this->api_sign_type = 'MD5';
     }
 
 

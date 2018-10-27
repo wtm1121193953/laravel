@@ -10,7 +10,7 @@ namespace App\Http\Controllers;
 
 use App\Modules\Settlement\SettlementPlatform;
 use App\Modules\Settlement\SettlementPlatformService;
-use App\Support\Reapal\ReapalAgentPay;
+use App\Support\AgentPay\Reapal;
 use Illuminate\Support\Facades\App;
 
 /**
@@ -25,7 +25,7 @@ class AgentPayController extends Controller
      */
     public function reapalNotify()
     {
-        $reapalAgentPay = new ReapalAgentPay();
+        $reapalAgentPay = new Reapal();
         $res = $reapalAgentPay->agentNotify();
 
         $settlement = SettlementPlatformService::getBySettlementNo($res['settlement_no']);
