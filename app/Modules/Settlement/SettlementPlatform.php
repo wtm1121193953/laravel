@@ -34,6 +34,7 @@ use Illuminate\Support\Carbon;
  * @property string logistics_name
  * @property string logistics_no
  * @property int status
+ * @property int settlement_cycle_type
  * @property int settlement_pay_batch_id
  * @property string pay_batch_no
  * @property string reason
@@ -50,6 +51,16 @@ class SettlementPlatform extends BaseModel
     //结算类型 1-手动打款 2-融宝代付
     const TYPE_DEFAULT = 1;
     const TYPE_AGENT = 2;
+
+    /**
+     * 结算类型
+     */
+    const SETTLE_WEEKLY = 1; // 周结
+    const SETTLE_HALF_MONTHLY = 2; // 半月结
+    const SETTLE_MONTHLY = 3; // 月结
+    const SETTLE_HALF_YEARLY = 4; // 半年结
+    const SETTLE_YEARLY = 5; // 年结
+    const SETTLE_DAY_ADD_ONE = 6; // T+1
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

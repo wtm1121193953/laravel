@@ -42,6 +42,7 @@ class SettlementAgentPayDaily implements ShouldQueue
         SettlementPlatform::select('id')
             ->where('status','=', SettlementPlatform::STATUS_UN_PAY)
             ->where('type','=',SettlementPlatform::TYPE_AGENT)
+            ->where('settlement_cycle_type','=',SettlementPlatform::SETTLE_DAY_ADD_ONE)
             ->chunk(1000, function(Collection $list){
                 SettlementAgentPay::dispatch($list->pluck('id'));
             });
