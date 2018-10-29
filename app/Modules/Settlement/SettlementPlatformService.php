@@ -64,7 +64,8 @@ class SettlementPlatformService extends BaseService
      */
     public static function getListForSaas(array $params = [],bool $return_query = false)
     {
-        $query = SettlementPlatform::where('id', '>', 0);
+        $query = SettlementPlatform::where('id', '>', 0)
+            ->where('settlement_cycle_type',SettlementPlatform::SETTLE_DAY_ADD_ONE);
         if (!empty($params['merchant_name'])) {
             $query->whereHas('merchant',function($q) use ($params) {
                 $q->where('name', 'like', "%{$params['merchant_name']}%");
@@ -130,24 +131,16 @@ class SettlementPlatformService extends BaseService
      * @DateTime 2018-08-24
      * @param $merchant
      * @param Carbon $date
-     * @param $type
      * @return bool [bool]
      * @throws \Exception
      */
-    //public static function settlement( $merchant, $date, $type )
     public static function settlement( $merchant, $date)
     {
-        /*$pay_type = [];
-        if($type == SettlementPlatform::TYPE_DEFAULT){
-            $pay_type = [Order::PAY_TYPE_WECHAT];
-        }elseif ($type == SettlementPlatform::TYPE_AGENT){
-            $pay_type = [Order::PAY_TYPE_REAPAL];
-        }*/
         $query = Order::where('merchant_id', $merchant->id)
             ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
             ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
             ->where('status', Order::STATUS_FINISHED )
-            //->whereIn('pay_type', $pay_type)
+            ->where('pay_type', Order::PAY_TYPE_REAPAL)
             ->where('finish_time','<=', $date->endOfDay());
         // 统计所有需结算金额
         $sum = $query->sum('pay_price');
@@ -178,8 +171,7 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform->merchant_id = $merchant->id;
             $settlementPlatform->start_date = $start_date;
             $settlementPlatform->end_date = $end_date;
-            //$settlementPlatform->type = $type;
-            $settlementPlatform->type = 1;
+            $settlementPlatform->type = SettlementPlatform::TYPE_AGENT;
             $settlementPlatform->settlement_cycle_type = $merchant->settlement_cycle_type;
             $settlementPlatform->settlement_no = $settlementNum;
             $settlementPlatform->settlement_rate = $merchant->settlement_rate;

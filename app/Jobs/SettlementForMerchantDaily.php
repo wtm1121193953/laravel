@@ -25,7 +25,6 @@ class SettlementForMerchantDaily implements ShouldQueue
 
     protected $merchantId;
     protected $date;
-    //protected $type;
 
     /**
      *
@@ -38,7 +37,6 @@ class SettlementForMerchantDaily implements ShouldQueue
     {
         $this->merchantId = $merchantId;
         $this->date = $date;
-        //$this->type = [SettlementPlatform::TYPE_DEFAULT,SettlementPlatform::TYPE_AGENT];
     }
 
 
@@ -68,9 +66,6 @@ class SettlementForMerchantDaily implements ShouldQueue
             return;
         }*/
         try {
-            /*foreach ($this->type as $key => $val){
-                SettlementPlatformService::settlement($merchant, $this->date, $val);
-            }*/
 
             SettlementPlatformService::settlement($merchant, $this->date);
         }catch (\Exception $e){
