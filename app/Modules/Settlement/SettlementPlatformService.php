@@ -26,9 +26,9 @@ class SettlementPlatformService extends BaseService
     public static $status_vals = [
         1 => '未打款',
         2 => '打款中',
-        3 => '已打款',
-        4 => '已到账',
-        5 => '打款失败',            // changed by Jerry 新增状态
+        3 => '打款成功',
+        4 => '打款失败',
+        5 => '已重新打款',            // changed by Jerry 新增状态
     ];
     /**
      * 获取结算单列表
@@ -98,10 +98,10 @@ class SettlementPlatformService extends BaseService
         }
         $data = $query->paginate();
 
-        $data->each(function ($item) {
+        /*$data->each(function ($item) {
             $item->status_val = self::$status_vals[$item->status];
-            if($item->satatus==5) $item->status_val .= $item->reason;
-        });
+            if($item->satatus==4) $item->status_val .= $item->reason;
+        });*/
         return $data;
     }
 
@@ -249,7 +249,10 @@ class SettlementPlatformService extends BaseService
     public static function getByIdModifyStatus($id)
     {
         $data = SettlementPlatform::where('id', $id)->update(
-            ['status' => SettlementPlatform::STATUS_PAID]
+            [
+                'status' => SettlementPlatform::STATUS_RE_PAY,
+                'reason' => ''
+            ]
         );
         return $data;
     }

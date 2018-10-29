@@ -41,12 +41,12 @@ use Illuminate\Support\Carbon;
  */
 class SettlementPlatform extends BaseModel
 {
-    //状态 1-未打款 2-打款中 3-已打款 4-已到账 5-打款失败
+    //状态 1-未打款 2-打款中 3-打款成功 4-打款失败 5-已重新打款
     const STATUS_UN_PAY = 1;
     const STATUS_PAYING = 2;
     const STATUS_PAID = 3;
-    const STATUS_INTO_ACCOUNT = 4;
-    const STATUS_FAIL = 5;
+    const STATUS_FAIL = 4;
+    const STATUS_RE_PAY = 5;
 
     //结算类型 1-手动打款 2-融宝代付
     const TYPE_DEFAULT = 1;
