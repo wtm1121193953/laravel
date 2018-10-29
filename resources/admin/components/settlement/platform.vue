@@ -1,6 +1,10 @@
 <template>
 
-    <page title="商户货款结算管理" v-loading="isLoading">
+    <page :title="searchTypeName" v-loading="isLoading">
+        <el-tabs v-model="originType" type="card" @tab-click="originTypeChange">
+            <el-tab-pane label="T+1账单" name="settlementDay"></el-tab-pane>
+            <el-tab-pane label="月结账单" name="settlementMonth"></el-tab-pane>
+        </el-tabs>
         <el-col style="margin-bottom: 10px;">
             <el-alert
                     title="温馨提示：T+1结算单规则，单日总订单金额小于100元，不生成结算单，总订单金额累计到100元后再生成结算单；月结账单无最低消费金额限制。"
@@ -115,11 +119,13 @@
             return {
                 isShowSettlementDetail: false,
                 settlement: {},
+                originType: 'settlementDay',
                 activeTab: 'merchant',
                 showDetail: false,
                 isLoading: false,
                 unAudit:false,
                 detailMerchant:null,
+                searchTypeName: '',
                 query: {
                     merchant_name: '',
                     merchant_id:'',
@@ -137,6 +143,12 @@
             }
         },
         methods: {
+            getOriginTypeText(){
+                return {
+                    'settlementDay': 'T+1账单',
+                    'settlementMonth': '月结账单'
+                }[this.originType]
+            },
             search() {
                 if (this.query.startDate > this.query.endDate) {
                     this.$message.error('搜索的开始时间不能大于结束时间！');
@@ -147,8 +159,11 @@
             },
             getList(){
                 this.tableLoading = true;
+                let originText = this.getOriginTypeText();
+                this.searchTypeName = '商户货款结算管理 > ' + originText;
                 let params = {};
                 Object.assign(params, this.query);
+                Object.assign(params, {origin_type:this.originType});
                 api.get('/settlement/platforms', params).then(data => {
                     this.query.page = params.page;
                     this.list = data.list;
@@ -182,6 +197,9 @@
                     api.get('/settlement/modifyStatus', {id: scope.row.id});
                     this.getList();
                 })
+            },
+            originTypeChange(){
+                this.getList();
             },
         },
         created(){
