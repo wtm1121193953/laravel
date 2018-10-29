@@ -80,7 +80,7 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
      */
     public function map($row): array
     {
-        $payments = Payment::getAllType();
+        $payments = [1=>'微信',2=>'支付宝',3=>'融宝'];
         return [
             $row->merchant_id,
             $row->merchant_name,

@@ -34,7 +34,7 @@ class PaymentService extends BaseService
             $types = Payment::getAllType();
             $data->each(function ($item) use ($types) {
 
-                $item->type_val = $types[$item->type];
+                $item->type_val = $types[$item->type]??'无';
 
 
             });

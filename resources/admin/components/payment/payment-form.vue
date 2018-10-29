@@ -8,6 +8,7 @@
                     </el-form-item>
                     <el-form-item label="支付类型" prop="type">
                         <el-select v-model="form.type" placeholder="请选择">
+                            <el-option label="无" :value="0"/>
                             <el-option label="微信" :value="1"/>
                             <el-option label="支付宝" :value="2"/>
                         </el-select>
