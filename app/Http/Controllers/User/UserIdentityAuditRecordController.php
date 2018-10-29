@@ -32,6 +32,7 @@ class UserIdentityAuditRecordController extends Controller
         $request->offsetSet('user_id',$request->get('current_user')->id);
         $request->validate([
             'name'          => 'required|max:20',
+            'country_id'    => 'required',
             'id_card_no'    => 'bail|required|min:18|identitycards|unique:user_identity_audit_records',
             'front_pic'     => 'required',
             'opposite_pic'  => 'required',
@@ -39,6 +40,7 @@ class UserIdentityAuditRecordController extends Controller
         ]);
         $saveData = [
             'name'          => $request->get('name'),
+            'country_id'    => $request->get('country_id'),
             'id_card_no'    => $request->get('id_card_no'),
             'front_pic'     => $request->get('front_pic'),
             'opposite_pic'  => $request->get('opposite_pic'),
@@ -58,6 +60,7 @@ class UserIdentityAuditRecordController extends Controller
     {
         $request->validate([
             'name'          => 'required|max:20',
+            'country_id'    => 'required',
             'id_card_no'    => 'bail|required|min:18|identitycards',
             'front_pic'     => 'required',
             'opposite_pic'  => 'required',
@@ -65,6 +68,7 @@ class UserIdentityAuditRecordController extends Controller
 
         $saveData = [
             'name'          => $request->get('name'),
+            'country_id'    => $request->get('country_id'),
             'id_card_no'    => $request->get('id_card_no'),
             'front_pic'     => $request->get('front_pic'),
             'opposite_pic'  => $request->get('opposite_pic')
