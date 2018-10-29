@@ -44,13 +44,23 @@
             <el-table-column prop="date" label="时间"/>
             <el-table-column prop="oper_id" label="运营中心id"/>
             <el-table-column prop="oper.name" label="运营中心名称"/>
-            <el-table-column prop="merchant_num" label="商户数"/>
-            <el-table-column prop="user_num" label="邀请用户数"/>
-            <el-table-column prop="order_paid_num" label="总订单量（已支付）"/>
-            <el-table-column prop="order_refund_num" label="总退款量"/>
-            <el-table-column prop="order_paid_amount" label="总订单金额（已支付）"/>
-            <el-table-column prop="order_refund_amount" label="总退款金额"/>
-
+            <el-table-column label="运营中心省份+城市">
+                <template slot-scope="scope">
+                    <span>{{scope.row.oper.province}}</span>
+                    <span>{{scope.row.oper.city}}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="user_num" label="运营中心邀请会员数"/>
+            <el-table-column prop="merchant_invite_num" label="商户邀请会员数"/>
+            <el-table-column prop="oper_and_merchant_invite_num" label="运营中心及商户共邀请会员数"/>
+            <el-table-column prop="merchant_total_num" label="商户总数"/>
+            <el-table-column prop="merchant_num" label="正式商户数"/>
+            <el-table-column prop="merchant_pilot_num" label="试点商户数"/>
+            <el-table-column label="总金额(已完成)/笔数">
+                <template slot-scope="scope">
+                    {{scope.row.order_paid_amount}}/{{scope.row.order_paid_num}}笔
+                </template>
+            </el-table-column>
         </el-table>
         <el-pagination
                 class="fr m-t-20"
