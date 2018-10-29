@@ -99,7 +99,7 @@ class WalletService extends BaseService
             return $wallet;
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::info('减余额数据库错误', [
+            Log::info('增加余额数据库错误', [
                 'message' => $e->getMessage(),
                 'data' => $e
             ]);
