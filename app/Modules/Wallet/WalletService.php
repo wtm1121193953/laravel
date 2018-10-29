@@ -76,23 +76,35 @@ class WalletService extends BaseService
 
         // 1.添加冻结金额
         // 2.添加钱包流水
-        $wallet->increment('balance', $amount);  // 更新钱包的冻结金额
+        DB::beginTransaction();
+        try{
+            $wallet->increment('balance', $amount);  // 更新钱包的冻结金额
 
-        // 钱包流水表 添加钱包流水记录
-        $walletBill = new WalletBill();
-        $walletBill->wallet_id = $wallet->id;
-        $walletBill->origin_id = $wallet->origin_id;
-        $walletBill->origin_type = $wallet->origin_type;
-        $walletBill->bill_no = WalletService::createWalletBillNo();
-        $walletBill->type = $type;
-        $walletBill->obj_id = $objId;
-        $walletBill->inout_type = WalletBill::IN_TYPE;
-        $walletBill->amount = $amount;
-        $walletBill->amount_type = WalletBill::AMOUNT_TYPE_UNFREEZE;
-        $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
-        $walletBill->after_balance = $wallet->balance;
-        $walletBill->save();
-        return $wallet;
+            // 钱包流水表 添加钱包流水记录
+            $walletBill = new WalletBill();
+            $walletBill->wallet_id = $wallet->id;
+            $walletBill->origin_id = $wallet->origin_id;
+            $walletBill->origin_type = $wallet->origin_type;
+            $walletBill->bill_no = WalletService::createWalletBillNo();
+            $walletBill->type = $type;
+            $walletBill->obj_id = $objId;
+            $walletBill->inout_type = WalletBill::IN_TYPE;
+            $walletBill->amount = $amount;
+            $walletBill->amount_type = WalletBill::AMOUNT_TYPE_UNFREEZE;
+            $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
+            $walletBill->after_balance = $wallet->balance;
+            $walletBill->save();
+
+            DB::commit();
+            return $wallet;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::info('增加余额数据库错误', [
+                'message' => $e->getMessage(),
+                'data' => $e
+            ]);
+            throw $e;
+        }
 
     }
 
@@ -199,25 +211,41 @@ class WalletService extends BaseService
             throw new BaseResponseException('减少的金额不能小于零');
         }
 
+        if ($wallet->balance < $amount) {
+            throw new BaseResponseException('钱包余额不足');
+        }
+
         // 1.添加冻结金额
         // 2.添加钱包流水
-        $wallet->decrement('balance', $amount);  // 更新钱包的冻结金额
+        DB::beginTransaction();
+        try{
+            $wallet->decrement('balance', $amount);  // 更新钱包的冻结金额
 
-        // 钱包流水表 添加钱包流水记录
-        $walletBill = new WalletBill();
-        $walletBill->wallet_id = $wallet->id;
-        $walletBill->origin_id = $wallet->origin_id;
-        $walletBill->origin_type = $wallet->origin_type;
-        $walletBill->bill_no = WalletService::createWalletBillNo();
-        $walletBill->type = $type;
-        $walletBill->obj_id = $objId;
-        $walletBill->inout_type = WalletBill::OUT_TYPE;
-        $walletBill->amount = $amount;
-        $walletBill->amount_type = WalletBill::AMOUNT_TYPE_UNFREEZE;
-        $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
-        $walletBill->after_balance = $wallet->balance;
-        $walletBill->save();
-        return $wallet;
+            // 钱包流水表 添加钱包流水记录
+            $walletBill = new WalletBill();
+            $walletBill->wallet_id = $wallet->id;
+            $walletBill->origin_id = $wallet->origin_id;
+            $walletBill->origin_type = $wallet->origin_type;
+            $walletBill->bill_no = WalletService::createWalletBillNo();
+            $walletBill->type = $type;
+            $walletBill->obj_id = $objId;
+            $walletBill->inout_type = WalletBill::OUT_TYPE;
+            $walletBill->amount = $amount;
+            $walletBill->amount_type = WalletBill::AMOUNT_TYPE_UNFREEZE;
+            $walletBill->after_amount = $wallet->balance + $wallet->freeze_balance;
+            $walletBill->after_balance = $wallet->balance;
+            $walletBill->save();
+            DB::commit();
+            return $wallet;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::info('减余额数据库错误', [
+                'message' => $e->getMessage(),
+                'data' => $e
+            ]);
+            throw $e;
+        }
+
     }
 
     /**
@@ -590,6 +618,7 @@ class WalletService extends BaseService
         {
             throw new BaseResponseException('交易密码不正确', ResultCode::PARAMS_INVALID);
         }
+        return $wallet;
     }
 
     /**
