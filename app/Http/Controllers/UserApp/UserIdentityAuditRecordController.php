@@ -7,12 +7,11 @@
  */
 namespace App\Http\Controllers\UserApp;
 
-//use App\Exceptions\DataNotFoundException;
+use App\Exceptions\ParamInvalidException;
 use App\Result;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\User\UserIdentityAuditRecordService;
-//use App\Exceptions\BaseResponseException;
 
 /**
  * 验证记录
@@ -39,11 +38,27 @@ class UserIdentityAuditRecordController extends Controller
         $request->validate([
             'name' => 'required',
             'country_id'    => 'required',
-            'id_card_no' => 'bail|required|min:18|identitycards|unique:user_identity_audit_records',
+            'id_card_no' => 'bail|required|unique:user_identity_audit_records',
             'front_pic' => 'required',
             'opposite_pic' => 'required',
             'user_id' => 'unique:user_identity_audit_records'
         ]);
+
+        $countryId = $request->get('country_id');
+        $idCardNo = $request->get('id_card_no');
+
+        if($countryId == 2){
+            $reg = '/(^((\s?[A-Za-z])|([A-Za-z]{2}))\d{6}\((([0−9aA])|([0-9aA]))\)$)/';
+        }elseif ($countryId == 3){
+            $reg = '/^[1|5|7][0-9]{6}\([0-9Aa]\)/';
+        }elseif ($countryId == 4){
+            $reg = '/^[a-zA-Z][0-9]{9}$/';
+        }else{
+            $reg = '/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/';
+        }
+        if(!preg_match($reg,$idCardNo)){
+            throw new ParamInvalidException('请输入正确的身份证号码');
+        }
         $saveData = [
             'name' => $request->get('name'),
             'country_id' => $request->get('country_id'),
@@ -67,10 +82,26 @@ class UserIdentityAuditRecordController extends Controller
         $request->validate([
             'name' => 'required',
             'country_id' => 'required',
-            'id_card_no' => 'bail|required|min:18|identitycards',
+            'id_card_no' => 'required',
             'front_pic' => 'required',
             'opposite_pic' => 'required',
         ]);
+
+        $countryId = $request->get('country_id');
+        $idCardNo = $request->get('id_card_no');
+
+        if($countryId == 2){
+            $reg = '/(^((\s?[A-Za-z])|([A-Za-z]{2}))\d{6}\((([0−9aA])|([0-9aA]))\)$)/';
+        }elseif ($countryId == 3){
+            $reg = '/^[1|5|7][0-9]{6}\([0-9Aa]\)/';
+        }elseif ($countryId == 4){
+            $reg = '/^[a-zA-Z][0-9]{9}$/';
+        }else{
+            $reg = '/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/';
+        }
+        if(!preg_match($reg,$idCardNo)){
+            throw new ParamInvalidException('请输入正确的身份证号码');
+        }
 
         $saveData = [
             'name' => $request->get('name'),
