@@ -498,17 +498,23 @@ class OrderController extends Controller
      */
     private function _returnOrder($order,$currentOperId,$merchant,$orderNo){
         $sdkConfig = null;
+
         if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
-            $isOperSelf = 0;
             if($currentOperId == 0){ // 在平台小程序下
                 $isOperSelf = 1;
                 $sdkConfig = $this->_payToPlatform($order);
+            }else {
+                $isOperSelf = 0;
+                $sdkConfig = null;
             }
         }else {
             $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
             if($isOperSelf == 1) {
+//                $sdkConfig = $this->_wechatUnifyPayToOper($order);
                 $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
                 $sdkConfig = $this->_payByWechat($order,$payApp);
+            }else {
+                $sdkConfig = null;
             }
         }
 
