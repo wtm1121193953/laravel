@@ -16,6 +16,7 @@ use App\Modules\Oper\Oper;
 use App\Modules\User\User;
 use App\Modules\User\UserMapping;
 use App\Result;
+use Illuminate\Filesystem\Cache;
 
 class UserController extends Controller
 {
@@ -63,6 +64,34 @@ class UserController extends Controller
         $userInfo->wx_nick_name = $wxUserInfo->nickName;
         $userInfo->wx_avatar_url = $wxUserInfo->avatarUrl;
         $userInfo->save();
+
+        return Result::success();
+    }
+
+    /**
+     * 设置个人头像接口
+     */
+    public function setAvatar()
+    {
+        $user = request()->get('current_user');
+        $avatarUrl = request('avatar_url');
+        $name = request('name');
+        $userInfo = User::find($user->id);
+        if (empty($userInfo)) {
+            throw new BaseResponseException('该用户不存在');
+        }
+        if ($avatarUrl){
+            $userInfo->avatar_url = $avatarUrl;
+        }
+
+        if ($name){
+            $userInfo->name = $name;
+        }
+        $userInfo->save();
+
+        // 修改用户信息后更新缓存中的用户信息
+        $token = request()->headers->get('token');
+        Cache::put('token_to_user_' . $token, $userInfo, 60 * 24 * 30);
 
         return Result::success();
     }
