@@ -156,6 +156,9 @@ return [
         'user_id'   =>  [
             'unique'    =>  '不可重复提交'
         ],
+        'country_id'   =>  [
+            'required'    =>  '身份证号码类型不能为空'
+        ],
         'id_card_no'    =>  [
             'unique'        =>  '身份证号码已验证过',
             'identitycards' =>  '身份证号码格式错误',

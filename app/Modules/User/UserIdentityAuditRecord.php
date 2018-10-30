@@ -18,6 +18,7 @@ use App\BaseModel;
  * @package App\Modules\User
  * @property integer    user_id
  * @property string    name
+ * @property integer country_id
  * @property string    id_card_no
  * @property string     front_pic
  * @property string     opposite_pic

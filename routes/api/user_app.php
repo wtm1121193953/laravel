@@ -116,6 +116,8 @@ Route::prefix('app/user')
         Route::get('message/noticesDetail', 'MessageController@getNoticeDetail')->middleware(UserLoginFilter::class);
         Route::get('message/systemDetail', 'MessageController@getSystemDetail')->middleware(UserLoginFilter::class);
 
-    });
+        Route::get('app/user/message/systems', 'Admin\MessageSystemController@getSystems')->middleware('user_app',UserLoginFilter::class);
 
-    Route::get('app/user/message/systems', 'Admin\MessageSystemController@getSystems')->middleware('user_app',UserLoginFilter::class);
+        Route::get('/country/list', 'CountryController@getList');
+
+    });
