@@ -9,7 +9,7 @@
 namespace App\Console\Commands\Updates;
 
 use App\Jobs\ImageMigrationToCOSJob;
-use App\Jobs\Schedule\OperStatisticsDailyJob;
+use App\Jobs\Schedule\OperAndMerchantAndUserStatisticsDailyJob;
 use App\Modules\Bizer\BizerIdentityAuditRecord;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Dishes\DishesItem;
@@ -60,7 +60,7 @@ class V1_4_5 extends Command
         $i = 1;
         while (1) {
             $endTime = date('Y-m-d', strtotime("-{$i} day")) . ' 23:59:59';
-            OperStatisticsDailyJob::dispatch($endTime);
+            OperAndMerchantAndUserStatisticsDailyJob::dispatch($endTime);
             if (date('Y-m-d', strtotime("-{$i} day")) <= '2018-04-17') {
                 break;
             }

@@ -56,7 +56,9 @@ class MerchantStatisticsService extends BaseService
                 ->whereIn('status', Order::STATUS_FINISHED)
                 ->sum('pay_price');
 
-            (new MerchantStatistics)->updateOrCreate($where, $row);
+            if ($row['invite_user_num'] != 0 && $row['order_finished_num'] != 0 && $row['order_finished_amount'] != 0) {
+                (new MerchantStatistics)->updateOrCreate($where, $row);
+            }
         }
     }
 }

@@ -7,6 +7,7 @@
  */
 namespace App\Http\Controllers\Admin;
 
+use App\Exceptions\BaseResponseException;
 use App\Exports\StatisticsOperExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Oper\OperService;
@@ -58,15 +59,30 @@ class StatisticsController extends Controller
             $endDate = $endDate->format('Y-m-d');
         }
 
-        $data = OperStatisticsService::getList([
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'oper_id' => $oper_id,
-        ]);
+        $orderColumn = request('orderColumn', null);
+        $orderType = request('orderType', null);
+        $steType = request('staType');
+
+        if ($steType == 3) {
+            $data = OperStatisticsService::getList([
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'oper_id' => $oper_id,
+                'page' => $page,
+                'orderColumn' => $orderColumn,
+                'orderType' => $orderType,
+            ]);
+        } elseif ($steType == 2) {
+
+        } elseif ($steType == 1) {
+
+        } else {
+            throw new BaseResponseException('该营销统计类型不存在');
+        }
 
         return Result::success([
-            'list' => $data->items(),
-            'total' => $data->total(),
+            'list' => $data['data'],
+            'total' => $data['total'],
         ]);
     }
 

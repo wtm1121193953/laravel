@@ -40,7 +40,7 @@
         <el-col class="m-t-15 m-b-15">
             <el-alert v-if="timeType == 'today'" type="success" title="注: 当日数据每半个小时更新一次"/>
         </el-col>
-        <el-table :data="list" stripe v-loading="isLoading">
+        <el-table :data="list" stripe v-loading="isLoading" @sort-change="sortChange">
             <el-table-column prop="date" label="时间"/>
             <el-table-column prop="oper_id" label="运营中心id"/>
             <el-table-column prop="oper.name" label="运营中心名称"/>
@@ -52,10 +52,10 @@
             </el-table-column>
             <el-table-column prop="user_num" label="运营中心邀请会员数"/>
             <el-table-column prop="merchant_invite_num" label="商户邀请会员数"/>
-            <el-table-column prop="oper_and_merchant_invite_num" label="运营中心及商户共邀请会员数"/>
-            <el-table-column prop="merchant_total_num" label="商户总数"/>
-            <el-table-column prop="merchant_num" label="正式商户数"/>
-            <el-table-column prop="merchant_pilot_num" label="试点商户数"/>
+            <el-table-column prop="oper_and_merchant_invite_num" label="运营中心及商户共邀请会员数" sortable="custom"/>
+            <el-table-column prop="merchant_total_num" label="商户总数" sortable="custom"/>
+            <el-table-column prop="merchant_num" label="正式商户数" sortable="custom"/>
+            <el-table-column prop="merchant_pilot_num" label="试点商户数" sortable="custom"/>
             <el-table-column label="总金额(已完成)/笔数">
                 <template slot-scope="scope">
                     {{scope.row.order_paid_amount}}/{{scope.row.order_paid_num}}笔
@@ -73,6 +73,8 @@
 </template>
 
 <script>
+    import api from '../../../assets/js/api'
+
     export default {
         name: "statistics-oper",
         data(){
@@ -82,8 +84,11 @@
                     page: 1,
                     startDate: '',
                     endDate: '',
-                    timeType:'',
-                    oper_id:0,
+                    timeType: '',
+                    oper_id: 0,
+                    satType: 3,
+                    orderColumn: null,
+                    orderType: null,
                 },
                 list: [],
                 total: 0,
@@ -92,7 +97,6 @@
                 dateRange: [],
                 operId: '',
                 searchDate: {},
-                searchTypeName: '全部统计汇总 > 今日',
 
                 opers:[]
             }
@@ -101,6 +105,11 @@
 
         },
         methods: {
+            sortChange (column) {
+                this.query.orderColumn = column.prop;
+                this.query.orderType = column.order;
+                this.getList();
+            },
             getList(){
                 if(this.timeType == 'other' && this.dateRange.length < 2){
                     this.$message.error('请选择起始日期');
