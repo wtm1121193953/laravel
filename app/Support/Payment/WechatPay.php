@@ -73,15 +73,16 @@ class WechatPay extends PayBase
     }
 
     /**
+     * @param $order
      * @return mixed
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    public function refund()
+    public function refund($order)
     {
 
 
-        $orderNo = request('order_no');
-        $order = Order::where('order_no', $orderNo)->firstOrFail();
+//        $orderNo = request('order_no');
+//        $order = Order::where('order_no', $orderNo)->firstOrFail();
         if($order->status != Order::STATUS_PAID){
             throw new BaseResponseException('订单状态不允许退款');
         }
@@ -117,7 +118,6 @@ class WechatPay extends PayBase
             $order->refund_time = Carbon::now();
             $order->refund_price = $orderPay->amount;
             $order->save();
-            $this->decSellNumber($order);
 
             $platform_trade_record = new PlatformTradeRecord();
             $platform_trade_record->type = PlatformTradeRecord::TYPE_REFUND;
@@ -125,7 +125,7 @@ class WechatPay extends PayBase
             $platform_trade_record->trade_amount = $orderPay->amount;
             $platform_trade_record->trade_time = $order->refund_time;
             $platform_trade_record->trade_no = $orderRefund->refund_id;
-            $platform_trade_record->order_no = $orderNo;
+            $platform_trade_record->order_no = $order->order_no;
             $platform_trade_record->oper_id = $order->oper_id;
             $platform_trade_record->merchant_id = $order->merchant_id;
             $platform_trade_record->user_id = $order->user_id;
@@ -145,25 +145,4 @@ class WechatPay extends PayBase
 
     }
 
-    /**
-     * 退款返还商品数量
-     * @param $order
-     */
-    private function decSellNumber($order)
-    {
-        if ($order->type == Order::TYPE_GROUP_BUY) {
-            Goods::where('id', $order->goods_id)
-                ->where('merchant_id', $order->merchant_id)
-                ->decrement('sell_number', $order->buy_number);
-        } elseif ($order->type == Order::TYPE_DISHES) {
-            $dishesItems = DishesItem::where('merchant_id', $order->merchant_id)
-                ->where('dishes_id', $order->dishes_id)
-                ->get();
-            foreach ($dishesItems as $item) {
-                DishesGoods::where('id', $item->dishes_goods_id)
-                    ->where('merchant_id', $item->merchant_id)
-                    ->decrement('sell_number', $item->number);
-            }
-        }
-    }
 }

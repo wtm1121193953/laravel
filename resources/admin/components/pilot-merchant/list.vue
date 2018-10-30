@@ -46,6 +46,14 @@
                 <el-form-item prop="operName" label="激活运营中心名称"  >
                     <el-input v-model="query.operName" size="small"  placeholder="激活运营中心名称"  clearable></el-input>
                 </el-form-item>
+                <el-form-item label="商户状态" prop="status">
+                    <el-select v-model="query.status" size="small" class="w-150">
+                        <el-option label="全部" value=""/>
+                        <el-option label="正常" value="1"/>
+                        <el-option label="冻结" value="2"/>
+                        <el-option label="未知" value="3"/>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                 </el-form-item>
@@ -186,6 +194,7 @@
                     name: '',
                     signboardName:'',
                     auditStatus: [],
+                    status:'',
                     page: 1,
                     merchantId: '',
                     startDate: '',
@@ -287,7 +296,7 @@
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
                 this.$confirm(message).then(() => {
-                    window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&signboardName='+ this.query.signboardName+ '&auditStatus=' + this.query.auditStatus + '&operName=' + this.query.operName + '&operId=' + this.query.operId + '&isPilot=1';
+                    window.location.href = window.location.origin + '/api/admin/merchant/download?' + 'merchantId=' + this.query.merchantId + '&startDate=' + this.query.startDate + '&endDate=' + this.query.endDate + '&name=' + this.query.name + '&signboardName='+ this.query.signboardName+ '&auditStatus=' + this.query.auditStatus + '&operName=' + this.query.operName + '&operId=' + this.query.operId + '&status=' + this.query.status + '&isPilot=1';
                 })
             },
             edit(scope){

@@ -11,6 +11,7 @@ namespace App\Http\Controllers\UserApp;
 
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
+use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Dishes\DishesGoods;
@@ -29,15 +30,20 @@ use App\Modules\Order\OrderService;
 use App\Modules\Setting\SettingService;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
+use App\Modules\Wallet\Wallet;
+use App\Modules\Wallet\WalletBill;
+use App\Modules\Wallet\WalletService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use App\Support\Alipay;
 use App\Support\Lbs;
 use App\Support\Payment\PayBase;
+use App\Support\Payment\WalletPay;
 use App\Support\Payment\WechatPay;
 use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Merchant\MerchantSettingService;
@@ -211,19 +217,7 @@ class OrderController extends Controller
         $order->remark = request('remark', '');
         $order->bizer_id = $merchant->bizer_id;
         $order->save();
-
-        // 如果是微信支付
-        if($payType == Order::PAY_TYPE_WECHAT){
-            $sdkConfig = $this->_wechatPayToPlatform($order);
-        }else {
-            throw new BaseResponseException('支付方式错误');
-        }
-
-        return Result::success([
-            'order_no' => $orderNo,
-            'sdk_config' => $sdkConfig,
-            'order' => $order,
-        ]);
+        return $this->_returnOrder($order);
     }
 
     /**
@@ -298,18 +292,7 @@ class OrderController extends Controller
         $order->bizer_id = $merchant->bizer_id;
         $order->save();
 
-        // 如果是微信支付
-        if($payType == Order::PAY_TYPE_WECHAT){
-            $sdkConfig = $this->_wechatPayToPlatform($order);
-        }else {
-            throw new BaseResponseException('支付方式错误');
-        }
-
-        return Result::success([
-            'order_no' => $orderNo,
-            'sdk_config' => $sdkConfig,
-            'order' => $order,
-        ]);
+        return $this->_returnOrder($order);
     }
 
     /**
@@ -385,29 +368,11 @@ class OrderController extends Controller
         $order->bizer_id = $merchant->bizer_id;
         $order->save();
 
-        if ($payType == 1) {
-            // 如果是微信支付
-            $sdkConfig = $this->_wechatPayToPlatform($order);
-            return Result::success([
-                'order' => $order,
-                'order_no' => $orderNo,
-                'sdk_config' => $sdkConfig,
-            ]);
-        } else {
-            // 如果是支付宝支付
-            throw new BaseResponseException('支付方式错误');
-//            $sdkConfig = Alipay::pay($order);
-//            return Result::success([
-//                'order' => $order,
-//                'order_no' => $orderNo,
-//                'alipay_sdk_config' => $sdkConfig,
-//            ]);
-        }
+        return $this->_returnOrder($order);
     }
 
     /**
      * 立即付款
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function pay()
     {
@@ -448,26 +413,7 @@ class OrderController extends Controller
         }else{
             $profitAmount = 0;
         }
-        if ($payType == 1) {
-            // 如果是微信支付
-            $sdkConfig = $this->_wechatPayToPlatform($order);
-            Log::info('开始执行微信支付', ['sdkConfig' => $sdkConfig]);
-
-            return Result::success([
-                'order_no' => $orderNo,
-                'sdk_config' => $sdkConfig,
-                'profitAmount' => $profitAmount,
-                'order' => $order,
-            ]);
-        } else {
-            throw new BaseResponseException('支付方式错误');
-            // 如果是支付宝支付
-//            $sdkConfig = Alipay::pay($order);
-//            return Result::success([
-//                'order_no' => $orderNo,
-//                'alipay_sdk_config' => $sdkConfig,
-//            ]);
-        }
+        return $this->_returnOrder($order);
     }
 
     /**
@@ -479,9 +425,19 @@ class OrderController extends Controller
         $this->validate(request(), [
             'order_no' => 'required'
         ]);
-        $m = new WechatPay();
-        return $m->refund();
-
+        $order = OrderService::getInfoByOrderNo(request()->get('order_no'));
+        if($order->type==Order::PAY_TYPE_WALLET){
+            $wallet = new WalletPay();
+            $res = $wallet->refund($order,request()->get('current_user'));
+            // 还原库存
+        }else if($order->type==Order::PAY_TYPE_WECHAT){
+            $m = new WechatPay();
+            $res =  $m->refund($order);
+        }else{
+            throw new BaseResponseException('非法支付类型');
+        }
+        $this->decSellNumber($order);
+        return $res;
     }
 
     /**
@@ -493,8 +449,6 @@ class OrderController extends Controller
     private function _wechatPayToPlatform(Order $order)
     {
         $sdkConfig = null;
-        //OrderService::paySuccess($order->order_no, 'pay_to_platform', $order->pay_price,Order::PAY_TYPE_WECHAT);
-
         $payApp = WechatService::getOpenPlatformPayAppFromPlatform();
         $data = [
             'body' => $order->merchant_name,
@@ -514,17 +468,6 @@ class OrderController extends Controller
         $sdkConfig = $payApp->jssdk->appConfig($unifyResult['prepay_id']);
         $sdkConfig['packageValue'] = $sdkConfig['package'];
         return $sdkConfig;
-
-        // 调平台支付, 走融宝支付接口
-        /*
-        $sdkConfig = null; // todo 走融宝支付接口
-
-        $result = $this->reapalPrepay($order);
-        $sdkConfig = json_decode($result['wxjsapi_str'],true);
-        $sdkConfig['timestamp'] = $sdkConfig['timeStamp'];
-        */
-
-        //return $sdkConfig;
 
     }
 
@@ -549,4 +492,59 @@ class OrderController extends Controller
             }
         }
     }
+
+    /**
+     * 处理订单返回
+     * @param $order
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     */
+    private function _returnOrder($order){
+        // 如果是微信支付
+        $sdkConfig = null;
+        switch ($order->pay_type){
+            case Order::PAY_TYPE_WECHAT:
+                $data =  $this->_payByWallet($order);
+                break;
+            case Order::PAY_TYPE_WALLET:
+                $sdkConfig = $this->_wechatPayToPlatform($order);
+                break;
+        }
+
+        return Result::success([
+            'order_no' => $order->order_no,
+            'sdk_config' => $sdkConfig,
+            'order' => $order,
+            'pay_type'  => $order->pay_type
+        ]);
+    }
+
+    /**
+     * 通过钱包支付
+     * @param $order
+     * @return bool
+     * @throws \Exception
+     */
+    private function _payByWallet($order)
+    {
+        // 判断密码的有效性
+        $this->validate(request(), [
+            'temp_token' => 'required'
+        ]);
+        $inputToken = request()->get('temp_token');
+        $user = request()->get('current_user');
+        $tempToken = Cache::get('user_pay_password_modify_temp_token_' . $user->id);
+        if(empty($tempToken)){
+            throw new NoPermissionException('您的验证信息已超时, 请返回重新验证');
+        }
+        if($tempToken != $inputToken){
+            throw new NoPermissionException('验证信息无效');
+        }
+        // 删除有效时间，避免重复提交
+        Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
+        $walletPay = new WalletPay();
+        return $walletPay->buy($user,$order);
+    }
+
+
 }

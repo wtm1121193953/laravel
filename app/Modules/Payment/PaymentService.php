@@ -71,4 +71,25 @@ class PaymentService extends BaseService
 
         return $payment[0];
     }
+
+    /**
+     * 根据平台查询数据
+     * @param array $whereArr  // 待查询字段数组
+     * @return Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getListByPlatForm($whereArr)
+    {
+        $query = Payment::query()
+            ->where('status',Payment::STATUS_ON)
+        ;
+        foreach ($whereArr as $k => $v){
+            $query = $query->where($k,$v);
+        }
+        return $query->orderBy('id','desc')->get();
+    }
+
+    public static function getDetailById($id)
+    {
+        return Payment::where('id',$id)->where('status',Payment::STATUS_ON)->first();
+    }
 }

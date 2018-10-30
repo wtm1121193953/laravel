@@ -219,8 +219,14 @@ class MerchantService extends BaseService
                 $query->where('area_id', $area_Id->area_id);
             }
         }
-        if ($status) {
-            $query->where('status', $status);
+        if (!empty($status)){
+            if($status == 1){
+                $query->where('status',1)->whereIn('audit_status',[1,3]);
+            }elseif($status ==2){
+                $query->where('status',2)->whereIn('audit_status',[1,3]);
+            }else{
+                $query->whereIn('audit_status',[0,2]);
+            }
         }
         if ($settlementCycleType) {
             $query->whereIn('settlement_cycle_type', $settlementCycleType);
