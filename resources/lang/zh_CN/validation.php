@@ -190,6 +190,9 @@ return [
             'required' => '场景ID不能为空',
             'integer' => '场景ID必须为整数',
             'min' => '场景ID不能小于0',
+        ],
+        'view_name' =>  [
+            'required'  =>  '前端展示名称'
         ]
     ],
 

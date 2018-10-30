@@ -203,7 +203,8 @@ class WalletService extends BaseService
      * @param number $amount 余额
      * @param int $type 交易类型
      * @param int $objId 交易来源ID
-     * @return Wallet
+     * @return Wallet | WalletBill
+     * @throws \Exception
      */
     public static function minusBalance(Wallet $wallet, $amount, $type, $objId = 0)
     {
@@ -236,6 +237,9 @@ class WalletService extends BaseService
             $walletBill->after_balance = $wallet->balance;
             $walletBill->save();
             DB::commit();
+            if($walletBill->type==WalletBill::TYPE_PLATFORM_SHOPPING){
+                return $walletBill;
+            }
             return $wallet;
         } catch (\Exception $e) {
             DB::rollBack();

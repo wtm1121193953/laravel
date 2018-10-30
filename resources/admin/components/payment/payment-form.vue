@@ -6,6 +6,9 @@
                     <el-form-item prop="name" label="名称">
                         <el-input v-model="form.name"/>
                     </el-form-item>
+                    <el-form-item prop="view_name" label="前端展示名称">
+                        <el-input v-model="form.view_name"/>
+                    </el-form-item>
                     <el-form-item label="支付类型" prop="type">
                         <el-select v-model="form.type" placeholder="请选择">
                             <el-option label="无" :value="0"/>
@@ -71,6 +74,7 @@
 
     let defaultForm = {
         name: '',
+        view_name: '',
         type: '',
         class_name: '',
         logo_url: '',
@@ -95,6 +99,9 @@
                 formRules: {
                     name: [
                         {required: true, message: '支付方式名称不能为空'},
+                    ],
+                    view_name: [
+                        {required: true, message: '前端展示名称不能为空'},
                     ],
                     class_name: [
                         {required: true, message: '类名不能为空' },

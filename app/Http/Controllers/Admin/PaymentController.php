@@ -35,10 +35,12 @@ class PaymentController extends Controller
         $request->validate([
             'name' => 'required',
             'type' => 'required',
+            'view_name' => 'required',
         ]);
 
         $payment = new Payment();
         $payment->name = $request->get('name');
+        $payment->view_name = $request->get('view_name');
         $payment->type = $request->get('type');
         $payment->logo_url = $request->get('logo_url');
         $payment->class_name = $request->get('class_name');
@@ -94,11 +96,13 @@ class PaymentController extends Controller
         $request->validate([
             'id' => 'required|integer|min:1',
             'name' => 'required',
+            'view_name' => 'required',
             'type' => 'required',
         ]);
 
         $payment = Payment::findOrFail($request->get('id'));
         $payment->name = $request->get('name');
+        $payment->view_name = $request->get('view_name');
         $payment->type = $request->get('type');
         $payment->logo_url = $request->get('logo_url');
         $payment->class_name = $request->get('class_name');
@@ -135,6 +139,29 @@ class PaymentController extends Controller
     {
         $types = Payment::getAllType();
         return Result::success($types);
+    }
+
+    public function getListByPlatform(Request $request)
+    {
+        $uri = $request->getRequestUri();
+        // 查询字段
+        $whereArr = [
+            'on_pc' =>  null,
+            'on_miniprogram'    => null,
+            'on_app'    =>  null,
+            'type'      =>  null
+        ];
+        if(strpos($uri,'app')){
+            //数据源于app的
+            $whereArr['on_app'] = Payment::APP_ON;
+        }else if(strpos($uri,'user')){
+            $whereArr['on_miniprogram'] = Payment::MINI_PROGRAM_ON;
+            $whereArr['type'] = Payment::TYPE_WECHAT;
+        }else{
+            $whereArr['on_pc'] = Payment::PC_ON;
+        }
+        $list = PaymentService::getListByPlatForm(array_filter($whereArr));
+        return Result::success(['list'=>$list]);
     }
 
 }

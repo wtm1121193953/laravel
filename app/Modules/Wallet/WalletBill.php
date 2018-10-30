@@ -44,6 +44,7 @@ class WalletBill extends BaseModel
     const TYPE_BIZER = 9;
     const TYPE_BIZER_REFUND = 10;
     const TYPE_PLATFORM_SHOPPING = 11;
+    const TYPE_PLATFORM_REFUND = 12;
 
     /**
      * 收支类型 1-收入 2-支出
