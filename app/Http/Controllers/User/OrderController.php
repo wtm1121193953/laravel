@@ -243,6 +243,7 @@ class OrderController extends Controller
                 throw new BaseResponseException('菜单已变更, 请刷新页面');
             }
         }
+        $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
 
         $merchant_oper = Oper::findOrFail($merchant->oper_id);
 
@@ -265,6 +266,7 @@ class OrderController extends Controller
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->bizer_id = $merchant->bizer_id;
+        $payType->pay_type = $payType;
         $order->save();
 
         return $this->_returnOrder($order,$currentOperId,$merchant,$orderNo);
@@ -348,7 +350,7 @@ class OrderController extends Controller
         if (empty($merchant_oper)) {
             throw new DataNotFoundException('该商户的运营中心不存在！');
         }
-
+        $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
         $order = new Order();
         $orderNo = Order::genOrderNo();
         $order->order_no = $orderNo;
@@ -370,6 +372,8 @@ class OrderController extends Controller
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->bizer_id = $merchant->bizer_id;
+        $order->pay_type = $payType;
+
         $order->save();
         return $this->_returnOrder($order,$currentOperId,$merchant,$orderNo);
     }
