@@ -556,4 +556,14 @@ class UserService extends BaseService
     public static function getUserAvatarUrlByUserId($userId){
         return User::where('id',$userId)->value('avatar_url');
     }
+
+    /**
+     * 获取所有用户
+     * @return User[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getAll()
+    {
+        $users = User::all();
+        return $users;
+    }
 }

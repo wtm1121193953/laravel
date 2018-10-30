@@ -17,6 +17,8 @@ use App\BaseModel;
 
 class MerchantStatistics extends BaseModel
 {
+    protected $guarded = [];
+
     public function merchant()
     {
         return $this->belongsTo(Merchant::class);

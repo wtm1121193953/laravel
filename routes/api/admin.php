@@ -101,9 +101,11 @@ Route::prefix('admin')
         Route::post('bank/changeStatus', 'BankController@changeStatus');
         Route::post('bank/edit', 'BankController@edit');
 
-        Route::get('statistics/oper','StatisticsController@oper');
+        Route::get('statistics/list','StatisticsController@getList');
         Route::get('statistics/all_opers','StatisticsController@allOpers');
-        Route::get('statistics/oper_export','StatisticsController@operExport');
+        Route::get('statistics/all_merchants','StatisticsController@allMerchants');
+        Route::get('statistics/all_users','StatisticsController@allUsers');
+        Route::get('statistics/export','StatisticsController@exportExcel');
 
         Route::get('versions', 'VersionController@getList');
         Route::get('version/detail', 'VersionController@detail');

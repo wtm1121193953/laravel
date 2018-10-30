@@ -129,7 +129,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             ($data->bizer_id!=0) ? $this->getOperBizersName($data->bizer_id) :$this->getOperBizMemberName($data->operId,$data->oper_biz_member_code),
             $this->getCategoryPathName($data->merchant_category_id),
             $data->city . ' ' . $data->area,
-            $this->getMerchantStautsText($data->audit_status,$data->status),
+            $this->getMerchantStatusText($data->audit_status,$data->status),
             ['待审核', '审核通过', '审核不通过', '重新提交审核'][$data->audit_status],
             //$this->isPilot ? '' : ['', '周结', '半月结', '月结', '半年结', '年结', 'T+1', '未知'][$data->settlement_cycle_type],
         ];
@@ -141,7 +141,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
      * @param $status
      * @return string
      */
-    public function getMerchantStautsText($auditStatus,$status){
+    public function getMerchantStatusText($auditStatus,$status){
         if(in_array($auditStatus,[1,3])){
             if($status == 1){
                 $statusText = '正常';
