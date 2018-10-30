@@ -10,6 +10,7 @@ namespace App\Http\Controllers\UserApp;
 
 
 use App\Http\Controllers\Controller;
+use App\Modules\Dishes\DishesService;
 use App\Modules\Goods\GoodsService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
@@ -96,6 +97,10 @@ class MerchantController extends Controller
         $detail->merchantCategoryName = $category->name;
         //商家是否开启单品模式
         $detail->isOpenDish = MerchantSettingService::getValueByKey($id,'dishes_enabled');
+        $tmp_dis_cat = DishesService::getDishesCategory($id);
+        if (empty($tmp_dis_cat)) {
+            $detail->isOpenDish = 0;
+        }
         // 最低消费
         $detail->lowestAmount = MerchantService::getLowestPriceForMerchant($detail->id);
         $currentOperId = request()->get('current_oper_id');
