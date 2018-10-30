@@ -41,7 +41,7 @@ use App\Jobs\InviteChannelsUnbindMaker;
 use Illuminate\Support\Facades\Storage;
 
 use App\Support\TpsApi;
-use App\Jobs\Schedule\OperStatisticsDailyJob;
+use App\Jobs\Schedule\OperAndMerchantAndUserStatisticsDailyJob;
 
 class Test extends Command
 {
@@ -103,7 +103,7 @@ class Test extends Command
         dd(config('cos.cos_url'));
         InviteUserStatisticsDailyJob::dispatch((new Carbon())->subDay());
 dd('ok');
-        OperStatisticsDailyJob::dispatch((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s'));
+        OperAndMerchantAndUserStatisticsDailyJob::dispatch((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s'));
         dd('hi');
 //        $data = InviteChannel::where('id','<','10')->pluck('id');
 //        var_dump($data);

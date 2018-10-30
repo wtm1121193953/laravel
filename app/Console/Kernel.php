@@ -7,14 +7,13 @@ use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Jobs\Schedule\OrderAutoFinished;
 use App\Jobs\Schedule\OrderExpired;
 use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
-use App\Jobs\Schedule\SettlementAgentPayDaily;
 use App\Jobs\Schedule\SettlementDaily;
 use App\Jobs\Schedule\SettlementWeekly;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Carbon;
-use App\Jobs\Schedule\OperStatisticsDailyJob;
+use App\Jobs\Schedule\OperAndMerchantAndUserStatisticsDailyJob;
 
 class Kernel extends ConsoleKernel
 {
@@ -51,9 +50,9 @@ class Kernel extends ConsoleKernel
         $schedule->job( new SettlementDaily() )->daily();
         // T+1结算分账任务， 生成的结算单每天8点自动打款
         // 运营中心营销当日统计
-        $schedule->job( new OperStatisticsDailyJob((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s')))->daily();
+        $schedule->job( new OperAndMerchantAndUserStatisticsDailyJob((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s')))->daily();
         // 运营中心当日数据更新统计 (每30分钟执行)
-        $schedule->job( new OperStatisticsDailyJob(Carbon::now()->endOfDay()->format('Y-m-d H:i:s')))->everyThirtyMinutes();
+        $schedule->job( new OperAndMerchantAndUserStatisticsDailyJob(Carbon::now()->endOfDay()->format('Y-m-d H:i:s')))->everyThirtyMinutes();
         //$schedule->job(new SettlementAgentPayDaily())->dailyAt('08:00');
         /**团购商品过期自动下架*/
         $schedule->job(AutoDownGoodsJob::class)->daily();

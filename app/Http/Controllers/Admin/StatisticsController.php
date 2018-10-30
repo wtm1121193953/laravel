@@ -58,15 +58,22 @@ class StatisticsController extends Controller
             $endDate = $endDate->format('Y-m-d');
         }
 
+        $orderColumn = request('orderColumn', null);
+        $orderType = request('orderType', null);
+
+
         $data = OperStatisticsService::getList([
             'startDate' => $startDate,
             'endDate' => $endDate,
             'oper_id' => $oper_id,
+            'page' => $page,
+            'orderColumn' => $orderColumn,
+            'orderType' => $orderType,
         ]);
 
         return Result::success([
-            'list' => $data->items(),
-            'total' => $data->total(),
+            'list' => $data['data'],
+            'total' => $data['total'],
         ]);
     }
 

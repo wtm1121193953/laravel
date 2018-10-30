@@ -33,12 +33,30 @@ class OperStatisticsService extends BaseService
         if ($return_query) {
             return  $query;
         }
-        $data = $query->paginate();
+        $page = $params['page'] ?: 1;
+        $pageSize = isset($params['pageSize']) ? $params['pageSize'] : 15;
+        $orderColumn = $params['orderColumn'];
+        $orderType = $params['orderType'];
 
-        $data->each(function ($item) use ($params){
+        $query->each(function ($item) use ($params){
             $item->date = "{$params['startDate']}至{$params['endDate']}";
         });
-        return $data;
+
+        $total = $query->count();
+        $data = $query->get();
+
+        if ($orderType == 'descending') {
+            $data = $data->sortBy($orderColumn);
+        } elseif ($orderType == 'ascending') {
+            $data = $data->sortByDesc($orderColumn);
+        }
+
+        $data = $data->forPage($page,$pageSize)->values()->all();
+
+        return [
+            'data' => $data,
+            'total' => $total,
+        ];
     }
 
 
@@ -129,7 +147,9 @@ class OperStatisticsService extends BaseService
                 ->where('status','=',Order::STATUS_REFUNDED)
                 ->sum('pay_price');
 
-            OperStatistics::updateOrCreate($where,$row);
+            if ($row['merchant_num'] && $row['merchant_pilot_num'] && $row['merchant_total_num'] && $row['user_num'] && $row['merchant_invite_num'] && $row['oper_and_merchant_invite_num'] && $row['order_paid_num'] && $row['order_refund_num'] && $row['order_paid_amount'] && $row['order_refund_amount']) {
+                (new OperStatistics)->updateOrCreate($where, $row);
+            }
         }
     }
 }
