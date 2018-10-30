@@ -73,6 +73,8 @@
 </template>
 
 <script>
+    import api from '../../../assets/js/api'
+
     export default {
         name: "statistics-oper",
         data(){
@@ -84,6 +86,7 @@
                     endDate: '',
                     timeType: '',
                     oper_id: 0,
+                    satType: 3,
                     orderColumn: null,
                     orderType: null,
                 },
@@ -94,7 +97,6 @@
                 dateRange: [],
                 operId: '',
                 searchDate: {},
-                searchTypeName: '全部统计汇总 > 今日',
 
                 opers:[]
             }
