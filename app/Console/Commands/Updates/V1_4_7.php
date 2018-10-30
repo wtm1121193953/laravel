@@ -103,7 +103,13 @@ class V1_4_7 extends Command
 
         */
         //20181029处理bug造成的错误商户信息
-        $sql = 'update merchants a set a.audit_status=0 where a.`status`=1 and a.oper_id=0 and a.audit_status=1 and a.is_pilot=0;';
+        //$sql = 'update merchants a set a.audit_status=0 where a.`status`=1 and a.oper_id=0 and a.audit_status=1 and a.is_pilot=0;';
+
+        //20181030正式环境商品下架
+        $sql = 'update goods a set a.`status`=2 where a.id=27;';
+
+        DB::statement($sql);
+        $sql = 'update dishes_goods b set b.`status`=2 where b.id=637;';
 
         DB::statement($sql);
         $this->info('执行成功');
