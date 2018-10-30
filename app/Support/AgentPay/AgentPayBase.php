@@ -23,6 +23,9 @@ abstract class AgentPayBase
             throw new ParamInvalidException('代付类名配置错误');
         }
 
-        $this->_configs = json_decode($this->_angetpay_info->configs, true);
+        if (!empty($this->_angetpay_info->configs)) {
+            $this->_configs = json_decode($this->_angetpay_info->configs, true);
+        }
+
     }
 }

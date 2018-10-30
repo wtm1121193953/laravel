@@ -64,8 +64,7 @@ class SettlementPlatformService extends BaseService
      */
     public static function getListForSaas(array $params = [],bool $return_query = false)
     {
-        $query = SettlementPlatform::where('id', '>', 0)
-            ->where('settlement_cycle_type',SettlementPlatform::SETTLE_DAY_ADD_ONE);
+        $query = SettlementPlatform::where('id', '>', 0);
         if (!empty($params['merchant_name'])) {
             $query->whereHas('merchant',function($q) use ($params) {
                 $q->where('name', 'like', "%{$params['merchant_name']}%");
@@ -89,6 +88,12 @@ class SettlementPlatformService extends BaseService
                 $params['status'] = explode(',',$params['status']);
             }
             $query->whereIn('status', $params['status']);
+        }
+
+        if($params['origin_type'] == 'settlementDay'){
+            $query->where('settlement_cycle_type',SettlementPlatform::SETTLE_DAY_ADD_ONE);
+        }elseif($params['origin_type'] == 'settlementMonth'){
+            $query->where('settlement_cycle_type',SettlementPlatform::SETTLE_MONTHLY);
         }
 
         $query->with('merchant:id,name')
@@ -140,7 +145,7 @@ class SettlementPlatformService extends BaseService
             ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
             ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
             ->where('status', Order::STATUS_FINISHED )
-            ->where('pay_type', Order::PAY_TYPE_REAPAL)
+            ->where('pay_type', Order::PAY_TYPE_WECHAT)
             ->where('finish_time','<=', $date->endOfDay());
         // 统计所有需结算金额
         $sum = $query->sum('pay_price');
@@ -172,6 +177,81 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform->start_date = $start_date;
             $settlementPlatform->end_date = $end_date;
             $settlementPlatform->type = SettlementPlatform::TYPE_AGENT;
+            $settlementPlatform->settlement_cycle_type = $merchant->settlement_cycle_type;
+            $settlementPlatform->settlement_no = $settlementNum;
+            $settlementPlatform->settlement_rate = $merchant->settlement_rate;
+            $settlementPlatform->bank_open_name = $merchant->bank_open_name;
+            $settlementPlatform->bank_card_no = $merchant->bank_card_no;
+            $settlementPlatform->bank_card_type = $merchant->bank_card_type;
+            $settlementPlatform->sub_bank_name = $merchant->bank_name .'|' . $merchant->sub_bank_name;
+            $settlementPlatform->bank_open_address = $merchant->bank_province . $merchant->bank_city . $merchant->bank_area .'|' .$merchant->bank_open_address;
+            $settlementPlatform->invoice_title = $merchant->invoice_title;
+            $settlementPlatform->invoice_no = $merchant->invoice_no;
+            $settlementPlatform->amount = 0;
+            $settlementPlatform->charge_amount = 0;
+            $settlementPlatform->real_amount = 0;
+            $settlementPlatform->save();
+
+            // 统计订单总金额与改变每笔订单状态
+            $list = $query->select('id', 'settlement_charge_amount', 'settlement_real_amount', 'settlement_status', 'settlement_id', 'pay_price','settlement_rate')->get();
+            $list->each( function(Order $item ) use ( $merchant, $settlementPlatform ){
+                $item->settlement_charge_amount = $item->pay_price * $item->settlement_rate / 100;  // 手续费
+                $item->settlement_real_amount = $item->pay_price - $item->settlement_charge_amount;   // 货款
+                $item->settlement_status = Order::SETTLEMENT_STATUS_FINISHED;
+                $item->settlement_id = $settlementPlatform->id;
+                $item->save();
+
+                // 结算实收金额
+                $settlementPlatform->amount += $item->pay_price;
+                $settlementPlatform->charge_amount += $item->settlement_charge_amount;
+                $settlementPlatform->real_amount += $item->settlement_real_amount;
+                $settlementPlatform->save();
+            });
+            DB::commit();
+            return true;
+        }catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * 处理每月之前结算细节入库
+     * @Author   Jerry
+     * @DateTime 2018-08-24
+     * @param $merchant
+     * @param Carbon $date
+     * @return bool [bool]
+     * @throws \Exception
+     */
+    public static function settlementMonth( $merchant, $date)
+    {
+        $query = Order::where('merchant_id', $merchant->id)
+            ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
+            ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
+            ->where('status', Order::STATUS_FINISHED )
+            ->where('pay_type', Order::PAY_TYPE_WECHAT)
+            ->where('finish_time','<=', $date);
+
+        //获得结算周期时间
+        $start_date = $query->min('pay_time') ?? Carbon::now();
+        $end_date = $query->max('pay_time') ?? Carbon::now();
+
+        // 生成结算单，方便之后结算订单中保存结算信息
+        $settlementNum = self::genSettlementNo(10);
+        if( !$settlementNum ) {
+            throw new \Exception('结算单号生成失败');
+        }
+
+        // 开启事务
+        DB::beginTransaction();
+        try{
+            $settlementPlatform = new SettlementPlatform();
+            $settlementPlatform->oper_id = $merchant->oper_id;
+            $settlementPlatform->merchant_id = $merchant->id;
+            $settlementPlatform->start_date = $start_date;
+            $settlementPlatform->end_date = $end_date;
+            $settlementPlatform->type = SettlementPlatform::TYPE_DEFAULT;
             $settlementPlatform->settlement_cycle_type = $merchant->settlement_cycle_type;
             $settlementPlatform->settlement_no = $settlementNum;
             $settlementPlatform->settlement_rate = $merchant->settlement_rate;

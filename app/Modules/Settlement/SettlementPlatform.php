@@ -48,7 +48,7 @@ class SettlementPlatform extends BaseModel
     const STATUS_FAIL = 4;
     const STATUS_RE_PAY = 5;
 
-    //结算类型 1-手动打款 2-融宝代付
+    //结算类型 1-手动打款 2-自动打款
     const TYPE_DEFAULT = 1;
     const TYPE_AGENT = 2;
 

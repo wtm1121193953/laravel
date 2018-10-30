@@ -8,6 +8,7 @@ use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
 use App\Jobs\Schedule\SettlementAgentPayDaily;
 
 use App\Jobs\Schedule\SettlementDaily;
+use App\Jobs\Schedule\SettlementMonth;
 use App\Jobs\Schedule\SettlementWeekly;
 
 use App\Jobs\OrderFinishedJob;
@@ -76,6 +77,8 @@ class Test extends Command
      */
     public function handle()
     {
+        SettlementMonth::dispatch();
+        dd(456);
         PlatformTradeRecordsDailyJob::dispatch();
         dd('ok');
         $param = [

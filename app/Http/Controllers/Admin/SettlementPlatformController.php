@@ -28,7 +28,7 @@ class SettlementPlatformController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $status = request('status');
-
+        $originType = request('origin_type');
 
         $startTime = microtime(true);
         $data = SettlementPlatformService::getListForSaas([
@@ -36,7 +36,8 @@ class SettlementPlatformController extends Controller
             'merchant_id' => $merchant_id,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'status' => $status
+            'status' => $status,
+            'origin_type' => $originType,
         ]);
         $endTime = microtime(true);
 

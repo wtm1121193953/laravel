@@ -29,7 +29,7 @@ class MerchantController extends Controller
     public function getList()
     {
         $appType = request()->headers->get('app-type');
-
+        
         $data = MerchantService::getListAndDistance([
             'city_id' => request('city_id'),
             'merchant_category_id' => request('merchant_category_id'),
@@ -44,11 +44,24 @@ class MerchantController extends Controller
         ]);
 
         if (empty($data['total']) && $appType == 2) {
-            $list = MerchantService::getListByIds([62,63964],request('lng'),request('lat'));
+            $lng = request('lng')??114.0332;
+            $lat = request('lat')??22.569606;
+            $list = MerchantService::getListByIds([62,63964],$lng,$lat);
             $data = ['list' => $list, 'total' => 2];
         }
 
-
+        $list = $data['list'];
+        $total = $data['total'];
+        foreach ($list as $k=>$v) {
+            $escape_list = ['test','测试','beta'];
+            foreach ($escape_list as $word) {
+                if (strpos($v->name,$word) !== false) {
+                    unset($list[$k]);
+                    $total--;
+                }
+            }
+        }
+        $data = ['list' => $list, 'total' => $total];
         return Result::success($data);
     }
 
