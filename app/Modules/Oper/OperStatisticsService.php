@@ -11,18 +11,22 @@ use Illuminate\Support\Facades\DB;
 
 class OperStatisticsService extends BaseService
 {
-    public static function getList(array $params = [],bool $return_query = false)
+    /**
+     * 获取运营中心营销统计数据
+     * @param array $params
+     * @param bool $return_query
+     * @return OperStatistics|array
+     */
+    public static function getList(array $params = [], bool $return_query = false)
     {
         $query = OperStatistics::select('oper_id',DB::raw('sum(merchant_num) as merchant_num,sum(merchant_pilot_num) as merchant_pilot_num, sum(merchant_total_num) as merchant_total_num, sum(user_num) as user_num, sum(merchant_invite_num) as merchant_invite_num, sum(oper_and_merchant_invite_num) as oper_and_merchant_invite_num, sum(order_paid_num) as order_paid_num,sum(order_refund_num) as order_refund_num,sum(order_paid_amount) as order_paid_amount,sum(order_refund_amount) as order_refund_amount '));
-
-
 
         if (!empty($params['startDate']) && !empty($params['endDate'])) {
             $query->where('date', '>=', $params['startDate']);
             $query->where('date', '<=', $params['endDate']);
         }
-        if (!empty($params['oper_id'])) {
-            $query->where('oper_id', '=', $params['oper_id']);
+        if (!empty($params['operId'])) {
+            $query->where('oper_id', '=', $params['operId']);
         }
 
 
@@ -38,12 +42,12 @@ class OperStatisticsService extends BaseService
         $orderColumn = $params['orderColumn'];
         $orderType = $params['orderType'];
 
-        $query->each(function ($item) use ($params){
-            $item->date = "{$params['startDate']}至{$params['endDate']}";
-        });
-
         $total = $query->count();
         $data = $query->get();
+
+        $data->each(function ($item) use ($params){
+            $item->date = "{$params['startDate']}至{$params['endDate']}";
+        });
 
         if ($orderType == 'descending') {
             $data = $data->sortBy($orderColumn);
@@ -123,7 +127,7 @@ class OperStatisticsService extends BaseService
             $row['order_paid_num'] = Order::where('oper_id','=',$row['oper_id'])
                 ->where('pay_time','>=',$startTime)
                 ->where('pay_time','<=',$endTime)
-                ->whereIn('status', Order::STATUS_FINISHED)
+                ->where('status', Order::STATUS_FINISHED)
                 ->count();
 
             //总退款量
@@ -137,7 +141,7 @@ class OperStatisticsService extends BaseService
             $row['order_paid_amount'] = Order::where('oper_id','=',$row['oper_id'])
                 ->where('pay_time','>=',$startTime)
                 ->where('pay_time','<=',$endTime)
-                ->whereIn('status', Order::STATUS_FINISHED)
+                ->where('status', Order::STATUS_FINISHED)
                 ->sum('pay_price');
 
             //总退款金额

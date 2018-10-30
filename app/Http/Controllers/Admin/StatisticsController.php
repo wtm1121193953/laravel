@@ -1,23 +1,26 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: tim.tang
- * Date: 2018/9/20/020
- * Time: 15:38
- */
+
 namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
 use App\Exports\StatisticsOperExport;
 use App\Http\Controllers\Controller;
+use App\Modules\Merchant\MerchantService;
+use App\Modules\Merchant\MerchantStatisticsService;
 use App\Modules\Oper\OperService;
 use App\Modules\Oper\OperStatisticsService;
+use App\Modules\User\UserService;
+use App\Modules\User\UserStatisticsService;
 use App\Result;
 use Illuminate\Support\Carbon;
 
 class StatisticsController extends Controller
 {
-    public function oper()
+    /**
+     * 获取营销统计列表
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getList()
     {
         $timeType = request('timeType');
         $page = request('page');
@@ -51,7 +54,6 @@ class StatisticsController extends Controller
                 break;
         }
 
-        $oper_id = request('oper_id');
         if($startDate && $startDate instanceof Carbon){
             $startDate = $startDate->format('Y-m-d');
         }
@@ -64,18 +66,35 @@ class StatisticsController extends Controller
         $steType = request('staType');
 
         if ($steType == 3) {
+            $operId = request('operId');
             $data = OperStatisticsService::getList([
                 'startDate' => $startDate,
                 'endDate' => $endDate,
-                'oper_id' => $oper_id,
+                'operId' => $operId,
                 'page' => $page,
                 'orderColumn' => $orderColumn,
                 'orderType' => $orderType,
             ]);
         } elseif ($steType == 2) {
-
+            $merchantId = request('merchantId');
+            $data = MerchantStatisticsService::getList([
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'merchantId' => $merchantId,
+                'page' => $page,
+                'orderColumn' => $orderColumn,
+                'orderType' => $orderType,
+            ]);
         } elseif ($steType == 1) {
-
+            $userId = request('userId');
+            $data = UserStatisticsService::getList([
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'userId' => $userId,
+                'page' => $page,
+                'orderColumn' => $orderColumn,
+                'orderType' => $orderType,
+            ]);
         } else {
             throw new BaseResponseException('该营销统计类型不存在');
         }
@@ -96,7 +115,11 @@ class StatisticsController extends Controller
 
     }
 
-    public function operExport()
+    /**
+     * 导出营销统计excel
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportExcel()
     {
         $timeType = request('timeType');
         switch ($timeType) {
@@ -126,7 +149,6 @@ class StatisticsController extends Controller
                 break;
         }
 
-        $oper_id = request('oper_id');
         if($startDate && $startDate instanceof Carbon){
             $startDate = $startDate->format('Y-m-d');
         }
@@ -134,12 +156,57 @@ class StatisticsController extends Controller
             $endDate = $endDate->format('Y-m-d');
         }
 
-        $params = [
-            'startDate' => $startDate,
-            'endDate' => $endDate,
-            'oper_id' => $oper_id,
-        ];
-        $data = OperStatisticsService::getList($params,true);
+        $steType = request('staType');
+        if ($steType == 3) {
+            $operId = request('operId');
+            $params = [
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'operId' => $operId,
+            ];
+            $data = OperStatisticsService::getList($params,true);
+        } elseif ($steType == 2) {
+            $merchantId = request('merchantId');
+            $params = [
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'merchantId' => $merchantId,
+            ];
+            $data = MerchantStatisticsService::getList($params, true);
+        } elseif ($steType == 1) {
+            $userId = request('userId');
+            $params = [
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'userId' => $userId,
+            ];
+            $data = UserStatisticsService::getList($params, true);
+        } else {
+            throw new BaseResponseException('该营销统计类型不存在');
+        }
+
         return (new StatisticsOperExport($data, $params))->download(' 运营中心营销报表.xlsx');
+    }
+
+    /**
+     * 获取所有商户
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function allMerchants()
+    {
+        $merchants = MerchantService::getAllNames();
+
+        return Result::success($merchants);
+    }
+
+    /**
+     * 获取所有用户
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function allUsers()
+    {
+        $users = UserService::getAll();
+
+        return Result::success($users);
     }
 }

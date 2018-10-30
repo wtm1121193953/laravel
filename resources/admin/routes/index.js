@@ -26,6 +26,9 @@ import TradeRecordsDaily from '../components/order/trade_records_daily';
 import SettlementPlatfroms from '../components/settlement/platform.vue'
 
 import StatisticsOper from '../components/statistics/oper.vue'
+import StatisticsMerchant from '../components/statistics/merchant.vue'
+import StatisticsUser from '../components/statistics/user.vue'
+
 import payment from "./payment";
 import agentpay from "./agentpay";
 /**
@@ -75,6 +78,8 @@ const routes = [
         component: Home,
         children: [
             {path: '/statistics/oper', component: StatisticsOper, name: 'StatisticsOper'},
+            {path: '/statistics/merchant', component: StatisticsMerchant, name: 'StatisticsMerchant'},
+            {path: '/statistics/user', component: StatisticsUser, name: 'StatisticsUser'},
         ]
     },
     // 订单列表,

@@ -1,5 +1,5 @@
 <template>
-    <page title="运营中心营销报表">
+    <page title="商户营销报表">
         <el-col class="m-t-30 search-bar">
 
             <el-radio-group v-model="timeType" size="small">
@@ -25,10 +25,10 @@
             </template>
 
             <template>
-                <el-select v-model="operId" filterable placeholder="请选择" size="small" @change="getList">
+                <el-select v-model="merchantId" filterable placeholder="请选择" size="small" @change="getList">
                     <el-option label="全部" value=0></el-option>
                     <el-option
-                            v-for="item in opers"
+                            v-for="item in merchants"
                             :key="item.id"
                             :label="item.name"
                             :value="item.id">
@@ -42,23 +42,18 @@
         </el-col>
         <el-table :data="list" stripe v-loading="isLoading" @sort-change="sortChange">
             <el-table-column prop="date" label="时间"/>
-            <el-table-column prop="oper_id" label="运营中心id"/>
-            <el-table-column prop="oper.name" label="运营中心名称"/>
+            <el-table-column prop="merchant_id" label="商户ID"/>
+            <el-table-column prop="merchant.name" label="商户名称"/>
             <el-table-column label="运营中心省份+城市">
                 <template slot-scope="scope">
-                    <span>{{scope.row.oper.province}}</span>
-                    <span>{{scope.row.oper.city}}</span>
+                    <span>{{scope.row.merchant.province}}</span>
+                    <span>{{scope.row.merchant.city}}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="user_num" label="运营中心邀请会员数"/>
-            <el-table-column prop="merchant_invite_num" label="商户邀请会员数"/>
-            <el-table-column prop="oper_and_merchant_invite_num" label="运营中心及商户共邀请会员数" sortable="custom"/>
-            <el-table-column prop="merchant_total_num" label="商户总数" sortable="custom"/>
-            <el-table-column prop="merchant_num" label="正式商户数" sortable="custom"/>
-            <el-table-column prop="merchant_pilot_num" label="试点商户数" sortable="custom"/>
+            <el-table-column prop="invite_user_num" label="商户邀请会员数" sortable="custom"/>
             <el-table-column label="总金额(已完成)/笔数">
                 <template slot-scope="scope">
-                    {{scope.row.order_paid_amount}}/{{scope.row.order_paid_num}}笔
+                    {{scope.row.order_finished_amount}}/{{scope.row.order_finished_num}}笔
                 </template>
             </el-table-column>
         </el-table>
@@ -85,8 +80,8 @@
                     startDate: '',
                     endDate: '',
                     timeType: '',
-                    operId: 0,
-                    staType: 3,
+                    merchantId: 0,
+                    staType: 2,
                     orderColumn: null,
                     orderType: null,
                 },
@@ -95,10 +90,10 @@
                 originType: 'all',
                 timeType: 'yesterday',
                 dateRange: [],
-                operId: '',
+                merchantId: '',
                 searchDate: {},
 
-                opers:[]
+                merchants:[]
             }
         },
         computed: {
@@ -116,7 +111,7 @@
                     return false;
                 }
                 this.query.timeType = this.timeType;
-                this.query.operId = this.operId;
+                this.query.merchantId = this.merchantId;
 
                 this.query.startDate = this.dateRange[0] || '';
                 this.query.endDate = this.dateRange[1] || '';
@@ -159,9 +154,9 @@
                     endDate: endDate,
                 };
             },
-            getOpers() {
-                api.get('/statistics/all_opers').then(data => {
-                    this.opers = data.list;
+            getMerchants() {
+                api.get('/statistics/all_merchants').then(data => {
+                    this.merchants = data;
                 })
             },
             dataExport() {
@@ -171,7 +166,7 @@
                     return false;
                 }
                 this.query.timeType = this.timeType;
-                this.query.operId = this.operId;
+                this.query.merchantId = this.merchantId;
 
                 this.query.startDate = this.dateRange[0] || '';
                 this.query.endDate = this.dateRange[1] || '';
@@ -181,15 +176,14 @@
                         + 'timeType=' + this.query.timeType
                         + '&startDate=' + this.query.startDate
                         + '&endDate=' + this.query.endDate
-                        + '&operId=' + this.query.operId
+                        + '&merchantId=' + this.query.merchantId
                         + '&staType=' + this.query.staType;
-
                 })
             }
         },
         created(){
             this.getList();
-            this.getOpers();
+            this.getMerchants();
         },
         watch:{
             timeType(val){

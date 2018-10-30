@@ -80,7 +80,7 @@ class MerchantService extends BaseService
      * @param array $data
      * @return Merchant[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getAllNames(array $data)
+    public static function getAllNames(array $data = [])
     {
         // todo 后期可以对查询结果做缓存
         $auditStatus = array_get($data, 'audit_status');

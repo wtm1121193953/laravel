@@ -17,6 +17,8 @@ use App\BaseModel;
 
 class UserStatistics extends BaseModel
 {
+    protected $guarded = [];
+
     public function user()
     {
         return $this->belongsTo(User::class);
