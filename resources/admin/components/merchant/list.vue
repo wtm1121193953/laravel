@@ -63,6 +63,14 @@
                 <el-form-item prop="operName" label="激活运营中心名称"  >
                     <el-input v-model="query.operName" size="small"  placeholder="激活运营中心名称"  clearable></el-input>
                 </el-form-item>
+                <el-form-item label="商户状态" prop="status">
+                    <el-select v-model="query.status" size="small" class="w-150">
+                        <el-option label="全部" value=""/>
+                        <el-option label="正常" value="1"/>
+                        <el-option label="冻结" value="2"/>
+                        <el-option label="未知" value="3"/>
+                    </el-select>
+                </el-form-item>
                 <el-form-item prop="memberNameOrMobile" label="我的员工"  >
                     <el-input v-model="query.memberNameOrMobile" size="small"  placeholder="请输入员工姓名或手机号码搜索"  clearable></el-input>
                 </el-form-item>
@@ -207,6 +215,7 @@
                     name: '',
                     signboardName:'',
                     auditStatus: [],
+                    status:'',
                     page: 1,
                     merchantId: '',
                     startDate: '',
