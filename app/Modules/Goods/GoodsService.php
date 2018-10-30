@@ -53,7 +53,7 @@ class GoodsService extends BaseService
         if($number){
             $list->limit($number);
         }
-        $data = $list->get()->toArray();
+        $data = $list->get();
         return $data;
     }
 
