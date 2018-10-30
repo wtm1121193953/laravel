@@ -422,10 +422,10 @@ class OrderController extends Controller
             'order_no' => 'required'
         ]);
         $order = OrderService::getInfoByOrderNo(request()->get('order_no'));
-        if($order->type==Order::PAY_TYPE_WALLET){
+        if($order->pay_type==Order::PAY_TYPE_WALLET){
             $wallet = new WalletPay();
             $res = $wallet->refund($order,request()->get('current_user'));
-        }else if($order->type==Order::PAY_TYPE_WECHAT){
+        }else if($order->pay_type==Order::PAY_TYPE_WECHAT){
             $m = new WechatPay();
             $res = $m->refund($order);
         }else{
@@ -522,7 +522,8 @@ class OrderController extends Controller
             'order_no' => $orderNo,
             'isOperSelf' => $isOperSelf,
             'sdk_config' => $sdkConfig,
-            'pay_type'  =>  $order->pay_type
+            'pay_type'  =>  $order->pay_type,
+            'order' =>  $order
         ]);
     }
 

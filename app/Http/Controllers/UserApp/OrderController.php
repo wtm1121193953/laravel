@@ -426,11 +426,11 @@ class OrderController extends Controller
             'order_no' => 'required'
         ]);
         $order = OrderService::getInfoByOrderNo(request()->get('order_no'));
-        if($order->type==Order::PAY_TYPE_WALLET){
+        if($order->pay_type==Order::PAY_TYPE_WALLET){
             $wallet = new WalletPay();
             $res = $wallet->refund($order,request()->get('current_user'));
             // 还原库存
-        }else if($order->type==Order::PAY_TYPE_WECHAT){
+        }else if($order->pay_type==Order::PAY_TYPE_WECHAT){
             $m = new WechatPay();
             $res =  $m->refund($order);
         }else{
