@@ -16,7 +16,7 @@ class KuaiQian extends AgentPayBase
     public $pfx_path = '';//商户PFX证书地址
     public $key_password = '';//证书密码
     public $membercode = '';//商户号
-    public $url = 'https://sandbox.99bill.com/fo-batch-settlement/services';
+    public $url = 'https://sandbox.99bill.com/fo-batch-settlement/services';//接口地址
 
     public function __construct()
     {
@@ -82,8 +82,6 @@ class KuaiQian extends AgentPayBase
         $digitalenvelope = $this->crypto_seal_pubilc($autokey);//公钥加密（数字信封/OPENSSL_PKCS1_PADDING）
         $encrypteddata = $this->encrypt_aes($originalData,$autokey);//数据加密（AES/CBC/PKCS5Padding）
 
-//提交地址
-        $url = 'https://sandbox.99bill.com/fo-batch-settlement/services';
 
 //提交报文
         $str= '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><tns:settlement-pki-api-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
@@ -181,8 +179,6 @@ class KuaiQian extends AgentPayBase
         $digitalenvelope = $this->crypto_seal_pubilc($autokey);//公钥加密（数字信封/OPENSSL_PKCS1_PADDING）
         $encrypteddata = $this->encrypt_aes($originalData,$autokey);//数据加密（AES/CBC/PKCS5Padding）
 
-//提交地址
-        $url = 'https://sandbox.99bill.com/fo-batch-settlement/services';
 
 //提交报文
         $str= '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><tns:settlement-pki-api-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
@@ -392,8 +388,6 @@ class KuaiQian extends AgentPayBase
         $digitalenvelope = $this->crypto_seal_pubilc($autokey);//公钥加密（数字信封/OPENSSL_PKCS1_PADDING）
         $encrypteddata = $this->encrypt_aes($originalData,$autokey);//数据加密（AES/CBC/PKCS5Padding）
 
-//提交地址
-        $url = 'https://sandbox.99bill.com/fo-batch-settlement/services';
 
 //提交报文
         $str= '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><tns:settlement-pki-api-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
