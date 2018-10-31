@@ -21,6 +21,7 @@ use App\Modules\UserCredit\UserCredit;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Result;
+use App\Support\RedisLock;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Merchant\Merchant;
@@ -44,53 +45,69 @@ class UserService extends BaseService
      */
     public static function userAppLogin($mobile, $verifyCode)
     {
-        DB::beginTransaction();
-        // 正式环境开放一个手机号,用于ios审核
-        $needSkipVerifyCode = !App::environment('production') || $mobile == '18038019967';
-        // 非正式环境时, 验证码为6666为通过验证
-        if(! ($needSkipVerifyCode && $verifyCode == '6666') ){
-            $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
-                ->where('verify_code', $verifyCode)
-                ->where('status', 1)
-                ->where('expire_time', '>', Carbon::now())
-                ->first();
-            if(empty($verifyCodeRecord)){
-                throw new ParamInvalidException('验证码错误');
+        // 获取锁
+        $lock_key = 'user_register:' . $mobile;
+        $is_lock = RedisLock::lock($lock_key, 5);
+
+        if($is_lock){
+            DB::beginTransaction();
+            try {
+                // 正式环境开放一个手机号,用于ios审核
+                $needSkipVerifyCode = !App::environment('production') || $mobile == '18038019967';
+                // 非正式环境时, 验证码为6666为通过验证
+                if(! ($needSkipVerifyCode && $verifyCode == '6666') ){
+                    $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
+                        ->where('verify_code', $verifyCode)
+                        ->where('status', 1)
+                        ->where('expire_time', '>', Carbon::now())
+                        ->first();
+                    if(empty($verifyCodeRecord)){
+                        throw new ParamInvalidException('验证码错误');
+                    }
+                    $verifyCodeRecord->status = 2;
+                    $verifyCodeRecord->save();
+                }
+
+                // 验证通过, 查询当前用户是否存在, 不存在则创建用户
+                if(! $user = User::where('mobile', $mobile)->first()){
+                    $user = new User();
+                    $user->mobile = $mobile;
+                    $user->save();
+                    // 重新查一次用户信息, 补充用户信息中的全部字段
+                    $user = User::find($user->id);
+                }
+
+                // 如果存在邀请渠道ID, 查询用户是否已被邀请过
+                $inviteChannelId = request('inviteChannelId');
+                if($inviteChannelId){
+                    $inviteChannel = InviteChannelService::getById($inviteChannelId);
+                    if(empty($inviteChannel)){
+                        throw new ParamInvalidException('邀请渠道不存在');
+                    }
+                    InviteUserService::bindInviter($user->id, $inviteChannel);
+                }
+                // 如果用户存在旧token，则清除，限制用户只能登陆1终端
+                if( Cache::has('user_id_to_token_' . $user->id)){
+                    $oldToken = Cache::get('user_id_to_token_' . $user->id);
+                    Cache::forget('user_id_to_token_' . $user->id);
+                    Cache::forget('token_to_user_' . $oldToken);
+                }
+                // 生成token并返回
+                $token = str_random(64);
+                Cache::put('token_to_user_' . $token, $user, 60 * 24 * 30);
+                Cache::put('user_id_to_token_' . $user->id, $token, 60 * 24 * 30);
+
+                DB::commit();
+                RedisLock::unlock($lock_key);
+            }catch (\Exception $e){
+                DB::rollBack();
+                RedisLock::unlock($lock_key);
+                throw $e;
             }
-            $verifyCodeRecord->status = 2;
-            $verifyCodeRecord->save();
+        } else {
+            throw new BaseResponseException('重复请求');
         }
 
-        // 验证通过, 查询当前用户是否存在, 不存在则创建用户
-        if(! $user = User::where('mobile', $mobile)->first()){
-            $user = new User();
-            $user->mobile = $mobile;
-            $user->save();
-            // 重新查一次用户信息, 补充用户信息中的全部字段
-            $user = User::find($user->id);
-        }
-
-        // 如果存在邀请渠道ID, 查询用户是否已被邀请过
-        $inviteChannelId = request('inviteChannelId');
-        if($inviteChannelId){
-            $inviteChannel = InviteChannelService::getById($inviteChannelId);
-            if(empty($inviteChannel)){
-                throw new ParamInvalidException('邀请渠道不存在');
-            }
-            InviteUserService::bindInviter($user->id, $inviteChannel);
-        }
-        // 如果用户存在旧token，则清除，限制用户只能登陆1终端
-        if( Cache::has('user_id_to_token_' . $user->id)){
-            $oldToken = Cache::get('user_id_to_token_' . $user->id);
-            Cache::forget('user_id_to_token_' . $user->id);
-            Cache::forget('token_to_user_' . $oldToken);
-        }
-        // 生成token并返回
-        $token = str_random(64);
-        Cache::put('token_to_user_' . $token, $user, 60 * 24 * 30);
-        Cache::put('user_id_to_token_' . $user->id, $token, 60 * 24 * 30);
-
-        DB::commit();
 
         $userMapping = UserMapping::where('user_id', $user->id)->first();
         if (!empty($userMapping)){

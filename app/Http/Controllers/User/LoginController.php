@@ -22,6 +22,7 @@ use App\Modules\User\UserMapping;
 use App\Modules\User\UserOpenIdMapping;
 use App\Modules\Wechat\MiniprogramScene;
 use App\Result;
+use App\Support\RedisLock;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -45,71 +46,83 @@ class LoginController extends Controller
             throw new ParamInvalidException('手机号码不合法');
         }
         $verifyCode = request('verify_code');
-        // 开始事务, 如果登陆失败, 验证码回滚为为验证状态
-        DB::beginTransaction();
-        try {
 
-            // 非正式环境时, 验证码为6666为通过验证
-            if(App::environment('production') || $verifyCode != '6666'){
-                $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
-                    ->where('verify_code', $verifyCode)
-                    ->where('status', 1)
-                    ->where('expire_time', '>', Carbon::now())
-                    ->first();
-                if(empty($verifyCodeRecord)){
-                    throw new ParamInvalidException('验证码错误');
+        // 获取锁
+        $lock_key = 'user_register:' . $mobile;
+        $is_lock = RedisLock::lock($lock_key, 5);
+
+        if($is_lock){
+            // 开始事务, 如果登陆失败, 验证码回滚为为验证状态
+            DB::beginTransaction();
+            try {
+
+                // 非正式环境时, 验证码为6666为通过验证
+                if(App::environment('production') || $verifyCode != '6666'){
+                    $verifyCodeRecord = SmsVerifyCode::where('mobile', $mobile)
+                        ->where('verify_code', $verifyCode)
+                        ->where('status', 1)
+                        ->where('expire_time', '>', Carbon::now())
+                        ->first();
+                    if(empty($verifyCodeRecord)){
+                        throw new ParamInvalidException('验证码错误');
+                    }
+                    $verifyCodeRecord->status = 2;
+                    $verifyCodeRecord->save();
                 }
-                $verifyCodeRecord->status = 2;
-                $verifyCodeRecord->save();
-            }
 
-            $wxUserInfo = json_decode(request('userInfo'));
-            // 验证通过, 查询当前用户是否存在, 不存在则创建用户
-            $user = User::where('mobile', $mobile)->first();
-            $isFirstSign = null;
-            if(!$user){
-                $user = new User();
-                $user->mobile = $mobile;
-                //判断是否是新用户注册，1：是，null：不是
-                $isFirstSign = 1;
-            }
-            if ($wxUserInfo) {
-                $user->wx_nick_name = $wxUserInfo->nickName;
-                $user->wx_avatar_url = $wxUserInfo->avatarUrl;
-            }
-            $user->save();
-            // 重新查一次用户信息, 补充用户信息中的全部字段
-            $user = User::find($user->id);
-
-            // 如果存在邀请渠道ID, 查询用户是否已被邀请过
-            $inviteChannelId = request('inviteChannelId');
-            if($inviteChannelId){
-                $inviteChannel = InviteChannelService::getById($inviteChannelId);
-                if(empty($inviteChannel)){
-                    throw new ParamInvalidException('邀请渠道不存在');
+                $wxUserInfo = json_decode(request('userInfo'));
+                // 验证通过, 查询当前用户是否存在, 不存在则创建用户
+                $user = User::where('mobile', $mobile)->first();
+                $isFirstSign = null;
+                if(!$user){
+                    $user = new User();
+                    $user->mobile = $mobile;
+                    //判断是否是新用户注册，1：是，null：不是
+                    $isFirstSign = 1;
                 }
-                InviteUserService::bindInviter($user->id, $inviteChannel);
-            }
+                if ($wxUserInfo) {
+                    $user->wx_nick_name = $wxUserInfo->nickName;
+                    $user->wx_avatar_url = $wxUserInfo->avatarUrl;
+                }
+                $user->save();
+                // 重新查一次用户信息, 补充用户信息中的全部字段
+                $user = User::find($user->id);
 
-            // 保存用户与openId的映射关系, 并覆盖旧的关联关系
-            $openId = request()->get('current_open_id');
-            $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
-            if($userOpenIdMapping){
-                $userOpenIdMapping->user_id = $user->id;
-                $userOpenIdMapping->oper_id = request()->get('current_oper_id');
-                $userOpenIdMapping->save();
-            }else {
-                $userOpenIdMapping = new UserOpenIdMapping();
-                $userOpenIdMapping->oper_id = request()->get('current_oper_id');
-                $userOpenIdMapping->open_id = $openId;
-                $userOpenIdMapping->user_id = $user->id;
-                $userOpenIdMapping->save();
+                // 如果存在邀请渠道ID, 查询用户是否已被邀请过
+                $inviteChannelId = request('inviteChannelId');
+                if($inviteChannelId){
+                    $inviteChannel = InviteChannelService::getById($inviteChannelId);
+                    if(empty($inviteChannel)){
+                        throw new ParamInvalidException('邀请渠道不存在');
+                    }
+                    InviteUserService::bindInviter($user->id, $inviteChannel);
+                }
+
+                // 保存用户与openId的映射关系, 并覆盖旧的关联关系
+                $openId = request()->get('current_open_id');
+                $userOpenIdMapping = UserOpenIdMapping::where('open_id', $openId)->first();
+                if($userOpenIdMapping){
+                    $userOpenIdMapping->user_id = $user->id;
+                    $userOpenIdMapping->oper_id = request()->get('current_oper_id');
+                    $userOpenIdMapping->save();
+                }else {
+                    $userOpenIdMapping = new UserOpenIdMapping();
+                    $userOpenIdMapping->oper_id = request()->get('current_oper_id');
+                    $userOpenIdMapping->open_id = $openId;
+                    $userOpenIdMapping->user_id = $user->id;
+                    $userOpenIdMapping->save();
+                }
+                DB::commit();
+                RedisLock::unlock($lock_key);
+            }catch (\Exception $e){
+                DB::rollBack();
+                RedisLock::unlock($lock_key);
+                throw $e;
             }
-            DB::commit();
-        }catch (\Exception $e){
-            DB::rollBack();
-            throw $e;
+        }else{
+           throw new BaseResponseException('重复请求');
         }
+
 
         $userMapping = UserMapping::where('user_id', $user->id)->first();
         if (!empty($userMapping)){
