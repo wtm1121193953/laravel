@@ -23,9 +23,9 @@ class EventServiceProvider extends ServiceProvider
 
         // 新增 运营中心营销统计 事件监听
         // 添加用户数据统计
-        'App\Events\InviteUserRecordsCreatedEvent'  =>  [
+        /*'App\Events\InviteUserRecordsCreatedEvent'  =>  [
             'App\Listeners\OperStatisticsAddUserListener'
-        ],
+        ],*/
         // 添加订单记录
         'App\Events\OrdersUpdatedEvent'    =>  [
             'App\Listeners\OperStatisticsAddOrderListener'
@@ -33,7 +33,11 @@ class EventServiceProvider extends ServiceProvider
         // 添加商户数
         'App\Events\MerchantCreatedEvent' =>  [
             'App\Listeners\OperStatisticsAddMerchantListener'
-        ]
+        ],
+        // 用户注册通知消息
+        'App\Events\InviteUserRecordsCreatedEvent'  =>  [
+            'App\Listeners\MessageNoticeSendListener'
+        ],
     ];
 
     /**
