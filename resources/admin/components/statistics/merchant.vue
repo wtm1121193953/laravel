@@ -44,7 +44,7 @@
             <el-table-column prop="date" label="时间"/>
             <el-table-column prop="merchant_id" label="商户ID"/>
             <el-table-column prop="merchant.name" label="商户名称"/>
-            <el-table-column label="运营中心省份+城市">
+            <el-table-column label="商户省份+城市">
                 <template slot-scope="scope">
                     <span>{{scope.row.merchant.province}}</span>
                     <span>{{scope.row.merchant.city}}</span>

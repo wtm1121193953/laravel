@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\BaseResponseException;
-use App\Exports\StatisticsOperExport;
+use App\Exports\StatisticsExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\MerchantService;
@@ -126,7 +126,7 @@ class StatisticsController extends Controller
         switch ($timeType) {
             case 'all':
                 $startDate = null;
-                $endDate = null;
+                $endDate = Carbon::now()->endOfDay();
                 break;
             case 'today':
                 $startDate = Carbon::now()->startOfDay();
@@ -164,29 +164,33 @@ class StatisticsController extends Controller
                 'startDate' => $startDate,
                 'endDate' => $endDate,
                 'operId' => $operId,
+                'steType' => $steType,
             ];
             $data = OperStatisticsService::getList($params,true);
+            return (new StatisticsExport($data, $params))->download('运营中心营销报表.xlsx');
         } elseif ($steType == 2) {
             $merchantId = request('merchantId');
             $params = [
                 'startDate' => $startDate,
                 'endDate' => $endDate,
                 'merchantId' => $merchantId,
+                'steType' => $steType,
             ];
             $data = MerchantStatisticsService::getList($params, true);
+            return (new StatisticsExport($data, $params))->download('商户营销报表.xlsx');
         } elseif ($steType == 1) {
             $userId = request('userId');
             $params = [
                 'startDate' => $startDate,
                 'endDate' => $endDate,
                 'userId' => $userId,
+                'steType' => $steType,
             ];
             $data = UserStatisticsService::getList($params, true);
+            return (new StatisticsExport($data, $params))->download('用户营销报表.xlsx');
         } else {
             throw new BaseResponseException('该营销统计类型不存在');
         }
-
-        return (new StatisticsOperExport($data, $params))->download(' 运营中心营销报表.xlsx');
     }
 
     /**
