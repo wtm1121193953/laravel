@@ -102,7 +102,7 @@ Route::prefix('user')
         Route::get('identity/record/getRecord','UserIdentityAuditRecordController@getRecord')->middleware(UserLoginFilter::class);
         Route::get('bank/getList', 'BankController@getList')->middleware(UserLoginFilter::class);
         Route::get('message/isShowRedDot', 'MessageController@isShowReDot')->middleware(UserLoginFilter::class);
-        Route::get('/country/list', 'CountryController@getList');
+        Route::get('country/list', 'CountryController@getList');
 
     });
 

@@ -115,7 +115,7 @@ Route::prefix('app/user')
         Route::get('message/noticesNum', 'MessageController@getNeedViewNum')->middleware(UserLoginFilter::class);
         Route::get('message/noticesDetail', 'MessageController@getNoticeDetail')->middleware(UserLoginFilter::class);
         Route::get('message/systemDetail', 'MessageController@getSystemDetail')->middleware(UserLoginFilter::class);
-        Route::get('/country/list', 'CountryController@getList');
+        Route::get('country/list', 'CountryController@getList');
 
     });
 
