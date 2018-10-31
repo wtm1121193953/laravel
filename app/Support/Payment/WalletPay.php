@@ -9,6 +9,7 @@
 namespace App\Support\Payment;
 
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\NoPermissionException;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
@@ -19,11 +20,28 @@ use App\Modules\Wallet\WalletBill;
 use App\Modules\Wallet\WalletService;
 use App\Result;
 use App\Support\Payment\PayBase;
+use Illuminate\Support\Facades\Cache;
 
 class WalletPay extends PayBase
 {
     public function buy($user,$order)
     {
+        // 判断密码的有效性
+        $this->validate(request(), [
+            'temp_token' => 'required'
+        ]);
+        $inputToken = request()->get('temp_token');
+        $user = request()->get('current_user');
+        $tempToken = Cache::get('user_pay_password_modify_temp_token_' . $user->id);
+        if(empty($tempToken)){
+            throw new NoPermissionException('您的验证信息已超时, 请返回重新验证');
+        }
+        if($tempToken != $inputToken){
+            throw new NoPermissionException('验证信息无效');
+        }
+        // 删除有效时间，避免重复提交
+        Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
+
         // 获取钱包信息
         $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
         // 新增流水
