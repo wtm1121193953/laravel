@@ -27,6 +27,8 @@ use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
 use App\Modules\Order\OrderService;
+use App\Modules\Payment\Payment;
+use App\Modules\Payment\PaymentService;
 use App\Modules\Setting\SettingService;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
@@ -426,11 +428,11 @@ class OrderController extends Controller
             'order_no' => 'required'
         ]);
         $order = OrderService::getInfoByOrderNo(request()->get('order_no'));
-        if($order->type==Order::PAY_TYPE_WALLET){
+        if($order->pay_type==Order::PAY_TYPE_WALLET){
             $wallet = new WalletPay();
             $res = $wallet->refund($order,request()->get('current_user'));
             // 还原库存
-        }else if($order->type==Order::PAY_TYPE_WECHAT){
+        }else if($order->pay_type==Order::PAY_TYPE_WECHAT){
             $m = new WechatPay();
             $res =  $m->refund($order);
         }else{
@@ -502,20 +504,26 @@ class OrderController extends Controller
     private function _returnOrder($order){
         // 如果是微信支付
         $sdkConfig = null;
-        switch ($order->pay_type){
-            case Order::PAY_TYPE_WECHAT:
-                $data =  $this->_payByWallet($order);
-                break;
-            case Order::PAY_TYPE_WALLET:
-                $sdkConfig = $this->_wechatPayToPlatform($order);
-                break;
+        $data = null;
+        $payment = PaymentService::getDetailById($order->pay_type);
+        if($payment->type==Payment::TYPE_WECHAT){
+            // 如果为微信支付,则返回支付参数
+            $sdkConfig = $this->_wechatPayToPlatform($order);
+        }else{
+            $paymentClassName = '\\App\\Support\\Payment'.$payment->class_name;
+            if(!class_exists($paymentClassName)){
+                throw new BaseResponseException('无法使用该支付方式');
+            }
+            $paymentClass = new $paymentClassName();
+            $data = $paymentClass->buy();
         }
 
         return Result::success([
             'order_no' => $order->order_no,
             'sdk_config' => $sdkConfig,
             'order' => $order,
-            'pay_type'  => $order->pay_type
+            'pay_type'  => $order->pay_type,
+            'data'  =>  $data
         ]);
     }
 

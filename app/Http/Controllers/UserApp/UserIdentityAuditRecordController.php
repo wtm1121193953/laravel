@@ -8,6 +8,7 @@
 namespace App\Http\Controllers\UserApp;
 
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Country\Country;
 use App\Result;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -124,6 +125,7 @@ class UserIdentityAuditRecordController extends Controller
     public function getRecord(Request $request)
     {
         $record = UserIdentityAuditRecordService::getRecordByUserId($request->get('current_user')->id);
+        $record->country_name = Country::where('id',$record->country_id)->value('name_zh');
         return Result::success($record);
     }
 }

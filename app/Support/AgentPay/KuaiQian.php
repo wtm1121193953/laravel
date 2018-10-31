@@ -15,10 +15,13 @@ class KuaiQian extends AgentPayBase
 
     public $pfx_path = '';//商户PFX证书地址
     public $key_password = '';//证书密码
+    public $membercode = '';//商户号
+    public $url = 'https://sandbox.99bill.com/fo-batch-settlement/services';//接口地址
+
     public function __construct()
     {
         $this->_class_name = basename(__CLASS__);
-        parent::__construct();
+        //parent::__construct();
 
         $this->pubkey_path = 'D:/wamp/www/dpl-php/99bill.cert.rsa.20340630_sandbox.cer';//快钱公钥地址
         $this->pubkey_path = app_path('/Support/AgentPay/KuaiQian/99bill.cert.rsa.20340630_sandbox.cer');//快钱公钥地址
@@ -26,6 +29,210 @@ class KuaiQian extends AgentPayBase
         $this->pfx_path = 'D:/wamp/www/dpl-php/99bill-rsa.pfx';//商户PFX证书地址
         $this->pfx_path = app_path('/Support/AgentPay/KuaiQian/99bill-rsa.pfx');//商户PFX证书地址
         $this->key_password = '123456';//证书密码
+        $this->membercode = '10012138842';//商户号
+
+    }
+
+    public function queryByTime()
+    {
+        header("content-type:text/html;charset=utf-8");
+
+        $membercode = $this->membercode;//商户号
+        $time1 = date('YmdHis');//时间戳
+        $stime = "20181030000000";//开始时间
+        $etime = "20181030235959";//结束时间
+
+
+//request-header
+        $rheader = '<tns:complex-query-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
+  <tns:request-header>
+    <tns:version xmlns:tns="http://www.99bill.com/schema/fo/commons">
+      <ns0:version>1.0.1</ns0:version>
+      <ns0:service>fo.batch.settlement.complexquery</ns0:service>
+    </tns:version>
+    <ns1:time>'.$time1.'</ns1:time>
+  </tns:request-header>';
+
+//request-body
+
+        $rbody = '
+  <tns:request-body>
+    <tns:merchant-id/>
+    <tns:beginApply-time>'.$stime.'</tns:beginApply-time>
+    <tns:endApply-time>'.$etime.'</tns:endApply-time>
+    <tns:bank/>
+    <tns:name/>
+    <tns:bankCard-no/>
+    <tns:branch-bank/>
+    <tns:payee-type/>
+    <tns:province/>
+    <tns:city/>
+    <tns:order-status/>
+    <tns:order-error-code/>
+    <tns:order-bank-error-code/>
+    <tns:page/>
+    <tns:page-size>20</tns:page-size>
+  </tns:request-body>
+</tns:complex-query-request>';
+
+        $originalData = $rheader.$rbody;//原始报文
+        $autokey = rand(10000000,99999999).rand(10000000,99999999); //随机KEY
+        $originalData = gzencode($originalData);//GZIP压缩报文
+        $signeddata = $this->crypto_seal_private($originalData);//私钥加密（验签/OPENSSL_ALGO_SHA1）
+        $digitalenvelope = $this->crypto_seal_pubilc($autokey);//公钥加密（数字信封/OPENSSL_PKCS1_PADDING）
+        $encrypteddata = $this->encrypt_aes($originalData,$autokey);//数据加密（AES/CBC/PKCS5Padding）
+
+
+//提交报文
+        $str= '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><tns:settlement-pki-api-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
+  <tns:request-header>
+    <tns:version xmlns:tns="http://www.99bill.com/schema/fo/commons">
+      <ns0:version>1.0.1</ns0:version>
+      <ns0:service>fo.batch.settlement.complexquery</ns0:service>
+    </tns:version>
+    <ns1:time>'.$time1.'</ns1:time>
+  </tns:request-header>
+  <tns:request-body>
+    <tns:member-code>'.$membercode.'</tns:member-code>
+    <tns:data>
+      <ns1:original-data/>
+      <ns1:signed-data>'.$signeddata.'</ns1:signed-data>
+      <ns1:encrypted-data>'.$encrypteddata.'</ns1:encrypted-data>
+      <ns1:digital-envelope>'.$digitalenvelope.'</ns1:digital-envelope>
+    </tns:data>
+  </tns:request-body>
+</tns:settlement-pki-api-request></soapenv:Body></soapenv:Envelope>';
+
+
+        $output = $this->curl_post($str);
+
+        $dom = new \DOMDocument();
+        $dom -> loadXML($output);
+        $receive = array(
+            'membercode' => $dom -> getElementsByTagName('member-code')->item(0)->nodeValue,//商户号
+            'status' => $dom -> getElementsByTagName('status')->item(0)->nodeValue,//状态
+            'errorCode' => $dom -> getElementsByTagName('error-code')->item(0)->nodeValue,//错误编号
+            'errorMsg' => $dom -> getElementsByTagName('error-msg')->item(0)->nodeValue,//错误代码
+            'signedData' => $dom -> getElementsByTagName('signed-data')->item(0)->nodeValue,//验签
+            'encryptedData' => $dom -> getElementsByTagName('encrypted-data')->item(0)->nodeValue,//加密报文
+            'digitalEnvelope' => $dom -> getElementsByTagName('digital-envelope')->item(0)->nodeValue//数字信封
+        );
+
+        echo "付款商户号：".$receive['membercode'];//商户号
+        echo "<br/>查询时间：".$stime."~".$etime;
+        echo "<br/>应答状态：".$receive['status'];//批次状态
+        echo "<br/>错误编号：".$receive['errorCode'];//错误编号
+        echo "<br/>错误代码：".$receive['errorMsg'];//错误代码
+
+        $receivekey = $this->crypto_unseal_private($receive['digitalEnvelope']);
+
+        $receiveData2 = $this->decrypt_aes($receive['encryptedData'],$receivekey);
+
+        dd($receiveData2);
+        $receiveData = gzdecode($receiveData2);
+
+        echo "<br/>结果明细：<br/>";//数据结果
+        echo "<textarea rows=\"30\" cols=\"100\">".$receiveData."</textarea>";
+
+        $ok = $this->crypto_unseal_pubilc($receive['signedData'],$receiveData2);
+
+        if($ok==1) echo "<br/>验签成功！";
+        else echo "<br/>验签失败！";
+    }
+
+    public function queryByBatchNo()
+    {
+        header("content-type:text/html;charset=utf-8");
+
+        $membercode = $this->membercode;//商户号
+        $time1 = date('YmdHis');//时间
+//        $batchno= "batchNo_20181030153934";//批次号
+        $batchno= "batchNo_20181030170535";//批次号
+
+//request-header
+        $rheader = '<tns:batchid-query-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
+  <tns:request-header>
+    <tns:version xmlns:tns="http://www.99bill.com/schema/fo/commons">
+      <ns0:version>1.0.1</ns0:version>
+      <ns0:service>fo.batch.settlement.batchidquery</ns0:service>
+    </tns:version>
+    <ns1:time>'.$time1.'</ns1:time>
+  </tns:request-header>';
+
+
+
+//request-body
+
+        $rbody = '
+<tns:request-body>
+    <tns:batch-no>'.$batchno.'</tns:batch-no>
+    <tns:page>1</tns:page>
+    <tns:page-size>20</tns:page-size>
+    <tns:list-flag>0</tns:list-flag>
+  </tns:request-body>
+</tns:batchid-query-request>';
+
+        $originalData = $rheader.$rbody;//原始报文
+        $autokey = rand(10000000,99999999).rand(10000000,99999999); //随机KEY
+        $originalData = gzencode($originalData);//GZIP压缩报文
+        $signeddata = $this->crypto_seal_private($originalData);//私钥加密（验签/OPENSSL_ALGO_SHA1）
+        $digitalenvelope = $this->crypto_seal_pubilc($autokey);//公钥加密（数字信封/OPENSSL_PKCS1_PADDING）
+        $encrypteddata = $this->encrypt_aes($originalData,$autokey);//数据加密（AES/CBC/PKCS5Padding）
+
+
+//提交报文
+        $str= '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><tns:settlement-pki-api-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
+  <tns:request-header>
+    <tns:version xmlns:tns="http://www.99bill.com/schema/fo/commons">
+      <ns0:version>1.0.1</ns0:version>
+      <ns0:service>fo.batch.settlement.batchidquery</ns0:service>
+    </tns:version>
+    <ns1:time>'.$time1.'</ns1:time>
+  </tns:request-header>
+  <tns:request-body>
+    <tns:member-code>'.$membercode.'</tns:member-code>
+    <tns:data>
+      <ns1:original-data/>
+      <ns1:signed-data>'.$signeddata.'</ns1:signed-data>
+      <ns1:encrypted-data>'.$encrypteddata.'</ns1:encrypted-data>
+      <ns1:digital-envelope>'.$digitalenvelope.'</ns1:digital-envelope>
+    </tns:data>
+  </tns:request-body>
+</tns:settlement-pki-api-request></soapenv:Body></soapenv:Envelope>';
+
+        $output = $this->curl_post($str);
+
+        $dom = new \DOMDocument();
+        $dom -> loadXML($output);
+        $receive = array(
+            'membercode' => $dom -> getElementsByTagName('member-code')->item(0)->nodeValue,//商户号
+            'status' => $dom -> getElementsByTagName('status')->item(0)->nodeValue,//状态
+            'errorCode' => $dom -> getElementsByTagName('error-code')->item(0)->nodeValue,//错误编号
+            'errorMsg' => $dom -> getElementsByTagName('error-msg')->item(0)->nodeValue,//错误代码
+            'signedData' => $dom -> getElementsByTagName('signed-data')->item(0)->nodeValue,//验签
+            'encryptedData' => $dom -> getElementsByTagName('encrypted-data')->item(0)->nodeValue,//加密报文
+            'digitalEnvelope' => $dom -> getElementsByTagName('digital-envelope')->item(0)->nodeValue//数字信封
+        );
+
+        echo "付款商户号：".$receive['membercode'];//商户号
+        echo "<br/>批次号：".$batchno;//批次号
+        echo "<br/>应答状态：".$receive['status'];//批次状态
+        echo "<br/>错误编号：".$receive['errorCode'];//错误编号
+        echo "<br/>错误代码：".$receive['errorMsg'];//错误代码
+
+        $receivekey = $this->crypto_unseal_private($receive['digitalEnvelope']);
+
+        $receiveData2 = $this->decrypt_aes($receive['encryptedData'],$receivekey);
+
+        $receiveData = gzdecode($receiveData2);
+
+        echo "<br/>结果明细：<br/>";//数据结果
+        echo "<textarea rows=\"30\" cols=\"100\">".$receiveData."</textarea>";
+
+        $ok = $this->crypto_unseal_pubilc($receive['signedData'],$receiveData2);
+
+        if($ok==1) echo "<br/>验签成功！";
+        else echo "<br/>验签失败！";
     }
 
     public function send()
@@ -78,7 +285,7 @@ class KuaiQian extends AgentPayBase
         /**批次信息**/
 
         /** 商户编号 */
-        $memberCode = "10012138842";
+        $memberCode = $this->membercode;
         /** 付款方帐号 */
         $payerAcctCode = $memberCode."01";
         /** 批次号 */
@@ -181,8 +388,6 @@ class KuaiQian extends AgentPayBase
         $digitalenvelope = $this->crypto_seal_pubilc($autokey);//公钥加密（数字信封/OPENSSL_PKCS1_PADDING）
         $encrypteddata = $this->encrypt_aes($originalData,$autokey);//数据加密（AES/CBC/PKCS5Padding）
 
-//提交地址
-        $url = 'https://sandbox.99bill.com/fo-batch-settlement/services';
 
 //提交报文
         $str= '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><tns:settlement-pki-api-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
@@ -205,19 +410,8 @@ class KuaiQian extends AgentPayBase
 </tns:settlement-pki-api-request></soapenv:Body></soapenv:Envelope>';
 
 
-        dd($str);
-        $header[] = "Content-type: text/xml;charset=utf-8";
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$str);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,false);
-        $output = curl_exec($ch);
+        $output = $this->curl_post($str);
 
-        dd($output);
         $dom = new \DOMDocument();
         $dom -> loadXML($output);
         $receive = array(
@@ -235,14 +429,14 @@ class KuaiQian extends AgentPayBase
         echo "<br/>错误编号：".$receive['errorCode'];//错误编号
         echo "<br/>错误代码：".$receive['errorMsg'];//错误代码
 
-        $receivekey = crypto_unseal_private($receive['digitalEnvelope']);
-        $receiveData2 = decrypt_aes($receive['encryptedData'],$receivekey);
-        $receiveData = gzdecode($receiveData2);
+        $receivekey = $this->crypto_unseal_private($receive['digitalEnvelope']);
+        $receiveData2 = $this->decrypt_aes($receive['encryptedData'],$receivekey);
+        $receiveData = $this->gzdecode($receiveData2);
 
         echo "<br/>结果明细：<br/>";//数据结果
         echo "<textarea rows=\"30\" cols=\"100\">".$receiveData."</textarea>";
 
-        $ok = crypto_unseal_pubilc($receive['signedData'],$receiveData2);
+        $ok = $this->crypto_unseal_pubilc($receive['signedData'],$receiveData2);
 
         if($ok==1) echo "<br/><br/>验签成功！";
         else echo "<br/><br/>验签失败！";
@@ -307,7 +501,7 @@ class KuaiQian extends AgentPayBase
 
 
 //AES解密
-    function decrypt_aes($str,$key) {
+    public function decrypt_aes($str,$key) {
         $str =  base64_decode($str);
         $iv = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
         $or_data = @mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $key, $str, MCRYPT_MODE_CBC,$iv);
@@ -317,7 +511,7 @@ class KuaiQian extends AgentPayBase
 
 
 //pcks5解密
-    function pkcs5Unpad($text) {
+    public function pkcs5Unpad($text) {
         $pad = ord($text{strlen($text)-1});
         if ($pad>strlen($text))
             return false;
@@ -327,7 +521,7 @@ class KuaiQian extends AgentPayBase
     }
 
 //公钥验签
-    function crypto_unseal_pubilc($signedData,$receiveData){
+    public function crypto_unseal_pubilc($signedData,$receiveData){
         $pubkey_path = $this->pubkey_path;
         $MAC = base64_decode($signedData);
         $fp = fopen($pubkey_path, "r");
@@ -340,7 +534,7 @@ class KuaiQian extends AgentPayBase
 
 
 //gzip解密
-    function gzdecode($data)
+    public function gzdecode($data)
     {
         $flags = ord(substr($data, 3, 1));
         $headerlen = 10;
@@ -362,5 +556,23 @@ class KuaiQian extends AgentPayBase
         if ($unpacked === FALSE)
             $unpacked = $data;
         return $unpacked;
+    }
+
+    public function curl_post($str, $url='')
+    {
+        if (empty($url)) {
+            $url = $this->url;
+        }
+        $header[] = "Content-type: text/xml;charset=utf-8";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,$str);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,false);
+        $output = curl_exec($ch);
+        return $output;
     }
 }

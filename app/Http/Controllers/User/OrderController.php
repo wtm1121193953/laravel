@@ -422,10 +422,10 @@ class OrderController extends Controller
             'order_no' => 'required'
         ]);
         $order = OrderService::getInfoByOrderNo(request()->get('order_no'));
-        if($order->type==Order::PAY_TYPE_WALLET){
+        if($order->pay_type==Order::PAY_TYPE_WALLET){
             $wallet = new WalletPay();
             $res = $wallet->refund($order,request()->get('current_user'));
-        }else if($order->type==Order::PAY_TYPE_WECHAT){
+        }else if($order->pay_type==Order::PAY_TYPE_WECHAT){
             $m = new WechatPay();
             $res = $m->refund($order);
         }else{
@@ -444,16 +444,18 @@ class OrderController extends Controller
      */
     private function _payToPlatform($order)
     {
-        switch ($order->pay_type){
-            case Payment::TYPE_WALLET:
-                return $this->_payByWallet($order);
-                break;
-            case Payment::TYPE_WECHAT:
-                $payApp = WechatService::getWechatPayAppForPlatform();
-                return $this->_payByWechat($order,$payApp);
-                break;
+        $payment = PaymentService::getDetailById($order->pay_type);
+        if($payment->type==Payment::TYPE_WECHAT){
+            // 如果为微信支付,则返回支付参数
+            $payApp = WechatService::getWechatPayAppForPlatform();
+            return $this->_payByWechat($order,$payApp);
         }
-        return null;
+        $paymentClassName = '\\App\\Support\\Payment'.$payment->class_name;
+        if(!class_exists($paymentClassName)){
+            throw new BaseResponseException('无法使用该支付方式');
+        }
+        $paymentClass = new $paymentClassName();
+        return $paymentClass->buy();
     }
 
     /**
@@ -498,8 +500,8 @@ class OrderController extends Controller
      */
     private function _returnOrder($order,$currentOperId,$merchant,$orderNo){
         $sdkConfig = null;
+        $isOperSelf = 0;
         if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
-            $isOperSelf = 0;
             if($currentOperId == 0){ // 在平台小程序下
                 $isOperSelf = 1;
                 $sdkConfig = $this->_payToPlatform($order);
@@ -516,7 +518,8 @@ class OrderController extends Controller
             'order_no' => $orderNo,
             'isOperSelf' => $isOperSelf,
             'sdk_config' => $sdkConfig,
-            'pay_type'  =>  $order->pay_type
+            'pay_type'  =>  $order->pay_type,
+            'order' =>  $order
         ]);
     }
 
@@ -576,33 +579,6 @@ class OrderController extends Controller
         }
         $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
         return $sdkConfig;
-    }
-
-    /**
-     * 通过钱包支付
-     * @param $order
-     * @return bool
-     * @throws \Exception
-     */
-    private function _payByWallet($order)
-    {
-        // 判断密码的有效性
-        $this->validate(request(), [
-            'temp_token' => 'required'
-        ]);
-        $inputToken = request()->get('temp_token');
-        $user = request()->get('current_user');
-        $tempToken = Cache::get('user_pay_password_modify_temp_token_' . $user->id);
-        if(empty($tempToken)){
-            throw new NoPermissionException('您的验证信息已超时, 请返回重新验证');
-        }
-        if($tempToken != $inputToken){
-            throw new NoPermissionException('验证信息无效');
-        }
-        // 删除有效时间，避免重复提交
-        Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
-        $walletPay = new WalletPay();
-        return $walletPay->buy($user,$order);
     }
 
 
