@@ -50,7 +50,12 @@
                     <span>{{scope.row.oper.city}}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="user_num" label="运营中心邀请会员数"/>
+            <el-table-column prop="user_num" label="运营中心邀请会员数">
+                <template slot-scope="scope">
+                    {{scope.row.user_num}}
+                    <el-button type="text" @click="showInvite(scope.row)">查看</el-button>
+                </template>
+            </el-table-column>
             <el-table-column prop="merchant_invite_num" label="商户邀请会员数"/>
             <el-table-column prop="oper_and_merchant_invite_num" label="运营中心及商户共邀请会员数" sortable="custom"/>
             <el-table-column prop="merchant_total_num" label="商户总数" sortable="custom"/>
@@ -185,6 +190,19 @@
                         + '&staType=' + this.query.staType;
 
                 })
+            },
+            showInvite(row) {
+                router.push({
+                    path: '/statistics/invite/list',
+                    query: {
+                        originId: row.oper_id,
+                        originType: 3,
+                        name: row.oper.name,
+                        timeType: this.query.timeType,
+                        startDate: this.query.startDate,
+                        endDate: this.query.endDate,
+                    }
+                });
             }
         },
         created(){

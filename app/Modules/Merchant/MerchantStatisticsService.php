@@ -94,12 +94,12 @@ class MerchantStatisticsService extends BaseService
         $orderColumn = $params['orderColumn'];
         $orderType = $params['orderType'];
 
-        $query->each(function ($item) use ($params){
-            $item->date = "{$params['startDate']}至{$params['endDate']}";
-        });
-
         $total = $query->count();
         $data = $query->get();
+
+        $data->each(function ($item) use ($params){
+            $item->date = "{$params['startDate']}至{$params['endDate']}";
+        });
 
         if ($orderType == 'descending') {
             $data = $data->sortBy($orderColumn);
