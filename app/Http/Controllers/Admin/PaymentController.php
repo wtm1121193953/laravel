@@ -156,7 +156,6 @@ class PaymentController extends Controller
             $whereArr['on_app'] = Payment::APP_ON;
         }else if(strpos($uri,'user')){
             $whereArr['on_miniprogram'] = Payment::MINI_PROGRAM_ON;
-            $whereArr['type'] = Payment::TYPE_WECHAT;
         }else{
             $whereArr['on_pc'] = Payment::PC_ON;
         }

@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 57458
- * Date: 2018/7/18
- * Time: 10:47
- */
 
 namespace App\Modules\Merchant;
-
 
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Oper\MyOperBizer;
@@ -133,6 +126,9 @@ class MerchantAuditService extends Service
         // 审核通过时, 补充商户所属运营中心ID及审核通过时间
         $merchant->oper_id = $merchant->audit_oper_id;
         $merchant->active_time = Carbon::now();
+        if (!$merchant->first_active_time) {
+            $merchant->first_active_time = Carbon::now();
+        }
         $merchant->save();
 
         if ($merchant->oper_biz_member_code) {
