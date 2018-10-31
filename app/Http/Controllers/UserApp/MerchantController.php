@@ -51,18 +51,18 @@ class MerchantController extends Controller
             $data = ['list' => $list, 'total' => 2];
         }
 
-        $list = $data['list'];
-        $total = $data['total'];
-        foreach ($list as $k=>$v) {
-            $escape_list = ['test','测试','beta'];
-            foreach ($escape_list as $word) {
-                if (strpos($v->name,$word) !== false) {
-                    unset($list[$k]);
-                    $total--;
-                }
-            }
-        }
-        $data = ['list' => $list, 'total' => $total];
+//        $list = $data['list'];
+//        $total = $data['total'];
+//        foreach ($list as $k=>$v) {
+//            $escape_list = ['test','测试','beta'];
+//            foreach ($escape_list as $word) {
+//                if (strpos($v->name,$word) !== false) {
+//                    unset($list[$k]);
+//                    $total--;
+//                }
+//            }
+//        }
+//        $data = ['list' => $list, 'total' => $total];
         return Result::success($data);
     }
 
