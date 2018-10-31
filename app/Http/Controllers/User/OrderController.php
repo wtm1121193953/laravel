@@ -422,15 +422,20 @@ class OrderController extends Controller
             'order_no' => 'required'
         ]);
         $order = OrderService::getInfoByOrderNo(request()->get('order_no'));
-        if($order->pay_type==Order::PAY_TYPE_WALLET){
-            $wallet = new WalletPay();
-            $res = $wallet->refund($order,request()->get('current_user'));
-        }else if($order->pay_type==Order::PAY_TYPE_WECHAT){
+        $payment = PaymentService::getDetailById($order->pay_type);
+        if($payment->type==Payment::TYPE_WECHAT){
+            // 如果为微信支付,则返回支付参数
             $m = new WechatPay();
-            $res = $m->refund($order);
+            $res =  $m->refund($order);
         }else{
-            throw new BaseResponseException('非法支付类型');
+            $paymentClassName = '\\App\\Support\\Payment'.$payment->class_name;
+            if(!class_exists($paymentClassName)){
+                throw new BaseResponseException('无法使用该退款方式');
+            }
+            $paymentClass = new $paymentClassName();
+            $res =  $paymentClass->refund($order,request()->get('current_user'));
         }
+        // 还原库存
         $this->decSellNumber($order);
         return $res;
     }
