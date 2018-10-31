@@ -22,39 +22,40 @@ class UserStatisticsService extends BaseService
 
         $startTime = date('Y-m-d', strtotime($endTime));
 
-        $users = User::all()->toArray();
-        foreach ($users as $user) {
-            $where['user_id'] = $user['id'];
-            $where['date'] = substr($startTime, 0, 10);
+        User::query()->chunk(1000, function ($users) use ($startTime, $endTime) {
+            foreach ($users as $user) {
+                $where['user_id'] = $user['id'];
+                $where['date'] = substr($startTime, 0, 10);
 
-            $row = [];
-            $row = array_merge($row, $where);
+                $row = [];
+                $row = array_merge($row, $where);
 
-            //邀请用户数量
-            $row['invite_user_num'] = InviteUserRecord::where('origin_id', '=', $row['user_id'])
-                ->where('origin_type', '=', InviteUserRecord::ORIGIN_TYPE_USER)
-                ->where('created_at', '>=', $startTime)
-                ->where('created_at', '<=', $endTime)
-                ->count();
+                //邀请用户数量
+                $row['invite_user_num'] = InviteUserRecord::where('origin_id', '=', $row['user_id'])
+                    ->where('origin_type', '=', InviteUserRecord::ORIGIN_TYPE_USER)
+                    ->where('created_at', '>=', $startTime)
+                    ->where('created_at', '<=', $endTime)
+                    ->count();
 
-            // 总订单量（已完成）
-            $row['order_finished_num'] = Order::where('user_id', '=', $row['user_id'])
-                ->where('pay_time', '>=', $startTime)
-                ->where('pay_time', '<=', $endTime)
-                ->where('status', Order::STATUS_FINISHED)
-                ->count();
+                // 总订单量（已完成）
+                $row['order_finished_num'] = Order::where('user_id', '=', $row['user_id'])
+                    ->where('pay_time', '>=', $startTime)
+                    ->where('pay_time', '<=', $endTime)
+                    ->where('status', Order::STATUS_FINISHED)
+                    ->count();
 
-            //总订单金额（已完成）
-            $row['order_finished_amount'] = Order::where('user_id', '=', $row['user_id'])
-                ->where('pay_time', '>=', $startTime)
-                ->where('pay_time', '<=', $endTime)
-                ->where('status', Order::STATUS_FINISHED)
-                ->sum('pay_price');
+                //总订单金额（已完成）
+                $row['order_finished_amount'] = Order::where('user_id', '=', $row['user_id'])
+                    ->where('pay_time', '>=', $startTime)
+                    ->where('pay_time', '<=', $endTime)
+                    ->where('status', Order::STATUS_FINISHED)
+                    ->sum('pay_price');
 
-            if ($row['invite_user_num'] != 0 && $row['order_finished_num'] != 0 && $row['order_finished_amount'] != 0) {
-                (new UserStatistics())->updateOrCreate($where, $row);
+                if ($row['invite_user_num'] != 0 && $row['order_finished_num'] != 0 && $row['order_finished_amount'] != 0) {
+                    (new UserStatistics())->updateOrCreate($where, $row);
+                }
             }
-        }
+        });
     }
 
     /**

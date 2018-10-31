@@ -63,4 +63,17 @@ class MessageNoticeService extends BaseService
         return $notice;
     }
 
+    public static function createByRegister($mobile,$userId)
+    {
+        $content = '手机号码为'.$mobile.'的好友已注册成功';
+        $messageNotice = new MessageNotice();
+        $messageNotice->title = '邀请消息';
+        $messageNotice->content = $content;
+        $messageNotice->user_id = $userId;
+        $messageNotice->is_view = MessageNotice::IS_VIEW_NORMAL;
+        $messageNotice->is_read = MessageNotice::IS_READ_NORMAL;
+        $messageNotice->save();
+        return $messageNotice;
+    }
+
 }

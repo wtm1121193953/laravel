@@ -312,11 +312,17 @@ class OperService extends BaseService
 
     /**
      * 获取所有合作的运营商
-     * @return array
+     * @param bool $withQuery
+     * @return Oper|array
      */
-    public static function allNormalOpers()
+    public static function allNormalOpers($withQuery = false)
     {
-        return Oper::select('id','name')->where('status','=',Oper::STATUS_NORMAL)->get()->toArray();
+        $query = Oper::select('id','name')->where('status','=',Oper::STATUS_NORMAL);
+        if ($withQuery) {
+            return $query;
+        } else {
+            return $query->get()->toArray();
+        }
     }
 
     /**
