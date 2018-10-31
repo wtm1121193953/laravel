@@ -129,7 +129,7 @@ class Order extends BaseModel
 
     public static function getStatusText($status)
     {
-        return ['', '未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成[不可退款]'][$status];
+        return ['', '未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成'][$status];
     }
 
     public static function getPayTypeText($payType){
