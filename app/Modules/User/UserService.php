@@ -52,6 +52,7 @@ class UserService extends BaseService
         if($is_lock){
             DB::beginTransaction();
             try {
+                sleep(2);
                 // 正式环境开放一个手机号,用于ios审核
                 $needSkipVerifyCode = !App::environment('production') || $mobile == '18038019967';
                 // 非正式环境时, 验证码为6666为通过验证
