@@ -35,7 +35,7 @@ class MessageNoticeSendListener
     public function handle(InviteUserRecordsCreatedEvent $event)
     {
         $inviteUserRecord =  $event->inviteUserRecord;
-        if($inviteUserRecord!=InviteChannel::ORIGIN_TYPE_USER){
+        if($inviteUserRecord->origin_type!=InviteChannel::ORIGIN_TYPE_USER){
             // 邀请渠道不为用户类型，直接退出
             return;
         }

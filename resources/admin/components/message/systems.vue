@@ -66,7 +66,7 @@
                 </el-form-item>
                 <el-form-item prop="object_type" label="角色">
                     <el-checkbox-group v-model="addForm.object_type" >
-                        <!--<el-checkbox :label="1" :key="1">用户端</el-checkbox>-->
+                        <el-checkbox :label="1" :key="1">用户端</el-checkbox>
                         <el-checkbox :label="2" :key="2">商户端</el-checkbox>
                         <el-checkbox :label="3" :key="3">业务员</el-checkbox>
                         <el-checkbox :label="4" :key="4">运营中心</el-checkbox>

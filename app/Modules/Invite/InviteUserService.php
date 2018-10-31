@@ -14,6 +14,7 @@ use App\Modules\Oper\OperService;
 use App\Modules\User\User;
 use App\Modules\User\UserService;
 use App\ResultCode;
+use App\Support\Utils;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -443,7 +444,7 @@ class InviteUserService
             ->with('user:id,mobile')
             ->paginate($pageSize);
         $inviteUserRecords->each(function(InviteUserRecord $item){
-            $item->user_mobile = $item->user->mobile;
+            $item->user_mobile = Utils::getHalfHideMobile($item->user->mobile);
         });
         return $inviteUserRecords;
     }
@@ -463,7 +464,7 @@ class InviteUserService
             ->simplePaginate($pageSize);
         $list = collect($inviteUserRecords->items());
         $data = $list->each(function (InviteUserRecord $item){
-            $item->user_mobile = $item->user->mobile;
+            $item->user_mobile = Utils::getHalfHideMobile($item->user->mobile);
             $item->created_month = $item->created_at->format('Y-m');
         })
             ->groupBy('created_month')
@@ -512,8 +513,12 @@ class InviteUserService
         $orderType = array_get($params, 'orderType', 'descending') ?: 'descending';
         $orderType = $orderType == 'descending' ? 'desc' : 'asc';
 
-        $data = $query->orderBy($orderColumn, $orderType)
-            ->paginate($pageSize);
+          $data = $query->orderBy($orderColumn, $orderType)
+                ->paginate($pageSize);
+
+          $data->each(function ($item){
+                $item->mobile = Utils::getHalfHideMobile($item->mobile);
+            });
         return $data;
     }
 
@@ -569,6 +574,7 @@ class InviteUserService
 
             $data->each(function ($item) use ($channels){
                $item->invite_channel_name = $channels[$item->invite_channel_id];
+               $item->mobile = Utils::getHalfHideMobile($item->mobile);
             });
         }
 
