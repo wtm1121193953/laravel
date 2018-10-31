@@ -89,8 +89,8 @@ class UserStatisticsService extends BaseService
         $orderColumn = $params['orderColumn'];
         $orderType = $params['orderType'];
 
-        $total = $query->count();
         $data = $query->get();
+        $total = $query->get()->count();
 
         $data->each(function ($item) use ($params){
             $item->date = "{$params['startDate']}至{$params['endDate']}";
