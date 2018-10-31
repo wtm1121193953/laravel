@@ -56,6 +56,10 @@ class AdminOrderExport implements FromCollection, WithMapping, WithHeadings
             'pay_price' => '总价 ¥',
             'status' => '订单状态',
             'pay_type' => '支付方式',
+            'created_at' => '创建时间',
+            'finish_time' => '核销时间',
+            'notify_mobile' => '手机号',
+            'remark' => '备注',
         ];
     }
 
@@ -68,6 +72,11 @@ class AdminOrderExport implements FromCollection, WithMapping, WithHeadings
     public function map($row): array
     {
         $payments = [1=>'微信',2=>'支付宝',3=>'融宝'];
+        if($row->finish_time && $row->type == 1){
+            $finish_time = $row->finish_time;
+        }else{
+            $finish_time = '';
+        }
         return [
             $row->id,
             $row->oper_name,
@@ -79,6 +88,10 @@ class AdminOrderExport implements FromCollection, WithMapping, WithHeadings
             $row->pay_price,
             Order::getStatusText($row->status),
             $payments[$row->pay_type]??'未知('.$row->pay_type.')',
+            $row->created_at,
+            $finish_time,
+            $row->notify_mobile,
+            $row->remark,
         ];
     }
 

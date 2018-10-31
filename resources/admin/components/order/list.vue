@@ -76,20 +76,20 @@
                             <el-form-item label="支付时间" v-if="scope.row.pay_time">
                                 <span>{{ scope.row.pay_time }}</span>
                             </el-form-item>
-                            <el-form-item label="核销时间" v-if="scope.row.finish_time && scope.row.type != 2">
+                            <el-form-item label="核销时间" v-if="scope.row.finish_time && scope.row.type == 1">
                                 <span>{{ scope.row.finish_time }}</span>
                             </el-form-item>
                             <el-form-item label="手机号">
                                 <span>{{ scope.row.notify_mobile }}</span>
                             </el-form-item>
 
-                            <el-form-item label="商品信息：" v-if="scope.row.type == 3">
+                            <!--<el-form-item label="商品信息：" v-if="scope.row.type == 3">
                                 <div v-for="(item, index) in scope.row.dishes_items" :key="index">
                                     <span>{{item.dishes_goods_name}}</span>&nbsp;&nbsp;&nbsp;
                                     <span>¥{{item.dishes_goods_sale_price}}</span>&nbsp;&nbsp;&nbsp;
                                     <span>×{{item.number}}</span><br/>
                                 </div>
-                            </el-form-item>
+                            </el-form-item>-->
 
                             <el-form-item label="备注">
                                 <span>{{ scope.row.remark }}</span>

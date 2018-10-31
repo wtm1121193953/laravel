@@ -55,6 +55,8 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
             'pay_price' => '总价 ¥',
             'pay_type' => '支付方式',
             'status' => '订单状态',
+            'notify_mobile' => '手机号',
+            'remark' => '备注',
         ];
     }
 
@@ -77,6 +79,8 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
             $row->pay_price,
             $payments[$row->pay_type]??'未知('.$row->pay_type.')',
             Order::getStatusText($row->status),
+            $row->notify_mobile,
+            $row->remark,
         ];
     }
 
