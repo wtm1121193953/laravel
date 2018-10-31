@@ -66,7 +66,7 @@ class MerchantOrderExport implements FromCollection, WithMapping, WithHeadings
             Order::getGoodsNameText($row->type,$row->dishes_items,$row->goods_name),
             $row->pay_price,
             $row->notify_mobile,
-            ['','未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成'][$row->status],
+            Order::getStatusText($row->status),
             Order::getPayTypeText($row->pay_type),
         ];
     }
