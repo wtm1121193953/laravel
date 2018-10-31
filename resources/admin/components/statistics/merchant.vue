@@ -50,7 +50,12 @@
                     <span>{{scope.row.merchant.city}}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="invite_user_num" label="商户邀请会员数" sortable="custom"/>
+            <el-table-column prop="invite_user_num" label="商户邀请会员数" sortable="custom">
+                <template slot-scope="scope">
+                    {{scope.row.invite_user_num}}
+                    <el-button type="text" @click="showInvite(scope.row)">查看</el-button>
+                </template>
+            </el-table-column>
             <el-table-column label="总金额(已完成)/笔数">
                 <template slot-scope="scope">
                     {{scope.row.order_finished_amount}}/{{scope.row.order_finished_num}}笔
@@ -179,6 +184,19 @@
                         + '&merchantId=' + this.query.merchantId
                         + '&staType=' + this.query.staType;
                 })
+            },
+            showInvite(row) {
+                router.push({
+                    path: '/statistics/invite/list',
+                    query: {
+                        originId: row.merchant_id,
+                        originType: 2,
+                        name: row.merchant.name,
+                        timeType: this.query.timeType,
+                        startDate: this.query.startDate,
+                        endDate: this.query.endDate,
+                    }
+                });
             }
         },
         created(){

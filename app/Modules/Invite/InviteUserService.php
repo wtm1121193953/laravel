@@ -533,6 +533,7 @@ class InviteUserService
      * 获取运营中心邀请的用户列表
      * @param $params
      * @param bool $return_query
+     * @return LengthAwarePaginator|\Illuminate\Database\Query\Builder|mixed
      */
     public static function operInviteList($params,bool $return_query = false)
     {
@@ -573,5 +574,42 @@ class InviteUserService
 
         return $data;
 
+    }
+
+    /**
+     * 获取邀请记录列表
+     * @param $params
+     * @param bool $withQuery
+     * @return LengthAwarePaginator|Builder
+     */
+    public static function getInviteRecordList($params, $withQuery = false)
+    {
+        $originId = array_get($params, 'originId');
+        $originType = array_get($params, 'originType');
+        $startDate = array_get($params, 'startDate');
+        $endDate = array_get($params, 'endDate');
+
+        $query = InviteUserRecord::query()->with('user');
+        if ($originId) {
+            $query->where('origin_id', $originId);
+        }
+        if ($originType) {
+            $query->where('origin_type', $originType);
+        }
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($startDate) {
+            $query->where('created_at', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->where('created_at', '<=', $endDate);
+        }
+        $query->orderBy('created_at', 'desc');
+
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate();
+            return $data;
+        }
     }
 }

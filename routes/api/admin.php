@@ -106,6 +106,7 @@ Route::prefix('admin')
         Route::get('statistics/all_merchants','StatisticsController@allMerchants');
         Route::get('statistics/all_users','StatisticsController@allUsers');
         Route::get('statistics/export','StatisticsController@exportExcel');
+        Route::get('statistics/getInviteUserRecords','StatisticsController@getInviteUserRecords');
 
         Route::get('versions', 'VersionController@getList');
         Route::get('version/detail', 'VersionController@detail');

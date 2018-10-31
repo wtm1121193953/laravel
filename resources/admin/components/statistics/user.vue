@@ -44,7 +44,12 @@
             <el-table-column prop="date" label="时间"/>
             <el-table-column prop="user_id" label="用户ID"/>
             <el-table-column prop="user.mobile" label="用户手机号码"/>
-            <el-table-column prop="invite_user_num" label="邀请会员数" sortable="custom"/>
+            <el-table-column prop="invite_user_num" label="邀请会员数" sortable="custom">
+                <template slot-scope="scope">
+                    {{scope.row.invite_user_num}}
+                    <el-button type="text" @click="showInvite(scope.row)">查看</el-button>
+                </template>
+            </el-table-column>
             <el-table-column label="总金额(已完成)/笔数">
                 <template slot-scope="scope">
                     {{scope.row.order_finished_amount}}/{{scope.row.order_finished_num}}笔
@@ -173,6 +178,19 @@
                         + '&userId=' + this.query.userId
                         + '&staType=' + this.query.staType;
                 })
+            },
+            showInvite(row) {
+                router.push({
+                    path: '/statistics/invite/list',
+                    query: {
+                        originId: row.user_id,
+                        originType: 1,
+                        name: row.user.mobile,
+                        timeType: this.query.timeType,
+                        startDate: this.query.startDate,
+                        endDate: this.query.endDate,
+                    }
+                });
             }
         },
         created(){

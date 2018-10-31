@@ -28,6 +28,7 @@ import SettlementPlatfroms from '../components/settlement/platform.vue'
 import StatisticsOper from '../components/statistics/oper.vue'
 import StatisticsMerchant from '../components/statistics/merchant.vue'
 import StatisticsUser from '../components/statistics/user.vue'
+import StatisticsInviteList from '../components/statistics/invite-list'
 
 import payment from "./payment";
 import agentpay from "./agentpay";
@@ -80,6 +81,7 @@ const routes = [
             {path: '/statistics/oper', component: StatisticsOper, name: 'StatisticsOper'},
             {path: '/statistics/merchant', component: StatisticsMerchant, name: 'StatisticsMerchant'},
             {path: '/statistics/user', component: StatisticsUser, name: 'StatisticsUser'},
+            {path: '/statistics/invite/list', component: StatisticsInviteList, name: 'StatisticsInviteList'},
         ]
     },
     // 订单列表,
