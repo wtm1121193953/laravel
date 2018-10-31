@@ -82,7 +82,7 @@ class MerchantAccountService extends BaseService
                         if($operUnbindTps && $sub['name'] == 'TPS会员账号管理'){
                             unset($menus[$key]['sub'][$key2]);
                         }
-                        if(!$isPayToPlatform && $sub['name'] == 'T+1结算管理'){
+                        if(!$isPayToPlatform && $sub['name'] == '平台结算管理'){
                             unset($menus[$key]['sub'][$key2]);
                         }
                     }
@@ -121,7 +121,7 @@ class MerchantAccountService extends BaseService
              [ 'id' => 5, 'name' => '财务管理', 'level' => 1, 'url' => '/merchant/settlements',
                  'sub' => [
                     [ 'id' => 19, 'name' => '运营中心结算管理', 'level' => 2, 'url' => '/merchant/settlements', 'pid' => 5,],
-                    [ 'id' => 20, 'name' => 'T+1结算管理', 'level' => 2, 'url' => '/merchant/settlement/platform/list', 'pid' => 5,],
+                    [ 'id' => 20, 'name' => '平台结算管理', 'level' => 2, 'url' => '/merchant/settlement/platform/list', 'pid' => 5,],
                 ]
             ],
             [ 'id' => 15, 'name' => '账户管理', 'level' => 1, 'url' => '/wallet', 'sub' =>

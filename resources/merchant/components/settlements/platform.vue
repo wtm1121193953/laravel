@@ -1,14 +1,19 @@
 <template>
-    <page title="T+1结算管理" v-loading="isLoading">
+    <page title="平台结算管理" v-loading="isLoading">
         <el-col style="margin-bottom: 10px;">
             <el-alert
-                    title="温馨提示：T+1结算单规则，单日总订单金额小于100元，不生成结算单，总订单金额累计到100元后再生成结算单；月结账单无最低消费金额限制。"
+                    title="温馨提示：平台结算单规则，单日总订单金额小于100元，不生成结算单，总订单金额累计到100元后再生成结算单；月结账单无最低消费金额限制。"
                     type="success"
                     close-text="知道了">
             </el-alert>
         </el-col>
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="结算时间" align="center"/>
+            <el-table-column prop="settlement_cycle_type" label="结算周期">
+                <template slot-scope="scope">
+                    <span>{{ {1: '周结', 2: '半月结', 3: '月结', 4: '半年结', 5: '年结', 6: 'T+1', 7: '未知',}[scope.row.settlement_cycle_type] }}</span>
+                </template>
+            </el-table-column>
             <el-table-column min-width="125%" prop="settlement_cycle" label="结算周期" align="center">
                 <template slot-scope="scope">
                     {{scope.row.start_date}} 至 {{scope.row.end_date}}
@@ -21,14 +26,13 @@
                 </template>
             </el-table-column>-->
             <el-table-column prop="real_amount" label="结算金额 ¥" align="center"/>
-            <el-table-column prop="status" label="结算状态" align="center">
+            <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
-                    <span v-if="parseInt(scope.row.status) === 1">未打款</span>
-                    <span v-else-if="parseInt(scope.row.status) === 2">打款中</span>
-                    <span v-else-if="parseInt(scope.row.status) === 3">已打款</span>
-                    <span v-else-if="parseInt(scope.row.status) === 4">已到账</span>
-                    <span v-else-if="parseInt(scope.row.status) === 5">打款失败 （{{scope.row.reason}}）</span>
-                    <span v-else>未知 ({{scope.row.status}})</span>
+                    <span v-if="scope.row.status === 1" class="c-warning">未打款</span>
+                    <span v-else-if="scope.row.status === 2" class="c-blue">打款中</span>
+                    <span v-else-if="scope.row.status === 3" class="c-green">打款成功</span>
+                    <span v-else-if="scope.row.status === 4" class="c-danger">打款失败: ({{scope.row.reason}})</span>
+                    <span v-else-if="scope.row.status === 5" class="c-warning">已重新打款</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="300px" align="center">
