@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Merchant;
 
 use App\Exports\MerchantOrderExport;
 use App\Http\Controllers\Controller;
+use App\Modules\Dishes\DishesItem;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Order\OrderService;
+use App\Modules\Payment\Payment;
 use App\Result;
 
 class OrdersController extends Controller
@@ -75,7 +78,22 @@ class OrdersController extends Controller
             'endCreatedAt' => $endCreatedAt,
         ], true);
 
-        return (new MerchantOrderExport($query))->download('商户中心订单管理列表.xlsx');
+        $list = $query->orderByDesc('id')
+            ->select('order_no', 'user_id', 'user_name', 'notify_mobile', 'merchant_id', 'type', 'goods_id', 'goods_name', 'dishes_id', 'price', 'buy_number', 'status', 'pay_type', 'pay_price', 'pay_time', 'pay_target_type', 'refund_price', 'refund_time', 'finish_time', 'created_at', 'origin_app_type','remark')
+            ->get();
+        //$merchantIds = $list->pluck('merchant_id');
+        //$merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
+        //$payments = Payment::getAllType();
+        $list->each(function($item){
+            //$item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
+            //$item->pay_type_name = $payments[$item->pay_type]??'';
+            if ($item->type == 3){
+                $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
+                $item->dishes_items = $dishesItems;
+            }
+        });
+
+        return (new MerchantOrderExport($list))->download('商户中心订单管理列表.xlsx');
     }
 
     public function verification()

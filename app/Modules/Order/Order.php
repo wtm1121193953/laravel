@@ -156,6 +156,17 @@ class Order extends BaseModel
         return ['', '安卓', 'iOS', '小程序'][$originAppType];
     }
 
+    public static function getGoodsNameText($type,$dishes_items,$goods_name){
+        if($type == 3 && count($dishes_items) == 1){
+            $goods_name = $dishes_items[0]->dishes_goods_name;
+        }elseif($type == 3 && count($dishes_items) > 1){
+            $goods_name = $dishes_items[0]->dishes_goods_name.'等'.count($dishes_items).'件商品';
+        }elseif ($type == 2){
+            $goods_name = '无';
+        }
+        return $goods_name;
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany|WalletConsumeQuotaRecord
      */

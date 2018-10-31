@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Admin;
 use App\Exports\OperOrderExport;
 use App\Exports\PlatformTradeRecordsExport;
 use App\Http\Controllers\Controller;
+use App\Modules\Dishes\DishesItem;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperService;
@@ -111,8 +112,7 @@ class OrderController extends Controller
             'from_saas' => 1
         ], true);
 
-        $list = $query->orderByDesc('id')
-            ->select('order_no', 'user_id', 'user_name', 'notify_mobile', 'merchant_id', 'type', 'goods_id', 'goods_name', 'price', 'buy_number', 'status', 'pay_type', 'pay_price', 'pay_time', 'pay_target_type', 'refund_price', 'refund_time', 'finish_time', 'created_at', 'origin_app_type','remark')
+        $list = $query->select('order_no', 'user_id', 'user_name', 'notify_mobile', 'merchant_id', 'type', 'goods_id', 'goods_name', 'dishes_id', 'price', 'buy_number', 'status', 'pay_type', 'pay_price', 'pay_time', 'pay_target_type', 'refund_price', 'refund_time', 'finish_time', 'created_at', 'origin_app_type','remark')
             ->get();
         $merchantIds = $list->pluck('merchant_id');
         $merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
@@ -120,6 +120,10 @@ class OrderController extends Controller
         $list->each(function($item) use ($merchants,$payments){
             $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
             $item->pay_type_name = $payments[$item->pay_type]??'';
+            if ($item->type == 3){
+                $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
+                $item->dishes_items = $dishesItems;
+            }
         });
 
         return (new OperOrderExport($list))->download('订单列表.xlsx');
