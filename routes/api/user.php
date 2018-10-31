@@ -106,11 +106,14 @@ Route::prefix('user')
 
     });
 
-Route::get('user/payments/platform', 'Admin\PaymentController@getListByPlatform')->middleware('user',UserLoginFilter::class);
-Route::get('user/message/systems', 'Admin\MessageSystemController@getSystems')->middleware('user',UserLoginFilter::class);
-Route::get('user/message/notices', 'UserApp\MessageController@getNotices')->middleware('user',UserLoginFilter::class);
-Route::get('user/message/noticesNum', 'UserApp\MessageController@getNeedViewNum')->middleware('user',UserLoginFilter::class);
-Route::get('user/message/noticesDetail', 'UserApp\MessageController@getNoticeDetail')->middleware('user',UserLoginFilter::class);
-Route::get('user/message/systemDetail', 'UserApp\MessageController@getSystemDetail')->middleware('user',UserLoginFilter::class);
+Route::prefix('user')->middleware('user')->group(function (){
+    Route::get('payments/platform', 'Admin\PaymentController@getListByPlatform')->middleware(UserLoginFilter::class);
+    Route::get('message/systems', 'Admin\MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
+    Route::get('message/notices', 'UserApp\MessageController@getNotices')->middleware(UserLoginFilter::class);
+    Route::get('message/noticesNum', 'UserApp\MessageController@getNeedViewNum')->middleware(UserLoginFilter::class);
+    Route::get('message/noticesDetail', 'UserApp\MessageController@getNoticeDetail')->middleware(UserLoginFilter::class);
+    Route::get('message/systemDetail', 'UserApp\MessageController@getSystemDetail')->middleware(UserLoginFilter::class);
+});
+
 
 

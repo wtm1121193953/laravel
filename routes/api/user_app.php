@@ -119,6 +119,9 @@ Route::prefix('app/user')
 
     });
 
-    Route::get('app/user/message/systems', 'Admin\MessageSystemController@getSystems')->middleware('user_app',UserLoginFilter::class);
-    Route::get('app/user/payments/platform', 'Admin\PaymentController@getListByPlatform')->middleware('user_app',UserLoginFilter::class);
-    Route::get('app/user/message/systems', 'Admin\MessageSystemController@getSystems')->middleware('user_app',UserLoginFilter::class);
+Route::prefix('app/user')
+    ->middleware('user_app')->group(function () {
+        Route::get('app/user/message/systems', 'Admin\MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
+        Route::get('app/user/payments/platform', 'Admin\PaymentController@getListByPlatform')->middleware(UserLoginFilter::class);
+        Route::get('app/user/message/systems', 'Admin\MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
+    });
