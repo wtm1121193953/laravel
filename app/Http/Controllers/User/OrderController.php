@@ -422,10 +422,10 @@ class OrderController extends Controller
             'order_no' => 'required'
         ]);
         $order = OrderService::getInfoByOrderNo(request()->get('order_no'));
-        if($order->type==Order::PAY_TYPE_WALLET){
+        if($order->pay_type==Order::PAY_TYPE_WALLET){
             $wallet = new WalletPay();
             $res = $wallet->refund($order,request()->get('current_user'));
-        }else if($order->type==Order::PAY_TYPE_WECHAT){
+        }else if($order->pay_type==Order::PAY_TYPE_WECHAT){
             $m = new WechatPay();
             $res = $m->refund($order);
         }else{
@@ -498,23 +498,17 @@ class OrderController extends Controller
      */
     private function _returnOrder($order,$currentOperId,$merchant,$orderNo){
         $sdkConfig = null;
-
+        $isOperSelf = 0;
         if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
             if($currentOperId == 0){ // 在平台小程序下
                 $isOperSelf = 1;
                 $sdkConfig = $this->_payToPlatform($order);
-            }else {
-                $isOperSelf = 0;
-                $sdkConfig = null;
             }
         }else {
             $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
             if($isOperSelf == 1) {
-//                $sdkConfig = $this->_wechatUnifyPayToOper($order);
                 $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
                 $sdkConfig = $this->_payByWechat($order,$payApp);
-            }else {
-                $sdkConfig = null;
             }
         }
 
@@ -522,7 +516,8 @@ class OrderController extends Controller
             'order_no' => $orderNo,
             'isOperSelf' => $isOperSelf,
             'sdk_config' => $sdkConfig,
-            'pay_type'  =>  $order->pay_type
+            'pay_type'  =>  $order->pay_type,
+            'order' =>  $order
         ]);
     }
 
