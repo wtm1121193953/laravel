@@ -75,6 +75,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string employees_number
  * @property string oper_biz_member_code
  * @property Carbon active_time
+ * @property Carbon first_active_time
  * @property number lowest_amount
  * @property int mapping_user_id
  * @property int level

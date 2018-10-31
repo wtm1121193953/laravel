@@ -86,24 +86,24 @@ class OperStatisticsService extends BaseService
 
                 //商户数量（正式）
                 $row['merchant_num'] = Merchant::where('oper_id','=',$row['oper_id'])
-                    ->where('active_time','>=',$startTime)
-                    ->where('active_time','<=',$endTime)
+                    ->where('first_active_time','>=',$startTime)
+                    ->where('first_active_time','<=',$endTime)
                     ->where('is_pilot', Merchant::NORMAL_MERCHANT)
                     ->where('audit_status','=',Merchant::AUDIT_STATUS_SUCCESS)
                     ->count();
 
                 //试点商户数量
                 $row['merchant_pilot_num'] = Merchant::where('oper_id','=',$row['oper_id'])
-                    ->where('active_time','>=',$startTime)
-                    ->where('active_time','<=',$endTime)
+                    ->where('first_active_time','>=',$startTime)
+                    ->where('first_active_time','<=',$endTime)
                     ->where('is_pilot', Merchant::PILOT_MERCHANT)
                     ->where('audit_status','=',Merchant::AUDIT_STATUS_SUCCESS)
                     ->count();
 
                 //商户总数量
                 $row['merchant_total_num'] = Merchant::where('oper_id','=',$row['oper_id'])
-                    ->where('active_time','>=',$startTime)
-                    ->where('active_time','<=',$endTime)
+                    ->where('first_active_time','>=',$startTime)
+                    ->where('first_active_time','<=',$endTime)
                     ->where('audit_status','=',Merchant::AUDIT_STATUS_SUCCESS)
                     ->count();
 
