@@ -530,7 +530,7 @@ class OrderController extends Controller
                 }
             }
         }else{
-            $paymentClassName = '\\App\\Support\\Payment'.$payment->class_name;
+            $paymentClassName = '\\App\\Support\\Payment\\'.$payment->class_name;
             if(!class_exists($paymentClassName)){
                 throw new BaseResponseException('无法使用该支付方式');
             }
