@@ -9,6 +9,7 @@
 namespace App\Exports;
 
 use App\Modules\Bizer\Bizer;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Oper\OperBizMember;
 use Illuminate\Support\Collection;
@@ -79,7 +80,7 @@ class OperMerchantExport implements FromCollection, WithMapping, WithHeadings
             $this->getCategoryPathName($data->merchant_category_id),
             $data->city . ' ' . $data->area,
             ($data->bizer_id!=0) ? $this->getOperBizersName($data->bizer_id) :$this->getOperBizMemberName($data->oper_id > 0 ? $data->oper_id : $data->audit_oper_id,$data->oper_biz_member_code),
-            ['', '正常', '禁用'][$data->status],
+            Merchant::getMerchantStatusText($data->audit_status,$data->status),
             ['待审核', '审核通过', '审核不通过', '重新提交审核'][$data->audit_status],
             //$this->isPilot ? '' : ['', '周结', '半月结', '月结', '半年结', '年结', 'T+1', '未知'][$data->settlement_cycle_type],
         ];
