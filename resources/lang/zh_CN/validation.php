@@ -193,6 +193,10 @@ return [
         ],
         'view_name' =>  [
             'required'  =>  '前端展示名称'
+        ],
+        'pay_type'  =>  [
+            'required'  =>  '支付类型不可为空',
+            'integer'   =>  '支付类型必须为整数'
         ]
     ],
 
