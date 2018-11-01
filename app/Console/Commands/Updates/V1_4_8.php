@@ -38,7 +38,7 @@ class V1_4_8 extends Command
      */
     public function handle()
     {
-        $sqls = [
+        /*$sqls = [
             "ALTER TABLE `oper_statistics`
 	CHANGE COLUMN `merchant_num` `merchant_num` INT(11) NOT NULL DEFAULT '0' COMMENT '商户数(正式)' AFTER `oper_id`",
             "ALTER TABLE `oper_statistics`
@@ -67,7 +67,7 @@ class V1_4_8 extends Command
                 $merchant->save();
             }
         });
-        $this->info('填充商户首次审核通过时间完成');
+        $this->info('填充商户首次审核通过时间完成');*/
 
         /*************统计运营中心5月份之后历史运营数据start*************/
         $i = 1;
