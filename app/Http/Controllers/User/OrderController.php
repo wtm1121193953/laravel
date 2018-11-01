@@ -215,6 +215,7 @@ class OrderController extends Controller
     {
         $this->validate(request(), [
             'dishes_id' => 'required|integer|min:1',
+            'pay_type'  => 'required|integer'
         ]);
         $dishesId = request('dishes_id');
         $dishes = Dishes::findOrFail($dishesId);
@@ -243,7 +244,7 @@ class OrderController extends Controller
                 throw new BaseResponseException('菜单已变更, 请刷新页面');
             }
         }
-        $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
+        $payType = request('pay_type');
 
         $merchant_oper = Oper::findOrFail($merchant->oper_id);
 
@@ -266,7 +267,7 @@ class OrderController extends Controller
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->bizer_id = $merchant->bizer_id;
-        $payType->pay_type = $payType;
+        $order->pay_type = $payType;
         $order->save();
 
         return $this->_returnOrder($order,$currentOperId,$merchant,$orderNo);
