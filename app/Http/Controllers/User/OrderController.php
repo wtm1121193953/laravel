@@ -40,6 +40,7 @@ use App\Modules\Wallet\WalletBill;
 use App\Modules\Wallet\WalletService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
+use App\ResultCode;
 use App\Support\Lbs;
 use App\Support\Payment\PayBase;
 use App\Support\Payment\WalletPay;
@@ -536,7 +537,21 @@ class OrderController extends Controller
                 throw new BaseResponseException('无法使用该支付方式');
             }
             $paymentClass = new $paymentClassName();
-            $data =  $paymentClass->buy($order);
+            try{
+                $data =  $paymentClass->buy($order);
+            }catch (\Exception $e){
+                return Result::error(
+                    ResultCode::PARAMS_INVALID,
+                    $e->getMessage(),[
+                    'order_no' => $orderNo,
+                    'isOperSelf' => $isOperSelf,
+                    'sdk_config' => $sdkConfig,
+                    'pay_type'  =>  $order->pay_type,
+                    'order' =>  $order,
+                    'anther_pay'  =>  $data
+                ]);
+            }
+
         }
 
         return Result::success([
