@@ -199,7 +199,7 @@ return [
             'integer'   =>  '支付类型必须为整数'
         ],
         'temp_token'    =>  [
-            'required'  =>  '欠缺密钥信息'
+            'required'  =>  '交易密码不正确'
         ]
     ],
 
