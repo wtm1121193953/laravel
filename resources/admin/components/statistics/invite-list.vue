@@ -54,6 +54,7 @@
                 router.go(-1);
             }
             this.query.originId = this.$route.query.originId;
+            this.query.originType = this.$route.query.originType;
             let name = this.$route.query.name;
             let timeType = this.$route.query.timeType;
             this.query.timeType = timeType;
