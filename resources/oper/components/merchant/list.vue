@@ -29,12 +29,12 @@
                         v-model="query.merchant_category">
                 </el-cascader>
             </el-form-item>
-
-            <el-form-item label="状态" prop="status">
-                <el-select v-model="query.status" class="w-100">
+            <el-form-item label="商户状态" prop="status">
+                <el-select v-model="query.status" size="small" class="w-150">
                     <el-option label="全部" value=""/>
                     <el-option label="正常" value="1"/>
-                    <el-option label="已冻结" value="2"/>
+                    <el-option label="冻结" value="2"/>
+                    <el-option label="未知" value="3"/>
                 </el-select>
             </el-form-item>
             <el-form-item label="审核状态" prop="audit_status">
