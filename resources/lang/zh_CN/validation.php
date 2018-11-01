@@ -197,6 +197,9 @@ return [
         'pay_type'  =>  [
             'required'  =>  '支付类型不可为空',
             'integer'   =>  '支付类型必须为整数'
+        ],
+        'temp_token'    =>  [
+            'required'  =>  '欠缺密钥信息'
         ]
     ],
 
