@@ -29,6 +29,14 @@ class MerchantController extends Controller
 
     public function getList()
     {
+        $user_key =  request()->get('current_device_no');
+        if (empty($user_key)) {
+            $user_key = request()->headers->get('token');
+            if (empty($user_key)) {
+                $user_key = request()->ip();
+            }
+        }
+
         $data = MerchantService::getListAndDistance([
             'city_id' => request('city_id'),
             'merchant_category_id' => request('merchant_category_id'),
@@ -38,7 +46,7 @@ class MerchantController extends Controller
             'radius' => request('radius'),
             'lowest_price' => request('lowest_price'),
             'highest_price' => request('highest_price'),
-            'user_key' => request()->get('current_device_no'),
+            'user_key' => $user_key,
             'onlyPayToPlatform' => 1,
         ]);
 
