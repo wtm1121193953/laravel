@@ -433,7 +433,7 @@ class OrderController extends Controller
             $m = new WechatPay();
             $res =  $m->refund($order);
         }else{
-            $paymentClassName = '\\App\\Support\\Payment'.$payment->class_name;
+            $paymentClassName = '\\App\\Support\\Payment\\'.$payment->class_name;
             if(!class_exists($paymentClassName)){
                 throw new BaseResponseException('无法使用该退款方式');
             }
