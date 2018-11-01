@@ -46,10 +46,11 @@ class OperAndMerchantAndUserStatisticsDailyJob implements ShouldQueue
     public function handle()
     {
         Log::info('生成 营销统计数据 :Start');
+        print_r($this->endTime);
 
         MerchantStatisticsService::statistics($this->endTime);
-        OperStatisticsService::statistics($this->endTime);
-        UserStatisticsService::statistics($this->endTime);
+//        OperStatisticsService::statistics($this->endTime);
+//        UserStatisticsService::statistics($this->endTime);
 
         Log::info('生成 营销统计数据 :end');
     }
