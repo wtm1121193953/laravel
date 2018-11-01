@@ -215,6 +215,7 @@ class OrderController extends Controller
     {
         $this->validate(request(), [
             'dishes_id' => 'required|integer|min:1',
+            'pay_type'  => 'required|integer'
         ]);
         $dishesId = request('dishes_id');
         $dishes = Dishes::findOrFail($dishesId);
@@ -243,7 +244,7 @@ class OrderController extends Controller
                 throw new BaseResponseException('菜单已变更, 请刷新页面');
             }
         }
-        $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
+        $payType = request('pay_type');
 
         $merchant_oper = Oper::findOrFail($merchant->oper_id);
 
@@ -266,7 +267,7 @@ class OrderController extends Controller
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
         $order->bizer_id = $merchant->bizer_id;
-        $payType->pay_type = $payType;
+        $order->pay_type = $payType;
         $order->save();
 
         return $this->_returnOrder($order,$currentOperId,$merchant,$orderNo);
@@ -385,10 +386,13 @@ class OrderController extends Controller
     public function pay()
     {
         $this->validate(request(), [
-            'order_no' => 'required'
+            'order_no' => 'required',
+            'pay_type' => 'required|integer'
         ]);
         $orderNo = request('order_no');
         $order = Order::where('order_no', $orderNo)->firstOrFail();
+        $order->pay_type = request()->get('pay_type');
+        $order->save();
         $merchant = MerchantService::getById($order->merchant_id);
         if($merchant->status == Merchant::STATUS_OFF){
             throw new BaseResponseException('商家异常，请联系商家');
@@ -506,25 +510,42 @@ class OrderController extends Controller
     private function _returnOrder($order,$currentOperId,$merchant,$orderNo){
         $sdkConfig = null;
         $isOperSelf = 0;
-        if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){ // 如果是支付到平台
-            if($currentOperId == 0){ // 在平台小程序下
-                $isOperSelf = 1;
-                $sdkConfig = $this->_payToPlatform($order);
+        $data = null;
+
+        $payment = PaymentService::getDetailById($order->pay_type);
+        if($payment->type==Payment::TYPE_WECHAT){
+            // 如果为微信支付 走以下逻辑
+            if($order->pay_target_type == Order::PAY_TARGET_TYPE_PLATFORM){
+                if($currentOperId == 0){ // 在平台小程序下
+                    $isOperSelf = 1;
+                    // 如果为微信支付,则返回支付参数
+                    $payApp = WechatService::getWechatPayAppForPlatform();
+                    $sdkConfig = $this->_payByWechat($order,$payApp);
+                }
+            }else{
+                $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
+                if($isOperSelf == 1) {
+                    $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
+                    $sdkConfig = $this->_payByWechat($order,$payApp);
+                }
             }
-        }else {
-            $isOperSelf = $merchant->oper_id === $currentOperId ? 1 : 0;
-            if($isOperSelf == 1) {
-                $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
-                $sdkConfig = $this->_payByWechat($order,$payApp);
+        }else{
+            $paymentClassName = '\\App\\Support\\Payment'.$payment->class_name;
+            if(!class_exists($paymentClassName)){
+                throw new BaseResponseException('无法使用该支付方式');
             }
+            $paymentClass = new $paymentClassName();
+            $data =  $paymentClass->buy();
         }
+
 
         return Result::success([
             'order_no' => $orderNo,
             'isOperSelf' => $isOperSelf,
             'sdk_config' => $sdkConfig,
             'pay_type'  =>  $order->pay_type,
-            'order' =>  $order
+            'order' =>  $order,
+            'anther_pay'  =>  $data
         ]);
     }
 
