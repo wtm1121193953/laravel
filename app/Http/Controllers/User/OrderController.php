@@ -530,6 +530,7 @@ class OrderController extends Controller
                 }
             }
         }else{
+            $isOperSelf = 1;
             $paymentClassName = '\\App\\Support\\Payment\\'.$payment->class_name;
             if(!class_exists($paymentClassName)){
                 throw new BaseResponseException('无法使用该支付方式');
@@ -537,7 +538,6 @@ class OrderController extends Controller
             $paymentClass = new $paymentClassName();
             $data =  $paymentClass->buy($order);
         }
-
 
         return Result::success([
             'order_no' => $orderNo,
