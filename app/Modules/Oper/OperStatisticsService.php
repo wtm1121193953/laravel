@@ -151,7 +151,7 @@ class OperStatisticsService extends BaseService
                     ->where('status','=',Order::STATUS_REFUNDED)
                     ->sum('pay_price');
 
-                if ($row['merchant_num'] != 0 && $row['merchant_pilot_num'] != 0 && $row['merchant_total_num'] != 0 && $row['user_num'] != 0 && $row['merchant_invite_num'] != 0 && $row['oper_and_merchant_invite_num'] != 0 && $row['order_paid_num'] != 0 && $row['order_refund_num'] != 0 && $row['order_paid_amount'] != 0 && $row['order_refund_amount'] != 0) {
+                if ($row['merchant_num'] != 0 || $row['merchant_pilot_num'] != 0 || $row['merchant_total_num'] != 0 || $row['user_num'] != 0 || $row['merchant_invite_num'] != 0 || $row['oper_and_merchant_invite_num'] != 0 || $row['order_paid_num'] != 0 || $row['order_refund_num'] != 0 || $row['order_paid_amount'] != 0 || $row['order_refund_amount'] != 0) {
                     (new OperStatistics)->updateOrCreate($where, $row);
                 }
             }

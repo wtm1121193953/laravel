@@ -47,9 +47,9 @@ class OperAndMerchantAndUserStatisticsDailyJob implements ShouldQueue
     {
         Log::info('生成 营销统计数据 :Start');
 
-//        MerchantStatisticsService::statistics($this->endTime);
+        MerchantStatisticsService::statistics($this->endTime);
         OperStatisticsService::statistics($this->endTime);
-//        UserStatisticsService::statistics($this->endTime);
+        UserStatisticsService::statistics($this->endTime);
 
         Log::info('生成 营销统计数据 :end');
     }
