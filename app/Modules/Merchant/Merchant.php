@@ -194,6 +194,27 @@ class Merchant extends BaseModel
     }
 
     /**
+     * 获取商户状态
+     * @param $auditStatus
+     * @param $status
+     * @return string
+     */
+    public static function getMerchantStatusText($auditStatus,$status){
+        if(in_array($auditStatus,[1,3])){
+            if($status == 1){
+                $statusText = '正常';
+            }elseif($status == 2){
+                $statusText = '冻结';
+            }else{
+                $statusText = '';
+            }
+        }else{
+            $statusText = '';
+        }
+        return $statusText;
+    }
+
+    /**
      * 从请求中获取商户激活需要的数据, 并填充到当前实例中
      */
     public function fillMerchantActiveInfoFromRequest()
