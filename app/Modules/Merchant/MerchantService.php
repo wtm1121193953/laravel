@@ -21,6 +21,7 @@ use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizer;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperBizMember;
+use App\Modules\Oper\OperStatisticsService;
 use App\Result;
 use App\Support\Lbs;
 use App\Support\Utils;
@@ -430,6 +431,9 @@ class MerchantService extends BaseService
                 $merchant->oper_id = 0;
                 $merchant->is_pilot = Merchant::NORMAL_MERCHANT;
                 $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+
+                // 运营中心营销统计 审核通过的试点转正式的时候 统计数据要修改
+                OperStatisticsService::updateMerchantNum($merchant->oper_id, date('Y-m-d', strtotime($merchant->first_active_time)));
             } else {
                 MerchantAuditService::addAudit($merchant->id, $currentOperId, Merchant::AUDIT_STATUS_RESUBMIT);
                 $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;

@@ -157,4 +157,20 @@ class OperStatisticsService extends BaseService
             }
         });
     }
+
+    /**
+     * 审核通过的试点商户 转 正式商户的时候，修改统计数据
+     * @param $operId
+     * @param $date
+     */
+    public static function updateMerchantNum($operId, $date)
+    {
+        $operStatistics = OperStatistics::where('oper_id', $operId)
+            ->where('date', $date)
+            ->first();
+        if (!empty($operStatistics)) {
+            $operStatistics->increment('merchant_num');
+            $operStatistics->decrement('merchant_pilot_num');
+        }
+    }
 }
