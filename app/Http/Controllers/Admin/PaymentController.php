@@ -160,6 +160,10 @@ class PaymentController extends Controller
             $whereArr['on_pc'] = Payment::PC_ON;
         }
         $list = PaymentService::getListByPlatForm(array_filter($whereArr));
+        foreach ($list as $k => $v){
+            // ID 4为钱包支付
+            $list[$k]['need_password'] = ($v['id']==4) ? true : false;
+        }
         return Result::success(['list'=>$list]);
     }
 
