@@ -24,10 +24,10 @@ use Illuminate\Support\Facades\Cache;
 
 class WalletPay extends PayBase
 {
-    public function buy($user,$order)
+    public function buy($order)
     {
         // 判断密码的有效性
-        $this->validate(request(), [
+        request()->validate([
             'temp_token' => 'required'
         ]);
         $inputToken = request()->get('temp_token');

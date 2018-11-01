@@ -433,7 +433,7 @@ class OrderController extends Controller
             $m = new WechatPay();
             $res =  $m->refund($order);
         }else{
-            $paymentClassName = '\\App\\Support\\Payment'.$payment->class_name;
+            $paymentClassName = '\\App\\Support\\Payment\\'.$payment->class_name;
             if(!class_exists($paymentClassName)){
                 throw new BaseResponseException('无法使用该退款方式');
             }
@@ -513,12 +513,12 @@ class OrderController extends Controller
             // 如果为微信支付,则返回支付参数
             $sdkConfig = $this->_wechatPayToPlatform($order);
         }else{
-            $paymentClassName = '\\App\\Support\\Payment'.$payment->class_name;
+            $paymentClassName = '\\App\\Support\\Payment\\'.$payment->class_name;
             if(!class_exists($paymentClassName)){
                 throw new BaseResponseException('无法使用该支付方式');
             }
             $paymentClass = new $paymentClassName();
-            $data = $paymentClass->buy();
+            $data = $paymentClass->buy($order);
         }
 
         return Result::success([
