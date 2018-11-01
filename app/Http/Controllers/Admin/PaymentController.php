@@ -12,6 +12,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Payment\Payment;
 use App\Modules\Payment\PaymentService;
+use App\Modules\Wallet\WalletService;
 use App\Result;
 use Illuminate\Http\Request;
 
@@ -164,7 +165,8 @@ class PaymentController extends Controller
             // ID 4为钱包支付
             $list[$k]['need_password'] = ($v['id']==4) ? true : false;
         }
-        return Result::success(['list'=>$list]);
+        $wallet = WalletService::getWalletInfo($request->get('current_user'))->toArray();
+        return Result::success(['list'=>$list,'wallet'=>$wallet]);
     }
 
 }
