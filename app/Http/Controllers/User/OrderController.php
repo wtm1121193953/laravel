@@ -549,7 +549,7 @@ class OrderController extends Controller
                     $message = $e->getMessage();
                 }
                 return Result::error(
-                    $e->getCode(),
+                    ResultCode::PARAMS_INVALID,
                     $message,[
                     'order_no' => $orderNo,
                     'isOperSelf' => $isOperSelf,
