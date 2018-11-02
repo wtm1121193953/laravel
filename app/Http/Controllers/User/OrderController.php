@@ -542,12 +542,14 @@ class OrderController extends Controller
                 $data =  $paymentClass->buy($order);
             }catch (\Exception $e){
                 if($e instanceof ValidationException){
-                    $message = implode(',',$e->errors());
+                    $message = implode(',',array_map(function(&$value){
+                        return implode('|', $value);
+                    }, $e->errors()));;
                 }else{
                     $message = $e->getMessage();
                 }
                 return Result::error(
-                    $e->getCode(),
+                    ResultCode::PARAMS_INVALID,
                     $message,[
                     'order_no' => $orderNo,
                     'isOperSelf' => $isOperSelf,

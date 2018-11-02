@@ -329,4 +329,63 @@ class SettlementPlatformService extends BaseService
         return $data;
     }
 
+    /**
+     * 生成批次
+     */
+    public static function genBatch() {
+
+        $batch_total = 100;
+        $settlement_total = 200;
+
+        for ($i=1; $i<=$batch_total; $i++) {
+            $settlement_platform = SettlementPlatform::where('pay_batch_no','')
+                ->where('status',1)
+                ->limit($settlement_total)
+                ->get()
+            ;
+
+            if (empty($settlement_platform)) {
+                break;
+            }
+            DB::beginTransaction();
+            try {
+                $batch_no = SettlementPlatformReapalBatchService::genBatchNo();
+                $settlement_platform_ids = [];
+                $settlement_platform->each(function ($item) use ($batch_no,$settlement_platform_ids) {
+
+                    $item->pay_batch_no = $batch_no;
+                    $item->status = SettlementPlatform::STATUS_UN_PAY;
+                    $item->save();
+                    $settlement_platform_ids[] = $item->id;
+                });
+
+                $m = new SettlementPlatformReapalBatch();
+                $m->batch_no = $batch_no;
+                $m->settlement_platfrom_ids = implode(',',$settlement_platform_ids);
+                $m->total = count($settlement_platform_ids);
+                $m->data_send = '';
+                $m->data_receive = '';
+                $m->data_query = '';
+                $m->send_time = '';
+
+                $m->save();
+
+                DB::commit();
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('生成结算批次数据库错误', [
+                    'message' => $e->getMessage(),
+                    'data' => $e
+                ]);
+                throw $e;
+            }
+
+
+
+
+            dd($settlement_platform);exit;
+        }
+    }
+
 }
