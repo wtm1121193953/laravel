@@ -25,6 +25,7 @@ use App\Modules\Oper\OperStatisticsService;
 use App\Result;
 use App\Support\Lbs;
 use App\Support\Utils;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Area\Area;
 use Illuminate\Support\Collection;
@@ -411,7 +412,14 @@ class MerchantService extends BaseService
             throw new ParamInvalidException('招牌名称不能重复');
         }
 
-        if($merchant->settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE){
+        if($merchant->settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE || $merchant->settlement_cycle_type == Merchant::SETTLE_MONTHLY){
+
+            $date = Carbon::now()->startOfDay();
+            $week = Carbon::now()->startOfWeek();
+            if($date != $week){
+                throw new ParamInvalidException('周结改T+1需要周一才能修改');
+            }
+
             if($merchant->bank_card_type == Merchant::BANK_CARD_TYPE_COMPANY){
                 if($merchant->name != $merchant->bank_open_name){
                     throw new ParamInvalidException('提交失败，申请T+1结算，商户名称需和开户名一致');
