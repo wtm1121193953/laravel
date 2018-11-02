@@ -65,7 +65,7 @@ class MessageNoticeService extends BaseService
 
     public static function createByRegister($mobile,$userId)
     {
-        $content = "邀请消息：\n手机号码为{$mobile}的好友已注册成功。";
+        $content = "手机号码为{$mobile}的好友已注册成功。";
         $messageNotice = new MessageNotice();
         $messageNotice->title = '邀请消息';
         $messageNotice->content = $content;
