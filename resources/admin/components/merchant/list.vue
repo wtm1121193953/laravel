@@ -51,10 +51,10 @@
                     <el-select v-model="query.settlementCycleType" size="small" multiple placeholder="请选择" class="w-150">
                         <el-option label="周结" value="1"/>
                         <!--<el-option label="半月结" value="2"/>-->
-                        <el-option label="月结" value="3"/>
+                        <el-option label="T+1(自动)" value="3"/>
                         <!--<el-option label="半年结" value="4"/>-->
                         <!--<el-option label="年结" value="5"/>-->
-                        <el-option label="T+1" value="6"/>
+                        <el-option label="T+1(人工)" value="6"/>
                     </el-select>
                 </el-form-item>
                 <el-form-item prop="operId" label="激活运营中心ID"  >
@@ -156,7 +156,7 @@
                 </el-table-column>
                 <el-table-column prop="settlement_cycle_type" label="结算周期">
                     <template slot-scope="scope">
-                        <span>{{ {1: '周结', 2: '半月结', 3: '月结', 4: '半年结', 5: '年结', 6: 'T+1', 7: '未知',}[scope.row.settlement_cycle_type] }}</span>
+                        <span>{{ {1: '周结', 2: '半月结', 3: 'T+1(自动)', 4: '半年结', 5: '年结', 6: 'T+1(人工)', 7: '未知',}[scope.row.settlement_cycle_type] }}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" width="150px">

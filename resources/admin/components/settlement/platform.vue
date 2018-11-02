@@ -68,11 +68,11 @@
             <el-table-column prop="oper.name" size="mini" label="运营中心"/>
             <el-table-column prop="settlement_cycle_type" label="结算周期">
                 <template slot-scope="scope">
-                    <span>{{ {1: '周结', 2: '半月结', 3: '月结', 4: '半年结', 5: '年结', 6: 'T+1', 7: '未知',}[scope.row.settlement_cycle_type] }}</span>
+                    <span>{{ {1: '周结', 2: '半月结', 3: 'T+1(自动)', 4: '半年结', 5: '年结', 6: 'T+1(人工)', 7: '未知',}[scope.row.settlement_cycle_type] }}</span>
                 </template>
             </el-table-column>
             <el-table-column prop="created_at" label="结算单生成时间"/>
-            <el-table-column prop="date" label="结算周期">
+            <el-table-column prop="date" label="结算日期">
                 <template slot-scope="scope">
                     {{scope.row.start_date}} 至 {{scope.row.end_date}}
                 </template>
