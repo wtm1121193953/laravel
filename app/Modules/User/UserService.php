@@ -123,6 +123,13 @@ class UserService extends BaseService
         }
         $user->level_text = User::getLevelText($user->level);
 
+        $record = UserIdentityAuditRecordService::getRecordByUserId($user->id);
+        if ($record) {
+            $user->identityInfoStatus = $record->status;
+        } else {
+            $user->identityInfoStatus = 4;
+        }
+
         return [
             'user' => $user,
             'token' => $token
