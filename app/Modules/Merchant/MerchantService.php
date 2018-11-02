@@ -384,6 +384,8 @@ class MerchantService extends BaseService
         $merchant = Merchant::where('id', $id)
             //->where('audit_oper_id', $currentOperId)
             ->first();
+        //获取原有结算周期
+        $settlement_cycle_type = $merchant->settlement_cycle_type;
         if (empty($merchant)) {
             throw new BaseResponseException('该商户不存在');
         }
@@ -414,10 +416,16 @@ class MerchantService extends BaseService
 
         if($merchant->settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE || $merchant->settlement_cycle_type == Merchant::SETTLE_MONTHLY){
 
-            $date = Carbon::now()->startOfDay();
-            $week = Carbon::now()->startOfWeek();
-            if($date != $week){
-                throw new ParamInvalidException('周结改T+1需要周一才能修改');
+            //判断编辑之前商户是否已切换到T+1
+            if($settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE || $settlement_cycle_type
+             == Merchant::SETTLE_MONTHLY){
+
+            }else{
+                $date = Carbon::now()->startOfDay();
+                $week = Carbon::now()->startOfWeek();
+                if($date != $week){
+                    throw new ParamInvalidException('周结改T+1需要周一才能修改');
+                }
             }
 
             if($merchant->bank_card_type == Merchant::BANK_CARD_TYPE_COMPANY){
