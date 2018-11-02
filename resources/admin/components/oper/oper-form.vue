@@ -81,9 +81,6 @@
                         <el-option label="停止合作" :value="3"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item prop="audit_suggestion" label="审核意见">
-                    <el-input  placeholder="最多输入50个汉字，可不填"  maxlength="50" v-model="form.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
-                </el-form-item>
 
                 <el-form-item>
                     <el-button @click="cancel">取消</el-button>
@@ -115,7 +112,6 @@
         bank_code: '',
         licence_pic_url: '',
         business_licence_pic_url: '',
-        audit_suggestion: '',
     };
     export default {
         name: 'oper-form',

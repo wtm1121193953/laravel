@@ -199,7 +199,6 @@ class OperService extends BaseService
         }
         $oper->name = request('name');
         $oper->status = request('status', 1);
-        $oper->audit_suggestion = request('audit_suggestion', '');
         $oper->contacter = request('contacter', '');
         $oper->tel = request('tel', '');
         $provinceId = request('province_id', 0);

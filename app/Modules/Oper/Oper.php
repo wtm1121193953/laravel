@@ -29,7 +29,6 @@ use App\BaseModel;
  * @property number mapping_user_id
  * @property number pay_to_platform
  * @property number status
- * @property number audit_suggestion
  * @property float bizer_divide
  */
 class Oper extends BaseModel
