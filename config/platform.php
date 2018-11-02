@@ -15,8 +15,8 @@ return [
     ],
     // 微信开放平台app应用配置
     'wechat_open' => [
-        'app_id' => 'wxd1a8a54d81ebf5fa',
-        'app_secret' => 'e0f7d6492e089f45671b7a5408962315',
+        'app_id' => 'wxece68e67f4f57bb7',
+        'app_secret' => '6f783d87b7471e8353f14d9e9a7e04b6',
     ],
     // 平台微信支付配置
     'wechat_pay' => [
