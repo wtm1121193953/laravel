@@ -19,6 +19,7 @@ use App\ResultCode;
 use App\Support\ImageTool;
 use EasyWeChat\Factory;
 use EasyWeChat\Kernel\Exceptions\InvalidArgumentException;
+use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
 use Intervention\Image\Gd\Font;
 use App\Modules\Wechat\MiniprogramScene;
@@ -32,7 +33,7 @@ class WechatService
      */
     public static function getWechatMiniAppForOper($operId)
     {
-        \Log::info('login_oper_id',$operId);
+        Log::info('login_oper_id',['login_oper_id' => $operId]);
         $miniProgram = OperMiniprogram::where('oper_id', $operId)->first();
         if(empty($miniProgram)){
             throw new BaseResponseException('运营中心小程序配置不存在', ResultCode::MINIPROGRAM_CONFIG_NOT_EXIST);
