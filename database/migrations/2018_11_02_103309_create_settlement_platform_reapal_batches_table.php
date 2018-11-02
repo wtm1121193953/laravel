@@ -23,8 +23,8 @@ class CreateSettlementPlatformReapalBatchesTable extends Migration
             $table->integer('total')->default(0)->comment('结算单总数');
             $table->integer('success')->default(0)->comment('受理成功数');
             $table->integer('fail')->default(0)->comment('受理失败数');
-            $table->integer('pay_success')->default('')->comment('打款成功数');
-            $table->integer('pay_fail')->default('')->comment('打款失败数');
+            $table->integer('pay_success')->default(0)->comment('打款成功数');
+            $table->integer('pay_fail')->default(0)->comment('打款失败数');
             $table->timestamp('send_time')->comment('发送时间');
             $table->tinyInteger('status')->default(0)->comment('结算单处理状态 0 未处理 1 已推送 2 处理完成');
             $table->timestamps();
