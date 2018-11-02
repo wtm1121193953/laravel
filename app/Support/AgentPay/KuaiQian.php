@@ -147,7 +147,8 @@ class KuaiQian extends AgentPayBase
         $membercode = $this->membercode;//商户号
         $time1 = date('YmdHis');//时间
 //        $batchno= "batchNo_20181030153934";//批次号
-        $batchno= "batchNo_20181030170535";//批次号
+//        $batchno= "batchNo_20181030170535";//批次号
+        $batchno= "batchNo_20181031153002";//批次号
 
 //request-header
         $rheader = '<tns:batchid-query-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
@@ -247,39 +248,39 @@ class KuaiQian extends AgentPayBase
         /** 金额 无小数点，个位代表分*/
         $amt = "1500";
         /** 银行名称 */
-        $bank = "中国民生银行";
+        $bank = "中国工商银行";
         /** 户名 */
         $name = "快钱公司";
         /** 卡号 */
         $bankCardNo = "0328014170000313";
         /** 开户行 */
-        $branchBank = "中国民生银行股份有限公司上海支行";
+        $branchBank = "中国工商银行";
         /** 对公对私 0:企业; 1:个人*/
         $payeeType = "0";
         /** 省份 */
-        $province = "上海";
+        $province = "广东省";
         /** 城市 */
-        $city = "上海";
+        $city = "佛山市";
         /** 快钱交易备注 */
-        $memo = "快钱备注";
+        $memo = "";
         /** 银行交易用备注 */
-        $bankPurpose = "银行交易备注";
+        $bankPurpose = "";
         /** 银行交易备注 */
-        $bankMemo = "交易备注";
+        $bankMemo = "";
         /** 收款方通知知内容 */
-        $payeeNote = "通知内容";
+        $payeeNote = "";
         /** 收款方手机号 */
-        $payeeMobile = "13000000000";
+        $payeeMobile = "";
         /** 收款方邮件 */
-        $payeeEmail = "123@126.com";
+        $payeeEmail = "";
         /** 到账时效 */
         $period = "";
         /** 商户预留字段1 */
-        $orderMemo1 = "order1";
+        $orderMemo1 = "";
         /** 商户预留字段2 */
-        $orderMemo2 = "order2";
+        $orderMemo2 = "";
         /** 商户预留字段3 */
-        $orderMemo3 = "order3";
+        $orderMemo3 = "";
 
 
         /**批次信息**/
@@ -313,11 +314,11 @@ class KuaiQian extends AgentPayBase
         /** 是否短信通知 0:通知; 1:不通知*/
         $phoneNoteFlag = "0";
         /** 预留字段1 */
-        $merchantMemo1 = "memo1";
+        $merchantMemo1 = "";
         /** 预留字段2 */
-        $merchantMemo2 = "memo2";
+        $merchantMemo2 = "";
         /** 预留字段3 */
-        $merchantMemo3 = "memo3";
+        $merchantMemo3 = "";
 
 
 //request-header

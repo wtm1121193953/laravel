@@ -1,7 +1,7 @@
 <template>
     <page :title="title" :breadcrumbs="bread">
         <el-table :data="list" stripe v-loading="loading">
-            <el-table-column prop="user.id" label="用户ID"></el-table-column>
+            <el-table-column prop="user_id" label="用户ID"></el-table-column>
             <el-table-column prop="user.mobile" label="用户手机号码"></el-table-column>
             <el-table-column prop="user.created_at" label="注册时间"></el-table-column>
         </el-table>
@@ -54,6 +54,7 @@
                 router.go(-1);
             }
             this.query.originId = this.$route.query.originId;
+            this.query.originType = this.$route.query.originType;
             let name = this.$route.query.name;
             let timeType = this.$route.query.timeType;
             this.query.timeType = timeType;

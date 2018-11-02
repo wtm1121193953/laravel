@@ -51,7 +51,7 @@ class UserStatisticsService extends BaseService
                     ->where('status', Order::STATUS_FINISHED)
                     ->sum('pay_price');
 
-                if ($row['invite_user_num'] != 0 && $row['order_finished_num'] != 0 && $row['order_finished_amount'] != 0) {
+                if ($row['invite_user_num'] != 0 || $row['order_finished_num'] != 0 || $row['order_finished_amount'] != 0) {
                     (new UserStatistics())->updateOrCreate($where, $row);
                 }
             }
@@ -89,8 +89,8 @@ class UserStatisticsService extends BaseService
         $orderColumn = $params['orderColumn'];
         $orderType = $params['orderType'];
 
-        $total = $query->count();
         $data = $query->get();
+        $total = $query->get()->count();
 
         $data->each(function ($item) use ($params){
             $item->date = "{$params['startDate']}至{$params['endDate']}";

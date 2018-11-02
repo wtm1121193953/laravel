@@ -9,29 +9,29 @@
 namespace App\Exports;
 
 use App\Modules\Order\Order;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class MerchantOrderExport implements FromQuery, WithHeadings, WithMapping
+class MerchantOrderExport implements FromCollection, WithMapping, WithHeadings
 {
     use Exportable;
 
-    protected $query;
+    protected $collection;
 
-    public function __construct($query)
+    public function __construct($collection)
     {
-        $this->query = $query;
+        $this->collection = $collection;
     }
 
     /**
-     * @return Builder
+     * @return Collection
      */
-    public function query()
+    public function collection()
     {
-        return $this->query;
+        return $this->collection;
     }
 
     /**
@@ -58,25 +58,15 @@ class MerchantOrderExport implements FromQuery, WithHeadings, WithMapping
      */
     public function map($row): array
     {
-        if($row->type ==3 && count($row->dishes_items) ==1){
-            $goosName = $row->dishes_items[0]->dishes_goods_name;
-        }elseif($row->type ==3 && count($row->dishes_items) >1){
-            $goosName = $row->dishes_items[0]->dishes_goods_name.'等'.count($row->dishes_items).'件商品';
-        }elseif($row->type ==2){
-            $goosName = '无';
-        }else{
-            $goosName = $row-> goods_name;
-        }
-
         return [
             $row->id,
             $row->created_at,
             $row->order_no,
             ['','团购','买单','单品'][$row->type],
-            $goosName,
+            Order::getGoodsNameText($row->type,$row->dishes_items,$row->goods_name),
             $row->pay_price,
             $row->notify_mobile,
-            ['','未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成'][$row->status],
+            Order::getStatusText($row->status),
             Order::getPayTypeText($row->pay_type),
         ];
     }

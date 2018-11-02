@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Merchant;
 
 use App\Exports\MerchantOrderExport;
 use App\Http\Controllers\Controller;
+use App\Modules\Dishes\DishesItem;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Order\OrderService;
+use App\Modules\Payment\Payment;
 use App\Result;
 
 class OrdersController extends Controller
@@ -75,7 +78,15 @@ class OrdersController extends Controller
             'endCreatedAt' => $endCreatedAt,
         ], true);
 
-        return (new MerchantOrderExport($query))->download('商户中心订单管理列表.xlsx');
+        $list = $query->get();
+        $list->each(function($item){
+            if ($item->type == 3){
+                $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
+                $item->dishes_items = $dishesItems;
+            }
+        });
+
+        return (new MerchantOrderExport($list))->download('商户中心订单管理列表.xlsx');
     }
 
     public function verification()

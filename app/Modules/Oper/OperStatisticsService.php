@@ -42,8 +42,8 @@ class OperStatisticsService extends BaseService
         $orderColumn = $params['orderColumn'];
         $orderType = $params['orderType'];
 
-        $total = $query->count();
         $data = $query->get();
+        $total = $query->get()->count();
 
         $data->each(function ($item) use ($params){
             $item->date = "{$params['startDate']}至{$params['endDate']}";
@@ -86,24 +86,24 @@ class OperStatisticsService extends BaseService
 
                 //商户数量（正式）
                 $row['merchant_num'] = Merchant::where('oper_id','=',$row['oper_id'])
-                    ->where('active_time','>=',$startTime)
-                    ->where('active_time','<=',$endTime)
+                    ->where('first_active_time','>=',$startTime)
+                    ->where('first_active_time','<=',$endTime)
                     ->where('is_pilot', Merchant::NORMAL_MERCHANT)
                     ->where('audit_status','=',Merchant::AUDIT_STATUS_SUCCESS)
                     ->count();
 
                 //试点商户数量
                 $row['merchant_pilot_num'] = Merchant::where('oper_id','=',$row['oper_id'])
-                    ->where('active_time','>=',$startTime)
-                    ->where('active_time','<=',$endTime)
+                    ->where('first_active_time','>=',$startTime)
+                    ->where('first_active_time','<=',$endTime)
                     ->where('is_pilot', Merchant::PILOT_MERCHANT)
                     ->where('audit_status','=',Merchant::AUDIT_STATUS_SUCCESS)
                     ->count();
 
                 //商户总数量
                 $row['merchant_total_num'] = Merchant::where('oper_id','=',$row['oper_id'])
-                    ->where('active_time','>=',$startTime)
-                    ->where('active_time','<=',$endTime)
+                    ->where('first_active_time','>=',$startTime)
+                    ->where('first_active_time','<=',$endTime)
                     ->where('audit_status','=',Merchant::AUDIT_STATUS_SUCCESS)
                     ->count();
 
@@ -151,10 +151,24 @@ class OperStatisticsService extends BaseService
                     ->where('status','=',Order::STATUS_REFUNDED)
                     ->sum('pay_price');
 
-                if ($row['merchant_num'] && $row['merchant_pilot_num'] && $row['merchant_total_num'] && $row['user_num'] && $row['merchant_invite_num'] && $row['oper_and_merchant_invite_num'] && $row['order_paid_num'] && $row['order_refund_num'] && $row['order_paid_amount'] && $row['order_refund_amount']) {
-                    (new OperStatistics)->updateOrCreate($where, $row);
-                }
+                (new OperStatistics)->updateOrCreate($where, $row);
             }
         });
+    }
+
+    /**
+     * 审核通过的试点商户 转 正式商户的时候，修改统计数据
+     * @param $operId
+     * @param $date
+     */
+    public static function updateMerchantNum($operId, $date)
+    {
+        $operStatistics = OperStatistics::where('oper_id', $operId)
+            ->where('date', $date)
+            ->first();
+        if (!empty($operStatistics)) {
+            $operStatistics->increment('merchant_num');
+            $operStatistics->decrement('merchant_pilot_num');
+        }
     }
 }

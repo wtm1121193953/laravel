@@ -21,9 +21,11 @@ use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizer;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperBizMember;
+use App\Modules\Oper\OperStatisticsService;
 use App\Result;
 use App\Support\Lbs;
 use App\Support\Utils;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Area\Area;
 use Illuminate\Support\Collection;
@@ -410,7 +412,14 @@ class MerchantService extends BaseService
             throw new ParamInvalidException('招牌名称不能重复');
         }
 
-        if($merchant->settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE){
+        if($merchant->settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE || $merchant->settlement_cycle_type == Merchant::SETTLE_MONTHLY){
+
+            $date = Carbon::now()->startOfDay();
+            $week = Carbon::now()->startOfWeek();
+            if($date != $week){
+                throw new ParamInvalidException('周结改T+1需要周一才能修改');
+            }
+
             if($merchant->bank_card_type == Merchant::BANK_CARD_TYPE_COMPANY){
                 if($merchant->name != $merchant->bank_open_name){
                     throw new ParamInvalidException('提交失败，申请T+1结算，商户名称需和开户名一致');
@@ -430,6 +439,9 @@ class MerchantService extends BaseService
                 $merchant->oper_id = 0;
                 $merchant->is_pilot = Merchant::NORMAL_MERCHANT;
                 $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+
+                // 运营中心营销统计 审核通过的试点转正式的时候 统计数据要修改
+                OperStatisticsService::updateMerchantNum($merchant->oper_id, date('Y-m-d', strtotime($merchant->first_active_time)));
             } else {
                 MerchantAuditService::addAudit($merchant->id, $currentOperId, Merchant::AUDIT_STATUS_RESUBMIT);
                 $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;

@@ -10,7 +10,7 @@ namespace App\Exports;
 
 
 use App\Modules\Invite\InviteUserService;
-use App\Modules\Order\Order;
+use App\Support\Utils;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -45,7 +45,7 @@ class InviteUserRecordExport implements FromQuery, WithMapping, WithHeadings
     {
         return [
             $data->created_at,
-            $data->mobile,
+            Utils::getHalfHideMobile($data->mobile),
             $data->wx_nick_name,
             $data->order_count,
         ];

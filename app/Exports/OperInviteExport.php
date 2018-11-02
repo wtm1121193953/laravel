@@ -6,6 +6,7 @@
 namespace App\Exports;
 
 use App\Modules\Invite\InviteChannelService;
+use App\Support\Utils;
 use Illuminate\Database\Query\Builder;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
@@ -56,10 +57,10 @@ class OperInviteExport implements FromQuery, WithHeadings, WithMapping
     {
         return [
             $row->user_created_at,
-            $row->mobile,
+            Utils::getHalfHideMobile($row->mobile),
             $row->wx_nick_name,
             $this->channels[$row->invite_channel_id],
-            '`'.$row->order_count
+            ''.$row->order_count
         ];
     }
 }

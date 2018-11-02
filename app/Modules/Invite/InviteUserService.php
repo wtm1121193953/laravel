@@ -464,7 +464,7 @@ class InviteUserService
             ->simplePaginate($pageSize);
         $list = collect($inviteUserRecords->items());
         $data = $list->each(function (InviteUserRecord $item){
-            $item->user_mobile = Utils::getHalfHideMobile($item->user->mobile);
+            $item->user_mobile = isset($item->user->mobile) ? Utils::getHalfHideMobile($item->user->mobile) : '';
             $item->created_month = $item->created_at->format('Y-m');
         })
             ->groupBy('created_month')

@@ -12,6 +12,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Payment\Payment;
 use App\Modules\Payment\PaymentService;
+use App\Modules\Wallet\WalletService;
 use App\Result;
 use Illuminate\Http\Request;
 
@@ -156,12 +157,16 @@ class PaymentController extends Controller
             $whereArr['on_app'] = Payment::APP_ON;
         }else if(strpos($uri,'user')){
             $whereArr['on_miniprogram'] = Payment::MINI_PROGRAM_ON;
-            $whereArr['type'] = Payment::TYPE_WECHAT;
         }else{
             $whereArr['on_pc'] = Payment::PC_ON;
         }
         $list = PaymentService::getListByPlatForm(array_filter($whereArr));
-        return Result::success(['list'=>$list]);
+        foreach ($list as $k => $v){
+            // ID 4为钱包支付
+            $list[$k]['need_password'] = ($v['id']==4) ? true : false;
+        }
+        $wallet = WalletService::getWalletInfo($request->get('current_user'))->toArray();
+        return Result::success(['list'=>$list,'wallet'=>$wallet]);
     }
 
 }

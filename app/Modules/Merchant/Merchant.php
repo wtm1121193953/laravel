@@ -75,6 +75,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string employees_number
  * @property string oper_biz_member_code
  * @property Carbon active_time
+ * @property Carbon first_active_time
  * @property number lowest_amount
  * @property int mapping_user_id
  * @property int level
@@ -124,10 +125,10 @@ class Merchant extends BaseModel
      */
     const SETTLE_WEEKLY = 1; // 周结
     const SETTLE_HALF_MONTHLY = 2; // 半月结
-    const SETTLE_MONTHLY = 3; // 月结
+    const SETTLE_MONTHLY = 3; // T+1（自动）
     const SETTLE_HALF_YEARLY = 4; // 半年结
     const SETTLE_YEARLY = 5; // 年结
-    const SETTLE_DAY_ADD_ONE = 6; // T+1
+    const SETTLE_DAY_ADD_ONE = 6; // T+1（人工）
 
     /**
      * 试点商户
@@ -190,6 +191,27 @@ class Merchant extends BaseModel
         $this->lng = request('lng',0);
         $this->lat = request('lat',0);
         $this->address = request('address','');
+    }
+
+    /**
+     * 获取商户状态
+     * @param $auditStatus
+     * @param $status
+     * @return string
+     */
+    public static function getMerchantStatusText($auditStatus,$status){
+        if(in_array($auditStatus,[1,3])){
+            if($status == 1){
+                $statusText = '正常';
+            }elseif($status == 2){
+                $statusText = '冻结';
+            }else{
+                $statusText = '';
+            }
+        }else{
+            $statusText = '';
+        }
+        return $statusText;
     }
 
     /**

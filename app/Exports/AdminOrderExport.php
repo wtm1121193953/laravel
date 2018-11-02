@@ -20,7 +20,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;
  * Class OperOrderExport
  * @package App\Exports
  */
-class OperOrderExport implements FromCollection, WithMapping, WithHeadings
+class AdminOrderExport implements FromCollection, WithMapping, WithHeadings
 {
     use Exportable;
 
@@ -47,15 +47,16 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
     {
         return [
             'id' => 'ID',
+            'oper_name' => '所属运营中心',
             'merchant_name' => '所属商户',
-            'created_at' => '创建时间',
+            'pay_time' => '支付时间',
             'order_no' => '订单号',
             'type' => '订单类型',
             'goods_name' => '商品名称',
             'pay_price' => '总价 ¥',
-            'pay_type' => '支付方式',
             'status' => '订单状态',
-            'pay_time' => '支付时间',
+            'pay_type' => '支付方式',
+            'created_at' => '创建时间',
             'finish_time' => '核销时间',
             'notify_mobile' => '手机号',
             'remark' => '备注',
@@ -78,15 +79,16 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
         }
         return [
             $row->id,
+            $row->oper_name,
             $row->merchant_name,
-            $row->created_at,
+            $row->pay_time,
             $row->order_no,
             Order::getTypeText($row->type),
             Order::getGoodsNameText($row->type,$row->dishes_items,$row->goods_name),
             $row->pay_price,
-            $payments[$row->pay_type]??'未知('.$row->pay_type.')',
             Order::getStatusText($row->status),
-            $row->pay_time,
+            $payments[$row->pay_type]??'未知('.$row->pay_type.')',
+            $row->created_at,
             $finish_time,
             $row->notify_mobile,
             $row->remark,

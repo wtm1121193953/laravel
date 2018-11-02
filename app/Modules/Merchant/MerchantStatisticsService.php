@@ -22,46 +22,42 @@ class MerchantStatisticsService extends BaseService
 
         $startTime = date('Y-m-d', strtotime($endTime));
 
-        MerchantService::getList([
-            'auditStatus' => Merchant::AUDIT_STATUS_SUCCESS,
-        ], true)
-            ->chunk(1000, function ($merchants) use ($startTime, $endTime) {
-                foreach ($merchants as $merchant) {
-                    $where['merchant_id'] = $merchant['id'];
-                    $where['date'] = substr($startTime, 0, 10);
+        Merchant::query()->chunk(1000, function ($merchants) use ($startTime, $endTime) {
+            foreach ($merchants as $merchant) {
+                $where['merchant_id'] = $merchant['id'];
+                $where['date'] = substr($startTime, 0, 10);
 
-                    $row = [
-                        'oper_id' => $merchant['oper_id'],
-                    ];
-                    $row = array_merge($row, $where);
+                $row = [
+                    'oper_id' => $merchant['oper_id'],
+                ];
+                $row = array_merge($row, $where);
 
-                    //邀请用户数量
-                    $row['invite_user_num'] = InviteUserRecord::where('origin_id', '=', $row['merchant_id'])
-                        ->where('origin_type', '=', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
-                        ->where('created_at', '>=', $startTime)
-                        ->where('created_at', '<=', $endTime)
-                        ->count();
+                //邀请用户数量
+                $row['invite_user_num'] = InviteUserRecord::where('origin_id', '=', $row['merchant_id'])
+                    ->where('origin_type', '=', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
+                    ->where('created_at', '>=', $startTime)
+                    ->where('created_at', '<=', $endTime)
+                    ->count();
 
-                    // 总订单量（已完成）
-                    $row['order_finished_num'] = Order::where('merchant_id', '=', $row['merchant_id'])
-                        ->where('pay_time', '>=', $startTime)
-                        ->where('pay_time', '<=', $endTime)
-                        ->where('status', Order::STATUS_FINISHED)
-                        ->count();
+                // 总订单量（已完成）
+                $row['order_finished_num'] = Order::where('merchant_id', '=', $row['merchant_id'])
+                    ->where('pay_time', '>=', $startTime)
+                    ->where('pay_time', '<=', $endTime)
+                    ->where('status', Order::STATUS_FINISHED)
+                    ->count();
 
-                    //总订单金额（已完成）
-                    $row['order_finished_amount'] = Order::where('merchant_id', '=', $row['merchant_id'])
-                        ->where('pay_time', '>=', $startTime)
-                        ->where('pay_time', '<=', $endTime)
-                        ->where('status', Order::STATUS_FINISHED)
-                        ->sum('pay_price');
+                //总订单金额（已完成）
+                $row['order_finished_amount'] = Order::where('merchant_id', '=', $row['merchant_id'])
+                    ->where('pay_time', '>=', $startTime)
+                    ->where('pay_time', '<=', $endTime)
+                    ->where('status', Order::STATUS_FINISHED)
+                    ->sum('pay_price');
 
-                    if ($row['invite_user_num'] != 0 && $row['order_finished_num'] != 0 && $row['order_finished_amount'] != 0) {
-                        (new MerchantStatistics)->updateOrCreate($where, $row);
-                    }
+                if ($row['invite_user_num'] != 0 || $row['order_finished_num'] != 0 || $row['order_finished_amount'] != 0) {
+                    (new MerchantStatistics)->updateOrCreate($where, $row);
                 }
-
-            });
+            }
+        });
     }
 
     /**
@@ -95,8 +91,8 @@ class MerchantStatisticsService extends BaseService
         $orderColumn = $params['orderColumn'];
         $orderType = $params['orderType'];
 
-        $total = $query->count();
         $data = $query->get();
+        $total = $query->get()->count();
 
         $data->each(function ($item) use ($params){
             $item->date = "{$params['startDate']}至{$params['endDate']}";

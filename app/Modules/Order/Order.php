@@ -129,7 +129,7 @@ class Order extends BaseModel
 
     public static function getStatusText($status)
     {
-        return ['', '未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成[不可退款]'][$status];
+        return ['', '未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成'][$status];
     }
 
     public static function getPayTypeText($payType){
@@ -154,6 +154,17 @@ class Order extends BaseModel
     public static function getOriginAppTypeText($originAppType)
     {
         return ['', '安卓', 'iOS', '小程序'][$originAppType];
+    }
+
+    public static function getGoodsNameText($type,$dishes_items,$goods_name){
+        if($type == 3 && count($dishes_items) == 1){
+            $goods_name = $dishes_items[0]->dishes_goods_name;
+        }elseif($type == 3 && count($dishes_items) > 1){
+            $goods_name = $dishes_items[0]->dishes_goods_name.'等'.count($dishes_items).'件商品';
+        }elseif ($type == 2){
+            $goods_name = '无';
+        }
+        return $goods_name;
     }
 
     /**
