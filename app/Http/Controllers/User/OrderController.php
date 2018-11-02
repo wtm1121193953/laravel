@@ -51,6 +51,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
@@ -540,9 +541,14 @@ class OrderController extends Controller
             try{
                 $data =  $paymentClass->buy($order);
             }catch (\Exception $e){
+                if($e instanceof ValidationException){
+                    $message = implode(',',$e->errors());
+                }else{
+                    $message = $e->getMessage();
+                }
                 return Result::error(
-                    ResultCode::PARAMS_INVALID,
-                    $e->getMessage(),[
+                    $e->getCode(),
+                    $message,[
                     'order_no' => $orderNo,
                     'isOperSelf' => $isOperSelf,
                     'sdk_config' => $sdkConfig,
