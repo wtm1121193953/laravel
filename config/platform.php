@@ -26,8 +26,8 @@ return [
 //            'cert_path' => storage_path('app/wxPayCert/platform/miniprogram/apiclient_cert.pem'),
 //            'key_path' => storage_path('app/wxPayCert/platform/miniprogram/apiclient_key.pem'),
             // 新微信支付: 大千生活科技主体的支付
-            'mch_id' => '1516321591',
-            'key' => 'nNfOgMNbck42f8N6QnhvIuVWBgoaHb7L',
+            'mch_id' => '1516318411',
+            'key' => 'nNfOgerbck15f8N6QnhvIuVWBgoaHb8e',
             'cert_path' => storage_path('app/wxPayCert/platform/miniprogram/new/apiclient_cert.pem'),
             'key_path' => storage_path('app/wxPayCert/platform/miniprogram/new/apiclient_key.pem'),
         ],
