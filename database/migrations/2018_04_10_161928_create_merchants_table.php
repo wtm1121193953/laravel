@@ -42,7 +42,7 @@ class CreateMerchantsTable extends Migration
             $table->string('contacter_phone')->default('')->comment('负责人联系方式');
 
             // 商务信息
-            $table->tinyInteger('settlement_cycle_type')->default(1)->comment('结款周期 1-周结 2-半月结 3-月结 4-半年结 5-年结');
+            $table->tinyInteger('settlement_cycle_type')->default(1)->comment('结款周期 1-周结 2-半月结 3-T+1（自动） 4-半年结 5-年结 6-T+1（人工）');
             $table->decimal('settlement_rate', 4, 2)->default(0)->comment('分利比例(结算时的费率)');
 
             $table->string('business_licence_pic_url')->default('')->comment('营业执照');

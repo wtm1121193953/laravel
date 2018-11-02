@@ -72,8 +72,8 @@
             <el-form-item v-if="isPayToPlatform" prop="settlement_cycle_type" required label="结算周期">
                 <el-select v-model="form.settlement_cycle_type" placeholder="请选择">
                     <el-option :disabled="form.settlement_cycle_type > 1" label="周结" :value="1"/>
-                    <el-option :disabled="form.settlement_cycle_type > 3" label="月结" :value="3"/>
-                    <el-option label="T+1" :value="6"/>
+                    <el-option label="T+1(自动)" :value="3"/>
+                    <el-option label="T+1(人工)" :value="6"/>
                 </el-select>
             </el-form-item>
             <el-form-item prop="settlement_rate" required label="分利比例">
