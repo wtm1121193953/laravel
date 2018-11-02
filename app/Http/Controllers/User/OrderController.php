@@ -542,7 +542,9 @@ class OrderController extends Controller
                 $data =  $paymentClass->buy($order);
             }catch (\Exception $e){
                 if($e instanceof ValidationException){
-                    $message = implode(',',$e->errors());
+                    $message = implode(',',array_map(function(&$value){
+                        return implode('|', $value);
+                    }, $e->errors()));;
                 }else{
                     $message = $e->getMessage();
                 }
