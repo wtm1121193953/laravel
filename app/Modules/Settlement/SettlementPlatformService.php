@@ -364,9 +364,12 @@ class SettlementPlatformService extends BaseService
                 $m->batch_no = $batch_no;
                 $m->settlement_platfrom_ids = implode(',',$settlement_platform_ids);
                 $m->total = count($settlement_platform_ids);
+                $m->amount = $rs['amount']/100;
                 $m->data_send = $data_send;
                 $m->data_receive = '';
                 $m->data_query = '';
+                $m->create_date = date('Y-m-d');
+                $m->send_time = date('Y-m-d H:i:s');
 
                 $m->save();
 
