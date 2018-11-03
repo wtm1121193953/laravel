@@ -128,12 +128,14 @@ class KuaiQian extends AgentPayBase
             $data_query .= "<br/>验签成功！";
             $batch->data_query = $data_query;
             $batch->save();
+            $this->loadDetail($receiveData);
         } else {
             $data_query .= "<br/>验签失败！";
             $batch->data_query = $data_query;
             $batch->save();
         }
 
+        return $batch;
     }
 
     /**
@@ -143,6 +145,26 @@ class KuaiQian extends AgentPayBase
     public function loadDetail($receiveData)
     {
 
+        $receiveData = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body>'
+            . $receiveData
+            . '</soapenv:Body></soapenv:Envelope>';
+
+        $dom = new \DOMDocument();
+        $dom->loadXML($receiveData);
+        $items = $dom->getElementsByTagName('pay2bank-result');
+        foreach ($items as $k=>$val) {
+            $error_code = $val->getElementsByTagName('error-code')->item(0)->nodeValue;
+            $error_msg = $val->getElementsByTagName('error-msg')->item(0)->nodeValue;
+            $settlement_no = $val->getElementsByTagName('merchant-id')->item(0)->nodeValue;
+            if ($error_code != '0000') {
+                $update = [
+                    'status' => SettlementPlatform::STATUS_FAIL,
+                    'reason' => $error_msg
+                ];
+                SettlementPlatform::where('settlement_no',$settlement_no)
+                    ->update($update);
+            }
+        }
     }
 
     public function send(SettlementPlatformKuaiQianBatch $batch)
