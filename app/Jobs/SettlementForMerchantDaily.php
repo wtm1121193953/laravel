@@ -55,16 +55,7 @@ class SettlementForMerchantDaily implements ShouldQueue
     public function handle()
     {
         $merchant = Merchant::findOrFail($this->merchantId);
-        // 判断该店是否已结算
-        /*$exist = SettlementPlatform::where('merchant_id', $this->merchantId)
-            ->where('date', $this->date)->first();
-        if ($exist) {
-            Log::info('该每日结算已结算,跳过结算', [
-                'merchantId' => $this->merchantId,
-                'date' => $this->date
-            ]);
-            return;
-        }*/
+
         try {
 
             SettlementPlatformService::settlement($merchant, $this->date);

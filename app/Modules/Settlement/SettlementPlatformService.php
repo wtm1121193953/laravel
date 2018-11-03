@@ -10,6 +10,7 @@ namespace App\Modules\Settlement;
 
 
 use App\BaseService;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Support\AgentPay\KuaiQian;
 use Illuminate\Support\Facades\DB;
@@ -150,22 +151,43 @@ class SettlementPlatformService extends BaseService
         // 统计所有需结算金额
         $sum = $query->sum('pay_price');
 
-        if( $sum<100 ){
-            Log::info('商家每日结算时订单金额小于100，跳过结算', [
-                'merchantId' => $merchant->id,
-                'date' => $date,
-                'timestamp' => date('Y-m-d H:i:s')
-            ]);
-            return true;
-        }
         //获得结算周期时间
-        $start_date = $query->min('pay_time');
-        $end_date = $query->max('pay_time');
+        $start_date = $query->min('pay_time') ?? Carbon::now();
+        $end_date = $query->max('pay_time') ?? Carbon::now();
+
+        if( $sum<100 ){
+
+            //从第一个订单起7天内如果订单金额还不满100，直接强制生成结算单
+            $start = strtotime($start_date);
+            $now = strtotime($date->endOfDay())?? strtotime("now");
+            $diffDay = ($now-$start)/86400;
+
+            if($diffDay < 7){
+                Log::info('商家每日结算7天内订单金额小于100，直接强制生成结算单', [
+                    'merchantId' => $merchant->id,
+                    'date' => $date,
+                    'timestamp' => date('Y-m-d H:i:s')
+                ]);
+            }else{
+                Log::info('商家每日结算时订单金额小于100，跳过结算', [
+                    'merchantId' => $merchant->id,
+                    'date' => $date,
+                    'timestamp' => date('Y-m-d H:i:s')
+                ]);
+                return true;
+            }
+        }
 
         // 生成结算单，方便之后结算订单中保存结算信息
         $settlementNum = self::genSettlementNo(10);
         if( !$settlementNum ) {
             throw new \Exception('结算单号生成失败');
+        }
+
+        if($merchant->settlement_cycle_type == Merchant::SETTLE_MONTHLY){
+            $type = SettlementPlatform::TYPE_AGENT;
+        }else{
+            $type = SettlementPlatform::TYPE_DEFAULT;
         }
 
         // 开启事务
@@ -176,7 +198,7 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform->merchant_id = $merchant->id;
             $settlementPlatform->start_date = $start_date;
             $settlementPlatform->end_date = $end_date;
-            $settlementPlatform->type = SettlementPlatform::TYPE_AGENT;
+            $settlementPlatform->type = $type;
             $settlementPlatform->settlement_cycle_type = $merchant->settlement_cycle_type;
             $settlementPlatform->settlement_no = $settlementNum;
             $settlementPlatform->settlement_rate = $merchant->settlement_rate;

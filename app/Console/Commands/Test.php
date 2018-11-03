@@ -77,6 +77,9 @@ class Test extends Command
      */
     public function handle()
     {
+
+        SettlementDaily::dispatch();
+        dd('hi');
         SettlementForPlatformWeekly::dispatch();
         dd(213);
         PlatformTradeRecordsDailyJob::dispatch();
