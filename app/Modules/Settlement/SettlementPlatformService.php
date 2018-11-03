@@ -352,21 +352,21 @@ class SettlementPlatformService extends BaseService
             }
             DB::beginTransaction();
             try {
-                $batch_no = SettlementPlatformReapalBatchService::genBatchNo();
-                $settlement_platform_ids = [];
-                $settlement_platform->each(function ($item) use ($batch_no, &$settlement_platform_ids) {
+                $batch_no = SettlementPlatformKuaiQianBatchService::genBatchNo();
 
-                    $item->pay_batch_no = $batch_no;
-                    $item->status = SettlementPlatform::STATUS_PAYING;
-                    $item->save();
-                    $settlement_platform_ids[] = $item->id;
-                });
+                $rs = $kuaiqian->genXmlSend($settlement_platform, $batch_no);
+                if (empty($rs) || empty($rs['settlement_platform_ids'])) {
+                    continue;
+                }
 
-                $m = new SettlementPlatformReapalBatch();
+                $settlement_platform_ids = $rs['settlement_platform_ids'];
+                $data_send = $rs['originalData'];
+
+                $m = new SettlementPlatformKuaiQianBatch();
                 $m->batch_no = $batch_no;
                 $m->settlement_platfrom_ids = implode(',',$settlement_platform_ids);
                 $m->total = count($settlement_platform_ids);
-                $m->data_send = $kuaiqian->genXmlSend($settlement_platform, $batch_no);
+                $m->data_send = $data_send;
                 $m->data_receive = '';
                 $m->data_query = '';
 
