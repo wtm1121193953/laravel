@@ -28,16 +28,14 @@ class SettlementGenBatch implements ShouldQueue
 
     /**
      * Execute the job.
-     *
-     * @return void
      */
     public function handle()
     {
         //
-        Log::info('结算单生成批次，块钱 :Start');
+        Log::info('结算单生成批次，快钱 :Start');
 
-        SettlementPlatformService::genBatch();
+        SettlementPlatformService::autoGenBatch();
 
-        Log::info('结算单生成批次，块钱 :end');
+        Log::info('结算单生成批次，快钱 :end');
     }
 }

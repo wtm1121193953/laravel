@@ -333,7 +333,7 @@ class SettlementPlatformService extends BaseService
     /**
      * 生成批次
      */
-    public static function genBatch() {
+    public static function autoGenBatch() {
 
         $batch_total = 100;
         $settlement_total = 200;
@@ -342,6 +342,7 @@ class SettlementPlatformService extends BaseService
         for ($i=1; $i<=$batch_total; $i++) {
             $settlement_platform = SettlementPlatform::where('pay_batch_no','')
                 ->where('status',SettlementPlatform::STATUS_UN_PAY)
+                ->where('real_amount','>',0)
                 ->limit($settlement_total)
                 ->get()
             ;
