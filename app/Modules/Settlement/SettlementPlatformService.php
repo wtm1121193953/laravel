@@ -152,8 +152,17 @@ class SettlementPlatformService extends BaseService
         $sum = $query->sum('pay_price');
 
         //获得结算周期时间
-        $start_date = $query->min('finish_time') ?? Carbon::now();
-        $end_date = $query->max('finish_time') ?? Carbon::now();
+        $start_date = $query->min('finish_time');
+        //如果该商户无订单，跳过结算
+        if(empty($start_date)){
+            Log::info('商家每日无订单，跳过结算', [
+                'merchantId' => $merchant->id,
+                'date' => $date,
+                'timestamp' => date('Y-m-d H:i:s')
+            ]);
+            return true;
+        }
+        $end_date = $date;
 
         if( $sum<100 ){
 
@@ -255,8 +264,17 @@ class SettlementPlatformService extends BaseService
             ->where('finish_time','<=', $date);
 
         //获得结算周期时间
-        $start_date = $query->min('finish_time') ?? Carbon::now();
-        $end_date = $query->max('finish_time') ?? Carbon::now();
+        $start_date = $query->min('finish_time');
+        //如果该商户无订单，跳过结算
+        if(empty($start_date)){
+            Log::info('商家当前周无订单，跳过结算', [
+                'merchantId' => $merchant->id,
+                'date' => $date,
+                'timestamp' => date('Y-m-d H:i:s')
+            ]);
+            return true;
+        }
+        $end_date = $date;
 
         // 生成结算单，方便之后结算订单中保存结算信息
         $settlementNum = self::genSettlementNo(10);
