@@ -250,6 +250,7 @@ class KuaiQian extends AgentPayBase
         $encrypteddata = $this->encrypt_aes($originalData,$autokey);//数据加密（AES/CBC/PKCS5Padding）
 
 
+
 //提交报文
         $str= '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><tns:settlement-pki-api-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
   <tns:request-header>
@@ -371,23 +372,28 @@ class KuaiQian extends AgentPayBase
 
         $settlement_platform_ids = [];//生成结算单的id号
         $settlement_platform->each(function ($item) use (&$rdetail, &$totalCnt, &$totalAmt,$batchNo, &$settlement_platform_ids) {
-            $totalCnt ++;
-            $totalAmt += $item->amount;
+
             $sub_bank_name = explode('|',$item->sub_bank_name);
             $bank_open_address = explode('|',$item->bank_open_address);
-            if (count($sub_bank_name) != 2 || count($bank_open_address) != 2) {
+            $amount = intval($item->amount *100);//换算成分
+            if ($amount==0) {
+                Log::error('结算单金额为零' . $item->settlement_no);
+            } elseif (count($sub_bank_name) != 2 || count($bank_open_address) != 2) {
                 Log::error('结算单地址或者支行信息有误' . $item->settlement_no);
             } else {
                 $item->pay_batch_no = $batchNo;
                 $item->status = SettlementPlatform::STATUS_PAYING;
                 $item->save();
 
+                $totalCnt ++;
+                $totalAmt += $amount;
+
                 $settlement_platform_ids[] = $item->id;
 
                 $rdetail = $rdetail.'
 <tns:pay2bank>
         <ns1:merchant-id>'.$item->settlement_no.'</ns1:merchant-id>
-        <ns1:amt>'.$item->amount.'</ns1:amt>
+        <ns1:amt>'.$amount.'</ns1:amt>
         <ns1:bank>'.$sub_bank_name[0].'</ns1:bank>
         <ns1:name>'.$item->bank_open_name.'</ns1:name>
         <ns1:bank-card-no>'.$item->bank_card_no.'</ns1:bank-card-no>

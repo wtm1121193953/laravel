@@ -3,6 +3,7 @@
 namespace App\Modules\Settlement;
 
 use App\BaseService;
+use App\Support\AgentPay\KuaiQian;
 
 class SettlementPlatformKuaiQianBatchService extends BaseService
 {
@@ -15,8 +16,12 @@ class SettlementPlatformKuaiQianBatchService extends BaseService
     {
         $list = SettlementPlatformKuaiQianBatch::where('status',SettlementPlatformKuaiQianBatch::STATUS_NOT_SEND)->get();
 
-        $list->each(function ($item) {
+        $kuaiqian = new KuaiQian();
+        $list->each(function ($item) use ($kuaiqian) {
 
+            $rs = $kuaiqian->send($item->data_send);
+
+            dd($rs);
         });
         dd($list);
     }
