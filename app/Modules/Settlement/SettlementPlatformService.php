@@ -184,7 +184,7 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform->bank_card_no = $merchant->bank_card_no;
             $settlementPlatform->bank_card_type = $merchant->bank_card_type;
             $settlementPlatform->sub_bank_name = $merchant->bank_name .'|' . $merchant->sub_bank_name;
-            $settlementPlatform->bank_open_address = $merchant->bank_province . $merchant->bank_city . $merchant->bank_area .'|' .$merchant->bank_open_address;
+            $settlementPlatform->bank_open_address = $merchant->bank_province . ',' . $merchant->bank_city . ',' . $merchant->bank_area .'|' .$merchant->bank_open_address;
             $settlementPlatform->invoice_title = $merchant->invoice_title;
             $settlementPlatform->invoice_no = $merchant->invoice_no;
             $settlementPlatform->amount = 0;
