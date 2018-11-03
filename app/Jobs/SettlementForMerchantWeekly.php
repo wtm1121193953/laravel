@@ -16,9 +16,9 @@ use App\Modules\Settlement\SettlementPlatformService;
 /**
  * Author: Jerry
  * Date:    180823
- * 处理商家每日结算
+ * 处理商家每月结算
  */
-class SettlementForMerchantMonth implements ShouldQueue
+class SettlementForMerchantWeekly implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -45,7 +45,7 @@ class SettlementForMerchantMonth implements ShouldQueue
      * @return void
      */
     /**
-     * 新结算指定日期商家到平台的订单
+     * 周结算商家到平台的订单
      * @Author   Jerry
      * @DateTime 2018-08-23
      * @return   void
@@ -56,8 +56,7 @@ class SettlementForMerchantMonth implements ShouldQueue
         $merchant = Merchant::findOrFail($this->merchantId);
 
         try {
-
-            SettlementPlatformService::settlementMonth($merchant, $this->date);
+            SettlementPlatformService::settlementWeekly($merchant, $this->date);
         }catch (\Exception $e){
             Log::error('该商家每月结算错误, 错误原因:' . $e->getMessage(), [
                 'merchantId' => $this->merchantId,
