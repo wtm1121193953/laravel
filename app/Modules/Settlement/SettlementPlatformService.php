@@ -146,7 +146,6 @@ class SettlementPlatformService extends BaseService
             ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
             ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
             ->where('status', Order::STATUS_FINISHED )
-            ->where('pay_type', Order::PAY_TYPE_WECHAT)
             ->where('finish_time','<=', $date->endOfDay());
         // 统计所有需结算金额
         $sum = $query->sum('pay_price');
@@ -217,7 +216,7 @@ class SettlementPlatformService extends BaseService
     }
 
     /**
-     * 处理每月之前结算细节入库
+     * 处理每周之前结算细节入库
      * @Author   Jerry
      * @DateTime 2018-08-24
      * @param $merchant
@@ -225,13 +224,12 @@ class SettlementPlatformService extends BaseService
      * @return bool [bool]
      * @throws \Exception
      */
-    public static function settlementMonth( $merchant, $date)
+    public static function settlementWeekly( $merchant, $date)
     {
         $query = Order::where('merchant_id', $merchant->id)
             ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
             ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
             ->where('status', Order::STATUS_FINISHED )
-            ->where('pay_type', Order::PAY_TYPE_WECHAT)
             ->where('finish_time','<=', $date);
 
         //获得结算周期时间
@@ -260,7 +258,7 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform->bank_card_no = $merchant->bank_card_no;
             $settlementPlatform->bank_card_type = $merchant->bank_card_type;
             $settlementPlatform->sub_bank_name = $merchant->bank_name .'|' . $merchant->sub_bank_name;
-            $settlementPlatform->bank_open_address = $merchant->bank_province . $merchant->bank_city . $merchant->bank_area .'|' .$merchant->bank_open_address;
+            $settlementPlatform->bank_open_address = $merchant->bank_province . ',' . $merchant->bank_city . ',' . $merchant->bank_area .'|' .$merchant->bank_open_address;
             $settlementPlatform->invoice_title = $merchant->invoice_title;
             $settlementPlatform->invoice_no = $merchant->invoice_no;
             $settlementPlatform->amount = 0;
