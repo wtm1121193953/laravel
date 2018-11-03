@@ -17,4 +17,5 @@ class SettlementPlatformReapalBatchService extends BaseService
         return 'dq'.date('YmdHis') . rand(10000,99999);
     }
 
+
 }
