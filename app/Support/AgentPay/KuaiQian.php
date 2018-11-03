@@ -7,6 +7,8 @@
  */
 namespace App\Support\AgentPay;
 
+use Illuminate\Support\Facades\Log;
+
 class KuaiQian extends AgentPayBase
 {
 
@@ -441,6 +443,139 @@ class KuaiQian extends AgentPayBase
 
         if($ok==1) echo "<br/><br/>验签成功！";
         else echo "<br/><br/>验签失败！";
+    }
+
+
+    /**
+     * 生成打款数据
+     * @param $settlement_platform 结算单
+     * @param $batch_no 批次号
+     * @return bool
+     */
+    public function genXmlSend($settlement_platform, $batch_no)
+    {
+        if (empty($settlement_platform)) {
+            return false;
+        }
+
+        $time1 = date('YmdHis');//时间戳
+
+        /**批次信息**/
+
+        /** 商户编号 */
+        $memberCode = $this->membercode;
+        /** 付款方帐号 */
+        $payerAcctCode = $memberCode."01";
+        /** 批次号 */
+        $batchNo = $batch_no;
+        /** 发起日期 */
+        $applyDate = $time1;
+        /** 付款商户名称 */
+        $merchantName = "测试商户";
+        /** 总笔额 */
+        $totalCnt = 0;
+        /** 总金额 */
+        $totalAmt = 0;
+        /** 付费方式 0:收款方付款;1:付款方付费 */
+        $feeType = "1";
+        /** 币种 */
+        $cur = "RMB";
+        /** 是否验证金额 0:验证; 1:不验证*/
+        $checkAmtCnt = "0";
+        /** 是否整批失败 0:整批失败; 1:不整批失败*/
+        $batchFail = "1";
+        /** 充值方式 0:代扣，1:充值，2:垫资*/
+        $rechargeType = "1";
+        /** 是否自动退款 0:自动退款; 1:不自动退款*/
+        $autoRefund = "0";
+        /** 是否短信通知 0:通知; 1:不通知*/
+        $phoneNoteFlag = "0";
+        /** 预留字段1 */
+        $merchantMemo1 = "";
+        /** 预留字段2 */
+        $merchantMemo2 = "";
+        /** 预留字段3 */
+        $merchantMemo3 = "";
+
+
+//request-header
+        $rheader = '<tns:batch-settlement-apply-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
+  <tns:request-header>
+    <tns:version xmlns:tns="http://www.99bill.com/schema/fo/commons">
+      <ns0:version>1.0.1</ns0:version>
+      <ns0:service>fo.batch.settlement.pay</ns0:service>
+    </tns:version>
+    <ns1:time>'.$time1.'</ns1:time>
+  </tns:request-header>';
+
+//rdetail
+        $rdetail = '';
+
+
+        $settlement_platform->each(function ($item) use (&$rdetail, &$totalCnt, &$totalAmt) {
+            $totalCnt ++;
+            $totalAmt += $item->amount;
+            $sub_bank_name = explode('|',$item->sub_bank_name);
+            $bank_open_address = explode('|',$item->bank_open_address);
+            if (count($sub_bank_name) != 2 || count($bank_open_address) != 2) {
+                Log::error('结算单地址或者支行信息有误' . $item->settlement_no);
+            } else {
+                $rdetail = $rdetail.'
+<tns:pay2bank>
+        <ns1:merchant-id>'.$item->settlement_no.'</ns1:merchant-id>
+        <ns1:amt>'.$item->amount.'</ns1:amt>
+        <ns1:bank>'.$sub_bank_name[0].'</ns1:bank>
+        <ns1:name>'.$item->bank_open_name.'</ns1:name>
+        <ns1:bank-card-no>'.$item->bank_card_no.'</ns1:bank-card-no>
+        <ns1:branch-bank>'.$sub_bank_name[1].'</ns1:branch-bank>
+        <ns1:payee-type>'.$item->bank_card_type.'</ns1:payee-type>
+        <ns1:province>'.$item->bank_open_address.'</ns1:province>
+        <ns1:city>'.$item->bank_open_address.'</ns1:city>
+        <ns1:memo></ns1:memo>
+        <ns1:bank-purpose></ns1:bank-purpose>
+        <ns1:bank-memo></ns1:bank-memo>
+        <ns1:payee-note></ns1:payee-note>
+        <ns1:payee-mobile></ns1:payee-mobile>
+        <ns1:payee-email></ns1:payee-email>
+        <ns1:period/>
+        <ns1:merchant-memo1></ns1:merchant-memo1>
+        <ns1:merchant-memo2></ns1:merchant-memo2>
+        <ns1:merchant-memo3></ns1:merchant-memo3>
+      </tns:pay2bank>';
+            }
+
+        });
+
+
+
+//request-body
+        $rbody = '
+<tns:request-body>
+    <tns:payer-acctCode>'.$payerAcctCode.'</tns:payer-acctCode>
+    <tns:batch-no>'.$batchNo.'</tns:batch-no>
+    <tns:apply-date>'.$time1.'</tns:apply-date>
+    <tns:name>'.$merchantName.'</tns:name>
+    <tns:total-amt>'.$totalAmt.'</tns:total-amt>
+    <tns:total-cnt>'.$totalCnt.'</tns:total-cnt>
+    <tns:fee-type>'.$feeType.'</tns:fee-type>
+    <tns:cur>'.$cur.'</tns:cur>
+    <tns:checkAmt-cnt>'.$checkAmtCnt.'</tns:checkAmt-cnt>
+    <tns:batch-fail>'.$batchFail.'</tns:batch-fail>
+    <tns:recharge-type>'.$rechargeType.'</tns:recharge-type>
+    <tns:auto-refund>'.$autoRefund.'</tns:auto-refund>
+    <tns:phoneNote-flag>'.$phoneNoteFlag.'</tns:phoneNote-flag>
+    <tns:merchant-memo1>'.$merchantMemo1.'</tns:merchant-memo1>
+    <tns:merchant-memo2>'.$merchantMemo2.'</tns:merchant-memo2>
+    <tns:merchant-memo3>'.$merchantMemo3.'</tns:merchant-memo3>
+    <tns:pay2bank-list>'.$rdetail.'
+	</tns:pay2bank-list>
+  </tns:request-body>
+</tns:batch-settlement-apply-request>';
+
+        $originalData = $rheader.$rbody;//原始报文
+
+        return $originalData;
+
     }
 
 

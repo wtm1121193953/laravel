@@ -11,6 +11,7 @@ namespace App\Modules\Settlement;
 
 use App\BaseService;
 use App\Modules\Order\Order;
+use App\Support\AgentPay\KuaiQian;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -337,24 +338,26 @@ class SettlementPlatformService extends BaseService
         $batch_total = 100;
         $settlement_total = 200;
 
+        $kuaiqian = new KuaiQian();
         for ($i=1; $i<=$batch_total; $i++) {
             $settlement_platform = SettlementPlatform::where('pay_batch_no','')
-                ->where('status',1)
+                ->where('status',SettlementPlatform::STATUS_UN_PAY)
                 ->limit($settlement_total)
                 ->get()
             ;
 
-            if (empty($settlement_platform)) {
+            $cnt = $settlement_platform->count();
+            if (empty($cnt)) {
                 break;
             }
             DB::beginTransaction();
             try {
                 $batch_no = SettlementPlatformReapalBatchService::genBatchNo();
                 $settlement_platform_ids = [];
-                $settlement_platform->each(function ($item) use ($batch_no,$settlement_platform_ids) {
+                $settlement_platform->each(function ($item) use ($batch_no, &$settlement_platform_ids) {
 
                     $item->pay_batch_no = $batch_no;
-                    $item->status = SettlementPlatform::STATUS_UN_PAY;
+                    $item->status = SettlementPlatform::STATUS_PAYING;
                     $item->save();
                     $settlement_platform_ids[] = $item->id;
                 });
@@ -363,10 +366,9 @@ class SettlementPlatformService extends BaseService
                 $m->batch_no = $batch_no;
                 $m->settlement_platfrom_ids = implode(',',$settlement_platform_ids);
                 $m->total = count($settlement_platform_ids);
-                $m->data_send = '';
+                $m->data_send = $kuaiqian->genXmlSend($settlement_platform, $batch_no);
                 $m->data_receive = '';
                 $m->data_query = '';
-                $m->send_time = '';
 
                 $m->save();
 
@@ -381,10 +383,6 @@ class SettlementPlatformService extends BaseService
                 throw $e;
             }
 
-
-
-
-            dd($settlement_platform);exit;
         }
     }
 
