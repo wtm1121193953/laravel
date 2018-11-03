@@ -71,6 +71,16 @@ class SettlementPlatformService extends BaseService
                 $q->where('name', 'like', "%{$params['merchant_name']}%");
             });
         }
+        //展示T+1人工以及周结的结算单
+        if (!empty($params['settlementCycleType'])) {
+            if($params['settlementCycleType'] == SettlementPlatform::SETTLE_WEEKLY){
+                $query->where('settlement_cycle_type',SettlementPlatform::SETTLE_WEEKLY);
+            }elseif ($params['settlementCycleType'] == SettlementPlatform::SETTLE_DAY_ADD_ONE){
+                $query->where('settlement_cycle_type', SettlementPlatform::SETTLE_DAY_ADD_ONE);
+            }
+        }else{
+            $query->whereIn('settlement_cycle_type',[SettlementPlatform::SETTLE_WEEKLY, SettlementPlatform::SETTLE_DAY_ADD_ONE]);
+        }
 
         if (!empty($params['merchant_id'])) {
             $query->where('merchant_id','=', $params['merchant_id']);
@@ -91,12 +101,6 @@ class SettlementPlatformService extends BaseService
             $query->whereIn('status', $params['status']);
         }
 
-        if($params['origin_type'] == 'settlementDay'){
-            $query->where('settlement_cycle_type',SettlementPlatform::SETTLE_DAY_ADD_ONE);
-        }elseif($params['origin_type'] == 'settlementMonth'){
-            $query->where('settlement_cycle_type',SettlementPlatform::SETTLE_MONTHLY);
-        }
-
         $query->with('merchant:id,name')
             ->with('oper:id,name')
             ->orderBy('id', 'desc');
@@ -105,10 +109,6 @@ class SettlementPlatformService extends BaseService
         }
         $data = $query->paginate();
 
-        /*$data->each(function ($item) {
-            $item->status_val = self::$status_vals[$item->status];
-            if($item->satatus==4) $item->status_val .= $item->reason;
-        });*/
         return $data;
     }
 
@@ -323,7 +323,7 @@ class SettlementPlatformService extends BaseService
     {
         $data = SettlementPlatform::where('id', $id)->update(
             [
-                'status' => SettlementPlatform::STATUS_RE_PAY,
+                'status' => SettlementPlatform::STATUS_PAID,
                 'reason' => ''
             ]
         );

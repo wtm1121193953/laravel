@@ -28,7 +28,7 @@ class SettlementPlatformController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $status = request('status');
-        $originType = request('origin_type');
+        $settlementCycleType = request('settlement_cycle_type');
 
         $startTime = microtime(true);
         $data = SettlementPlatformService::getListForSaas([
@@ -37,7 +37,7 @@ class SettlementPlatformController extends Controller
             'startDate' => $startDate,
             'endDate' => $endDate,
             'status' => $status,
-            'origin_type' => $originType,
+            'settlementCycleType' => $settlementCycleType,
         ]);
         $endTime = microtime(true);
 
@@ -72,6 +72,7 @@ class SettlementPlatformController extends Controller
         $startDate = request('startDate');
         $endDate = request('endDate');
         $status = request('status');
+        $settlementCycleType = request('settlement_cycle_type');
 
 
         $query = SettlementPlatformService::getListForSaas([
@@ -79,7 +80,8 @@ class SettlementPlatformController extends Controller
             'merchant_id' => $merchant_id,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'status' => $status
+            'status' => $status,
+            'settlementCycleType' => $settlementCycleType,
         ],true);
 
         return (new SettlementPlatformExport($query))->download('结算报表.xlsx');

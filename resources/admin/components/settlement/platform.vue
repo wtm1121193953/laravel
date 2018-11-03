@@ -1,10 +1,6 @@
 <template>
 
-    <page :title="searchTypeName" v-loading="isLoading">
-        <el-tabs v-model="originType" type="card" @tab-click="originTypeChange">
-            <el-tab-pane label="T+1账单" name="settlementDay"></el-tab-pane>
-            <el-tab-pane label="月结账单" name="settlementMonth"></el-tab-pane>
-        </el-tabs>
+    <page title="商户货款结算(人工)" v-loading="isLoading">
         <el-col style="margin-bottom: 10px;">
             <el-alert
                     title="温馨提示：T+1结算单规则，单日总订单金额小于100元，不生成结算单，总订单金额累计到100元后再生成结算单；月结账单无最低消费金额限制。"
@@ -14,14 +10,13 @@
         </el-col>
         <el-col>
             <el-form v-model="query" inline>
-                <el-form-item prop="merchantId" label="商户名称" >
-                    <el-input v-model="query.merchant_name" size="small"  placeholder="商户名称"  class="w-200" clearable></el-input>
-                </el-form-item>
                 <el-form-item prop="merchantId" label="商户ID" >
                     <el-input v-model="query.merchant_id" size="small"  placeholder="商户ID"  class="w-100" clearable></el-input>
                 </el-form-item>
-
-                <el-form-item label="结算单生成时间">
+                <el-form-item prop="merchantId" label="商户名称" >
+                    <el-input v-model="query.merchant_name" size="small"  placeholder="商户名称"  class="w-150" clearable></el-input>
+                </el-form-item>
+                <el-form-item label="结算日期">
                     <el-date-picker
                             class="w-150"
                             v-model="query.startDate"
@@ -42,10 +37,17 @@
                 <el-form-item label="结算状态" prop="status">
                     <el-select v-model="query.status" size="small"  multiple placeholder="请选择" class="w-150">
                         <el-option label="未打款" value="1"/>
-                        <el-option label="打款中" value="2"/>
+                        <!--<el-option label="打款中" value="2"/>-->
                         <el-option label="打款成功" value="3"/>
-                        <el-option label="打款失败" value="4"/>
-                        <el-option label="已重新打款" value="5"/>
+                        <!--<el-option label="打款失败" value="4"/>-->
+                        <!--<el-option label="已重新打款" value="5"/>-->
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="结算周期类型" prop="settlement_cycle_type">
+                    <el-select v-model="query.settlement_cycle_type" size="small" class="w-150">
+                        <el-option label="全部" value=""/>
+                        <el-option label="周结" value="1"/>
+                        <el-option label="T+1(人工)" value="6"/>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -64,7 +66,7 @@
 
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="merchant.id" label="商户ID"  width="100px" />
-            <el-table-column prop="merchant.name" label="结算商户"  width="160px" />
+            <el-table-column prop="merchant.name" label="商户名称"  width="160px" />
             <el-table-column prop="oper.name" size="mini" label="运营中心"/>
             <el-table-column prop="settlement_cycle_type" label="结算周期">
                 <template slot-scope="scope">
@@ -81,20 +83,21 @@
             <el-table-column prop="amount" size="mini" label="订单金额"/>
             <!--<el-table-column prop="settlement_rate" label="利率"/>-->
             <el-table-column prop="real_amount" label="结算金额" />
-            <el-table-column prop="status" label="状态">
+            <el-table-column prop="status" label="结算状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 1" class="c-warning">未打款</span>
-                    <span v-else-if="scope.row.status === 2" class="c-blue">打款中</span>
+                    <!--<span v-else-if="scope.row.status === 2" class="c-blue">打款中</span>-->
                     <span v-else-if="scope.row.status === 3" class="c-green">打款成功</span>
-                    <span v-else-if="scope.row.status === 4" class="c-danger">打款失败</span>
-                    <span v-else-if="scope.row.status === 5" class="c-warning">已重新打款</span>
+                    <!--<span v-else-if="scope.row.status === 4" class="c-danger">打款失败</span>-->
+                    <!--<span v-else-if="scope.row.status === 5" class="c-warning">已重新打款</span>-->
+                    <span v-else>未知({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="reason" label="备注" />
+            <!--<el-table-column prop="reason" label="备注" />-->
             <el-table-column label="操作" width="150px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="showOrders(scope)">查看</el-button>
-                    <el-button type="text" v-if="hasRule('/api/admin/settlement/modifyStatus') && parseInt(scope.row.status) === 4" @click="modifyPlatformStatus(scope)">重新打款</el-button>
+                    <el-button type="text" v-if="hasRule('/api/admin/settlement/modifyStatus') && parseInt(scope.row.status) === 1" @click="modifyPlatformStatus(scope)">确认打款</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -119,17 +122,16 @@
             return {
                 isShowSettlementDetail: false,
                 settlement: {},
-                originType: 'settlementDay',
                 activeTab: 'merchant',
                 showDetail: false,
                 isLoading: false,
                 unAudit:false,
                 detailMerchant:null,
-                searchTypeName: '',
                 query: {
                     merchant_name: '',
                     merchant_id:'',
                     status: '',
+                    settlement_cycle_type:'',
                     page: 1,
                     startDate: '',
                     endDate: '',
@@ -143,12 +145,6 @@
             }
         },
         methods: {
-            getOriginTypeText(){
-                return {
-                    'settlementDay': 'T+1账单',
-                    'settlementMonth': '月结账单'
-                }[this.originType]
-            },
             search() {
                 if (this.query.startDate > this.query.endDate) {
                     this.$message.error('搜索的开始时间不能大于结束时间！');
@@ -159,11 +155,8 @@
             },
             getList(){
                 this.tableLoading = true;
-                let originText = this.getOriginTypeText();
-                this.searchTypeName = '商户货款结算管理 > ' + originText;
                 let params = {};
                 Object.assign(params, this.query);
-                Object.assign(params, {origin_type:this.originType});
                 api.get('/settlement/platforms', params).then(data => {
                     this.query.page = params.page;
                     this.list = data.list;
@@ -188,18 +181,16 @@
                         + '&endDate=' + this.query.endDate
                         + '&merchant_id=' + this.query.merchant_id
                         + '&status='+ this.query.status
+                        + '&settlement_cycle_type='+ this.query.settlement_cycle_type
                         + '&show_zero=' + this.query.show_zero ;
                 })
             },
             modifyPlatformStatus(scope){
 
-                this.$confirm('确定发起重新打款指令吗?').then(() => {
+                this.$confirm('确认此单已完成打款了吗，请再次确认').then(() => {
                     api.get('/settlement/modifyStatus', {id: scope.row.id});
                     this.getList();
                 })
-            },
-            originTypeChange(){
-                this.getList();
             },
         },
         created(){

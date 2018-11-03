@@ -38,10 +38,11 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
     {
         return [
             '商户ID',
-            '结算商户',
-            '结算单生成时间',
-            '结算周期',
+            '商户名称',
             '运营中心',
+            '结算周期',
+            '结算单生成时间',
+            '结算日期',
             '类型',
             '银行开户名',
             '银行账号',
@@ -50,7 +51,7 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
             '开户行网点地址',
             '订单金额',
             '结算金额',
-            '状态'
+            '结算状态'
         ];
     }
 
@@ -73,9 +74,10 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
         return [
             $row->merchant->id??0,
             $row->merchant->name??'',
+            $row->oper->name??'',
+            ['', '周结', '半月结', 'T+1(自动)', '半年结', '年结', 'T+1(人工)', '未知'][$row->settlement_cycle_type],
             $row->created_at,
             $row->start_date.'至'.$row->end_date,
-            $row->oper->name??'',
             $row->bank_card_type == 1?'公司':'个人',
             $row->bank_open_name,
             ' ' . $row->bank_card_no,
