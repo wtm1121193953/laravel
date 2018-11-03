@@ -14,12 +14,28 @@ class SettlementPlatformKuaiQianBatchService extends BaseService
 
     public static function batchSend()
     {
+        header("content-type:text/html;charset=utf-8");
         $list = SettlementPlatformKuaiQianBatch::where('status',SettlementPlatformKuaiQianBatch::STATUS_NOT_SEND)->get();
 
         $kuaiqian = new KuaiQian();
         $list->each(function ($item) use ($kuaiqian) {
 
-            $rs = $kuaiqian->send($item->data_send);
+            $rs = $kuaiqian->send($item);
+
+            dd($rs);
+        });
+        dd($list);
+    }
+
+    public static function batchQuery()
+    {
+        header("content-type:text/html;charset=utf-8");
+        $list = SettlementPlatformKuaiQianBatch::where('status',SettlementPlatformKuaiQianBatch::STATUS_NOT_SEND)->get();
+
+        $kuaiqian = new KuaiQian();
+        $list->each(function ($item) use ($kuaiqian) {
+
+            $rs = $kuaiqian->queryByBatchNo($item);
 
             dd($rs);
         });

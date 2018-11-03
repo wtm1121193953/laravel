@@ -8,6 +8,7 @@
 namespace App\Support\AgentPay;
 
 use App\Modules\Settlement\SettlementPlatform;
+use App\Modules\Settlement\SettlementPlatformKuaiQianBatch;
 use Illuminate\Support\Facades\Log;
 
 class KuaiQian extends AgentPayBase
@@ -36,122 +37,11 @@ class KuaiQian extends AgentPayBase
 
     }
 
-    public function queryByTime()
+    public function queryByBatchNo(SettlementPlatformKuaiQianBatch $batch)
     {
-        header("content-type:text/html;charset=utf-8");
-
-        $membercode = $this->membercode;//商户号
-        $time1 = date('YmdHis');//时间戳
-        $stime = "20181030000000";//开始时间
-        $etime = "20181030235959";//结束时间
-
-
-//request-header
-        $rheader = '<tns:complex-query-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
-  <tns:request-header>
-    <tns:version xmlns:tns="http://www.99bill.com/schema/fo/commons">
-      <ns0:version>1.0.1</ns0:version>
-      <ns0:service>fo.batch.settlement.complexquery</ns0:service>
-    </tns:version>
-    <ns1:time>'.$time1.'</ns1:time>
-  </tns:request-header>';
-
-//request-body
-
-        $rbody = '
-  <tns:request-body>
-    <tns:merchant-id/>
-    <tns:beginApply-time>'.$stime.'</tns:beginApply-time>
-    <tns:endApply-time>'.$etime.'</tns:endApply-time>
-    <tns:bank/>
-    <tns:name/>
-    <tns:bankCard-no/>
-    <tns:branch-bank/>
-    <tns:payee-type/>
-    <tns:province/>
-    <tns:city/>
-    <tns:order-status/>
-    <tns:order-error-code/>
-    <tns:order-bank-error-code/>
-    <tns:page/>
-    <tns:page-size>20</tns:page-size>
-  </tns:request-body>
-</tns:complex-query-request>';
-
-        $originalData = $rheader.$rbody;//原始报文
-        $autokey = rand(10000000,99999999).rand(10000000,99999999); //随机KEY
-        $originalData = gzencode($originalData);//GZIP压缩报文
-        $signeddata = $this->crypto_seal_private($originalData);//私钥加密（验签/OPENSSL_ALGO_SHA1）
-        $digitalenvelope = $this->crypto_seal_pubilc($autokey);//公钥加密（数字信封/OPENSSL_PKCS1_PADDING）
-        $encrypteddata = $this->encrypt_aes($originalData,$autokey);//数据加密（AES/CBC/PKCS5Padding）
-
-
-//提交报文
-        $str= '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><tns:settlement-pki-api-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
-  <tns:request-header>
-    <tns:version xmlns:tns="http://www.99bill.com/schema/fo/commons">
-      <ns0:version>1.0.1</ns0:version>
-      <ns0:service>fo.batch.settlement.complexquery</ns0:service>
-    </tns:version>
-    <ns1:time>'.$time1.'</ns1:time>
-  </tns:request-header>
-  <tns:request-body>
-    <tns:member-code>'.$membercode.'</tns:member-code>
-    <tns:data>
-      <ns1:original-data/>
-      <ns1:signed-data>'.$signeddata.'</ns1:signed-data>
-      <ns1:encrypted-data>'.$encrypteddata.'</ns1:encrypted-data>
-      <ns1:digital-envelope>'.$digitalenvelope.'</ns1:digital-envelope>
-    </tns:data>
-  </tns:request-body>
-</tns:settlement-pki-api-request></soapenv:Body></soapenv:Envelope>';
-
-
-        $output = $this->curl_post($str);
-
-        $dom = new \DOMDocument();
-        $dom -> loadXML($output);
-        $receive = array(
-            'membercode' => $dom -> getElementsByTagName('member-code')->item(0)->nodeValue,//商户号
-            'status' => $dom -> getElementsByTagName('status')->item(0)->nodeValue,//状态
-            'errorCode' => $dom -> getElementsByTagName('error-code')->item(0)->nodeValue,//错误编号
-            'errorMsg' => $dom -> getElementsByTagName('error-msg')->item(0)->nodeValue,//错误代码
-            'signedData' => $dom -> getElementsByTagName('signed-data')->item(0)->nodeValue,//验签
-            'encryptedData' => $dom -> getElementsByTagName('encrypted-data')->item(0)->nodeValue,//加密报文
-            'digitalEnvelope' => $dom -> getElementsByTagName('digital-envelope')->item(0)->nodeValue//数字信封
-        );
-
-        echo "付款商户号：".$receive['membercode'];//商户号
-        echo "<br/>查询时间：".$stime."~".$etime;
-        echo "<br/>应答状态：".$receive['status'];//批次状态
-        echo "<br/>错误编号：".$receive['errorCode'];//错误编号
-        echo "<br/>错误代码：".$receive['errorMsg'];//错误代码
-
-        $receivekey = $this->crypto_unseal_private($receive['digitalEnvelope']);
-
-        $receiveData2 = $this->decrypt_aes($receive['encryptedData'],$receivekey);
-
-        dd($receiveData2);
-        $receiveData = gzdecode($receiveData2);
-
-        echo "<br/>结果明细：<br/>";//数据结果
-        echo "<textarea rows=\"30\" cols=\"100\">".$receiveData."</textarea>";
-
-        $ok = $this->crypto_unseal_pubilc($receive['signedData'],$receiveData2);
-
-        if($ok==1) echo "<br/>验签成功！";
-        else echo "<br/>验签失败！";
-    }
-
-    public function queryByBatchNo()
-    {
-        header("content-type:text/html;charset=utf-8");
-
         $membercode = $this->membercode;//商户号
         $time1 = date('YmdHis');//时间
-//        $batchno= "batchNo_20181030153934";//批次号
-//        $batchno= "batchNo_20181030170535";//批次号
-        $batchno= "batchNo_20181031153002";//批次号
+        $batchno= $batch->batch_no;//批次号
 
 //request-header
         $rheader = '<tns:batchid-query-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
@@ -162,8 +52,6 @@ class KuaiQian extends AgentPayBase
     </tns:version>
     <ns1:time>'.$time1.'</ns1:time>
   </tns:request-header>';
-
-
 
 //request-body
 
@@ -218,11 +106,12 @@ class KuaiQian extends AgentPayBase
             'digitalEnvelope' => $dom -> getElementsByTagName('digital-envelope')->item(0)->nodeValue//数字信封
         );
 
-        echo "付款商户号：".$receive['membercode'];//商户号
-        echo "<br/>批次号：".$batchno;//批次号
-        echo "<br/>应答状态：".$receive['status'];//批次状态
-        echo "<br/>错误编号：".$receive['errorCode'];//错误编号
-        echo "<br/>错误代码：".$receive['errorMsg'];//错误代码
+        $data_query = '';
+        $data_query .= "付款商户号：".$receive['membercode'];//商户号
+        $data_query .= "<br/>批次号：".$batchno;//批次号
+        $data_query .= "<br/>应答状态：".$receive['status'];//批次状态
+        $data_query .= "<br/>错误编号：".$receive['errorCode'];//错误编号
+        $data_query .= "<br/>错误代码：".$receive['errorMsg'];//错误代码
 
         $receivekey = $this->crypto_unseal_private($receive['digitalEnvelope']);
 
@@ -230,19 +119,35 @@ class KuaiQian extends AgentPayBase
 
         $receiveData = gzdecode($receiveData2);
 
-        echo "<br/>结果明细：<br/>";//数据结果
-        echo "<textarea rows=\"30\" cols=\"100\">".$receiveData."</textarea>";
+        $data_query .= "<br/>结果明细：<br/>";//数据结果
+        $data_query .= "<textarea rows=\"30\" cols=\"100\">".$receiveData."</textarea>";
 
         $ok = $this->crypto_unseal_pubilc($receive['signedData'],$receiveData2);
 
-        if($ok==1) echo "<br/>验签成功！";
-        else echo "<br/>验签失败！";
+        if ($ok == 1) {
+            $data_query .= "<br/>验签成功！";
+            $batch->data_query = $data_query;
+            $batch->save();
+        } else {
+            $data_query .= "<br/>验签失败！";
+            $batch->data_query = $data_query;
+            $batch->save();
+        }
+
     }
 
-    public function send($originalData)
+    /**
+     * 解析处理结果明细
+     * @param $receiveData
+     */
+    public function loadDetail($receiveData)
     {
-        header("content-type:text/html;charset=utf-8");
 
+    }
+
+    public function send(SettlementPlatformKuaiQianBatch $batch)
+    {
+        $originalData = $batch->data_send;
         $autokey = rand(10000000,99999999).rand(10000000,99999999); //随机KEY
         $originalData = gzencode($originalData);//GZIP压缩报文
         $signeddata = $this->crypto_seal_private($originalData);//私钥加密（验签/OPENSSL_ALGO_SHA1）
@@ -250,9 +155,9 @@ class KuaiQian extends AgentPayBase
         $encrypteddata = $this->encrypt_aes($originalData,$autokey);//数据加密（AES/CBC/PKCS5Padding）
 
 
-
 //提交报文
-        $str= '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><tns:settlement-pki-api-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
+        $str= '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body>
+        <tns:settlement-pki-api-request xmlns:ns0="http://www.99bill.com/schema/commons" xmlns:ns1="http://www.99bill.com/schema/fo/commons" xmlns:tns="http://www.99bill.com/schema/fo/settlement">
   <tns:request-header>
     <tns:version xmlns:tns="http://www.99bill.com/schema/fo/commons">
       <ns0:version>1.0.1</ns0:version>
@@ -273,35 +178,40 @@ class KuaiQian extends AgentPayBase
 
 
         $output = $this->curl_post($str);
-
         $dom = new \DOMDocument();
-        $dom -> loadXML($output);
+        $dom->loadXML($output);
         $receive = array(
-            'membercode' => $dom -> getElementsByTagName('member-code')->item(0)->nodeValue,//商户号
-            'status' => $dom -> getElementsByTagName('status')->item(0)->nodeValue,//状态
-            'errorCode' => $dom -> getElementsByTagName('error-code')->item(0)->nodeValue,//错误编号
-            'errorMsg' => $dom -> getElementsByTagName('error-msg')->item(0)->nodeValue,//错误代码
-            'signedData' => $dom -> getElementsByTagName('signed-data')->item(0)->nodeValue,//验签
-            'encryptedData' => $dom -> getElementsByTagName('encrypted-data')->item(0)->nodeValue,//加密报文
-            'digitalEnvelope' => $dom -> getElementsByTagName('digital-envelope')->item(0)->nodeValue//数字信封
+            'membercode' => $dom->getElementsByTagName('member-code')->item(0)->nodeValue,//商户号
+            'status' => $dom->getElementsByTagName('status')->item(0)->nodeValue,//状态
+            'errorCode' => $dom->getElementsByTagName('error-code')->item(0)->nodeValue,//错误编号
+            'errorMsg' => $dom->getElementsByTagName('error-msg')->item(0)->nodeValue,//错误代码
+            'signedData' => $dom->getElementsByTagName('signed-data')->item(0)->nodeValue,//验签
+            'encryptedData' => $dom->getElementsByTagName('encrypted-data')->item(0)->nodeValue,//加密报文
+            'digitalEnvelope' => $dom->getElementsByTagName('digital-envelope')->item(0)->nodeValue//数字信封
         );
 
-        echo "付款商户号：".$receive['membercode'];//商户号
-        echo "<br/>应答状态：".$receive['status'];//批次状态
-        echo "<br/>错误编号：".$receive['errorCode'];//错误编号
-        echo "<br/>错误代码：".$receive['errorMsg'];//错误代码
+        $data_receive = '';
+        $data_receive .= "付款商户号：".$receive['membercode'];//商户号
+        $data_receive .=  "<br/>应答状态：".$receive['status'];//批次状态
+        $data_receive .=  "<br/>错误编号：".$receive['errorCode'];//错误编号
+        $data_receive .=  "<br/>错误代码：".$receive['errorMsg'];//错误代码
 
         $receivekey = $this->crypto_unseal_private($receive['digitalEnvelope']);
         $receiveData2 = $this->decrypt_aes($receive['encryptedData'],$receivekey);
         $receiveData = $this->gzdecode($receiveData2);
 
-        echo "<br/>结果明细：<br/>";//数据结果
-        echo "<textarea rows=\"30\" cols=\"100\">".$receiveData."</textarea>";
+        $data_receive .=  "<br/>结果明细：<br/>";//数据结果
+        $data_receive .=  "<textarea rows=\"30\" cols=\"100\">".$receiveData."</textarea>";
 
         $ok = $this->crypto_unseal_pubilc($receive['signedData'],$receiveData2);
 
-        if($ok==1) echo "<br/><br/>验签成功！";
-        else echo "<br/><br/>验签失败！";
+        if($ok==1) {
+            $data_receive .=  "<br/><br/>验签成功！";
+        } else {
+            $data_receive.=  "<br/><br/>验签失败！";
+        }
+        $batch->data_receive = $data_receive;
+        $batch->save();
     }
 
 
@@ -377,8 +287,14 @@ class KuaiQian extends AgentPayBase
             $bank_open_address = explode('|',$item->bank_open_address);
             $amount = intval($item->amount *100);//换算成分
             if ($amount==0) {
+                $item->status = SettlementPlatform::STATUS_FAIL;
+                $item->reason = '结算单金额为零';
+                $item->save();
                 Log::error('结算单金额为零' . $item->settlement_no);
             } elseif (count($sub_bank_name) != 2 || count($bank_open_address) != 2) {
+                $item->status = SettlementPlatform::STATUS_FAIL;
+                $item->reason = '结算单地址或者支行信息有误';
+                $item->save();
                 Log::error('结算单地址或者支行信息有误' . $item->settlement_no);
             } else {
                 $item->pay_batch_no = $batchNo;
@@ -388,6 +304,7 @@ class KuaiQian extends AgentPayBase
                 $totalCnt ++;
                 $totalAmt += $amount;
 
+                $bank_card_type = $item->bank_card_type-1;//块钱是 0公司1个人 平台是 1公司2个人
                 $settlement_platform_ids[] = $item->id;
 
                 $rdetail = $rdetail.'
@@ -398,7 +315,7 @@ class KuaiQian extends AgentPayBase
         <ns1:name>'.$item->bank_open_name.'</ns1:name>
         <ns1:bank-card-no>'.$item->bank_card_no.'</ns1:bank-card-no>
         <ns1:branch-bank>'.$sub_bank_name[1].'</ns1:branch-bank>
-        <ns1:payee-type>'.$item->bank_card_type.'</ns1:payee-type>
+        <ns1:payee-type>'.$bank_card_type.'</ns1:payee-type>
         <ns1:province>'.$item->bank_open_address.'</ns1:province>
         <ns1:city>'.$item->bank_open_address.'</ns1:city>
         <ns1:memo></ns1:memo>
@@ -444,7 +361,7 @@ class KuaiQian extends AgentPayBase
 
         $originalData = $rheader.$rbody;//原始报文
 
-        return ['originalData'=>$originalData, 'settlement_platform_ids'=>$settlement_platform_ids];
+        return ['originalData'=>$originalData, 'settlement_platform_ids'=>$settlement_platform_ids, 'amount'=>$totalAmt];
 
     }
 
