@@ -54,7 +54,7 @@ class MerchantFollowController extends Controller
             array_push($follow_merchant_ids,$key->merchant_id);
         }
 
-        $list = MerchantService::getListByIds($follow_merchant_ids,$lng,$lat);
+        $list = MerchantService::getListByIds($follow_merchant_ids,$lng,$lat,$userID);
 
         $total = $followmerchantList->total();
 

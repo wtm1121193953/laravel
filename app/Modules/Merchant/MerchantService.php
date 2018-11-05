@@ -810,9 +810,10 @@ class MerchantService extends BaseService
      * @param array $ids
      * @param float $lng
      * @param float $lat
+     * @param int $user_key
      * @return \Illuminate\Http\JsonResponse
      */
-    public static function getListByIds(array $ids = [],  float $lng = 0, float $lat=0)
+    public static function getListByIds(array $ids = [],  float $lng = 0, float $lat=0 ,$user_key =0)
     {
         if (empty($ids)) {
             return [];
@@ -821,17 +822,37 @@ class MerchantService extends BaseService
         $query = Merchant::query()
             ->whereIn('id', $ids);
 
-        $list = $query->get();
-
         if($lng && $lat){
             // 如果是按距离搜索, 需要在程序中按距离排序
+            $allList = $query->select('id','is_pilot')->get();
+            $total = $query->count();
+            $list = $allList->map(function ($item) use ($lng, $lat, $user_key) {
+                $item->distance = Lbs::getDistanceOfMerchant($item->id, $user_key, floatval($lng), floatval($lat));
 
-            $allList = $list;
-            $list = $allList->map(function ($item) use ($lng, $lat) {
-                $item->distance = Lbs::getDistanceOfMerchant($item->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
-                $item->distance = Utils::getFormativeDistance($item->distance);
+                if ($item->is_pilot == 1) {
+                    $item->distance += 100000000;
+                }
                 return $item;
-            });
+            })
+                ->sortBy('distance')
+                ->forPage(request('page', 1), 15)
+                ->values()
+                ->map(function($item) {
+                    if ($item->is_pilot == 1) {
+                        $item->distance -= 100000000;
+                    }
+                    $item->distance = Utils::getFormativeDistance($item->distance);
+                    $merchant = DataCacheService::getMerchantDetail($item->id);
+                    $merchant->distance = $item->distance;
+                    // 格式化距离
+                    return $merchant;
+                });
+        }else {
+            // 没有按距离搜索时, 直接在数据库中排序并分页
+            $query->orderBy('is_pilot', 'asc');
+            $data = $query->paginate();
+            $list = $data->items();
+            $total = $data->total();
         }
 
         // 补充商家其他信息

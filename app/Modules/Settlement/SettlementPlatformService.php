@@ -10,6 +10,7 @@ namespace App\Modules\Settlement;
 
 
 use App\BaseService;
+use App\Exceptions\ParamInvalidException;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Support\AgentPay\KuaiQian;
@@ -369,7 +370,7 @@ class SettlementPlatformService extends BaseService
     }
 
     /**
-     * 生成批次
+     * 生成块钱批次
      */
     public static function autoGenBatch() {
 
@@ -427,6 +428,65 @@ class SettlementPlatformService extends BaseService
             }
 
         }
+    }
+
+
+    /**
+     * 重新生成批次
+     * @param $settlement_id
+     * @return SettlementPlatformKuaiQianBatch
+     * @throws \Exception
+     */
+    public static function genBatchAgain($settlement_id)
+    {
+        $settlement_platform = SettlementPlatform::where('id',$settlement_id)
+            ->where('settlement_cycle_type',SettlementPlatform::SETTLE_MONTHLY) //T+1(自动) 原月结数据
+            ->where('real_amount','>',0)
+            ->get()
+        ;
+
+        $cnt = $settlement_platform->count();
+        if (empty($cnt)) {
+
+            throw new ParamInvalidException('结算单信息有误');
+        }
+        $kuaiqian = new KuaiQian();
+        DB::beginTransaction();
+        try {
+            $batch_no = SettlementPlatformKuaiQianBatchService::genBatchNo();
+
+            $rs = $kuaiqian->genXmlSend($settlement_platform, $batch_no);
+            if (empty($rs) || empty($rs['settlement_platform_ids'])) {
+                throw new ParamInvalidException('生成报文错误');
+            }
+
+            $settlement_platform_ids = $rs['settlement_platform_ids'];
+            $data_send = $rs['originalData'];
+
+            $m = new SettlementPlatformKuaiQianBatch();
+            $m->batch_no = $batch_no;
+            $m->settlement_platfrom_ids = implode(',',$settlement_platform_ids);
+            $m->total = count($settlement_platform_ids);
+            $m->amount = $rs['amount']/100;
+            $m->data_send = $data_send;
+            $m->data_receive = '';
+            $m->data_query = '';
+            $m->create_date = date('Y-m-d');
+            $m->send_time = date('Y-m-d H:i:s');
+
+            $m->save();
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('生成结算批次数据库错误', [
+                'message' => $e->getMessage(),
+                'data' => $e
+            ]);
+            throw $e;
+        }
+        return $m;
     }
 
 }

@@ -71,7 +71,6 @@ class MerchantFollowService extends BaseService
         $query = MerchantFollow::query()
             ->where('user_id',$userId)
             ->where('status',MerchantFollow::USER_YES_FOLLOW)
-            ->orderBy('updated_at','desc')
             ->paginate();
 
         return $query;

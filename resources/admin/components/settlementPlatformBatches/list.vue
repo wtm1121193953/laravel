@@ -61,9 +61,10 @@
             modifyPlatformStatus(scope){
 
                 this.$confirm('确认发起自动打款指令吗').then(() => {
-                    api.get('/settlementPlatformBatches/modifyStatus', {id: scope.row.id});
-                    this.getList();
-                })
+                    api.get('/settlementPlatformBatches/modifyStatus', {batch_no: scope.row.batch_no}).then(data => {
+                        this.getList();
+                    });
+                });
             },
         },
         created(){
