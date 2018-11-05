@@ -135,7 +135,8 @@
                     page: 1,
                     startDate: '',
                     endDate: '',
-                    show_zero:true
+                    is_auto_settlement: '',
+                    show_zero:true,
                 },
                 list: [],
                 auditRecord:[],
@@ -182,6 +183,7 @@
                         + '&merchant_id=' + this.query.merchant_id
                         + '&status='+ this.query.status
                         + '&settlement_cycle_type='+ this.query.settlement_cycle_type
+                        + '&is_auto_settlement='+ this.query.is_auto_settlement
                         + '&show_zero=' + this.query.show_zero ;
                 })
             },
