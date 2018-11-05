@@ -6,6 +6,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Settlement\SettlementPlatformKuaiQianBatchService;
 use App\Modules\SettlementPlatformBatche\SettlementPlatformBatchesService;
 use App\Result;
 
@@ -27,9 +28,9 @@ class SettlementPlatformBatchesController extends Controller
 
     public function modifyStatus()
     {
-        $id = request()->get('id');
-        $settlement = SettlementPlatformBatchesService::getByIdModifyStatus($id);
-        return Result::success($settlement);
+        $batchNo = request()->get('batch_no');
+        SettlementPlatformKuaiQianBatchService::sendByBatchNo($batchNo);
+        return Result::success('自动打款成功');
     }
 
 }
