@@ -160,6 +160,7 @@ class OrderController extends Controller
         //商家详情
         $detail['merchant'] = $merchant_of_order;
         $detail['good'] = GoodsService::getById($detail->goods_id);
+        $detail['pay_type'] = PaymentService::getDetailById($detail->pay_type);
         return Result::success($detail);
     }
 
