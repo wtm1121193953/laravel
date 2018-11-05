@@ -125,6 +125,9 @@ class UserIdentityAuditRecordController extends Controller
     public function getRecord(Request $request)
     {
         $record = UserIdentityAuditRecordService::getRecordByUserId($request->get('current_user')->id);
+        if(empty($record)){
+            return Result::success('暂无验证记录');
+        }
         $record->country_name = Country::where('id',$record->country_id)->value('name_zh');
         return Result::success($record);
     }
