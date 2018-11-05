@@ -12,6 +12,7 @@ use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Admin\AdminUser;
+use App\Modules\Country\CountryService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserUnbindRecord;
@@ -274,7 +275,8 @@ class UserService extends BaseService
             })
             ->when($params['name'], function (Builder $query) use ($params){
                 $query->where('name','like','%'.$params['name'].'%');
-            })->when($params['id_card_no'], function (Builder $query) use ($params){
+            })
+            ->when($params['id_card_no'], function (Builder $query) use ($params){
                 $query->where('id_card_no','like','%'.$params['id_card_no'].'%');
             })
             ->when($params['id'], function (Builder $query) use ($params){
@@ -298,6 +300,7 @@ class UserService extends BaseService
 
         $users->each(function ($item){
 
+            $item->countryName = CountryService::getNameZhById($item->country_id);
             $item->status_val = UserIdentityAuditRecord::getStatusText($item->status);
             if (!empty($item->user)) {
                 $item->user->status_val = User::getStatusText($item->user->status);

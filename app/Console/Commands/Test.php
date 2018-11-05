@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\DataCacheService;
 use App\Jobs\ImageMigrationToCOSJob;
 use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
@@ -20,10 +21,13 @@ use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Message\MessageNoticeService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderService;
+use App\Modules\Payment\Payment;
+use App\Modules\Payment\PaymentService;
 use App\Modules\Settlement\Settlement;
 use App\Modules\Sms\SmsService;
 use App\Modules\Tps\TpsBind;
@@ -77,6 +81,17 @@ class Test extends Command
      */
     public function handle()
     {
+        DataCacheService::delMerchantDetail([29]);
+        dd('hi');
+        $payment =  PaymentService::getDetailById(4);
+        $paymentClassName = '\\App\\Support\\Payment\\'.$payment->class_name;
+        var_dump($paymentClassName);
+        var_dump(class_exists($paymentClassName));
+        /*if(!class_exists($paymentClassName)){
+            throw new BaseResponseException('无法使用该支付方式');
+        }
+        MessageNoticeService::createByRegister('13929492991',80);*/
+        dd(456);
 
         SettlementDaily::dispatch();
         dd('hi');

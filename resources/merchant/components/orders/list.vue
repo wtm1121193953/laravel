@@ -100,6 +100,7 @@
                     <span v-if="parseInt(scope.row.pay_type) === 1">微信</span>
                     <span v-else-if="parseInt(scope.row.pay_type) === 2">支付宝</span>
                     <span v-else-if="parseInt(scope.row.pay_type) === 3">融宝</span>
+                    <span v-else-if="parseInt(scope.row.pay_type) === 4">钱包余额</span>
                     <span v-else>未知 ({{scope.row.pay_type}})</span>
                 </template>
             </el-table-column>

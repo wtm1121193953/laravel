@@ -169,7 +169,7 @@ class OrderController extends Controller
             throw new BaseResponseException('此商品已下架，请您选择其他商品');
         }
 
-        $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
+        $payType = request('pay_type', Payment::ID_WECHAT);
         $user = request()->get('current_user');
 
         $merchant = MerchantService::getById($goods->merchant_id);
@@ -246,7 +246,7 @@ class OrderController extends Controller
                 throw new BaseResponseException('菜单已变更, 请刷新页面');
             }
         }
-        $payType = request('pay_type');
+        $payType = request('pay_type',Payment::ID_WECHAT);
 
         $merchant_oper = Oper::findOrFail($merchant->oper_id);
 
@@ -353,7 +353,7 @@ class OrderController extends Controller
         if (empty($merchant_oper)) {
             throw new DataNotFoundException('该商户的运营中心不存在！');
         }
-        $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
+        $payType = request('pay_type', Payment::ID_WECHAT);
         $order = new Order();
         $orderNo = Order::genOrderNo();
         $order->order_no = $orderNo;
@@ -393,7 +393,7 @@ class OrderController extends Controller
         ]);
         $orderNo = request('order_no');
         $order = Order::where('order_no', $orderNo)->firstOrFail();
-        $order->pay_type = request()->get('pay_type');
+        $order->pay_type = request()->get('pay_type',Payment::ID_WECHAT);
         $order->save();
         $merchant = MerchantService::getById($order->merchant_id);
         if($merchant->status == Merchant::STATUS_OFF){
@@ -510,8 +510,6 @@ class OrderController extends Controller
      * @throws \Exception
      */
     private function _returnOrder($order,$currentOperId,$merchant,$orderNo){
-//        var_dump($currentOperId);
-        Log::error('JerryTestCurrentOperId'.$currentOperId);
         $sdkConfig = null;
         $isOperSelf = 0;
         $data = null;

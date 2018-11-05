@@ -166,7 +166,8 @@ class UsersController extends Controller
             'name' => $name,
             'startDate' => $startDate,
             'endDate' => $endDate,
-            'status' => $status
+            'status' => $status,
+            'id_card_no'=>''
         ],true);
 
         return (new UserIdentityExport($query))->download('用户审核列表.xlsx');
