@@ -23,6 +23,14 @@ class KuaiQian extends AgentPayBase
     public $merchant_name = '';
     public $url = '';//接口地址
 
+    public $status_val = [
+        101 => '进行中',
+        111 => '出款成功',
+        112 => '出款失败',
+        114 => '已经退款',
+    ];
+
+
     public function __construct()
     {
         $this->_class_name = basename(__CLASS__);
@@ -148,6 +156,9 @@ class KuaiQian extends AgentPayBase
     public function loadDetail($receiveData)
     {
 
+        if (empty($receiveData)) {
+            return ;
+        }
         $receiveData = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body>'
             . $receiveData
             . '</soapenv:Body></soapenv:Envelope>';
@@ -155,10 +166,14 @@ class KuaiQian extends AgentPayBase
         $dom = new \DOMDocument();
         $dom->loadXML($receiveData);
         $items = $dom->getElementsByTagName('pay2bank-result');
+        if (empty($items)) {
+            return;
+        }
         foreach ($items as $k=>$val) {
             $error_code = $val->getElementsByTagName('error-code')->item(0)->nodeValue;
             $error_msg = $val->getElementsByTagName('error-msg')->item(0)->nodeValue;
             $settlement_no = $val->getElementsByTagName('merchant-id')->item(0)->nodeValue;
+            $status = $val->getElementsByTagName('status')->item(0)->nodeValue;
             if ($error_code != '0000') {
                 $update = [
                     'status' => SettlementPlatform::STATUS_FAIL,

@@ -27,6 +27,19 @@ class SettlementPlatformKuaiQianBatchService extends BaseService
         dd($list);
     }
 
+
+    /**
+     * 单个批次推送
+     * @param $batch_no
+     */
+    public static function sendByBatchNo($batch_no)
+    {
+        //$batch_no = '';
+        $batch = SettlementPlatformKuaiQianBatch::where('batch_no', $batch_no)->firstOrFail();
+        $kuaiqian = new KuaiQian();
+        $kuaiqian->send($batch);
+    }
+
     public static function batchQuery()
     {
         header("content-type:text/html;charset=utf-8");
