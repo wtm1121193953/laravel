@@ -13,6 +13,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
+use App\Modules\Order\OrderRefund;
 use App\Modules\Order\OrderService;
 use App\Modules\User\User;
 use App\Modules\User\UserService;
@@ -377,6 +378,16 @@ class WalletService extends BaseService
                     $item->status = $walletWithdraw->status;
                 } else {
                     $item->status = 0;
+                }
+                if($item->type==WalletBill::TYPE_PLATFORM_SHOPPING){
+                    // 如果使用钱包平台消费
+                    $order = OrderService::getById($item->obj_id);
+                    $item->order_no = $order->order_no;
+                }
+                if($item->type==WalletBill::TYPE_PLATFORM_REFUND){
+                    // 如果使用钱包平台退款
+                    $refundOrder = OrderRefund::where('id',$item->obj_id)->get();
+                    $item->order_no = $refundOrder->order_no;
                 }
             });
 
