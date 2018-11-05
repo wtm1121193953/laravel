@@ -386,7 +386,7 @@ class WalletService extends BaseService
                 }
                 if($item->type==WalletBill::TYPE_PLATFORM_REFUND){
                     // 如果使用钱包平台退款
-                    $refundOrder = OrderRefund::where('id',$item->obj_id)->get();
+                    $refundOrder = OrderRefund::find($item->obj_id);
                     $order = OrderService::getInfoByOrderNo($refundOrder->order_no);
                     $item->order = $order;
                 }
