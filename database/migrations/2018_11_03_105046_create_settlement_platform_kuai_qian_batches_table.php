@@ -17,9 +17,9 @@ class CreateSettlementPlatformKuaiQianBatchesTable extends Migration
             $table->increments('id');
             $table->string('batch_no',50)->default('')->comment('批次号');
             $table->string('settlement_platfrom_ids',1500)->default('')->comment('结算单的id');
-            $table->text('data_send')->comment('请求的报文');
-            $table->text('data_receive')->comment('接收到的报文');
-            $table->text('data_query')->comment('查询结果');
+            $table->mediumText('data_send')->comment('请求的报文');
+            $table->mediumText('data_receive')->comment('接收到的报文');
+            $table->mediumText('data_query')->comment('查询结果');
             $table->decimal('amount',10,2)->default(0.00)->comment('总金额');
             $table->integer('total')->default(0)->comment('结算单总数');
             $table->integer('success')->default(0)->comment('受理成功数');
