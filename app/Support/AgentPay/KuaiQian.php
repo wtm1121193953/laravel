@@ -20,20 +20,23 @@ class KuaiQian extends AgentPayBase
     public $pfx_path = '';//商户PFX证书地址
     public $key_password = '';//证书密码
     public $membercode = '';//商户号
-    public $url = 'https://sandbox.99bill.com/fo-batch-settlement/services';//接口地址
+    public $merchant_name = '';
+    public $url = '';//接口地址
 
     public function __construct()
     {
         $this->_class_name = basename(__CLASS__);
         //parent::__construct();
 
-        $this->pubkey_path = 'D:/wamp/www/dpl-php/99bill.cert.rsa.20340630_sandbox.cer';//快钱公钥地址
         $this->pubkey_path = app_path('/Support/AgentPay/KuaiQian/99bill.cert.rsa.20340630_sandbox.cer');//快钱公钥地址
-
-        $this->pfx_path = 'D:/wamp/www/dpl-php/99bill-rsa.pfx';//商户PFX证书地址
         $this->pfx_path = app_path('/Support/AgentPay/KuaiQian/99bill-rsa.pfx');//商户PFX证书地址
-        $this->key_password = '123456';//证书密码
-        $this->membercode = '10012138842';//商户号
+        $this->url = 'https://sandbox.99bill.com/fo-batch-settlement/services';//测试接口地址
+        $this->key_password = '123456';//测试证书密码
+        $this->membercode = '10012138842';//测试商户号
+        $this->merchant_name = '测试商户';
+//        $this->key_password = 'daqian111';//正式证书密码
+//        $this->membercode = '10210075284';//正式商户号
+//        $this->url = 'https://www.99bill.com/fo-batch-settlement/services';//正式接口地址
 
     }
 
@@ -262,7 +265,7 @@ class KuaiQian extends AgentPayBase
         /** 发起日期 */
         $applyDate = $time1;
         /** 付款商户名称 */
-        $merchantName = "测试商户";
+        $merchantName = $this->merchant_name;
         /** 总笔额 */
         $totalCnt = 0;
         /** 总金额 */
