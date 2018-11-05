@@ -94,6 +94,11 @@ Route::prefix('admin')
         Route::get('settlement/download', 'SettlementPlatformController@downloadExcel');
         Route::get('settlement/modifyStatus', 'SettlementPlatformController@modifyStatus');
 
+
+        Route::get('settlementPlatformBatches/list', 'SettlementPlatformBatchesController@getList');
+        Route::get('settlementPlatformBatches/modifyStatus', 'SettlementPlatformBatchesController@modifyStatus');
+
+
         Route::get('settlement/getPlatformOrders', 'SettlementPlatformController@getSettlementOrders');
         Route::get('bank/list', 'BankController@getList');
         Route::post('bank/add', 'BankController@add');
