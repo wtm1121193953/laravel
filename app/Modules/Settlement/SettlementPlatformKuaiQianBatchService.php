@@ -30,7 +30,7 @@ class SettlementPlatformKuaiQianBatchService extends BaseService
     public static function batchQuery()
     {
         header("content-type:text/html;charset=utf-8");
-        $list = SettlementPlatformKuaiQianBatch::where('status',SettlementPlatformKuaiQianBatch::STATUS_NOT_SEND)->get();
+        $list = SettlementPlatformKuaiQianBatch::where('status',SettlementPlatformKuaiQianBatch::STATUS_SENDED)->get();
 
         $kuaiqian = new KuaiQian();
         $list->each(function ($item) use ($kuaiqian) {

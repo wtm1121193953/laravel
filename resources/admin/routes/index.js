@@ -25,6 +25,8 @@ import TradeRecordsDaily from '../components/order/trade_records_daily';
 
 import SettlementPlatfroms from '../components/settlement/platform.vue'
 
+import SettlementPlatfromBatches from '../components/settlementPlatformBatches/list'
+
 import StatisticsOper from '../components/statistics/oper.vue'
 import StatisticsMerchant from '../components/statistics/merchant.vue'
 import StatisticsUser from '../components/statistics/user.vue'
@@ -71,6 +73,14 @@ const routes = [
         component: Home,
         children: [
             {path: '/settlement/platforms', component: SettlementPlatfroms, name: 'SettlementPlatfroms'},
+        ]
+    },
+
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: '/settlementPlatformBatches/list', component: SettlementPlatfromBatches, name: 'SettlementPlatfromBatches'},
         ]
     },
     // 营销报表模块,,

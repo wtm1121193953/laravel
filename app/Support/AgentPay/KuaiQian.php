@@ -20,20 +20,23 @@ class KuaiQian extends AgentPayBase
     public $pfx_path = '';//商户PFX证书地址
     public $key_password = '';//证书密码
     public $membercode = '';//商户号
-    public $url = 'https://sandbox.99bill.com/fo-batch-settlement/services';//接口地址
+    public $merchant_name = '';
+    public $url = '';//接口地址
 
     public function __construct()
     {
         $this->_class_name = basename(__CLASS__);
         //parent::__construct();
 
-        $this->pubkey_path = 'D:/wamp/www/dpl-php/99bill.cert.rsa.20340630_sandbox.cer';//快钱公钥地址
         $this->pubkey_path = app_path('/Support/AgentPay/KuaiQian/99bill.cert.rsa.20340630_sandbox.cer');//快钱公钥地址
-
-        $this->pfx_path = 'D:/wamp/www/dpl-php/99bill-rsa.pfx';//商户PFX证书地址
         $this->pfx_path = app_path('/Support/AgentPay/KuaiQian/99bill-rsa.pfx');//商户PFX证书地址
-        $this->key_password = '123456';//证书密码
-        $this->membercode = '10012138842';//商户号
+        $this->url = 'https://sandbox.99bill.com/fo-batch-settlement/services';//测试接口地址
+        $this->key_password = '123456';//测试证书密码
+        $this->membercode = '10012138842';//测试商户号
+        $this->merchant_name = '测试商户';
+//        $this->key_password = 'daqian111';//正式证书密码
+//        $this->membercode = '10210075284';//正式商户号
+//        $this->url = 'https://www.99bill.com/fo-batch-settlement/services';//正式接口地址
 
     }
 
@@ -229,11 +232,15 @@ class KuaiQian extends AgentPayBase
 
         if($ok==1) {
             $data_receive .=  "<br/><br/>验签成功！";
+            $this->loadDetail($receiveData);
+
         } else {
             $data_receive.=  "<br/><br/>验签失败！";
         }
+        $batch->status = SettlementPlatformKuaiQianBatch::STATUS_SENDED;
         $batch->data_receive = $data_receive;
         $batch->save();
+        return $batch;
     }
 
 
@@ -262,7 +269,7 @@ class KuaiQian extends AgentPayBase
         /** 发起日期 */
         $applyDate = $time1;
         /** 付款商户名称 */
-        $merchantName = "测试商户";
+        $merchantName = $this->merchant_name;
         /** 总笔额 */
         $totalCnt = 0;
         /** 总金额 */
@@ -307,17 +314,26 @@ class KuaiQian extends AgentPayBase
 
             $sub_bank_name = explode('|',$item->sub_bank_name);
             $bank_open_address = explode('|',$item->bank_open_address);
+            if (count($bank_open_address) != 2) {
+                $item->status = SettlementPlatform::STATUS_FAIL;
+                $item->reason = '结算单地址有误';
+                $item->save();
+                Log::error('结算单地址有误' . $item->settlement_no);
+            }
+            $bank_open_address = explode(',',$bank_open_address[0]);
+
             $amount = intval($item->amount *100);//换算成分
             if ($amount==0) {
                 $item->status = SettlementPlatform::STATUS_FAIL;
                 $item->reason = '结算单金额为零';
                 $item->save();
                 Log::error('结算单金额为零' . $item->settlement_no);
-            } elseif (count($sub_bank_name) != 2 || count($bank_open_address) != 2) {
+            } elseif (count($sub_bank_name) != 2 || count($bank_open_address) < 2) {
                 $item->status = SettlementPlatform::STATUS_FAIL;
                 $item->reason = '结算单地址或者支行信息有误';
                 $item->save();
                 Log::error('结算单地址或者支行信息有误' . $item->settlement_no);
+
             } else {
                 $item->pay_batch_no = $batchNo;
                 $item->status = SettlementPlatform::STATUS_PAYING;
@@ -328,7 +344,7 @@ class KuaiQian extends AgentPayBase
 
                 $bank_card_type = $item->bank_card_type-1;//块钱是 0公司1个人 平台是 1公司2个人
                 $settlement_platform_ids[] = $item->id;
-
+                $memo = $amount > 5000000?'代付金额超过5w':'';
                 $rdetail = $rdetail.'
 <tns:pay2bank>
         <ns1:merchant-id>'.$item->settlement_no.'</ns1:merchant-id>
@@ -338,9 +354,9 @@ class KuaiQian extends AgentPayBase
         <ns1:bank-card-no>'.$item->bank_card_no.'</ns1:bank-card-no>
         <ns1:branch-bank>'.$sub_bank_name[1].'</ns1:branch-bank>
         <ns1:payee-type>'.$bank_card_type.'</ns1:payee-type>
-        <ns1:province>'.$item->bank_open_address.'</ns1:province>
-        <ns1:city>'.$item->bank_open_address.'</ns1:city>
-        <ns1:memo></ns1:memo>
+        <ns1:province>'.$bank_open_address[0].'</ns1:province>
+        <ns1:city>'.$bank_open_address[1].'</ns1:city>
+        <ns1:memo>'.$memo.'</ns1:memo>
         <ns1:bank-purpose></ns1:bank-purpose>
         <ns1:bank-memo></ns1:bank-memo>
         <ns1:payee-note></ns1:payee-note>

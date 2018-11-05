@@ -373,12 +373,13 @@ class SettlementPlatformService extends BaseService
      */
     public static function autoGenBatch() {
 
-        $batch_total = 100;
-        $settlement_total = 200;
+        $batch_total = 100; //最多生成的批次数
+        $settlement_total = 1;//一个批次结算单数量
 
         $kuaiqian = new KuaiQian();
         for ($i=1; $i<=$batch_total; $i++) {
             $settlement_platform = SettlementPlatform::where('pay_batch_no','')
+                ->where('settlement_cycle_type',SettlementPlatform::SETTLE_MONTHLY) //T+1(自动) 原月结数据
                 ->where('status',SettlementPlatform::STATUS_UN_PAY)
                 ->where('real_amount','>',0)
                 ->limit($settlement_total)
