@@ -70,7 +70,14 @@
             <el-table-column prop="user.id" label="用户ID"/>
             <el-table-column prop="user.created_at" label="注册时间"/>
             <el-table-column prop="name" label="真实姓名"/>
-            <el-table-column prop="id_card_no" label="身份证号码" width="200"/>
+            <el-table-column prop="id_card_no" label="身份证号码" width="250">
+                <template slot-scope="scope">
+                    <div>
+                        ({{scope.row.countryName}})
+                        {{scope.row.id_card_no}}
+                    </div>
+                </template>
+            </el-table-column>
             <el-table-column prop="front_pic" label="身份证正面">
                 <template slot-scope="scope">
                     <div class="detail_image" style="height: 50px; width: 50px" v-viewer @click="previewImage($event)">

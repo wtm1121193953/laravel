@@ -5,6 +5,7 @@
 
 namespace App\Exports;
 
+use App\Modules\Country\CountryService;
 use App\Modules\User\User;
 use App\Modules\User\UserIdentityAuditRecord;
 use Illuminate\Database\Query\Builder;
@@ -57,13 +58,14 @@ class UserIdentityExport implements FromQuery, WithHeadings, WithMapping
     {
         $row->user->status_val = User::getStatusText($row->user->status);
         $row->status_val = UserIdentityAuditRecord::getStatusText($row->status);
+        $row->countryName = CountryService::getNameZhById($row->country_id);
         $rt = [
             $row->created_at,
             $row->user->mobile,
             $row->user_id,
             $row->user->created_at,
             $row->name,
-            ' ' . $row->id_card_no,
+            '('.$row->countryName.') ' . $row->id_card_no,
             $row->user->status_val,
             $row->status_val,
         ];
