@@ -80,7 +80,7 @@ class WalletPay extends PayBase
         $platform_trade_record->pay_id = 1;
         $platform_trade_record->trade_amount = $orderPay->amount;
         $platform_trade_record->trade_time = $order->refund_time;
-        $platform_trade_record->trade_no = $orderRefund->refund_id;
+        $platform_trade_record->trade_no = ($orderRefund->refund_id) ? $orderRefund->refund_id:'';
         $platform_trade_record->order_no = $order->order_no;
         $platform_trade_record->oper_id = $order->oper_id;
         $platform_trade_record->merchant_id = $order->merchant_id;

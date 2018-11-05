@@ -37,7 +37,7 @@ class SettlementGenBatch implements ShouldQueue
 
         // 获取锁
         $lock_key = 'SettlementPlatformService';
-        $is_lock = RedisLock::lock($lock_key, 10);
+        $is_lock = RedisLock::lock($lock_key, 600);
 
         if($is_lock){
             SettlementPlatformService::autoGenBatch();

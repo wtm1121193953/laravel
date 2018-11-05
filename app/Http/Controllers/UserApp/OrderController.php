@@ -178,7 +178,7 @@ class OrderController extends Controller
         ]);
         $goodsId = request('goods_id');
         $number = request('number', 1);
-        $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
+        $payType = request('pay_type', Payment::ID_WECHAT);
 
         $goods = Goods::findOrFail($goodsId);
 
@@ -235,7 +235,7 @@ class OrderController extends Controller
             'pay_type' => 'integer|min:1',
         ]);
         $dishesId = request('dishes_id');
-        $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
+        $payType = request('pay_type', Payment::ID_WECHAT);
 
         $dishes = Dishes::findOrFail($dishesId);
         $userIdByDish = $dishes->user_id;
@@ -326,7 +326,7 @@ class OrderController extends Controller
             'pay_type' => 'integer|min:1',
         ]);
         $price = request('price');
-        $payType = request('pay_type', Order::PAY_TYPE_WECHAT);
+        $payType = request('pay_type', Payment::ID_WECHAT);
         if ($price <= 0) {
             throw new ParamInvalidException('价格不合法');
         }
@@ -404,7 +404,7 @@ class OrderController extends Controller
             throw new BaseResponseException('该订单不能在APP中支付, 请到小程序中付款');
         }
 
-        $payType = request('pay_type', 1);
+        $payType = request('pay_type', Payment::ID_WECHAT);
         $order->pay_type = $payType;
         $order->save();
 
