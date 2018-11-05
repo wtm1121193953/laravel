@@ -27,7 +27,7 @@ class VersionController extends Controller
 
         $lastVersion = VersionService::getLastVersion($appType, $versionNo);
         if(empty($lastVersion)){
-            return Result::success('当前版本1.4.6');
+            return Result::success('当前版本1.4.7');
         }
 
         $lastVersion->version = $lastVersion->version_no;

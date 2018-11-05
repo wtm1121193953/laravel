@@ -239,7 +239,7 @@ class MerchantController extends Controller
     public function edit()
     {
         $validate = [
-            'name' => 'required|max:20',
+            'name' => 'required|max:50',
             'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
@@ -250,7 +250,9 @@ class MerchantController extends Controller
                 'settlement_rate' => 'required|numeric|min:0',
             ]);
         }
-        $this->validate(request(), $validate);
+        $this->validate(request(), $validate, [
+            'name.max' => '商户名称不能超过50个字',
+        ]);
 
         $mobile = request('contacter_phone');
         if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
