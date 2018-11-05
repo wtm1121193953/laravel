@@ -379,10 +379,15 @@ class WalletService extends BaseService
                 } else {
                     $item->status = 0;
                 }
-                if($item->type==WalletBill::TYPE_PLATFORM_SHOPPING || $item->type==WalletBill::TYPE_PLATFORM_REFUND){
+                if($item->type==WalletBill::TYPE_PLATFORM_SHOPPING){
                     // 如果使用钱包平台消费
                     $order = OrderService::getById($item->obj_id);
                     $item->order = $order;
+                }
+                if($item->type==WalletBill::TYPE_PLATFORM_REFUND){
+                    // 如果使用钱包平台退款
+                    $refundOrder = OrderRefund::where('id',$item->obj_id)->get();
+                    $item->order = $refundOrder;
                 }
             });
 
