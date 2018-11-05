@@ -10,6 +10,7 @@ use App\Jobs\Schedule\SettlementAgentPayDaily;
 
 use App\Jobs\Schedule\SettlementDaily;
 use App\Jobs\Schedule\SettlementForPlatformWeekly;
+use App\Jobs\Schedule\SettlementGenBatch;
 use App\Jobs\Schedule\SettlementWeekly;
 
 use App\Jobs\OrderFinishedJob;
@@ -29,6 +30,8 @@ use App\Modules\Order\OrderService;
 use App\Modules\Payment\Payment;
 use App\Modules\Payment\PaymentService;
 use App\Modules\Settlement\Settlement;
+use App\Modules\Settlement\SettlementPlatformKuaiQianBatch;
+use App\Modules\Settlement\SettlementPlatformKuaiQianBatchService;
 use App\Modules\Sms\SmsService;
 use App\Modules\Tps\TpsBind;
 use App\Modules\User\User;
@@ -81,6 +84,12 @@ class Test extends Command
      */
     public function handle()
     {
+
+//        SettlementPlatformKuaiQianBatchService::batchSend();
+//
+//        dd('ok');
+//        SettlementGenBatch::dispatch();
+//        dd('ok');
         DataCacheService::delMerchantDetail([29]);
         dd('hi');
         $payment =  PaymentService::getDetailById(4);
