@@ -14,6 +14,7 @@ use App\Modules\Order\Order;
 use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
 use App\Modules\Order\OrderService;
+use App\Modules\Payment\Payment;
 use App\Modules\Platform\PlatformTradeRecord;
 use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletBill;
@@ -60,7 +61,7 @@ class WalletPay extends PayBase
         if($order->status != Order::STATUS_PAID){
             throw new BaseResponseException('订单状态不允许退款');
         }
-        if ($order->pay_type != Order::PAY_TYPE_WALLET) {
+        if ($order->pay_type != Payment::ID_WALLET) {
             throw new BaseResponseException('不是钱包支付的订单');
         }
         // 查询支付记录
