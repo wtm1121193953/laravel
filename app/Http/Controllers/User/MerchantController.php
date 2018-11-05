@@ -20,6 +20,8 @@ use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Merchant\MerchantFollow;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Merchant\MerchantSettingService;
+use App\Modules\Oper\Oper;
+use App\Modules\Order\Order;
 use App\Modules\Setting\SettingService;
 use App\Result;
 use App\Support\Lbs;
@@ -105,7 +107,17 @@ class MerchantController extends Controller
         $detail->lowestAmount = MerchantService::getLowestPriceForMerchant($detail->id);
         $currentOperId = request()->get('current_oper_id');
         // 判断商户是否是当前小程序关联运营中心下的商户
-        $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        $merchant_oper = Oper::find($detail->oper_id);
+        $isOperSelf = 0;
+        if($merchant_oper->pay_to_platform == Order::PAY_TARGET_TYPE_PLATFORM){
+            if($currentOperId==0){
+                // 在平台小程序下
+                $isOperSelf = 1;
+            }
+        }else{
+            $isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
+        }
+        $detail->isOperSelf = $isOperSelf;
         // 兼容v1.0.0版客服电话字段
         $detail->contacter_phone = $detail->service_phone;
         // 商户评级字段，暂时全部默认为5星
