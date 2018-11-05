@@ -10,6 +10,7 @@ use App\Jobs\Schedule\SettlementAgentPayDaily;
 
 use App\Jobs\Schedule\SettlementDaily;
 use App\Jobs\Schedule\SettlementForPlatformWeekly;
+use App\Jobs\Schedule\SettlementGenBatch;
 use App\Jobs\Schedule\SettlementWeekly;
 
 use App\Jobs\OrderFinishedJob;
@@ -81,6 +82,8 @@ class Test extends Command
      */
     public function handle()
     {
+        SettlementGenBatch::dispatch();
+        dd('ok');
         DataCacheService::delMerchantDetail([29]);
         dd('hi');
         $payment =  PaymentService::getDetailById(4);

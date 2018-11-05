@@ -21,6 +21,7 @@ use App\Modules\Wallet\WalletBill;
 use App\Modules\Wallet\WalletService;
 use App\Result;
 use App\Support\Payment\PayBase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class WalletPay extends PayBase
@@ -74,6 +75,11 @@ class WalletPay extends PayBase
         $orderRefund->save();
         $wallet = WalletService::getWalletInfo($user);
         WalletService::addBalance($wallet,$order->pay_price,WalletBill::TYPE_PLATFORM_REFUND,$orderRefund->id);
+        // 修改order表状态
+        $order->status = Order::STATUS_REFUNDED;
+        $order->refund_time = Carbon::now();
+        $order->refund_price = $orderPay->amount;
+        $order->save();
 
         $platform_trade_record = new PlatformTradeRecord();
         $platform_trade_record->type = PlatformTradeRecord::TYPE_REFUND;
