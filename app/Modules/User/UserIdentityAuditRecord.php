@@ -31,10 +31,11 @@ use App\BaseModel;
  */
 class UserIdentityAuditRecord extends BaseModel
 {
-    // '状态 1：为待审核，2：为审核通过， 3：为审核失败',
+    // '状态 1：为待审核，2：为审核通过， 3：为审核失败',  4:为未提交（不存在）
     const STATUS_UN_AUDIT   = 1;
     const STATUS_SUCCESS    = 2;
     const STATUS_FAIL       = 3;
+    const STATUS_UN_SAVE    = 4;
 
     public static function getStatusText($status)
     {

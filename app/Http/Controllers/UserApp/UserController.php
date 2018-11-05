@@ -15,6 +15,7 @@ use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
+use App\Modules\User\UserIdentityAuditRecord;
 use App\Modules\User\UserMapping;
 use App\Modules\User\UserService;
 use App\Result;
@@ -62,11 +63,7 @@ class UserController extends Controller
 
 
         $record = UserIdentityAuditRecordService::getRecordByUserId($user->id);
-        if ($record) {
-            $user['identityInfoStatus'] = $record->status;
-        } else {
-            $user['identityInfoStatus'] = 4;
-        }
+        $user['identityInfoStatus'] = ($record) ? $record->status : UserIdentityAuditRecord::STATUS_UN_SAVE;
         //查询我的上级
         $superior = InviteUserService::getParentName($user->id);
         if ($superior) {
