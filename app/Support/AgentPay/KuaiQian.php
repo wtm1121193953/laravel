@@ -36,15 +36,16 @@ class KuaiQian extends AgentPayBase
         $this->_class_name = basename(__CLASS__);
         //parent::__construct();
 
-        $this->pubkey_path = app_path('/Support/AgentPay/KuaiQian/99bill.cert.rsa.20340630_sandbox.cer');//快钱公钥地址
+        $this->pubkey_path = app_path('/Support/AgentPay/KuaiQian/99bill.cert.rsa.20340630.cer');//快钱公钥地址
         $this->pfx_path = app_path('/Support/AgentPay/KuaiQian/99bill-rsa.pfx');//商户PFX证书地址
-        $this->url = 'https://sandbox.99bill.com/fo-batch-settlement/services';//测试接口地址
-        $this->key_password = '123456';//测试证书密码
-        $this->membercode = '10012138842';//测试商户号
-        $this->merchant_name = '测试商户';
-//        $this->key_password = 'daqian111';//正式证书密码
-//        $this->membercode = '10210075284';//正式商户号
-//        $this->url = 'https://www.99bill.com/fo-batch-settlement/services';//正式接口地址
+//        $this->url = 'https://sandbox.99bill.com/fo-batch-settlement/services';//测试接口地址
+//        $this->key_password = '123456';//测试证书密码
+//        $this->membercode = '10012138842';//测试商户号
+//        $this->merchant_name = '测试商户';
+        $this->url = 'https://www.99bill.com/fo-batch-settlement/services';//正式接口地址
+        $this->key_password = 'daqian111';//正式证书密码
+        $this->membercode = '10210075284';//正式商户号
+        $this->merchant_name = '深圳大千生活科技有限公司';
 
     }
 
