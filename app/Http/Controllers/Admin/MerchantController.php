@@ -294,13 +294,13 @@ class MerchantController extends Controller
 
                 switch ($type){
                     case '1': // 审核通过
-                        $merchant = MerchantAuditService::auditSuccess($merchant, $auditSuggestion);
+                        MerchantAuditService::auditSuccess($merchant, $auditSuggestion);
                         break;
                     case '2': // 审核不通过
-                        $merchant = MerchantAuditService::auditFail($merchant, $auditSuggestion);
+                        MerchantAuditService::auditFail($merchant, $auditSuggestion);
                         break;
                     case '3': // 审核不通过并打回到商户池
-                        $merchant = MerchantAuditService::auditFailAndPushToPool($merchant, $auditSuggestion);
+                        MerchantAuditService::auditFailAndPushToPool($merchant, $auditSuggestion);
                         break;
                     default:
                         throw new BaseResponseException('错误的操作');
