@@ -233,9 +233,11 @@ class KuaiQian extends AgentPayBase
         if($ok==1) {
             $data_receive .=  "<br/><br/>验签成功！";
             $this->loadDetail($receiveData);
+
         } else {
             $data_receive.=  "<br/><br/>验签失败！";
         }
+        $batch->status = SettlementPlatformKuaiQianBatch::STATUS_SENDED;
         $batch->data_receive = $data_receive;
         $batch->save();
         return $batch;
@@ -342,6 +344,7 @@ class KuaiQian extends AgentPayBase
 
                 $bank_card_type = $item->bank_card_type-1;//块钱是 0公司1个人 平台是 1公司2个人
                 $settlement_platform_ids[] = $item->id;
+                $memo = $amount > 5000000?'代付金额超过5w':'';
                 $rdetail = $rdetail.'
 <tns:pay2bank>
         <ns1:merchant-id>'.$item->settlement_no.'</ns1:merchant-id>
@@ -353,7 +356,7 @@ class KuaiQian extends AgentPayBase
         <ns1:payee-type>'.$bank_card_type.'</ns1:payee-type>
         <ns1:province>'.$bank_open_address[0].'</ns1:province>
         <ns1:city>'.$bank_open_address[1].'</ns1:city>
-        <ns1:memo></ns1:memo>
+        <ns1:memo>'.$memo.'</ns1:memo>
         <ns1:bank-purpose></ns1:bank-purpose>
         <ns1:bank-memo></ns1:bank-memo>
         <ns1:payee-note></ns1:payee-note>

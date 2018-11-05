@@ -5,6 +5,7 @@
 namespace App\Jobs\Schedule;
 
 use App\Modules\Settlement\SettlementPlatformService;
+use App\Support\RedisLock;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -34,8 +35,17 @@ class SettlementGenBatch implements ShouldQueue
         //
         Log::info('结算单生成批次，快钱 :Start');
 
-        SettlementPlatformService::autoGenBatch();
+        // 获取锁
+        $lock_key = 'SettlementPlatformService';
+        $is_lock = RedisLock::lock($lock_key, 10);
 
+        if($is_lock){
+            SettlementPlatformService::autoGenBatch();
+            RedisLock::unlock($lock_key);
+        }else{
+            Log::info('结算单重复执行，快钱 :end');
+            throw new BaseResponseException('重复请求');
+        }
         Log::info('结算单生成批次，快钱 :end');
     }
 }

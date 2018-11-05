@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int fail
  * @property int pay_success
  * @property int pay_fail
+ * @property int status
  * @property sting create_date
  * @property datetime send_time
  */
