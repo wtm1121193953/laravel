@@ -73,15 +73,22 @@ class SettlementPlatformService extends BaseService
                 $q->where('name', 'like', "%{$params['merchant_name']}%");
             });
         }
-        //展示T+1人工以及周结的结算单
-        if (!empty($params['settlementCycleType'])) {
-            if($params['settlementCycleType'] == SettlementPlatform::SETTLE_WEEKLY){
-                $query->where('settlement_cycle_type',SettlementPlatform::SETTLE_WEEKLY);
-            }elseif ($params['settlementCycleType'] == SettlementPlatform::SETTLE_DAY_ADD_ONE){
-                $query->where('settlement_cycle_type', SettlementPlatform::SETTLE_DAY_ADD_ONE);
+        //展示所有结算周期的结算单
+        if(!empty($params['isAutoSettlement'])){
+            if (!empty($params['settlementCycleType'])) {
+                $query->where('settlement_cycle_type',$params['settlementCycleType']);
             }
         }else{
-            $query->whereIn('settlement_cycle_type',[SettlementPlatform::SETTLE_WEEKLY, SettlementPlatform::SETTLE_DAY_ADD_ONE]);
+            //展示T+1人工以及周结的结算单
+            if (!empty($params['settlementCycleType'])) {
+                if($params['settlementCycleType'] == SettlementPlatform::SETTLE_WEEKLY){
+                    $query->where('settlement_cycle_type',SettlementPlatform::SETTLE_WEEKLY);
+                }elseif ($params['settlementCycleType'] == SettlementPlatform::SETTLE_DAY_ADD_ONE){
+                    $query->where('settlement_cycle_type', SettlementPlatform::SETTLE_DAY_ADD_ONE);
+                }
+            }else{
+                $query->whereIn('settlement_cycle_type',[SettlementPlatform::SETTLE_WEEKLY, SettlementPlatform::SETTLE_DAY_ADD_ONE]);
+            }
         }
 
         if (!empty($params['merchant_id'])) {

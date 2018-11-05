@@ -12,7 +12,6 @@ use App\Modules\Order\OrderService;
 use App\Result;
 use Illuminate\Support\Facades\Log;
 use App\Modules\Settlement\SettlementPlatformService;
-use App\Exceptions\DataNotFoundException;
 
 class SettlementPlatformController extends Controller
 {
@@ -29,6 +28,7 @@ class SettlementPlatformController extends Controller
         $endDate = request('endDate');
         $status = request('status');
         $settlementCycleType = request('settlement_cycle_type');
+        $isAutoSettlement = request('is_auto_settlement');
 
         $startTime = microtime(true);
         $data = SettlementPlatformService::getListForSaas([
@@ -38,6 +38,7 @@ class SettlementPlatformController extends Controller
             'endDate' => $endDate,
             'status' => $status,
             'settlementCycleType' => $settlementCycleType,
+            'isAutoSettlement' => $isAutoSettlement,
         ]);
         $endTime = microtime(true);
 
@@ -48,18 +49,6 @@ class SettlementPlatformController extends Controller
             'total' => $data->total(),
         ]);
     }
-
-
-
-    public function detail()
-    {
-
-    }
-
-
-
-
-
 
     /**
      * 下载Excel
@@ -73,6 +62,7 @@ class SettlementPlatformController extends Controller
         $endDate = request('endDate');
         $status = request('status');
         $settlementCycleType = request('settlement_cycle_type');
+        $isAutoSettlement = request('is_auto_settlement');
 
 
         $query = SettlementPlatformService::getListForSaas([
@@ -82,6 +72,7 @@ class SettlementPlatformController extends Controller
             'endDate' => $endDate,
             'status' => $status,
             'settlementCycleType' => $settlementCycleType,
+            'isAutoSettlement' => $isAutoSettlement,
         ],true);
 
         return (new SettlementPlatformExport($query))->download('结算报表.xlsx');
