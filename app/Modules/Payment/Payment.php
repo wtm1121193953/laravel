@@ -25,6 +25,10 @@ class Payment extends Model
     const TYPE_ALIPAY = 2;
     const TYPE_WALLET = 0;
 
+    const ID_WECHAT = 1;
+    const ID_ALIPAY = 2;
+    const ID_WALLET = 4;
+
     const PC_ON = 1;
     const PC_OFF = 0;
 
