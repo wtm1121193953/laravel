@@ -85,9 +85,9 @@ class Test extends Command
     public function handle()
     {
 
-//        SettlementPlatformKuaiQianBatchService::batchSend();
-//
-//        dd('ok');
+        SettlementPlatformKuaiQianBatchService::batchSend();
+
+        dd('ok');
         SettlementGenBatch::dispatch();
         dd('ok');
         DataCacheService::delMerchantDetail([29]);
