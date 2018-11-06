@@ -10,7 +10,7 @@ return [
         // 旧的小程序, 需要做兼容, 旧小程序也可访问, 支付时跳转到新小程序
         'old' => [
             'app_id' => env('APP_ENV') == 'production' ? 'wx0e8e29c73ec2ae88' : 'wx8d0f5e945df699c2',
-            'app_secret' => env('APP_ENV') == 'production' ? 'e0f7d6492e089f45671b7a5408962315' : '6a8d93afba52c4b88e12d46c70bec1bf',
+            'app_secret' => env('APP_ENV') == 'production' ? 'e0f7d6492e089f45671b7a5408962315' : 'a92b4d5ef424b7d2f8423e3df671e603',
         ],
     ],
     // 微信开放平台app应用配置
