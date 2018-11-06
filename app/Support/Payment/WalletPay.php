@@ -41,9 +41,6 @@ class WalletPay extends PayBase
         if($tempToken != $inputToken){
             throw new NoPermissionException('验证信息无效');
         }
-        if($order->status!=Order::STATUS_PAID){
-            throw new NoPermissionException('该订单状态不支持退款操作');
-        }
         // 删除有效时间，避免重复提交
         Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
 
@@ -67,6 +64,9 @@ class WalletPay extends PayBase
         }
         if ($order->pay_type != Payment::ID_WALLET) {
             throw new BaseResponseException('不是钱包支付的订单');
+        }
+        if($order->status!=Order::STATUS_PAID){
+            throw new NoPermissionException('该订单状态不支持退款操作');
         }
         // 查询支付记录
         $orderPay = OrderPay::where('order_id', $order->id)->firstOrFail();

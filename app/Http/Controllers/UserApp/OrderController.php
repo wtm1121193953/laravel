@@ -400,6 +400,10 @@ class OrderController extends Controller
         if ($order->status != Order::STATUS_UN_PAY) {
             throw new BaseResponseException('订单状态异常');
         }
+        if($order->pay_target_type != Order::PAY_TARGET_TYPE_PLATFORM){
+            throw new BaseResponseException('该订单不能在APP中支付, 请到小程序中付款');
+        }
+
         $payType = request('pay_type', Payment::ID_WECHAT);
         $order->pay_type = $payType;
         $order->save();
@@ -425,9 +429,6 @@ class OrderController extends Controller
             'order_no' => 'required'
         ]);
         $order = OrderService::getInfoByOrderNo(request()->get('order_no'));
-        if($order->pay_target_type != Order::PAY_TARGET_TYPE_PLATFORM){
-            throw new BaseResponseException('该订单不能在APP中支付, 请到小程序中付款');
-        }
         $payment = PaymentService::getDetailById($order->pay_type);
         if($payment->pay_type==Payment::TYPE_WECHAT){
             $m = new WechatPay();
