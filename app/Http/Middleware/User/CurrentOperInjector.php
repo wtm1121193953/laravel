@@ -36,7 +36,7 @@ class CurrentOperInjector
             $appid = $matches[1];
         }else {
             throw new BaseResponseException('微信小程序appid错误', ResultCode::WECHAT_APPID_INVALID);
-//            $appid = 'wx1abb4cf60ffea6c9';
+            $appid = 'wx8d0f5e945df699c2';
         }
 
         if($appid == config('platform.miniprogram.app_id')){
