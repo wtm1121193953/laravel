@@ -42,7 +42,7 @@ class RetryFailedJobs extends Command
         Log::info('开始手动执行失败队列');
         DB::table('failed_jobs')->orderBy('id')->chunk(100, function($jobs) {
             foreach ($jobs as $job) {
-                $this->call('queue:retry',[$job->id]);
+                $this->call('queue:retry',['id' => $job->id]);
                 Log::info('失败队列ID', ['id' => $job->id]);
              }
         });
