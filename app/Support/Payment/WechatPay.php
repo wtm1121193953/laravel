@@ -30,6 +30,10 @@ class WechatPay extends PayBase
         parent::__construct();
     }
 
+    /**
+     * @return string|\Symfony\Component\HttpFoundation\Response
+     * @throws \EasyWeChat\Kernel\Exceptions\Exception
+     */
     public function doNotify()
     {
         $str = request()->getContent();
@@ -79,10 +83,6 @@ class WechatPay extends PayBase
      */
     public function refund($order)
     {
-
-
-//        $orderNo = request('order_no');
-//        $order = Order::where('order_no', $orderNo)->firstOrFail();
         if($order->status != Order::STATUS_PAID){
             throw new BaseResponseException('订单状态不允许退款');
         }
