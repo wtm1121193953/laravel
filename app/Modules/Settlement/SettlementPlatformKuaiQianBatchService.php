@@ -54,4 +54,26 @@ class SettlementPlatformKuaiQianBatchService extends BaseService
         });
         dd($list);
     }
+
+
+    public static function getList()
+    {
+        $data = settlementPlatformKuaiQianBatch::query()->orderByDesc('id')->paginate();
+        return $data;
+    }
+
+    /**
+     * 通过id获取结算单更新状态
+     * @param $id
+     * @return bool
+     */
+    public static function getByIdModifyStatus($id)
+    {
+        $data = settlementPlatformKuaiQianBatch::where('id', $id)->update(
+            [
+                'status' => settlementPlatformKuaiQianBatch::STATUS_SENDED,
+            ]
+        );
+        return $data;
+    }
 }

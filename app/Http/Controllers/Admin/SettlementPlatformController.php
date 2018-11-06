@@ -85,6 +85,14 @@ class SettlementPlatformController extends Controller
         return Result::success($settlement);
     }
 
+
+    public function reBatchAgain()
+    {
+        $id = request()->get('id');
+        $settlement = SettlementPlatformService::genBatchAgain($id);
+        return Result::success($settlement);
+    }
+
     public function getSettlementOrders()
     {
         $this->validate(request(), [

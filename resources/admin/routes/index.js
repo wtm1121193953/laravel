@@ -25,6 +25,8 @@ import TradeRecordsDaily from '../components/order/trade_records_daily';
 
 import SettlementPlatfroms from '../components/settlement/platform.vue'
 
+import AllSettlementPlatfroms from '../components/settlement/all-platform'
+
 import SettlementPlatfromBatches from '../components/settlementPlatformBatches/list'
 
 import StatisticsOper from '../components/statistics/oper.vue'
@@ -67,7 +69,7 @@ const routes = [
     ...message,
     ...agentpay,
 
-    // 财务模块
+    // 财务模块--人工
     {
         path: '/',
         component: Home,
@@ -76,6 +78,16 @@ const routes = [
         ]
     },
 
+    // 财务模块--全部
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: '/settlement/allPlatforms', component: AllSettlementPlatfroms, name: 'AllSettlementPlatfroms'},
+        ]
+    },
+
+    //自动结算模块
     {
         path: '/',
         component: Home,

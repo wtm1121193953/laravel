@@ -2,9 +2,21 @@
 
 namespace App\Console\Commands\Updates;
 
+use App\Jobs\ImageMigrationToCOSJob;
 use App\Jobs\Schedule\OperAndMerchantAndUserStatisticsDailyJob;
+use App\Modules\Bizer\BizerIdentityAuditRecord;
+use App\Modules\Dishes\DishesGoods;
+use App\Modules\Dishes\DishesItem;
+use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
+use App\Modules\Merchant\MerchantDraft;
+use App\Modules\Oper\Oper;
+use App\Modules\Order\Order;
+use App\Modules\Settlement\Settlement;
+use App\Modules\Settlement\SettlementPlatform;
+use App\Modules\User\User;
+use App\Modules\User\UserIdentityAuditRecord;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -79,5 +91,95 @@ class V1_4_8 extends Command
             }
             $i++;
         }
+
+        /**********************系统图片迁移COS start**********************/
+        $this->info('系统图片迁移COS start');
+        // 待修改字段
+        $changModel = [
+            DishesGoods::class => ['detail_image'],
+            DishesItem::class => ['dishes_goods_detail_image'],
+            Goods::class => [
+                'thumb_url',
+                'pic',
+                'pic_list'
+            ],
+            Merchant::class => ['logo'
+                , 'desc_pic'
+                , 'desc_pic_list'
+                , 'business_licence_pic_url'
+                , 'tax_cert_pic_url'
+                , 'legal_id_card_pic_a'
+                , 'legal_id_card_pic_b'
+                , 'contract_pic_url'
+                , 'licence_pic_url'
+                , 'hygienic_licence_pic_url'
+                , 'agreement_pic_url'
+                , 'bank_card_pic_a'
+                , 'other_card_pic_urls'
+            ],
+            Oper::class => [
+                'licence_pic_url',
+                'business_licence_pic_url'
+            ],
+            Order::class => [
+                'goods_pic',
+                'goods_thumb_url'
+            ],
+            Settlement::class => [
+                'pay_pic_url',
+                'invoice_pic_url'
+            ],
+            BizerIdentityAuditRecord::class => [
+                'front_pic',
+                'opposite_pic'
+            ],
+            MerchantDraft::class => [
+                'logo',
+                'desc_pic',
+                'desc_pic_list',
+                'business_licence_pic_url',
+                'tax_cert_pic_url',
+                'legal_id_card_pic_a',
+                'legal_id_card_pic_b',
+                'contract_pic_url',
+                'licence_pic_url',
+                'hygienic_licence_pic_url',
+                'agreement_pic_url',
+                'bank_card_pic_a',
+                'other_card_pic_urls'
+            ],
+            SettlementPlatform::class => [
+                'pay_pic_url',
+                'invoice_pic_url'
+            ],
+            UserIdentityAuditRecord::class => [
+                'front_pic',
+                'opposite_pic'
+            ],
+            User::class => [
+                'avatar_url'
+            ]
+        ];
+        $count = 0;
+        foreach ($changModel as $modelName => $v) {
+            $count += $modelName::count();
+        }
+
+        $bar = $this->output->createProgressBar($count);
+        foreach ($changModel as $modelName => $columns) {
+            $searchColumn = $columns;
+            array_push($searchColumn,'id');
+            $modelName::select($searchColumn)
+                ->chunk(1000, function ( $list ) use ( $columns, $bar ) {
+                $list->each(function ( $data ) use ( $columns, $bar ) {
+                    ImageMigrationToCOSJob::dispatch($data, $columns);
+                    $bar->advance();
+                });
+                unset($list);
+            });
+        }
+        $bar->finish();
+        $this->info('系统图片迁移COS end');
+        /**********************系统图片迁移COS end**********************/
     }
 }
