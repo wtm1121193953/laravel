@@ -168,7 +168,7 @@ class PaymentController extends Controller
             $list[$k]['need_password'] = ($v['id']==4) ? true : false;
         }
         $wallet = WalletService::getWalletInfo($request->get('current_user'))->toArray();
-        $record = UserIdentityAuditRecordService::getRecordByUserId($request->get('current_user'));
+        $record = UserIdentityAuditRecordService::getRecordByUserId($request->get('current_user')->id);
         $wallet['identityInfoStatus'] = ($record) ? $record->status : UserIdentityAuditRecord::STATUS_UN_SAVE;
         return Result::success(['list'=>$list,'wallet'=>$wallet]);
     }
