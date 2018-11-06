@@ -172,8 +172,7 @@ class V1_4_8 extends Command
             $modelName::select($searchColumn)
                 ->chunk(1000, function ( $list ) use ( $columns, $bar ) {
                 $list->each(function ( $data ) use ( $columns, $bar ) {
-//                    ImageMigrationToCOSJob::dispatch($data, $columns);
-                    var_dump($data->toArray());
+                    ImageMigrationToCOSJob::dispatch($data, $columns);
                     $bar->advance();
                 });
                 unset($list);
