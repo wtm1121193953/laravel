@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Settlement\SettlementPlatformKuaiQianBatchService;
-use App\Modules\SettlementPlatformBatche\SettlementPlatformBatchesService;
 use App\Result;
 
 class SettlementPlatformBatchesController extends Controller
@@ -19,7 +18,7 @@ class SettlementPlatformBatchesController extends Controller
      */
     public function getList()
     {
-        $data = SettlementPlatformBatchesService::getList();
+        $data = SettlementPlatformKuaiQianBatchService::getList();
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
