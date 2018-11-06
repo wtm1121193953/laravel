@@ -39,7 +39,7 @@ class ImageMigrationToCOSJob implements ShouldQueue
      * Execute the job.
      * @return void
      */
-    public function handle()
+    /*public function handle()
     {
         $disk = Storage::disk('cosv5');
         $isSave = false;
@@ -82,6 +82,88 @@ class ImageMigrationToCOSJob implements ShouldQueue
             }
 
             // 如果无分隔符，或者有分隔符只有一条数据，走以下逻辑
+            $res = $this->upload($this->data[$tmp], $disk);
+            if ($res['status']) {
+                // 为cos保存成功，需要入库
+                if($this->data[$tmp]!=$res['url']){
+                    // 避免重复提交
+                    $this->data[$tmp] = $res['url'];
+                    $isSave = true;
+                }
+
+            } else {
+                Log::error('迁移COS字段上传失败', [
+                    'column' => $explode,
+                    'data' => $this->data,
+                    'cos_url' => $res['url'],
+                    'date' => date('Y-m-d H:i:s')
+                ]);
+            }
+        }
+        if ($isSave && (!$this->data->save())) {
+            // 如果入库失败
+            Log::error('迁移COS数据保存失败', [
+                'column' => $this->columns,
+                'data' => $this->data,
+                'cos_url' => $res['url'],
+                'date' => date('Y-m-d H:i:s')
+            ]);
+        }
+    }*/
+
+    public function handle()
+    {
+        $disk = Storage::disk('cosv5');
+        $isSave = false;
+        $explode = ',';
+        foreach ($this->columns as $column) {
+            $tmp = $column;  // 带分隔符为$column , 不带为$explode
+            if(empty($this->data[$tmp])){
+                // 如果为空
+                continue;
+            }
+            if (strstr($this->data[$tmp],$explode)) {
+                // 有分隔符
+                $arr = explode($explode, $this->data[$tmp]);         // 炸开数组
+                if (count($arr) > 1) {
+                    // 如果为多张图片
+                    $newFileArr = [];
+                    foreach ($arr as $k) {
+                        if(strstr($k,'1257640953')){
+                            // 如果已经上传
+                            $newFileArr[] = $k;
+                            continue;
+                        }
+                        $res = $this->upload($k, $disk);
+                        if ($res['status']) {
+                            $newFileArr[] = $res['url'];
+                        } else {
+                            Log::error('迁移COS字段上传失败', [
+                                'column' => $tmp,
+                                'data' => $this->data,
+                                'cos_url' => $res['url'],
+                                'date' => date('Y-m-d H:i:s')
+                            ]);
+                        }
+                    }
+                    if (!empty($newFileArr)) {
+                        // 如果有新数据插入
+                        $saveFile = implode(',', $newFileArr);
+                        if($this->data[$tmp]!=$saveFile){
+                            // 避免重复插入
+                            $this->data[$tmp] = implode(',', $newFileArr);
+                        }
+                        $isSave = true;
+                    }
+                    continue;
+                }
+            }
+
+            // 如果无分隔符，或者有分隔符只有一条数据，走以下逻辑
+            if(strstr($this->data[$tmp],'1257640953')){
+                // 如果已经上传
+                continue;
+            }
             $res = $this->upload($this->data[$tmp], $disk);
             if ($res['status']) {
                 // 为cos保存成功，需要入库
