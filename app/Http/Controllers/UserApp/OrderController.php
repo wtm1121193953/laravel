@@ -549,6 +549,9 @@ class OrderController extends Controller
         if(empty($tempToken)){
             throw new NoPermissionException('您的验证信息已超时, 请返回重新验证');
         }
+        Log::info('1111',['key1' => $tempToken]);
+        Log::info('2222',['key2' => $inputToken]);
+
         if($tempToken != $inputToken){
             throw new NoPermissionException('验证信息无效');
         }
