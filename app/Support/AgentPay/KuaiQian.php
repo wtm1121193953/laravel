@@ -175,10 +175,10 @@ class KuaiQian extends AgentPayBase
             $error_msg = $val->getElementsByTagName('error-msg')->item(0)->nodeValue;
             $settlement_no = $val->getElementsByTagName('merchant-id')->item(0)->nodeValue;
             $status = $val->getElementsByTagName('status')->item(0)->nodeValue;
-            if ($error_code != '0000') {
+            if (!empty($error_code)) {
                 $update = [
                     'status' => SettlementPlatform::STATUS_FAIL,
-                    'reason' => $error_msg
+                    'reason' => $error_code . ':'.$error_msg
                 ];
                 SettlementPlatform::where('settlement_no',$settlement_no)
                     ->update($update);
@@ -195,7 +195,7 @@ class KuaiQian extends AgentPayBase
                         break;
                     case 112:
                         $update = [
-                            'status' => SettlementPlatform::STATUS_PAID,
+                            'status' => SettlementPlatform::STATUS_FAIL,
                             'reason' => '打款失败'
                         ];
                         SettlementPlatform::where('settlement_no',$settlement_no)
@@ -203,7 +203,7 @@ class KuaiQian extends AgentPayBase
                         break;
                     case 114:
                         $update = [
-                            'status' => SettlementPlatform::STATUS_PAID,
+                            'status' => SettlementPlatform::STATUS_FAIL,
                             'reason' => '已退款'
                         ];
                         SettlementPlatform::where('settlement_no',$settlement_no)
