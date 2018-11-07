@@ -51,7 +51,7 @@ class UserIdentityAuditRecordController extends Controller
         if($countryId == 2){
             $reg = '/(^((\s?[A-Za-z])|([A-Za-z]{2}))\d{6}\((([0−9aA])|([0-9aA]))\)$)/';
         }elseif ($countryId == 3){
-            $reg = '/^[1|5|7][0-9]{6}\([0-9Aa]\)/';
+            $reg = '/^[1|5|7][0-9]{6}\([0-9]\)/';
         }elseif ($countryId == 4){
             $reg = '/^[a-zA-Z][0-9]{9}$/';
         }else{
