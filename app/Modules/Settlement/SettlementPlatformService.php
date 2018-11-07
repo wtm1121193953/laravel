@@ -476,7 +476,7 @@ class SettlementPlatformService extends BaseService
         try {
             $batch_no = SettlementPlatformKuaiQianBatchService::genBatchNo();
 
-            $rs = $kuaiqian->genXmlSend($settlement_platform, $batch_no);
+            $rs = $kuaiqian->genXmlSend($settlement_platform, $batch_no, true);
             if (empty($rs) || empty($rs['settlement_platform_ids'])) {
                 throw new ParamInvalidException('生成报文错误');
             }
