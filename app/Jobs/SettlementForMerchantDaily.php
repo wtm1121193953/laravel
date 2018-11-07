@@ -25,7 +25,7 @@ class SettlementForMerchantDaily implements ShouldQueue
 
     protected $merchantId;
     protected $date;
-    protected $type;
+    //protected $type;
 
     /**
      *
@@ -38,7 +38,7 @@ class SettlementForMerchantDaily implements ShouldQueue
     {
         $this->merchantId = $merchantId;
         $this->date = $date;
-        $this->type = [SettlementPlatform::TYPE_DEFAULT,SettlementPlatform::TYPE_AGENT];
+        //$this->type = [SettlementPlatform::TYPE_DEFAULT,SettlementPlatform::TYPE_AGENT];
     }
 
 
@@ -68,10 +68,11 @@ class SettlementForMerchantDaily implements ShouldQueue
             return;
         }*/
         try {
-            foreach ($this->type as $key => $val){
+            /*foreach ($this->type as $key => $val){
                 SettlementPlatformService::settlement($merchant, $this->date, $val);
-            }
+            }*/
 
+            SettlementPlatformService::settlement($merchant, $this->date);
         }catch (\Exception $e){
             Log::error('该商家每日结算错误, 错误原因:' . $e->getMessage(), [
                 'merchantId' => $this->merchantId,

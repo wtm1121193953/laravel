@@ -10,6 +10,7 @@ namespace App\Http\Controllers\UserApp;
 
 
 use App\Http\Controllers\Controller;
+use App\Modules\Dishes\DishesService;
 use App\Modules\Goods\GoodsService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantCategory;
@@ -28,7 +29,13 @@ class MerchantController extends Controller
 
     public function getList()
     {
-        $appType = request()->headers->get('app-type');
+        $user_key =  request()->get('current_device_no');
+        if (empty($user_key)) {
+            $user_key = request()->headers->get('token');
+            if (empty($user_key)) {
+                $user_key = request()->ip();
+            }
+        }
 
         $data = MerchantService::getListAndDistance([
             'city_id' => request('city_id'),
@@ -39,15 +46,9 @@ class MerchantController extends Controller
             'radius' => request('radius'),
             'lowest_price' => request('lowest_price'),
             'highest_price' => request('highest_price'),
-            'user_key' => request()->get('current_device_no'),
+            'user_key' => $user_key,
             'onlyPayToPlatform' => 1,
         ]);
-
-        if (empty($data['total']) && $appType == 2) {
-            $list = MerchantService::getListByIds([62,63964],request('lng'),request('lat'));
-            $data = ['list' => $list, 'total' => 2];
-        }
-
 
         return Result::success($data);
     }
@@ -83,6 +84,10 @@ class MerchantController extends Controller
         $detail->merchantCategoryName = $category->name;
         //商家是否开启单品模式
         $detail->isOpenDish = MerchantSettingService::getValueByKey($id,'dishes_enabled');
+        $tmp_dis_cat = DishesService::getDishesCategory($id);
+        if (empty($tmp_dis_cat)) {
+            $detail->isOpenDish = 0;
+        }
         // 最低消费
         $detail->lowestAmount = MerchantService::getLowestPriceForMerchant($detail->id);
         $currentOperId = request()->get('current_oper_id');

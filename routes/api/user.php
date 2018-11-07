@@ -100,6 +100,11 @@ Route::prefix('user')
         Route::post('identity/record/modRecord', 'UserIdentityAuditRecordController@modRecord')->middleware(UserLoginFilter::class);
         Route::get('identity/record/getRecord','UserIdentityAuditRecordController@getRecord')->middleware(UserLoginFilter::class);
         Route::get('bank/getList', 'BankController@getList')->middleware(UserLoginFilter::class);
-
+        Route::get('message/isShowRedDot', 'MessageController@isShowReDot')->middleware(UserLoginFilter::class);
 
     });
+Route::get('user/message/systems', 'Admin\MessageSystemController@getSystems')->middleware('user',UserLoginFilter::class);
+Route::get('user/message/notices', 'UserApp\MessageController@getNotices')->middleware('user',UserLoginFilter::class);
+Route::get('user/message/noticesNum', 'UserApp\MessageController@getNeedViewNum')->middleware('user',UserLoginFilter::class);
+Route::get('user/message/noticesDetail', 'UserApp\MessageController@getNoticeDetail')->middleware('user',UserLoginFilter::class);
+Route::get('user/message/systemDetail', 'UserApp\MessageController@getSystemDetail')->middleware('user',UserLoginFilter::class);

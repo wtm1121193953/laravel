@@ -114,7 +114,7 @@
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column label="签约人" align="center">
+            <el-table-column label="签约人" width="200" align="center">
                 <template slot-scope="scope">
                     <span v-if="scope.row.bizer_name">
                         <span>[业务员]</span>

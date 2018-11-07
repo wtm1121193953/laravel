@@ -134,7 +134,7 @@ class MerchantAccountService extends BaseService
             ],
             [ 'id' => 6, 'name' => '素材中心', 'level' => 1, 'url' => 'material', 'sub' =>
                 [
-                    [ 'id' => 7, 'name' => '分享会员二维码', 'level' => 2, 'url' => '/merchant/invite/channel', 'pid' => 6,],
+                    [ 'id' => 7, 'name' => '分享用户二维码', 'level' => 2, 'url' => '/merchant/invite/channel', 'pid' => 6,],
                     [ 'id' => 8, 'name' => '支付二维码', 'level' => 2, 'url' => '/merchant/pay/qrcode', 'pid' => 6,],
                 ]
             ],

@@ -18,6 +18,7 @@ class BizerController extends Controller
         $mobile = request('mobile', '');
         $id = request('id', 0);
         $name = request('name', '');
+        $identityName = request('identityName', '');
         $startDate = request('startDate', '');
         $endDate = request('endDate', '');
         $status = request('status', 0);
@@ -26,7 +27,7 @@ class BizerController extends Controller
         $identityEndDate = request('identityEndDate', '');
         $pageSize = request('pageSize', 15);
 
-        $params = compact('mobile', 'id', 'name', 'startDate', 'endDate', 'status', 'identityStatus', 'identityStartDate', 'identityEndDate');
+        $params = compact('mobile', 'id', 'name', 'identityName', 'startDate', 'endDate', 'status', 'identityStatus', 'identityStartDate', 'identityEndDate');
         $data = BizerService::getBizerList($params, $pageSize);
 
         return Result::success([
@@ -132,7 +133,7 @@ class BizerController extends Controller
         header('Content-Disposition: attachment;filename="' . $fileName . '.csv"');
 
         $fp = fopen('php://output', 'a');
-        $title = ['提交认证时间', '手机号码', '业务员ID', '注册时间', '昵称', '身份证号码', '用户状态', '身份认证状态'];
+        $title = ['提交认证时间', '手机号码', '业务员ID', '注册时间', '昵称', '姓名', '身份证号码', '用户状态', '身份认证状态'];
         foreach ($title as $key => $value) {
             $title[$key] = iconv('UTF-8', 'GBK', $value);
         }
@@ -146,6 +147,7 @@ class BizerController extends Controller
                 $item['id'] = iconv('UTF-8', 'GBK',$value['id']);
                 $item['created_at'] = iconv('UTF-8', 'GBK',$value['created_at']);
                 $item['name'] = iconv('UTF-8', 'GBK',$value['name']);
+                $item['identity_name'] = isset($value['bizer_identity_audit_record']) ? iconv('UTF-8', 'GBK', $value['bizer_identity_audit_record']['name']) : '';
                 $idCardNo = '';
                 if (isset($value['bizer_identity_audit_record'])) {
                     $arr = str_split($value['bizer_identity_audit_record']['id_card_no']);

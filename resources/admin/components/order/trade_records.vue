@@ -1,20 +1,14 @@
 <template>
-    <page title="交易记录" v-loading="isLoading">
+    <page title="交易记录">
         <el-form inline :model="query" size="small">
             <el-form-item label="订单号">
                 <el-input type="text" clearable v-model="query.order_no" placeholder="请输入订单号"/>
             </el-form-item>
-            <el-form-item label="所属运营中心">
-                <el-select v-model="query.oper_id" filterable clearable >
-                    <el-option value="" label="全部"/>
-                    <el-option v-for="item in opers" :key="item.id" :value="item.id" :label="item.name"/>
-                </el-select>
+            <el-form-item label="所属运营中心ID">
+                <el-input type="text" clearable placeholder="请输入所属运营中心ID" v-model="query.oper_id" class="w-150"/>
             </el-form-item>
-            <el-form-item label="所属商户">
-                <el-select v-model="query.merchant_id" filterable clearable >
-                    <el-option value="" label="全部"/>
-                    <el-option v-for="item in merchants" :key="item.id" :value="item.id" :label="item.name"/>
-                </el-select>
+            <el-form-item label="所属商户ID">
+                <el-input type="text" clearable placeholder="请输入所属商户ID" v-model="query.merchant_id" class="w-150"/>
             </el-form-item>
             <el-form-item label="交易时间">
                 <el-date-picker
@@ -34,8 +28,8 @@
                         value-format="yyyy-MM-dd 23:59:59"
                 />
             </el-form-item>
-            <el-form-item label="用户">
-                <el-input type="text" clearable v-model="query.mobile" placeholder="请输入用户手机"/>
+            <el-form-item label="用户ID">
+                <el-input type="text" clearable v-model="query.user_id" placeholder="请输入用户ID"/>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="search">
@@ -59,7 +53,7 @@
             </el-table-column>
             <el-table-column prop="merchant.name" label="交易商户"/>
             <el-table-column prop="oper.name" label="所属运营中心"/>
-            <el-table-column prop="user.mobile" label="用户"/>
+            <el-table-column prop="user_id" label="用户ID"/>
         </el-table>
 
         <el-pagination
@@ -87,7 +81,7 @@
                     merchant_id: '',
                     startTime: '',
                     endTime: '',
-                    mobile: '',
+                    user_id: '',
                 },
                 list: [],
                 total: 0,
@@ -135,7 +129,6 @@
         },
         created(){
             this.getList();
-            this.getOptions();
         },
         components: {
         }

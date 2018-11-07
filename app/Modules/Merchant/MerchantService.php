@@ -364,14 +364,16 @@ class MerchantService extends BaseService
      * @param $id
      * @param $currentOperId
      * @param string $auditStauts
+     * @param bool $isAdmin
      * @return Merchant
      */
-    public static function edit($id,$currentOperId,$auditStauts = '')
+    public static function edit($id, $currentOperId, $auditStauts = '', $isAdmin = false)
     {
+        if(empty($currentOperId)){
+            $currentOperId = 0;
+        }
 
-        $merchant = Merchant::where('id', $id)
-            ->where('audit_oper_id', $currentOperId)
-            ->first();
+        $merchant = Merchant::where('id', $id)->first();
         if (empty($merchant)) {
             throw new BaseResponseException('该商户不存在');
         }
@@ -419,48 +421,43 @@ class MerchantService extends BaseService
             if ($merchant->is_pilot && $merchant->desc) {
                 $merchant->oper_id = 0;
                 $merchant->is_pilot = Merchant::NORMAL_MERCHANT;
-                //$merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
             } else {
                 MerchantAuditService::addAudit($merchant->id, $currentOperId, Merchant::AUDIT_STATUS_RESUBMIT);
-                //$merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
+                $merchant->audit_status = Merchant::AUDIT_STATUS_RESUBMIT;
             }
         } else {
             // 如果当前商户没有所属运营中心，且是试点商户，且有商户描述，则是待审核状态下的补全资料，修改商户为正常商户
             if ($merchant->is_pilot && $merchant->desc) {
                 $merchant->is_pilot = Merchant::NORMAL_MERCHANT;
-                //$merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
             } else {
                 MerchantAuditService::addAudit($merchant->id, $currentOperId);
-                //$merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
             }
         }
-        //编辑商户，除审核通过的商户编辑完成直接默认审核通过外，其他状态的商户编辑后都是待审核
 
-        if($auditStauts != Merchant::AUDIT_STATUS_SUCCESS){
-            $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
-        }else{
-            $merchant->audit_status = Merchant::AUDIT_STATUS_SUCCESS;
+        //admin编辑商户，除审核通过的商户编辑完成直接默认审核通过外，其他状态的商户编辑后都是待审核
+        if ($isAdmin) {
+            if ($auditStauts != Merchant::AUDIT_STATUS_SUCCESS) {
+                $merchant->audit_status = Merchant::AUDIT_STATUS_AUDITING;
+            } else {
+                $merchant->audit_status = Merchant::AUDIT_STATUS_SUCCESS;
+            }
         }
-
 
         $merchant->save();
 
-        // 更新业务员已激活商户数量
+        // 更新业务员已发展商户和审核通过商户数量
         if ($merchant->bizer_id) {
-
-            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
-            MyOperBizer::updateAuditMerchantNumberByCode($merchant->bizer_id);
-
-            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
-            //OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->oper_id, $merchant->bizer_id);
+            MyOperBizer::updateAuditMerchantNumberByCode($merchant->oper_id, $merchant->bizer_id);
         }
 
         // 如果存在原有的业务员, 并且不等于现有的业务员, 更新原有业务员邀请用户数量
         if (isset($originOperBizMemberCode) && $originOperBizMemberCode != $merchant->bizer_id) {
-            MyOperBizer::updateActiveMerchantNumberByCode($originOperBizMemberCode);
-            MyOperBizer::updateAuditMerchantNumberByCode($originOperBizMemberCode);
-            //OperBizMember::updateActiveMerchantNumberByCode($originOperBizMemberCode);
-            //OperBizMember::updateAuditMerchantNumberByCode($originOperBizMemberCode);
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->oper_id, $originOperBizMemberCode);
+            MyOperBizer::updateAuditMerchantNumberByCode($merchant->oper_id, $originOperBizMemberCode);
         }
 
         return $merchant;
@@ -499,10 +496,9 @@ class MerchantService extends BaseService
         // 添加审核记录
         MerchantAuditService::addAudit($merchant->id, $currentOperId);
 
-        // 更新业务员已激活商户数量
+        // 更新业务员发展商户数量
         if ($merchant->bizer_id) {
-            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
-            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
+            MyOperBizer::updateActiveMerchantNumberByCode($currentOperId, $merchant->bizer_id);
         }
 
         return $merchant;
@@ -538,10 +534,9 @@ class MerchantService extends BaseService
         // 添加审核记录
         MerchantAuditService::addAudit($merchant->id, $operId);
 
-        // 更新业务员已激活商户数量
+        // 更新业务员发展商户数量
         if($merchant->bizer_id){
-            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
-            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
+            MyOperBizer::updateActiveMerchantNumberByCode($operId, $merchant->bizer_id);
         }
 
         return $merchant;

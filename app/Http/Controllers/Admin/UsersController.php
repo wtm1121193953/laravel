@@ -8,6 +8,7 @@ use App\Exports\UserIdentityExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
+use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\User\User;
 use App\Modules\Invite\InviteUserRecord;
@@ -15,6 +16,7 @@ use App\Modules\Oper\OperService;
 use App\Modules\User\UserIdentityAuditRecord;
 use App\Modules\User\UserService;
 use App\Result;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use App\ResultCode;
@@ -210,6 +212,8 @@ class UsersController extends Controller
 
                 InviteUserService::unbindInviter($record);
 
+                InviteStatisticsService::updateDailyStatByOriginInfoAndDate($record->origin_id, $record->origin_type, Carbon::createFromFormat('Y-m-d', $record->created_at->format('Y-m-d')));
+
                 DB::commit();
 
             }catch (\Exception $e){
@@ -325,6 +329,10 @@ class UsersController extends Controller
             } else {
                 $inviteUserRecords = InviteUserService::getInviteRecordsByIds($inviteUserRecordIds); //需换绑的记录
             }
+            if ($inviteUserRecords->isEmpty()) {
+                throw new BaseResponseException('没有需要换绑的记录');
+            }
+
             // 获取要换绑的目标用户
             if ($type == InviteChannel::ORIGIN_TYPE_USER) {
                 $user = UserService::getUserByMobile($channelIdOrMobile);
