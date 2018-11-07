@@ -22,6 +22,7 @@ class KuaiQian extends AgentPayBase
     public $membercode = '';//商户号
     public $merchant_name = '';
     public $url = '';//接口地址
+    public $balance_query_url = '';//余额查询接口地址
 
     public $status_val = [
         101 => '进行中',
@@ -36,17 +37,106 @@ class KuaiQian extends AgentPayBase
         $this->_class_name = basename(__CLASS__);
         //parent::__construct();
 
-        $this->pubkey_path = app_path('/Support/AgentPay/KuaiQian/99bill.cert.rsa.20340630.cer');//快钱公钥地址
-        $this->pfx_path = app_path('/Support/AgentPay/KuaiQian/99bill-rsa.pfx');//商户PFX证书地址
+//        $this->pubkey_path = app_path('/Support/AgentPay/KuaiQian/99bill.cert.rsa.20340630_sandbox.cer');//快钱公钥地址
+//        $this->pfx_path = app_path('/Support/AgentPay/KuaiQian/99bill-rsa.pfx');//商户PFX证书地址
 //        $this->url = 'https://sandbox.99bill.com/fo-batch-settlement/services';//测试接口地址
 //        $this->key_password = '123456';//测试证书密码
 //        $this->membercode = '10012138842';//测试商户号
 //        $this->merchant_name = '测试商户';
+        $this->pubkey_path = app_path('/Support/AgentPay/KuaiQian/99bill.cert.rsa.20340630.cer');//快钱公钥地址
+        $this->pfx_path = app_path('/Support/AgentPay/KuaiQian/99bill-rsa.pfx');//商户PFX证书地址
         $this->url = 'https://www.99bill.com/fo-batch-settlement/services';//正式接口地址
         $this->key_password = 'daqian111';//正式证书密码
         $this->membercode = '10210075284';//正式商户号
         $this->merchant_name = '深圳大千生活科技有限公司';
 
+        $this->balance_query_url = 'http://sandbox.99bill.com/apiservices/services/balance.wsdl';
+
+    }
+
+    public function balanceQuery()
+    {
+        $memberCode='10012138842';
+        $acctType='1';
+        $memberAcctCode='';
+        $merchantMemberCode='10012138842';
+        $key='XSD889YSFS37NZWS';
+
+        $originalData= '&memberCode='.$memberCode.'&acctType='.$acctType.'&memberAcctCode='.$memberAcctCode.'&merchantMemberCode='.$merchantMemberCode.'&key='.$key;
+
+        $autokey = rand(10000000,99999999).rand(10000000,99999999); //随机KEY
+
+        $signeddata = $this->crypto_seal_private($originalData);//私钥加密（验签/OPENSSL_ALGO_SHA1）
+        $digitalenvelope = $this->crypto_seal_pubilc($autokey);//公钥加密（数字信封/OPENSSL_PKCS1_PADDING）
+        $encrypteddata = $this->encrypt_aes($originalData,$autokey);//数据加密（AES/CBC/PKCS5Padding）
+
+        $url2 = 'http://sandbox.99bill.com/apiservices/services/balance.wsdl';//提交地址
+
+        $str= '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bal="http://www.99bill.com/schema/ma/mbrinfo/balance" xmlns:mbr="http://www.99bill.com/schema/ma/mbrinfo" xmlns:com="http://www.99bill.com/schema/commons">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <bal:balance-request>
+         <bal:request-header>
+            <mbr:version>
+               <com:version>1</com:version>
+               <com:service>ma.mbrinfo.balance</com:service>
+            </mbr:version>
+            <mbr:requestId/>
+            <mbr:appId/>
+         </bal:request-header>
+         <bal:request-body>
+            <bal:balanceApiRequestType>
+               <!--You have a CHOICE of the next 2 items at this level-->
+               <bal:memberCode>'.$memberCode.'</bal:memberCode>
+               <bal:acctType>'.$acctType.'</bal:acctType>
+               <bal:merchantMemberCode>'.$merchantMemberCode.'</bal:merchantMemberCode>
+            </bal:balanceApiRequestType>
+            <!--Optional:-->
+            <bal:maSealPkiDataType>
+               <!--You may enter the following 4 items in any order-->
+               <!--Optional:-->
+               <mbr:signedData>'.$signeddata.'</mbr:signedData>
+               <mbr:encryptedData>'.$encrypteddata.'</mbr:encryptedData>
+               <mbr:digitalEnvelope>'.$digitalenvelope.'</mbr:digitalEnvelope>
+            </bal:maSealPkiDataType>
+         </bal:request-body>
+      </bal:balance-request>
+   </soapenv:Body>
+</soapenv:Envelope>';
+
+        $header[] = "Content-type: text/xml;charset=utf-8";
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url2);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS,$str);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,false);
+        $output = curl_exec($ch);
+
+        dd($output);
+        $dom = new \DOMDocument();
+        $dom -> loadXML($output);
+        $receive = array(
+            'errorCode' => $dom -> getElementsByTagName('errorCode')->item(0)->nodeValue,//错误编号
+            'errorMsg' => $dom -> getElementsByTagName('errorMsg')->item(0)->nodeValue,//错误代码
+            'amount' => $dom -> getElementsByTagName('amount')->item(0)->nodeValue,//金额
+            'signedData' => $dom -> getElementsByTagName('signedData')->item(0)->nodeValue,//验签
+            'encryptedData' => $dom -> getElementsByTagName('encryptedData')->item(0)->nodeValue,//加密报文
+            'digitalEnvelope' => $dom -> getElementsByTagName('digitalEnvelope')->item(0)->nodeValue//数字信封
+        );
+
+        echo "<br/>".$receive['errorCode'];//错误编号
+        echo "<br/>".$receive['errorMsg'];//错误代码
+
+        $receivekey = $this->crypto_unseal_private($receive['digitalEnvelope']);
+        $receiveData = $this->decrypt_aes($receive['encryptedData'],$receivekey);
+
+        echo "<br/>".$receiveData;//数据结果
+
+        $ok = crypto_unseal_pubilc($receive['signedData'],$receiveData);
+        echo "<br/>ok=".$ok;//验签结果
     }
 
     public function queryByBatchNo(SettlementPlatformKuaiQianBatch $batch)
