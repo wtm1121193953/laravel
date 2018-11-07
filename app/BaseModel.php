@@ -24,7 +24,7 @@ use Illuminate\Support\Carbon;
  * @method static static when($value, $callback, $default = null)
  * @method static static where($column, $operator = null, $value = null, $boolean = 'and')
  * @method static static whereIn($column, $values, $boolean = 'and', $not = false)
- * @method static static whereDate($column, $operator, $value = null, $boolean = 'and')
+ * @method static static whereBetween($column, array $values, $boolean = 'and', $not = false)
  * @method static static orderBy($column, $direction = 'asc')
  * @method static static orderByDesc($column)
  * @method static static withTrashed()

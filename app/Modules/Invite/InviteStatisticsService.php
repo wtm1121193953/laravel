@@ -29,7 +29,7 @@ class InviteStatisticsService extends BaseService
             $date = $date->format('Y-m-d');
         }
         // 查询出每个origin对应当天的邀请数量并存储到每日统计表中
-        $list = InviteUserRecord::whereDate('created_at', $date)
+        $list = InviteUserRecord::whereBetween('created_at', [$date . ' 00:00:00', $date . ' 23:59:59'])
             ->groupBy('origin_id', 'origin_type')
             ->select('origin_id', 'origin_type')
             ->selectRaw('count(1) as total')
