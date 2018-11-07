@@ -183,15 +183,11 @@ class InviteUserService
             $changeBindNumber = 0;
             $changeBindErrorNumber = 0;
             $needStatisticsDate = []; //需要统计的日期
-            $originId = 0;
-            $originType = 0;
             // 循环遍历需换绑的记录，在解绑表invite_user_unbind_records中加入解绑记录;
             // 添加新的邀请记录在invite_user_records中,并删除记录表中的旧记录
             foreach ($inviteUserRecords as $inviteUserRecord) {
                 $date = $inviteUserRecord->created_at->format('Y-m-d');
                 $needStatisticsDate[$date] = $date;
-                $originId = $inviteUserRecord->origin_id;
-                $originType = $inviteUserRecord->origin_type;
 
                 try {
                     InviteUserService::changeInviter($inviteUserRecord, $newInviteChannel, $inviteUserBatchChangedRecord->id);
@@ -214,11 +210,9 @@ class InviteUserService
         // 记录换绑完成之后，对每日统计表invite_user_statistics_dailies进行更改
         if (!empty($needStatisticsDate)) {
             foreach ($needStatisticsDate as $date) {
-                InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', $date));
-                if ($originId && $originType) {
-                    InviteStatisticsDailyUpdateByOriginInfoAndDate::dispatch($originId, $originType, Carbon::createFromFormat('Y-m-d', $date));
-                }
-                OperAndMerchantAndUserStatisticsDailyJob::dispatch(date('Y-m-d 23:59:59', strtotime($date)));
+                InviteStatisticsDailyUpdateByOriginInfoAndDate::dispatch($newInviteChannel->origin_id, $newInviteChannel->origin_type, Carbon::createFromFormat('Y-m-d', $date));
+                InviteStatisticsDailyUpdateByOriginInfoAndDate::dispatch($oldInviteChannel->origin_id, $oldInviteChannel->origin_type, Carbon::createFromFormat('Y-m-d', $date));
+                // todo 换绑统计
             }
         }
 

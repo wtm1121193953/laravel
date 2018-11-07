@@ -16,6 +16,7 @@ class CreateSettlementPlatformKuaiQianBatchesTable extends Migration
         Schema::create('settlement_platform_kuai_qian_batches', function (Blueprint $table) {
             $table->increments('id');
             $table->string('batch_no',50)->default('')->comment('批次号');
+            $table->tinyInteger('type')->default(0)->comment('类型 1 自动生成批次，2手动重新打款批次');
             $table->string('settlement_platfrom_ids',1500)->default('')->comment('结算单的id');
             $table->mediumText('data_send')->comment('请求的报文');
             $table->mediumText('data_receive')->comment('接收到的报文');

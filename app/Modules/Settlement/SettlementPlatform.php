@@ -37,11 +37,12 @@ use Illuminate\Support\Carbon;
  * @property int settlement_cycle_type
  * @property int settlement_pay_batch_id
  * @property string pay_batch_no
+ * @property string pay_again_batch_no
  * @property string reason
  */
 class SettlementPlatform extends BaseModel
 {
-    //状态 1-未打款 2-打款中 3-打款成功 4-打款失败 5-已重新打款
+    //状态 1-未打款 2-打款中 3-打款成功 4-打款失败 5-重新打款中
     const STATUS_UN_PAY = 1;
     const STATUS_PAYING = 2;
     const STATUS_PAID = 3;

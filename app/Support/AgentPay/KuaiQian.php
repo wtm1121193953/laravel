@@ -180,7 +180,7 @@ class KuaiQian extends AgentPayBase
             $error_msg = $val->getElementsByTagName('error-msg')->item(0)->nodeValue;
             $settlement_no = $val->getElementsByTagName('merchant-id')->item(0)->nodeValue;
             $status = $val->getElementsByTagName('status')->item(0)->nodeValue;
-            if (!empty($error_code)) {
+            if (!empty($error_code) && $error_code != '0000') {
                 $update = [
                     'status' => SettlementPlatform::STATUS_FAIL,
                     'reason' => $error_code . ':'.$error_msg
@@ -302,9 +302,10 @@ class KuaiQian extends AgentPayBase
      * 生成打款数据
      * @param $settlement_platform 结算单
      * @param $batch_no 批次号
+     * @param bool $again 是否是第二次生成
      * @return bool
      */
-    public function genXmlSend($settlement_platform, $batch_no)
+    public function genXmlSend($settlement_platform, $batch_no, $again = false)
     {
         if (empty($settlement_platform)) {
             return false;
@@ -364,7 +365,7 @@ class KuaiQian extends AgentPayBase
         $rdetail = '';
 
         $settlement_platform_ids = [];//生成结算单的id号
-        $settlement_platform->each(function ($item) use (&$rdetail, &$totalCnt, &$totalAmt,$batchNo, &$settlement_platform_ids) {
+        $settlement_platform->each(function ($item) use (&$rdetail, &$totalCnt, &$totalAmt,$batchNo, &$settlement_platform_ids, $again) {
 
             $sub_bank_name = explode('|',$item->sub_bank_name);
             $bank_open_address = explode('|',$item->bank_open_address);
@@ -376,7 +377,7 @@ class KuaiQian extends AgentPayBase
             }
             $bank_open_address = explode(',',$bank_open_address[0]);
 
-            $amount = intval($item->amount *100);//换算成分
+            $amount = intval($item->real_amount *100);//换算成分
             if ($amount==0) {
                 $item->status = SettlementPlatform::STATUS_FAIL;
                 $item->reason = '结算单金额为零';
@@ -389,8 +390,14 @@ class KuaiQian extends AgentPayBase
                 Log::error('结算单地址或者支行信息有误' . $item->settlement_no);
 
             } else {
-                $item->pay_batch_no = $batchNo;
-                $item->status = SettlementPlatform::STATUS_PAYING;
+                if ($again) {
+                    $item->pay_again_batch_no = $batchNo;
+                    $item->status = SettlementPlatform::STATUS_RE_PAY;
+                } else {
+                    $item->pay_batch_no = $batchNo;
+                    $item->status = SettlementPlatform::STATUS_PAYING;
+                }
+
                 $item->save();
 
                 $totalCnt ++;
