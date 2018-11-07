@@ -158,7 +158,7 @@ class KuaiQian extends AgentPayBase
     {
 
         if (empty($receiveData)) {
-            return ;
+            return false;
         }
         $receiveData = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body>'
             . $receiveData
@@ -168,8 +168,9 @@ class KuaiQian extends AgentPayBase
         $dom->loadXML($receiveData);
         $items = $dom->getElementsByTagName('pay2bank-result');
         if (empty($items)) {
-            return;
+            return false;
         }
+        $has_101 = false;//是否有101 处理中状态的，没有101的代表整个批次处理完成
         foreach ($items as $k=>$val) {
             $error_code = $val->getElementsByTagName('error-code')->item(0)->nodeValue;
             $error_msg = $val->getElementsByTagName('error-msg')->item(0)->nodeValue;
@@ -185,6 +186,7 @@ class KuaiQian extends AgentPayBase
             } else {
                 switch ($status) {
                     case 101:
+                        $has_101 = true;
                         break;
                     case 111:
                         $update = [
@@ -215,6 +217,7 @@ class KuaiQian extends AgentPayBase
             }
 
         }
+        return !$has_101;
     }
 
     public function send(SettlementPlatformKuaiQianBatch $batch)
