@@ -62,7 +62,7 @@ class SettlementPlatformKuaiQianBatchService extends BaseService
 
     public static function getList()
     {
-        $data = settlementPlatformKuaiQianBatch::query()->orderByDesc('id')->paginate();
+        $data = SettlementPlatformKuaiQianBatch::query()->orderByDesc('id')->paginate();
         return $data;
     }
 
@@ -73,9 +73,9 @@ class SettlementPlatformKuaiQianBatchService extends BaseService
      */
     public static function getByIdModifyStatus($id)
     {
-        $data = settlementPlatformKuaiQianBatch::where('id', $id)->update(
+        $data = SettlementPlatformKuaiQianBatch::where('id', $id)->update(
             [
-                'status' => settlementPlatformKuaiQianBatch::STATUS_SENDED,
+                'status' => SettlementPlatformKuaiQianBatch::STATUS_SENDED,
             ]
         );
         return $data;
