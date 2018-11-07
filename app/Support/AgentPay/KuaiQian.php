@@ -377,7 +377,7 @@ class KuaiQian extends AgentPayBase
             }
             $bank_open_address = explode(',',$bank_open_address[0]);
 
-            $amount = intval($item->amount *100);//换算成分
+            $amount = intval($item->real_amount *100);//换算成分
             if ($amount==0) {
                 $item->status = SettlementPlatform::STATUS_FAIL;
                 $item->reason = '结算单金额为零';
