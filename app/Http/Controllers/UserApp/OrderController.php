@@ -371,7 +371,15 @@ class OrderController extends Controller
         $order->bizer_id = $merchant->bizer_id;
         $order->save();
 
-        return $this->_returnOrder($order);
+        //返利金额
+        $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordByOrderId($order->id,FeeSplittingRecord::TYPE_TO_SELF);
+
+        if(!empty($feeSplittingRecords)){
+            $profitAmount = $feeSplittingRecords->amount;
+        }else{
+            $profitAmount = 0;
+        }
+        return $this->_returnOrder($order,$isprofitAmount = true,$profitAmount);
     }
 
     /**
@@ -416,7 +424,7 @@ class OrderController extends Controller
         }else{
             $profitAmount = 0;
         }
-        return $this->_returnOrder($order);
+        return $this->_returnOrder($order,$isprofitAmount = true,$profitAmount);
     }
 
     /**
@@ -502,10 +510,12 @@ class OrderController extends Controller
     /**
      * 处理订单返回
      * @param $order
+     * @param bool $isprofitAmount
+     * @param int $profitAmount
      * @return \Illuminate\Http\JsonResponse
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    private function _returnOrder($order){
+    private function _returnOrder($order,$isprofitAmount = false,$profitAmount = 0){
         // 如果是微信支付
         $sdkConfig = null;
         $data = null;
@@ -522,13 +532,20 @@ class OrderController extends Controller
             $data = $paymentClass->buy($order);
         }
 
-        return Result::success([
+        $list = [
             'order_no' => $order->order_no,
             'sdk_config' => $sdkConfig,
             'order' => $order,
             'pay_type'  => $order->pay_type,
             'data'  =>  $data
-        ]);
+        ];
+
+        //判断是否需要返利金额
+        if($isprofitAmount){
+            $profitAmounArr = ['profitAmount' => $profitAmount];
+            $list = array_merge($list,$profitAmounArr);
+        }
+        return Result::success($list);
     }
 
     /**
