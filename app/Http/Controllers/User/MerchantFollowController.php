@@ -38,7 +38,7 @@ class MerchantFollowController extends Controller
         $lng = request('lng',0);
         $lat = request('lat',0);
         //获取用户收藏的商户ID
-        $followmerchantList = MerchantFollowService::getFollowMerchantList($userID);
+        $followmerchantList = MerchantFollowService::getFollowMerchantList($userID,false);
 
         $follow_merchant_ids = [];
         foreach($followmerchantList as $key){

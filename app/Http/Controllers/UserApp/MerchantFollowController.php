@@ -22,9 +22,13 @@ class MerchantFollowController extends Controller
     {
         $user = request()->get('current_user');
         $merchantId = request('merchant_id');
+        $operId = request('oper_id');
         $status = request('status');
         if (!$merchantId) {
             throw new BaseResponseException('商户ID不能为空');
+        }
+        if (!$operId) {
+            throw new BaseResponseException('运营中心ID不能为空');
         }
         if (!$status) {
             throw new BaseResponseException('状态不能为空');
@@ -33,7 +37,8 @@ class MerchantFollowController extends Controller
         $data = MerchantFollowService::modifyFollows([
             'status' => $status, //1-未关注，2-已关注
             'user_id' => $user->id,
-            'merchant_id' => $merchantId
+            'merchant_id' => $merchantId,
+            'oper_id' => $operId,
         ]);
 
         return Result::success([
@@ -47,7 +52,7 @@ class MerchantFollowController extends Controller
         $lng = request('lng',0);
         $lat = request('lat',0);
         //获取用户收藏的商户ID
-        $followmerchantList = MerchantFollowService::getFollowMerchantList($userID);
+        $followmerchantList = MerchantFollowService::getFollowMerchantList($userID,true);
 
         $follow_merchant_ids = [];
         foreach($followmerchantList as $key){
