@@ -17,14 +17,16 @@ class SettlementPlatformKuaiQianBatchService extends BaseService
         header("content-type:text/html;charset=utf-8");
         $list = SettlementPlatformKuaiQianBatch::where('status',SettlementPlatformKuaiQianBatch::STATUS_NOT_SEND)->get();
 
+        if ($list->count() == 0) {
+            return 'no batches';
+        }
+
         $kuaiqian = new KuaiQian();
         $list->each(function ($item) use ($kuaiqian) {
-
             $rs = $kuaiqian->send($item);
-
-            dd($rs);
         });
-        dd($list);
+
+        return 'ok';
     }
 
 
@@ -45,14 +47,16 @@ class SettlementPlatformKuaiQianBatchService extends BaseService
         header("content-type:text/html;charset=utf-8");
         $list = SettlementPlatformKuaiQianBatch::where('status',SettlementPlatformKuaiQianBatch::STATUS_SENDED)->get();
 
+        if ($list->count() == 0) {
+            return 'no batches';
+        }
+
         $kuaiqian = new KuaiQian();
         $list->each(function ($item) use ($kuaiqian) {
-
             $rs = $kuaiqian->queryByBatchNo($item);
-
-            dd($rs);
         });
-        dd($list);
+
+        return 'ok';
     }
 
 

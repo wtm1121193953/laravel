@@ -139,8 +139,12 @@ class KuaiQian extends AgentPayBase
         if ($ok == 1) {
             $data_query .= "<br/>验签成功！";
             $batch->data_query = $data_query;
+
+            $rt = $this->loadDetail($receiveData);
+            if ($rt === true) {
+                $batch->status = SettlementPlatformKuaiQianBatch::STATUS_FINISHED;
+            }
             $batch->save();
-            $this->loadDetail($receiveData);
         } else {
             $data_query .= "<br/>验签失败！";
             $batch->data_query = $data_query;
@@ -158,7 +162,7 @@ class KuaiQian extends AgentPayBase
     {
 
         if (empty($receiveData)) {
-            return ;
+            return false;
         }
         $receiveData = '<?xml version=\'1.0\' encoding=\'UTF-8\'?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body>'
             . $receiveData
@@ -168,22 +172,56 @@ class KuaiQian extends AgentPayBase
         $dom->loadXML($receiveData);
         $items = $dom->getElementsByTagName('pay2bank-result');
         if (empty($items)) {
-            return;
+            return false;
         }
+        $has_101 = false;//是否有101 处理中状态的，没有101的代表整个批次处理完成
         foreach ($items as $k=>$val) {
             $error_code = $val->getElementsByTagName('error-code')->item(0)->nodeValue;
             $error_msg = $val->getElementsByTagName('error-msg')->item(0)->nodeValue;
             $settlement_no = $val->getElementsByTagName('merchant-id')->item(0)->nodeValue;
             $status = $val->getElementsByTagName('status')->item(0)->nodeValue;
-            if ($error_code != '0000') {
+            if (!empty($error_code) && $error_code != '0000') {
                 $update = [
                     'status' => SettlementPlatform::STATUS_FAIL,
-                    'reason' => $error_msg
+                    'reason' => $error_code . ':'.$error_msg
                 ];
                 SettlementPlatform::where('settlement_no',$settlement_no)
                     ->update($update);
+            } else {
+                switch ($status) {
+                    case 101:
+                        $has_101 = true;
+                        break;
+                    case 111:
+                        $update = [
+                            'status' => SettlementPlatform::STATUS_PAID,
+                        ];
+                        SettlementPlatform::where('settlement_no',$settlement_no)
+                            ->update($update);
+                        break;
+                    case 112:
+                        $update = [
+                            'status' => SettlementPlatform::STATUS_FAIL,
+                            'reason' => '打款失败'
+                        ];
+                        SettlementPlatform::where('settlement_no',$settlement_no)
+                            ->update($update);
+                        break;
+                    case 114:
+                        $update = [
+                            'status' => SettlementPlatform::STATUS_FAIL,
+                            'reason' => '已退款'
+                        ];
+                        SettlementPlatform::where('settlement_no',$settlement_no)
+                            ->update($update);
+                        break;
+                    default:
+                        break;
+                }
             }
+
         }
+        return !$has_101;
     }
 
     public function send(SettlementPlatformKuaiQianBatch $batch)
@@ -264,9 +302,10 @@ class KuaiQian extends AgentPayBase
      * 生成打款数据
      * @param $settlement_platform 结算单
      * @param $batch_no 批次号
+     * @param bool $again 是否是第二次生成
      * @return bool
      */
-    public function genXmlSend($settlement_platform, $batch_no)
+    public function genXmlSend($settlement_platform, $batch_no, $again = false)
     {
         if (empty($settlement_platform)) {
             return false;
@@ -326,7 +365,7 @@ class KuaiQian extends AgentPayBase
         $rdetail = '';
 
         $settlement_platform_ids = [];//生成结算单的id号
-        $settlement_platform->each(function ($item) use (&$rdetail, &$totalCnt, &$totalAmt,$batchNo, &$settlement_platform_ids) {
+        $settlement_platform->each(function ($item) use (&$rdetail, &$totalCnt, &$totalAmt,$batchNo, &$settlement_platform_ids, $again) {
 
             $sub_bank_name = explode('|',$item->sub_bank_name);
             $bank_open_address = explode('|',$item->bank_open_address);
@@ -338,7 +377,7 @@ class KuaiQian extends AgentPayBase
             }
             $bank_open_address = explode(',',$bank_open_address[0]);
 
-            $amount = intval($item->amount *100);//换算成分
+            $amount = intval($item->real_amount *100);//换算成分
             if ($amount==0) {
                 $item->status = SettlementPlatform::STATUS_FAIL;
                 $item->reason = '结算单金额为零';
@@ -351,8 +390,14 @@ class KuaiQian extends AgentPayBase
                 Log::error('结算单地址或者支行信息有误' . $item->settlement_no);
 
             } else {
-                $item->pay_batch_no = $batchNo;
-                $item->status = SettlementPlatform::STATUS_PAYING;
+                if ($again) {
+                    $item->pay_again_batch_no = $batchNo;
+                    $item->status = SettlementPlatform::STATUS_RE_PAY;
+                } else {
+                    $item->pay_batch_no = $batchNo;
+                    $item->status = SettlementPlatform::STATUS_PAYING;
+                }
+
                 $item->save();
 
                 $totalCnt ++;

@@ -8,7 +8,7 @@
                 {{['','团购', '买单','单品'][order.type]}}
             </el-form-item>
             <el-form-item label="支付方式：">
-                {{['','微信', '支付宝','融宝'][order.pay_type]}}
+                {{['','微信', '支付宝','融宝','钱包余额'][order.pay_type]}}
             </el-form-item>
             <el-form-item label="商品名称：" v-if="order.type == 1">
                 {{order.goods_name}}

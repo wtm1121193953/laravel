@@ -23,7 +23,7 @@ class Payment extends Model
     //
     const TYPE_WECHAT = 1;
     const TYPE_ALIPAY = 2;
-    const TYPE_WALLET = 0;
+    const TYPE_WALLET = 4;
 
     const ID_WECHAT = 1;
     const ID_ALIPAY = 2;
@@ -43,6 +43,6 @@ class Payment extends Model
 
     public static function getAllType()
     {
-        return [self::TYPE_WECHAT=>'微信',self::TYPE_ALIPAY=>'支付宝',self::TYPE_WALLET=>'钱包'];
+        return [self::TYPE_WECHAT=>'微信',self::TYPE_ALIPAY=>'支付宝',self::TYPE_WALLET=>'钱包余额'];
     }
 }

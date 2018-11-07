@@ -4,6 +4,8 @@ namespace App\Modules\Merchant;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use App\Modules\Oper\Oper;
+use Illuminate\Database\Eloquent\Builder;
 
 
 /**
@@ -68,9 +70,13 @@ class MerchantFollowService extends BaseService
      */
     public static function getFollowMerchantList($userId)
     {
+        //APP只显示支付到平台的商户
         $query = MerchantFollow::query()
             ->where('user_id',$userId)
             ->where('status',MerchantFollow::USER_YES_FOLLOW)
+            ->whereHas('oper', function(Builder $query){
+                $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
+            })
             ->paginate();
 
         return $query;

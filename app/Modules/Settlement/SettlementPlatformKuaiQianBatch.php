@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class SettlementPlatformKuaiQianBatch
  * @package App\Modules\Settlement
+ * @property int type
  * @property string batch_no
  * @property string settlement_platfrom_ids
  * @property string data_send
@@ -27,4 +28,7 @@ class SettlementPlatformKuaiQianBatch extends Model
     const STATUS_NOT_SEND = 0; //未推送
     const STATUS_SENDED = 1; //已推送
     const STATUS_FINISHED = 2; //已完成
+
+    const TYPE_AUTO = 1;
+    const TYPE_RE_PAY = 2;
 }

@@ -232,10 +232,10 @@ class OrderController extends Controller
     {
         $this->validate(request(), [
             'dishes_id' => 'required|integer|min:1',
-            'pay_type' => 'integer|min:1',
+//            'pay_type' => 'integer|min:1',
         ]);
         $dishesId = request('dishes_id');
-        $payType = request('pay_type', Payment::ID_WECHAT);
+        $payType = request('pay_type');
 
         $dishes = Dishes::findOrFail($dishesId);
         $userIdByDish = $dishes->user_id;
@@ -289,12 +289,20 @@ class OrderController extends Controller
         $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
-        $order->pay_type = $payType;
+//        $order->pay_type = $payType;
         $order->settlement_rate = $merchant->settlement_rate;
         $order->origin_app_type = request()->header('app-type');
         $order->bizer_id = $merchant->bizer_id;
         $order->save();
-
+        if(!$payType){
+            return Result::success([
+                'order_no' => $order->order_no,
+                'sdk_config' => null,
+                'order' => $order,
+                'pay_type'  => $order->pay_type,
+                'data'  =>  null
+            ]);
+        }
         return $this->_returnOrder($order);
     }
 
@@ -371,7 +379,15 @@ class OrderController extends Controller
         $order->bizer_id = $merchant->bizer_id;
         $order->save();
 
-        return $this->_returnOrder($order);
+        //返利金额
+        $feeSplittingRecords = FeeSplittingService::getFeeSplittingRecordByOrderId($order->id,FeeSplittingRecord::TYPE_TO_SELF);
+
+        if(!empty($feeSplittingRecords)){
+            $profitAmount = $feeSplittingRecords->amount;
+        }else{
+            $profitAmount = 0;
+        }
+        return $this->_returnOrder($order,$isprofitAmount = true,$profitAmount);
     }
 
     /**
@@ -416,7 +432,7 @@ class OrderController extends Controller
         }else{
             $profitAmount = 0;
         }
-        return $this->_returnOrder($order);
+        return $this->_returnOrder($order,$isprofitAmount = true,$profitAmount);
     }
 
     /**
@@ -502,10 +518,12 @@ class OrderController extends Controller
     /**
      * 处理订单返回
      * @param $order
+     * @param bool $isprofitAmount
+     * @param int $profitAmount
      * @return \Illuminate\Http\JsonResponse
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    private function _returnOrder($order){
+    private function _returnOrder($order,$isprofitAmount = false,$profitAmount = 0){
         // 如果是微信支付
         $sdkConfig = null;
         $data = null;
@@ -522,13 +540,20 @@ class OrderController extends Controller
             $data = $paymentClass->buy($order);
         }
 
-        return Result::success([
+        $list = [
             'order_no' => $order->order_no,
             'sdk_config' => $sdkConfig,
             'order' => $order,
             'pay_type'  => $order->pay_type,
             'data'  =>  $data
-        ]);
+        ];
+
+        //判断是否需要返利金额
+        if($isprofitAmount){
+            $profitAmounArr = ['profitAmount' => $profitAmount];
+            $list = array_merge($list,$profitAmounArr);
+        }
+        return Result::success($list);
     }
 
     /**
