@@ -100,7 +100,11 @@ class WechatPay extends PayBase
 
 
         if($order->origin_app_type == Order::ORIGIN_APP_TYPE_MINIPROGRAM){
-            $payApp = WechatService::getWechatPayAppForPlatform();
+            if($order->pay_target_type == Order::PAY_TARGET_TYPE_OPER){
+                $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
+            }else {
+                $payApp = WechatService::getWechatPayAppForPlatform();
+            }
         }else{
             // 获取平台的微信支付实例
             $payApp = WechatService::getOpenPlatformPayAppFromPlatform();
