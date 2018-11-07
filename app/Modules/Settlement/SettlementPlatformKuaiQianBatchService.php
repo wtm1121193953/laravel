@@ -50,9 +50,8 @@ class SettlementPlatformKuaiQianBatchService extends BaseService
 
             $rs = $kuaiqian->queryByBatchNo($item);
 
-            dd($rs);
         });
-        dd($list);
+
     }
 
 
