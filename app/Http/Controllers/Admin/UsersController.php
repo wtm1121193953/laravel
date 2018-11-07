@@ -6,6 +6,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exports\UserExport;
 use App\Exports\UserIdentityExport;
 use App\Http\Controllers\Controller;
+use App\Modules\Country\CountryService;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteStatisticsService;
@@ -178,6 +179,7 @@ class UsersController extends Controller
         $id = request('id');
 
         $info = UserService::identityDetail($id);
+        $info->countryName = CountryService::getNameZhById($info->country_id);
 
         if (empty($info->user)) {
             throw new BaseResponseException("用户数据异常", ResultCode::UNKNOWN);
