@@ -69,16 +69,19 @@ class MerchantFollowService extends BaseService
     /**
      * 获取用户关注列表
      * @param $userId
+     * @param bool $onlyPayToPlatform
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public static function getFollowMerchantList($userId)
+    public static function getFollowMerchantList($userId,$onlyPayToPlatform =false)
     {
         //APP只显示支付到平台的商户
         $query = MerchantFollow::query()
             ->where('user_id',$userId)
             ->where('status',MerchantFollow::USER_YES_FOLLOW)
-            ->whereHas('oper', function(Builder $query){
-                $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
+            ->when($onlyPayToPlatform, function (Builder $query) {
+                $query->whereHas('oper', function(Builder $query){
+                    $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
+                });
             })
             ->paginate();
 
