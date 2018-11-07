@@ -139,8 +139,12 @@ class KuaiQian extends AgentPayBase
         if ($ok == 1) {
             $data_query .= "<br/>验签成功！";
             $batch->data_query = $data_query;
+
+            $rt = $this->loadDetail($receiveData);
+            if ($rt === true) {
+                $batch->status = SettlementPlatformKuaiQianBatch::STATUS_FINISHED;
+            }
             $batch->save();
-            $this->loadDetail($receiveData);
         } else {
             $data_query .= "<br/>验签失败！";
             $batch->data_query = $data_query;

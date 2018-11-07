@@ -48,10 +48,7 @@ class SettlementPlatformKuaiQianBatchService extends BaseService
         $kuaiqian = new KuaiQian();
         $list->each(function ($item) use ($kuaiqian) {
             $rs = $kuaiqian->queryByBatchNo($item);
-            if ($rs === true) {
-                $item->status = SettlementPlatformKuaiQianBatch::STATUS_FINISHED;
-                $item->save();
-            }
+
         });
 
     }
