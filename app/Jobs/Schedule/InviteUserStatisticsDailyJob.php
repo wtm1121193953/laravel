@@ -39,6 +39,7 @@ class InviteUserStatisticsDailyJob implements ShouldQueue
      */
     public function handle()
     {
+        echo '执行每日数据统计~';
         // 执行每日数据统计
         InviteStatisticsService::batchUpdateDailyStatisticsByDate($this->date);
     }
