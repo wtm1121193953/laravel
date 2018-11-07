@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/5/13
- * Time: 0:11
- */
 
 namespace App\Modules\Invite;
 
@@ -57,6 +51,9 @@ class InviteStatisticsService extends BaseService
      */
     public static function updateDailyStatByOriginInfoAndDate($originId, $originType, $date)
     {
+        if($date instanceof Carbon){
+            $date = $date->format('Y-m-d');
+        }
         $total = InviteUserRecord::where('origin_id', $originId)
             ->where('origin_type', $originType)
             ->whereDate('created_at', $date)

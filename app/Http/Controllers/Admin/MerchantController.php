@@ -239,7 +239,7 @@ class MerchantController extends Controller
     public function edit()
     {
         $validate = [
-            'name' => 'required|max:20',
+            'name' => 'required|max:50',
             'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
@@ -250,13 +250,15 @@ class MerchantController extends Controller
                 'settlement_rate' => 'required|numeric|min:0',
             ]);
         }
-        $this->validate(request(), $validate);
+        $this->validate(request(), $validate, [
+            'name.max' => '商户名称不能超过50个字',
+        ]);
 
         $mobile = request('contacter_phone');
         if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
             throw new ParamInvalidException('负责人手机号码不合法');
         }
-        $merchant = MerchantService::edit(request('id'), request('audit_oper_id'),request('audit_status'));
+        $merchant = MerchantService::edit(request('id'), request('audit_oper_id'), request('audit_status'), true);
 
         return Result::success($merchant);
     }
@@ -292,13 +294,13 @@ class MerchantController extends Controller
 
                 switch ($type){
                     case '1': // 审核通过
-                        $merchant = MerchantAuditService::auditSuccess($merchant, $auditSuggestion);
+                        MerchantAuditService::auditSuccess($merchant, $auditSuggestion);
                         break;
                     case '2': // 审核不通过
-                        $merchant = MerchantAuditService::auditFail($merchant, $auditSuggestion);
+                        MerchantAuditService::auditFail($merchant, $auditSuggestion);
                         break;
                     case '3': // 审核不通过并打回到商户池
-                        $merchant = MerchantAuditService::auditFailAndPushToPool($merchant, $auditSuggestion);
+                        MerchantAuditService::auditFailAndPushToPool($merchant, $auditSuggestion);
                         break;
                     default:
                         throw new BaseResponseException('错误的操作');

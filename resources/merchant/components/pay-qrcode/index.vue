@@ -1,7 +1,7 @@
 <template>
     <page title="支付二维码">
         <div class="qrcode-container">
-            <div class="title">小程序码 <el-button type="text" @click="showExample = true">示例</el-button></div>
+            <div class="title">支付二维码 <el-button type="text" @click="showExample = true">示例</el-button></div>
             <img class="image" :src="qrcodeUrl" alt="">
             <div class="btns">
                 <el-button type="text" @click="download(1)">下载（小）</el-button>
@@ -15,7 +15,7 @@
             </div>
         </div>
         <el-dialog :visible.sync="showExample" width="290px">
-            <div class="example-title">支付小程序码</div>
+            <div class="example-title">支付二维码</div>
             <img class="image" :src="qrcodeUrl" alt="">
         </el-dialog>
     </page>

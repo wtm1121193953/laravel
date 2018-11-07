@@ -39,9 +39,9 @@
         <el-table :data="list" stripe>
             <el-table-column width="250" prop="created_at" label="添加时间"/>
             <el-table-column width="250" prop="title" label="标题"/>
-            <el-table-column prop="content" label="内容">
+            <el-table-column :show-overflow-tooltip="true" prop="content" label="内容">
                 <template slot-scope="scope">
-                    {{scope.row.content.substr(0, 10)}}
+                    {{scope.row.content}}
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="250px">
@@ -55,7 +55,7 @@
         <el-dialog
                 title="添加消息"
                 :visible.sync="addDialog"
-                width="30%"
+                width="60%"
                 center
                 :close-on-click-modal="false"
                 :close-on-press-escape="false"
@@ -73,7 +73,7 @@
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item prop="content" label="内容">
-                    <el-input type="textarea" :rows="2" placeholder="限2000个字" v-model="addForm.content"/>
+                    <el-input type="textarea" :rows="20" placeholder="限2000个字" v-model="addForm.content"/>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">

@@ -42,7 +42,7 @@ class TestPlatformSettlementDaily extends Command
         //
         $date = $this->argument('date');
         if(empty($date)){
-            $date = date('Y-m-d');
+            $date = date('Y-m-d',strtotime('-1 day'));
         }
         SettlementDaily::dispatch(Carbon::createFromFormat('Y-m-d', $date));
     }

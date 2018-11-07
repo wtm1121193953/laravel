@@ -37,6 +37,7 @@
                         <el-option label="待审核" value="0"/>
                         <el-option label="审核通过" value="1"/>
                         <el-option label="审核不通过" value="2"/>
+                        <el-option label="重新提交审核" value="3"/>
                     </el-select>
                 </el-form-item>
                 <el-form-item prop="operId" label="激活运营中心ID"  >
@@ -125,7 +126,7 @@
                                   <div   slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
                                     <unaudit-record-reason    :data="auditRecord"  />
                               </el-popover>
-                        <span v-else-if="scope.row.audit_status === 3" class="c-warning">待审核(重新提交)</span>
+                        <span v-else-if="scope.row.audit_status === 3" class="c-warning">重新提交审核</span>
                         <span v-else>未知 ({{scope.row.audit_status}})</span>
                     </template>
                  </el-table-column>

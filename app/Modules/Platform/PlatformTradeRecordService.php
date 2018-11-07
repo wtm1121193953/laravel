@@ -30,9 +30,9 @@ class PlatformTradeRecordService extends BaseService
             ->when($params['merchant_id'],function (Builder $query) use ($params) {
                 $query->where('merchant_id','=',"{$params['merchant_id']}");
             })
-            ->when($params['mobile'],function (Builder $query) use ($params) {
+            ->when($params['user_id'],function (Builder $query) use ($params) {
                 $query->whereHas('user',function($q) use ($params) {
-                    $q->where('mobile', 'like', "%{$params['mobile']}%");
+                    $q->where('user_id', "{$params['user_id']}");
                 });
             })
             ->when($params['startTime'] && $params['endTime'],function (Builder $query) use ($params) {
@@ -43,7 +43,6 @@ class PlatformTradeRecordService extends BaseService
 
         $query->with('oper:id,name');
         $query->with('merchant:id,name');
-        $query->with('user:id,mobile');
 
 
         $query->orderBy('trade_time', 'desc');
