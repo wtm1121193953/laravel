@@ -40,12 +40,16 @@ class RetryFailedJobs extends Command
     public function handle()
     {
         Log::info('开始手动执行失败队列');
-        DB::table('failed_jobs')->orderBy('id')->chunk(100, function($jobs) {
-            foreach ($jobs as $job) {
+        while (true){
+            $list = DB::table('failed_jobs')->orderBy('id')->limit(100)->get();
+            if($list->count() == 0){
+                break;
+            }
+            foreach ($list as $job) {
                 $this->call('queue:retry',['id' => $job->id]);
-                Log::info('失败队列ID', ['id' => $job->id]);
-             }
-        });
+//                Log::info('失败队列ID', ['id' => $job->id]);
+            }
+        }
         Log::info('手动执行失败队列完成');
     }
 }
