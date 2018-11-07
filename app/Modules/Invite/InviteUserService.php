@@ -6,8 +6,6 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Jobs\InviteStatisticsDailyUpdateByOriginInfoAndDate;
 use App\Jobs\MerchantLevelComputeJob;
-use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
-use App\Jobs\Schedule\OperAndMerchantAndUserStatisticsDailyJob;
 use App\Modules\Admin\AdminUser;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
