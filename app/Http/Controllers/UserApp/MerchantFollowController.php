@@ -22,6 +22,7 @@ class MerchantFollowController extends Controller
     {
         $user = request()->get('current_user');
         $merchantId = request('merchant_id');
+        $operId = request('oper_id');
         $status = request('status');
         if (!$merchantId) {
             throw new BaseResponseException('商户ID不能为空');
@@ -33,7 +34,8 @@ class MerchantFollowController extends Controller
         $data = MerchantFollowService::modifyFollows([
             'status' => $status, //1-未关注，2-已关注
             'user_id' => $user->id,
-            'merchant_id' => $merchantId
+            'merchant_id' => $merchantId,
+            'oper_id' => $operId,
         ]);
 
         return Result::success([

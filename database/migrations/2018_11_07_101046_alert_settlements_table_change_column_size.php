@@ -26,6 +26,11 @@ class AlertSettlementsTableChangeColumnSize extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('settlements', function (Blueprint $table) {
+            $table->dropColumn([
+                'pay_pic_url',
+                'invoice_pic_url',
+            ]);
+        });
     }
 }

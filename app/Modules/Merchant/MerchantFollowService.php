@@ -25,6 +25,7 @@ class MerchantFollowService extends BaseService
         $status = array_get($params, "status");
         $userId = array_get($params,'user_id');
         $merchantId = array_get($params,'merchant_id');
+        $operId = array_get($params,'oper_id',0);
 
         $merchant = new Merchant();
         $merchantFollowQuery = MerchantFollow::where('user_id',$userId)->where('merchant_id',$merchantId)->first();
@@ -34,6 +35,7 @@ class MerchantFollowService extends BaseService
 
                 if($merchantFollowQuery->status == MerchantFollow::USER_NOT_FOLLOW){
                     $merchantFollowQuery->status = MerchantFollow::USER_YES_FOLLOW;
+                    $merchantFollowQuery->oper_id = $operId;
                     $merchantFollowQuery->save();
                 }else{
                     throw new BaseResponseException('已关注');
@@ -42,6 +44,7 @@ class MerchantFollowService extends BaseService
             }else{
                 $merchantFollow = new MerchantFollow();
                 $merchantFollow->merchant_id = $merchantId;
+                $merchantFollow->oper_id = $operId;
                 $merchantFollow->user_id = $userId;
                 $merchantFollow->status = MerchantFollow::USER_YES_FOLLOW;
                 $merchantFollow->save();
