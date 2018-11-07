@@ -13,7 +13,7 @@ class RetryFailedJobs extends Command
      *
      * @var string
      */
-    protected $signature = 'retry_failed_jobs';
+    protected $signature = 'queue:retry-all';
 
     /**
      * The console command description.
