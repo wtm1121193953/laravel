@@ -23,23 +23,24 @@ class InviteStatisticsService extends BaseService
             $date = $date->format('Y-m-d');
         }
         // 查询出每个origin对应当天的邀请数量并存储到每日统计表中
-        $list = InviteUserRecord::whereDate('created_at', $date)
+        InviteUserRecord::whereDate('created_at', $date)
             ->groupBy('origin_id', 'origin_type')
             ->select('origin_id', 'origin_type')
             ->selectRaw('count(1) as total')
-            ->get();
-        $list->each(function($item) use ($date){
-            // 统计时先查询, 如果存在, 则在原基础上修改
-            $statDaily = InviteStatisticsService::getDailyStatisticsByOriginInfoAndDate($item->origin_id, $item->origin_type, $date);
-            if(empty($statDaily)){
-                $statDaily = new InviteUserStatisticsDaily();
-                $statDaily->date = $date;
-                $statDaily->origin_id = $item->origin_id;
-                $statDaily->origin_type = $item->origin_type;
-            }
-            $statDaily->invite_count = $item->total;
-            $statDaily->save();
-        });
+            ->chunk(1000, function ($records) use ($date) {
+                foreach ($records as $record) {
+                    // 统计时先查询, 如果存在, 则在原基础上修改
+                    $statDaily = InviteStatisticsService::getDailyStatisticsByOriginInfoAndDate($record->origin_id, $record->origin_type, $date);
+                    if(empty($statDaily)){
+                        $statDaily = new InviteUserStatisticsDaily();
+                        $statDaily->date = $date;
+                        $statDaily->origin_id = $record->origin_id;
+                        $statDaily->origin_type = $record->origin_type;
+                    }
+                    $statDaily->invite_count = $record->total;
+                    $statDaily->save();
+                }
+            });
     }
 
     /**

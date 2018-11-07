@@ -7,6 +7,7 @@ use App\BaseService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Order\Order;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MerchantStatisticsService extends BaseService
 {
@@ -14,50 +15,43 @@ class MerchantStatisticsService extends BaseService
      * 商户营销统计
      * @param string $endTime
      */
-    public static function statistics($endTime='')
+    public static function statistics($endTime = '')
     {
         if (empty($endTime)) {
             $endTime = date('Y-m-d H:i:s');
         }
 
-        $startTime = date('Y-m-d', strtotime($endTime));
+        $startTime = date('Y-m-d 00:00:00', strtotime($endTime));
+        $date = date('Y-m-d', $startTime);
 
-        Merchant::query()->chunk(1000, function ($merchants) use ($startTime, $endTime) {
-            foreach ($merchants as $merchant) {
-                $where['merchant_id'] = $merchant['id'];
-                $where['date'] = substr($startTime, 0, 10);
+        Order::where('status', Order::STATUS_FINISHED)
+            ->whereBetween('pay_time', [$startTime, $endTime])
+            ->chunk(1000, function($orders) use ($date) {
+                foreach ($orders as $order) {
+                    $merchantStatistics = self::getStatisticsByMerchantIdAndDate($order->merchant_id, $date, $order->oper_id);
 
-                $row = [
-                    'oper_id' => $merchant['oper_id'],
-                ];
-                $row = array_merge($row, $where);
-
-                //邀请用户数量
-                $row['invite_user_num'] = InviteUserRecord::where('origin_id', '=', $row['merchant_id'])
-                    ->where('origin_type', '=', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
-                    ->where('created_at', '>=', $startTime)
-                    ->where('created_at', '<=', $endTime)
-                    ->count();
-
-                // 总订单量（已完成）
-                $row['order_finished_num'] = Order::where('merchant_id', '=', $row['merchant_id'])
-                    ->where('pay_time', '>=', $startTime)
-                    ->where('pay_time', '<=', $endTime)
-                    ->where('status', Order::STATUS_FINISHED)
-                    ->count();
-
-                //总订单金额（已完成）
-                $row['order_finished_amount'] = Order::where('merchant_id', '=', $row['merchant_id'])
-                    ->where('pay_time', '>=', $startTime)
-                    ->where('pay_time', '<=', $endTime)
-                    ->where('status', Order::STATUS_FINISHED)
-                    ->sum('pay_price');
-
-                if ($row['invite_user_num'] != 0 || $row['order_finished_num'] != 0 || $row['order_finished_amount'] != 0) {
-                    (new MerchantStatistics)->updateOrCreate($where, $row);
+                    $merchantStatistics->increment('order_finished_amount', $order->pay_price);
+                    $merchantStatistics->increment('order_finished_num', 1);
                 }
-            }
-        });
+            });
+
+        InviteUserRecord::where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
+            ->whereBetween('created_at', [$startTime, $endTime])
+            ->chunk(1000, function ($inviteRecords) use ($date) {
+                 foreach ($inviteRecords as $inviteRecord) {
+                     $merchant = MerchantService::getById($inviteRecord->origin_id);
+                     if (empty($merchant)) {
+                         Log::error('MerchantStatisticsService统计商户邀请人数, 商户为空', [
+                             'inviteRecordId' => $inviteRecord->id,
+                             'inviteRecord' => $inviteRecord,
+                         ]);
+                         continue;
+                     }
+                     $merchantStatistics = self::getStatisticsByMerchantIdAndDate($inviteRecord->origin_id, $date, $merchant->oper_id);
+
+                     $merchantStatistics->increment('invite_user_num', 1);
+                 }
+            });
     }
 
     /**
@@ -110,5 +104,27 @@ class MerchantStatisticsService extends BaseService
             'data' => $data,
             'total' => $total,
         ];
+    }
+
+    /**
+     * 查看是否有某个商户的统计记录， 没有则新建
+     * @param $merchantId
+     * @param $date
+     * @param $operId
+     * @return MerchantStatistics
+     */
+    private static function getStatisticsByMerchantIdAndDate($merchantId, $date, $operId)
+    {
+        $merchantStatistics = MerchantStatistics::where('date', $date)
+            ->where('merchant_id', $merchantId)
+            ->first();
+        if (empty($merchantStatistics)) {
+            $merchantStatistics = new MerchantStatistics();
+            $merchantStatistics->date = $date;
+            $merchantStatistics->merchant_id = $merchantId;
+            $merchantStatistics->oper_id = $operId;
+            $merchantStatistics->save();
+        }
+        return $merchantStatistics;
     }
 }
