@@ -42,7 +42,8 @@ class CurrentOperInjector
         if($appid == config('platform.miniprogram.app_id')){
             // 官方小程序
             $request->attributes->add(['current_oper_id' => 0]);
-        }else if($appid == config('platform.miniprogram.old.app_id')) {
+        }else if($appid == config('platform.miniprogram.old.app_id') && (!strstr(url()->full(),'https://xiaochengxu.niucha.ren'))) {
+            // 如果为测试服，则不跑以下条件，便于调试
             // 旧的官方小程序
             $request->attributes->add(['current_oper_id' => -1]);
         }else {

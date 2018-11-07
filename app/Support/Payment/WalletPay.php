@@ -29,9 +29,9 @@ class WalletPay extends PayBase
     public function buy($order)
     {
         // 判断密码的有效性
-        request()->validate([
+        /*request()->validate([
             'temp_token' => 'required'
-        ]);
+        ]);*/
         $inputToken = request()->get('temp_token');
         $user = request()->get('current_user');
         $tempToken = Cache::get('user_pay_password_modify_temp_token_' . $user->id);

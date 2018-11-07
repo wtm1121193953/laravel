@@ -232,10 +232,10 @@ class OrderController extends Controller
     {
         $this->validate(request(), [
             'dishes_id' => 'required|integer|min:1',
-            'pay_type' => 'integer|min:1',
+//            'pay_type' => 'integer|min:1',
         ]);
         $dishesId = request('dishes_id');
-        $payType = request('pay_type', Payment::ID_WECHAT);
+        $payType = request('pay_type');
 
         $dishes = Dishes::findOrFail($dishesId);
         $userIdByDish = $dishes->user_id;
@@ -289,12 +289,20 @@ class OrderController extends Controller
         $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = request('remark', '');
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
-        $order->pay_type = $payType;
+//        $order->pay_type = $payType;
         $order->settlement_rate = $merchant->settlement_rate;
         $order->origin_app_type = request()->header('app-type');
         $order->bizer_id = $merchant->bizer_id;
         $order->save();
-
+        if(!$payType){
+            return Result::success([
+                'order_no' => $order->order_no,
+                'sdk_config' => null,
+                'order' => $order,
+                'pay_type'  => $order->pay_type,
+                'data'  =>  null
+            ]);
+        }
         return $this->_returnOrder($order);
     }
 
