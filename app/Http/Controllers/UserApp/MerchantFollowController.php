@@ -27,6 +27,9 @@ class MerchantFollowController extends Controller
         if (!$merchantId) {
             throw new BaseResponseException('商户ID不能为空');
         }
+        if (!$operId) {
+            throw new BaseResponseException('运营中心ID不能为空');
+        }
         if (!$status) {
             throw new BaseResponseException('状态不能为空');
         }
