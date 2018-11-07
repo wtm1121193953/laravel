@@ -14,48 +14,35 @@ class UserStatisticsService extends BaseService
      * 用户营销统计
      * @param string $endTime
      */
-    public static function statistics($endTime='')
+    public static function statistics($endTime = '')
     {
         if (empty($endTime)) {
             $endTime = date('Y-m-d H:i:s');
         }
 
-        $startTime = date('Y-m-d', strtotime($endTime));
+        $startTime = date('Y-m-d 00:00:00', strtotime($endTime));
+        $date = date('Y-m-d', $endTime);
 
-        User::query()->chunk(1000, function ($users) use ($startTime, $endTime) {
-            foreach ($users as $user) {
-                $where['user_id'] = $user['id'];
-                $where['date'] = substr($startTime, 0, 10);
+        Order::where('status', Order::STATUS_FINISHED)
+            ->whereBetween('pay_time', [$startTime, $endTime])
+            ->chunk(1000, function($orders) use ($date) {
+                foreach ($orders as $order) {
+                    $userStatistics = self::getStatisticsByUserIdAndDate($order->user_id, $date);
 
-                $row = [];
-                $row = array_merge($row, $where);
-
-                //邀请用户数量
-                $row['invite_user_num'] = InviteUserRecord::where('origin_id', '=', $row['user_id'])
-                    ->where('origin_type', '=', InviteUserRecord::ORIGIN_TYPE_USER)
-                    ->where('created_at', '>=', $startTime)
-                    ->where('created_at', '<=', $endTime)
-                    ->count();
-
-                // 总订单量（已完成）
-                $row['order_finished_num'] = Order::where('user_id', '=', $row['user_id'])
-                    ->where('pay_time', '>=', $startTime)
-                    ->where('pay_time', '<=', $endTime)
-                    ->where('status', Order::STATUS_FINISHED)
-                    ->count();
-
-                //总订单金额（已完成）
-                $row['order_finished_amount'] = Order::where('user_id', '=', $row['user_id'])
-                    ->where('pay_time', '>=', $startTime)
-                    ->where('pay_time', '<=', $endTime)
-                    ->where('status', Order::STATUS_FINISHED)
-                    ->sum('pay_price');
-
-                if ($row['invite_user_num'] != 0 || $row['order_finished_num'] != 0 || $row['order_finished_amount'] != 0) {
-                    (new UserStatistics())->updateOrCreate($where, $row);
+                    $userStatistics->increment('order_finished_amount', $order->pay_price);
+                    $userStatistics->increment('order_finished_num', 1);
                 }
-            }
-        });
+            });
+
+        InviteUserRecord::where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+            ->whereBetween('created_at', [$startTime, $endTime])
+            ->chunk(1000, function ($inviteRecords) use ($date) {
+                foreach ($inviteRecords as $inviteRecord) {
+                    $userStatistics = self::getStatisticsByUserIdAndDate($inviteRecord->origin_id, $date);
+
+                    $userStatistics->increment('invite_user_num', 1);
+                }
+            });
     }
 
     /**
@@ -108,5 +95,25 @@ class UserStatisticsService extends BaseService
             'data' => $data,
             'total' => $total,
         ];
+    }
+
+    /**
+     * 查看是否存在营销的用户统计记录，没有则新建
+     * @param $userId
+     * @param $date
+     * @return UserStatistics
+     */
+    private static function getStatisticsByUserIdAndDate($userId, $date)
+    {
+        $userStatistics = UserStatistics::where('date', $date)
+            ->where('user_id', $userId)
+            ->first();
+        if (empty($userStatistics)) {
+            $userStatistics = new UserStatistics();
+            $userStatistics->date = $date;
+            $userStatistics->user_id = $userId;
+            $userStatistics->save();
+        }
+        return $userStatistics;
     }
 }
