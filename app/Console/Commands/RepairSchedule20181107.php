@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
 use App\Jobs\Schedule\SettlementDaily;
 use App\Jobs\Schedule\SettlementWeekly;
+use App\Jobs\SettlementForMerchant;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -45,6 +46,18 @@ class RepairSchedule20181107 extends Command
         //
 //        SettlementDaily::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-07')->subDay());
 //        PlatformTradeRecordsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-07')->subDay()->endOfDay()->format('Y-m-d H:i:s'));
-        SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY, Carbon::createFromFormat('Y-m-d', '2018-11-07'));
+//        SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY, Carbon::createFromFormat('Y-m-d', '2018-11-07'));
+
+        $date = Carbon::createFromFormat('Y-m-d', '2018-11-07');
+        $start = $date->copy()->subWeek()->endOfWeek();
+        $end = $date->copy()->subWeek()->endOfWeek();
+        Merchant::where('settlement_cycle_type', '<>', 1)
+            ->where('oper_id', '>', 0)
+            ->chunk(100, function($merchants) use ($start, $end){
+                $merchants->each(function ($item) use ($start, $end){
+                    SettlementForMerchant::dispatch($item->id, $start, $end);
+                });
+            });
+
     }
 }
