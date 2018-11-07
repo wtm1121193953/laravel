@@ -169,7 +169,7 @@ class OrderService extends BaseService
             }
             $item->items = OrderItem::where('order_id', $item->id)->get();
             $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
-            $item->pay_type_name = $payments[$item->pay_type]??'';
+            $item->pay_type_name = $payments[$item->pay_type]??'未知('.$item->pay_type.')';
         }
 
         return $data;

@@ -86,7 +86,7 @@ class Test extends Command
     {
 
         SettlementPlatformKuaiQianBatchService::batchQuery();
-        dd('ok');
+        dd('ok1');
 //        SettlementPlatformKuaiQianBatchService::batchSend();
 //
 //        dd('ok');
