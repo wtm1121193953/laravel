@@ -4,10 +4,12 @@ namespace App\Console\Commands;
 
 use App\Jobs\ConsumeQuotaUnfreezeJob;
 use App\Jobs\FeeSplittingUnfreezeJob;
+use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
 use App\Jobs\Schedule\SettlementDaily;
 use App\Jobs\Schedule\SettlementWeekly;
 use App\Jobs\SettlementForMerchant;
+use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use Illuminate\Console\Command;
@@ -63,9 +65,11 @@ class RepairSchedule20181107 extends Command
             });*/
 
 
-        $order = Order::where('order_no', 'O20181107085947617449')->first();
-        FeeSplittingUnfreezeJob::dispatch($order)/*->delay(Carbon::now()->addDay(1))*/;
-        ConsumeQuotaUnfreezeJob::dispatch($order)/*->delay(Carbon::now()->addDay(1))*/;
+//        $order = Order::where('order_no', 'O20181107085947617449')->first();
+//        FeeSplittingUnfreezeJob::dispatch($order)/*->delay(Carbon::now()->addDay(1))*/;
+//        ConsumeQuotaUnfreezeJob::dispatch($order)/*->delay(Carbon::now()->addDay(1))*/;
+
+        InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-07')->subDay());
 
     }
 }
