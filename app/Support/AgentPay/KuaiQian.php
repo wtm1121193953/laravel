@@ -180,7 +180,7 @@ class KuaiQian extends AgentPayBase
             $error_msg = $val->getElementsByTagName('error-msg')->item(0)->nodeValue;
             $settlement_no = $val->getElementsByTagName('merchant-id')->item(0)->nodeValue;
             $status = $val->getElementsByTagName('status')->item(0)->nodeValue;
-            if (!empty($error_code)) {
+            if (!empty($error_code) && $error_code != '0000') {
                 $update = [
                     'status' => SettlementPlatform::STATUS_FAIL,
                     'reason' => $error_code . ':'.$error_msg
