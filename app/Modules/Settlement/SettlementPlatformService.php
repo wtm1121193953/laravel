@@ -275,7 +275,7 @@ class SettlementPlatformService extends BaseService
         $start_date = $query->min('finish_time');
         //如果该商户无订单，跳过结算
         if(empty($start_date)){
-            Log::info('商家当前周无订单，跳过结算', [
+            Log::info('商家上周无订单，跳过结算', [
                 'merchantId' => $merchant->id,
                 'date' => $date,
                 'timestamp' => date('Y-m-d H:i:s')

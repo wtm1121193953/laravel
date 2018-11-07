@@ -42,7 +42,7 @@ class TestPlatformSettlementWeekly extends Command
         //
         $date = $this->argument('date');
         if(empty($date)){
-            $date = date('Y-m-d',strtotime('-7 day'));
+            $date = date('Y-m-d');
         }
         SettlementForPlatformWeekly::dispatch(Carbon::createFromFormat('Y-m-d', $date));
     }
