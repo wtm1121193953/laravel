@@ -85,27 +85,27 @@ class Test extends Command
     public function handle()
     {
 
-        SettlementPlatformKuaiQianBatchService::batchQuery();
-        dd('ok1');
+//        SettlementPlatformKuaiQianBatchService::batchQuery();
+//        dd('ok1');
 //        SettlementPlatformKuaiQianBatchService::batchSend();
 //
 //        dd('ok');
 //        SettlementGenBatch::dispatch();
 //        dd('ok');
-        DataCacheService::delMerchantDetail([29]);
-        dd('hi');
-        $payment =  PaymentService::getDetailById(4);
-        $paymentClassName = '\\App\\Support\\Payment\\'.$payment->class_name;
-        var_dump($paymentClassName);
-        var_dump(class_exists($paymentClassName));
-        /*if(!class_exists($paymentClassName)){
-            throw new BaseResponseException('无法使用该支付方式');
-        }
-        MessageNoticeService::createByRegister('13929492991',80);*/
-        dd(456);
+//        DataCacheService::delMerchantDetail([29]);
+//        dd('hi');
+//        $payment =  PaymentService::getDetailById(4);
+//        $paymentClassName = '\\App\\Support\\Payment\\'.$payment->class_name;
+//        var_dump($paymentClassName);
+//        var_dump(class_exists($paymentClassName));
+//        /*if(!class_exists($paymentClassName)){
+//            throw new BaseResponseException('无法使用该支付方式');
+//        }
+//        MessageNoticeService::createByRegister('13929492991',80);*/
+//        dd(456);
 
         SettlementDaily::dispatch();
-        dd('hi');
+//        dd('hi');
         SettlementForPlatformWeekly::dispatch();
         dd(213);
         PlatformTradeRecordsDailyJob::dispatch();
