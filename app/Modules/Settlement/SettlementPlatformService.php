@@ -440,13 +440,14 @@ class SettlementPlatformService extends BaseService
 
 
     /**
-     * 重新生成批次
-     * @param $settlement_id
+     * 重新打款
+     * @param $settlement_id 结算单ID
      * @return SettlementPlatformKuaiQianBatch
      * @throws \Exception
      */
     public static function genBatchAgain($settlement_id)
     {
+        //重新打款更新商户最新银行卡信息
         $settlement_info = SettlementPlatform::findOrFail($settlement_id);
         $merchant = Merchant::findOrFail($settlement_info->merchant_id);
 
