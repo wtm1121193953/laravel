@@ -382,7 +382,7 @@ class SettlementPlatformService extends BaseService
     public static function autoGenBatch() {
 
         $batch_total = 100; //最多生成的批次数
-        $settlement_total = 1;//一个批次结算单数量
+        $settlement_total = 1000;//一个批次结算单数量
 
         $kuaiqian = new KuaiQian();
         for ($i=1; $i<=$batch_total; $i++) {
@@ -411,6 +411,7 @@ class SettlementPlatformService extends BaseService
                 $data_send = $rs['originalData'];
 
                 $m = new SettlementPlatformKuaiQianBatch();
+                $m->type = SettlementPlatformKuaiQianBatch::TYPE_AUTO;
                 $m->batch_no = $batch_no;
                 $m->settlement_platfrom_ids = implode(',',$settlement_platform_ids);
                 $m->total = count($settlement_platform_ids);
@@ -471,6 +472,7 @@ class SettlementPlatformService extends BaseService
             $data_send = $rs['originalData'];
 
             $m = new SettlementPlatformKuaiQianBatch();
+            $m->type = SettlementPlatformKuaiQianBatch::TYPE_RE_PAY;
             $m->batch_no = $batch_no;
             $m->settlement_platfrom_ids = implode(',',$settlement_platform_ids);
             $m->total = count($settlement_platform_ids);

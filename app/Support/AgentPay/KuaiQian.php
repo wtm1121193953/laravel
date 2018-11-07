@@ -302,9 +302,10 @@ class KuaiQian extends AgentPayBase
      * 生成打款数据
      * @param $settlement_platform 结算单
      * @param $batch_no 批次号
+     * @param bool $again 是否是第二次生成
      * @return bool
      */
-    public function genXmlSend($settlement_platform, $batch_no)
+    public function genXmlSend($settlement_platform, $batch_no, $again = false)
     {
         if (empty($settlement_platform)) {
             return false;
@@ -364,7 +365,7 @@ class KuaiQian extends AgentPayBase
         $rdetail = '';
 
         $settlement_platform_ids = [];//生成结算单的id号
-        $settlement_platform->each(function ($item) use (&$rdetail, &$totalCnt, &$totalAmt,$batchNo, &$settlement_platform_ids) {
+        $settlement_platform->each(function ($item) use (&$rdetail, &$totalCnt, &$totalAmt,$batchNo, &$settlement_platform_ids, $again) {
 
             $sub_bank_name = explode('|',$item->sub_bank_name);
             $bank_open_address = explode('|',$item->bank_open_address);
@@ -389,8 +390,14 @@ class KuaiQian extends AgentPayBase
                 Log::error('结算单地址或者支行信息有误' . $item->settlement_no);
 
             } else {
-                $item->pay_batch_no = $batchNo;
-                $item->status = SettlementPlatform::STATUS_PAYING;
+                if ($again) {
+                    $item->pay_again_batch_no = $batchNo;
+                    $item->status = SettlementPlatform::STATUS_RE_PAY;
+                } else {
+                    $item->pay_batch_no = $batchNo;
+                    $item->status = SettlementPlatform::STATUS_PAYING;
+                }
+
                 $item->save();
 
                 $totalCnt ++;
