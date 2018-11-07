@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
 use App\Jobs\Schedule\SettlementDaily;
+use App\Jobs\Schedule\SettlementWeekly;
+use App\Modules\Merchant\Merchant;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -41,8 +43,8 @@ class RepairSchedule20181107 extends Command
     public function handle()
     {
         //
-        SettlementDaily::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-07')->subDay());
-
-        PlatformTradeRecordsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-07')->subDay()->endOfDay()->format('Y-m-d H:i:s'));
+//        SettlementDaily::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-07')->subDay());
+//        PlatformTradeRecordsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-07')->subDay()->endOfDay()->format('Y-m-d H:i:s'));
+        SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY, Carbon::createFromFormat('Y-m-d', '2018-11-07'));
     }
 }
