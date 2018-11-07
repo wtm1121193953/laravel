@@ -447,6 +447,18 @@ class SettlementPlatformService extends BaseService
      */
     public static function genBatchAgain($settlement_id)
     {
+        $settlement_info = SettlementPlatform::findOrFail($settlement_id);
+        $merchant = Merchant::findOrFail($settlement_info->merchant_id);
+
+        $settlement_info->bank_open_name = $merchant->bank_open_name;
+        $settlement_info->bank_card_no = $merchant->bank_card_no;
+        $settlement_info->bank_card_type = $merchant->bank_card_type;
+        $settlement_info->sub_bank_name = $merchant->bank_name .'|' . $merchant->sub_bank_name;
+        $settlement_info->bank_open_address = $merchant->bank_province . ',' . $merchant->bank_city . ',' . $merchant->bank_area .'|' .$merchant->bank_open_address;
+        $settlement_info->invoice_title = $merchant->invoice_title;
+        $settlement_info->invoice_no = $merchant->invoice_no;
+        $settlement_info->save();
+
         $settlement_platform = SettlementPlatform::where('id',$settlement_id)
             ->where('settlement_cycle_type',SettlementPlatform::SETTLE_MONTHLY) //T+1(自动) 原月结数据
             ->where('real_amount','>',0)
@@ -455,9 +467,9 @@ class SettlementPlatformService extends BaseService
 
         $cnt = $settlement_platform->count();
         if (empty($cnt)) {
-
             throw new ParamInvalidException('结算单信息有误');
         }
+
         $kuaiqian = new KuaiQian();
         DB::beginTransaction();
         try {
