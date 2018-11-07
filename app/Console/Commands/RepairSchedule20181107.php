@@ -63,7 +63,7 @@ class RepairSchedule20181107 extends Command
             });*/
 
 
-        $order = Order::where('order_no', 'O20181107085947617449');
+        $order = Order::where('order_no', 'O20181107085947617449')->first();
         FeeSplittingUnfreezeJob::dispatch($order)/*->delay(Carbon::now()->addDay(1))*/;
         ConsumeQuotaUnfreezeJob::dispatch($order)/*->delay(Carbon::now()->addDay(1))*/;
 
