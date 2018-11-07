@@ -61,8 +61,14 @@ class VersionService extends BaseService
 
         $last_seq = self::getLastVersionSeq($app_type);
         if ($versionSeq <= $last_seq) {
-            throw new ParamInvalidException('版本号必须大于上一个版本号：' . $last_seq);
+            throw new ParamInvalidException('版本序号必须大于上一个版本序号：' . $last_seq);
         }
+
+        $version_no_exist = Version::where('version_no',$versionNo)->where('app_type',$app_type)->first();
+        if ($version_no_exist) {
+            throw new ParamInvalidException('版本号不能重复：' . $versionNo);
+        }
+
         $version = new Version();
         $version->app_name = $app_name;
         $version->app_tag = $app_tag;
