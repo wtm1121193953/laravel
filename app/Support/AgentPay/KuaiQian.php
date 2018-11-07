@@ -182,7 +182,38 @@ class KuaiQian extends AgentPayBase
                 ];
                 SettlementPlatform::where('settlement_no',$settlement_no)
                     ->update($update);
+            } else {
+                switch ($status) {
+                    case 101:
+                        break;
+                    case 111:
+                        $update = [
+                            'status' => SettlementPlatform::STATUS_PAID,
+                        ];
+                        SettlementPlatform::where('settlement_no',$settlement_no)
+                            ->update($update);
+                        break;
+                    case 112:
+                        $update = [
+                            'status' => SettlementPlatform::STATUS_PAID,
+                            'reason' => '打款失败'
+                        ];
+                        SettlementPlatform::where('settlement_no',$settlement_no)
+                            ->update($update);
+                        break;
+                    case 114:
+                        $update = [
+                            'status' => SettlementPlatform::STATUS_PAID,
+                            'reason' => '已退款'
+                        ];
+                        SettlementPlatform::where('settlement_no',$settlement_no)
+                            ->update($update);
+                        break;
+                    default:
+                        break;
+                }
             }
+
         }
     }
 
