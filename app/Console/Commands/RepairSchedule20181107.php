@@ -49,7 +49,7 @@ class RepairSchedule20181107 extends Command
 //        SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY, Carbon::createFromFormat('Y-m-d', '2018-11-07'));
 
         $date = Carbon::createFromFormat('Y-m-d', '2018-11-07');
-        $start = $date->copy()->subWeek()->endOfWeek();
+        $start = $date->copy()->subWeek()->startOfWeek();
         $end = $date->copy()->subWeek()->endOfWeek();
         Merchant::where('settlement_cycle_type', '<>', 1)
             ->where('oper_id', '>', 0)
