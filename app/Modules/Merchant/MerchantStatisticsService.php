@@ -23,7 +23,7 @@ class MerchantStatisticsService extends BaseService
 
         $startTime = date('Y-m-d 00:00:00', strtotime($endTime));
         $endTime = date('Y-m-d 23:59:59', strtotime($endTime));
-        $date = date('Y-m-d', $startTime);
+        $date = date('Y-m-d', strtotime($endTime));
 
         Order::where('status', Order::STATUS_FINISHED)
             ->whereBetween('pay_time', [$startTime, $endTime])
