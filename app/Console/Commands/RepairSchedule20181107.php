@@ -4,7 +4,9 @@ namespace App\Console\Commands;
 
 use App\Jobs\ConsumeQuotaUnfreezeJob;
 use App\Jobs\FeeSplittingUnfreezeJob;
+use App\Jobs\Schedule\AutoDownGoodsJob;
 use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
+use App\Jobs\Schedule\OperStatisticsDailyJob;
 use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
 use App\Jobs\Schedule\SettlementDaily;
 use App\Jobs\Schedule\SettlementWeekly;
@@ -49,8 +51,11 @@ class RepairSchedule20181107 extends Command
     public function handle()
     {
         //
-//        SettlementDaily::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-07')->subDay());
-//        PlatformTradeRecordsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-07')->subDay()->endOfDay()->format('Y-m-d H:i:s'));
+        SettlementDaily::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay());
+        PlatformTradeRecordsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay()->endOfDay()->format('Y-m-d H:i:s'));
+        InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay());
+        OperStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay()->endOfDay()->format('Y-m-d H:i:s'));
+        AutoDownGoodsJob::dispatch();
 //        SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY, Carbon::createFromFormat('Y-m-d', '2018-11-07'));
 
         /*$date = Carbon::createFromFormat('Y-m-d', '2018-11-07');
@@ -69,7 +74,7 @@ class RepairSchedule20181107 extends Command
 //        FeeSplittingUnfreezeJob::dispatch($order)/*->delay(Carbon::now()->addDay(1))*/;
 //        ConsumeQuotaUnfreezeJob::dispatch($order)/*->delay(Carbon::now()->addDay(1))*/;
 
-        InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-07')->subDay());
+//        InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-07')->subDay());
 
     }
 }
