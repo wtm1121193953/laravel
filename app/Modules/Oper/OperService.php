@@ -158,6 +158,7 @@ class OperService extends BaseService
     {
         $oper = new Oper();
         $oper->name = request('name');
+        $oper->number = request('number','');
         $oper->status = request('status', 1);
         $oper->contacter = request('contacter', '');
         $oper->tel = request('tel', '');
@@ -198,6 +199,7 @@ class OperService extends BaseService
             throw new DataNotFoundException('运营中心信息不存在');
         }
         $oper->name = request('name');
+        $oper->number = request('number','');
         $oper->status = request('status', 1);
         $oper->contacter = request('contacter', '');
         $oper->tel = request('tel', '');

@@ -5,6 +5,9 @@
                 <el-form-item prop="name" label="运营中心名称">
                     <el-input v-model="form.name"/>
                 </el-form-item>
+                <el-form-item prop="number" label="运营中心编号">
+                    <el-input v-model="form.number"/>
+                </el-form-item>
                 <el-form-item prop="contacter" label="负责人">
                     <el-input v-model="form.contacter" placeholder=""/>
                 </el-form-item>
@@ -94,6 +97,7 @@
 <script>
     let defaultForm = {
         name: '',
+        number:'',
         status: 1,
         contacter: '',
         tel: '',
@@ -149,6 +153,9 @@
                     name: [
                         {required: true, message: '名称不能为空'},
                         {max: 50, message: '运营中心名称不能超过50个字'},
+                    ],
+                    number: [
+                        {max: 20, message: '运营中心名称不能超过20个字'},
                     ],
                     selectAreas: [
                         {required: true, type: 'array', message: '地区不能为空' }
