@@ -8,6 +8,7 @@ use App\Jobs\Schedule\OrderAutoFinished;
 use App\Jobs\Schedule\OrderExpired;
 use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
 use App\Jobs\Schedule\SettlementDaily;
+use App\Jobs\Schedule\SettlementForPlatformWeekly;
 use App\Jobs\Schedule\SettlementWeekly;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Console\Scheduling\Schedule;
@@ -46,6 +47,8 @@ class Kernel extends ConsoleKernel
         // 周结, 旧结算逻辑, 支付到运营中心的订单结算
         $schedule->job(new SettlementWeekly(Merchant::SETTLE_WEEKLY))
             ->weeklyOn(1);
+        //周结, 新结算逻辑, 支付到平台的订单结算
+        $schedule->job( new SettlementForPlatformWeekly() )->weeklyOn(1);
         // T+1结算统计 Author：Jerry Date：180824
         $schedule->job( new SettlementDaily() )->daily();
         // T+1结算分账任务， 生成的结算单每天8点自动打款

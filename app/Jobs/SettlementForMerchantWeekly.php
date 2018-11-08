@@ -58,7 +58,7 @@ class SettlementForMerchantWeekly implements ShouldQueue
         try {
             SettlementPlatformService::settlementWeekly($merchant, $this->date);
         }catch (\Exception $e){
-            Log::error('该商家每月结算错误, 错误原因:' . $e->getMessage(), [
+            Log::error('该商家上周结算错误, 错误原因:' . $e->getMessage(), [
                 'merchantId' => $this->merchantId,
                 'date' => $this->date,
                 'timestamp' => date('Y-m-d H:i:s'),

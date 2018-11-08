@@ -46,7 +46,7 @@ class SettlementForPlatformWeekly implements ShouldQueue
     public function handle()
     {
         //计算上周要结算的任务
-        Log::info('开始执行每月结算任务');
+        Log::info('开始执行每周结算任务');
         $date   = $this->date;
         // 获取运营中心支付到平台(平台参与分成) 商家
         Merchant::where('settlement_cycle_type',Merchant::SETTLE_WEEKLY)

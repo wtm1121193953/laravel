@@ -275,7 +275,7 @@ class SettlementPlatformService extends BaseService
         $start_date = $query->min('finish_time');
         //如果该商户无订单，跳过结算
         if(empty($start_date)){
-            Log::info('商家当前周无订单，跳过结算', [
+            Log::info('商家上周无订单，跳过结算', [
                 'merchantId' => $merchant->id,
                 'date' => $date,
                 'timestamp' => date('Y-m-d H:i:s')
@@ -449,6 +449,9 @@ class SettlementPlatformService extends BaseService
     {
         //重新打款更新商户最新银行卡信息
         $settlement_info = SettlementPlatform::findOrFail($settlement_id);
+        if ($settlement_info->status!= SettlementPlatform::STATUS_FAIL) {
+            throw new ParamInvalidException('只有打款失败的结算单可以重新打款');
+        }
         $merchant = Merchant::findOrFail($settlement_info->merchant_id);
 
         $settlement_info->bank_open_name = $merchant->bank_open_name;
@@ -476,7 +479,7 @@ class SettlementPlatformService extends BaseService
         try {
             $batch_no = SettlementPlatformKuaiQianBatchService::genBatchNo();
 
-            $rs = $kuaiqian->genXmlSend($settlement_platform, $batch_no);
+            $rs = $kuaiqian->genXmlSend($settlement_platform, $batch_no, true);
             if (empty($rs) || empty($rs['settlement_platform_ids'])) {
                 throw new ParamInvalidException('生成报文错误');
             }
