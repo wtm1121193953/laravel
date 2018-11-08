@@ -205,7 +205,10 @@ class OrderService extends BaseService
     {
         $data = Order::where('settlement_id', $settlementId)
             ->where('pay_target_type', $payTargetType)
-            ->orderBy('id', 'desc')->paginate();
+            ->with('merchant:id,name')
+            ->with('oper:id,name')
+            ->orderBy('id', 'desc')
+            ->paginate();
         return $data;
     }
 

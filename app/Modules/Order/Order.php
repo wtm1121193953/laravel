@@ -4,6 +4,7 @@ namespace App\Modules\Order;
 
 use App\BaseModel;
 use App\Exceptions\BaseResponseException;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use Carbon\Carbon;
@@ -182,5 +183,10 @@ class Order extends BaseModel
     public function oper()
     {
         return $this->belongsTo(Oper::class);
+    }
+
+    public function merchant()
+    {
+        return $this->belongsTo(Merchant::class);
     }
 }
