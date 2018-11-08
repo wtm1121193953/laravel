@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Modules\Message\MessageSystem;
 use App\Modules\Message\MessageSystemService;
+use App\Modules\Message\MessageSystemUserBehaviorRecord;
+use App\Modules\Message\MessageSystemUserBehaviorRecordService;
 use App\Result;
 use App\ResultCode;
 use Illuminate\Http\Request;
@@ -47,8 +49,19 @@ class MessageSystemController extends Controller
         }
 
         $data = MessageSystemService::getList($params);
+        $list = $data->items();
+        if(strpos($uri,'user')){
+            // 处理是否已读已阅
+            $records = MessageSystemUserBehaviorRecordService::getRecordByUserId($request->get('current_user')->id);
+            $isViewIds = empty($records->is_view) ? '' : json_decode($records->is_view);
+            $isReadIds = empty($records->is_read) ? '' : json_decode($records->is_read);
+            foreach ($list as $k => $v){
+                $list[$k]['is_view'] = (!empty($isViewIds) && in_array($v['id'],$isViewIds)) ? MessageSystemUserBehaviorRecord::IS_VIEW_VIEWED : MessageSystemUserBehaviorRecord::IS_VIEW_NORMAL;
+                $list[$k]['is_read'] = (!empty($isReadIds) && in_array($v['id'],$isReadIds)) ? MessageSystemUserBehaviorRecord::IS_READ_READED : MessageSystemUserBehaviorRecord::IS_READ_NORMAL;
+            }
+        }
         return Result::success([
-            'list' => $data->items(),
+            'list' => $list,
             'total' => $data->total(),
         ]);
     }

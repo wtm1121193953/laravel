@@ -75,5 +75,11 @@ class MessageNoticeService extends BaseService
         $messageNotice->save();
         return $messageNotice;
     }
+    public static function getRedDotCountsByUserId($userId)
+    {
+        return MessageNotice::where('user_id',$userId)
+            ->where('is_view',MessageNotice::IS_VIEW_NORMAL)
+            ->count();
+    }
 
 }
