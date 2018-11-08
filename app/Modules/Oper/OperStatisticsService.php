@@ -68,90 +68,16 @@ class OperStatisticsService extends BaseService
      * 运营中心单日运营数据统计
      * @param string $endTime
      */
-    public static function statistics($endTime='')
+    public static function statistics($endTime = '')
     {
         if (empty($endTime)) {
             $endTime = date('Y-m-d H:i:s');
         }
 
-        $startTime = date('Y-m-d', strtotime($endTime));
-
-        OperService::allNormalOpers(true)->chunk(1000, function ($opers) use ($startTime, $endTime) {
-            foreach ($opers as $o) {
-                $where['oper_id'] = $o['id'];
-                $where['date'] = substr($startTime,0,10);
-
-                $row = [];
-                $row = array_merge($row,$where);
-
-                //商户数量（正式）
-                $row['merchant_num'] = Merchant::where('oper_id','=',$row['oper_id'])
-                    ->where('first_active_time','>=',$startTime)
-                    ->where('first_active_time','<=',$endTime)
-                    ->where('is_pilot', Merchant::NORMAL_MERCHANT)
-                    ->where('audit_status','=',Merchant::AUDIT_STATUS_SUCCESS)
-                    ->count();
-
-                //试点商户数量
-                $row['merchant_pilot_num'] = Merchant::where('oper_id','=',$row['oper_id'])
-                    ->where('first_active_time','>=',$startTime)
-                    ->where('first_active_time','<=',$endTime)
-                    ->where('is_pilot', Merchant::PILOT_MERCHANT)
-                    ->where('audit_status','=',Merchant::AUDIT_STATUS_SUCCESS)
-                    ->count();
-
-                //商户总数量
-                $row['merchant_total_num'] = Merchant::where('oper_id','=',$row['oper_id'])
-                    ->where('first_active_time','>=',$startTime)
-                    ->where('first_active_time','<=',$endTime)
-                    ->where('audit_status','=',Merchant::AUDIT_STATUS_SUCCESS)
-                    ->count();
-
-                //邀请用户数量
-                $row['user_num'] = InviteUserRecord::where('origin_id','=',$row['oper_id'])
-                    ->where('origin_type','=',InviteUserRecord::ORIGIN_TYPE_OPER)
-                    ->where('created_at','>=',$startTime)
-                    ->where('created_at','<=',$endTime)
-                    ->count();
-
-                //运营中心的商户邀请的会员数量
-                $row['merchant_invite_num'] = MerchantStatistics::where('oper_id', $row['oper_id'])
-                    ->where('date', '>=', $startTime)
-                    ->where('date', '<=', $endTime)
-                    ->sum('invite_user_num');
-
-                //运营中心及商户共邀请会员数
-                $row['oper_and_merchant_invite_num'] = $row['user_num'] + $row['merchant_invite_num'];
-
-                // 总订单量（已完成）
-                $row['order_paid_num'] = Order::where('oper_id','=',$row['oper_id'])
-                    ->where('pay_time','>=',$startTime)
-                    ->where('pay_time','<=',$endTime)
-                    ->where('status', Order::STATUS_FINISHED)
-                    ->count();
-
-                //总退款量
-                $row['order_refund_num'] = Order::where('oper_id','=',$row['oper_id'])
-                    ->where('refund_time','>=',$startTime)
-                    ->where('refund_time','<=',$endTime)
-                    ->where('status','=',Order::STATUS_REFUNDED)
-                    ->count();
-
-                //总订单金额（已完成）
-                $row['order_paid_amount'] = Order::where('oper_id','=',$row['oper_id'])
-                    ->where('pay_time','>=',$startTime)
-                    ->where('pay_time','<=',$endTime)
-                    ->where('status', Order::STATUS_FINISHED)
-                    ->sum('pay_price');
-
-                //总退款金额
-                $row['order_refund_amount'] = Order::where('oper_id','=',$row['oper_id'])
-                    ->where('refund_time','>=',$startTime)
-                    ->where('refund_time','<=',$endTime)
-                    ->where('status','=',Order::STATUS_REFUNDED)
-                    ->sum('pay_price');
-
-                (new OperStatistics)->updateOrCreate($where, $row);
+        OperService::allNormalOpers(true)
+            ->chunk(1000, function ($opers) use ($endTime) {
+            foreach ($opers as $oper) {
+                self::updateStatistics($oper->id, $endTime);
             }
         });
     }
@@ -170,5 +96,117 @@ class OperStatisticsService extends BaseService
             $operStatistics->increment('merchant_num');
             $operStatistics->decrement('merchant_pilot_num');
         }
+    }
+
+    /**
+     * 更新运营中心的 营销统计
+     * @param $operId
+     * @param $date
+     */
+    public static function updateStatistics($operId, $date)
+    {
+        $startTime = date('Y-m-d 00:00:00', strtotime($date));
+        $endTime = date('Y-m-d 23:59:59', strtotime($date));
+        $date = date('Y-m-d', strtotime($date));
+
+        if ($date > date('Y-m-d', time())) return;
+
+        $merchantNum = 0;
+        $merchantPilotNum = 0;
+        $merchantTotalNum = 0;
+        Merchant::where('oper_id', $operId)
+            ->whereBetween('first_active_time', [$startTime, $endTime])
+            ->where('audit_status',Merchant::AUDIT_STATUS_SUCCESS)
+            ->chunk(1000, function ($merchants) use (&$merchantNum, &$merchantPilotNum, &$merchantTotalNum) {
+                foreach ($merchants as $merchant) {
+                    if ($merchant->is_pilot == Merchant::NORMAL_MERCHANT) {
+                        $merchantNum += 1;
+                    } else {
+                        $merchantPilotNum += 1;
+                    }
+                    $merchantTotalNum += 1;
+                }
+            });
+
+        $userNum = InviteUserRecord::where('origin_id', $operId)
+            ->where('origin_type',InviteUserRecord::ORIGIN_TYPE_OPER)
+            ->whereBetween('created_at', [$startTime, $endTime])
+            ->count();
+        $merchantInviteNum = MerchantStatistics::where('oper_id', $operId)
+            ->where('date',  $date)
+            ->sum('invite_user_num');
+        $operAndMerchantInviteNum = $userNum + $merchantInviteNum;
+
+        $orderPaidNum = 0;
+        $orderRefundNum = 0;
+        $orderPaidAmount = 0;
+        $orderRefundAmount = 0;
+        Order::where('oper_id',$operId)
+            ->chunk(1000, function ($orders) use (&$orderPaidNum, &$orderRefundNum, &$orderPaidAmount, &$orderRefundAmount, $startTime, $endTime) {
+                foreach ($orders as $order) {
+                    if ($order->status == Order::STATUS_FINISHED && $order->pay_time >= $startTime && $order->pay_time <= $endTime) {
+                        $orderPaidNum += 1;
+                        $orderPaidAmount += $order->pay_price;
+                    }
+                    if ($order->status == Order::STATUS_REFUNDED && $order->refund_time >= $startTime && $order->refund_time <= $endTime) {
+                        $orderRefundNum += 1;
+                        $orderRefundAmount += $order->refund_price;
+                    }
+                }
+            });
+
+        $where['oper_id'] = $operId;
+        $where['date'] = $date;
+
+        $row = [
+            'merchant_num' => $merchantNum,
+            'merchant_pilot_num' => $merchantPilotNum,
+            'merchant_total_num' => $merchantTotalNum,
+            'user_num' => $userNum,
+            'merchant_invite_num' => $merchantInviteNum,
+            'oper_and_merchant_invite_num' => $operAndMerchantInviteNum,
+            'order_paid_num' => $orderPaidNum,
+            'order_refund_num' => $orderRefundNum,
+            'order_paid_amount' => $orderPaidAmount,
+            'order_refund_amount' => $orderRefundAmount,
+        ];
+        $row = array_merge($row,$where);
+
+        (new OperStatistics)->updateOrCreate($where, $row);
+    }
+
+    /**
+     * 更新运营中心营销统计 的 邀请相关的数据
+     * @param $operId
+     * @param $date
+     */
+    public static function updateStatisticsInviteInfo($operId, $date)
+    {
+        $startTime = date('Y-m-d 00:00:00', strtotime($date));
+        $endTime = date('Y-m-d 23:59:59', strtotime($date));
+        $date = date('Y-m-d', $date);
+
+        if ($date >= date('Y-m-d', time())) return;
+
+        $userNum = InviteUserRecord::where('origin_id', $operId)
+            ->where('origin_type',InviteUserRecord::ORIGIN_TYPE_OPER)
+            ->whereBetween('created_at', [$startTime, $endTime])
+            ->count();
+        $merchantInviteNum = MerchantStatistics::where('oper_id', $operId)
+            ->where('date',  $date)
+            ->sum('invite_user_num');
+        $operAndMerchantInviteNum = $userNum + $merchantInviteNum;
+
+        $where['oper_id'] = $operId;
+        $where['date'] = $date;
+
+        $row = [
+            'user_num' => $userNum,
+            'merchant_invite_num' => $merchantInviteNum,
+            'oper_and_merchant_invite_num' => $operAndMerchantInviteNum,
+        ];
+        $row = array_merge($row,$where);
+
+        (new OperStatistics)->updateOrCreate($where, $row);
     }
 }

@@ -22,6 +22,7 @@ class MerchantStatisticsService extends BaseService
         }
 
         $startTime = date('Y-m-d 00:00:00', strtotime($endTime));
+        $endTime = date('Y-m-d 23:59:59', strtotime($endTime));
         $date = date('Y-m-d', $startTime);
 
         Order::where('status', Order::STATUS_FINISHED)
@@ -125,6 +126,40 @@ class MerchantStatisticsService extends BaseService
             $merchantStatistics->oper_id = $operId;
             $merchantStatistics->save();
         }
+        return $merchantStatistics;
+    }
+
+    /**
+     * 更新商户营销统计 的 邀请会员数量
+     * @param $merchantId
+     * @param $date
+     * @return MerchantStatistics
+     */
+    public static function updateStatisticsInviteInfo($merchantId, $date)
+    {
+        $startTime = date('Y-m-d 00:00:00', strtotime($date));
+        $endTime = date('Y-m-d 23:59:59', strtotime($date));
+        $date = date('Y-m-d', $date);
+
+        if ($date >= date('Y-m-d', time())) return;
+
+        $inviteUserRecordCount = InviteUserRecord::where('origin_id', $merchantId)
+            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
+            ->whereBetween('created_at', [$startTime, $endTime])
+            ->count();
+
+        $merchant = MerchantService::getById($merchantId);
+        if (empty($merchant)) {
+            Log::error('MerchantStatisticsService更新商户邀请人数, 商户为空', [
+                'merchantId' => $merchantId,
+                'date' => $date,
+            ]);
+            return;
+        }
+        $merchantStatistics = self::getStatisticsByMerchantIdAndDate($merchantId, $date, $merchant->oper_id);
+        $merchantStatistics->invite_user_num = $inviteUserRecordCount;
+        $merchantStatistics->save();
+
         return $merchantStatistics;
     }
 }

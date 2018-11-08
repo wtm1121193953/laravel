@@ -2,7 +2,6 @@
 
 namespace App\Jobs\Schedule;
 
-use App\Modules\Merchant\MerchantStatistics;
 use App\Modules\Merchant\MerchantStatisticsService;
 use App\Modules\Oper\OperStatisticsService;
 use App\Modules\User\UserStatisticsService;
@@ -30,9 +29,8 @@ class OperAndMerchantAndUserStatisticsDailyJob implements ShouldQueue
      * Create a new job instance.
      * @param string $endTime
      */
-    public function __construct($endTime='')
+    public function __construct($endTime = '')
     {
-        //
         if (empty($endTime)) {
             $endTime = date('Y-m-d H:i:s');
         }
