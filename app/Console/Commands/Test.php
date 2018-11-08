@@ -84,6 +84,17 @@ class Test extends Command
      */
     public function handle()
     {
+        $i = 1;
+        while (1) {
+            $endTime = date('Y-m-d', strtotime("-{$i} day")) . ' 23:59:59';
+            $this->info($endTime);
+            OperAndMerchantAndUserStatisticsDailyJob::dispatch($endTime);
+            if (date('Y-m-d', strtotime("-{$i} day")) <= '2018-04-17') {
+                break;
+            }
+            $i++;
+        }
+        return;
 
 //        SettlementPlatformKuaiQianBatchService::batchQuery();
 //        dd('ok1');
