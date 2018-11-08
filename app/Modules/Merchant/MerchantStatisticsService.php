@@ -139,7 +139,7 @@ class MerchantStatisticsService extends BaseService
     {
         $startTime = date('Y-m-d 00:00:00', strtotime($date));
         $endTime = date('Y-m-d 23:59:59', strtotime($date));
-        $date = date('Y-m-d', $date);
+        $date = date('Y-m-d', strtotime($date));
 
         if ($date >= date('Y-m-d', time())) return;
 
