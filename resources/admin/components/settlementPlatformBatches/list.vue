@@ -4,7 +4,7 @@
 
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="create_date" label="日期" />
-            <el-table-column prop="batch_no" label="批次号"  width="160px" />
+            <el-table-column prop="batch_no" label="批次号"  />
             <el-table-column prop="amount" label="需代付总金额"  width="160px" />
             <el-table-column prop="status" label="确认自动打款">
                 <template slot-scope="scope">
