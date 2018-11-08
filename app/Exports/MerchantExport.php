@@ -132,7 +132,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             $data->city . ' ' . $data->area,
             Merchant::getMerchantStatusText($data->audit_status,$data->status),
             ['待审核', '审核通过', '审核不通过', '重新提交审核'][$data->audit_status],
-            //$this->isPilot ? '' : ['', '周结', '半月结', '月结', '半年结', '年结', 'T+1', '未知'][$data->settlement_cycle_type],
+            $this->isPilot ? '' : ['', '周结', '半月结', '月结(自动)', '半年结', '年结', 'T+1(人工)', '未知'][$data->settlement_cycle_type],
         ];
     }
 
@@ -188,7 +188,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             '城市',
             '商户状态',
             '审核状态',
-            //$this->isPilot ? '' : '结算周期',
+            $this->isPilot ? '' : '结算周期',
         ];
     }
 }
