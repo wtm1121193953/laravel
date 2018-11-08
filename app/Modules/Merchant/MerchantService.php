@@ -1,13 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 57458
- * Date: 2018/7/16
- * Time: 15:49
- */
-
 namespace App\Modules\Merchant;
-
 
 use App\BaseService;
 use App\DataCacheService;
@@ -18,22 +10,17 @@ use App\Modules\Country\CountryService;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Goods\Goods;
 use App\Modules\Oper\Oper;
-use App\Modules\Oper\OperBizer;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperBizMember;
 use App\Modules\Oper\OperStatisticsService;
-use App\Result;
 use App\Support\Lbs;
 use App\Support\Utils;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use App\Modules\Area\Area;
 use Illuminate\Support\Collection;
-use App\Modules\Setting\SettingService;
 use App\Modules\Goods\GoodsService;
-
 use App\Modules\Oper\MyOperBizer;
-
 
 class MerchantService extends BaseService
 {

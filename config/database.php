@@ -41,10 +41,10 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'read' => [
+            'write' => [
                 'host' => [env('DB_HOST', '127.0.0.1')],
             ],
-            'write' => [
+            'read' => [
                 'host' => [env('DB_HOST_READONLY', '127.0.0.1')],
             ],
             'sticky'    => true,

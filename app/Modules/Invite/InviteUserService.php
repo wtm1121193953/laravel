@@ -6,6 +6,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Jobs\InviteStatisticsDailyUpdateByOriginInfoAndDate;
 use App\Jobs\MerchantLevelComputeJob;
+use App\Jobs\UpdateMarketingStatisticsInviteInfo;
 use App\Modules\Admin\AdminUser;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
@@ -210,7 +211,9 @@ class InviteUserService
             foreach ($needStatisticsDate as $date) {
                 InviteStatisticsDailyUpdateByOriginInfoAndDate::dispatch($newInviteChannel->origin_id, $newInviteChannel->origin_type, Carbon::createFromFormat('Y-m-d', $date));
                 InviteStatisticsDailyUpdateByOriginInfoAndDate::dispatch($oldInviteChannel->origin_id, $oldInviteChannel->origin_type, Carbon::createFromFormat('Y-m-d', $date));
-                // todo 换绑统计
+                // 换绑后 营销统计更新
+                UpdateMarketingStatisticsInviteInfo::dispatch($newInviteChannel->origin_id, $newInviteChannel->origin_type, $date);
+                UpdateMarketingStatisticsInviteInfo::dispatch($oldInviteChannel->origin_id, $oldInviteChannel->origin_type, $date);
             }
         }
 

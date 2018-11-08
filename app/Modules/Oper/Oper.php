@@ -9,6 +9,7 @@ use App\BaseModel;
  * @package App\Modules\Oper
  *
  * @property string name
+ * @property string number
  * @property string tel
  * @property string province
  * @property string city

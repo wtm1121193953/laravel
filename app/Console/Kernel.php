@@ -54,8 +54,6 @@ class Kernel extends ConsoleKernel
         // T+1结算分账任务， 生成的结算单每天8点自动打款
         // 运营中心营销当日统计
         $schedule->job( new OperAndMerchantAndUserStatisticsDailyJob((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s')))->daily();
-        // 运营中心当日数据更新统计 (每30分钟执行)
-        $schedule->job( new OperAndMerchantAndUserStatisticsDailyJob(Carbon::now()->endOfDay()->format('Y-m-d H:i:s')))->everyThirtyMinutes();
         //$schedule->job(new SettlementAgentPayDaily())->dailyAt('08:00');
         /**团购商品过期自动下架*/
         $schedule->job(AutoDownGoodsJob::class)->daily();

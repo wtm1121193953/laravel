@@ -6,7 +6,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exports\UserExport;
 use App\Exports\UserIdentityExport;
 use App\Http\Controllers\Controller;
-use App\Modules\Country\CountryService;
+use App\Jobs\UpdateMarketingStatisticsInviteInfo;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteStatisticsService;
@@ -179,7 +179,6 @@ class UsersController extends Controller
         $id = request('id');
 
         $info = UserService::identityDetail($id);
-        $info->countryName = CountryService::getNameZhById($info->country_id);
 
         if (empty($info->user)) {
             throw new BaseResponseException("用户数据异常", ResultCode::UNKNOWN);
@@ -216,6 +215,8 @@ class UsersController extends Controller
                 InviteUserService::unbindInviter($record);
 
                 InviteStatisticsService::updateDailyStatByOriginInfoAndDate($record->origin_id, $record->origin_type, Carbon::createFromFormat('Y-m-d', $record->created_at->format('Y-m-d')));
+
+                UpdateMarketingStatisticsInviteInfo::dispatch($record->origin_id, $record->origin_type, $record->created_at);
 
                 DB::commit();
 

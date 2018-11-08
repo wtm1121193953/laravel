@@ -21,6 +21,7 @@ class UserStatisticsService extends BaseService
         }
 
         $startTime = date('Y-m-d 00:00:00', strtotime($endTime));
+        $endTime = date('Y-m-d 23:59:59', strtotime($endTime));
         $date = date('Y-m-d', $endTime);
 
         Order::where('status', Order::STATUS_FINISHED)
@@ -114,6 +115,32 @@ class UserStatisticsService extends BaseService
             $userStatistics->user_id = $userId;
             $userStatistics->save();
         }
+        return $userStatistics;
+    }
+
+    /**
+     * 更新用户营销统计 的 邀请会员数量
+     * @param $userId
+     * @param $date
+     * @return UserStatistics
+     */
+    public static function updateStatisticsInviteInfo($userId, $date)
+    {
+        $startTime = date('Y-m-d 00:00:00', strtotime($date));
+        $endTime = date('Y-m-d 23:59:59', strtotime($date));
+        $date = date('Y-m-d', $date);
+
+        if ($date >= date('Y-m-d', time())) return;
+
+        $inviteUserRecordCount = InviteUserRecord::where('origin_id', $userId)
+            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+            ->whereBetween('created_at', [$startTime, $endTime])
+            ->count();
+
+        $userStatistics = self::getStatisticsByUserIdAndDate($userId, $date);
+        $userStatistics->invite_user_num = $inviteUserRecordCount;
+        $userStatistics->save();
+
         return $userStatistics;
     }
 }
