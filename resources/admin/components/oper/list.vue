@@ -31,7 +31,7 @@
         <el-table :data="list" stripe v-loading="isLoading">
             <el-table-column prop="id" label="ID" width="100px"/>
             <el-table-column prop="name" label="运营中心名称" width="300px"/>
-            <el-table-column prop="number" label="运营中心编号" />
+            <el-table-column prop="number" label="运营中心编码" />
             <el-table-column prop="contacter" label="负责人" />
             <el-table-column prop="tel" label="手机号码" />
             <el-table-column prop="status" label="合作状态">

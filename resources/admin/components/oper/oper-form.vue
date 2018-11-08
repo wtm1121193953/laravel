@@ -5,7 +5,7 @@
                 <el-form-item prop="name" label="运营中心名称">
                     <el-input v-model="form.name"/>
                 </el-form-item>
-                <el-form-item prop="number" label="运营中心编号">
+                <el-form-item prop="number" label="运营中心编码">
                     <el-input v-model="form.number"/>
                 </el-form-item>
                 <el-form-item prop="contacter" label="负责人">
@@ -155,7 +155,7 @@
                         {max: 50, message: '运营中心名称不能超过50个字'},
                     ],
                     number: [
-                        {max: 20, message: '运营中心名称不能超过20个字'},
+                        {max: 20, message: '运营中心编码不能超过20个字'},
                     ],
                     selectAreas: [
                         {required: true, type: 'array', message: '地区不能为空' }

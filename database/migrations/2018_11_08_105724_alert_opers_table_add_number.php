@@ -15,7 +15,7 @@ class AlertOpersTableAddNumber extends Migration
     {
         //
         Schema::table('opers', function (Blueprint $table) {
-            $table->string('number',30)->default('')->comment('运营中心编号')->after('name');
+            $table->string('number',30)->default('')->comment('运营中心编码')->after('name');
         });
     }
 
