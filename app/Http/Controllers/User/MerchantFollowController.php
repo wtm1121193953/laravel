@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\User;
 
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantFollowService;
 use App\Modules\Merchant\MerchantService;
@@ -20,12 +21,26 @@ class MerchantFollowController extends Controller
     public function modifyFollowStatus()
     {
         $user = request()->get('current_user');
+        $merchantId = request('merchant_id');
+        $operId = request('oper_id');
+        $status = request('status');
 
         $data = MerchantFollowService::modifyFollows([
-            'status' => request('status'), //1-未关注，2-已关注
+            'status' => $status, //1-未关注，2-已关注
             'user_id' => $user->id,
-            'merchant_id' => request('merchant_id')
+            'merchant_id' => $merchantId,
+            'oper_id' => $operId,
         ]);
+
+        if (!$merchantId) {
+            throw new BaseResponseException('商户ID不能为空');
+        }
+        if (!$operId) {
+            throw new BaseResponseException('运营中心ID不能为空');
+        }
+        if (!$status) {
+            throw new BaseResponseException('状态不能为空');
+        }
 
         return Result::success([
             'data' => $data
