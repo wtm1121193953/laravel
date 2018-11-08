@@ -249,6 +249,12 @@ class UsersController extends Controller
         $originIds = [];
         if ($mobile) {
             $originIds = UserService::getUserColumnArrayByMobile($mobile, 'id');
+            if ($originIds->isEmpty()) {
+                return Result::success([
+                    'list' => [],
+                    'total' => 0,
+                ]);
+            }
             $originType = InviteChannel::ORIGIN_TYPE_USER;
         }
 
