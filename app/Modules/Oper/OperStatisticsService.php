@@ -71,7 +71,7 @@ class OperStatisticsService extends BaseService
     public static function statistics($endTime = '')
     {
         if (empty($endTime)) {
-            $endTime = date('Y-m-d H:i:s');
+            $endTime = date('Y-m-d 23:59:59', strtotime('-1 day'));
         }
 
         OperService::allNormalOpers(true)
@@ -109,7 +109,7 @@ class OperStatisticsService extends BaseService
         $endTime = date('Y-m-d 23:59:59', strtotime($date));
         $date = date('Y-m-d', strtotime($date));
 
-        if ($date > date('Y-m-d', time())) return;
+        if ($date >= date('Y-m-d', time())) return;
 
         $merchantNum = 0;
         $merchantPilotNum = 0;
