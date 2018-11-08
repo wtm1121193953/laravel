@@ -69,4 +69,13 @@ class MessageSystemService extends BaseService
         }
         return $system;
     }
+
+    public static function getRedDotCountsByUserId($userId)
+    {
+        $record = MessageSystemUserBehaviorRecordService::getRecordByUserId($userId);
+        $notInIds = empty($record->is_view) ? [] : json_decode($record->is_view);
+        return MessageSystem::where('object_type',MessageSystem::OB_TYPE_USER)
+                    ->whereNotIn('id',$notInIds)
+                    ->count();
+    }
 }

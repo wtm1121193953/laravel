@@ -17,12 +17,14 @@ class UserStatisticsService extends BaseService
     public static function statistics($endTime = '')
     {
         if (empty($endTime)) {
-            $endTime = date('Y-m-d H:i:s');
+            $endTime = date('Y-m-d 23:59:59', strtotime('-1 day'));
         }
 
         $startTime = date('Y-m-d 00:00:00', strtotime($endTime));
         $endTime = date('Y-m-d 23:59:59', strtotime($endTime));
         $date = date('Y-m-d', strtotime($endTime));
+
+        if ($date >= date('Y-m-d', time())) return;
 
         Order::where('status', Order::STATUS_FINISHED)
             ->whereBetween('pay_time', [$startTime, $endTime])

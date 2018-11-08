@@ -511,6 +511,8 @@ class SettlementPlatformService extends BaseService
             ]);
             throw $e;
         }
+
+        SettlementPlatformKuaiQianBatchService::sendByBatchNo($batch_no);
         return $m;
     }
 
