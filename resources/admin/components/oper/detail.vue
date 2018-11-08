@@ -4,6 +4,9 @@
             <el-form-item label="运营中心名称">
                 {{oper.name}}
             </el-form-item>
+            <el-form-item label="运营中心编码">
+                {{oper.number}}
+            </el-form-item>
             <el-form-item prop="contacter" label="负责人">
                 {{oper.contacter}}
             </el-form-item>
