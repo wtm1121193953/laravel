@@ -4,12 +4,20 @@
 
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="create_date" label="日期" />
+            <el-table-column prop="batch_no" label="批次号"  />
             <el-table-column prop="amount" label="需代付总金额"  width="160px" />
             <el-table-column prop="status" label="确认自动打款">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === 0" class="c-warning">未确认</span>
                     <span v-else-if="scope.row.status === 1" class="c-green">已确认</span>
                     <span v-else>未知({{scope.row.status}})</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="type" label="类型">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.type === 1" class="c-green">首次打款</span>
+                    <span v-else-if="scope.row.type === 2" class="c-green">重新打款</span>
+                    <span v-else>未知({{scope.row.type}})</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="150px">

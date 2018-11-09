@@ -170,6 +170,9 @@
             <el-form-item prop="other_card_pic_urls" label="其他证件">
                 <image-upload v-model="form.other_card_pic_urls" :limit="10"/>
             </el-form-item>
+            <el-form-item prop="audit_suggestion" label="审核意见">
+                {{form.audit_suggestion}}
+            </el-form-item>
         </el-col>
 
         <!-- 商户激活信息右侧块 -->
@@ -231,6 +234,7 @@
         organization_code: '',
         contract_pic_url: '',
         other_card_pic_urls: '',
+        audit_suggestion: '',
         // 商户负责人
         contacter: '',
         contacter_phone: '',

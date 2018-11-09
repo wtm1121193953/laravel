@@ -124,4 +124,6 @@ Route::prefix('app/user')
         Route::get('message/systems', 'Admin\MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
         Route::get('payments/platform', 'Admin\PaymentController@getListByPlatform')->middleware(UserLoginFilter::class);
         Route::get('message/systems', 'Admin\MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
+        Route::post('message/behavior', 'User\MessageController@userBehavior')->middleware(UserLoginFilter::class);
+        Route::get('message/redDotNum', 'User\MessageController@redDotNumList')->middleware(UserLoginFilter::class);
     });

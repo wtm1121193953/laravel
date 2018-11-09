@@ -179,8 +179,8 @@ class SettlementPlatformService extends BaseService
             $now = strtotime($date->endOfDay())?? strtotime("now");
             $diffDay = ($now-$start)/86400;
 
-            if($diffDay < 7){
-                Log::info('商家每日结算7天内订单金额小于100，直接强制生成结算单', [
+            if($diffDay >= 7){
+                Log::info('商家结算单超过七天，且总金额小于100，直接强制生成结算单', [
                     'merchantId' => $merchant->id,
                     'date' => $date,
                     'timestamp' => date('Y-m-d H:i:s')
@@ -511,6 +511,8 @@ class SettlementPlatformService extends BaseService
             ]);
             throw $e;
         }
+
+        SettlementPlatformKuaiQianBatchService::sendByBatchNo($batch_no);
         return $m;
     }
 

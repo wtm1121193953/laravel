@@ -101,9 +101,11 @@ Route::prefix('user')
         Route::post('identity/record/modRecord', 'UserIdentityAuditRecordController@modRecord')->middleware(UserLoginFilter::class);
         Route::get('identity/record/getRecord','UserIdentityAuditRecordController@getRecord')->middleware(UserLoginFilter::class);
         Route::get('bank/getList', 'BankController@getList')->middleware(UserLoginFilter::class);
-        Route::get('message/isShowRedDot', 'MessageController@isShowReDot')->middleware(UserLoginFilter::class);
+        Route::get('message/isShowRedDot', 'MessageController@isShowRedDot')->middleware(UserLoginFilter::class);
         Route::get('country/list', 'CountryController@getList');
 
+        Route::post('message/behavior', 'MessageController@userBehavior')->middleware(UserLoginFilter::class);
+        Route::get('message/redDotNum', 'MessageController@redDotNumList')->middleware(UserLoginFilter::class);
     });
 
 Route::prefix('user')->middleware('user')->group(function (){

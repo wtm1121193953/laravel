@@ -3,7 +3,7 @@
     <page title="商户货款结算" v-loading="isLoading">
         <el-col style="margin-bottom: 10px;">
             <el-alert
-                    title="温馨提示：T+1结算单规则，单日总订单金额小于100元，不生成结算单，总订单金额累计到100元后再生成结算单；月结账单无最低消费金额限制。"
+                    title="温馨提示：T+1结算单规则，单日总订单金额小于100元，不生成结算单，总订单金额累计到100元后再生成结算单；周结账单无最低消费金额限制。"
                     type="success"
                     close-text="知道了">
             </el-alert>
@@ -61,7 +61,7 @@
 
         </el-col>
 
-        <el-dialog :visible.sync="isShowSettlementDetail"  width="60%">
+        <el-dialog :visible.sync="isShowSettlementDetail"  width="70%">
             <settlement-detail :scope="settlement"/>
         </el-dialog>
 
@@ -95,9 +95,9 @@
                 </template>
             </el-table-column>
             <!--<el-table-column prop="reason" label="备注" />-->
-            <el-table-column label="操作" width="150px">
+            <el-table-column label="操作" width="200px">
                 <template slot-scope="scope">
-                    <el-button type="text" @click="showOrders(scope)">查看</el-button>
+                    <el-button type="text" @click="showOrders(scope)">审核订单</el-button>
                     <el-button type="text" v-if="hasRule('/api/admin/settlement/modifyStatus') && parseInt(scope.row.status) === 1 && parseInt(scope.row.settlement_cycle_type) !== 3" @click="modifyPlatformStatus(scope)">确认打款</el-button>
                     <el-button type="text" v-if="hasRule('/api/admin/settlement/modifyStatus') && parseInt(scope.row.status) === 4 && parseInt(scope.row.settlement_cycle_type) === 3" @click="genBatchAgain(scope)">重新打款</el-button>
                 </template>

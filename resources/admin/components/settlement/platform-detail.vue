@@ -1,8 +1,8 @@
 <template>
-    <page title="结算详情">
+    <page title="审核订单明细">
         <el-table :data="list" stripe>
-            <el-table-column prop="created_at" label="创建时间" align="center"/>
-            <el-table-column prop="order_no" label="订单号" align="center"/>
+            <el-table-column prop="created_at" label="交易时间" align="center"/>
+            <el-table-column prop="order_no" label="订单编号" align="center"/>
             <el-table-column prop="goods_name" label="商品名称" align="center">
                 <template slot-scope="scope">
                     <span v-if="scope.row.type == 3 && scope.row.dishes_items && scope.row.dishes_items.length == 1">
@@ -19,10 +19,30 @@
                     </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="pay_price" label="总价" align="center"/>
-            <el-table-column prop="settlement_rate" label="费率" width="100px" align="center">
+            <el-table-column prop="merchant.name" label="商户" align="center"/>
+            <el-table-column prop="oper.name" label="运营中心" align="center"/>
+            <el-table-column prop="pay_price" label="订单金额" align="center"/>
+            <el-table-column prop="settlement_rate" label="利率" width="100px" align="center">
                 <template slot-scope="scope">
                     <span>{{ parseInt(scope.row.settlement_rate).toFixed(2) }}%</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="settlement_real_amount" label="结算金额" align="center"/>
+            <el-table-column prop="type" label="订单类型" align="center">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.type == 1">团购订单</span>
+                    <span v-else-if="scope.row.type == 2">扫码买单</span>
+                    <span v-else-if="scope.row.type == 3">单品订单</span>
+                    <span v-else>未知({{scope.row.type}})</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="pay_type" label="支付方式" align="center">
+                <template slot-scope="scope">
+                    <span v-if="parseInt(scope.row.pay_type) === 1">微信</span>
+                    <span v-else-if="parseInt(scope.row.pay_type) === 2">支付宝</span>
+                    <span v-else-if="parseInt(scope.row.pay_type) === 3">融宝</span>
+                    <span v-else-if="parseInt(scope.row.pay_type) === 4">钱包余额</span>
+                    <span v-else>未知 ({{scope.row.pay_type}})</span>
                 </template>
             </el-table-column>
             <el-table-column prop="status" label="订单状态" align="center">

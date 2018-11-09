@@ -35,7 +35,7 @@ class EventServiceProvider extends ServiceProvider
             'App\Listeners\OperStatisticsAddMerchantListener'
         ],
         // 用户注册通知消息
-        'App\Events\InviteUserRecordsCreatedEvent'  =>  [
+        'App\Events\UserCreatedEvent'  =>  [
             'App\Listeners\MessageNoticeSendListener'
         ],
     ];
