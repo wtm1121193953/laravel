@@ -1,18 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/4/14
- * Time: 14:58
- */
 
 namespace App\Http\Controllers\Merchant;
 
 use App\Exceptions\UnloginException;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantAccountService;
+use App\Modules\Merchant\MerchantElectronicContractService;
 use App\Modules\Merchant\MerchantService;
 use App\Result;
+use Carbon\Carbon;
 
 class SelfController extends Controller
 {
@@ -95,5 +91,57 @@ class SelfController extends Controller
         $merchant = MerchantService::detail($merchantId);
 
         return Result::success($merchant);
+    }
+
+    /**
+     * 商户检查电子合同
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkElectronicContract()
+    {
+        $merchantId = request()->get('current_user')->merchant_id;
+        $contract = MerchantElectronicContractService::getContractByMerchantId($merchantId);
+        if (!empty($contract)) {
+            // 1-未过期  0-已过期
+            $contract->status = ($contract->expiry_time > Carbon::now()) ? 1 : 0;
+        }
+
+        return Result::success($contract);
+    }
+
+    public function getMerchantAndElectronicContract()
+    {
+        $merchantId = request()->get('current_user')->merchant_id;
+        $contract = MerchantElectronicContractService::getContractByMerchantId($merchantId);
+        if (empty($contract)) {
+            $contract = MerchantElectronicContractService::createdElectronicContract($merchantId);
+        }
+        $merchant = MerchantService::detail($merchantId);
+
+        return Result::success([
+            'contract' => $contract,
+            'merchant' => $merchant,
+            'nowTime' => Carbon::now(),
+        ]);
+    }
+
+    /**
+     * 签约或续约合同
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function signElectronicContract()
+    {
+        $merchantId = request()->get('current_user')->merchant_id;
+        $contract = MerchantElectronicContractService::getContractByMerchantId($merchantId);
+        if (empty($contract)) {
+            $contract = MerchantElectronicContractService::createdElectronicContract($merchantId);
+            $contract = MerchantElectronicContractService::updateElectronicContract($contract->id);
+        } elseif (!$contract->expiry_time || $contract->expiry_time < Carbon::now()) {
+            $contract = MerchantElectronicContractService::updateElectronicContract($contract->id);
+        } else {
+            return Result::success($contract);
+        }
+
+        return Result::success($contract);
     }
 }

@@ -61,6 +61,7 @@ const stateLocalstorePlugin = function(store){
         store.commit('setMenus', state.menus || []);
         store.commit('setCurrentMenu', state.currentMenu || getFirstMenu(store.state.menus));
         store.commit('setLoginUsername', state.loginUsername);
+        store.commit('setElectronicContract', state.electronicContract);
     }
 
     store.subscribe((mutation, state) => {
@@ -82,6 +83,7 @@ export default new Vuex.Store({
         menus: [],
         currentMenu: null,
         loginUsername: null,
+        electronicContract: null,
     },
     mutations: {
         setGlobalLoading(state, loading){
@@ -106,6 +108,9 @@ export default new Vuex.Store({
         },
         setLoginUsername(state, loginUsername) {
             state.loginUsername = loginUsername;
+        },
+        setElectronicContract(state, electronicContract) {
+            state.electronicContract = electronicContract;
         }
     },
     actions:{
@@ -137,6 +142,9 @@ export default new Vuex.Store({
         },
         setLoginUserName(context, username) {
             context.commit('setLoginUsername', username);
+        },
+        setElectronicContract(context, electronicContract) {
+            context.commit('setElectronicContract', electronicContract);
         }
     },
     plugins: [

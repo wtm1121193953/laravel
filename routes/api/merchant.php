@@ -14,6 +14,9 @@ Route::prefix('merchant')
         Route::post('self/modifyPassword', 'SelfController@modifyPassword');
         Route::get('self/getMerchantInfo', 'SelfController@getMerchantInfo');
         Route::get('self/menus', 'SelfController@getMenus');
+        Route::get('self/checkElectronicContract', 'SelfController@checkElectronicContract');
+        Route::get('self/getMerchantAndElectronicContract', 'SelfController@getMerchantAndElectronicContract');
+        Route::post('self/signElectronicContract', 'SelfController@signElectronicContract');
 
         Route::get('inviteChannel/inviteQrcode', 'InviteChannelController@getInviteQrcode');
         Route::get('inviteChannel/downloadInviteQrcode', 'InviteChannelController@downloadInviteQrcode');
