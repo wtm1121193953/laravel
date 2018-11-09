@@ -30,6 +30,10 @@ class WechatPay extends PayBase
         parent::__construct();
     }
 
+    /**
+     * @return string|\Symfony\Component\HttpFoundation\Response
+     * @throws \EasyWeChat\Kernel\Exceptions\Exception
+     */
     public function doNotify()
     {
         $str = request()->getContent();
@@ -61,13 +65,10 @@ class WechatPay extends PayBase
                 $orderNo = $message['out_trade_no'];
                 $totalFee = $message['total_fee'];
                 $payTime = $message['time_end'];
-                OrderService::paySuccess($orderNo, $message['transaction_id'], $totalFee / 100, Order::PAY_TYPE_WECHAT, $payTime);
+                return OrderService::paySuccess($orderNo, $message['transaction_id'], $totalFee / 100, Order::PAY_TYPE_WECHAT, $payTime);
             } else {
                 return $fail('通信失败，请稍后再通知我');
             }
-
-            // 其他未知情况
-            return false;
         });
         return $response;
     }
