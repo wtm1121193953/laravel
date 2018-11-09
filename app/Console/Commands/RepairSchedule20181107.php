@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ConsumeQuotaUnfreezeJob;
 use App\Jobs\FeeSplittingUnfreezeJob;
+use App\Jobs\OrderFinishedJob;
 use App\Jobs\Schedule\AutoDownGoodsJob;
 use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Jobs\Schedule\OperStatisticsDailyJob;
@@ -51,11 +52,22 @@ class RepairSchedule20181107 extends Command
     public function handle()
     {
         //
-        SettlementDaily::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay());
-        PlatformTradeRecordsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay()->endOfDay()->format('Y-m-d H:i:s'));
-        InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay());
-        OperStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay()->endOfDay()->format('Y-m-d H:i:s'));
-        AutoDownGoodsJob::dispatch();
+        $list = Order::where('status', 7)
+            ->where('splitting_status', 1)
+            ->where('pay_target_type', 2)
+            ->whereHas('oper', function($query){
+                $query->where('pay_to_platform', 2);
+            })
+            ->get();
+        $list->each(function($item) {
+            OrderFinishedJob::dispatch($item);
+        });
+//        SettlementDaily::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay());
+//        PlatformTradeRecordsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay()->endOfDay()->format('Y-m-d H:i:s'));
+//        InviteUserStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay());
+//        OperStatisticsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay()->endOfDay()->format('Y-m-d H:i:s'));
+//        AutoDownGoodsJob::dispatch();
+
 //        SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY, Carbon::createFromFormat('Y-m-d', '2018-11-07'));
 
         /*$date = Carbon::createFromFormat('Y-m-d', '2018-11-07');
