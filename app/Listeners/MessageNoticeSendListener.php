@@ -2,7 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Events\InviteUserRecordsCreatedEvent;
 use App\Events\UserCreatedEvent;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteUserRecord;
