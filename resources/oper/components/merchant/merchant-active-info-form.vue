@@ -164,7 +164,7 @@
                 <image-upload v-model="form.other_card_pic_urls" :limit="10"/>
             </el-form-item>
             <el-form-item prop="audit_suggestion" label="审核意见">
-                <el-input disabled v-model="form.audit_suggestion"/>
+                {{form.audit_suggestion}}
             </el-form-item>
         </el-col>
 
