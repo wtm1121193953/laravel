@@ -22,6 +22,7 @@ use Illuminate\Support\Collection;
 use App\Exceptions\BaseResponseException;
 use App\ResultCode;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class WalletService extends BaseService
 {
@@ -178,6 +179,13 @@ class WalletService extends BaseService
         // 2.添加钱包金额解冻记录
         self::createWalletBalanceUnfreezeRecord($feeSplittingRecord, $wallet);
         // 3.更新钱包
+        if ($wallet->freeze_balance - $feeSplittingRecord->amount < 0) {
+            Log::info('钱包冻结金额小于要解冻的金额', [
+                'wallet' => $wallet,
+                'feeSplittingRecord' => $feeSplittingRecord,
+            ]);
+            throw new BaseResponseException('钱包冻结金额小于要解冻的金额');
+        }
         $wallet->freeze_balance = DB::raw('freeze_balance - ' . $feeSplittingRecord->amount);
         $wallet->balance = DB::raw('balance + ' . $feeSplittingRecord->amount);
         $wallet->save();

@@ -4,6 +4,7 @@ namespace App\Modules\Wallet;
 
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
 use App\Jobs\ConsumeQuotaSyncToTpsJob;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Invite\InviteUserService;
@@ -109,9 +110,25 @@ class ConsumeQuotaService extends BaseService
                 self::addConsumeQuotaUnfreezeRecord($walletConsumeQuotaRecord, $wallet);
                 // 3.判断消费额记录类型,是 自反 还是 下级消费返 ,并更新钱包信息
                 if ($walletConsumeQuotaRecord->type == WalletConsumeQuotaRecord::TYPE_SELF) {
+                    if ($wallet->freeze_consume_quota - $walletConsumeQuotaRecord->consume_quota < 0) {
+                        Log::info('钱包冻结的贡献值小于要解冻的贡献值', [
+                            'wallet' => $wallet,
+                            'walletConsumeQuotaRecord' => $walletConsumeQuotaRecord,
+                        ]);
+                        throw new BaseResponseException('钱包冻结的贡献值小于要解冻的贡献值');
+                    }
+
                     $wallet->consume_quota = DB::raw('consume_quota + ' . $walletConsumeQuotaRecord->consume_quota);
                     $wallet->freeze_consume_quota = DB::raw('freeze_consume_quota - ' . $walletConsumeQuotaRecord->consume_quota);
                 } elseif ($walletConsumeQuotaRecord->type == WalletConsumeQuotaRecord::TYPE_SUBORDINATE) {
+                    if ($wallet->share_freeze_consume_quota - $walletConsumeQuotaRecord->consume_quota < 0) {
+                        Log::info('钱包冻结的下级贡献值小于要解冻的贡献值', [
+                            'wallet' => $wallet,
+                            'walletConsumeQuotaRecord' => $walletConsumeQuotaRecord,
+                        ]);
+                        throw new BaseResponseException('钱包冻结的下级贡献值小于要解冻的贡献值');
+                    }
+
                     $wallet->share_consume_quota = DB::raw('share_consume_quota + ' . $walletConsumeQuotaRecord->consume_quota);
                     $wallet->share_freeze_consume_quota = DB::raw('share_freeze_consume_quota - ' . $walletConsumeQuotaRecord->consume_quota);
                 } else {
