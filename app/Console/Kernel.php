@@ -7,6 +7,7 @@ use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Jobs\Schedule\OrderAutoFinished;
 use App\Jobs\Schedule\OrderExpired;
 use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
+use App\Jobs\Schedule\SettlementBatchQuery;
 use App\Jobs\Schedule\SettlementDaily;
 use App\Jobs\Schedule\SettlementForPlatformWeekly;
 use App\Jobs\Schedule\SettlementGenBatch;
@@ -54,7 +55,8 @@ class Kernel extends ConsoleKernel
         $schedule->job( new SettlementDaily() )->daily();
         //T+1自动打款 批次生成每天早8点
         $schedule->job( new SettlementGenBatch() )->at('08:00');
-
+        //自动打款批次查询
+        $schedule->job( new SettlementBatchQuery())->hourly();
         // T+1结算分账任务， 生成的结算单每天8点自动打款
         // 运营中心营销当日统计
         $schedule->job( new OperAndMerchantAndUserStatisticsDailyJob((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s')))->daily();
