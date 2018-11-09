@@ -119,10 +119,11 @@ class BankCardService extends BaseService
             throw new BaseResponseException('删除失败',ResultCode::DB_INSERT_FAIL);
         }
 
-        //判断只有一张银行卡时设置为默认银行卡
+        //判断有无默认卡，无设置第一张为默认卡
         $query = BankCard::where('origin_id',$user->id)
             ->where('origin_type',$originType);
-        if($query ->count() == 1){
+        $isDefault = $query->where('default',BankCard::DEFAULT_SELECTED)->get();
+        if(!$isDefault){
             $item = $query->first();
             $item->default = BankCard::DEFAULT_SELECTED;
             $item->save();
