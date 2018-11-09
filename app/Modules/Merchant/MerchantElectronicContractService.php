@@ -66,11 +66,16 @@ class MerchantElectronicContractService extends BaseService
     /**
      * 通过id获取合同
      * @param $id
+     * @param bool $withMerchant
      * @return MerchantElectronicContract
      */
-    public static function getById($id)
+    public static function getById($id, $withMerchant = false)
     {
-        $contract = MerchantElectronicContract::find($id);
+        if ($withMerchant) {
+            $contract = MerchantElectronicContract::with('merchant')->find($id);
+        } else {
+            $contract = MerchantElectronicContract::find($id);
+        }
         return $contract;
     }
 }

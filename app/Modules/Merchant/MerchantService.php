@@ -12,6 +12,7 @@ use App\Modules\Goods\Goods;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperBizMember;
+use App\Modules\Oper\OperService;
 use App\Modules\Oper\OperStatisticsService;
 use App\Support\Lbs;
 use App\Support\Utils;
@@ -911,5 +912,43 @@ class MerchantService extends BaseService
             ->get()
             ->pluck($field);
         return $arr;
+    }
+
+    public static function getElectronicContractList($params, $withQuery = false)
+    {
+        $merchantIds = array_get($params, 'merchantIds', []);
+        $contractNo = array_get($params, 'contractNo', '');
+        $status = array_get($params, 'status', '');
+
+        $query = MerchantElectronicContract::with('merchant');
+        if (!empty($merchantIds)) {
+            if (is_array($merchantIds)) {
+                $query->whereIn('merchant_id', $merchantIds);
+            } else {
+                $query->where('merchant_id', $merchantIds);
+            }
+        }
+        if ($contractNo) {
+            $query->where('el_contract_no', 'like', "%$contractNo%");
+        }
+        if ($status) {
+            if ($status == 1) {
+                $query->whereRaw('expiry_time >= sign_time');
+            } else {
+                $query->whereRaw('expiry_time < sign_time');
+            }
+        }
+        $query->orderBy('sign_time', 'desc');
+
+        if ($withQuery) {
+            return $query;
+        } else {
+            $data = $query->paginate();
+            $data->each(function ($item) {
+                $item->oper = OperService::getById($item->merchant->oper_id, ['id', 'name']);
+                $item->status = ($item->sign_time <= $item->expiry_time) ? 1 : 0;
+            });
+            return $data;
+        }
     }
 }

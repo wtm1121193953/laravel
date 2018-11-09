@@ -18,6 +18,7 @@ use App\Modules\Bizer\BizerService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantAuditService;
+use App\Modules\Merchant\MerchantElectronicContractService;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizerService;
@@ -324,4 +325,74 @@ class MerchantController extends Controller
         return Result::success($isPayToPlatform);
     }
 
+    /**
+     * 获取商户电子合同列表
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getElectronicContractList()
+    {
+        $merchantId = request('merchantId', '');
+        $merchantName = request('merchantName', '');
+        $contractNo = request('contractNo', '');
+        $status = request('status', '');
+        $operId = request('operId', '');
+        $operName = request('operName','');
+
+        $merchantIds = [];
+        $flag = true;
+        if ($merchantId) {
+            $merchantId1 = [$merchantId];
+            $flag = false;
+            $merchantIds = $merchantId1;
+        }
+        if ($merchantName) {
+            $merchantId2 = MerchantService::getMerchantColumnArrayByParams(compact('merchantName'), 'id')->toArray();
+            if ($flag == false) {
+                $merchantIds = array_intersect($merchantIds, $merchantId2);
+            } else {
+                $merchantIds = $merchantId2;
+            }
+            $flag = false;
+        }
+        if ($operId) {
+            $merchantId3 = OperService::getOperColumnArrayByOperId($operId, 'merchant_id')->toArray();
+            if ($flag == false) {
+                $merchantIds = array_intersect($merchantIds, $merchantId3);
+            } else {
+                $merchantIds = $merchantId3;
+            }
+            $flag = false;
+        }
+        if ($operName) {
+            $merchantId4 = OperService::getOperColumnArrayByOperName($operName, 'merchant_id')->toArray();
+            if ($flag == false) {
+                $merchantIds = array_intersect($merchantIds, $merchantId4);
+            } else {
+                $merchantIds = $merchantId4;
+            }
+        }
+
+        $params = compact('merchantIds', 'contractNo', 'status');
+        $data = MerchantService::getElectronicContractList($params);
+
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
+    }
+
+    /**
+     * 获取合同详情
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getElectronicContractDetail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|min:1'
+        ]);
+        $id = request('id');
+        $content = MerchantElectronicContractService::getById($id, true);
+
+        return Result::success($content);
+    }
 }

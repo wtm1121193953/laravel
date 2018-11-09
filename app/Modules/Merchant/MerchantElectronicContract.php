@@ -16,5 +16,8 @@ use App\BaseModel;
 
 class MerchantElectronicContract extends BaseModel
 {
-    //
+    public function merchant()
+    {
+        return $this->belongsTo(Merchant::class);
+    }
 }
