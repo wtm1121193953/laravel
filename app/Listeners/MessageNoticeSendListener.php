@@ -3,7 +3,9 @@
 namespace App\Listeners;
 
 use App\Events\InviteUserRecordsCreatedEvent;
+use App\Events\UserCreatedEvent;
 use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Message\MessageNoticeService;
 use App\Modules\User\UserService;
 use Illuminate\Queue\InteractsWithQueue;
@@ -28,14 +30,15 @@ class MessageNoticeSendListener
 
     /**
      * Handle the event.
-     *
-     * @param  InviteUserRecordsCreatedEvent  $event
+     * @param UserCreatedEvent $event
      * @return void
      */
-    public function handle(InviteUserRecordsCreatedEvent $event)
+    public function handle(UserCreatedEvent $event)
     {
-        $inviteUserRecord =  $event->inviteUserRecord;
-        if($inviteUserRecord->origin_type!=InviteChannel::ORIGIN_TYPE_USER){
+        $user = $event->user;
+        // 判断是否存在邀请记录
+        $inviteUserRecord = InviteUserRecord::where('user_id',$user->id)->first();
+        if(!($inviteUserRecord) || $inviteUserRecord->origin_type!=InviteChannel::ORIGIN_TYPE_USER){
             // 邀请渠道不为用户类型，直接退出
             return;
         }
