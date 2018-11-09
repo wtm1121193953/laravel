@@ -37,7 +37,7 @@ class MessageNoticeSendListener
         $user = $event->user;
         // 判断是否存在邀请记录
         $inviteUserRecord = InviteUserRecord::where('user_id',$user->id)->first();
-        if(!($inviteUserRecord) || $inviteUserRecord->origin_type!=InviteChannel::ORIGIN_TYPE_USER){
+        if((!$inviteUserRecord) || ($inviteUserRecord->origin_type!=InviteChannel::ORIGIN_TYPE_USER)){
             // 邀请渠道不为用户类型，直接退出
             return;
         }
