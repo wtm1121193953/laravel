@@ -12,9 +12,12 @@ use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
 use App\Jobs\Schedule\SettlementDaily;
 use App\Jobs\Schedule\SettlementWeekly;
 use App\Jobs\SettlementForMerchant;
+use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\Invite\InviteStatisticsService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
+use App\Modules\Wallet\WalletConsumeQuotaRecord;
+use App\Modules\Wallet\WalletConsumeQuotaUnfreezeRecord;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -61,6 +64,14 @@ class RepairSchedule20181107 extends Command
             ->get();
         $list->each(function($item) {
             OrderFinishedJob::dispatch($item);
+        });
+        $list = FeeSplittingRecord::where('status', 1)->get();
+        $list->each(function($item){
+            FeeSplittingUnfreezeJob::dispatch(Order::find($item->order_id));
+        });
+        $list = WalletConsumeQuotaRecord::where('status', 1)->get();
+        $list->each(function ($item) {
+            ConsumeQuotaUnfreezeJob::dispatch(Order::find($item->order_id));
         });
 //        SettlementDaily::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay());
 //        PlatformTradeRecordsDailyJob::dispatch(Carbon::createFromFormat('Y-m-d', '2018-11-08')->subDay()->endOfDay()->format('Y-m-d H:i:s'));
