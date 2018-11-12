@@ -28,6 +28,10 @@ class InviteUserRecord extends BaseModel
         return $this->belongsTo(User::class);
     }
 
+    protected $dispatchesEvents = [
+        'created' => \App\Events\InviteUserRecordCreatedEvent::class,
+    ];
+
     /*protected $dispatchesEvents = [
         'created' => \App\Events\InviteUserRecordsCreatedEvent::class,
     ];*/
