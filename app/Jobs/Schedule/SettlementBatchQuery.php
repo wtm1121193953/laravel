@@ -32,10 +32,10 @@ class SettlementBatchQuery implements ShouldQueue
     public function handle()
     {
         //
-        Log::info('块钱批次查询 :Start');
+        Log::info('快钱批次查询 :Start');
 
         SettlementPlatformKuaiQianBatchService::batchQuery();
 
-        Log::info('块钱批次查询 :end');
+        Log::info('快钱批次查询 :end');
     }
 }
