@@ -120,13 +120,14 @@ class BankCardService extends BaseService
         }
 
         //判断有无默认卡，无设置第一张为默认卡
-        $query = BankCard::where('origin_id',$user->id)
-            ->where('origin_type',$originType);
-        $isDefault = $query->where('default',BankCard::DEFAULT_SELECTED)->get();
-        if(!$isDefault){
-            $item = $query->first();
-            $item->default = BankCard::DEFAULT_SELECTED;
-            $item->save();
+
+        $isDefault = BankCard::where('origin_id',$user->id)->where('origin_type',$originType)->where('default',BankCard::DEFAULT_SELECTED)->count();
+        if($isDefault == 0){
+            $item = BankCard::where('origin_id',$user->id)->where('origin_type',$originType)->first();
+            if ($item){
+                $item->default = BankCard::DEFAULT_SELECTED;
+                $item->save();
+            }
         }
     }
 
