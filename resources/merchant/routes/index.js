@@ -18,6 +18,9 @@ import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
 import OrdersList from '../components/orders/list.vue'
 
+//电子合同管理
+import ElectronicContract from '../components/electronic-contract/form'
+
 //系统设置
 import SettingMappingUser from '../components/setting/mapping-user.vue'
 //setting 商户系统配置
@@ -64,6 +67,15 @@ const routes = [
         component: Home,
         children: [
             {path: 'orders', component: OrdersList, name: 'OrdersList'},
+        ]
+    },
+
+    // 电子合同管理
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: '/electronic/contract', component: ElectronicContract, name: 'ElectronicContract'},
         ]
     },
 

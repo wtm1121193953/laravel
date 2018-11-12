@@ -104,6 +104,19 @@
                 </el-form>
             </el-dialog>
 
+            <el-dialog
+                    title="大千生活商户服务协议"
+                    :visible.sync="showElectronicContract"
+                    center
+                    :close-on-click-modal="false"
+                    :close-on-press-escape="false"
+                    :show-close="false"
+            >
+                <electronic-contract
+                    @closeElectronicContract="showElectronicContract = false"
+                ></electronic-contract>
+            </el-dialog>
+
         </el-header>
         <el-container>
             <leftMenu :collapse="collapseLeftMenu" :menus="menus" ref="leftMenu"/>
@@ -121,6 +134,7 @@
 <script>
     import api from '../../assets/js/api'
     import leftMenu from '../../assets/components/leftMenu.vue'
+    import ElectronicContract from './electronic-contract/contract-detail'
     import {mapState, mapMutations, mapActions} from 'vuex'
 
     export default {
@@ -168,6 +182,8 @@
                 showMerchantInfo:false,
                 showMerchantInfoForm:{},
                 showMerchantInfoFormRules:{},
+
+                showElectronicContract: false,
             }
         },
         computed: {
@@ -178,6 +194,7 @@
                 'globalLoading',
                 'user',
                 'menus',
+                'electronicContract',
             ]),
             username(){
                 return this.user ? (this.user.merchantName || this.user.account) : '';
@@ -261,6 +278,12 @@
                 });
             },
 
+            checkMerchantElectronicContract() {
+                if (this.electronicContract == null || this.electronicContract.status == 0) {
+                    this.showElectronicContract = true;
+                }
+            }
+
         },
         created() {
             this.getTitleAndLogo();
@@ -269,6 +292,7 @@
                 router.replace('/login');
                 return ;
             }
+            this.checkMerchantElectronicContract();
             this.themeSettingForm = deepCopy(store.state.theme);
 
             // 刷新页面时重新获取一下权限
@@ -276,6 +300,7 @@
         },
         components: {
             leftMenu,
+            ElectronicContract,
         },
         watch: {
         }

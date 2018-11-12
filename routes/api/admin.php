@@ -67,6 +67,8 @@ Route::prefix('admin')
         Route::post('merchant/changeStatus', 'MerchantController@changeStatus');
         Route::post('merchant/edit', 'MerchantController@edit');
         Route::get('/merchant/isPayToPlatform', 'MerchantController@isPayToPlatform');
+        Route::get('/merchant/getElectronicContractList', 'MerchantController@getElectronicContractList');
+        Route::get('/merchant/getElectronicContractDetail', 'MerchantController@getElectronicContractDetail');
 
         Route::get('merchant/audit/list', 'MerchantController@getAuditList');
         Route::get('merchant/audit/record/newest', 'MerchantController@getNewestAuditRecord');

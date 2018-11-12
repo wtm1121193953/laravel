@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: 57458
- * Date: 2018/7/23
- * Time: 17:38
- */
-
 namespace App\Modules\Oper;
 
 use App\BaseService;
@@ -349,5 +342,20 @@ class OperService extends BaseService
         });
 
         return $oper;
+    }
+
+    /**
+     * 通过operId 获取相关数组
+     * @param $operId
+     * @param $field
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getOperColumnArrayByOperId($operId, $field)
+    {
+        $arr = Oper::where('id', $operId)
+            ->select($field)
+            ->get()
+            ->pluck($field);
+        return $arr;
     }
 }

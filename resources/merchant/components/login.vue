@@ -165,7 +165,7 @@
                         api.post('/login', this.form).then(data => {
                             store.dispatch('storeUserInfo', data);
                             store.dispatch('setLoginUserName', this.rememberUsername ? this.form.username : '');
-                            _self.relocation();
+                            _self.checkElectronicContract();
                         }).catch(() => {
                             _self.refreshVerify();
                         }).finally(() => {
@@ -174,6 +174,13 @@
                     }
                 })
 
+            },
+            checkElectronicContract() {
+                let _self = this;
+                api.get('/self/checkElectronicContract').then(data => {
+                    store.dispatch('setElectronicContract', data);
+                    _self.relocation();
+                })
             },
 
             init3D () { // 初始化3D动画
