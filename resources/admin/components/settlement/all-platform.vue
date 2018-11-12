@@ -89,7 +89,7 @@
                     <span v-if="scope.row.status === 1" class="c-warning">未打款</span>
                     <span v-else-if="scope.row.status === 2" class="c-blue">打款中</span>
                     <span v-else-if="scope.row.status === 3" class="c-green">打款成功</span>
-                    <span v-else-if="scope.row.status === 4" class="c-danger">打款失败</span>
+                    <span v-else-if="scope.row.status === 4" class="c-danger">打款失败({{scope.row.reason}})</span>
                     <span v-else-if="scope.row.status === 5" class="c-warning">已重新打款</span>
                     <span v-else>未知({{scope.row.status}})</span>
                 </template>
