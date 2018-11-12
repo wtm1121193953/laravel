@@ -53,7 +53,7 @@ class Kernel extends ConsoleKernel
         // 运营中心营销当日统计
         $schedule->job( new OperStatisticsDailyJob((new Carbon())->subDay()->endOfDay()->format('Y-m-d H:i:s')))->daily();
         // 运营中心当日数据更新统计 (每30分钟执行)
-//        $schedule->job( new OperStatisticsDailyJob(Carbon::now()->endOfDay()->format('Y-m-d H:i:s')))->everyThirtyMinutes();
+        $schedule->job( new OperStatisticsDailyJob(Carbon::now()->endOfDay()->format('Y-m-d H:i:s')))->everyThirtyMinutes();
 //        $schedule->job(new SettlementAgentPayDaily())->dailyAt('08:00');
         /**团购商品过期自动下架*/
         $schedule->job(AutoDownGoodsJob::class)->daily();
