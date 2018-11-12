@@ -217,7 +217,7 @@ class OrderController extends Controller
     {
         $this->validate(request(), [
             'dishes_id' => 'required|integer|min:1',
-            'pay_type'  => 'required|integer'
+            'pay_type'  => 'integer'
         ]);
         $dishesId = request('dishes_id');
         $dishes = Dishes::findOrFail($dishesId);
@@ -389,7 +389,7 @@ class OrderController extends Controller
     {
         $this->validate(request(), [
             'order_no' => 'required',
-            'pay_type' => 'required|integer'
+            'pay_type' => 'integer'
         ]);
         $orderNo = request('order_no');
         $order = Order::where('order_no', $orderNo)->firstOrFail();
