@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Events\InviteUserRecordCreatedEvent;
 use App\Events\UserCreatedEvent;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteUserRecord;
@@ -29,19 +30,26 @@ class MessageNoticeSendListener
 
     /**
      * Handle the event.
-     * @param UserCreatedEvent $event
+     * @param InviteUserRecordCreatedEvent $event
      * @return void
      */
-    public function handle(UserCreatedEvent $event)
+    public function handle(InviteUserRecordCreatedEvent $event)
     {
-        $user = $event->user;
-        // 判断是否存在邀请记录
-        $inviteUserRecord = InviteUserRecord::where('user_id',$user->id)->first();
-        if((!$inviteUserRecord) || ($inviteUserRecord->origin_type!=InviteChannel::ORIGIN_TYPE_USER)){
+        $inviteUserRecord =  $event->record;
+        if($inviteUserRecord->origin_type!=InviteChannel::ORIGIN_TYPE_USER){
             // 邀请渠道不为用户类型，直接退出
             return;
         }
         $user = UserService::getUserById($inviteUserRecord->user_id);
+        if(!$user){
+            return ;
+        }
+        $inviteTime = strtotime($inviteUserRecord->updated_at);
+        $userTime = strtotime($user->created_at);
+        if(($inviteTime-$userTime)>60){
+            // 如果不是同一时间存在的数据，不发送
+            return;
+        }
         MessageNoticeService::createByRegister($user->mobile,$inviteUserRecord->origin_id);
     }
 }

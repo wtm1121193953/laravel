@@ -63,8 +63,5 @@ class User extends BaseModel
         return !empty($status_arr[$status])?$status_arr[$status]:'未知状态';
     }
 
-    protected $dispatchesEvents = [
-        'created' => \App\Events\UserCreatedEvent::class,
-    ];
 
 }
