@@ -44,7 +44,7 @@ class MessageNoticeSendListener
         if(!$user){
             return ;
         }
-        $inviteTime = strtotime($inviteUserRecord->created_at);
+        $inviteTime = strtotime($inviteUserRecord->updated_at);
         $userTime = strtotime($user->created_at);
         if(($inviteTime-$userTime)>60){
             // 如果不是同一时间存在的数据，不发送
