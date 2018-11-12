@@ -64,7 +64,7 @@ class User extends BaseModel
     }
 
     protected $dispatchesEvents = [
-        'created' => \App\Events\UserCreatedEvent::class,
+        'created' => \App\Events\InviteUserRecordCreatedEvent::class,
     ];
 
 }
