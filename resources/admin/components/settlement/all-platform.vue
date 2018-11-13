@@ -1,6 +1,6 @@
 <template>
 
-    <page title="商户货款结算" v-loading="isLoading">
+    <page title="商户货款结算管理" v-loading="isLoading">
         <el-col style="margin-bottom: 10px;">
             <el-alert
                     title="温馨提示：T+1结算单规则，单日总订单金额小于100元，不生成结算单，总订单金额累计到100元后再生成结算单；周结账单无最低消费金额限制。"
@@ -94,7 +94,7 @@
                     <span v-else>未知({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <!--<el-table-column prop="reason" label="备注" />-->
+            <el-table-column prop="reason" label="备注" />
             <el-table-column label="操作" width="200px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="showOrders(scope)">审核订单</el-button>

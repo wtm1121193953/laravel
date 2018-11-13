@@ -182,13 +182,18 @@ class SettlementPlatformService extends BaseService
             if($diffDay >= 7){
                 Log::info('商家结算单超过七天，且总金额小于100，直接强制生成结算单', [
                     'merchantId' => $merchant->id,
-                    'date' => $date,
+                    'start_date' => $start_date,
+                    'start' => $start,
+                    'diffDay' => $diffDay,
                     'timestamp' => date('Y-m-d H:i:s')
                 ]);
             }else{
                 Log::info('商家每日结算时订单金额小于100，跳过结算', [
                     'merchantId' => $merchant->id,
-                    'date' => $date,
+                    'start_date' => $start_date,
+                    'start' => $start,
+                    'diffDay' => $diffDay,
+                    'now' => $now,
                     'timestamp' => date('Y-m-d H:i:s')
                 ]);
                 return true;

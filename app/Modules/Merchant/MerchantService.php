@@ -921,6 +921,8 @@ class MerchantService extends BaseService
         $status = array_get($params, 'status', '');
 
         $query = MerchantElectronicContract::with('merchant');
+        $query->where('sign_time', '<>', null)->where('expiry_time', '<>', null);
+
         if (!empty($merchantIds)) {
             if (is_array($merchantIds)) {
                 $query->whereIn('merchant_id', $merchantIds);

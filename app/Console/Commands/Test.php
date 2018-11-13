@@ -84,6 +84,13 @@ class Test extends Command
      */
     public function handle()
     {
+
+        //new SettlementWeekly(Merchant::SETTLE_WEEKLY);
+
+        SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY);
+        dd('ok');
+
+
         $i = 1;
         while (1) {
             $endTime = date('Y-m-d', strtotime("-{$i} day")) . ' 23:59:59';

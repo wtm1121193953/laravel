@@ -215,11 +215,18 @@ class KuaiQian extends AgentPayBase
         $data_query .= "<br/>错误编号：".$receive['errorCode'];//错误编号
         $data_query .= "<br/>错误代码：".$receive['errorMsg'];//错误代码
 
+        if ($receive['errorCode'] != '0000') {
+            $batch->status = SettlementPlatformKuaiQianBatch::STATUS_FAILED;
+            $batch->data_query = $data_query;
+            $batch->save();
+            return $batch;
+        }
         $receivekey = $this->crypto_unseal_private($receive['digitalEnvelope']);
 
         $receiveData2 = $this->decrypt_aes($receive['encryptedData'],$receivekey);
 
         $receiveData = gzdecode($receiveData2);
+
 
         $data_query .= "<br/>结果明细：<br/>";//数据结果
         $data_query .= "<textarea rows=\"30\" cols=\"100\">".$receiveData."</textarea>";
@@ -364,6 +371,13 @@ class KuaiQian extends AgentPayBase
         $data_receive .=  "<br/>应答状态：".$receive['status'];//批次状态
         $data_receive .=  "<br/>错误编号：".$receive['errorCode'];//错误编号
         $data_receive .=  "<br/>错误代码：".$receive['errorMsg'];//错误代码
+
+        if ($receive['errorCode'] != '0000') {
+            $batch->status = SettlementPlatformKuaiQianBatch::STATUS_FAILED;
+            $batch->data_receive = $data_receive;
+            $batch->save();
+            return $batch;
+        }
 
         $receivekey = $this->crypto_unseal_private($receive['digitalEnvelope']);
         $receiveData2 = $this->decrypt_aes($receive['encryptedData'],$receivekey);
