@@ -20,7 +20,6 @@ import OrdersList from '../components/orders/list.vue'
 
 //电子合同管理
 import ElectronicContract from '../components/electronic-contract/form'
-import ElectronicContractDetail from '../components/electronic-contract/contract-detail'
 
 //系统设置
 import SettingMappingUser from '../components/setting/mapping-user.vue'
@@ -79,8 +78,6 @@ const routes = [
             {path: '/electronic/contract', component: ElectronicContract, name: 'ElectronicContract'},
         ]
     },
-    // 电子合同查看
-    {path: '/electronic/contract/detail', component: ElectronicContractDetail, name: 'ElectronicContractDetail'},
 
     //系统设置
     {
