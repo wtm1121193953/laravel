@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Model;
 class SettlementPlatformKuaiQianBatch extends Model
 {
     //
+    const STATUS_FAILED = -1;
     const STATUS_NOT_SEND = 0; //未推送
     const STATUS_SENDED = 1; //已推送
     const STATUS_FINISHED = 2; //已完成

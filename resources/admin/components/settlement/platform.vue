@@ -1,6 +1,6 @@
 <template>
 
-    <page title="商户货款结算(人工)" v-loading="isLoading">
+    <page title="商户货款结算管理(人工)" v-loading="isLoading">
         <el-col style="margin-bottom: 10px;">
             <el-alert
                     title="温馨提示：T+1结算单规则，单日总订单金额小于100元，不生成结算单，总订单金额累计到100元后再生成结算单；周结账单无最低消费金额限制。"
