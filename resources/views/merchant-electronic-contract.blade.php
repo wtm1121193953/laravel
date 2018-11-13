@@ -1,3 +1,4 @@
+<title>大千生活商户服务协议</title>
 <div class="rules">
     <h2>大千生活商户服务协议</h2>
     <div class="header">
