@@ -56,8 +56,8 @@ class MessageSystemController extends Controller
             $isViewIds = empty($records->is_view) ? '' : json_decode($records->is_view);
             $isReadIds = empty($records->is_read) ? '' : json_decode($records->is_read);
             foreach ($list as $k => $v){
-                $list[$k]['is_view'] = (!empty($isViewIds) && in_array($v['id'],$isViewIds)) ? MessageSystemUserBehaviorRecord::IS_VIEW_VIEWED : MessageSystemUserBehaviorRecord::IS_VIEW_NORMAL;
-                $list[$k]['is_read'] = (!empty($isReadIds) && in_array($v['id'],$isReadIds)) ? MessageSystemUserBehaviorRecord::IS_READ_READED : MessageSystemUserBehaviorRecord::IS_READ_NORMAL;
+                $list[$k]['is_view'] = (!empty($isViewIds) && in_array($v->id,$isViewIds)) ? MessageSystemUserBehaviorRecord::IS_VIEW_VIEWED : MessageSystemUserBehaviorRecord::IS_VIEW_NORMAL;
+                $list[$k]['is_read'] = (!empty($isReadIds) && in_array($v->id,$isReadIds)) ? MessageSystemUserBehaviorRecord::IS_READ_READED : MessageSystemUserBehaviorRecord::IS_READ_NORMAL;
             }
         }
         return Result::success([
