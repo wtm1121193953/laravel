@@ -374,7 +374,7 @@ class KuaiQian extends AgentPayBase
 
         if ($receive['errorCode'] != '0000') {
             $batch->status = SettlementPlatformKuaiQianBatch::STATUS_FAILED;
-            $batch->data_query = $data_receive;
+            $batch->data_receive = $data_receive;
             $batch->save();
             return $batch;
         }
