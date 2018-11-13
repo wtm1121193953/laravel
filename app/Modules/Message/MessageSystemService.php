@@ -68,7 +68,7 @@ class MessageSystemService extends BaseService
             throw new BaseResponseException('找不到该消息');
         }
         // 添加记录已阅状态
-        MessageSystemUserBehaviorRecordService::addRecords($user->id,'is_read',[$id]);
+//        MessageSystemUserBehaviorRecordService::addRecords($user->id,'is_read',[$id]);
         return $system;
     }
 
