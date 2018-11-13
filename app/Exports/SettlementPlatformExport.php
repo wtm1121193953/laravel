@@ -51,7 +51,8 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
             '开户行网点地址',
             '订单金额',
             '结算金额',
-            '结算状态'
+            '结算状态',
+            '备注'
         ];
     }
 
@@ -64,7 +65,6 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
         $bank_info = explode('|',$row->sub_bank_name);
         $c = count($bank_info);
         $bank_name = '';
-        $sub_bank_name = '';
         if ($c == 1) {
             $sub_bank_name = $bank_info[0];
         } else {
@@ -86,7 +86,8 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
             $row->bank_open_address,
             $row->amount,
             $row->real_amount,
-            SettlementPlatformService::$status_vals[$row->status]
+            SettlementPlatformService::$status_vals[$row->status],
+            $row->reason
         ];
     }
 }

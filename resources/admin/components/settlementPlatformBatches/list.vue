@@ -11,6 +11,7 @@
                     <span v-if="scope.row.status === 0" class="c-warning">未确认</span>
                     <span v-else-if="scope.row.status === 1" class="c-green">已确认</span>
                     <span v-else-if="scope.row.status === 2" class="c-green">已完成</span>
+                    <span v-else-if="scope.row.status === -1" class="c-danger">失败</span>
                     <span v-else>未知({{scope.row.status}})</span>
                 </template>
             </el-table-column>
