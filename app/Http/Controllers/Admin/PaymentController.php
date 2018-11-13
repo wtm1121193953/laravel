@@ -18,6 +18,7 @@ use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletService;
 use App\Result;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Types\Array_;
 
 class PaymentController extends Controller
 {
@@ -176,7 +177,11 @@ class PaymentController extends Controller
             }
             $list[$k]['need_password'] = ($v['id']==4) ? true : false;
         }
-        return Result::success(['list'=>$list,'wallet'=>$wallet]);
+        $result = array();
+        foreach ($list as $k => $v){
+            array_push($result,$v);
+        }
+        return Result::success(['list'=>$result,'wallet'=>$wallet]);
     }
 
 }
