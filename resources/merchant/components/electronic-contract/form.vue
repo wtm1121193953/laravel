@@ -15,10 +15,11 @@
                 :visible.sync="showElectronicContract"
                 center
         >
-            <electronic-contract
-                    @closeElectronicContract="showElectronicContract = false"
-                    :check="true"
-            ></electronic-contract>
+            <iframe :src="detailPath" frameborder="0" style="width: 100%; min-height: 500px"></iframe>
+            <!--<electronic-contract-->
+                    <!--@closeElectronicContract="showElectronicContract = false"-->
+                    <!--:check="true"-->
+            <!--&gt;</electronic-contract>-->
         </el-dialog>
     </page>
 </template>
@@ -33,6 +34,7 @@
                 electronicContract: null,
                 showElectronicContract: false,
                 formLoading: false,
+                detailPath: window.location.origin + '/api/merchant/self/showElectronicContract'
             }
         },
         methods: {
