@@ -61,8 +61,10 @@ class UserController extends Controller
         if (empty($userInfo)) {
             throw new BaseResponseException('该用户不存在');
         }
-        $userInfo->wx_nick_name = $wxUserInfo->nickName;
-        $userInfo->wx_avatar_url = $wxUserInfo->avatarUrl;
+        if (!empty($wxUserInfo)){
+            $userInfo->wx_nick_name = $wxUserInfo->nickName;
+            $userInfo->wx_avatar_url = $wxUserInfo->avatarUrl;
+        }
         $userInfo->save();
 
         return Result::success();
