@@ -355,7 +355,7 @@ class MerchantController extends Controller
             $flag = false;
         }
         if ($operId) {
-            $merchantId3 = OperService::getOperColumnArrayByOperId($operId, 'merchant_id')->toArray();
+            $merchantId3 = MerchantService::getMerchantColumnArrayByParams(compact('operIds', $operId), 'id')->toArray();
             if ($flag == false) {
                 $merchantIds = array_intersect($merchantIds, $merchantId3);
             } else {
@@ -364,7 +364,8 @@ class MerchantController extends Controller
             $flag = false;
         }
         if ($operName) {
-            $merchantId4 = OperService::getOperColumnArrayByOperName($operName, 'merchant_id')->toArray();
+            $operIds = OperService::getOperColumnArrayByOperName($operName, 'id')->toArray();
+            $merchantId4 = MerchantService::getMerchantColumnArrayByParams(compact('operIds', $operIds), 'id')->toArray();
             if ($flag == false) {
                 $merchantIds = array_intersect($merchantIds, $merchantId4);
             } else {
