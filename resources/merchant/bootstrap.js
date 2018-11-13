@@ -32,7 +32,7 @@ import Lockr from 'lockr'
 // 设置Lockr前缀
 Lockr.prefix = 'merchant_'
 // 修复Lockr的rm方法没有使用前缀的bug
-let  Lockrm = Lockr.rm;
+let Lockrm = Lockr.rm;
 Lockr.rm = function(key){
     Lockrm(Lockr.prefix + key)
 }
