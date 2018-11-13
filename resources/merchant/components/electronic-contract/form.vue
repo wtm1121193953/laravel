@@ -15,7 +15,8 @@
                 :visible.sync="showElectronicContract"
                 center
         >
-            <iframe :src="detailPath" frameborder="0" style="width: 100%; min-height: 500px"></iframe>
+            <el-button @click="doPrint" size="small" class="fr">打印</el-button>
+            <iframe id="printed" :src="detailPath" frameborder="0" style="width: 100%; min-height: 500px"></iframe>
             <!--<electronic-contract-->
                     <!--@closeElectronicContract="showElectronicContract = false"-->
                     <!--:check="true"-->
@@ -47,6 +48,10 @@
             },
             showContract() {
                 this.showElectronicContract = true;
+            },
+            doPrint() {
+                var printWin = window.open(document.getElementById("printed").src);
+                printWin.print();
             }
         },
         created() {
