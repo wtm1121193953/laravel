@@ -61,12 +61,14 @@ class MessageSystemService extends BaseService
         return $data;
     }
 
-    public static function getSystemDetailById($id)
+    public static function getSystemDetailById($id,$user)
     {
         $system = MessageSystem::where('id',$id)->first();
         if(!$system){
             throw new BaseResponseException('找不到该消息');
         }
+        // 添加记录已阅状态
+        MessageSystemUserBehaviorRecordService::addRecords($user->id,'is_read',[$id]);
         return $system;
     }
 

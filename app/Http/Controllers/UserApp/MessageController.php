@@ -52,7 +52,7 @@ class MessageController extends Controller
             'id.required'=>'参数不合法',
             'id.numeric'=>'参数不合法'
         ]);
-        $system = MessageSystemService::getSystemDetailById($request->get('id'));
+        $system = MessageSystemService::getSystemDetailById($request->get('id'),$request->get('current_user'));
         return Result::success($system);
     }
 
