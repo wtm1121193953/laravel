@@ -17,6 +17,9 @@ class MessageSystemUserBehaviorRecordService extends Model
         $needSaveIds = $ids;
         if (!empty($record->$type)) {
             $needSaveIds = json_decode($record->$type);
+            if(is_object($ids)){
+                $ids = json_decode($ids,true);
+            }
             foreach ($ids as $k => $v){
                 if(!is_numeric($v) || MessageSystem::where('id',$v)->doesntExist()){
                     // 非數字不保存,不存在的ID不保存
@@ -27,6 +30,7 @@ class MessageSystemUserBehaviorRecordService extends Model
                     array_push($needSaveIds,$v);
                 }
             }
+
         }
         $record->$type = json_encode($needSaveIds);
         $record->save();
