@@ -29,14 +29,14 @@ axios.defaults.headers['Content-Type'] = 'application/json'
  * 引入 Lockr 并全局挂载
  */
 import Lockr from 'lockr'
+window.Lockr = Object.assign({}, Lockr)
 // 设置Lockr前缀
 Lockr.prefix = 'merchant_'
 // 修复Lockr的rm方法没有使用前缀的bug
-let  Lockrm = Lockr.rm;
+let Lockrm = Lockr.rm;
 Lockr.rm = function(key){
     Lockrm(Lockr.prefix + key)
 }
-window.Lockr = Lockr
 
 // Date对象追加格式化方法
 Date.prototype.format = function(fmt){
