@@ -94,8 +94,8 @@ class WalletWithdrawController extends Controller
             'hasBankCard' => $cards->count() <= 0 ? 0 : 1,
             'balance' => $wallet->balance,
             // 判断现今可否结算
-//            'isWithdraw' => in_array(date('d'), WalletWithdrawService::getWithdrawableDays()),
-             'isWithdraw' => '1',
+            'isWithdraw' => in_array(date('d'), WalletWithdrawService::getWithdrawableDays()),
+//             'isWithdraw' => '1',
             //显示可提现日期
             'days'    =>  WalletWithdrawService::getWithdrawableDays(),
         ]);

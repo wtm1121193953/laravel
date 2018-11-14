@@ -9,6 +9,7 @@
 namespace App\Exports;
 
 use App\Modules\Order\Order;
+use App\Modules\Payment\Payment;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -58,6 +59,7 @@ class MerchantOrderExport implements FromCollection, WithMapping, WithHeadings
      */
     public function map($row): array
     {
+        $payments = Payment::getAllType();
         return [
             $row->id,
             $row->created_at,
@@ -67,7 +69,7 @@ class MerchantOrderExport implements FromCollection, WithMapping, WithHeadings
             $row->pay_price,
             $row->notify_mobile,
             Order::getStatusText($row->status),
-            Order::getPayTypeText($row->pay_type),
+            $payments[$row->pay_type]??'未知('.$row->pay_type.')',
         ];
     }
 }

@@ -14,10 +14,16 @@ class MessageSystemUserBehaviorRecordService extends Model
     public static function addRecords($userId, $type, $ids)
     {
         $record = MessageSystemUserBehaviorRecordService::getRecordByUserId($userId);
-        if(!is_array($ids)){
-            $ids = json_decode($ids,true);
+        if(is_string($ids)){
+            // 兼容小程序逻辑
+            if(strstr($ids,',')){
+                $ids = explode(',',$ids);
+            }else{
+                $arr = [];
+                array_push($arr,$ids);
+                $ids = $arr;
+            }
         }
-
         $needSaveIds = [];
         if (!empty($record->$type)) {
             $needSaveIds = json_decode($record->$type,true);

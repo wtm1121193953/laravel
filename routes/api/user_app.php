@@ -121,6 +121,8 @@ Route::prefix('app/user')
 
 Route::prefix('app/user')
     ->middleware('user_app')->group(function () {
+
+        Route::get('message/isShowRedDot', 'User\MessageController@isShowRedDot')->middleware(UserLoginFilter::class);
         Route::get('message/systems', 'Admin\MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
         Route::get('payments/platform', 'Admin\PaymentController@getListByPlatform')->middleware(UserLoginFilter::class);
         Route::get('message/systems', 'Admin\MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
