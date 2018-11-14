@@ -14,24 +14,25 @@ class MessageSystemUserBehaviorRecordService extends Model
     public static function addRecords($userId, $type, $ids)
     {
         $record = MessageSystemUserBehaviorRecordService::getRecordByUserId($userId);
-        $needSaveIds = $ids;
-        if (!empty($record->$type)) {
-            $needSaveIds = json_decode($record->$type);
-            if(is_object($ids)){
-                $ids = json_decode($ids,true);
-            }
-            foreach ($ids as $k => $v){
-                if(!is_numeric($v) || MessageSystem::where('id',$v)->doesntExist()){
-                    // 非數字不保存,不存在的ID不保存
-                    continue;
-                }
-                if(!in_array($v,$needSaveIds)){
-                    // 保存没有存过的ID
-                    array_push($needSaveIds,$v);
-                }
-            }
-
+        if(!is_array($ids)){
+            $ids = json_decode($ids,true);
         }
+
+        $needSaveIds = [];
+        if (!empty($record->$type)) {
+            $needSaveIds = json_decode($record->$type,true);
+        }
+        foreach ($ids as $k => $v){
+            if(!is_numeric($v) || MessageSystem::where('id',$v)->doesntExist()){
+                // 非數字不保存,不存在的ID不保存
+                continue;
+            }
+            if(!in_array($v,$needSaveIds)){
+                // 保存没有存过的ID
+                array_push($needSaveIds,$v);
+            }
+        }
+
         $record->$type = json_encode($needSaveIds);
         $record->save();
     }
