@@ -32,6 +32,8 @@
                     <el-option label="提现" :value="7"></el-option>
                     <el-option label="自己消费奖励" :value="1"></el-option>
                     <el-option label="被分享人消费奖励" :value="2"></el-option>
+                    <el-option label="余额消费" :value="11"></el-option>
+                    <el-option label="余额退款" :value="12"></el-option>
                     <!--<el-option label="自己消费奖励退款" :value="3"></el-option>-->
                     <!--<el-option label="被分享人消费奖励退款" :value="4"></el-option>-->
                 </el-select>
@@ -62,6 +64,8 @@
                         <span v-else-if="scope.row.status == 5">(审核不通过)</span>
                     </span>
                     <span v-else-if="scope.row.type == 8">提现失败</span>
+                    <span v-else-if="scope.row.type == 11">余额消费</span>
+                    <span v-else-if="scope.row.type == 12">余额退款</span>
                     <span v-else>未知{{scope.row.type}}</span>
                 </template>
             </el-table-column>
