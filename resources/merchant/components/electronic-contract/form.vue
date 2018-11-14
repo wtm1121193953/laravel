@@ -15,10 +15,12 @@
                 :visible.sync="showElectronicContract"
                 center
         >
-            <electronic-contract
-                    @closeElectronicContract="showElectronicContract = false"
-                    :check="true"
-            ></electronic-contract>
+            <el-button @click="doPrint" size="small" class="fr">打印</el-button>
+            <iframe id="printed" :src="detailPath" frameborder="0" style="width: 100%; min-height: 500px"></iframe>
+            <!--<electronic-contract-->
+                    <!--@closeElectronicContract="showElectronicContract = false"-->
+                    <!--:check="true"-->
+            <!--&gt;</electronic-contract>-->
         </el-dialog>
     </page>
 </template>
@@ -33,6 +35,7 @@
                 electronicContract: null,
                 showElectronicContract: false,
                 formLoading: false,
+                detailPath: window.location.origin + '/api/merchant/self/showElectronicContract'
             }
         },
         methods: {
@@ -45,6 +48,10 @@
             },
             showContract() {
                 this.showElectronicContract = true;
+            },
+            doPrint() {
+                var printWin = window.open(document.getElementById("printed").src);
+                printWin.print();
             }
         },
         created() {

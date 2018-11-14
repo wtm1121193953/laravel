@@ -935,9 +935,9 @@ class MerchantService extends BaseService
         }
         if ($status) {
             if ($status == 1) {
-                $query->whereRaw('expiry_time >= sign_time');
+                $query->whereRaw('expiry_time >= now()');
             } else {
-                $query->whereRaw('expiry_time < sign_time');
+                $query->whereRaw('expiry_time < now()');
             }
         }
         $query->orderBy('sign_time', 'desc');
@@ -948,7 +948,7 @@ class MerchantService extends BaseService
             $data = $query->paginate();
             $data->each(function ($item) {
                 $item->oper = OperService::getById($item->merchant->oper_id, ['id', 'name']);
-                $item->status = ($item->sign_time <= $item->expiry_time) ? 1 : 0;
+                $item->status = ($item->expiry_time > Carbon::now()) ? 1 : 0;
             });
             return $data;
         }

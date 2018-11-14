@@ -144,4 +144,18 @@ class SelfController extends Controller
 
         return Result::success($contract);
     }
+
+    public function showElectronicContract()
+    {
+        $merchantId = request()->get('current_user')->merchant_id;
+        $contract = MerchantElectronicContractService::getContractByMerchantId($merchantId);
+        $merchant = MerchantService::detail($merchantId);
+
+        return view('merchant-electronic-contract', [
+            'electronicContract' => $contract,
+            'merchantInfo' => $merchant,
+            'startTime' => date('Y年m月d日', strtotime($contract->sign_time)),
+            'endTime' => date('Y年m月d日', strtotime($contract->expiry_time)),
+        ]);
+    }
 }

@@ -14,9 +14,11 @@ use App\Modules\Payment\Payment;
 use App\Modules\Payment\PaymentService;
 use App\Modules\User\UserIdentityAuditRecord;
 use App\Modules\User\UserIdentityAuditRecordService;
+use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletService;
 use App\Result;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Types\Array_;
 
 class PaymentController extends Controller
 {
@@ -163,14 +165,23 @@ class PaymentController extends Controller
             $whereArr['on_pc'] = Payment::PC_ON;
         }
         $list = PaymentService::getListByPlatForm(array_filter($whereArr));
-        foreach ($list as $k => $v){
-            // ID 4为钱包支付
-            $list[$k]['need_password'] = ($v['id']==4) ? true : false;
-        }
         $wallet = WalletService::getWalletInfo($request->get('current_user'))->toArray();
         $record = UserIdentityAuditRecordService::getRecordByUserId($request->get('current_user')->id);
         $wallet['identityInfoStatus'] = ($record) ? $record->status : UserIdentityAuditRecord::STATUS_UN_SAVE;
-        return Result::success(['list'=>$list,'wallet'=>$wallet]);
+
+        foreach ($list as $k => $v){
+            // ID 4为钱包支付
+            if(($v['id']==4) && $wallet['status']==Wallet::STATUS_OFF){
+                unset($list[$k]);
+                continue;
+            }
+            $list[$k]['need_password'] = ($v['id']==4) ? true : false;
+        }
+        $result = array();
+        foreach ($list as $k => $v){
+            array_push($result,$v);
+        }
+        return Result::success(['list'=>$result,'wallet'=>$wallet]);
     }
 
 }
