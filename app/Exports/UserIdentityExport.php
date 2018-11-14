@@ -56,19 +56,35 @@ class UserIdentityExport implements FromQuery, WithHeadings, WithMapping
      */
     public function map($row): array
     {
-        $row->user->status_val = User::getStatusText($row->user->status);
-        $row->status_val = UserIdentityAuditRecord::getStatusText($row->status);
-        $row->countryName = CountryService::getNameZhById($row->country_id);
-        $rt = [
-            $row->created_at,
-            $row->user->mobile,
-            $row->user_id,
-            $row->user->created_at,
-            $row->name,
-            '('.$row->countryName.') ' . $row->id_card_no,
-            $row->user->status_val,
-            $row->status_val,
-        ];
+        if (!empty($row->user)) {
+            $row->user->status_val = User::getStatusText($row->user->status);
+            $row->status_val = UserIdentityAuditRecord::getStatusText($row->status);
+            $row->countryName = CountryService::getNameZhById($row->country_id);
+            $rt = [
+                $row->created_at,
+                $row->user->mobile,
+                $row->user_id,
+                $row->user->created_at,
+                $row->name,
+                '('.$row->countryName.') ' . $row->id_card_no,
+                $row->user->status_val,
+                $row->status_val,
+            ];
+        } else {
+            $row->status_val = UserIdentityAuditRecord::getStatusText($row->status);
+            $row->countryName = CountryService::getNameZhById($row->country_id);
+            $rt = [
+                $row->created_at,
+                '',
+                $row->user_id,
+                '',
+                $row->name,
+                '('.$row->countryName.') ' . $row->id_card_no,
+                '',
+                $row->status_val,
+            ];
+        }
+
 
         return $rt;
     }
