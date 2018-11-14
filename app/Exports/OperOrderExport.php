@@ -9,6 +9,7 @@
 namespace App\Exports;
 
 use App\Modules\Order\Order;
+use App\Modules\Payment\Payment;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -70,7 +71,7 @@ class OperOrderExport implements FromCollection, WithMapping, WithHeadings
      */
     public function map($row): array
     {
-        $payments = [1=>'微信',2=>'支付宝',3=>'融宝'];
+        $payments = Payment::getAllType();
         if($row->finish_time && $row->type == 1){
             $finish_time = $row->finish_time;
         }else{
