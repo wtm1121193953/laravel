@@ -37,29 +37,20 @@ class OperStatisticsService extends BaseService
         if ($return_query) {
             return  $query;
         }
-        $page = $params['page'] ?: 1;
         $pageSize = isset($params['pageSize']) ? $params['pageSize'] : 15;
         $orderColumn = $params['orderColumn'];
         $orderType = $params['orderType'];
 
-        $data = $query->get();
-        $total = $query->get()->count();
+        $data = $query->orderBy($orderColumn, $orderType == 'descending' ? 'desc' : 'asc')
+            ->paginate($pageSize);
 
         $data->each(function ($item) use ($params){
             $item->date = "{$params['startDate']}至{$params['endDate']}";
         });
 
-        if ($orderType == 'descending') {
-            $data = $data->sortBy($orderColumn);
-        } elseif ($orderType == 'ascending') {
-            $data = $data->sortByDesc($orderColumn);
-        }
-
-        $data = $data->forPage($page,$pageSize)->values()->all();
-
         return [
-            'data' => $data,
-            'total' => $total,
+            'data' => $data->items(),
+            'total' => $data->total(),
         ];
     }
 
@@ -142,6 +133,7 @@ class OperStatisticsService extends BaseService
         $orderPaidAmount = 0;
         $orderRefundAmount = 0;
         Order::where('oper_id',$operId)
+            // todo 是不是少了个时间条件?
             ->chunk(1000, function ($orders) use (&$orderPaidNum, &$orderRefundNum, &$orderPaidAmount, &$orderRefundAmount, $startTime, $endTime) {
                 foreach ($orders as $order) {
                     if ($order->status == Order::STATUS_FINISHED && $order->pay_time >= $startTime && $order->pay_time <= $endTime) {

@@ -210,6 +210,7 @@ class MerchantService extends BaseService
             }
         }
         if (!empty($status)){
+            // todo 不能根据status改变 audit_status
             if($status == 1){
                 $query->where('status',1)->whereIn('audit_status',[1,3]);
             }elseif($status ==2){
