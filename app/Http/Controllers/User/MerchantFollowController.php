@@ -25,22 +25,20 @@ class MerchantFollowController extends Controller
         $operId = request('oper_id');
         $status = request('status');
 
+        if (!$merchantId) {
+            throw new BaseResponseException('商户ID不能为空');
+        }
+
+        if (!$status) {
+            throw new BaseResponseException('状态不能为空');
+        }
+
         $data = MerchantFollowService::modifyFollows([
             'status' => $status, //1-未关注，2-已关注
             'user_id' => $user->id,
             'merchant_id' => $merchantId,
             'oper_id' => $operId,
         ]);
-
-        if (!$merchantId) {
-            throw new BaseResponseException('商户ID不能为空');
-        }
-        if (!$operId) {
-            throw new BaseResponseException('运营中心ID不能为空');
-        }
-        if (!$status) {
-            throw new BaseResponseException('状态不能为空');
-        }
 
         return Result::success([
             'data' => $data
