@@ -22,7 +22,7 @@ class MerchantFollowController extends Controller
     {
         $user = request()->get('current_user');
         $merchantId = request('merchant_id');
-        $operId = request('oper_id') ?? 0;
+        $operId = request('oper_id');
         $status = request('status');
 
         if (!$merchantId) {
