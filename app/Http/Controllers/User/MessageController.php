@@ -30,8 +30,12 @@ class MessageController extends Controller
         if($exists){
             return Result::success(['is_show'=>true]);
         }
-        $count = MessageNoticeService::getNeedViewNumByUserId($user->id);
-        if($count>0){
+        $exists = Db::table('message_notice')
+            ->when( $lastReadTime, function ($query) use ($lastReadTime) {
+                $query->where('created_at','>', $lastReadTime);
+            })
+            ->exists();
+        if($exists){
             return Result::success(['is_show'=>true]);
         }
         return Result::success(['is_show'=>false]);
