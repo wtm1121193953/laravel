@@ -88,8 +88,7 @@ class SettlementWeekly implements ShouldQueue
                 throw new \Exception('错误的结算方式:' . $this->settlementCycleType);
         }
         // 查询周结的商家列表
-        Merchant::where('settlement_cycle_type', $this->settlementCycleType)
-            ->where('oper_id', '>', 0)
+        Merchant::where('oper_id', '>', 0)
             ->chunk(100, function($merchants) use ($start, $end){
                 $merchants->each(function ($item) use ($start, $end){
                     SettlementForMerchant::dispatch($item->id, $start, $end);

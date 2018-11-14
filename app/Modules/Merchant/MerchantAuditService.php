@@ -135,7 +135,7 @@ class MerchantAuditService extends Service
             OperBizMember::updateAuditMerchantNumberByCode($merchant->oper_biz_member_code);
         }
         if ($merchant->bizer_id) {
-            MyOperBizer::updateAuditMerchantNumberByCode($merchant->bizer_id);
+            MyOperBizer::updateAuditMerchantNumberByCode($merchant->oper_id, $merchant->bizer_id);
         }
 
         return $merchant;
@@ -194,6 +194,11 @@ class MerchantAuditService extends Service
         $merchantCurrentAudit->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
         $merchantCurrentAudit->status = Merchant::AUDIT_STATUS_FAIL_TO_POOL;
         $merchantCurrentAudit->save();
+
+        // 更新业务员已发展商户数量
+        if ($merchant->bizer_id) {
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->audit_oper_id, $merchant->bizer_id);
+        }
 
         $merchant->audit_status = Merchant::AUDIT_STATUS_FAIL;
         // 打回商户池操作, 需要将商户信息中的audit_oper_id置空

@@ -464,16 +464,16 @@ class MerchantService extends BaseService
 
         $merchant->save();
 
-        // 更新业务员已激活商户数量
+        // 更新业务员已发展商户和审核通过商户数量
         if ($merchant->bizer_id) {
-            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
-            MyOperBizer::updateAuditMerchantNumberByCode($merchant->bizer_id);
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->oper_id, $merchant->bizer_id);
+            MyOperBizer::updateAuditMerchantNumberByCode($merchant->oper_id, $merchant->bizer_id);
         }
 
         // 如果存在原有的业务员, 并且不等于现有的业务员, 更新原有业务员邀请用户数量
         if (isset($originOperBizMemberCode) && $originOperBizMemberCode != $merchant->bizer_id) {
-            MyOperBizer::updateActiveMerchantNumberByCode($originOperBizMemberCode);
-            MyOperBizer::updateAuditMerchantNumberByCode($originOperBizMemberCode);
+            MyOperBizer::updateActiveMerchantNumberByCode($merchant->oper_id, $originOperBizMemberCode);
+            MyOperBizer::updateAuditMerchantNumberByCode($merchant->oper_id, $originOperBizMemberCode);
         }
 
         return $merchant;
@@ -512,10 +512,9 @@ class MerchantService extends BaseService
         // 添加审核记录
         MerchantAuditService::addAudit($merchant->id, $currentOperId);
 
-        // 更新业务员已激活商户数量
+        // 更新业务员发展商户数量
         if ($merchant->bizer_id) {
-            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
-            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
+            MyOperBizer::updateActiveMerchantNumberByCode($currentOperId, $merchant->bizer_id);
         }
 
         return $merchant;
@@ -551,10 +550,9 @@ class MerchantService extends BaseService
         // 添加审核记录
         MerchantAuditService::addAudit($merchant->id, $operId);
 
-        // 更新业务员已激活商户数量
+        // 更新业务员发展商户数量
         if($merchant->bizer_id){
-            //OperBizMember::updateActiveMerchantNumberByCode($merchant->oper_biz_member_code);
-            MyOperBizer::updateActiveMerchantNumberByCode($merchant->bizer_id);
+            MyOperBizer::updateActiveMerchantNumberByCode($operId, $merchant->bizer_id);
         }
 
         return $merchant;

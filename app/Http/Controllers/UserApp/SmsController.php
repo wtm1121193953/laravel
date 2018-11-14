@@ -32,7 +32,9 @@ class SmsController extends Controller
         $result = SmsService::sendVerifyCode($smsVerifyCode->mobile, $smsVerifyCode->verify_code);
 
         if ($result['code'] == 0){
-            return Result::success();
+            return Result::success([
+                'verify_code' => '', // 兼容安卓<1.4.8版本时, 如果没有返回此键值, 则会闪退的bug
+            ]);
         }else{
             throw new BaseResponseException($result['message'], $result['code']);
         }
