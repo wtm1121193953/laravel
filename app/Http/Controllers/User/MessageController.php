@@ -45,12 +45,12 @@ class MessageController extends Controller
     {
         $this->validate($request,[
             'type'      =>  'required|in:"is_read","is_view"',
-            'ids'       =>  'required|array'
+            'ids'       =>  'required'
         ],[
             'type.required'     =>  '类型不能为空',
             'type.in'           =>  '类型必须是is_read或者is_view',
             'ids.required'      =>  '修改ID不可为空',
-            'ids.array'         =>  '修改ID只能为数组'
+//            'ids.array'         =>  '修改ID只能为数组'
         ]);
         MessageSystemUserBehaviorRecordService::addRecords($request->get('current_user')->id,$request->get('type'),$request->get('ids'));
         return Result::success();
