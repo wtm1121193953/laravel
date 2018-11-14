@@ -418,12 +418,6 @@ class OrderService extends BaseService
                 $orderPay->transaction_no = $transactionId;
                 $orderPay->amount = $totalFee;
                 $orderPay->save();
-                OrderPaidJob::dispatch($order);
-
-                // 如果订单是已完成的状态, 分发一个订单完成的任务, 读写分离, 必须在修改状态的地方发任务, 否则可能会造成丢单
-                if($order->status == Order::STATUS_FINISHED){
-                    OrderFinishedJob::dispatch($order)->onQueue('order:finished');
-                }
 
                 //如果是支付到平台的订单，产生一条交易流水
                 if ($order->pay_target_type != Order::PAY_TARGET_TYPE_OPER ) {
@@ -447,6 +441,14 @@ class OrderService extends BaseService
                 Log::error('订单支付成功回调操作失败,失败信息:'.$e->getMessage());
                 return false;
             }
+            // 提交事务之后再派发任务, 防止任务处理时订单状态还未修改
+            OrderPaidJob::dispatch($order);
+
+            // 如果订单是已完成的状态, 分发一个订单完成的任务, 读写分离, 必须在修改状态的地方发任务, 否则可能会造成丢单
+            if($order->status == Order::STATUS_FINISHED){
+                OrderFinishedJob::dispatch($order)->onQueue('order:finished');
+            }
+
             SmsService::sendBuySuccessNotify($orderNo);
 
             return true;
