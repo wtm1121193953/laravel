@@ -24,7 +24,7 @@ class MessageController extends Controller
         $lastReadTime = Cache::get('message_last_read_time'.$user->id);
         $exists = Db::table('message_system')
             ->when( $lastReadTime, function ($query) use ($lastReadTime) {
-                $query->where('id','>', $lastReadTime);
+                $query->where('created_at','>', $lastReadTime);
             })
             ->exists();
         if($exists){
