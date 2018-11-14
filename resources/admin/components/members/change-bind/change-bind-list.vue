@@ -18,6 +18,7 @@
         <el-table stripe :data="list" ref="table" v-loading="tableLoading" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55"/>
             <el-table-column prop="user.id" label="用户ID"/>
+            <el-table-column prop="created_at" label="绑定时间"/>
             <el-table-column prop="user.created_at" label="注册时间"/>
             <el-table-column prop="user.mobile" label="手机号"/>
         </el-table>

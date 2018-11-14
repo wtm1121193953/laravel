@@ -355,7 +355,8 @@ class MerchantController extends Controller
             $flag = false;
         }
         if ($operId) {
-            $merchantId3 = MerchantService::getMerchantColumnArrayByParams(compact('operIds', $operId), 'id')->toArray();
+            $operIds = $operId;
+            $merchantId3 = MerchantService::getMerchantColumnArrayByParams(compact('operIds'), 'id')->toArray();
             if ($flag == false) {
                 $merchantIds = array_intersect($merchantIds, $merchantId3);
             } else {
@@ -365,12 +366,19 @@ class MerchantController extends Controller
         }
         if ($operName) {
             $operIds = OperService::getOperColumnArrayByOperName($operName, 'id')->toArray();
-            $merchantId4 = MerchantService::getMerchantColumnArrayByParams(compact('operIds', $operIds), 'id')->toArray();
+            $merchantId4 = MerchantService::getMerchantColumnArrayByParams(compact('operIds'), 'id')->toArray();
             if ($flag == false) {
                 $merchantIds = array_intersect($merchantIds, $merchantId4);
             } else {
                 $merchantIds = $merchantId4;
             }
+            $flag = false;
+        }
+        if ($flag == false && empty($merchantIds)) {
+            return Result::success([
+                'list' => [],
+                'total' => 0,
+            ]);
         }
 
         $params = compact('merchantIds', 'contractNo', 'status');

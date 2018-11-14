@@ -149,7 +149,7 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
                 $row->bill_no,
                 $row->user_mobile,
                 $typeText,
-                $row->amount,
+                ($row->inout_type == 1 ? '+' : '-') . "\t" . $row->amount,
                 $row->after_amount,
             ];
         } elseif ($this->originType == WalletBill::ORIGIN_TYPE_MERCHANT) {
@@ -159,7 +159,7 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
                 $row->merchant_name,
                 ['', '普通商户', '金牌商户', '超级商户'][$row->merchant_level],
                 $typeText,
-                $row->amount,
+                ($row->inout_type == 1 ? '+' : '-') . "\t" . $row->amount,
                 $row->after_amount,
             ];
         } elseif ($this->originType == WalletBill::ORIGIN_TYPE_OPER) {
@@ -168,7 +168,7 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
                 $row->bill_no,
                 $row->oper_name,
                 $typeText,
-                $row->amount,
+                ($row->inout_type == 1 ? '+' : '-') . "\t" . $row->amount,
                 $row->after_amount,
             ];
         } elseif ($this->originType == WalletBill::ORIGIN_TYPE_BIZER) {
