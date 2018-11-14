@@ -43,7 +43,7 @@ class UserExport implements FromQuery, WithHeadings, WithMapping
             '用户ID',
             '注册时间',
             '会员名称',
-            '推荐人',
+            '分享人',
             '用户状态',
             '认证身份状态'
         ];
