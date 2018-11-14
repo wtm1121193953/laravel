@@ -12,8 +12,9 @@
             </el-form-item>
             <el-form-item label="状态" prop="status">
                 <el-select v-model="query.status" size="small" placeholder="请选择" clearable class="w-150">
-                    <el-option label="正常" value="1"/>
-                    <el-option label="已过期" value="2"/>
+                    <el-option label="全部" :value="0"/>
+                    <el-option label="正常" :value="1"/>
+                    <el-option label="已过期" :value="2"/>
                 </el-select>
             </el-form-item>
             <el-form-item prop="operName" label="激活运营中心名称" >
@@ -86,7 +87,7 @@
                     merchantId: '',
                     merchantName: '',
                     contractNo: '',
-                    status: '',
+                    status: 0,
                     operName: '',
                     operId: '',
                 },

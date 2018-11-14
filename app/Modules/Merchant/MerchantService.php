@@ -906,7 +906,11 @@ class MerchantService extends BaseService
             $query->where('name', 'like', "%$merchantName%");
         }
         if (!empty($operIds)) {
-            $query->whereIn('oper_id', $operIds);
+            if (is_array($operIds)) {
+                $query->whereIn('oper_id', $operIds);
+            } else {
+                $query->where('oper_id', $operIds);
+            }
         }
         $arr = $query->select($field)
             ->get()
