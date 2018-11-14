@@ -30,6 +30,10 @@ class WechatPay extends PayBase
         parent::__construct();
     }
 
+    /**
+     * @return string|\Symfony\Component\HttpFoundation\Response
+     * @throws \EasyWeChat\Kernel\Exceptions\Exception
+     */
     public function doNotify()
     {
         $str = request()->getContent();
@@ -61,13 +65,10 @@ class WechatPay extends PayBase
                 $orderNo = $message['out_trade_no'];
                 $totalFee = $message['total_fee'];
                 $payTime = $message['time_end'];
-                OrderService::paySuccess($orderNo, $message['transaction_id'], $totalFee / 100, Order::PAY_TYPE_WECHAT, $payTime);
+                return OrderService::paySuccess($orderNo, $message['transaction_id'], $totalFee / 100, Order::PAY_TYPE_WECHAT, $payTime);
             } else {
                 return $fail('通信失败，请稍后再通知我');
             }
-
-            // 其他未知情况
-            return false;
         });
         return $response;
     }
@@ -99,7 +100,11 @@ class WechatPay extends PayBase
 
 
         if($order->origin_app_type == Order::ORIGIN_APP_TYPE_MINIPROGRAM){
-            $payApp = WechatService::getWechatPayAppForPlatform();
+            if($order->pay_target_type == Order::PAY_TARGET_TYPE_OPER){
+                $payApp = WechatService::getWechatPayAppForOper($order->oper_id);
+            }else {
+                $payApp = WechatService::getWechatPayAppForPlatform();
+            }
         }else{
             // 获取平台的微信支付实例
             $payApp = WechatService::getOpenPlatformPayAppFromPlatform();

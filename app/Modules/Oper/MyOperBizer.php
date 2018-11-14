@@ -61,7 +61,7 @@ class MyOperBizer extends BaseModel
      */
     public static function getActiveMerchantNumber($bizerId, $operId)
     {
-        $number = Cache::get('oper_bizer_active_merchant_number_' . $bizerId);
+        $number = Cache::get('oper_bizer_active_merchant_number_' . $operId . '_with_' . $bizerId);
         if (is_null($number)){
             $number = Merchant::where(function (Builder $query) use ($operId){
                 $query->where('oper_id', $operId)
@@ -70,17 +70,21 @@ class MyOperBizer extends BaseModel
             ->where('bizer_id', $bizerId)
             ->where('is_pilot', Merchant::NORMAL_MERCHANT)
             ->count();
-            Cache::forever('oper_bizer_active_merchant_number_' . $bizerId, $number);
+            Cache::forever('oper_bizer_active_merchant_number_' . $operId . '_with_' . $bizerId, $number);
             return $number;
         }else{
             return $number ?: 0;
         }
     }
 
-    public static function updateActiveMerchantNumberByCode($code)
+    /**
+     * 更新发展商户数量
+     * @param $operId
+     * @param $bizerId
+     */
+    public static function updateActiveMerchantNumberByCode($operId, $bizerId)
     {
-        //$operBizMember = self::where('code', $code)->first();
-        Cache::forget('oper_bizer_active_merchant_number_' . $code);
+        Cache::forget('oper_bizer_active_merchant_number_' . $operId . '_with_' . $bizerId);
     }
 
     /**
@@ -91,7 +95,7 @@ class MyOperBizer extends BaseModel
      */
     public static function getAuditMerchantNumber($bizerId, $operId)
     {
-        $number = Cache::get('oper_bizzer_audit_merchant_number_' . $bizerId);
+        $number = Cache::get('oper_bizer_audit_merchant_number_' . $operId . '_with_' . $bizerId);
         if (is_null($number)){
             $number = Merchant::where(function (Builder $query) use ($operId){
                 $query->where('oper_id', $operId)
@@ -101,7 +105,7 @@ class MyOperBizer extends BaseModel
                 ->where('bizer_id', $bizerId)
                 ->where('is_pilot', Merchant::NORMAL_MERCHANT)
                 ->count();
-            Cache::forever('oper_bizzer_audit_merchant_number_' . $bizerId, $number);
+            Cache::forever('oper_bizer_audit_merchant_number_' . $operId . '_with_' . $bizerId, $number);
             return $number;
         }else{
             return $number ?: 0;
@@ -111,11 +115,11 @@ class MyOperBizer extends BaseModel
 
     /**
      * 更新审核通过数
-     * @param $code
+     * @param $operId
+     * @param $bizerId
      */
-    public static function updateAuditMerchantNumberByCode($code)
+    public static function updateAuditMerchantNumberByCode($operId, $bizerId)
     {
-        //$operBizMember = self::where('code', $code)->first();
-        Cache::forget('oper_bizzer_audit_merchant_number_' . $code);
+        Cache::forget('oper_bizer_audit_merchant_number_' . $operId . '_with_' . $bizerId);
     }
 }

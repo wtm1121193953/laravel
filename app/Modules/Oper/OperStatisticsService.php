@@ -110,8 +110,7 @@ class OperStatisticsService extends BaseService
 
             //总退款量
             $row['order_refund_num'] = Order::where('oper_id','=',$row['oper_id'])
-                ->where('refund_time','>=',$startTime)
-                ->where('refund_time','<=',$endTime)
+                ->whereBetween('refund_time', [$startTime, $endTime])
                 ->where('status','=',Order::STATUS_REFUNDED)
                 ->count();
 
@@ -124,8 +123,7 @@ class OperStatisticsService extends BaseService
 
             //总退款金额
             $row['order_refund_amount'] = Order::where('oper_id','=',$row['oper_id'])
-                ->where('refund_time','>=',$startTime)
-                ->where('refund_time','<=',$endTime)
+                ->whereBetween('refund_time', [$startTime, $endTime])
                 ->where('status','=',Order::STATUS_REFUNDED)
                 ->sum('pay_price');
 

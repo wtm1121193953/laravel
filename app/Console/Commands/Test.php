@@ -76,6 +76,9 @@ class Test extends Command
      */
     public function handle()
     {
+
+        InviteUserStatisticsDailyJob::dispatch(Carbon::now())->onQueue('test');
+        exit;
         PlatformTradeRecordsDailyJob::dispatch();
         dd('ok');
         $param = [
