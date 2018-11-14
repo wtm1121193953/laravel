@@ -117,7 +117,7 @@
                     let signTime = new Date(data.sign_time);
                     this.electronicContract.sign_time = '【' + signTime.getFullYear() + '】年【' + (signTime.getMonth() + 1) + '】月【' + signTime.getDate() + '】日';
                     let expiryTime = new Date(data.expiry_time);
-                    this.electronicContract.expiry_time = '【' + (expiryTime.getFullYear() + 1) + '】年【' + (expiryTime.getMonth() + 1) + '】月【' + expiryTime.getDate() + '】日';
+                    this.electronicContract.expiry_time = '【' + (expiryTime.getFullYear()) + '】年【' + (expiryTime.getMonth() + 1) + '】月【' + expiryTime.getDate() + '】日';
                     this.showElectronicContract = true;
                 })
             }
