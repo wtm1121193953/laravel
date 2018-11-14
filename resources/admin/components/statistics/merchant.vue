@@ -4,7 +4,7 @@
 
             <el-radio-group v-model="timeType" size="small">
                 <el-radio label="all" border>全部</el-radio>
-                <el-radio label="today" border>今日</el-radio>
+                <!--<el-radio label="today" border>今日</el-radio>-->
                 <el-radio label="yesterday" border>昨日</el-radio>
                 <el-radio label="month" border>本月</el-radio>
                 <el-radio label="lastMonth" border>上个月</el-radio>
