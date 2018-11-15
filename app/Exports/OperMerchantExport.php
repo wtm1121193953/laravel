@@ -110,12 +110,12 @@ class OperMerchantExport implements FromCollection, WithMapping, WithHeadings
      */
     public function getOperBizMemberName($oper_id,$oper_biz_member_code){
         $operBizMember = OperBizMember::where('oper_id', $oper_id)->where('code', $oper_biz_member_code)->first();
-        return (empty($operBizMember->name))? '无' : '员工：'.$operBizMember->name.'/'.$operBizMember->mobile;
+        return (empty($operBizMember->name))? '无' : '员工 '.$operBizMember->name.'/'.$operBizMember->mobile;
     }
 
     public function getOperBizersName($bizerId){
         $bizer =  Bizer::where('id',$bizerId)->first();
-        return (empty($bizer->name))? '' : '业务员：'.$bizer->name.'/'.$bizer->mobile;
+        return (empty($bizer->name))? '' : '业务员 '.$bizer->name.'/'.$bizer->mobile;
     }
 
 }
