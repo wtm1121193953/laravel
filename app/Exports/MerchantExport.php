@@ -160,12 +160,12 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
      */
     public function getOperBizMemberName($oper_id,$oper_biz_member_code){
         $OperBizMember = OperBizMember::where('oper_id', $oper_id)->where('code', $oper_biz_member_code)->first();
-        return (empty($OperBizMember))? '无' : '员工/'.$OperBizMember->name.'/'.$OperBizMember->mobile;
+        return (empty($OperBizMember->name))? '无' : '员工 '.$OperBizMember->name.'/'.$OperBizMember->mobile;
     }
 
     public function getOperBizersName($bizerId){
         $Bizer =  Bizer::where('id',$bizerId)->first();
-        return (empty($Bizer))? '无' : '业务员/'.$Bizer->name.'/'.$Bizer->mobile;
+        return (empty($Bizer->name))? '无' : '业务员 '.$Bizer->name.'/'.$Bizer->mobile;
     }
 
     /**
