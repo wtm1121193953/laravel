@@ -91,6 +91,19 @@
         <p>10.1 甲乙双方的品牌归各自所有，未取得对方书面授权，任何一方不得使用对方名称、LOGO以及涉及相关内容的销售、促销宣传材料及广告、报纸、杂志、宣传单等，否则应赔偿对方受到的损失。</p>
         <p>10.2 本协议未尽事宜，由甲乙双方协商后签订补充协议，补充协议与本协议具有同等法律效力。</p>
         <p>10.3 本协议一式两份，双方各执一份，每份具有同等法律效力。</p>
+
+        <p>（以下无正文，为签署页）</p>
+        <div style="height: 80px;"></div>
+
+        <p>（本页无正文，为深圳大千生活科技有限公司与【<span style="display: inline-block; width: 200px; vertical-align: middle;"></span>】《大千生活商户合作协议》之签署页）</p>
+        <div style="height: 100px;"></div>
+        <h3>甲方：深圳大千生活科技有限公司（盖章）</h3>
+        <div style="height: 120px;"></div>
+        <p>法定代表人或授权代表（签字）：</p>
+        <div style="height: 100px;"></div>
+        <h3>乙方：【<span style="display: inline-block; width: 200px; vertical-align: middle;"></span>】（盖章）</h3>
+        <div style="height: 120px;"></div>
+        <p>法定代表人或授权代表（签字）：</p>
     </div>
 </div>
 
