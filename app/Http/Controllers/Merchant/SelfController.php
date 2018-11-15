@@ -154,8 +154,8 @@ class SelfController extends Controller
         return view('merchant-electronic-contract', [
             'electronicContract' => $contract,
             'merchantInfo' => $merchant,
-            'startTime' => date('Y年m月d日', strtotime($contract->sign_time)),
-            'endTime' => date('Y年m月d日', strtotime($contract->expiry_time)),
+            'startTime' => date('【Y】年【m】月【d】日', strtotime($contract->sign_time)),
+            'endTime' => date('【Y】年【m】月【d】日', strtotime($contract->expiry_time)),
         ]);
     }
 }

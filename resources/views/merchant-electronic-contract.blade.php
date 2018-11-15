@@ -2,7 +2,7 @@
 <div class="rules">
     <h2>大千生活商户服务协议</h2>
     <div class="header">
-        <p>协议编号：【{{$electronicContract['el_contract_no']}}】</p>
+        <p style="margin-left: 400px; margin-bottom: 10px;">协议编号：【{{$electronicContract['el_contract_no']}}】</p>
         <p>本《大千生活商户合作协议》（以下简称“本协议”）由以下各方于{{$startTime}}签署：</p>
         <h4>甲方：深圳大千生活科技有限公司</h4>
         <p>统一社会信用代码：91440300MA5FAC9C21</p>
@@ -89,19 +89,20 @@
 
         <h3>十、生效及其他</h3>
         <p>10.1 甲乙双方的品牌归各自所有，未取得对方书面授权，任何一方不得使用对方名称、LOGO以及涉及相关内容的销售、促销宣传材料及广告、报纸、杂志、宣传单等，否则应赔偿对方受到的损失。</p>
-        <p>10.2 本协议未尽事宜，由甲乙双方协商后签订补充协议，补充协议与本协议具有同等法律效力。</p>
-        <p>10.3 本协议一式两份，双方各执一份，每份具有同等法律效力。</p>
+        <p>10.2 本协议经甲乙双方法定代表人或授权代表签字并加盖公章后生效。</p>
+        <p>10.3 本协议未尽事宜，由甲乙双方协商后签订补充协议，补充协议与本协议具有同等法律效力。</p>
+        <p>10.4 本协议一式两份，双方各执一份，每份具有同等法律效力。</p>
 
         <p>（以下无正文，为签署页）</p>
         <div style="height: 80px;"></div>
 
-        <p>（本页无正文，为深圳大千生活科技有限公司与【<span style="display: inline-block; width: 200px; vertical-align: middle;"></span>】《大千生活商户合作协议》之签署页）</p>
+        <p>（本页无正文，为深圳大千生活科技有限公司与【{{$merchantInfo['name']}}】《大千生活商户合作协议》之签署页）</p>
         <div style="height: 100px;"></div>
         <h3>甲方：深圳大千生活科技有限公司（盖章）</h3>
         <div style="height: 120px;"></div>
         <p>法定代表人或授权代表（签字）：</p>
         <div style="height: 100px;"></div>
-        <h3>乙方：【<span style="display: inline-block; width: 200px; vertical-align: middle;"></span>】（盖章）</h3>
+        <h3>乙方：【{{$merchantInfo['name']}}】（盖章）</h3>
         <div style="height: 120px;"></div>
         <p>法定代表人或授权代表（签字）：</p>
     </div>
@@ -110,12 +111,13 @@
 <style>
     .rules h2, .rules h3, .rules p {
         margin: 0;
+        line-height: 35px;
     }
 
     .rules h2 {
         text-align: center;
-        font-size: 20px;
-        margin: 0 0 20px;
+        font-size: 30px;
+        margin: 20px;
     }
 
     .rules h3 {
@@ -125,9 +127,22 @@
 
     .rules p {
         margin: 10px 0 0;
+        line-height: 35px;
+    }
+
+    .rules {
+        width: 800px;
+        margin: 0 auto;
     }
 
     .rules .header {
         margin: 0 0 20px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .rules .header > * {
+        width: 100%;
     }
 </style>
