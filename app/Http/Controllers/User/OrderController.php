@@ -173,9 +173,8 @@ class OrderController extends Controller
         $user = request()->get('current_user');
 
         $merchant = MerchantService::getById($goods->merchant_id);
-        if($merchant->status == Merchant::STATUS_OFF){
-            throw new BaseResponseException('商家异常，请联系商家');
-        }
+        $this->checkMerchant($merchant);
+
         $merchant_oper = Oper::findOrFail($merchant->oper_id);
         $currentOperId = request()->get('current_oper_id');
 
@@ -224,9 +223,8 @@ class OrderController extends Controller
         $userIdByDish = $dishes->user_id;
         $user = request()->get('current_user');
         $merchant = MerchantService::getById($dishes->merchant_id);
-        if($merchant->status == Merchant::STATUS_OFF){
-            throw new BaseResponseException('商家异常，请联系商家');
-        }
+        $this->checkMerchant($merchant);
+
         $currentOperId = request()->get('current_oper_id');
 
         if ($userIdByDish != $user->id) {
@@ -346,9 +344,7 @@ class OrderController extends Controller
         if(empty($merchant)){
             throw new DataNotFoundException('商户信息不存在！');
         }
-        if($merchant->status == Merchant::STATUS_OFF){
-            throw new BaseResponseException('商家异常，请联系商家');
-        }
+        $this->checkMerchant($merchant);
         $merchant_oper = Oper::find($merchant->oper_id);
         if (empty($merchant_oper)) {
             throw new DataNotFoundException('该商户的运营中心不存在！');
@@ -396,9 +392,7 @@ class OrderController extends Controller
         $order->pay_type = request()->get('pay_type',Payment::ID_WECHAT);
         $order->save();
         $merchant = MerchantService::getById($order->merchant_id);
-        if($merchant->status == Merchant::STATUS_OFF){
-            throw new BaseResponseException('商家异常，请联系商家');
-        }
+        $this->checkMerchant($merchant);
 
         if ($order->status == Order::STATUS_PAID || $order->status == Order::STATUS_FINISHED) {
             throw new BaseResponseException('订单已支付，请重新发起订单');
@@ -628,6 +622,24 @@ class OrderController extends Controller
         }
         $sdkConfig = $payApp->jssdk->sdkConfig($unifyResult['prepay_id']);
         return $sdkConfig;
+    }
+
+    /**
+     * 下单检查商户状态
+     * @param Merchant $merchant
+     * @return bool
+     */
+    private function checkMerchant(Merchant $merchant)
+    {
+
+        if ($merchant->audit_status != Merchant::AUDIT_STATUS_SUCCESS) {
+            throw new BaseResponseException('商家异常，请联系商家');
+        }
+        if($merchant->status == Merchant::STATUS_OFF){
+            throw new BaseResponseException('商家异常，请联系商家');
+        }
+
+        return true;
     }
 
 
