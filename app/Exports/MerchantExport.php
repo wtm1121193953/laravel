@@ -132,7 +132,7 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
             $data->city . ' ' . $data->area,
             Merchant::getMerchantStatusText($data->audit_status,$data->status),
             ['待审核', '审核通过', '审核不通过', '重新提交审核'][$data->audit_status],
-            $this->isPilot ? '' : ['', '周结', '半月结', '月结(自动)', '半年结', '年结', 'T+1(人工)', '未知'][$data->settlement_cycle_type],
+            $this->isPilot ? '' : ['', '周结', '半月结', 'T+1(自动)', '半年结', '年结', 'T+1(人工)', '未知'][$data->settlement_cycle_type],
         ];
     }
 
@@ -159,13 +159,13 @@ class MerchantExport implements FromQuery, WithMapping, WithHeadings
      * @return string
      */
     public function getOperBizMemberName($oper_id,$oper_biz_member_code){
-        $name = OperBizMember::where('oper_id', $oper_id)->where('code', $oper_biz_member_code)->value('name');
-        return (empty($name))? '' : '员工：'.$name;
+        $OperBizMember = OperBizMember::where('oper_id', $oper_id)->where('code', $oper_biz_member_code)->first();
+        return (empty($OperBizMember))? '无' : '员工/'.$OperBizMember->name.'/'.$OperBizMember->mobile;
     }
 
     public function getOperBizersName($bizerId){
-        $name =  Bizer::where('id',$bizerId)->value('name');
-        return (empty($name))? '' : '业务员：'.$name;
+        $Bizer =  Bizer::where('id',$bizerId)->first();
+        return (empty($Bizer))? '无' : '业务员/'.$Bizer->name.'/'.$Bizer->mobile;
     }
 
     /**
