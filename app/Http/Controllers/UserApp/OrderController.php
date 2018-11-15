@@ -185,9 +185,8 @@ class OrderController extends Controller
         $user = request()->get('current_user');
 
         $merchant = MerchantService::getById($goods->merchant_id);
-        if($merchant->status == Merchant::STATUS_OFF){
-            throw new BaseResponseException('商家异常，请联系商家');
-        }
+        $this->checkMerchant($merchant);
+
         $oper = Oper::find($merchant->oper_id);
         if (empty($oper)) {
             throw new DataNotFoundException('该商户的运营中心不存在！');
@@ -241,9 +240,8 @@ class OrderController extends Controller
         $userIdByDish = $dishes->user_id;
         $user = request()->get('current_user');
         $merchant = MerchantService::getById($dishes->merchant_id);
-        if($merchant->status == Merchant::STATUS_OFF){
-            throw new BaseResponseException('商家异常，请联系商家');
-        }
+        $this->checkMerchant($merchant);
+
         $oper = Oper::find($merchant->oper_id);
         if (empty($oper)) {
             throw new DataNotFoundException('该商户的运营中心不存在！');
@@ -343,9 +341,8 @@ class OrderController extends Controller
         if (empty($merchant)) {
             throw new DataNotFoundException('商户信息不存在！');
         }
-        if($merchant->status == Merchant::STATUS_OFF){
-            throw new BaseResponseException('商家异常，请联系商家');
-        }
+        $this->checkMerchant($merchant);
+
         $oper = Oper::find($merchant->oper_id);
         if (empty($oper)) {
             throw new DataNotFoundException('该商户的运营中心不存在！');
@@ -403,9 +400,7 @@ class OrderController extends Controller
         $order = Order::where('order_no', $orderNo)->first();
 
         $merchant = MerchantService::getById($order->merchant_id);
-        if($merchant->status == Merchant::STATUS_OFF){
-            throw new BaseResponseException('商家异常，请联系商家');
-        }
+        $this->checkMerchant($merchant);
 
         if ($order->status == Order::STATUS_PAID) {
             throw new ParamInvalidException('该订单已支付');
@@ -581,6 +576,25 @@ class OrderController extends Controller
         Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
         $walletPay = new WalletPay();
         return $walletPay->buy($user,$order);
+    }
+
+
+    /**
+     * 下单检查商户状态
+     * @param Merchant $merchant
+     * @return bool
+     */
+    private function checkMerchant(Merchant $merchant)
+    {
+
+        if ($merchant->audit_status != Merchant::AUDIT_STATUS_SUCCESS) {
+            throw new BaseResponseException('商家异常，请联系商家');
+        }
+        if($merchant->status == Merchant::STATUS_OFF){
+            throw new BaseResponseException('商家异常，请联系商家');
+        }
+
+        return true;
     }
 
 
