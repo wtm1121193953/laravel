@@ -27,6 +27,7 @@ class InviteStatisticsService extends BaseService
             ->groupBy('origin_id', 'origin_type')
             ->select('origin_id', 'origin_type')
             ->selectRaw('count(1) as total')
+            ->orderBy('origin_id')
             ->chunk(1000, function ($records) use ($date) {
                 foreach ($records as $record) {
                     // 统计时先查询, 如果存在, 则在原基础上修改
