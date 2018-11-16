@@ -2,6 +2,7 @@
 
 namespace App\Modules\Payment;
 
+use App\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -10,15 +11,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property string name
  * @property string class_name
  * @property string logo_url
- * @property tinyInteger type
- * @property tinyInteger status
- * @property tinyInteger on_pc
- * @property tinyInteger on_miniprogram
- * @property tinyInteger on_app
+ * @property int type
+ * @property int status
+ * @property int on_pc
+ * @property int on_miniprogram
+ * @property int on_app
  * @property string view_name
- * @property text configs
+ * @property string configs
  */
-class Payment extends Model
+class Payment extends BaseModel
 {
     //
     const TYPE_WECHAT = 1;
