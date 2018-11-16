@@ -71,26 +71,12 @@ class V1_4_8 extends Command
                 ->orderBy('id')
                 ->first();
             if (!empty($auditRecord)) {
-                $merchant->first_active_time = $auditRecord->created_at;
+                $merchant->first_active_time = $auditRecord->updated_at;
             } else {
                 $merchant->first_active_time = $merchant->active_time;
             }
             $merchant->save();
         }
-        Merchant::chunk(1000, function ($merchants) {
-            foreach ($merchants as $merchant) {
-                $auditRecord = MerchantAudit::where('merchant_id', $merchant->id)
-                    ->where('status', MerchantAudit::STATUS_AUDIT_SUCCESS)
-                    ->orderBy('id')
-                    ->first();
-                if (!empty($auditRecord)) {
-                    $merchant->first_active_time = $auditRecord->updated_at;
-                } else {
-                    $merchant->first_active_time = $merchant->active_time;
-                }
-                $merchant->save();
-            }
-        });
         $this->info('填充商户首次审核通过时间完成');
 
         /*************统计运营中心5月份之后历史运营数据start*************/
