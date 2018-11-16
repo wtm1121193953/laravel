@@ -72,7 +72,7 @@ class V1_4_8 extends Command
                     ->orderBy('id')
                     ->first();
                 if (!empty($auditRecord)) {
-                    $merchant->first_active_time = $auditRecord->created_at;
+                    $merchant->first_active_time = $auditRecord->updated_at;
                 } else {
                     $merchant->first_active_time = $merchant->active_time;
                 }
