@@ -65,18 +65,22 @@ class V1_4_8 extends Command
         $this->info('备注修改完成');
 
         //填充商户首次审核通过时间
-        foreach (Merchant::where('id', '>', 0)->cursor() as $merchant) {
-            $auditRecord = MerchantAudit::where('merchant_id', $merchant->id)
-                ->where('status', MerchantAudit::STATUS_AUDIT_SUCCESS)
-                ->orderBy('id')
-                ->first();
-            if (!empty($auditRecord)) {
-                $merchant->first_active_time = $auditRecord->updated_at;
-            } else {
-                $merchant->first_active_time = $merchant->active_time;
+        Merchant::chunk(100, function ($merchants) {
+            foreach ($merchants as $merchant) {
+                $auditRecord = MerchantAudit::where('merchant_id', $merchant->id)
+                    ->where('status', MerchantAudit::STATUS_AUDIT_SUCCESS)
+                    ->orderBy('id')
+                    ->first();
+                if (!empty($auditRecord)) {
+                    $merchant->first_active_time = $auditRecord->updated_at;
+                } else {
+                    $merchant->first_active_time = $merchant->active_time;
+                }
+                $merchant->save();
+                unset($auditRecord);
+                unset($merchant);
             }
-            $merchant->save();
-        }
+        });
         $this->info('填充商户首次审核通过时间完成');
 
         /*************统计运营中心5月份之后历史运营数据start*************/
