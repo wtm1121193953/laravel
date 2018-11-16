@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantAccountService;
 use App\Modules\Merchant\MerchantElectronicContractService;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Setting\SettingService;
 use App\Result;
 use Carbon\Carbon;
 
@@ -105,8 +106,13 @@ class SelfController extends Controller
             // 1-未过期  0-已过期
             $contract->status = ($contract->expiry_time > Carbon::now()) ? 1 : 0;
         }
+        $merchantContractSwitch = SettingService::get('merchant_electronic_contract');
+        $contractSwitch = $merchantContractSwitch->isEmpty() ? 0 : $merchantContractSwitch->get('merchant_electronic_contract');
 
-        return Result::success($contract);
+        return Result::success([
+            'contract' => $contract,
+            'contractSwitch' => $contractSwitch,
+        ]);
     }
 
     public function getMerchantAndElectronicContract()

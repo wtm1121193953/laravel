@@ -44,6 +44,9 @@ class SettingService
         'fee_splitting_ratio_to_parent_of_merchant_level_2' => '分润: 返上级比例(商户等级2)',
         'fee_splitting_ratio_to_parent_of_merchant_level_3' => '分润: 返上级比例(商户等级3)',
         'fee_splitting_ratio_to_parent_of_oper' => '分润: 返上级比例(运营中心)',
+
+        // 商户端电子合同开关
+        'merchant_electronic_contract' => '商户端电子合同开关|商户端是否显示电子合同的签约和详情页',
     ];
 
     /**

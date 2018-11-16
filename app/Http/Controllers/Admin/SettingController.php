@@ -111,4 +111,31 @@ class SettingController extends Controller
             'article' => $article,
         ]);
     }
+
+
+    /**
+     * 获取商户端电子合同开关 设置
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getMerchantElectronicContractList()
+    {
+        $settings = SettingService::get('merchant_electronic_contract');
+        return Result::success([
+            'list' => $settings
+        ]);
+    }
+
+    /**
+     * 设置 商户端电子合同开关
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     */
+    public function setMerchantElectronicContract(){
+        $data = request()->all([
+            'merchant_electronic_contract'
+        ]);
+        foreach ($data as $key => $value) {
+            SettingService::set($key, $value);
+        }
+        return Result::success();
+    }
 }

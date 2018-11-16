@@ -1,6 +1,12 @@
 <template>
-    <page title="电子合同管理">
-        <el-form label-width="100px" v-loading="formLoading" v-if="!formLoading">
+    <page title="电子合同管理" v-loading="formLoading">
+        <el-col v-if="contractSwitch == 0">
+            努力上线中，敬请期待~
+        </el-col>
+        <el-col v-else-if="electronicContract == null">
+            请重新登录进行电子签约
+        </el-col>
+        <el-form label-width="100px" v-else>
             <el-form-item label="合同编号">{{electronicContract.el_contract_no}}</el-form-item>
             <el-form-item label="签约时间">{{electronicContract.sign_time}}</el-form-item>
             <el-form-item label="失效时间">{{electronicContract.expiry_time}}</el-form-item>
@@ -33,6 +39,7 @@
         data() {
             return {
                 electronicContract: null,
+                contractSwitch: 0,
                 showElectronicContract: false,
                 formLoading: false,
                 detailPath: window.location.origin + '/api/merchant/self/showElectronicContract'
@@ -42,7 +49,8 @@
             getContract() {
                 this.formLoading  = true;
                 api.get('/self/checkElectronicContract').then(data => {
-                    this.electronicContract = data;
+                    this.electronicContract = data.contract;
+                    this.contractSwitch = data.contractSwitch;
                     this.formLoading = false;
                 })
             },

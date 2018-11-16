@@ -57,7 +57,7 @@ class MerchantElectronicContractService extends BaseService
     {
         $contract = self::getById($id);
         $contract->sign_time = Carbon::now();
-        $contract->expiry_time = $contract->sign_time->copy()->addYear(1);
+        $contract->expiry_time = $contract->sign_time->copy()->addYear(1)->subDay();
         $contract->save();
 
         return $contract;
