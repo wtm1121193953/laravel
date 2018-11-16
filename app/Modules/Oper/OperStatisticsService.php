@@ -31,15 +31,14 @@ class OperStatisticsService extends BaseService
 
 
         $query->groupBy('oper_id');
-        $query->orderBy('oper_id', 'desc');
         $query->with('oper:id,name,province,city');
 
         if ($return_query) {
             return  $query;
         }
         $pageSize = isset($params['pageSize']) ? $params['pageSize'] : 15;
-        $orderColumn = $params['orderColumn'];
-        $orderType = $params['orderType'];
+        $orderColumn = $params['orderColumn'] ?: 'oper_id';
+        $orderType = $params['orderType'] ?: 'descending';
 
         $data = $query->orderBy($orderColumn, $orderType == 'descending' ? 'desc' : 'asc')
             ->paginate($pageSize);
