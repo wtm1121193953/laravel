@@ -13,6 +13,7 @@ use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Merchant\MerchantDraft;
 use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
+use App\Modules\Payment\Payment;
 use App\Modules\Settlement\Settlement;
 use App\Modules\Settlement\SettlementPlatform;
 use App\Modules\User\User;
@@ -63,6 +64,19 @@ class V1_4_8 extends Command
             DB::statement($sql);
         }
         $this->info('备注修改完成');
+
+        // 初始化支付方式
+        Payment::where('id', '>', 0)->delete();
+        $sqls = [
+            "INSERT INTO `payments` (`id`, `type`, `name`, `view_name`, `logo_url`, `class_name`, `status`, `on_pc`, `on_miniprogram`, `on_app`, `configs`, `created_at`, `updated_at`) VALUES (1, 1, '微信', '微信', 'https://daqian-public-1257640953.cos.ap-guangzhou.myqcloud.com/1b21d7cc263fb6e503c4dd8e054d3e67.png', 'WechatPay', 1, 1, 1, 1, '{\"a\":\"1\",\"b\":\"22\"}', '2018-10-15 16:04:27', '2018-11-12 15:19:19')",
+            "INSERT INTO `payments` (`id`, `type`, `name`, `view_name`, `logo_url`, `class_name`, `status`, `on_pc`, `on_miniprogram`, `on_app`, `configs`, `created_at`, `updated_at`) VALUES (2, 2, '支付宝支付', '', 'https://daqian-public-1257640953.cos.ap-guangzhou.myqcloud.com/1ed794dd63cd8fcc5f26882680844837.jpg', 'AliPay', 1, 0, 0, 0, '{\"a\":\"1\",\"b\":\"22\"}', '2018-10-16 10:16:37', '2018-10-16 11:15:58')",
+            "INSERT INTO `payments` (`id`, `type`, `name`, `view_name`, `logo_url`, `class_name`, `status`, `on_pc`, `on_miniprogram`, `on_app`, `configs`, `created_at`, `updated_at`) VALUES (3, 1, '融宝支付', '', 'https://daqian-public-1257640953.cos.ap-guangzhou.myqcloud.com/1ed794dd63cd8fcc5f26882680844837.jpg', 'ReaPay', 1, 0, 0, 0, '', '2018-10-16 10:20:56', '2018-10-16 10:20:56')",
+            "INSERT INTO `payments` (`id`, `type`, `name`, `view_name`, `logo_url`, `class_name`, `status`, `on_pc`, `on_miniprogram`, `on_app`, `configs`, `created_at`, `updated_at`) VALUES (4, 0, '钱包余额', '钱包余额', 'https://daqian-public-1257640953.cos.ap-guangzhou.myqcloud.com/bba04c0fd4c57de789aa180372ca65b0.png', 'WalletPay', 1, 0, 1, 1, '', '2018-10-29 14:04:17', '2018-11-12 15:17:55')",
+        ];
+        foreach ($sqls as $sql) {
+            DB::statement($sql);
+        }
+        $this->info('初始化支付方式');
 
         //填充商户首次审核通过时间
         Merchant::chunk(100, function ($merchants) {
