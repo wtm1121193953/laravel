@@ -129,7 +129,7 @@
                     if (!this.check) {
                         let date = new Date(data.nowTime.date);
                         this.startTime = '【' + date.getFullYear() + '】年【' + (date.getMonth() + 1) + '】月【' + date.getDate() + '】日';
-                        this.endTime = '【' + (date.getFullYear() + 1) + '】年【' + (date.getMonth() + 1) + '】月【' + date.getDate() + '】日';
+                        this.endTime = '【' + (date.getFullYear() + 1) + '】年【' + (date.getMonth() + 1) + '】月【' + (date.getDate() - 1) + '】日';
                     } else {
                         let signTime = new Date(data.contract.sign_time);
                         this.startTime = '【' + signTime.getFullYear() + '】年【' + (signTime.getMonth() + 1) + '】月【' + signTime.getDate() + '】日';
