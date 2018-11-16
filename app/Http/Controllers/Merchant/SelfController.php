@@ -106,7 +106,8 @@ class SelfController extends Controller
             // 1-未过期  0-已过期
             $contract->status = ($contract->expiry_time > Carbon::now()) ? 1 : 0;
         }
-        $contract->contract_switch = SettingService::get('merchant_electronic_contract')->get('merchant_electronic_contract');
+        $merchantContractSwitch = SettingService::get('merchant_electronic_contract');
+        $contract->contract_switch = $merchantContractSwitch->isEmpty() ? 0 : $merchantContractSwitch->get('merchant_electronic_contract');
 
         return Result::success($contract);
     }
