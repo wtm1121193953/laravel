@@ -279,7 +279,7 @@
             },
 
             checkMerchantElectronicContract() {
-                if (this.electronicContract == null || this.electronicContract.status == 0) {
+                if ((this.electronicContract == null || this.electronicContract.status == 0) && this.electronicContract.contract_switch == 1) {
                     this.showElectronicContract = true;
                 }
             }

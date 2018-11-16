@@ -1,6 +1,9 @@
 <template>
     <page title="电子合同管理">
-        <el-form label-width="100px" v-loading="formLoading" v-if="!formLoading">
+        <el-col v-if="electronicContract.contract_switch == 0">
+            努力上线中，敬请期待~
+        </el-col>
+        <el-form label-width="100px" v-loading="formLoading" v-else>
             <el-form-item label="合同编号">{{electronicContract.el_contract_no}}</el-form-item>
             <el-form-item label="签约时间">{{electronicContract.sign_time}}</el-form-item>
             <el-form-item label="失效时间">{{electronicContract.expiry_time}}</el-form-item>

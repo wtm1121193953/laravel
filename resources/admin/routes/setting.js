@@ -7,6 +7,7 @@ import PageSetting from '../components/setting/page-setting'
 import PageSettingForm from '../components/setting/page-setting-form'
 import FilterKeywordList from '../components/setting/filter-keyword/list'
 import BanksList from '../components/bank/list'
+import MerchantElectronicContract from '../components/setting/merchant-electronic-contract'
 
 export default [
     // 系统设置模块
@@ -20,6 +21,7 @@ export default [
             {path: 'setting/page_setting_form', component: PageSettingForm, name: 'PageSettingForm'},
             {path: 'setting/filter_keyword_list', component: FilterKeywordList, name: 'FilterKeywordList'},
             {path: 'bank/list', component: BanksList, name: 'BanksList'},
+            {path: 'setting/merchant_electronic_contract', component: MerchantElectronicContract, name: 'MerchantElectronicContract'},
         ]
     },
 ]
