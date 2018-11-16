@@ -20,6 +20,7 @@ class MessageController extends Controller
      */
     public function isShowRedDot(Request $request)
     {
+        $pollingTime = 60;  // 轮询时间
         $user = $request->get('current_user');
         $lastReadTime = Cache::get('message_last_read_time'.$user->id);
         $exists = Db::table('message_system')
@@ -28,7 +29,7 @@ class MessageController extends Controller
             })
             ->exists();
         if($exists){
-            return Result::success(['is_show'=>true]);
+            return Result::success(['is_show'=>true,'polling_time'=>$pollingTime]);
         }
         $exists = Db::table('message_notice')
             ->when( $lastReadTime, function ($query) use ($lastReadTime) {
@@ -36,9 +37,9 @@ class MessageController extends Controller
             })
             ->exists();
         if($exists){
-            return Result::success(['is_show'=>true]);
+            return Result::success(['is_show'=>true,'polling_time'=>$pollingTime]);
         }
-        return Result::success(['is_show'=>false]);
+        return Result::success(['is_show'=>false,'polling_time'=>$pollingTime]);
     }
 
     public function userBehavior(Request $request)
