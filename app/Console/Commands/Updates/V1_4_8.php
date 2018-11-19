@@ -202,8 +202,10 @@ class V1_4_8 extends Command
 
 
         /**********************结算单历史数据 start**********************/
+        $this->info('结算单历史数据 start');
         $sql = "update settlement_platforms s set settlement_cycle_type = (select settlement_cycle_type from merchants where id = s.merchant_id);";
         DB::statement($sql);
+        $this->info('结算单历史数据 end');
         /**********************结算单历史数据 end**********************/
     }
 }
