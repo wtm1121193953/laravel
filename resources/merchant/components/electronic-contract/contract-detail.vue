@@ -1,6 +1,7 @@
 <template>
-    <el-row :gutter="20" v-if="loading" v-loading="!loading">
-        <el-col class="rules">
+    <el-row class="rules-box" :gutter="20" v-if="loading" v-loading="!loading">
+        <el-col>在此特别提醒您(商户）在确认商户电子协议之前，请认真阅读本《大千生活商户协议》，确保您充分了解本协议中各条款。请您审慎阅读并选择同意/不同意本协议。除非您接受本协议所有条款，否则您无权注册、登录或使用本协议所涉服务。您的登录、使用等行为将视为对本协议的接受，并同意接受本协议各项条款的约束。</el-col>
+        <el-col class="rules" style="height: 600px; overflow-y: auto; margin-top: 15px; border: solid 1px">
             <h2>大千生活商户服务协议</h2>
             <div class="header">
                 <p>协议编号：【{{electronicContract.el_contract_no}}】</p>
@@ -94,7 +95,7 @@
                 <p>10.3 本协议一式两份，双方各执一份，每份具有同等法律效力。</p>
             </div>
         </el-col>
-        <el-col style="text-align: center" v-if="!check">
+        <el-col style="text-align: center; margin-top: 15px;" v-if="!check">
             <el-button @click="cancel">取 消</el-button>
             <el-button type="primary" @click="commit">我同意此协议并签约</el-button>
         </el-col>
@@ -160,6 +161,10 @@
 </script>
 
 <style scoped>
+    .rules-box {
+        margin-top: -40px;
+    }
+
     .rules h2, .rules h3, .rules p {
         margin: 0;
     }
