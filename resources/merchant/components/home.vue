@@ -105,7 +105,7 @@
             </el-dialog>
 
             <el-dialog
-                    title="大千生活商户服务协议"
+                    title=""
                     :visible.sync="showElectronicContract"
                     center
                     :close-on-click-modal="false"

@@ -85,33 +85,6 @@ class Test extends Command
      */
     public function handle()
     {
-
-
-        //填充商户首次审核通过时间
-        Merchant::chunk(1000, function ($merchants) {
-            foreach ($merchants as $merchant) {
-                $auditRecord = MerchantAudit::where('merchant_id', $merchant->id)
-                    ->where('status', MerchantAudit::STATUS_AUDIT_SUCCESS)
-                    ->orderBy('id')
-                    ->first();
-                if (!empty($auditRecord)) {
-                    $merchant->first_active_time = $auditRecord->updated_at;
-                } else {
-                    $merchant->first_active_time = $merchant->active_time;
-                }
-                $merchant->save();
-            }
-        });
-        $this->info('填充商户首次审核通过时间完成');
-
-        return;
-
-        //new SettlementWeekly(Merchant::SETTLE_WEEKLY);
-
-        SettlementWeekly::dispatch(Merchant::SETTLE_WEEKLY);
-        dd('ok');
-
-
         $i = 1;
         while (1) {
             $endTime = date('Y-m-d', strtotime("-{$i} day")) . ' 23:59:59';
