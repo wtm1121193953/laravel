@@ -1,8 +1,8 @@
 <template>
     <el-row class="rules-box" :gutter="20" v-if="loading" v-loading="!loading">
-        <el-col>在此特别提醒您(商户）在确认商户电子协议之前，请认真阅读本《大千生活商户协议》，确保您充分了解本协议中各条款。请您审慎阅读并选择同意/不同意本协议。除非您接受本协议所有条款，否则您无权注册、登录或使用本协议所涉服务。您的登录、使用等行为将视为对本协议的接受，并同意接受本协议各项条款的约束。</el-col>
+        <el-col class="red-color">在此特别提醒您(商户）在确认商户电子协议之前，请认真阅读本《大千生活商户协议》，确保您充分了解本协议中各条款。请您审慎阅读并选择同意/不同意本协议。除非您接受本协议所有条款，否则您无权注册、登录或使用本协议所涉服务。您的登录、使用等行为将视为对本协议的接受，并同意接受本协议各项条款的约束。</el-col>
         <el-col class="rules" style="height: 600px; overflow-y: auto; margin-top: 15px; border: solid 1px">
-            <h2>大千生活商户服务协议</h2>
+            <h2 class="red-color">大千生活商户服务协议</h2>
             <div class="header">
                 <p>协议编号：【{{electronicContract.el_contract_no}}】</p>
                 <p>本《大千生活商户合作协议》（以下简称“本协议”）由以下各方于{{startTime}}签署：</p>
@@ -10,11 +10,11 @@
                 <p>统一社会信用代码：91440300MA5FAC9C21</p>
                 <p>注册地址：深圳市南山区南头街道桃园路田厦金牛广场A座4008室</p>
                 <p>电话：0755-32983328</p>
-                <h4>乙方：{{merchantInfo.name}}</h4>
-                <p>统一社会信用代码：{{merchantInfo.organization_code}}</p>
-                <p>注册地址：{{merchantInfo.province + merchantInfo.city + merchantInfo.area + merchantInfo.address}}</p>
-                <p>联系人：{{merchantInfo.contacter}}</p>
-                <p>电话：{{merchantInfo.contacter_phone}}</p>
+                <h4>乙方：<span  class="red-color">{{merchantInfo.name}}</span></h4>
+                <p>统一社会信用代码：<span  class="red-color">{{merchantInfo.organization_code}}</span></p>
+                <p>注册地址：<span  class="red-color">{{merchantInfo.province + merchantInfo.city + merchantInfo.area + merchantInfo.address}}</span></p>
+                <p>联系人：<span  class="red-color">{{merchantInfo.contacter}}</span></p>
+                <p>电话：<span  class="red-color">{{merchantInfo.contacter_phone}}</span></p>
                 <p>甲乙双方为了发挥各自的优势，根据《中华人民共和国合同法》的规定，本着相互信任、真诚合作、平等自愿、等价有偿的原则，经充分友好协商，就甲方为乙方在“大千生活”平台上提供其产品及服务的在线信息发布服务的合作事宜达成如下协议：</p>
             </div>
             <div class="content">
@@ -26,7 +26,7 @@
                 <p>按照本协议的约定，甲方为乙方在“大千生活”平台（以下简称“甲方平台”）上提供其产品及服务的在线信息发布服务，乙方向甲方支付相应的服务费。</p>
 
                 <h3>三、合作期限</h3>
-                <p>甲乙双方合作期限为自本协议生效之日起【1】年，即{{startTime}}至{{endTime}}。除非本协议到期前三十日内，其中一方向另一方书面提出终止合作，否则本协议期限届满后将自动延续【1】年，延续次数不限。</p>
+                <p>甲乙双方合作期限为自本协议生效之日起【1】年，即<span  class="red-color">{{startTime}}至{{endTime}}</span>。除非本协议到期前三十日内，其中一方向另一方书面提出终止合作，否则本协议期限届满后将自动延续【1】年，延续次数不限。</p>
 
                 <h3>四、甲方的权利与义务</h3>
                 <p>4.1 甲方为乙方在甲方平台上提供其产品及服务的在线信息发布服务。</p>
@@ -48,13 +48,13 @@
                 <p>5.2.3 因乙方资质问题（含资质变更）导致本协议无法继续履行的，甲方有权解除本协议，由此产生的一切责任由乙方承担。</p>
                 <p>5.2.4 乙方同意为其未及时的告知或更新其资质文件承担全部责任，乙方保证其向甲方提供的全部资质文件真实、准确且不存在超过时效问题（即保证所有资质文件在本协议履行期间都处于有效期内），如因上述原因发生纠纷或被相关机关处罚，乙方应当承担全部责任，导致甲方损失的，应当承担赔偿责任。</p>
                 <p>5.3 乙方应按本协议约定向甲方支付服务费，具体约定如下：</p>
-                <p>5.3.1 乙方应以其在甲方平台提供产品和服务所产生的销售额为基数计算应向甲方支付的服务费，服务费的计算标准为：每笔交易销售额的【{{merchantInfo.settlement_rate}}】%。乙方同意，在本协议有效期内，在甲方通过平台公告、邮件方式或其他书面方式将服务费调整方案通知乙方后，乙方即按照调整后的服务费计算标准向甲方支付服务费。</p>
+                <p>5.3.1 乙方应以其在甲方平台提供产品和服务所产生的销售额为基数计算应向甲方支付的服务费，服务费的计算标准为：每笔交易销售额的【<span  class="red-color">{{merchantInfo.settlement_rate}}</span>】%。乙方同意，在本协议有效期内，在甲方通过平台公告、邮件方式或其他书面方式将服务费调整方案通知乙方后，乙方即按照调整后的服务费计算标准向甲方支付服务费。</p>
                 <p>5.3.2 消费者通过甲方平台购买乙方产品或服务的，其所支付的款项由消费者按照甲方平台指引支付至甲方账户。在甲方账户收到消费者支付的前述款项后两个工作日内，甲方应将扣除本条第5.3.1项约定的服务费后的剩余款项支付至乙方指定的账户。</p>
 
                 <h3>乙方指定账户信息如下：</h3>
-                <p>户名：【{{merchantInfo.bank_open_name}}】</p>
-                <p>开户行：【{{merchantInfo.bank_name}}】</p>
-                <p>账号：【{{merchantInfo.bank_card_no}}】</p>
+                <p>户名：【<span  class="red-color">{{merchantInfo.bank_open_name}}</span>】</p>
+                <p>开户行：【<span  class="red-color">{{merchantInfo.bank_name}}</span>】</p>
+                <p>账号：【<span  class="red-color">{{merchantInfo.bank_card_no}}</span>】</p>
                 <p>5.3.3 乙方指定账户如有任何变更需自变更之日起三日内书面通知甲方，否则由乙方自行承担一切不利后果；若甲方在收到乙方的书面通知前已支付款项或存在其他无法变更账户的情形，则甲方可继续向本条所确认的银行账户支付款项。</p>
                 <p>5.4 乙方保证其在甲方平台发布的信息合法、真实和有效，不存在任何虚假、不实、错误及误导，并且保证自身具备提供产品和服务所需的资质批文、管理制度及合格人员，否则乙方将承担全部的经济损失及法律责任。</p>
                 <p>5.5 乙方承诺在甲方平台开展销售产品和服务等经营活动时严格遵守《中华人民共和国消费者权益保护法》等相关法律法规，遵守甲方平台的相关规则，尊重和保护消费者的隐私权和其他法定权利。</p>
@@ -186,5 +186,9 @@
 
     .rules .header {
         margin: 0 0 20px;
+    }
+
+    .red-color {
+        color: red;
     }
 </style>
