@@ -92,7 +92,6 @@ class V1_4_8 extends Command
                 }
                 $merchant->save();
                 unset($auditRecord);
-                unset($merchant);
             }
         });
         $this->info('填充商户首次审核通过时间完成');
