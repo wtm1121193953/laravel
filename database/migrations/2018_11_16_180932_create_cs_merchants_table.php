@@ -20,6 +20,7 @@ class CreateCsMerchantsTable extends Migration
             $table->integer('merchant_category_id')->index()->default(0)->comment('商家类别ID');
             $table->string('name')->default('')->comment('商家名称');
             $table->string('brand')->default('')->comment('商家品牌');
+            $table->string('signboard_name')->default('')->comment('商家招牌名称');
             $table->tinyInteger('region')->index()->default(1)->comment('运营地区/大区 1-中国 2-美国 3-韩国 4-香港');
             $table->string('province')->default('')->comment('所在省份');
             $table->integer('province_id')->index()->default(0)->comment('所在省份Id');
@@ -74,17 +75,18 @@ class CreateCsMerchantsTable extends Migration
             $table->string('bank_open_address')->default('')->comment('开户支行地址');
 
             $table->tinyInteger('audit_status')->default(0)->comment('商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核');
+            $table->string('audit_suggestion',128)->default('')->comment('审核意见');
 
-            $table->integer('audit_oper_id')->dafault(0)->comment('当前提交审核的运营中心ID');
-            $table->integer('creator_oper_id')->dafault(0)->comment('录入资料的运营中心ID');
-            $table->string('bank_card_pic_a')->default('')->comment('客服电话');
-            $table->string('service_phone',500)->default('')->comment('法人银行卡正面照');
+            $table->integer('audit_oper_id')->default(0)->comment('当前提交审核的运营中心ID');
+            $table->integer('creator_oper_id')->default(0)->comment('录入资料的运营中心ID');
+            $table->string('service_phone')->default('')->comment('客服电话');
+            $table->string('bank_card_pic_a',500)->default('')->comment('法人银行卡正面照');
             $table->string('other_card_pic_urls',2000)->default('')->comment('其他证件照片');
             $table->string('oper_salesman')->default('')->comment('运营中心业务人员姓名');
             $table->string('oper_biz_member_code',10)->default('')->comment('运营中心业务员推荐码');
 
-            $table->dateTime('active_time')->default('0000-00-00 00:00:00')->comment('最近激活时间, 即商户最近一次审核通过时间');
-            $table->dateTime('first_active_time')->default('0000-00-00 00:00:00')->comment('首次审核通过时间');
+            $table->dateTime('active_time')->comment('最近激活时间, 即商户最近一次审核通过时间');
+            $table->dateTime('first_active_time')->comment('首次审核通过时间');
             $table->integer('mapping_user_id')->dafault(0)->comment('商户关联的user_id');
             $table->tinyInteger('level')->default(1)->comment('商户等级 1-签约商户 2-联盟商户 3-品牌商户');
             $table->decimal('lowest_amount')->default(0.00)->comment('最低消费');
@@ -92,6 +94,7 @@ class CreateCsMerchantsTable extends Migration
             $table->integer('bizer_id')->dafault(0)->comment('业务员ID');
             $table->timestamps();
 
+            $table->softDeletes();
             $table->comment = '超市商家表';
         });
     }
