@@ -79,6 +79,7 @@ class V1_4_8 extends Command
         $this->info('初始化支付方式');
 
         //填充商户首次审核通过时间
+        $this->info('开始填充商户首次审核通过时间');
         Merchant::chunk(100, function ($merchants) {
             foreach ($merchants as $merchant) {
                 $auditRecord = MerchantAudit::where('merchant_id', $merchant->id)
@@ -97,6 +98,7 @@ class V1_4_8 extends Command
         $this->info('填充商户首次审核通过时间完成');
 
         /*************统计运营中心5月份之后历史运营数据start*************/
+        $this->info('统计运营中心5月份之后历史运营数据start');
         $i = 1;
         while (1) {
             $endTime = date('Y-m-d', strtotime("-{$i} day")) . ' 23:59:59';
@@ -106,6 +108,7 @@ class V1_4_8 extends Command
             }
             $i++;
         }
+        $this->info('统计运营中心5月份之后历史运营数据end');
 
         /**********************系统图片迁移COS start**********************/
         $this->info('系统图片迁移COS start');
