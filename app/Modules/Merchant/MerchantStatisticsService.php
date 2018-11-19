@@ -27,20 +27,29 @@ class MerchantStatisticsService extends BaseService
 
         if ($date >= date('Y-m-d', time())) return;
 
+        $merchantArray = [];
+
         Order::where('status', Order::STATUS_FINISHED)
             ->whereBetween('pay_time', [$startTime, $endTime])
-            ->chunk(1000, function($orders) use ($date) {
+            ->chunk(1000, function($orders) use (&$merchantArray) {
                 foreach ($orders as $order) {
-                    $merchantStatistics = self::getStatisticsByMerchantIdAndDate($order->merchant_id, $date, $order->oper_id);
-
-                    $merchantStatistics->increment('order_finished_amount', $order->pay_price);
-                    $merchantStatistics->increment('order_finished_num', 1);
+                    if (!empty($merchantArray[$order->merchant_id])) {
+                        $merchantArray[$order->merchant_id]['order_finished_amount'] += $order->pay_price;
+                        $merchantArray[$order->merchant_id]['order_finished_num'] += 1;
+                    } else {
+                        $merchantArray[$order->merchant_id] = [
+                            'order_finished_amount' => $order->pay_price,
+                            'order_finished_num' => 1,
+                            'invite_user_num' => 0,
+                            'oper_id' => $order->oper_id,
+                        ];
+                    }
                 }
             });
 
         InviteUserRecord::where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
             ->whereBetween('created_at', [$startTime, $endTime])
-            ->chunk(1000, function ($inviteRecords) use ($date) {
+            ->chunk(1000, function ($inviteRecords) use (&$merchantArray) {
                  foreach ($inviteRecords as $inviteRecord) {
                      $merchant = MerchantService::getById($inviteRecord->origin_id);
                      if (empty($merchant)) {
@@ -50,11 +59,35 @@ class MerchantStatisticsService extends BaseService
                          ]);
                          continue;
                      }
-                     $merchantStatistics = self::getStatisticsByMerchantIdAndDate($inviteRecord->origin_id, $date, $merchant->oper_id);
 
-                     $merchantStatistics->increment('invite_user_num', 1);
+                     if (!empty($merchantArray[$inviteRecord->origin_id])) {
+                         $merchantArray[$inviteRecord->origin_id]['invite_user_num'] += 1;
+                     } else {
+                         $merchantArray[$inviteRecord->origin_id] = [
+                             'order_finished_amount' => 0,
+                             'order_finished_num' => 0,
+                             'invite_user_num' => 1,
+                             'oper_id' => $merchant->oper_id,
+                         ];
+                     }
                  }
             });
+
+        if (!empty($merchantArray)) {
+            foreach ($merchantArray as $key => $value) {
+                $where['merchant_id'] = $key;
+                $where['date'] = $date;
+
+                $row['oper_id'] = $value['oper_id'];
+                $row['order_finished_amount'] = $value['order_finished_amount'];
+                $row['order_finished_num'] = $value['order_finished_num'];
+                $row['invite_user_num'] = $value['invite_user_num'];
+
+                $row = array_merge($row,$where);
+
+                (new MerchantStatistics())->updateOrCreate($where, $row);
+            }
+        }
     }
 
     /**
