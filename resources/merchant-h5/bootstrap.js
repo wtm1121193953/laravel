@@ -29,7 +29,7 @@ axios.defaults.headers['Content-Type'] = 'application/json'
  * 引入 Lockr 并全局挂载
  */
 import Lockr from 'lockr'
-window.Lockr = Object.assign({}, Lockr)
+window.Lockr = Lockr
 // 设置Lockr前缀
 Lockr.prefix = 'merchant_'
 // 修复Lockr的rm方法没有使用前缀的bug

@@ -21,11 +21,10 @@
                         size="small"
                 >
                 </el-date-picker>
-                <el-button type="primary" size="small" @click="getList">查询</el-button>
             </template>
 
             <template>
-                <el-select v-model="userId" filterable placeholder="请选择" size="small" @change="getList">
+                <!--<el-select v-model="userId" filterable placeholder="请选择" size="small" @change="getList">
                     <el-option label="全部" value=0></el-option>
                     <el-option
                             v-for="item in users"
@@ -33,8 +32,10 @@
                             :label="item.mobile"
                             :value="item.id">
                     </el-option>
-                </el-select>
+                </el-select>-->
+                <el-input v-model="userId" size="small" clearable class="w-200" placeholder="请输入用户ID"></el-input>
             </template>
+            <el-button type="primary" size="small" @click="search">查询</el-button>
             <el-button type="success" size="small" @click="dataExport">导出</el-button>
         </el-col>
         <el-col class="m-t-15 m-b-15">
@@ -99,6 +100,10 @@
 
         },
         methods: {
+            search() {
+                this.query.page = 1;
+                this.getList();
+            },
             sortChange (column) {
                 this.query.orderColumn = column.prop;
                 this.query.orderType = column.order;
@@ -153,11 +158,6 @@
                     endDate: endDate,
                 };
             },
-            getUsers() {
-                api.get('/statistics/all_users').then(data => {
-                    this.users = data;
-                })
-            },
             dataExport() {
                 let message = '确定要导出当前筛选的列表么？'
                 if(this.timeType == 'other' && this.dateRange.length < 2){
@@ -195,7 +195,6 @@
         },
         created(){
             this.getList();
-            this.getUsers();
         },
         watch:{
             timeType(val){
