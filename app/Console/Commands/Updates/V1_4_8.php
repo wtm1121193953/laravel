@@ -197,5 +197,11 @@ class V1_4_8 extends Command
         $bar->finish();
         $this->info('系统图片迁移COS end');
         /**********************系统图片迁移COS end**********************/
+
+
+        /**********************结算单历史数据 start**********************/
+        $sql = "SELECT a.settlement_cycle_type settlement_cycle_type_a,b.settlement_cycle_type settlement_cycle_type_b from settlement_platforms a JOIN merchants b on a.merchant_id=b.id";
+        DB::statement($sql);
+        /**********************结算单历史数据 end**********************/
     }
 }

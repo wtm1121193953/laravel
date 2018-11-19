@@ -158,11 +158,6 @@
                     endDate: endDate,
                 };
             },
-            getUsers() {
-                api.get('/statistics/all_users').then(data => {
-                    this.users = data;
-                })
-            },
             dataExport() {
                 let message = '确定要导出当前筛选的列表么？'
                 if(this.timeType == 'other' && this.dateRange.length < 2){
@@ -200,7 +195,6 @@
         },
         created(){
             this.getList();
-            this.getUsers();
         },
         watch:{
             timeType(val){
