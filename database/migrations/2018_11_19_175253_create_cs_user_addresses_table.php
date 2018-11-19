@@ -25,6 +25,7 @@ class CreateCsUserAddressesTable extends Migration
             $table->string('address',600)->default('')->comment('详细地址');
             $table->tinyInteger('is_default')->default(0)->comment('是否默认地址 1是 0否');
             $table->timestamps();
+            $table->comment = '用户地址表';
         });
     }
 
