@@ -200,7 +200,7 @@ class V1_4_8 extends Command
 
 
         /**********************结算单历史数据 start**********************/
-        $sql = "SELECT a.settlement_cycle_type settlement_cycle_type_a,b.settlement_cycle_type settlement_cycle_type_b from settlement_platforms a JOIN merchants b on a.merchant_id=b.id";
+        $sql = "update settlement_platforms s set settlement_cycle_type = (select settlement_cycle_type from merchants where id = s.merchant_id);";
         DB::statement($sql);
         /**********************结算单历史数据 end**********************/
     }
