@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Updates;
 
 use App\Jobs\ImageMigrationToCOSJob;
+use App\Jobs\InitMerchantFirstActiveTime;
 use App\Jobs\Schedule\OperAndMerchantAndUserStatisticsDailyJob;
 use App\Modules\Bizer\BizerIdentityAuditRecord;
 use App\Modules\Dishes\DishesGoods;
@@ -82,19 +83,8 @@ class V1_4_8 extends Command
         $this->info('开始填充商户首次审核通过时间');
         Merchant::chunk(50, function ($merchants) {
             foreach ($merchants as $merchant) {
-                $auditRecord = MerchantAudit::where('merchant_id', $merchant->id)
-                    ->where('status', MerchantAudit::STATUS_AUDIT_SUCCESS)
-                    ->orderBy('id')
-                    ->first();
-                if (!empty($auditRecord)) {
-                    $merchant->first_active_time = $auditRecord->updated_at;
-                } else {
-                    $merchant->first_active_time = $merchant->active_time;
-                }
-                $merchant->save();
-                unset($auditRecord);
+                InitMerchantFirstActiveTime::dispatch($merchant);
             }
-            unset($merchants);
         });
         $this->info('填充商户首次审核通过时间完成');
 
