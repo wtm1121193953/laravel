@@ -26,6 +26,7 @@ class MessageController extends Controller
         $exists = Db::table('message_system')
             ->when( $lastReadTime, function ($query) use ($lastReadTime) {
                 $query->where('created_at','>', $lastReadTime);
+                $query->where('object_type','like', '1%');
             })
             ->exists();
         if($exists){
