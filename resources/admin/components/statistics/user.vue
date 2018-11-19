@@ -114,8 +114,13 @@
                     this.$message.error('请选择起始日期');
                     return false;
                 }
+                if (this.userId == '') {
+                    this.$message.error('请输入用户ID');
+                    return false;
+                }
                 this.query.timeType = this.timeType;
                 this.query.userId = this.userId;
+
 
                 this.query.startDate = this.dateRange[0] || '';
                 this.query.endDate = this.dateRange[1] || '';
