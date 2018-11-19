@@ -279,7 +279,7 @@
             },
 
             checkMerchantElectronicContract() {
-                if (this.electronicContract && (this.electronicContract.contract == null || this.electronicContract.contract.status == 0) && this.electronicContract.contractSwitch == 1) {
+                if (this.electronicContract && (this.electronicContract.contract == null || this.electronicContract.contract.status == 0) && this.electronicContract.contractSwitch == 1 && this.electronicContract.payToPlatform > 0) {
                     this.showElectronicContract = true;
                 }
             }
