@@ -173,7 +173,12 @@
                         api.post('/login', this.form).then(data => {
                             store.dispatch('storeUserInfo', data);
                             store.dispatch('setLoginUserName', this.rememberUsername ? this.form.username : '');
-                            _self.checkElectronicContract();
+                            //
+                            if(data.user.type == 1){
+                                _self.getNormalMerchantElectronicContractConfig();
+                            }else {
+                                window.baseApiUrl = '/api/cs/'
+                            }
                         }).catch(() => {
                             _self.refreshVerify();
                         }).finally(() => {
@@ -183,7 +188,7 @@
                 })
 
             },
-            checkElectronicContract() {
+            getNormalMerchantElectronicContractConfig() {
                 let _self = this;
                 api.get('/self/checkElectronicContract').then(data => {
                     store.dispatch('setElectronicContract', data);

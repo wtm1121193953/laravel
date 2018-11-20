@@ -6,7 +6,7 @@
  * Time: 11:20
  */
 
-namespace App\Http\Controllers\Merchant;
+namespace App\Http\Controllers\Cs;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantService;

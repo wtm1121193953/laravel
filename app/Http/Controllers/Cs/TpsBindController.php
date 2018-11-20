@@ -6,7 +6,7 @@
  * Time: 15:52
  */
 
-namespace App\Http\Controllers\Merchant;
+namespace App\Http\Controllers\Cs;
 
 
 use App\Exceptions\BaseResponseException;
