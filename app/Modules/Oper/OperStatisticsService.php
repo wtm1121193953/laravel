@@ -7,6 +7,7 @@ use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantStatistics;
 use App\Modules\Order\Order;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 class OperStatisticsService extends BaseService
@@ -132,7 +133,15 @@ class OperStatisticsService extends BaseService
         $orderPaidAmount = 0;
         $orderRefundAmount = 0;
         Order::where('oper_id',$operId)
-            // todo 是不是少了个时间条件?
+            ->where(function(Builder $query) use ($startTime, $endTime){
+                $query->where(function(Builder $query) use ($startTime, $endTime){
+                    $query->where('status', Order::STATUS_FINISHED)
+                        ->whereBetween('pay_time', [$startTime, $endTime]);
+                })->orWhere(function(Builder $query) use ($startTime, $endTime){
+                    $query->where('status', Order::STATUS_REFUNDED)
+                        ->whereBetween('refund_time', [$startTime, $endTime]);
+                });
+            })
             ->chunk(1000, function ($orders) use (&$orderPaidNum, &$orderRefundNum, &$orderPaidAmount, &$orderRefundAmount, $startTime, $endTime) {
                 foreach ($orders as $order) {
                     if ($order->status == Order::STATUS_FINISHED && $order->pay_time >= $startTime && $order->pay_time <= $endTime) {

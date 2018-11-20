@@ -105,7 +105,7 @@
             </el-dialog>
 
             <el-dialog
-                    title="大千生活商户服务协议"
+                    title=""
                     :visible.sync="showElectronicContract"
                     center
                     :close-on-click-modal="false"
@@ -279,7 +279,7 @@
             },
 
             checkMerchantElectronicContract() {
-                if (this.electronicContract && (this.electronicContract.contract == null || this.electronicContract.contract.status == 0) && this.electronicContract.contractSwitch == 1) {
+                if (this.electronicContract && (this.electronicContract.contract == null || this.electronicContract.contract.status == 0) && this.electronicContract.contractSwitch == 1 && this.electronicContract.payToPlatform > 0) {
                     this.showElectronicContract = true;
                 }
             }
