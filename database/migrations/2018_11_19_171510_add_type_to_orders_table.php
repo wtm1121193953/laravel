@@ -15,7 +15,7 @@ class AddTypeToOrdersTable extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             //
-            $table->tinyInteger('merchant_type')->default(0)->comment('订单类型 1普通商户订单 2超市商户订单')->after('oper_id');
+            $table->tinyInteger('merchant_type')->default(1)->comment('订单类型 1普通商户订单 2超市商户订单')->after('oper_id');
         });
     }
 
