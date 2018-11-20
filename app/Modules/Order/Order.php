@@ -4,6 +4,7 @@ namespace App\Modules\Order;
 
 use App\BaseModel;
 use App\Exceptions\BaseResponseException;
+use App\Modules\CsOrder\CsOrderGood;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Wallet\WalletConsumeQuotaRecord;
@@ -48,6 +49,9 @@ use Carbon\Carbon;
  * @property Carbon splitting_time
  * @property integer bizer_id
  * @property float bizer_divide
+ * @property integer deliver_type
+ * @property string express_company
+ * @property string express_no
  */
 
 class Order extends BaseModel
@@ -195,5 +199,10 @@ class Order extends BaseModel
     public function merchant()
     {
         return $this->belongsTo(Merchant::class);
+    }
+
+    public function csOrderGoods()
+    {
+        return $this->hasMany(CsOrderGood::class);
     }
 }
