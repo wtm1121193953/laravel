@@ -2,9 +2,9 @@
 
 namespace App\Modules\Cs;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class CsGood extends Model
+class CsGood extends BaseModel
 {
     //
 }

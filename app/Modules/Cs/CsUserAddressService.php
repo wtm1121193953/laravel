@@ -7,9 +7,9 @@
  */
 namespace App\Modules\Cs;
 
-use Qcloud\Cos\Service;
+use App\BaseService;
 
-class CsUserAddressService extends Service{
+class CsUserAddressService extends BaseService{
     public static function addAddresses(){
         $user = request()->get('current_user');
 
