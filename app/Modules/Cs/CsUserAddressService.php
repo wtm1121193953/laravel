@@ -74,14 +74,20 @@ class CsUserAddressService extends BaseService {
         }
     }
 
-    public static function getList($isTestAddress,$cityId,$city_wide){
+    /**
+     * 获取地址列表
+     * @param $isTestAddress
+     * @param $city_wide
+     * @return CsUserAddress[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getList($isTestAddress,$city_wide){
         $user = request()->get('current_user');
         $list = CsUserAddress::where('user_id',$user->id)->get();
         if ($city_wide == 0 || $isTestAddress == 0){
             return $list;
         }
         else{
-            if (empty($cityId)){
+            if (empty(request('city_id'))){
                 throw new BaseResponseException('未选择商家', ResultCode::PARAMS_INVALID);
             }
             $list->each(function ($item){
@@ -95,4 +101,61 @@ class CsUserAddressService extends BaseService {
             return $list;
         }
     }
+
+    /**
+     * 编辑地址
+     */
+    public static function editAddress($data){
+        $user = request()->get('current_user');
+        $userAddress = CsUserAddress::where('user_id',$user->id)
+            ->where('id',$data['id'])
+            ->first();
+         if (!empty($data['contacts']))  {
+             $userAddress->contacts = $data['contacts'];
+         }
+        if (!empty($data['contact_phone']))  {
+            $userAddress->contact_phone = $data['contact_phone'];
+        }
+        if (!empty($data['province_id']))  {
+            $userAddress->province_id = $data['province_id'];
+            $userAddress->province = Area::findOrFail($userAddress->province_id)->name;
+        }
+        if (!empty($data['city_id']))  {
+            $userAddress->city_id = $data['city_id'];
+            $userAddress->city = Area::findOrFail($userAddress->city_id)->name;
+        }
+        if (!empty($data['area_id']))  {
+            $userAddress->area_id = $data['area_id'];
+            $userAddress->area = Area::findOrFail($userAddress->area_id)->name;
+        }
+        if (!empty($data['address']))  {
+            $userAddress->address = $data['address'];
+        }
+        if (!empty($data['is_default']))  {
+            $userAddress->is_default = $data['is_default'];
+        }
+        if ($userAddress->is_default == CsUserAddress::DEFAULT){
+            //设置默认
+            $query  = CsUserAddress::where('user_id', $user->id )
+                ->where("is_default", CsUserAddress::DEFAULT);
+            if (sizeof($query) > 0){
+                // 开启事务
+                DB::beginTransaction();
+                try{
+                    // 全部改为未选
+                    $query->update(['is_default'=>CsUserAddress::UNDEFAULT]);
+                    DB::commit();
+                }catch ( \Exception $e ){
+                    DB::rollBack();
+                    throw new BaseResponseException( $e->getMessage(),ResultCode::DB_INSERT_FAIL);
+                }
+            }
+        }
+        //保存地址
+        if( !($userAddress->save()) ) {
+            throw new BaseResponseException('更新失败', ResultCode::DB_INSERT_FAIL);
+        }
+
+    }
+
 }
