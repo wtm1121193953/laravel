@@ -24,5 +24,11 @@ use App\BaseModel;
 
 class CsUserAddress extends BaseModel
 {
-    //
+    /**
+     * Author:  zwg
+     * Date :   181120
+     * 地址是否为默认
+     */
+    const DEFAULT = 1;
+    const UNDEFAULT = 0;
 }

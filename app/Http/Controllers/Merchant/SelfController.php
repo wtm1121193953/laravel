@@ -31,7 +31,7 @@ class SelfController extends Controller
         $password = request('password');
 
         $user = MerchantAccountService::login($username,$password);
-        $menus = MerchantAccountService::getMenus($user->oper_id);
+        $menus = MerchantAccountService::getMenus($user);
 
         return Result::success([
             'user' => $user,
@@ -46,7 +46,7 @@ class SelfController extends Controller
             throw new UnloginException();
         }
 
-        $menus = MerchantAccountService::getMenus($user->oper_id);
+        $menus = MerchantAccountService::getMenus($user);
 
         return Result::success([
             'user' => $user,

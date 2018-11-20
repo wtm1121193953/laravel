@@ -19,10 +19,13 @@ use App\Modules\User\GenPassword;
  * @property string password
  * @property string salt
  * @property int status
+ * @property int type
  *
  */
 class MerchantAccount extends BaseModel
 {
     use GenPassword;
     //
+    const  TYPE_NORMAL = 1;
+    const TYPE_CS = 2;
 }

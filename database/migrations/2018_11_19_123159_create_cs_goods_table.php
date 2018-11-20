@@ -25,10 +25,12 @@ class CreateCsGoodsTable extends Migration
             $table->string('logo')->default('')->comment('产品LOGO');
             $table->string('detail_imgs',1200)->default('')->comment('详情图片最多五张，逗号分隔');
             $table->string('summary',1000)->default('')->comment('商品简介');
-            $table->string('certificate1',1200)->default('其他证书1图片最多六张逗号分隔');
-            $table->string('certificate2',1200)->default('其他证书2图片最多六张逗号分隔');
-            $table->string('certificate3',1200)->default('其他证书3图片最多六张逗号分隔');
+            $table->string('certificate1',1200)->default('')->comment('其他证书1图片最多六张逗号分隔');
+            $table->string('certificate2',1200)->default('')->comment('其他证书2图片最多六张逗号分隔');
+            $table->string('certificate3',1200)->default('')->comment('其他证书3图片最多六张逗号分隔');
             $table->tinyInteger('status')->default(0)->comment('状态 1上架 2下架');
+            $table->tinyInteger('audit_status')->default(0)->comment('审核状态 1待审核 2审核通过 3审核不通过');
+            $table->string('audit_suggestion',600)->default('')->comment('审核意见');
             $table->timestamps();
         });
     }
