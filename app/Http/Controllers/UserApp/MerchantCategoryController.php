@@ -10,7 +10,7 @@ namespace App\Http\Controllers\UserApp;
 
 
 use App\Http\Controllers\Controller;
-use App\Modules\Cs\CsMerchantCatrgoryService;
+use App\Modules\Cs\CsMerchantCategoryService;
 use App\Modules\Merchant\MerchantCategoryService;
 use App\Result;
 
@@ -30,7 +30,7 @@ class MerchantCategoryController extends Controller
             'merchant_id' => 'required'
         ]);
         $merchantId = request('merchant_id');
-        $list = CsMerchantCatrgoryService::getTree($merchantId);
+        $list = CsMerchantCategoryService::getTree($merchantId);
         return Result::success($list);
     }
 }

@@ -11,7 +11,7 @@ namespace App\Modules\Cs;
 
 use App\BaseService;
 
-class CsMerchantCatrgoryService extends BaseService
+class CsMerchantCategoryService extends BaseService
 {
     public static function getTree($merchantId){
        $list = CsMerchantCategory::where('cs_category_level',1)
