@@ -117,6 +117,8 @@ Route::prefix('app/user')
         Route::get('message/systemDetail', 'MessageController@getSystemDetail')->middleware(UserLoginFilter::class);
         Route::get('country/list', 'CountryController@getList');
 
+        //收货地址
+        Route::post('cs/address/add','CsUserAddressController@addUserAddresses')->middleware(UserLoginFilter::class);
     });
 
 Route::prefix('app/user')

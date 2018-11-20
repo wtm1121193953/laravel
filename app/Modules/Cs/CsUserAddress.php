@@ -2,7 +2,7 @@
 
 namespace App\Modules\Cs;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
 /**
  * Class CsUserAddress
@@ -22,7 +22,13 @@ use Illuminate\Database\Eloquent\Model;
  */
 
 
-class CsUserAddress extends Model
+class CsUserAddress extends BaseModel
 {
-    //
+    /**
+     * Author:  zwg
+     * Date :   181120
+     * 地址是否为默认
+     */
+    const DEFAULT = 1;
+    const UNDEFAULT = 0;
 }

@@ -2,9 +2,9 @@
 
 namespace App\Modules\Cs;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class CsPlatformCategory extends Model
+class CsPlatformCategory extends BaseModel
 {
     //
 }

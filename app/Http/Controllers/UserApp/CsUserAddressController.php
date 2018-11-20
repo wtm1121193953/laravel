@@ -14,7 +14,6 @@ class CsUserAddressController extends Controller{
 public function addUserAddresses(){
     $data = ['contacts' => request('contacts'),
                 'contact_phone' => request('contact_phone'),
-                'bank_name' => request('bank_name'),
                 'province_id' => request('province_id'),
                 'city_id' => request('city_id'),
                 'area_id' => request('area_id'),
