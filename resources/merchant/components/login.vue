@@ -173,7 +173,11 @@
                         api.post('/login', this.form).then(data => {
                             store.dispatch('storeUserInfo', data);
                             store.dispatch('setLoginUserName', this.rememberUsername ? this.form.username : '');
-                            _self.checkElectronicContract();
+                            if(data.user.type == 1){
+                                _self.checkElectronicContract();
+                            }else {
+                                window.baseApiUrl = '/api/cs/'
+                            }
                         }).catch(() => {
                             _self.refreshVerify();
                         }).finally(() => {
