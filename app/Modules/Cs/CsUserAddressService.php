@@ -75,25 +75,24 @@ class CsUserAddressService extends BaseService {
     }
 
     public static function getList($isTestAddress,$cityId,$city_wide){
+        $user = request()->get('current_user');
+        $list = CsUserAddress::where('user_id',$user->id)->get();
         if ($city_wide == 0 || $isTestAddress == 0){
-            $user = request()->get('current_user');
-            $list = CsUserAddress::where('user_id',$user->id);
             return $list;
         }
         else{
-            $user = request()->get('current_user');
-            $list = CsUserAddress::where('user_id',$user->id);
             if (empty($cityId)){
                 throw new BaseResponseException('未选择商家', ResultCode::PARAMS_INVALID);
             }
             $list->each(function ($item){
-                if ($item->city_id == $cityId){
-                    $item->outRadius = '1';
-                }
-                else{
+                if ($item->city_id == request('city_id')){
                     $item->outRadius = '0';
                 }
+                else{
+                    $item->outRadius = '1';
+                }
             });
+            return $list;
         }
     }
 }

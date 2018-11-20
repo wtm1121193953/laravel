@@ -41,7 +41,7 @@ class CsUserAddressController extends Controller{
      */
     public function getAddresses(){
         $isTestAddress = 0; //是否检测配送范围
-        if (!empty(request('is_test_radius')){
+        if (!empty(request('is_test_radius'))){
             $isTestAddress = request('is_test_radius');
         }
         $cityId = request('city_id');
