@@ -5,49 +5,49 @@
                 <el-form-item prop="name" label="商品名称">
                     <el-input v-model="form.name"/>
                 </el-form-item>
+                <el-form-item prop="categoryOptions" label="分类">
+                    <el-cascader
+                            :options="form.categoryOptions"
+                            :props="{
+                            value: 'id',
+                            label: 'name',
+                            children: 'sub',
+                        }"
+                            v-model="form.categoryOptions">
+                    </el-cascader>
+                </el-form-item>
                 <el-form-item prop="market_price" label="市场价">
                     <el-input-number v-model="form.market_price" :min="0"/>
                 </el-form-item>
                 <el-form-item prop="price" label="销售价">
                     <el-input-number v-model="form.price" :min="0"/>
                 </el-form-item>
-                <el-form-item label="有效期" required>
-                    <el-date-picker
-                        v-model="form.start_date"
-                        type="date"
-                        :picker-options="{disabledDate: (time) => {return time.getTime() < Date.now() - 8.64e7}}"
-                        placeholder="选择开始日期"
-                        value-format="yyyy-MM-dd">
-                    </el-date-picker>
-                    -
-                    <el-date-picker
-                        v-model="form.end_date"
-                        type="date"
-                        :picker-options="{disabledDate: (time) => {return time.getTime() < Date.now() - 8.64e7}}"
-                        placeholder="选择结束日期"
-                        value-format="yyyy-MM-dd">
-                    </el-date-picker>
-                    <div class="tips">超出有效期，商品自动下架</div>
+                <el-form-item prop="price" label="库存">
+                    <el-input-number v-model="form.price" :min="0"/>
                 </el-form-item>
-                <el-form-item prop="thumb_url" label="产品缩略图">
-                    <image-upload :width="190" :height="190" v-model="form.thumb_url" :limit="1"/>
-                    <div>图片尺寸: 190 px * 190 px</div>
+
+                <el-form-item prop="logo" label="产品logo图">
+                    <image-upload v-model="form.logo" :limit="1"/>
+                    <div>图片尺寸: 750 px * 750 px</div>
                 </el-form-item>
                 <el-form-item prop="pic_list" label="产品详情图">
-                    <image-upload :width="752" :height="398" v-model="form.pic_list" :limit="6"/>
-                    <div>图片尺寸: 752 px * 398 px</div>
+                    <image-upload  v-model="form.detail_imgs" :limit="6"/>
+                    <div>图片尺寸: 750 px * 750 px</div>
                 </el-form-item>
                 <el-form-item prop="desc" label="商品简介">
                     <el-input v-model="form.desc" :autosize="{minRows: 2}" type="textarea"/>
                 </el-form-item>
-                <el-form-item prop="buy_info" label="购买须知">
-                    <el-input v-model="form.buy_info" :autosize="{minRows: 2}" type="textarea"/>
+                <el-form-item prop="pic_list" label="其他证书1">
+                    <image-upload  v-model="form.certificate1" :limit="6"/>
+                    <div></div>
                 </el-form-item>
-                <el-form-item prop="status" label="状态">
-                    <el-radio-group v-model="form.status">
-                        <el-radio :label="1">正常</el-radio>
-                        <el-radio :label="2">禁用</el-radio>
-                    </el-radio-group>
+                <el-form-item prop="pic_list" label="其他证书2">
+                    <image-upload  v-model="form.certificate2" :limit="6"/>
+                    <div></div>
+                </el-form-item>
+                <el-form-item prop="pic_list" label="其他证书3">
+                    <image-upload v-model="form.certificate3" :limit="6"/>
+                    <div></div>
                 </el-form-item>
                 <el-form-item>
                     <el-button @click="cancel">取消</el-button>
@@ -63,13 +63,13 @@
         name: '',
         market_price: 0,
         price: 0,
-        start_date: '',
-        end_date: '',
-        pic_list: [],
-        thumb_url: '',
+        detail_imgs: [],
+        logo: '',
         desc: '',
-        buy_info: '',
-        status: 1,
+        certificate1:[],
+        certificate2:[],
+        certificate3:[],
+        categoryOptions:[]
     };
     export default {
         name: 'goods-form',
@@ -109,10 +109,10 @@
                         {required: true, message: '销售价不能为空'},
                         {validator: validatePrice, trigger: 'blur'}
                     ],
-                    thumb_url: [
+                    logo: [
                         {required: true, message: '缩略图不能为空'}
                     ],
-                    pic_list: [
+                    detail_imgs: [
                         {required: true, message: '详情图不能为空'}
                     ],
                 },
@@ -127,8 +127,6 @@
                 }
             },
             resetForm(){
-                this.form.start_date = '';
-                this.form.end_date = '';
                 this.$refs.form.resetFields();
                 console.log(this.form)
             },
@@ -142,14 +140,6 @@
                         let data = deepCopy(this.form);
                         if(this.data && this.data.id){
                             data.id = this.data.id;
-                        }
-                        if(!data.start_date || !data.end_date){
-                            this.$message.error('时间不能为空');
-                            return;
-                        }
-                        if(data.start_date > data.end_date){
-                            this.$message.error('有效期开始时间不能大于结束时间');
-                            return;
                         }
                         this.$emit('save', data);
                     }

@@ -100,6 +100,10 @@ class Order extends BaseModel
     const STATUS_REFUNDED = 6; // 已退款
     const STATUS_FINISHED = 7; // 已完成
 
+    // 商户类型
+    const MERCHANT_TYPE_NORMAL = 1;         // 默认商家
+    const MERCHANT_TYPE_SUPERMARKET = 2;    // 超市商家
+
     /**
      * 分润状态
      */

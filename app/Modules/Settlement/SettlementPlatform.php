@@ -3,6 +3,7 @@
 namespace App\Modules\Settlement;
 
 use App\BaseModel;
+use App\Modules\Cs\CsMerchant;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use Illuminate\Support\Carbon;
@@ -14,6 +15,7 @@ use Illuminate\Support\Carbon;
  * @property string settlement_no
  * @property int    oper_id
  * @property int    merchant_id
+ * @property int  object_type
  * @property Carbon start_date
  * @property Carbon end_date
  * @property number settlement_rate
@@ -63,12 +65,19 @@ class SettlementPlatform extends BaseModel
     const SETTLE_YEARLY = 5; // 年结
     const SETTLE_DAY_ADD_ONE = 6; // T+1(人工)
 
+    const OBJECT_TYPE_MERCHANT = 1;     // 普通商户
+    const OBJECT_TYPE_SUPERMARKET = 2;  // 超市商户
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function merchant()
     {
         return $this->belongsTo(Merchant::class);
+    }
+
+    public function cs_merchant(){
+        return $this->belongsTo(CsMerchant::class);
     }
 
     public function oper()
