@@ -11,9 +11,11 @@ namespace App\Modules\Settlement;
 
 use App\BaseService;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Cs\CsMerchant;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Order\Order;
 use App\Support\AgentPay\KuaiQian;
+use http\Exception\BadMessageException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -144,18 +146,26 @@ class SettlementPlatformService extends BaseService
      * 处理每日结算细节入库
      * @Author   Jerry
      * @DateTime 2018-08-24
-     * @param $merchant
+     * @param Merchant|CsMerchant $merchant
      * @param Carbon $date
      * @return bool [bool]
      * @throws \Exception
      */
     public static function settlement( $merchant, $date)
     {
+        if($merchant instanceof Merchant){
+            $merchantType = Order::MERCHANT_TYPE_NORMAL;
+        }elseif ($merchant instanceof CsMerchant){
+            $merchantType = Order::MERCHANT_TYPE_SUPERMARKET;
+        }else{
+            throw new \Exception('暂无该类型用户');
+        }
         $query = Order::where('merchant_id', $merchant->id)
             ->where('settlement_status', Order::SETTLEMENT_STATUS_NO )
             ->where('pay_target_type', Order::PAY_TARGET_TYPE_PLATFORM)
             ->where('status', Order::STATUS_FINISHED )
-            ->where('finish_time','<=', $date->endOfDay());
+            ->where('finish_time','<=', $date->endOfDay())
+            ->where('merchant_type',$merchantType);
         // 统计所有需结算金额
         $sum = $query->sum('pay_price');
 
@@ -165,6 +175,7 @@ class SettlementPlatformService extends BaseService
         if(empty($start_date)){
             Log::info('商家每日无订单，跳过结算', [
                 'merchantId' => $merchant->id,
+                'merchantType'  =>  $merchantType,
                 'date' => $date,
                 'timestamp' => date('Y-m-d H:i:s')
             ]);
@@ -182,6 +193,7 @@ class SettlementPlatformService extends BaseService
             if($diffDay >= 7){
                 Log::info('商家结算单超过七天，且总金额小于100，直接强制生成结算单', [
                     'merchantId' => $merchant->id,
+                    'merchantType'  =>  $merchantType,
                     'start_date' => $start_date,
                     'start' => $start,
                     'diffDay' => $diffDay,
@@ -190,6 +202,7 @@ class SettlementPlatformService extends BaseService
             }else{
                 Log::info('商家每日结算时订单金额小于100，跳过结算', [
                     'merchantId' => $merchant->id,
+                    'merchantType'  =>  $merchantType,
                     'start_date' => $start_date,
                     'start' => $start,
                     'diffDay' => $diffDay,
@@ -206,11 +219,15 @@ class SettlementPlatformService extends BaseService
             throw new \Exception('结算单号生成失败');
         }
 
-        if($merchant->settlement_cycle_type == Merchant::SETTLE_MONTHLY){
-            $type = SettlementPlatform::TYPE_AGENT;
-        }else{
-            $type = SettlementPlatform::TYPE_DEFAULT;
+        // 默认为自动打款
+        $type = SettlementPlatform::TYPE_DEFAULT;
+        if($merchant instanceof Merchant){
+            // 如果为普通商户则走以下逻辑
+            if($merchant->settlement_cycle_type == Merchant::SETTLE_MONTHLY){
+                $type = SettlementPlatform::TYPE_AGENT;
+            }
         }
+
 
         // 开启事务
         DB::beginTransaction();

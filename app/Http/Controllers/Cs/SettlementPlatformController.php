@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Merchant;
+namespace App\Http\Controllers\Cs;
 
 //use App\Modules\Order\OrderService;
 use App\Http\Controllers\Controller;

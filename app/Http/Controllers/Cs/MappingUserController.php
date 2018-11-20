@@ -6,7 +6,7 @@
  * Time: 21:46
  */
 
-namespace App\Http\Controllers\Merchant;
+namespace App\Http\Controllers\Cs;
 
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
