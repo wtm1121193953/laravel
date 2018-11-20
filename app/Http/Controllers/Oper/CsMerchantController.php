@@ -7,12 +7,12 @@ use App\Exceptions\ParamInvalidException;
 use App\Exports\OperMerchantExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Bizer\BizerService;
-use App\Modules\Merchant\Merchant;
+use App\Modules\Cs\CsMerchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAccountService;
 use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantCategoryService;
-use App\Modules\Merchant\MerchantService;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperService;
@@ -28,11 +28,11 @@ class CsMerchantController extends Controller
      */
     public function getList()
     {
-        $memberNameOrMobile = request('memberNameOrMobile');
-        $bizerNameOrMobile = request('bizerNameOrMobile');
+        //$memberNameOrMobile = request('memberNameOrMobile');
+        //$bizerNameOrMobile = request('bizerNameOrMobile');
 
-        $operBizMemberCodes = $memberNameOrMobile ? OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile)->pluck('code') : '';
-        $bizerIds = $bizerNameOrMobile ? BizerService::getBizersByNameOrMobile($bizerNameOrMobile)->pluck('id') : '';
+        //$operBizMemberCodes = $memberNameOrMobile ? OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile)->pluck('code') : '';
+        //$bizerIds = $bizerNameOrMobile ? BizerService::getBizersByNameOrMobile($bizerNameOrMobile)->pluck('id') : '';
 
         $data = [
             'id' => request('id'),
@@ -43,15 +43,15 @@ class CsMerchantController extends Controller
             'signboardName' => request('signboardName'),
             'status' => request('status'),
             'auditStatus' => request('audit_status'),
-            'merchantCategory' => request('merchant_category'),
+            //'merchantCategory' => request('merchant_category'),
             'isPilot' => request('isPilot'),
             'startCreatedAt' => request('startCreatedAt'),
             'endCreatedAt' => request('endCreatedAt'),
-            'bizer_id' => $bizerIds,
-            'operBizMemberCodes' => $operBizMemberCodes,
+            //'bizer_id' => $bizerIds,
+            //'operBizMemberCodes' => $operBizMemberCodes,
         ];
 
-        $data = MerchantService::getList($data);
+        $data = CsMerchantService::getList($data);
 
         /*$isPayToPlatform = $this->isPayToPlatform();
         foreach ($data as $key){
@@ -73,11 +73,11 @@ class CsMerchantController extends Controller
      * 导出商户
      */
     public function export(){
-        $memberNameOrMobile = request('memberNameOrMobile');
-        $bizerNameOrMobile = request('bizerNameOrMobile');
+        //$memberNameOrMobile = request('memberNameOrMobile');
+        //$bizerNameOrMobile = request('bizerNameOrMobile');
 
-        $operBizMemberCodes = $memberNameOrMobile ? OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile)->pluck('code') : '';
-        $bizerIds = $bizerNameOrMobile ? BizerService::getBizersByNameOrMobile($bizerNameOrMobile)->pluck('id') : '';
+        //$operBizMemberCodes = $memberNameOrMobile ? OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile)->pluck('code') : '';
+        //$bizerIds = $bizerNameOrMobile ? BizerService::getBizersByNameOrMobile($bizerNameOrMobile)->pluck('id') : '';
 
         $data = [
             'id' => request('id'),
@@ -88,15 +88,15 @@ class CsMerchantController extends Controller
             'signboardName' => request('signboardName'),
             'status' => request('status'),
             'auditStatus' => request('audit_status'),
-            'merchantCategory' => request('merchant_category'),
+            //'merchantCategory' => request('merchant_category'),
             'isPilot' => request('isPilot'),
             'startCreatedAt' => request('startCreatedAt'),
             'endCreatedAt' => request('endCreatedAt'),
-            'bizer_id' => $bizerIds,
-            'operBizMemberCodes' => $operBizMemberCodes,
+            //'bizer_id' => $bizerIds,
+            //'operBizMemberCodes' => $operBizMemberCodes,
         ];
 
-        $query = MerchantService::getList($data,true);
+        $query = CsMerchantService::getList($data,true);
 
         $list = $query->get();
 
@@ -131,7 +131,7 @@ class CsMerchantController extends Controller
             'isPilot' => request('isPilot'),
             'operId' => request()->get('current_user')->oper_id,
         ];
-        $list = MerchantService::getAllNames($data);
+        $list = CsMerchantService::getAllNames($data);
         foreach ($list as $key){
             $key->name = $key->id.":".$key->name;
         }
@@ -149,7 +149,7 @@ class CsMerchantController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-        $merchant = MerchantService::detail(request('id'));
+        $merchant = CsMerchantService::detail(request('id'));
 
         /*$isPayToPlatform = $this->isPayToPlatform();
         if($isPayToPlatform){
@@ -166,13 +166,12 @@ class CsMerchantController extends Controller
      */
     public function add()
     {
-        dd(22314);
         $validate = [
             'name' => 'required|max:50',
-            'merchant_category_id' => 'required',
+            //'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
-        if (request('is_pilot') !== Merchant::PILOT_MERCHANT){
+        if (request('is_pilot') !== CsMerchant::PILOT_MERCHANT){
             $validate = array_merge($validate, [
                 'business_licence_pic_url' => 'required',
                 'organization_code' => 'required',
@@ -188,7 +187,7 @@ class CsMerchantController extends Controller
 
         $currentOperId = request()->get('current_user')->oper_id;
 
-        $merchant = MerchantService::add($currentOperId);
+        $merchant = CsMerchantService::add($currentOperId);
 
         return Result::success($merchant);
     }
@@ -200,7 +199,7 @@ class CsMerchantController extends Controller
     {
         $validate = [
             'name' => 'required|max:50',
-            'merchant_category_id' => 'required',
+            //'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
         if (request('is_pilot') !== Merchant::PILOT_MERCHANT){
@@ -216,7 +215,7 @@ class CsMerchantController extends Controller
         if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
             throw new ParamInvalidException('负责人手机号码不合法');
         }
-        $merchant = MerchantService::edit(request('id'), request('audit_oper_id'),request('audit_status'));
+        $merchant = CsMerchantService::edit(request('id'), request('audit_oper_id'),request('audit_status'));
 
         return Result::success($merchant);
     }
@@ -234,7 +233,7 @@ class CsMerchantController extends Controller
         ]);
 
         $merchantId = request('id');
-        $merchant = MerchantService::getById($merchantId);
+        $merchant = CsMerchantService::getById($merchantId);
         if(empty($merchant)){
             throw new DataNotFoundException('商户池信息不存在');
         }
@@ -246,7 +245,7 @@ class CsMerchantController extends Controller
         }
 
         $currentOperId = request()->get('current_user')->oper_id;
-        $merchant = MerchantService::addFromMerchantPool($currentOperId, $merchant);
+        $merchant = CsMerchantService::addFromMerchantPool($currentOperId, $merchant);
 
         return Result::success('操作成功', $merchant);
     }
@@ -260,14 +259,14 @@ class CsMerchantController extends Controller
             'id' => 'required|integer|min:1',
             'status' => 'required|integer',
         ]);
-        $merchant = MerchantService::getById(request('id'));
+        $merchant = CsMerchantService::getById(request('id'));
         if(empty($merchant)){
             throw new DataNotFoundException('商户信息不存在');
         }
         $merchant->status = request('status');
         $merchant->save();
 
-        $merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
+        //$merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
         $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
 
         return Result::success($merchant);
@@ -283,7 +282,7 @@ class CsMerchantController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $merchant = MerchantService::getById(request('id'));
+        $merchant = CsMerchantService::getById(request('id'));
         if(empty($merchant)){
             throw new DataNotFoundException('商户信息不存在');
         }

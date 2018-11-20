@@ -23,18 +23,18 @@
         methods: {
             doAdd(data){
                 this.isLoading = true;
-                api.post('/merchant/add', data).then(() => {
+                api.post('/cs/merchant/add', data).then(() => {
                     this.$message.success('保存成功');
-                    router.push('/merchants');
+                    router.push('/cs/merchants');
                 }).finally(() => {
                     this.isLoading = false;
                 })
             },
             cancel(){
                 if (this.isDraft){
-                    router.push('/merchant/drafts');
+                    router.push('/cs/merchant/drafts');
                 } else {
-                    router.push('/merchants')
+                    router.push('/cs/merchants')
                 }
             },
             addDraft(data) {
@@ -42,7 +42,7 @@
                     this.$message.error('商户名称不能为空');
                     return false;
                 }
-                api.post('/merchant/draft/add', data).then((data) => {
+                api.post('/cs/merchant/draft/add', data).then((data) => {
                     this.$message.success('保存成功');
                     router.replace({
                         path: '/refresh',
