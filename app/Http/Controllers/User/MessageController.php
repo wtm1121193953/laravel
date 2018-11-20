@@ -33,7 +33,8 @@ class MessageController extends Controller
             return Result::success(['is_show'=>true,'polling_time'=>$pollingTime]);
         }
         $exists = Db::table('message_notice')
-            ->when( $lastReadTime, function ($query) use ($lastReadTime) {
+            ->when( $lastReadTime, function ($query) use ($lastReadTime,$user) {
+                $query->where('user_id',$user->id);
                 $query->where('created_at','>', $lastReadTime);
             })
             ->exists();
