@@ -1,8 +1,8 @@
-import Login from '../components/login.vue'
-import refresh from '../components/refresh.vue'
-import Home from '../components/home.vue'
-import ErrorPage from '../components/404.vue'
-import welcome from '../components/welcome.vue'
+import Login from '../../components/login.vue'
+import refresh from '../../components/refresh.vue'
+import Home from '../../components/home.vue'
+import ErrorPage from '../../components/404.vue'
+import welcome from '../../components/welcome.vue'
 
 import goods from './goods'
 import settlements from './settlements'
@@ -28,18 +28,10 @@ import Setting from '../components/setting/list.vue'
 import TpsBind from '../components/setting/tps-bind.vue'
 import message from './message'
 
-// 大千超市
-import cs from '../cs/routes'
-
 /**
  *
  */
 const routes = [
-
-    {path: '/login', component: Login, name: 'Login'},
-
-    // 大千超市
-    ...cs,
 
     ...goods,
     ...settlements,
@@ -49,7 +41,7 @@ const routes = [
     ...message,
     // 我的用户
     {
-        path: '/',
+        path: '/cs',
         component: Home,
         children: [
             {path: 'invite/statistics/list', component: InviteStatisticsList, name: 'InviteStatisticsList'},
@@ -59,7 +51,7 @@ const routes = [
 
     // 二维码模块
     {
-        path: '/',
+        path: '/cs',
         component: Home,
         children: [
             {path: 'invite/channel', component: InviteChannel, name: 'InviteChannel'},
@@ -69,7 +61,7 @@ const routes = [
 
     //订单管理列表
     {
-        path: '/',
+        path: '/cs',
         component: Home,
         children: [
             {path: 'orders', component: OrdersList, name: 'OrdersList'},
@@ -78,7 +70,7 @@ const routes = [
 
     // 电子合同管理
     {
-        path: '/',
+        path: '/cs',
         component: Home,
         children: [
             {path: '/electronic/contract', component: ElectronicContract, name: 'ElectronicContract'},
@@ -87,7 +79,7 @@ const routes = [
 
     //系统设置
     {
-        path: '/',
+        path: '/cs',
         component: Home,
         children: [
             {path: 'setting/mapping_user', component: SettingMappingUser, name: 'SettingMappingUser'},
@@ -97,7 +89,7 @@ const routes = [
     },
 
     {
-        path: '/',
+        path: '/cs',
         component: Home,
         children: [
             // demo组件示例
