@@ -51,6 +51,7 @@ class OrderService extends BaseService
         $notifyMobile = array_get($params, 'notifyMobile');
         $keyword = array_get($params, 'keyword');
         $type = array_get($params, 'type');
+        $merchantType = array_get($params, 'merchantType', 1);
         $status = array_get($params, 'status');
         $goodsName = array_get($params, 'goodsName');
         $startCreatedAt = array_get($params, 'startCreatedAt');
@@ -88,6 +89,9 @@ class OrderService extends BaseService
         }
         if ($bizerId > 0) {
             $query->where('bizer_id', $bizerId);
+        }
+        if ($merchantType) {
+            $query->where('merchant_type', $merchantType);
         }
         if ($orderNo) {
             $query->where('order_no', 'like', "%$orderNo%");

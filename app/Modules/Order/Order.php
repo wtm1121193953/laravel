@@ -4,6 +4,7 @@ namespace App\Modules\Order;
 
 use App\BaseModel;
 use App\Exceptions\BaseResponseException;
+use App\Modules\CsOrder\CsOrderGood;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Wallet\WalletConsumeQuotaRecord;
@@ -48,6 +49,9 @@ use Carbon\Carbon;
  * @property Carbon splitting_time
  * @property integer bizer_id
  * @property float bizer_divide
+ * @property integer deliver_type
+ * @property string express_company
+ * @property string express_no
  */
 
 class Order extends BaseModel
@@ -99,6 +103,9 @@ class Order extends BaseModel
     const STATUS_REFUNDING = 5; // 退款中
     const STATUS_REFUNDED = 6; // 已退款
     const STATUS_FINISHED = 7; // 已完成
+    const STATUS_UNDELIVERED = 8; // 待发货
+    const STATUS_NOT_TAKE_BY_SELF = 9; // 待自提
+    const STATUS_DELIVERED = 10; // 已发货
 
     // 商户类型
     const MERCHANT_TYPE_NORMAL = 1;         // 默认商家
@@ -192,5 +199,10 @@ class Order extends BaseModel
     public function merchant()
     {
         return $this->belongsTo(Merchant::class);
+    }
+
+    public function csOrderGoods()
+    {
+        return $this->hasMany(CsOrderGood::class);
     }
 }

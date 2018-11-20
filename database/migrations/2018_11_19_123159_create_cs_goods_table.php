@@ -22,6 +22,7 @@ class CreateCsGoodsTable extends Migration
             $table->decimal('market_price')->default(0.00)->comment('市场价');
             $table->decimal('price')->default(0.00)->comment('销售价');
             $table->integer('stock')->default(0)->comment('库存');
+            $table->integer('sale_num')->default(0)->comment('销量');
             $table->string('logo')->default('')->comment('产品LOGO');
             $table->string('detail_imgs',1200)->default('')->comment('详情图片最多五张，逗号分隔');
             $table->string('summary',1000)->default('')->comment('商品简介');

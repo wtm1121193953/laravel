@@ -174,11 +174,12 @@
                             store.dispatch('storeUserInfo', data);
                             store.dispatch('setLoginUserName', this.rememberUsername ? this.form.username : '');
                             //
-                            if(data.user.type == 1){
-                                _self.getNormalMerchantElectronicContractConfig();
-                            }else {
+                            if(data.user.type == 2){
                                 window.baseApiUrl = '/api/cs/'
                                 _self.relocation();
+                            }else {
+                                window.baseApiUrl = '/api/merchant/'
+                                _self.getNormalMerchantElectronicContractConfig();
                             }
                         }).catch(() => {
                             _self.refreshVerify();

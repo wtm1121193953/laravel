@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
  * @property string settlement_no
  * @property int    oper_id
  * @property int    merchant_id
+ * @property int    merchant_type
  * @property int  object_type
  * @property Carbon start_date
  * @property Carbon end_date
@@ -50,6 +51,10 @@ class SettlementPlatform extends BaseModel
     const STATUS_PAID = 3;
     const STATUS_FAIL = 4;
     const STATUS_RE_PAY = 5;
+
+
+    const MERCHANT_TYPE_NORMAL = 1;
+    const MERCHANT_TYPE_CS = 2;
 
     //结算类型 1-手动打款 2-自动打款
     const TYPE_DEFAULT = 1;

@@ -12,6 +12,7 @@ import bizer from './bizer'
 import wallet from './wallet'
 
 import OrderList from '../components/order/list'
+import CsOrderList from '../components/order/cs/tabs'
 
 import InviteChannelList from '../components/invite-channel/list'
 import InviteRecords from '../components/invite-record/list'
@@ -47,6 +48,7 @@ const routes = [
         component: Home,
         children: [
             {path: 'orders', component: OrderList, name: 'OrderList'},
+            {path: 'cs/orders', component: CsOrderList, name: 'CsOrderList'},
         ]
     },
 
