@@ -13,7 +13,14 @@ use App\Modules\Cs\CsUserAddressService;
 use App\Result;
 
 class CsUserAddressController extends Controller{
-public function addUserAddresses(){
+
+    /**
+     * 添加收货地址
+     * @author zwg
+     * @date  181120
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addUserAddresses(){
     $default = 0;
     if (!empty(request('is_default'))){
         $default = request('is_default');
@@ -27,5 +34,20 @@ public function addUserAddresses(){
                 'is_default' => $default];
     CsUserAddressService::addAddresses($data);
     return Result::success('添加收货地址成功');
-}
+    }
+
+    /**
+     * 获取地址列表
+     */
+    public function getAddresses(){
+        $isTestAddress = 0; //是否检测配送范围
+        if (!empty(request('is_test_radius')){
+            $isTestAddress = request('is_test_radius');
+        }
+        $cityId = request('city_id');
+        $city_wide = config('common.city_wide');
+        $query = CsUserAddressService::getList($isTestAddress,$cityId,$city_wide);
+        return Result::success($query);
+    }
+
 }

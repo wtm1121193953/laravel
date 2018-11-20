@@ -10,12 +10,15 @@ namespace App\Modules\Cs;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Modules\Area\Area;
+use App\Result;
 use App\ResultCode;
 use Illuminate\Support\Facades\DB;
 
 
 class CsUserAddressService extends BaseService {
     /**
+     * 添加收获地址
+     * @author zwg
      * @param $data 传入数据
      */
     public static function addAddresses($data){
@@ -68,6 +71,29 @@ class CsUserAddressService extends BaseService {
         //保存地址
         if( !($userAddress->save()) ) {
             throw new BaseResponseException('新增失败', ResultCode::DB_INSERT_FAIL);
+        }
+    }
+
+    public static function getList($isTestAddress,$cityId,$city_wide){
+        if ($city_wide == 0 || $isTestAddress == 0){
+            $user = request()->get('current_user');
+            $list = CsUserAddress::where('user_id',$user->id);
+            return $list;
+        }
+        else{
+            $user = request()->get('current_user');
+            $list = CsUserAddress::where('user_id',$user->id);
+            if (empty($cityId)){
+                throw new BaseResponseException('未选择商家', ResultCode::PARAMS_INVALID);
+            }
+            $list->each(function ($item){
+                if ($item->city_id == $cityId){
+                    $item->outRadius = '1';
+                }
+                else{
+                    $item->outRadius = '0';
+                }
+            });
         }
     }
 }
