@@ -22,12 +22,11 @@ class CsGoodService extends BaseService
     public static function getList(array $params = [], bool $getWithQuery = false)
     {
 
+        $id = array_get($params, 'id');
         $query = CsGood::select('*')
-            ->when($params['id'],function (Builder $query) use ($params){
-
-                $query->where('id','=',$params['id']);
+            ->when($id,function (Builder $query) use ($id){
+                $query->where('id','=', $id);
             })
-
         ;
 
         if ($getWithQuery) {
