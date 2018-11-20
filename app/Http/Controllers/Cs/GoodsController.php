@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Merchant;
+namespace App\Http\Controllers\Cs;
 
 
 use App\Exceptions\DataNotFoundException;
 use App\Http\Controllers\Controller;
-use App\Modules\Goods\GoodsService;
+use App\Modules\Cs\CsGoodService;
 use App\Result;
+use Illuminate\Http\Request;
 
 class GoodsController extends Controller
 {
@@ -15,12 +16,8 @@ class GoodsController extends Controller
      */
     public function getList()
     {
-        $status = request('status');
-        $data = GoodsService::getList(request()->get('current_user')->merchant_id, $status);
-
-        $data->each(function ($item) {
-            $item->pic_list = $item->pic_list ? explode(',', $item->pic_list) : [];
-        });
+        $params = [];
+        $data = CsGoodService::getList($params);
 
         return Result::success([
             'list' => $data->items(),
@@ -48,22 +45,18 @@ class GoodsController extends Controller
     /**
      * 添加数据
      */
-    public function add()
+    public function add(Request $request)
     {
-        $this->validate(request(), [
+        $request->validate([
             'name' => 'required',
             'market_price' => 'required',
             'price' => 'required',
-            'start_date' => 'required',
-            'end_date' => 'required',
         ]);
-        $operId = request()->get('current_user')->oper_id;
-        $merchantId = request()->get('current_user')->merchant_id;
-        $goods = GoodsService::addFromRequest($operId, $merchantId);
 
-        $goods->pic_list = $goods->pic_list ? explode(',', $goods->pic_list) : [];
 
-        return Result::success($goods);
+        dd($request);
+
+        return Result::success();
     }
 
     /**
