@@ -123,7 +123,8 @@ Route::prefix('app/user')
         Route::post('cs/address/edit','CsUserAddressController@editAddress')->middleware(UserLoginFilter::class);
         Route::post('cs/address/delete','CsUserAddressController@deleteAddress')->middleware(UserLoginFilter::class);
 
-        //大千超市:
+        //超市
+        Route::get('cs/dishes/category','DishesCategoryController@getAllList')->middleware(UserLoginFilter::class);
         Route::get('cs/merchant/list', 'CsMerchantController@getList');
     });
 
