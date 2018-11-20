@@ -6,7 +6,7 @@
  * Time: 17:43
  */
 
-namespace App\Http\Controllers\Merchant;
+namespace App\Http\Controllers\Cs;
 
 
 use App\Exceptions\DataNotFoundException;

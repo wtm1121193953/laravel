@@ -6,7 +6,7 @@
  * Time: 15:00
  */
 
-namespace App\Http\Controllers\Merchant;
+namespace App\Http\Controllers\Cs;
 
 
 use App\Exports\InviteUserRecordExport;
