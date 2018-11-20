@@ -17,7 +17,6 @@ class CreateCsMerchantsTable extends Migration
             $table->increments('id');
             // 商家基本信息
             $table->integer('oper_id')->index()->default(0)->comment('所属运营中心ID');
-            $table->integer('merchant_category_id')->index()->default(0)->comment('商家类别ID');
             $table->string('name')->default('')->comment('商家名称');
             $table->string('brand')->default('')->comment('商家品牌');
             $table->string('signboard_name')->default('')->comment('商家招牌名称');
@@ -97,6 +96,9 @@ class CreateCsMerchantsTable extends Migration
             $table->softDeletes();
             $table->comment = '超市商家表';
         });
+
+        \Illuminate\Support\Facades\DB::statement('ALTER TABLE `cs_merchants`
+	AUTO_INCREMENT=1000000000');
     }
 
     /**
