@@ -12,7 +12,14 @@ use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsUserAddressService;
 class CsUserAddressController extends Controller{
 public function addUserAddresses(){
-    $data = ['bank_card_open_name' => request('bank_card_open_name'), 'bank_card_no' => request('bank_card_no'), 'bank_name' => request('bank_name')];
+    $data = ['contacts' => request('contacts'),
+                'contact_phone' => request('contact_phone'),
+                'bank_name' => request('bank_name'),
+                'province_id' => request('province_id'),
+                'city_id' => request('city_id'),
+                'area_id' => request('area_id'),
+                'address' => request('address'),
+                'is_default' => request('is_default')];
     CsUserAddressService::addAddresses($data);
     return Result::success('添加收货地址成功');
 }

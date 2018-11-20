@@ -11,6 +11,7 @@ use Qcloud\Cos\Service;
 
 class CsUserAddressService extends Service{
     public static function addAddresses(){
+        $user = request()->get('current_user');
 
     }
 }
