@@ -11,6 +11,7 @@ use App\BaseService;
 
 class CsMerchantCategoryService extends BaseService
 {
+
     /**
      * 获取商户的子分类
      * @param int $cs_merchant_id
@@ -68,5 +69,17 @@ class CsMerchantCategoryService extends BaseService
             CsMerchantCategory::updateOrCreate($where, $row);
         }
         return true;
+    }
+
+    public static function getTree($merchantId){
+       $list = CsMerchantCategory::where('cs_category_level',1)
+       ->where('cs_merchant_id',$merchantId)
+       ->get();
+        $list->each(function ($item){
+            $item->sub = CsMerchantCategory::where('cs_category_level',2)
+                ->where('cs_category_parent_id',$item->id)
+                ->get();
+        });
+        return $list;
     }
 }
