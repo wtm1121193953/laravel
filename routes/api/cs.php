@@ -5,7 +5,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('merchant/cs')
+Route::prefix('cs')
     ->namespace('Cs')
     ->middleware('merchant')->group(function (){
 

@@ -178,6 +178,7 @@
                                 _self.getNormalMerchantElectronicContractConfig();
                             }else {
                                 window.baseApiUrl = '/api/cs/'
+                                _self.relocation();
                             }
                         }).catch(() => {
                             _self.refreshVerify();
