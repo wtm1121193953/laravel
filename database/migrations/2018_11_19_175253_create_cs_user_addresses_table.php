@@ -23,6 +23,8 @@ class CreateCsUserAddressesTable extends Migration
             $table->string('area')->default('')->comment('县区');
             $table->integer('area_id')->default(0)->comment('县区id');
             $table->string('address',600)->default('')->comment('详细地址');
+            $table->string('contacts',50)->default('')->comment('联系人');
+            $table->string('contact_phone',20)->default('')->comment('联系电话');
             $table->tinyInteger('is_default')->default(0)->comment('是否默认地址 1是 0否');
             $table->timestamps();
             $table->comment = '用户地址表';
