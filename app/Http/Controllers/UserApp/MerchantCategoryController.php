@@ -26,6 +26,9 @@ class MerchantCategoryController extends Controller
      * 获取超市商户分类
      */
     public function getCsTree(){
+        $this->validate(request(),[
+            'merchant_id' => 'required'
+        ]);
         $merchantId = request('merchant_id');
         $list = CsMerchantCatrgoryService::getTree($merchantId);
         return Result::success($list);
