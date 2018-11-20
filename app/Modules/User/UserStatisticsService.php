@@ -26,55 +26,20 @@ class UserStatisticsService extends BaseService
 
         if ($date >= date('Y-m-d', time())) return;
 
-        $userArray = [];
-
-
-        Order::where('status', Order::STATUS_FINISHED)
+        $userIds1 = Order::where('status', Order::STATUS_FINISHED)
             ->whereBetween('pay_time', [$startTime, $endTime])
-            ->chunk(1000, function($orders) use (&$userArray) {
-                foreach ($orders as $order) {
-                    if (!empty($userArray[$order->user_id])) {
-                        $userArray[$order->user_id]['order_finished_amount'] += $order->pay_price;
-                        $userArray[$order->user_id]['order_finished_num'] += 1;
-                    } else {
-                        $userArray[$order->user_id] = [
-                            'order_finished_amount' => $order->pay_price,
-                            'order_finished_num' => 1,
-                            'invite_user_num' => 0,
-                        ];
-                    }
-                }
-            });
-
-        InviteUserRecord::where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+            ->select('user_id')
+            ->distinct()
+            ->pluck('user_id');
+        $userIds2 = InviteUserRecord::where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
             ->whereBetween('created_at', [$startTime, $endTime])
-            ->chunk(1000, function ($inviteRecords) use (&$userArray) {
-                foreach ($inviteRecords as $inviteRecord) {
-                    if (!empty($merchantArray[$inviteRecord->origin_id])) {
-                        $userArray[$inviteRecord->origin_id]['invite_user_num'] += 1;
-                    } else {
-                        $userArray[$inviteRecord->origin_id] = [
-                            'order_finished_amount' => 0,
-                            'order_finished_num' => 0,
-                            'invite_user_num' => 1,
-                        ];
-                    }
-                }
-            });
+            ->select('origin_id')
+            ->distinct()
+            ->pluck('origin_id');
+        $userIds = $userIds1->merge($userIds2)->unique()->values()->all();
 
-        if (!empty($userArray)) {
-            foreach ($userArray as $key => $value) {
-                $where['user_id'] = $key;
-                $where['date'] = $date;
-
-                $row['order_finished_amount'] = $value['order_finished_amount'];
-                $row['order_finished_num'] = $value['order_finished_num'];
-                $row['invite_user_num'] = $value['invite_user_num'];
-
-                $row = array_merge($row,$where);
-
-                (new UserStatistics())->updateOrCreate($where, $row);
-            }
+        foreach ($userIds as $userId) {
+            self::statisticsByUserId($userId, $startTime, $endTime);
         }
     }
 
@@ -174,5 +139,43 @@ class UserStatisticsService extends BaseService
         $userStatistics->save();
 
         return $userStatistics;
+    }
+
+    /**
+     * 统计每个用户
+     * @param $userId
+     * @param $startTime
+     * @param $endTime
+     */
+    private static function statisticsByUserId($userId, $startTime, $endTime)
+    {
+        $order_finished_amount = 0;
+        $order_finished_num = 0;
+
+        Order::where('user_id', $userId)
+            ->where('status', Order::STATUS_FINISHED)
+            ->whereBetween('pay_time', [$startTime, $endTime])
+            ->chunk(1000, function($orders) use (&$order_finished_amount, &$order_finished_num) {
+                foreach ($orders as $order) {
+                    $order_finished_amount += $order->pay_price;
+                    $order_finished_num += 1;
+                }
+            });
+
+        $invite_user_num = InviteUserRecord::where('origin_id', $userId)
+            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)
+            ->whereBetween('created_at', [$startTime, $endTime])
+            ->count();
+
+        $where['user_id'] = $userId;
+        $where['date'] = date('Y-m-d', strtotime($endTime));
+
+        $row['order_finished_amount'] = $order_finished_amount;
+        $row['order_finished_num'] = $order_finished_num;
+        $row['invite_user_num'] = $invite_user_num;
+
+        $row = array_merge($row,$where);
+
+        (new UserStatistics())->updateOrCreate($where, $row);
     }
 }

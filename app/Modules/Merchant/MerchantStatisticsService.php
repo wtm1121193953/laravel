@@ -27,66 +27,20 @@ class MerchantStatisticsService extends BaseService
 
         if ($date >= date('Y-m-d', time())) return;
 
-        $merchantArray = [];
-
-        Order::where('status', Order::STATUS_FINISHED)
+        $merchantIds1 = Order::where('status', Order::STATUS_FINISHED)
             ->whereBetween('pay_time', [$startTime, $endTime])
-            ->chunk(1000, function($orders) use (&$merchantArray) {
-                foreach ($orders as $order) {
-                    if (!empty($merchantArray[$order->merchant_id])) {
-                        $merchantArray[$order->merchant_id]['order_finished_amount'] += $order->pay_price;
-                        $merchantArray[$order->merchant_id]['order_finished_num'] += 1;
-                    } else {
-                        $merchantArray[$order->merchant_id] = [
-                            'order_finished_amount' => $order->pay_price,
-                            'order_finished_num' => 1,
-                            'invite_user_num' => 0,
-                            'oper_id' => $order->oper_id,
-                        ];
-                    }
-                }
-            });
-
-        InviteUserRecord::where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
+            ->select('merchant_id')
+            ->distinct()
+            ->pluck('merchant_id');
+        $merchantIds2 = InviteUserRecord::where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
             ->whereBetween('created_at', [$startTime, $endTime])
-            ->chunk(1000, function ($inviteRecords) use (&$merchantArray) {
-                 foreach ($inviteRecords as $inviteRecord) {
-                     $merchant = MerchantService::getById($inviteRecord->origin_id);
-                     if (empty($merchant)) {
-                         Log::error('MerchantStatisticsService统计商户邀请人数, 商户为空', [
-                             'inviteRecordId' => $inviteRecord->id,
-                             'inviteRecord' => $inviteRecord,
-                         ]);
-                         continue;
-                     }
+            ->select('origin_id')
+            ->distinct()
+            ->pluck('origin_id');
+        $merchantIds = $merchantIds1->merge($merchantIds2)->unique()->values()->all();
 
-                     if (!empty($merchantArray[$inviteRecord->origin_id])) {
-                         $merchantArray[$inviteRecord->origin_id]['invite_user_num'] += 1;
-                     } else {
-                         $merchantArray[$inviteRecord->origin_id] = [
-                             'order_finished_amount' => 0,
-                             'order_finished_num' => 0,
-                             'invite_user_num' => 1,
-                             'oper_id' => $merchant->oper_id,
-                         ];
-                     }
-                 }
-            });
-
-        if (!empty($merchantArray)) {
-            foreach ($merchantArray as $key => $value) {
-                $where['merchant_id'] = $key;
-                $where['date'] = $date;
-
-                $row['oper_id'] = $value['oper_id'];
-                $row['order_finished_amount'] = $value['order_finished_amount'];
-                $row['order_finished_num'] = $value['order_finished_num'];
-                $row['invite_user_num'] = $value['invite_user_num'];
-
-                $row = array_merge($row,$where);
-
-                (new MerchantStatistics())->updateOrCreate($where, $row);
-            }
+        foreach ($merchantIds as $merchantId) {
+            self::statisticsByMerchantId($merchantId, $startTime, $endTime);
         }
     }
 
@@ -196,5 +150,52 @@ class MerchantStatisticsService extends BaseService
         $merchantStatistics->save();
 
         return $merchantStatistics;
+    }
+
+    /**
+     * 统计每个商户
+     * @param $merchantId
+     * @param $startTime
+     * @param $endTime
+     */
+    private static function statisticsByMerchantId($merchantId, $startTime, $endTime)
+    {
+        $order_finished_amount = 0;
+        $order_finished_num = 0;
+
+        $oper_id = 0;
+
+        Order::where('merchant_id', $merchantId)
+            ->where('status', Order::STATUS_FINISHED)
+            ->whereBetween('pay_time', [$startTime, $endTime])
+            ->chunk(1000, function($orders) use (&$order_finished_amount, &$order_finished_num, &$oper_id) {
+                foreach ($orders as $order) {
+                    $order_finished_amount += $order->pay_price;
+                    $order_finished_num += 1;
+                    $oper_id = $order->oper_id;
+                }
+            });
+
+        $invite_user_num = InviteUserRecord::where('origin_id', $merchantId)
+            ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
+            ->whereBetween('created_at', [$startTime, $endTime])
+            ->count();
+
+        if ($oper_id == 0) {
+            $merchant = MerchantService::getById($merchantId);
+            $oper_id = $merchant->oper_id;
+        }
+
+        $where['merchant_id'] = $merchantId;
+        $where['date'] = date('Y-m-d', strtotime($endTime));
+
+        $row['oper_id'] = $oper_id;
+        $row['order_finished_amount'] = $order_finished_amount;
+        $row['order_finished_num'] = $order_finished_num;
+        $row['invite_user_num'] = $invite_user_num;
+
+        $row = array_merge($row,$where);
+
+        (new MerchantStatistics())->updateOrCreate($where, $row);
     }
 }
