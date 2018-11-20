@@ -9,8 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Class Merchant
- * @package App\Modules\Merchant
+ * Class CsMerchant
+ * @package App\Modules\CsMerchant
  *
  * @property int    oper_id
  * @property int    merchant_category_id
