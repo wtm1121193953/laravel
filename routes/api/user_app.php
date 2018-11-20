@@ -122,6 +122,11 @@ Route::prefix('app/user')
         Route::get('cs/address/getList','CsUserAddressController@getAddresses')->middleware(UserLoginFilter::class);
         Route::post('cs/address/edit','CsUserAddressController@editAddress')->middleware(UserLoginFilter::class);
         Route::post('cs/address/delete','CsUserAddressController@deleteAddress')->middleware(UserLoginFilter::class);
+
+        //超市
+        Route::get('cs/dishes/category','DishesCategoryController@getAllList')->middleware(UserLoginFilter::class);
+
+
     });
 
 Route::prefix('app/user')
