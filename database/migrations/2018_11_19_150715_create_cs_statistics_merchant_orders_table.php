@@ -15,9 +15,9 @@ class CreateCsStatisticsMerchantOrdersTable extends Migration
     {
         Schema::create('cs_statistics_merchant_orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('cs_merchant_id')->default(0)->comment('超市商户ID');
-            $table->string('month',10)->default('')->comment('统计月份');
-            $table->integer('order_number')->default(0)->comment('下单数量');
+            $table->integer('cs_merchant_id')->index()->default(0)->comment('超市商户ID');
+            $table->string('order_number_30d')->default(0)->comment('最近30天下单数量');
+            $table->integer('order_number_today')->default(0)->comment('当天下单数量');
             $table->timestamps();
             $table->comment = '超市商户月订单统计';
         });

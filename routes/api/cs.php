@@ -5,9 +5,17 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('merchant/cs')
+Route::prefix('cs')
     ->namespace('Cs')
     ->middleware('merchant')->group(function (){
+
+        Route::get('goods', 'GoodsController@getList');
+        Route::get('goods/detail', 'GoodsController@detail');
+        Route::post('goods/add', 'GoodsController@add');
+        Route::post('goods/edit', 'GoodsController@edit');
+        Route::post('goods/changeStatus', 'GoodsController@changeStatus');
+        Route::post('goods/del', 'GoodsController@del');
+        Route::post('goods/saveOrder', 'GoodsController@saveOrder');
 
         Route::post('login', 'SelfController@login');
         Route::post('logout', 'SelfController@logout');

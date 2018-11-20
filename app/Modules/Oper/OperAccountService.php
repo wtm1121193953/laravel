@@ -113,6 +113,13 @@ class OperAccountService extends BaseService
                 ]
 
             ],
+            [ 'id' => 12, 'name' => '超市商户管理', 'level' => 1, 'url' => 'cs/merchant', 'sub' =>
+                [
+                    [ 'id' => 121, 'name' => '超市商户列表', 'level' => 2, 'url' => '/oper/cs/merchants', 'pid' => 12,],
+                    [ 'id' => 122, 'name' => '超市商户审核记录', 'level' => 2, 'url' => '/oper/cs/merchant/audits', 'pid' => 12],
+                ]
+
+            ],
             [ 'id' => 2, 'name' => '订单管理', 'level' => 1, 'url' => 'orders', 'sub' =>
                 [
                     [ 'id' => 21, 'name' => '超市订单管理', 'level' => 2, 'url' => '/oper/cs/orders', 'pid' => 2],
@@ -137,7 +144,7 @@ class OperAccountService extends BaseService
                 ]
             ],
 
-            [ 'id' => 6, 'name' => '账户管理', 'level' => 1, 'url' => '/wallet', 'sub' =>
+            [ 'id' => 16, 'name' => '账户管理', 'level' => 1, 'url' => '/wallet', 'sub' =>
                 [
                     [ 'id' => 61, 'name' => '账户总览', 'level' => 2, 'url' => '/oper/wallet/summary/list', 'pid' => 6,],
                     [ 'id' => 62, 'name' => '我的贡献值', 'level' => 2, 'url' => '/oper/wallet/consume/list', 'pid' => 6,],

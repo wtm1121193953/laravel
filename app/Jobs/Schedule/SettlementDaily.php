@@ -2,6 +2,8 @@
 
 namespace App\Jobs\Schedule;
 
+use App\Jobs\Cs\SettlementForCsMerchantDaily;
+use App\Modules\Cs\CsMerchant;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -59,6 +61,16 @@ class SettlementDaily implements ShouldQueue
                 SettlementForMerchantDaily::dispatch( $item->id, $date );
             });
         });
+
+        // 添加超市类商家每日结算
+        CsMerchant::select('id')
+            ->chunk(100, function( $supermarket ) use ( $date ) {
+                $supermarket->each( function( $item ) use ( $date) {
+                    SettlementForCsMerchantDaily::dispatch( $item->id, $date );
+                });
+            });
+
+
         Log::info('每日结算任务完成');
     }
 }

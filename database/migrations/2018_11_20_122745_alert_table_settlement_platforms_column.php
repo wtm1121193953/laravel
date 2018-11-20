@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlertTableMerchantAccountsAddTypeColumns extends Migration
+class AlertTableSettlementPlatformsColumn extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class AlertTableMerchantAccountsAddTypeColumns extends Migration
      */
     public function up()
     {
-        //
-        Schema::table('merchant_accounts', function (Blueprint $table) {
+        Schema::table('settlement_platforms', function (Blueprint $table) {
             //
-            $table->tinyInteger('type')->default(1)->comment('商户类型 1-普通商户 2-超市商户')->after('merchant_id');
+            $table->tinyInteger('merchant_type')->default(1)->comment('商户类型 1-普通商户 2-超市商户')->after('merchant_id');
         });
     }
 
@@ -28,10 +27,10 @@ class AlertTableMerchantAccountsAddTypeColumns extends Migration
     public function down()
     {
         //
-        Schema::table('merchant_accounts', function (Blueprint $table) {
+        Schema::table('settlement_platforms', function (Blueprint $table) {
             //
             $table->dropColumn([
-                'type'
+                'merchant_type'
             ]);
         });
     }

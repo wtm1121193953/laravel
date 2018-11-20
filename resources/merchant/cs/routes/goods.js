@@ -14,9 +14,9 @@ export default [
         component: Home,
         children: [
             //商品管理列表
-            {path: '/goods', component: GoodsList, name: 'GoodsList'},
-            {path: '/goods/add', component: GoodsAdd, name: 'GoodsAdd'},
-            {path: '/goods/edit', component: GoodsEdit, name: 'GoodsEdit'},
+            {path: 'goods', component: GoodsList, name: 'GoodsList'},
+            {path: 'goods/add', component: GoodsAdd, name: 'GoodsAdd'},
+            {path: 'goods/edit', component: GoodsEdit, name: 'GoodsEdit'},
 
         ]
     },

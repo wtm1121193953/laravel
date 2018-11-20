@@ -5,6 +5,7 @@ import ErrorPage from '../components/404.vue'
 import welcome from '../components/welcome.vue'
 
 import merchant from './merchant'
+import csMerchant from "./csMerchant";
 import settlements from './settlements'
 import operBizMembers from './operBizMember'
 import bizer from './bizer'
@@ -35,6 +36,7 @@ const routes = [
     {path: '/login', component: Login, name: 'Login'},
 
     ...merchant,
+    ...csMerchant,
     ...settlements,
     ...operBizMembers,
     ...wallet,

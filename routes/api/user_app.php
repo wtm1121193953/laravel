@@ -119,6 +119,9 @@ Route::prefix('app/user')
 
         //收货地址
         Route::post('cs/address/add','CsUserAddressController@addUserAddresses')->middleware(UserLoginFilter::class);
+        Route::get('cs/address/getList','CsUserAddressController@getAddresses')->middleware(UserLoginFilter::class);
+        Route::post('cs/address/edit','CsUserAddressController@editAddress')->middleware(UserLoginFilter::class);
+        Route::post('cs/address/delete','CsUserAddressController@deleteAddress')->middleware(UserLoginFilter::class);
     });
 
 Route::prefix('app/user')

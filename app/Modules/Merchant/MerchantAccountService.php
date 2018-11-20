@@ -8,6 +8,7 @@ use App\Exceptions\PasswordErrorException;
 use App\Exceptions\AccountNotFoundException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
 use App\Modules\Tps\TpsBind;
@@ -34,12 +35,26 @@ class MerchantAccountService extends BaseService
         if($user->status != 1){
             throw new NoPermissionException('帐号已被禁用');
         }
-        $merchant = MerchantService::getById($user->merchant_id);
-        if(empty($merchant)){
-            throw new DataNotFoundException('商户信息不存在');
-        }
-        if($merchant->status != 1){
-            throw new NoPermissionException('商户已被冻结');
+        if($user->type == MerchantAccount::TYPE_NORMAL){
+
+            $merchant = MerchantService::getById($user->merchant_id);
+            if(empty($merchant)){
+                throw new DataNotFoundException('商户信息不存在');
+            }
+            if($merchant->status != 1){
+                throw new NoPermissionException('商户已被冻结');
+            }
+            $user->merchantName = $merchant->name;
+        }else {
+            // 大千超市信息获取
+            $csMerchant =  CsMerchantService::getById($user->merchant_id);
+            if(empty($csMerchant)){
+                throw new DataNotFoundException('商户信息不存在');
+            }
+            if($csMerchant->status != 1){
+                throw new NoPermissionException('商户已被冻结');
+            }
+            $user->merchantName = $csMerchant->name;
         }
 
         // 将用户信息记录到session中
@@ -47,7 +62,6 @@ class MerchantAccountService extends BaseService
             config('merchant.user_session') => $user,
         ]);
 
-        $user->merchantName = $merchant->name;
 
         return $user;
     }
