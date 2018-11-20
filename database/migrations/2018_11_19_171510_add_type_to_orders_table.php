@@ -14,8 +14,10 @@ class AddTypeToOrdersTable extends Migration
     public function up()
     {
         Schema::table('orders', function (Blueprint $table) {
-            //
             $table->tinyInteger('merchant_type')->default(1)->comment('订单类型 1普通商户订单 2超市商户订单')->after('oper_id');
+            $table->tinyInteger('deliver_type')->default(0)->comment('超市订单 发货方式 1-配送 2-自提');
+            $table->string('express_company')->default('')->comment('超市订单 快递公司');
+            $table->string('express_no')->default('')->comment('超市订单 快递单号');
         });
     }
 
@@ -27,9 +29,10 @@ class AddTypeToOrdersTable extends Migration
     public function down()
     {
         Schema::table('orders', function (Blueprint $table) {
-            //
             $table->dropColumn([
-                'merchant_type'
+                'merchant_type',
+                'express_company',
+                'express_no',
             ]);
         });
     }

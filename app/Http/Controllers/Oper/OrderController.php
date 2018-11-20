@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2018/5/23
- * Time: 22:56
- */
 
 namespace App\Http\Controllers\Oper;
 
@@ -13,10 +7,8 @@ use App\Exports\OperOrderExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Dishes\DishesItem;
-use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
 use App\Result;
-use Illuminate\Database\Eloquent\Builder;
 
 class OrderController extends Controller
 {
@@ -31,10 +23,14 @@ class OrderController extends Controller
         $endTime = request('endTime');
         $status = request('status');
         $type = request('type');
+        $merchantType = request('merchantType');
 
         if($timeType == 'payTime'){
             $startPayTime = $startTime;
             $endPayTime = $endTime;
+        } elseif ($timeType == 'createdTime') {
+            $startCreatedTime = $startTime;
+            $endCreatedTime = $endTime;
         }else {
             $startFinishTime = $startTime;
             $endFinishTime = $endTime;
@@ -49,8 +45,11 @@ class OrderController extends Controller
             'endPayTime' => $endPayTime ?? null,
             'startFinishTime' => $startFinishTime ?? null,
             'endFinishTime' => $endFinishTime ?? null,
+            'startCreatedAt' => $startCreatedTime ?? null,
+            'endCreatedAt' => $endCreatedTime ?? null,
             'status' => $status,
             'type' => $type,
+            'merchantType' => $merchantType,
         ]);
 
         return Result::success([

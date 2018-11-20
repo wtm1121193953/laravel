@@ -105,63 +105,68 @@ class OperAccountService extends BaseService
         return [
             [ 'id' => 1, 'name' => '商户管理', 'level' => 1, 'url' => 'merchant', 'sub' =>
                 [
-                    [ 'id' => 2, 'name' => '我的商户', 'level' => 2, 'url' => '/oper/merchants', 'pid' => 1,],
-                    [ 'id' => 15, 'name' => '试点商户', 'level' => 2, 'url' => '/oper/merchant/pilots', 'pid' => 1,],
-                    [ 'id' => 3, 'name' => '商户池', 'level' => 2, 'url' => '/oper/merchant/pool', 'pid' => 1,],
-                    [ 'id' => 13, 'name' => '商户审核记录', 'level' => 2, 'url' => '/oper/merchant/audits', 'pid' => 1],
-                    [ 'id' => 14, 'name' => '草稿箱('.$merchantDraftCount.')', 'level' => 2, 'url' => '/oper/merchant/drafts', 'pid' => 1],
+                    [ 'id' => 11, 'name' => '我的商户', 'level' => 2, 'url' => '/oper/merchants', 'pid' => 1,],
+                    [ 'id' => 12, 'name' => '试点商户', 'level' => 2, 'url' => '/oper/merchant/pilots', 'pid' => 1,],
+                    [ 'id' => 13, 'name' => '商户池', 'level' => 2, 'url' => '/oper/merchant/pool', 'pid' => 1,],
+                    [ 'id' => 14, 'name' => '商户审核记录', 'level' => 2, 'url' => '/oper/merchant/audits', 'pid' => 1],
+                    [ 'id' => 15, 'name' => '草稿箱('.$merchantDraftCount.')', 'level' => 2, 'url' => '/oper/merchant/drafts', 'pid' => 1],
                 ]
 
             ],
-            [ 'id' => 10, 'name' => '订单管理', 'level' => 1, 'url' => '/oper/orders' ],
-            ['id' => 61, 'name' => '消息管理', 'level' => 1, 'url' => '', 'sub' =>
+            [ 'id' => 2, 'name' => '订单管理', 'level' => 1, 'url' => 'orders', 'sub' =>
                 [
-                    ['id' => 60, 'name' => '系统消息', 'level' => 2, 'url' => '/message/systems', 'pid' => 61],
+                    [ 'id' => 21, 'name' => '超市订单管理', 'level' => 2, 'url' => '/oper/cs/orders', 'pid' => 2],
+                    [ 'id' => 22, 'name' => '普通订单管理', 'level' => 2, 'url' => '/oper/orders', 'pid' => 2],
+                ]
+            ],
+            ['id' => 3, 'name' => '消息管理', 'level' => 1, 'url' => '', 'sub' =>
+                [
+                    ['id' => 31, 'name' => '系统消息', 'level' => 2, 'url' => '/message/systems', 'pid' => 3],
                 ]
             ],
             [ 'id' => 4, 'name' => '人员管理', 'level' => 1, 'url' => 'user', 'sub' =>
                 [
-//                    [ 'id' => 5, 'name' => '我的会员', 'level' => 2, 'url' => '/oper/invite/statistics/daily', 'pid' => 4,],
-                    [ 'id' => 6, 'name' => '我的员工', 'level' => 2, 'url' => '/oper/operBizMembers', 'pid' => 4,]
+//                    [ 'id' => 41, 'name' => '我的会员', 'level' => 2, 'url' => '/oper/invite/statistics/daily', 'pid' => 4,],
+                    [ 'id' => 42, 'name' => '我的员工', 'level' => 2, 'url' => '/oper/operBizMembers', 'pid' => 4,]
                 ]
             ],
-            [ 'id' => 30, 'name' => '业务员管理', 'level' => 1, 'url' => 'bizer', 'sub' =>
+            [ 'id' => 5, 'name' => '业务员管理', 'level' => 1, 'url' => 'bizer', 'sub' =>
                 [
-                    [ 'id' => 31, 'name' => '我的业务员', 'level' => 2, 'url' => '/oper/bizers', 'pid' => 30,],
-                    [ 'id' => 32, 'name' => '业务员申请', 'level' => 2, 'url' => '/oper/bizerRecord', 'pid' => 30,],
+                    [ 'id' => 51, 'name' => '我的业务员', 'level' => 2, 'url' => '/oper/bizers', 'pid' => 5,],
+                    [ 'id' => 52, 'name' => '业务员申请', 'level' => 2, 'url' => '/oper/bizerRecord', 'pid' => 5,],
                 ]
             ],
 
-            [ 'id' => 16, 'name' => '账户管理', 'level' => 1, 'url' => '/wallet', 'sub' =>
+            [ 'id' => 6, 'name' => '账户管理', 'level' => 1, 'url' => '/wallet', 'sub' =>
                 [
-                    [ 'id' => 17, 'name' => '账户总览', 'level' => 2, 'url' => '/oper/wallet/summary/list', 'pid' => 16,],
-                    [ 'id' => 18, 'name' => '我的贡献值', 'level' => 2, 'url' => '/oper/wallet/consume/list', 'pid' => 16,],
-//                    [ 'id' => 22, 'name' => '我的TPS积分', 'level' => 2, 'url' => '/oper/wallet/credit/list', 'pid' => 16,],
-                    [ 'id' => 19, 'name' => '提现密码管理', 'level' => 2, 'url' => '/oper/wallet/withdraw/password', 'pid' => 16,],
+                    [ 'id' => 61, 'name' => '账户总览', 'level' => 2, 'url' => '/oper/wallet/summary/list', 'pid' => 6,],
+                    [ 'id' => 62, 'name' => '我的贡献值', 'level' => 2, 'url' => '/oper/wallet/consume/list', 'pid' => 6,],
+//                    [ 'id' => 63, 'name' => '我的TPS积分', 'level' => 2, 'url' => '/oper/wallet/credit/list', 'pid' => 6,],
+                    [ 'id' => 64, 'name' => '提现密码管理', 'level' => 2, 'url' => '/oper/wallet/withdraw/password', 'pid' => 6,],
                 ]
             ],
 
             [ 'id' => 7, 'name' => '财务管理', 'level' => 1, 'url' => '/oper/settlements',],
-            [ 'id' => 40, 'name' => '用户管理', 'level' => 1, 'url' => 'member', 'sub' =>
+            [ 'id' => 8, 'name' => '用户管理', 'level' => 1, 'url' => 'member', 'sub' =>
                 [
-                    [ 'id' => 41, 'name' => '我的用户', 'level' => 2, 'url' => '/member/index', 'pid' => 40,],
-                    [ 'id' => 42, 'name' => '用户统计', 'level' => 2, 'url' => '/member/statistics', 'pid' => 40,],
+                    [ 'id' => 81, 'name' => '我的用户', 'level' => 2, 'url' => '/member/index', 'pid' => 8,],
+                    [ 'id' => 82, 'name' => '用户统计', 'level' => 2, 'url' => '/member/statistics', 'pid' => 8,],
                 ]
             ],
-            [ 'id' => 8, 'name' => '推广渠道', 'level' => 1, 'url' => 'material', 'sub' =>
+            [ 'id' => 9, 'name' => '推广渠道', 'level' => 1, 'url' => 'material', 'sub' =>
                 [
-                    [ 'id' => 9, 'name' => '渠道列表', 'level' => 2, 'url' => '/oper/invite-channel', 'pid' => 8,],
+                    [ 'id' => 91, 'name' => '渠道列表', 'level' => 2, 'url' => '/oper/invite-channel', 'pid' => 9,],
                 ]
             ],
 
-//            [ 'id' => 20, 'name' => '系统配置', 'level' => 1, 'url' => 'sysconfig', 'sub' =>
+//            [ 'id' => 10, 'name' => '系统配置', 'level' => 1, 'url' => 'sysconfig', 'sub' =>
 //                [
-//                    [ 'id' => 21, 'name' => '绑定TPS', 'level' => 2, 'url' => '/oper/tps-bind', 'pid' => 20,],
+//                    [ 'id' => 101, 'name' => '绑定TPS', 'level' => 2, 'url' => '/oper/tps-bind', 'pid' => 10,],
 //                ]
 //            ],
             /*[ 'id' => 11, 'name' => '系统设置', 'level' => 1, 'url' => 'setting', 'sub' =>
                 [
-                    [ 'id' => 12, 'name' => '关联用户', 'level' => 2, 'url' => '/oper/setting/mapping_user', 'pid' => 11],
+                    [ 'id' => 111, 'name' => '关联用户', 'level' => 2, 'url' => '/oper/setting/mapping_user', 'pid' => 11],
                 ]
             ],*/
 
