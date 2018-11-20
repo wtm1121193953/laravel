@@ -8,6 +8,7 @@ use App\Exceptions\PasswordErrorException;
 use App\Exceptions\AccountNotFoundException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
 use App\Modules\Tps\TpsBind;
@@ -45,7 +46,15 @@ class MerchantAccountService extends BaseService
             }
             $user->merchantName = $merchant->name;
         }else {
-            // todo 大千超市信息获取
+            // 大千超市信息获取
+            $csMerchant =  CsMerchantService::getById($user->merchant_id);
+            if(empty($csMerchant)){
+                throw new DataNotFoundException('商户信息不存在');
+            }
+            if($csMerchant->status != 1){
+                throw new NoPermissionException('商户已被冻结');
+            }
+            $user->merchantName = $csMerchant->name;
         }
 
         // 将用户信息记录到session中

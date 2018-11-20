@@ -7,8 +7,12 @@
  */
 namespace App\Modules\Cs;
 
-use Qcloud\Cos\Service;
+use App\BaseService;
 
-class CsMerchantService extends Service{
+class CsMerchantService extends BaseService {
 
+    public static function getById($id, $fields = ['*'])
+    {
+        return CsMerchant::find($id, $fields);
+    }
 }
