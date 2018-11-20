@@ -74,6 +74,11 @@
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="id"  width="80" label="商户ID"/>
             <el-table-column prop="name" label="商户名称"/>
+            <el-table-column label="商户类型">
+                <template slot-scope="scope">
+                    <span>普通商户</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="signboard_name" label="商户招牌名"/>
             <el-table-column prop="categoryPath" label="行业">
                 <template slot-scope="scope">
