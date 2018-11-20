@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantAccountService;
 use App\Modules\Merchant\MerchantElectronicContractService;
 use App\Modules\Merchant\MerchantService;
+use App\Modules\Oper\OperService;
 use App\Modules\Setting\SettingService;
 use App\Result;
 use Carbon\Carbon;
@@ -109,9 +110,13 @@ class SelfController extends Controller
         $merchantContractSwitch = SettingService::get('merchant_electronic_contract');
         $contractSwitch = $merchantContractSwitch->isEmpty() ? 0 : $merchantContractSwitch->get('merchant_electronic_contract');
 
+        $operId = MerchantService::getById($merchantId)->oper_id;
+        $oper = OperService::getById($operId);
+
         return Result::success([
             'contract' => $contract,
             'contractSwitch' => $contractSwitch,
+            'payToPlatform' => $oper->pay_to_platform,
         ]);
     }
 

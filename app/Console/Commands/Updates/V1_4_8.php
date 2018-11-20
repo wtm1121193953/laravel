@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Updates;
 
 use App\Jobs\ImageMigrationToCOSJob;
+use App\Jobs\InitMerchantFirstActiveTime;
 use App\Jobs\Schedule\OperAndMerchantAndUserStatisticsDailyJob;
 use App\Modules\Bizer\BizerIdentityAuditRecord;
 use App\Modules\Dishes\DishesGoods;
@@ -79,25 +80,16 @@ class V1_4_8 extends Command
         $this->info('初始化支付方式');
 
         //填充商户首次审核通过时间
-        Merchant::chunk(100, function ($merchants) {
+        $this->info('开始填充商户首次审核通过时间');
+        Merchant::chunk(50, function ($merchants) {
             foreach ($merchants as $merchant) {
-                $auditRecord = MerchantAudit::where('merchant_id', $merchant->id)
-                    ->where('status', MerchantAudit::STATUS_AUDIT_SUCCESS)
-                    ->orderBy('id')
-                    ->first();
-                if (!empty($auditRecord)) {
-                    $merchant->first_active_time = $auditRecord->updated_at;
-                } else {
-                    $merchant->first_active_time = $merchant->active_time;
-                }
-                $merchant->save();
-                unset($auditRecord);
-                unset($merchant);
+                InitMerchantFirstActiveTime::dispatch($merchant);
             }
         });
         $this->info('填充商户首次审核通过时间完成');
 
         /*************统计运营中心5月份之后历史运营数据start*************/
+        $this->info('统计运营中心5月份之后历史运营数据start');
         $i = 1;
         while (1) {
             $endTime = date('Y-m-d', strtotime("-{$i} day")) . ' 23:59:59';
@@ -107,6 +99,7 @@ class V1_4_8 extends Command
             }
             $i++;
         }
+        $this->info('统计运营中心5月份之后历史运营数据end');
 
         /**********************系统图片迁移COS start**********************/
         $this->info('系统图片迁移COS start');
@@ -200,8 +193,10 @@ class V1_4_8 extends Command
 
 
         /**********************结算单历史数据 start**********************/
-        $sql = "SELECT a.settlement_cycle_type settlement_cycle_type_a,b.settlement_cycle_type settlement_cycle_type_b from settlement_platforms a JOIN merchants b on a.merchant_id=b.id";
+        $this->info('结算单历史数据 start');
+        $sql = "update settlement_platforms s set settlement_cycle_type = (select settlement_cycle_type from merchants where id = s.merchant_id);";
         DB::statement($sql);
+        $this->info('结算单历史数据 end');
         /**********************结算单历史数据 end**********************/
     }
 }

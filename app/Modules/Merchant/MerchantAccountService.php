@@ -87,6 +87,9 @@ class MerchantAccountService extends BaseService
                         }
                     }
                 }
+                if (!$isPayToPlatform && $second['name'] == '电子合同管理') {
+                    array_splice($menus, $key, 1);
+                }
             }
         }
 
