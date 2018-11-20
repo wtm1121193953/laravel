@@ -4,6 +4,7 @@ namespace App\Modules\User;
 
 
 use App\BaseService;
+use App\Jobs\UserStatisticsByUserId;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Order\Order;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +40,7 @@ class UserStatisticsService extends BaseService
         $userIds = $userIds1->merge($userIds2)->unique()->values()->all();
 
         foreach ($userIds as $userId) {
-            self::statisticsByUserId($userId, $startTime, $endTime);
+            UserStatisticsByUserId::dispatch($userId, $startTime, $endTime);
         }
     }
 
@@ -147,20 +148,22 @@ class UserStatisticsService extends BaseService
      * @param $startTime
      * @param $endTime
      */
-    private static function statisticsByUserId($userId, $startTime, $endTime)
+    public static function statisticsByUserId($userId, $startTime, $endTime)
     {
         $order_finished_amount = 0;
         $order_finished_num = 0;
 
-        Order::where('user_id', $userId)
+        $orderSta = Order::where('user_id', $userId)
             ->where('status', Order::STATUS_FINISHED)
             ->whereBetween('pay_time', [$startTime, $endTime])
-            ->chunk(1000, function($orders) use (&$order_finished_amount, &$order_finished_num) {
-                foreach ($orders as $order) {
-                    $order_finished_amount += $order->pay_price;
-                    $order_finished_num += 1;
-                }
-            });
+            ->groupBy('merchant_id')
+            ->selectRaw('sum(pay_price) as order_finished_amount')
+            ->selectRaw('count(1) as order_finished_num')
+            ->first();
+        if (!empty($orderSta)) {
+            $order_finished_amount = $orderSta->order_finished_amount;
+            $order_finished_num = $orderSta->order_finished_num;
+        }
 
         $invite_user_num = InviteUserRecord::where('origin_id', $userId)
             ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_USER)

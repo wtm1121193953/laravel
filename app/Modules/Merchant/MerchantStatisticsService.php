@@ -4,6 +4,7 @@ namespace App\Modules\Merchant;
 
 
 use App\BaseService;
+use App\Jobs\MerchantStatisticsByMerchantId;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Order\Order;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,7 @@ class MerchantStatisticsService extends BaseService
         $merchantIds = $merchantIds1->merge($merchantIds2)->unique()->values()->all();
 
         foreach ($merchantIds as $merchantId) {
-            self::statisticsByMerchantId($merchantId, $startTime, $endTime);
+            MerchantStatisticsByMerchantId::dispatch($merchantId, $startTime, $endTime);
         }
     }
 
@@ -158,23 +159,26 @@ class MerchantStatisticsService extends BaseService
      * @param $startTime
      * @param $endTime
      */
-    private static function statisticsByMerchantId($merchantId, $startTime, $endTime)
+    public static function statisticsByMerchantId($merchantId, $startTime, $endTime)
     {
         $order_finished_amount = 0;
         $order_finished_num = 0;
 
         $oper_id = 0;
 
-        Order::where('merchant_id', $merchantId)
+        $orderSta = Order::where('merchant_id', $merchantId)
             ->where('status', Order::STATUS_FINISHED)
             ->whereBetween('pay_time', [$startTime, $endTime])
-            ->chunk(1000, function($orders) use (&$order_finished_amount, &$order_finished_num, &$oper_id) {
-                foreach ($orders as $order) {
-                    $order_finished_amount += $order->pay_price;
-                    $order_finished_num += 1;
-                    $oper_id = $order->oper_id;
-                }
-            });
+            ->groupBy(['merchant_id', 'oper_id'])
+            ->selectRaw('oper_id')
+            ->selectRaw('sum(pay_price) as order_finished_amount')
+            ->selectRaw('count(1) as order_finished_num')
+            ->first();
+        if (!empty($orderSta)) {
+            $order_finished_amount = $orderSta->order_finished_amount;
+            $order_finished_num = $orderSta->order_finished_num;
+            $oper_id = $orderSta->oper_id;
+        }
 
         $invite_user_num = InviteUserRecord::where('origin_id', $merchantId)
             ->where('origin_type', InviteUserRecord::ORIGIN_TYPE_MERCHANT)
