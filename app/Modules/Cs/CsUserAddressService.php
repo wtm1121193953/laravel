@@ -155,7 +155,20 @@ class CsUserAddressService extends BaseService {
         if( !($userAddress->save()) ) {
             throw new BaseResponseException('更新失败', ResultCode::DB_INSERT_FAIL);
         }
+    }
 
+    /**
+     * 删除收货地址
+     */
+    public static function delAddress($id){
+        $user = request()->get('current_user');
+      $res =  CsUserAddress::where('user_id',$user->id)
+          ->where('id',$id)
+          ->delete();
+        if(!$res)
+        {
+            throw new BaseResponseException('删除失败',ResultCode::DB_INSERT_FAIL);
+        }
     }
 
 }

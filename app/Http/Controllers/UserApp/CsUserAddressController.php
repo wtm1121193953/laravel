@@ -73,4 +73,15 @@ class CsUserAddressController extends Controller{
         return Result::success('更新收货地址成功');
     }
 
+    /**
+     * 删除收货地址
+     */
+    public function deleteAddress(){
+        $this->validate(request(), [
+            'id' => 'required'
+        ]);
+        CsUserAddressService::delAddress(request('id'));
+        return Result::success('删除收货地址成功');
+    }
+
 }
