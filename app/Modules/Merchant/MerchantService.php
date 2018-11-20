@@ -406,7 +406,7 @@ class MerchantService extends BaseService
         if($merchant->settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE || $merchant->settlement_cycle_type == Merchant::SETTLE_MONTHLY){
 
             //判断编辑之前商户是否已切换到T+1
-            if($settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE || $settlement_cycle_type
+            /*if($settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE || $settlement_cycle_type
              == Merchant::SETTLE_MONTHLY){
 
             }else{
@@ -415,7 +415,7 @@ class MerchantService extends BaseService
                 if($date != $week){
                     throw new ParamInvalidException('周结改T+1需要周一才能修改');
                 }
-            }
+            }*/
 
             if($merchant->bank_card_type == Merchant::BANK_CARD_TYPE_COMPANY){
                 if($merchant->name != $merchant->bank_open_name){
