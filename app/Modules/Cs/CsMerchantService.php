@@ -15,4 +15,12 @@ class CsMerchantService extends BaseService {
     {
         return CsMerchant::find($id, $fields);
     }
+
+    /**
+     * 获取商户列表
+     */
+    public static function getAllList(){
+      $list = CsMerchant::all();
+      return $list;
+    }
 }
