@@ -96,6 +96,9 @@ class CreateCsMerchantsTable extends Migration
             $table->softDeletes();
             $table->comment = '超市商家表';
         });
+
+        \Illuminate\Support\Facades\DB::statement('ALTER TABLE `cs_merchants`
+	AUTO_INCREMENT=1000000000');
     }
 
     /**
