@@ -34,13 +34,6 @@
                 :page-size="query.pageSize"
                 :total="total"/>
 
-        <el-dialog title="添加分类" :visible.sync="isAdd" @close="resetForm" width="25%">
-            <dishes-category-form
-                    ref="form"
-                    :data="{}"
-                    @cancel="isAdd = false"
-                    @save="doAdd"/>
-        </el-dialog>
     </page>
 </template>
 

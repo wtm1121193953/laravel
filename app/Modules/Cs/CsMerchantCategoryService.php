@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\DB;
 
 class CsMerchantCategoryService extends BaseService
 {
+    /**
+     * 超市商户分类列表
+     * @param array $params
+     * @param bool $getWithQuery
+     * @return CsMerchantCategory|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
     public static function getList(array $params = [], bool $getWithQuery = false)
     {
 
@@ -138,6 +144,12 @@ class CsMerchantCategoryService extends BaseService
     }
 
 
+    /**
+     * 商品分类上下架切换
+     * @param int $id
+     * @param int $cs_merchant_id
+     * @return int
+     */
     public static function changeStatus(int $id, int $cs_merchant_id)
     {
         if ($id<0 || $cs_merchant_id<0) {

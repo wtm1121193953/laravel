@@ -7,6 +7,7 @@ import welcome from '../components/welcome.vue'
 import goods from './goods'
 import settlements from './settlements'
 import categoryList from '../components/category/list'
+import subCategoryList from '../components/category/sublist'
 import dishesGoods from './dishesGoods'
 import wallet from './wallet'
 
@@ -46,6 +47,7 @@ const routes = [
         component: Home,
         children: [
             {path: '/categories', component: categoryList, name: 'categoryList'},
+            {path: '/subCategories', component: subCategoryList, name: 'subCategoryList'},
         ]
     },
 

@@ -4,7 +4,7 @@
         <el-button type="text" :disabled="isFirst" @click="saveOrder(scope.row, 'up')">上移</el-button>
         <el-button type="text" :disabled="isLast" @click="saveOrder(scope.row, 'down')">下移</el-button>
         <el-button type="text" @click="changeStatus">{{parseInt(scope.row.status) === 1 ? '下架' : '上架'}}</el-button>
-        <el-button type="text" @click="edit">查看子分类</el-button>
+        <el-button v-if="parseInt(scope.row.level) === 1" type="text" @click="subCat">查看子分类</el-button>
     </div>
 </template>
 
@@ -66,6 +66,12 @@
             },
             dialogClose() {
                 this.$refs.form.reset();
+            },
+            subCat() {
+                router.push({
+                    path: '/subCategories',
+                    query: {cs_category_parent_id: this.scope.row.platform_category_id}
+                });
             }
         },
         components: {

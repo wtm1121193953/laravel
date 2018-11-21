@@ -50,6 +50,7 @@
                 isAdd: false,
                 isLoading: false,
                 query: {
+                    platform_category_id:0,
                     page: 1,
                     pageSize: 10,
                 },
@@ -83,6 +84,7 @@
             }
         },
         created(){
+            this.query.cs_category_parent_id = this.$route.query.cs_category_parent_id;
             this.getList();
         },
         components: {

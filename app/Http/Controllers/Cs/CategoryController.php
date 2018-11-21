@@ -18,7 +18,7 @@ class CategoryController extends Controller
     {
 
         $params['cs_merchant_id'] = 1000000000;
-        $params['cs_category_parent_id'] = 0 ;
+        $params['cs_category_parent_id'] = request('cs_category_parent_id',0) ;
         $data = CsMerchantCategoryService::getList($params);
 
         return Result::success([
