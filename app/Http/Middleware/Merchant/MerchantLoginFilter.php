@@ -23,6 +23,8 @@ class MerchantLoginFilter
     protected $publicUrls = [
         'api/merchant/login',
         'api/merchant/logout',
+        'api/cs/login',
+        'api/cs/logout',
     ];
 
     /**
