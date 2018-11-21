@@ -22,9 +22,9 @@ class AddTypeToOrdersTable extends Migration
             $table->dateTime('deliver_time')->nullable()->comment('超市订单 发货时间');
             $table->dateTime('take_delivery_time')->nullable()->comment('超市订单 收货时间');
 
+            $table->decimal('discount_price')->default(0.00)->comment('优惠金额')->after('pay_type');
+            $table->decimal('total_price')->default(0.00)->comment('总价格')->after('pay_type');
             $table->decimal('deliver_price')->default(0.00)->comment('超市配送费')->after('pay_type');
-            $table->decimal('total_price')->default(0.00)->comment('总价格');
-            $table->decimal('discount_price')->default(0.00)->comment('优惠金额');
         });
     }
 
