@@ -71,8 +71,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string bank_card_pic_a
  * @property string other_card_pic_urls
  * @property string oper_salesman
- * @property string site_acreage
- * @property string employees_number
  * @property string oper_biz_member_code
  * @property Carbon active_time
  * @property Carbon first_active_time
@@ -174,7 +172,6 @@ class CsMerchant extends BaseModel
     public function fillMerchantPoolInfoFromRequest()
     {
         // 商户基本信息
-        $this->merchant_category_id = request('merchant_category_id', 0);
         $this->name = request('name');
         $this->signboard_name = request('signboard_name', '');
 
@@ -219,7 +216,6 @@ class CsMerchant extends BaseModel
      */
     public function fillMerchantActiveInfoFromRequest()
     {
-        $this->oper_biz_member_code = request('oper_biz_member_code','');
         $this->brand = request('brand','');
         $this->invoice_title = request('invoice_title','');
         $this->invoice_no = request('invoice_no','');
@@ -271,14 +267,14 @@ class CsMerchant extends BaseModel
         $this->contacter_phone = request('contacter_phone','');
         $this->service_phone = request('service_phone','');
         $this->oper_salesman = request('oper_salesman','');
-        $this->site_acreage = request('site_acreage','');
-        $this->employees_number = request('employees_number','');
+        //$this->site_acreage = request('site_acreage','');
+        //$this->employees_number = request('employees_number','');
 
         //试点商户
-        $this->is_pilot = request('is_pilot', 0);
+        //$this->is_pilot = request('is_pilot', 0);
 
         //新业务员ID
-        $this->bizer_id = request('bizer_id',0);
+        //$this->bizer_id = request('bizer_id',0);
 
 
         //////// 没有了的字段

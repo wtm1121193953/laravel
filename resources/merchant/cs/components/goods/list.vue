@@ -1,13 +1,64 @@
 <template>
-    <page title="超市商品" v-loading="isLoading">
-        <el-button class="fr" type="primary" @click="add">添加商品</el-button>
+    <page title="商品管理" v-loading="isLoading">
+        <el-col>
+            <el-form v-model="query" inline>
+                <el-form-item prop="goods_name" label="商品名称" >
+                    <el-input v-model="query.goods_name"  placeholder="商品名称"  clearable></el-input>
+                </el-form-item>
+                <el-form-item label="一级分类" prop="cs_merchant_cat_id_level1">
+                    <template>
+                        <el-select v-model="query.cs_merchant_cat_id_level1" placeholder="请选择" @change="getLevel2()">
+                            <el-option
+                                    v-for="item in cs_merchant_cat_id_level1"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </template>
+
+                </el-form-item>
+
+                <el-form-item label="二级分类" prop="cs_merchant_cat_id_level2">
+                    <template>
+                        <el-select v-model="query.cs_merchant_cat_id_level2" placeholder="请选择">
+                            <el-option
+                                    v-for="item in cs_merchant_cat_id_level2"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </template>
+
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" size="small" @click="getList"><i class="el-icon-search">搜 索</i></el-button>
+                </el-form-item>
+                <el-button class="fr" type="primary" @click="add">添加商品</el-button>
+
+            </el-form>
+        </el-col>
+
         <el-table :data="list" stripe>
-            <el-table-column prop="id" label="ID"/>
-            <el-table-column prop="name" label="商品名称"/>
+            <el-table-column prop="id" label="商品ID"/>
+            <el-table-column prop="goods_name" label="商品名称"/>
+            <el-table-column prop="price" label="销售价"/>
+            <el-table-column prop="cs_merchant_cat_id_level1" label="一级分类"/>
+            <el-table-column prop="cs_merchant_cat_id_level2" label="二级分类"/>
+            <el-table-column prop="logo" label="商品图片"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
-                    <span v-if="parseInt(scope.row.status) === 1" class="c-green">正常</span>
-                    <span v-else-if="parseInt(scope.row.status) === 2" class="c-danger">禁用</span>
+                    <span v-if="parseInt(scope.row.status) === 1" class="c-green">上架</span>
+                    <span v-else-if="parseInt(scope.row.status) === 2" class="c-danger">下架</span>
+                    <span v-else>未知 ({{scope.row.status}})</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="audit_status" label="审核状态">
+                <template slot-scope="scope">
+                    <span v-if="parseInt(scope.row.status) === 1" class="c-green">审核中</span>
+                    <span v-else-if="parseInt(scope.row.status) === 2" class="c-danger">审核通过</span>
+                    <span v-else-if="parseInt(scope.row.status) === 3" class="c-danger">审核不通过</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
@@ -62,11 +113,16 @@
                 isAdd: false,
                 isLoading: false,
                 query: {
+                    goods_name:'',
+                    cs_merchant_cat_id_level1:'',
+                    cs_merchant_cat_id_level2:'',
                     page: 1,
                     pageSize: 15,
                 },
                 list: [],
                 total: 0,
+                cs_merchant_cat_id_level1:[],
+                cs_merchant_cat_id_level2:[],
             }
         },
         computed: {
@@ -78,6 +134,22 @@
             }
         },
         methods: {
+            getLevel1() {
+                api.get('/sub_cat', {parent_id:0}).then(data => {
+
+                    this.cs_merchant_cat_id_level1 = data;
+                })
+            },
+            getLevel2() {
+                if (this.query.cs_merchant_cat_id_level1 == 0) {
+                    return true;
+
+                }
+                api.get('/sub_cat', {parent_id:this.query.cs_merchant_cat_id_level1}).then(data => {
+
+                    this.cs_merchant_cat_id_level2 = data;
+                })
+            },
             getList(){
                 api.get('/goods', this.query).then(data => {
                     this.list = data.list;
@@ -105,6 +177,7 @@
             },
         },
         created(){
+            this.getLevel1();
             this.getList();
         },
         components: {

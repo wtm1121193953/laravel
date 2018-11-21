@@ -10,6 +10,7 @@ Route::prefix('cs')
     ->middleware('merchant')->group(function (){
 
         Route::get('goods', 'GoodsController@getList');
+        Route::get('sub_cat', 'GoodsController@getSubCat');
         Route::get('goods/detail', 'GoodsController@detail');
         Route::post('goods/add', 'GoodsController@add');
         Route::post('goods/edit', 'GoodsController@edit');

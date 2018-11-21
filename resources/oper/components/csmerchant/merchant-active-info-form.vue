@@ -6,7 +6,7 @@
         </el-col>
         <!-- 商户激活信息左侧块 -->
         <el-col :span="11">
-            <el-form-item prop="bizer_id" label="签约人">
+            <!--<el-form-item prop="bizer_id" label="签约人">
                 <el-select
                         v-model="form.bizer_id"
                         filterable
@@ -23,7 +23,7 @@
                         <span class="c-light-gray">{{item.bizerMobile}}</span>
                     </el-option>
                 </el-select>
-            </el-form-item>
+            </el-form-item>-->
             <!--<el-form-item prop="brand" label="品牌">
                 <el-input v-model="form.brand"/>
             </el-form-item>-->
@@ -70,7 +70,7 @@
                 <el-input type="textarea" :rows="5" v-model="form.desc"/>
             </el-form-item>
             <el-form-item prop="settlement_rate" required label="分利比例">
-                <el-input-number v-model="form.settlement_rate" :min="0" :max="100"/>
+                <el-input-number v-model="form.settlement_rate" :min="15" :max="100"/>
                 <div>返利百分比,如20%请填写20</div>
             </el-form-item>
 
@@ -163,7 +163,7 @@
             <el-form-item prop="other_card_pic_urls" label="其他证件">
                 <image-upload v-model="form.other_card_pic_urls" :limit="10"/>
             </el-form-item>
-            <el-form-item prop="audit_suggestion" label="审核意见">
+            <el-form-item prop="audit_suggestion" v-if="form.id" label="审核意见">
                 {{form.audit_suggestion}}
             </el-form-item>
         </el-col>
@@ -179,12 +179,12 @@
             <el-form-item prop="service_phone" label="客服电话">
                 <el-input v-model="form.service_phone"/>
             </el-form-item>
-            <el-form-item prop="site_acreage" label="商户面积">
+            <!--<el-form-item prop="site_acreage" label="商户面积">
                 <el-input v-model="form.site_acreage" placeholder="单位: ㎡"/>
-            </el-form-item>
-            <el-form-item prop="employees_number" label="商户员工人数">
+            </el-form-item>-->
+            <!--<el-form-item prop="employees_number" label="商户员工人数">
                 <el-input v-model="form.employees_number"/>
-            </el-form-item>
+            </el-form-item>-->
         </el-col>
 
     </el-form>
@@ -196,7 +196,7 @@
 
     let defaultForm = {
         /////// 商户激活信息
-        bizer_id: '',
+        //bizer_id: '',
         brand: '',
         status: 1,
         // business_time: [new Date('1970-01-01 00:00:00'), new Date('1970-01-01 23:59:59')],
@@ -233,11 +233,11 @@
         contacter_phone: '',
         service_phone: '',
         oper_salesman: '',
-        site_acreage: '',
-        employees_number: '',
+        //site_acreage: '',
+        //employees_number: '',
 
         //是否是试点商户的字段
-        is_pilot: 0,
+        //is_pilot: 0,
 
         //////// 没有了的字段
         invoice_title: '',
@@ -410,32 +410,32 @@
                         {required: true, message: '客服电话 不能为空'},
                         {max: 15, message: '客服电话不能超过15个字'}
                     ],
-                    oper_salesman: [
+                    /*oper_salesman: [
                         {required: true, message: '业务人员姓名 不能为空'},
-                    ],
-                    site_acreage: [
+                    ],*/
+                    /*site_acreage: [
                         {required: true, message: '商户面积 不能为空'},
                         {max: 50, message: '商户面积 不能超过50个字'},
                         {validator: validateNumber}
-                    ],
-                    employees_number: [
+                    ],*/
+                    /*employees_number: [
                         {required: true, message: '商户员工人数 不能为空'},
                         {max: 50, message: '商户员工人数 不能超过50个字'},
                         {validator: validateNumber}
-                    ],
+                    ],*/
                 },
                 searchOperBizMemberLoading: false,
-                operBizMembers: [],
+                //operBizMembers: [],
                 bankList: [],
                 countryList: [],
             }
         },
         methods: {
-            getOperBizMember(){
+            /*getOperBizMember(){
                 api.get('/operBizer/getbizers', {status: 1, sign_status: 1}).then(data => {
                     this.operBizMembers = data.list;
                 })
-            },
+            },*/
             initForm(){
                 if(this.data){
                     let data = this.data;
@@ -453,7 +453,7 @@
                     this.form.region = parseInt(data.region);
                     this.form.status = parseInt(data.status);
                     this.form.bank_card_type = parseInt(data.bank_card_type);
-                    this.form.bizer_id = parseInt(data.bizer_id) != 0 ? parseInt(data.bizer_id) : '';
+                    //this.form.bizer_id = parseInt(data.bizer_id) != 0 ? parseInt(data.bizer_id) : '';
                     this.form.country_id = parseInt(data.country_id) != 0 ? parseInt(data.country_id) : 1;
                 }else {
                     this.form = deepCopy(defaultForm);
@@ -500,7 +500,7 @@
         },
         created(){
             this.initForm();
-            this.getOperBizMember();
+            //this.getOperBizMember();
             this.getBankList();
             this.getCountryList();
         },
