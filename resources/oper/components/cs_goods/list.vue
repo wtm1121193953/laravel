@@ -84,8 +84,8 @@
             <el-table-column prop="audit_status" label="审核状态">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.audit_status) === 1" class="c-warning">审核中</span>
-                    <span v-else-if="parseInt(scope.row.audit_status) === 2" class="c-green">审核通过</span>
-                    <span v-else-if="parseInt(scope.row.audit_status) === 3" class="c-danger">审核不通过</span>
+                    <div v-else-if="parseInt(scope.row.audit_status) === 2"  slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
+                    <div  v-else-if="parseInt(scope.row.audit_status) === 3" slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
