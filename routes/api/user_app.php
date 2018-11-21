@@ -125,6 +125,7 @@ Route::prefix('app/user')
 
         //超市
         Route::get('cs/merchant/category','MerchantCategoryController@getCsTree');
+        Route::get('cs/merchant/goods','CsGoodsController@getAllGoods');
 
 
     });
