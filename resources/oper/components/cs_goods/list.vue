@@ -89,11 +89,6 @@
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="created_at" label="添加时间">
-                <template slot-scope="scope">
-                    {{scope.row.created_at.substr(0, 10)}}
-                </template>
-            </el-table-column>
             <!--<el-table-column prop="sort" label="排序">-->
             <!--<template slot-scope="scope">-->
             <!--{{scope.row.sort}}-->
