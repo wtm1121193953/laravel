@@ -10,7 +10,6 @@ namespace App\Modules\Cs;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Modules\Area\Area;
-use App\Result;
 use App\ResultCode;
 use Illuminate\Support\Facades\DB;
 
@@ -18,8 +17,6 @@ use Illuminate\Support\Facades\DB;
 class CsUserAddressService extends BaseService {
     /**
      * 添加收获地址
-     * @author zwg
-     * @param $data 传入数据
      */
     public static function addAddresses($data){
         $user = request()->get('current_user');
@@ -28,8 +25,8 @@ class CsUserAddressService extends BaseService {
         $userAddress->contact_phone = $data['contact_phone'];
         $userAddress->province_id = $data['province_id'];
         $userAddress->user_id = $user->id;
-        $userAddress->city_id = $data['city_id'];
-        $userAddress->area_id = $data['area_id'];
+        $userAddress->city_id = empty($data['city_id'])?'0':$data['city_id'];
+        $userAddress->area_id = empty($data['area_id'])?'0':$data['area_id'];
         $userAddress->address = $data['address'];
         $userAddress->is_default = $data['is_default'];
 
@@ -48,8 +45,18 @@ class CsUserAddressService extends BaseService {
 
         //查询省市区名称
         $userAddress->province = Area::findOrFail($userAddress->province_id)->name;
-        $userAddress->city = Area::findOrFail($userAddress->city_id)->name;
-        $userAddress->area = Area::findOrFail($userAddress->area_id)->name;
+        if(!empty($userAddress->city_id)){
+            $userAddress->city = Area::findOrFail($userAddress->city_id)->name;
+        }
+        else{
+            $userAddress->city ='0';
+        }
+        if (!empty($userAddress->area_id)){
+            $userAddress->area = Area::findOrFail($userAddress->area_id)->name;
+        }
+        else{
+            $userAddress->area = '0';
+        }
 
         if ($userAddress->is_default == CsUserAddress::DEFAULT){
             //设置默认
@@ -83,6 +90,14 @@ class CsUserAddressService extends BaseService {
     public static function getList($isTestAddress,$city_wide){
         $user = request()->get('current_user');
         $list = CsUserAddress::where('user_id',$user->id)->get();
+        foreach ($list as $item){
+            if ($item->city_id == 0){
+                $item->city = '';
+            }
+            if ($item->area_id == 0){
+                $item->area = '';
+            }
+        }
         if ($city_wide == 0 || $isTestAddress == 0){
             return $list;
         }
@@ -124,9 +139,17 @@ class CsUserAddressService extends BaseService {
             $userAddress->city_id = $data['city_id'];
             $userAddress->city = Area::findOrFail($userAddress->city_id)->name;
         }
+        else{
+            $userAddress->city_id = '0';
+            $userAddress->city = '0';
+        }
         if (!empty($data['area_id']))  {
             $userAddress->area_id = $data['area_id'];
             $userAddress->area = Area::findOrFail($userAddress->area_id)->name;
+        }
+        else{
+            $userAddress->area_id = '0';
+            $userAddress->area = '0';
         }
         if (!empty($data['address']))  {
             $userAddress->address = $data['address'];
