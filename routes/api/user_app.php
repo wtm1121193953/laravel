@@ -124,6 +124,7 @@ Route::prefix('app/user')
         Route::post('cs/address/delete','CsUserAddressController@deleteAddress')->middleware(UserLoginFilter::class);
 
         //超市
+        Route::get('cs/merchant/list','CsMerchantController@getList');
         Route::get('cs/merchant/category','MerchantCategoryController@getCsTree');
         Route::get('cs/merchant/goods','CsGoodsController@getAllGoods');
 
