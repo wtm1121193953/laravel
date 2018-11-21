@@ -58,11 +58,11 @@ Route::prefix('cs')
         Route::post('tps/sendVerifyCode', 'TpsBindController@sendVerifyCode');
         Route::post('tps/bindAccount', 'TpsBindController@bindAccount');
 
-        Route::group([], base_path('routes/api/merchant/goods.php'));
-        Route::group([], base_path('routes/api/merchant/orders.php'));
-        Route::group([], base_path('routes/api/merchant/settlements.php'));
-        Route::group([], base_path('routes/api/merchant/mapping_user.php'));
-        Route::group([], base_path('routes/api/merchant/dishes.php'));
-        Route::group([], base_path('routes/api/merchant/wallet.php'));
+        Route::group([], base_path('routes/api/cs/goods.php'));
+        Route::group([], base_path('routes/api/cs/orders.php'));
+        Route::group([], base_path('routes/api/cs/settlements.php'));
+        Route::group([], base_path('routes/api/cs/mapping_user.php'));
+        Route::group([], base_path('routes/api/cs/dishes.php'));
+        Route::group([], base_path('routes/api/cs/wallet.php'));
     });
 Route::get('/merchant/message/systems', 'Admin\MessageSystemController@getSystems')->middleware('merchant');

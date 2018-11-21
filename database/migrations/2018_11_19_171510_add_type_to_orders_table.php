@@ -42,8 +42,15 @@ class AddTypeToOrdersTable extends Migration
         Schema::table('orders', function (Blueprint $table) {
             $table->dropColumn([
                 'merchant_type',
+                'deliver_type',
                 'express_company',
                 'express_no',
+                'express_address',
+                'deliver_time',
+                'take_delivery_time',
+                'discount_price',
+                'total_price',
+                'deliver_price'
             ]);
         });
     }

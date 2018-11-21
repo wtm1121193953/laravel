@@ -65,7 +65,7 @@
                     {{order.express_no}}
                 </el-form-item>
                 <el-form-item label="地址：">
-                    {{order.express_address}}
+                    {{order.express_address ? order.express_address.province + order.express_address.city + order.express_address.area + order.express_address.address : ''}}
                 </el-form-item>
                 <el-form-item label="发货时间：" v-if="order.status == 7 || order.status == 10">
                     {{order.deliver_time}}
