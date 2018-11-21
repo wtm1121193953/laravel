@@ -27,7 +27,7 @@ class MerchantCategoryController extends Controller
      */
     public function getCsTree(){
         $this->validate(request(),[
-            'merchant_id' => 'required'
+            'merchant_id' => 'required|integer|min:1'
         ]);
         $merchantId = request('merchant_id');
         $list = CsMerchantCategoryService::getTree($merchantId);

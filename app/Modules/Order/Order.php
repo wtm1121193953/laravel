@@ -62,6 +62,7 @@ class Order extends BaseModel
     const TYPE_GROUP_BUY = 1; // 团购订单
     const TYPE_SCAN_QRCODE_PAY = 2; // 扫码支付订单, 即直接输入金额支付
     const TYPE_DISHES = 3; // 点菜订单
+    const TYPE_SUPERMARKET = 4; // 超市订单
 
     /**
      * 支付类型

@@ -46,7 +46,13 @@
             <el-table-column prop="price" label="销售价"/>
             <el-table-column prop="cs_merchant_cat_id_level1" label="一级分类"/>
             <el-table-column prop="cs_merchant_cat_id_level2" label="二级分类"/>
-            <el-table-column prop="logo" label="商品图片"/>
+            <el-table-column prop="logo" label="商品图片">
+                <template slot-scope="scope">
+                    <div class="detail_image" style="height: 50px; width: 50px" v-viewer @click="previewImage($event)">
+                        <img class="img" :src="scope.row.logo" width="100%" height="100%" />
+                    </div>
+                </template>
+            </el-table-column>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.status) === 1" class="c-green">上架</span>
@@ -56,9 +62,9 @@
             </el-table-column>
             <el-table-column prop="audit_status" label="审核状态">
                 <template slot-scope="scope">
-                    <span v-if="parseInt(scope.row.status) === 1" class="c-green">审核中</span>
-                    <span v-else-if="parseInt(scope.row.status) === 2" class="c-danger">审核通过</span>
-                    <span v-else-if="parseInt(scope.row.status) === 3" class="c-danger">审核不通过</span>
+                    <span v-if="parseInt(scope.row.audit_status) === 1" class="c-warning">审核中</span>
+                    <span v-else-if="parseInt(scope.row.audit_status) === 2" class="c-green">审核通过</span>
+                    <span v-else-if="parseInt(scope.row.audit_status) === 3" class="c-danger">审核不通过</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
@@ -174,6 +180,13 @@
                 }).finally(() => {
                     this.isLoading = false;
                 })
+            },
+            previewImage(event){
+                event.stopPropagation()
+                //预览商品图片
+                const viewer = event.currentTarget.$viewer
+                viewer.show()
+                return
             },
         },
         created(){
