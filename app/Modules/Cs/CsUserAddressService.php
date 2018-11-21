@@ -44,15 +44,15 @@ class CsUserAddressService extends BaseService {
         }
 
         //查询省市区名称
-        $userAddress->province = Area::findOrFail($userAddress->province_id)->name;
+        $userAddress->province = Area::getNameByAreaId($userAddress->province_id);
         if(!empty($userAddress->city_id)){
-            $userAddress->city = Area::findOrFail($userAddress->city_id)->name;
+            $userAddress->city = Area::getNameByAreaId($userAddress->city_id);
         }
         else{
             $userAddress->city ='0';
         }
         if (!empty($userAddress->area_id)){
-            $userAddress->area = Area::findOrFail($userAddress->area_id)->name;
+            $userAddress->area = Area::getNameByAreaId($userAddress->area_id);
         }
         else{
             $userAddress->area = '0';
@@ -133,11 +133,11 @@ class CsUserAddressService extends BaseService {
         }
         if (!empty($data['province_id']))  {
             $userAddress->province_id = $data['province_id'];
-            $userAddress->province = Area::findOrFail($userAddress->province_id)->name;
+            $userAddress->province = Area::getNameByAreaId($userAddress->area_id);;
         }
         if (!empty($data['city_id']))  {
             $userAddress->city_id = $data['city_id'];
-            $userAddress->city = Area::findOrFail($userAddress->city_id)->name;
+            $userAddress->city = Area::getNameByAreaId($userAddress->city_id);;
         }
         else{
             $userAddress->city_id = '0';
@@ -145,7 +145,7 @@ class CsUserAddressService extends BaseService {
         }
         if (!empty($data['area_id']))  {
             $userAddress->area_id = $data['area_id'];
-            $userAddress->area = Area::findOrFail($userAddress->area_id)->name;
+            $userAddress->area = Area::getNameByAreaId($userAddress->area_id);
         }
         else{
             $userAddress->area_id = '0';
