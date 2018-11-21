@@ -13,14 +13,14 @@
                 </el-select>
             </el-form-item>
 
-            <el-form-item label="订单状态">
+            <el-form-item label="订单状态" v-if="activeTab == 'all'">
                 <el-select v-model="query.status" class="w-100" clearable>
                     <el-option label="全部" value=""/>
-                    <el-option label="待发货" :value="8"/>
-                    <el-option label="待自提" :value="9"/>
-                    <el-option label="已发货" :value="10"/>
-                    <el-option label="已完成" :value="7"/>
-                    <el-option label="已退款" :value="6"/>
+                    <el-option label="待发货" value="8"/>
+                    <el-option label="待自提" value="9"/>
+                    <el-option label="已发货" value="10"/>
+                    <el-option label="已完成" value="7"/>
+                    <el-option label="已退款" value="6"/>
                 </el-select>
             </el-form-item>
             <el-form-item label="下单时间">
@@ -61,11 +61,11 @@
             </el-table-column>
             <el-table-column prop="goods_name" label="商品名称">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.cs_goods.length == 1">
-                        {{scope.row.cs_goods[0].goods_name}}
+                    <span v-if="scope.row.cs_order_goods.length == 1">
+                        {{scope.row.cs_order_goods[0].goods_name}}
                     </span>
-                    <span v-else-if="scope.row.cs_goods.length > 1">
-                        {{scope.row.cs_goods[0].goods_name}}等{{getNumber(scope.row.cs_goods)}}件商品
+                    <span v-else-if="scope.row.cs_order_goods.length > 1">
+                        {{scope.row.cs_order_goods[0].goods_name}}等{{getNumber(scope.row.cs_order_goods)}}件商品
                     </span>
                     <span v-else>
                         无
@@ -95,7 +95,7 @@
                         v-if="scope.row.deliver_type == 1"
                         placement="bottom"
                         trigger="hover"
-                        width="400"
+                        width="250"
                     >
                         <div>
                             <div>快递公司：{{scope.row.express_company}}</div>
@@ -119,7 +119,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="merchant_name" label="商户名称"/>
-            <el-table-column prop="oper_name" label="运营中心名称"/>
+            <el-table-column prop="operName" label="运营中心名称"/>
             <el-table-column prop="pay_type" label="支付方式">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.pay_type) === 1">微信</span>
@@ -151,9 +151,17 @@
 
     export default {
         name: "merchant-list",
+        props: {
+            activeTab: {
+                required: true,
+                type: String,
+            },
+            status: {
+                default: '',
+            }
+        },
         data(){
             return {
-                activeTab: 'all',
                 isLoading: false,
                 query: {
                     page: 1,
@@ -209,6 +217,8 @@
             }
         },
         created(){
+            this.query.status = this.status;
+
             this.getList();
             this.getMerchants();
         },
