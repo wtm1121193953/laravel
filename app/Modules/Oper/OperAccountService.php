@@ -117,7 +117,7 @@ class OperAccountService extends BaseService
                 [
                     [ 'id' => 201, 'name' => '超市商户列表', 'level' => 2, 'url' => '/oper/cs/merchants', 'pid' => 12,],
                     [ 'id' => 202, 'name' => '超市商户审核记录', 'level' => 2, 'url' => '/oper/cs/merchant/audit/list', 'pid' => 12],
-                    [ 'id' => 123, 'name' => '超市商品管理', 'level' => 2, 'url' => '/oper/cs/goods', 'pid' => 12],
+                    [ 'id' => 203, 'name' => '超市商品管理', 'level' => 2, 'url' => '/oper/cs/goods', 'pid' => 12],
                 ]
 
             ],
