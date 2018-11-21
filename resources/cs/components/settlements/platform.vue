@@ -104,6 +104,7 @@
             getList() {
                 this.isLoading = true;
                 api.get('/settlement/platform/list', this.query).then(data => {
+                    console.log('test');
                     this.list = data.list;
                     this.total = data.total;
                     this.isLoading = false;

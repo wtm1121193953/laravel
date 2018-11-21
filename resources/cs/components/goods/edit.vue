@@ -23,11 +23,11 @@
         },
         methods: {
             cancel(){
-                router.push('/cs/goods');
+                router.push('/goods');
             },
             doEdit(data){
                 api.post('/goods/edit', data).then((data) => {
-                    router.push('/cs/goods');
+                    router.push('/goods');
                 }).finally(() => {
 
                 })
@@ -42,7 +42,7 @@
             this.id = this.$route.query.id;
             if(!this.id){
                 this.$message.error('id不能为空');
-                router.push('/cs/goods');
+                router.push('/goods');
                 return false;
             }
             this.getDetail();

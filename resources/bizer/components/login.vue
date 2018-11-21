@@ -5,19 +5,19 @@
         top: 0;
         bottom: 0;
         left: 0;
-        background-color: #141a48;
-        background-image: url(../../assets/images/login-bg.png);
+        /*background-color: #141a48;*/
+        background-image: url(../images/login-bg.png);
         background-repeat: no-repeat;
         background-size: cover;
         overflow: hidden;
     }
-    #loginThree {
+    /*#loginThree {
         position: absolute;
         width: 100%;
         top: 0;
         bottom: 0;
         overflow: hidden;
-    }
+    }*/
     .form-fade-enter-active, .form-fade-leave-active {
         transition: all 1s;
     }
@@ -31,12 +31,12 @@
         <transition name="form-fade" mode="out-in">
             <router-view></router-view>
         </transition>
-        <div id="loginThree"></div>
+        <!--<div id="loginThree"></div>-->
     </div>
 </template>
 
 <script>
-    import THREE from '../../assets/js/three/three';
+    // import THREE from '../../assets/js/three/three';
 
     export default {
         data(){
@@ -47,7 +47,7 @@
 
         },
         methods: {
-
+/*
             init3D () { // 初始化3D动画
                 var SCREEN_WIDTH = window.innerWidth;
                 var SCREEN_HEIGHT = window.innerHeight;
@@ -117,17 +117,17 @@
                     renderer.render(scene, camera);
                     count += 0.1;
                 }
-            }
+            }*/
         },
         created: function () {
         },
         mounted () {
             const that = this;
-            that.init3D();
+            // that.init3D();
         },
         beforeDestroy () {
-            const self = this
-            if (self.interval) clearInterval(self.interval);
+            // const self = this
+            // if (self.interval) clearInterval(self.interval);
         }
     }
 </script>

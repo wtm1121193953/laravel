@@ -182,7 +182,7 @@
                 this.query.startDate = this.query.startDate == null ? '' : this.query.startDate;
                 this.query.endDate = this.query.endDate == null ? '' : this.query.endDate;
                 this.$confirm(message).then(() => {
-                    window.location.href = window.location.origin + '/api/admin/settlement/download?'
+                    window.location.href = window.location.origin + '/api/admin/settlement/csDownload?'
                         + 'merchant_name=' + this.query.merchant_name
                         + '&startDate=' + this.query.startDate
                         + '&endDate=' + this.query.endDate

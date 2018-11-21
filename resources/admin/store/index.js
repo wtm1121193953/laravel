@@ -85,7 +85,7 @@ export default new Vuex.Store({
     strict: process.env.NODE_ENV !== 'production',
     state: {
         projectName: '大千生活',
-        systemName: 'Saas大平台',
+        systemName: 'SaaS 管理平台',
         globalLoading: false,
         theme: deepCopy(defaultThemes['深蓝']),
         user: null,

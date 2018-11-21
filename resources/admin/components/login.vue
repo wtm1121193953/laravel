@@ -5,31 +5,25 @@
         top: 0;
         bottom: 0;
         left: 0;
-        background-color: #141a48;
-        background-image: url(../../assets/images/login-bg.png);
+        background-image: url(../images/login-bg.png);
         background-repeat: no-repeat;
         background-size: cover;
         overflow: hidden;
     }
-    #loginThree {
+    /*#loginThree {
         position: absolute;
         width: 100%;
         top: 0;
         bottom: 0;
         overflow: hidden;
-    }
-    .login-form {
+    }*/
+    .login-panel {
         position: absolute;
         top: 50%;
-        left: 50%;
-        margin: -230px 0 0 -180px;
-        width: 310px;
-        height: 330px;
-        padding: 25px;
-        box-shadow: 0 0 100px rgba(0,0,0,.08);
-        background-color: #fff;
-        border-radius: 4px;
-        z-index: 3;
+        left: 70%;
+        margin: -230px 0 0 -100px;
+        width: 360px;
+        height: 400px;
         .login-logo {
             text-align: center;
             height: 40px;
@@ -42,11 +36,22 @@
             }
             span {
                 vertical-align: text-bottom;
-                font-size: 16px;
+                font-size: 30px;
                 text-transform: uppercase;
                 display: inline-block;
+                color: #fff;
             }
         }
+
+    }
+    .login-form {
+        width: 310px;
+        height: 280px;
+        padding: 45px 25px 25px;
+        box-shadow: 0 0 100px rgba(0,0,0,.08);
+        background-color: #fff;
+        border-radius: 4px;
+        z-index: 3;
 
         .verify-img {
             right: 0;
@@ -66,37 +71,39 @@
 <template>
     <div class="login-container">
         <transition name="form-fade" mode="in-out">
-            <div class="login-form" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
+            <div class="login-panel">
                 <div class="login-logo">
                     <span>{{projectName}} - {{systemName}}</span>
                 </div>
-                <el-form :model="form" :rules="formRules" ref="form"
-                         @keyup.native.enter="doLogin"
-                         label-position="left"
-                         label-width="0px">
-                    <el-form-item prop="username">
-                        <el-input type="text" v-model="form.username" auto-complete="off" placeholder="帐号"/>
-                    </el-form-item>
-                    <el-form-item prop="password">
-                        <el-input type="password" v-model="form.password" auto-complete="off" placeholder="密码"/>
-                    </el-form-item>
-                    <el-form-item prop="verifyCode">
-                        <el-input type="text" v-model="form.verifyCode" auto-complete="off" class="w-150"
-                                  placeholder="验证码"/>
-                        <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/>
-                        <div>
-                            <el-checkbox v-model="rememberUsername">记住帐号</el-checkbox>
-                        </div>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" style="width:100%;" v-loading="loading" :disabled="loading"
-                                   @click.native.prevent="doLogin">登录
-                        </el-button>
-                    </el-form-item>
-                </el-form>
+                <div class="login-form" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
+                    <el-form :model="form" :rules="formRules" ref="form"
+                             @keyup.native.enter="doLogin"
+                             label-position="left"
+                             label-width="0px">
+                        <el-form-item prop="username">
+                            <el-input type="text" v-model="form.username" auto-complete="off" placeholder="帐号"/>
+                        </el-form-item>
+                        <el-form-item prop="password">
+                            <el-input type="password" v-model="form.password" auto-complete="off" placeholder="密码"/>
+                        </el-form-item>
+                        <el-form-item prop="verifyCode">
+                            <el-input type="text" v-model="form.verifyCode" auto-complete="off" class="w-150"
+                                      placeholder="验证码"/>
+                            <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/>
+                            <div>
+                                <el-checkbox v-model="rememberUsername">记住帐号</el-checkbox>
+                            </div>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" style="width:100%;" v-loading="loading" :disabled="loading"
+                                       @click.native.prevent="doLogin">登录
+                            </el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
             </div>
         </transition>
-        <div id="loginThree"></div>
+        <!--<div id="loginThree"></div>-->
     </div>
 </template>
 
@@ -175,7 +182,7 @@
                 })
 
             },
-
+/*
             init3D () { // 初始化3D动画
                 var SCREEN_WIDTH = window.innerWidth;
                 var SCREEN_HEIGHT = window.innerHeight;
@@ -245,7 +252,7 @@
                     renderer.render(scene, camera);
                     count += 0.1;
                 }
-            }
+            }*/
         },
         created: function () {
             this.form.username = this.loginUsername;
@@ -253,11 +260,11 @@
         mounted () {
             const that = this;
             that.showLogin = true;
-            that.init3D();
+            // that.init3D();
         },
         beforeDestroy () {
-            const self = this
-            if (self.interval) clearInterval(self.interval);
+            // const self = this
+            // if (self.interval) clearInterval(self.interval);
         }
     }
 </script>
