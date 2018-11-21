@@ -3,7 +3,7 @@
         <el-col :span="24">
             <el-form label-width="120px" label-position="left" size="small">
                 <el-col>
-                    <div class="title">商户录入信息</div>
+                    <div class="title">超市商户录入信息</div>
                 </el-col>
                 <!--商户录入信息左侧块-->
                 <el-col :span="11">
@@ -25,11 +25,6 @@
                     <el-form-item v-if="data.operName" prop="operName" label="运营中心">{{data.operName}}</el-form-item>
                     <el-form-item prop="name" label="商户名称">{{data.name}}</el-form-item>
                     <el-form-item prop="signboard_name" label="招牌名称">{{data.signboard_name}}</el-form-item>
-                    <el-form-item prop="merchant_category" label="所属行业">
-                        <span v-for="item in data.categoryPath" :key="item.id">
-                            {{ item.name }}
-                        </span>
-                    </el-form-item>
                     <el-form-item label="营业执照">
                         <div class="licence" v-viewer style="display: none;">
                                 <img :src="data.business_licence_pic_url" />
@@ -51,7 +46,7 @@
 
                 <!-- 商户录入信息右侧块 -->
                 <el-col :span="11" :offset="1">
-                    <el-form-item prop="merchant_type" label="商户类型" class="c-green">普通商户</el-form-item>
+                    <el-form-item prop="merchant_type" label="商户类型" class="c-green">超市商户</el-form-item>
                     <el-form-item prop="operAddress" label="运营中心地址">
                         {{data.operAddress}}
                     </el-form-item>
@@ -80,21 +75,7 @@
                     </el-col>
                     <!-- 商户激活信息左侧块 -->
                     <el-col :span="11">
-                        <el-form-item prop="oper_biz_member_code" label="签约人">
-                            <template>
-                                <span v-if="data.bizer_id && data.bizer">
-                                    <span>{{data.bizer.name}}</span>
-                                    <span>{{data.bizer.mobile}}</span>
-                                    <span>(业务员)</span>
-                                </span>
-                                <span v-else-if="data.oper_biz_member_code && data.operBizMember">
-                                    <span>{{data.operBizMember.name}}</span>
-                                    <span>{{data.operBizMember.mobile}}</span>
-                                    <span>(员工)</span>
-                                </span>
-                                <span v-else>无</span>
-                            </template>
-                        </el-form-item>
+
                         <!--<el-form-item prop="brand" label="品牌">{{data.brand}}</el-form-item>-->
                         <!--<el-form-item prop="invoice_title" label="发票抬头">{{data.invoice_title}}</el-form-item>-->
                         <!--<el-form-item prop="invoice_no" label="发票税号">{{data.invoice_no}}</el-form-item>-->

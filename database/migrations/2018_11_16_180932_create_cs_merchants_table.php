@@ -84,8 +84,8 @@ class CreateCsMerchantsTable extends Migration
             $table->string('oper_salesman')->default('')->comment('运营中心业务人员姓名');
             $table->string('oper_biz_member_code',10)->default('')->comment('运营中心业务员推荐码');
 
-            $table->dateTime('active_time')->comment('最近激活时间, 即商户最近一次审核通过时间');
-            $table->dateTime('first_active_time')->comment('首次审核通过时间');
+            $table->timestamp('active_time')->nullable()->comment('最近激活时间, 即商户最近一次审核通过时间');
+            $table->timestamp('first_active_time')->nullable()->comment('首次审核通过时间');
             $table->integer('mapping_user_id')->dafault(0)->comment('商户关联的user_id');
             $table->tinyInteger('level')->default(1)->comment('商户等级 1-签约商户 2-联盟商户 3-品牌商户');
             $table->decimal('lowest_amount')->default(0.00)->comment('最低消费');

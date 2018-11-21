@@ -368,35 +368,19 @@ class CsMerchantService extends BaseService {
             $currentOperId = 0;
         }
 
-        $merchant = CsMerchant::where('id', $id)
+        $csmerchant = CsMerchant::where('id', $id)
             //->where('audit_oper_id', $currentOperId)
             ->first();
         //获取原有结算周期
-        $settlement_cycle_type = $merchant->settlement_cycle_type;
-        if (empty($merchant)) {
+        $settlement_cycle_type = $csmerchant->settlement_cycle_type;
+        if (empty($csmerchant)) {
             throw new BaseResponseException('该商户不存在');
         }
 
-        $merchant->fillMerchantPoolInfoFromRequest();
-        $merchant->fillMerchantActiveInfoFromRequest();
+        $csmerchant->fillMerchantPoolInfoFromRequest();
+        $csmerchant->fillMerchantActiveInfoFromRequest();
 
-        // 商户名不能重复
-
-        $exists = CsMerchant::where('name', $merchant->name)
-            ->where('id', '<>', $merchant->id)->first();
-        $existsDraft = CsMerchantAudit::where('name', $merchant->name)->first();
-        if ($exists || $existsDraft) {
-            throw new ParamInvalidException('商户名称不能重复');
-        }
-        // 招牌名不能重复
-        $exists = CsMerchant::where('signboard_name', $merchant->signboard_name)
-            ->where('id', '<>', $merchant->id)->first();
-        $existsDraft = CsMerchantAudit::where('signboard_name', $merchant->signboard_name)->first();
-        if ($exists || $existsDraft) {
-            throw new ParamInvalidException('招牌名称不能重复');
-        }
-
-        if($merchant->settlement_cycle_type == CsMerchant::SETTLE_DAY_ADD_ONE || $merchant->settlement_cycle_type == CsMerchant::SETTLE_MONTHLY){
+        if($csmerchant->settlement_cycle_type == CsMerchant::SETTLE_DAY_ADD_ONE || $csmerchant->settlement_cycle_type == CsMerchant::SETTLE_MONTHLY){
 
             //判断编辑之前商户是否已切换到T+1
             /*if($settlement_cycle_type == CsMerchant::SETTLE_DAY_ADD_ONE || $settlement_cycle_type
@@ -410,31 +394,40 @@ class CsMerchantService extends BaseService {
                 }
             }*/
 
-            if($merchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_COMPANY){
-                if($merchant->name != $merchant->bank_open_name){
+            if($csmerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_COMPANY){
+                if($csmerchant->name != $csmerchant->bank_open_name){
                     throw new ParamInvalidException('提交失败，申请T+1结算，商户名称需和开户名一致');
                 }
-            }elseif($merchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_PEOPLE){
-                if($merchant->corporation_name != $merchant->bank_open_name){
+            }elseif($csmerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_PEOPLE){
+                if($csmerchant->corporation_name != $csmerchant->bank_open_name){
                     throw new ParamInvalidException('提交失败，申请T+1结算，营业执照及法人姓名需和开户名一致');
                 }
             }
         }
-
-        CsMerchantAuditService::addAudit($merchant->id, $currentOperId);
+        $csmerchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
 
         //admin编辑商户，除审核通过的商户编辑完成直接默认审核通过外，其他状态的商户编辑后都是待审核
-        if ($isAdmin) {
+        /*if ($isAdmin) {
             if ($auditStauts != CsMerchant::AUDIT_STATUS_SUCCESS) {
                 $merchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
             } else {
                 $merchant->audit_status = CsMerchant::AUDIT_STATUS_SUCCESS;
             }
-        }
+        }*/
 
-        $merchant->save();
+        $csmerchant->toArray();
+        $jsonTomerchant = json_encode($csmerchant);
 
-        return $merchant;
+        $params = [
+            'oper_id' => $currentOperId,
+            'name' => $csmerchant['name'],
+            'dataAfter' => $jsonTomerchant,
+        ];
+
+        // 添加审核记录
+        CsMerchantAuditService::addAudit($params);
+
+        return $csmerchant;
     }
 
     /**

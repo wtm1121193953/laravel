@@ -33,22 +33,17 @@
             doEdit(data){
                 this.isLoading = true;
                 if (!this.isDraft){
-                    api.post('/merchant/edit', data).then(() => {
+                    api.post('/cs/merchant/edit', data).then(() => {
                         this.$message.success('保存成功');
-                        router.push({
-                            path: '/merchants',
-                            name: 'MerchantList',
-                            params: this.$route.params,
-                        });
-                        store.commit('setCurrentMenu', '/merchants');
+                        router.push('/cs/merchants');
                     }).finally(() => {
                         this.isLoading = false;
                     })
                 }else {
-                    api.post('/merchant/draft/delete', {id: data.id}).then((res) => {
-                        api.post('/merchant/add', data).then(() => {
+                    api.post('/cs/merchant/draft/delete', {id: data.id}).then((res) => {
+                        api.post('/cs/merchant/add', data).then(() => {
                             this.$message.success('保存成功');
-                            router.push('/merchants');
+                            router.push('/cs/merchants');
                         })
                         let menu_copy = Lockr.get('userMenuList');
                         menu_copy[0].sub[4].name = '草稿箱(' + res.count + ')';
@@ -62,9 +57,9 @@
                 this.isLoading = true;
                 let url = '';
                 if (this.isDraft) {
-                    url = '/merchant/draft/detail';
+                    url = '/cs/merchant/draft/detail';
                 }else {
-                    url = '/merchant/detail';
+                    url = '/cs/merchant/detail';
                 }
                 api.get(url , {id: this.id}).then(data => {
                     this.merchant = data;
@@ -74,9 +69,9 @@
             },
             cancel(){
                 if (this.isDraft) {
-                    router.push('/merchant/drafts');
+                    router.push('/cs/merchant/drafts');
                 }else {
-                    router.push('/merchants');
+                    router.push('/cs/merchants');
                 }
             },
             doEditDraft(data) {
@@ -85,9 +80,9 @@
                     return false;
                 }
                 this.isLoading = true;
-                api.post('/merchant/draft/edit', data).then(() => {
+                api.post('/cs/merchant/draft/edit', data).then(() => {
                     this.$message.success('保存成功');
-                    router.push('/merchant/drafts');
+                    router.push('/cs/merchant/drafts');
                 }).finally(() => {
                     this.isLoading = false;
                 })
@@ -97,20 +92,20 @@
             this.id = this.$route.query.id;
             this.isDraft = this.$route.query.type == 'draft-list';
             if (this.isDraft){
-                this.breadcrumbs = {'草稿箱': '/merchant/drafts'};
+                this.breadcrumbs = {'草稿箱': '/cs/merchant/drafts'};
             } else {
                 if (this.$route.query.hasOwnProperty('isPilot') && this.$route.query.isPilot) {
-                    this.breadcrumbs = {'我的试点商户': '/merchant/pilots'}
+                    this.breadcrumbs = {'我的试点商户': '/cs/merchant/pilots'}
                 } else {
-                    this.breadcrumbs = {'我的商户': '/merchants'}
+                    this.breadcrumbs = {'我的超市商户': '/cs/merchants'}
                 }
             }
             if(!this.id){
                 this.$message.error('id不能为空');
                 if (this.isDraft) {
-                    router.push('/merchant/drafts');
+                    router.push('/cs/merchant/drafts');
                 }else {
-                    router.push('/merchants');
+                    router.push('/cs/merchants');
                 }
                 return false;
             }
