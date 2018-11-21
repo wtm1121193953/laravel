@@ -24,6 +24,9 @@ class CsGoodService extends BaseService
     {
 
         $query = CsGood::select('*')
+            ->when(!empty($params['cs_merchant_id']),function (Builder $query) use ($params){
+                $query->where('cs_merchant_id','=', $params['cs_merchant_id']);
+            })
             ->when(!empty($params['goods_name']),function (Builder $query) use ($params){
                 $query->where('goods_name','like', "%{$params['goods_name']}%");
             })

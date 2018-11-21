@@ -5,7 +5,6 @@
         top: 0;
         bottom: 0;
         left: 0;
-        background-color: #141a48;
         background-image: url(../images/login-bg.png);
         background-repeat: no-repeat;
         background-size: cover;

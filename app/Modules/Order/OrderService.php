@@ -193,6 +193,7 @@ class OrderService extends BaseService
                 } elseif ($item->status == Order::STATUS_REFUNDED) {
                     $item->take_time = date('H时i分', time() - strtotime($item->refund_time));
                 }
+                $item->express_address = json_decode($item->express_address, true);
             }
         }
 

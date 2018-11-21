@@ -1,65 +1,68 @@
 <template>
-    <div class="login-form" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
-        <div class="login-link">
-            <el-button type="text" @click="goReg">注册</el-button>
-            |
-            <el-button type="text" @click="dialogForgetPassword = true">忘记密码</el-button>
-        </div>
+    <div class="login-panel">
         <div class="login-logo">
             <span>{{projectName}} - {{systemName}}</span>
         </div>
-        <el-form :model="form" :rules="formRules" ref="form"
-                 @keyup.native.enter="doLogin"
-                 label-position="left"
-                 label-width="0px">
-            <el-form-item prop="account">
-                <el-input type="text" v-model="form.account" auto-complete="off" placeholder="帐号"/>
-            </el-form-item>
-            <el-form-item prop="password">
-                <el-input type="password" v-model="form.password" auto-complete="off" placeholder="密码"/>
-            </el-form-item>
-            <el-form-item prop="verifyCode">
-                <el-input type="text" v-model="form.verifyCode" auto-complete="off" class="w-150"
-                          placeholder="验证码"/>
-                <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" style="width:100%;" v-loading="loading" :disabled="loading"
-                           @click.native.prevent="doLogin">登录
-                </el-button>
-            </el-form-item>
-        </el-form>
 
-        <!-- 忘记密码弹框 -->
-        <el-dialog title="忘记密码" :visible.sync="dialogForgetPassword" width="434px">
-            <el-form class="form-label-noBefore" :model="dialogForgetPasswordForm" ref="dialogForgetPasswordForm" :rules="dialogForgetPasswordFormRules" label-width="70px">
-                <el-form-item label="帐号" prop="mobile">
-                    <el-input type="text" v-model="dialogForgetPasswordForm.mobile" auto-complete="off" placeholder="请输入手机号"/>
+        <div class="login-form" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
+            <div class="login-link">
+                <el-button type="text" @click="goReg">注册</el-button>
+                |
+                <el-button type="text" @click="dialogForgetPassword = true">忘记密码</el-button>
+            </div>
+            <el-form :model="form" :rules="formRules" ref="form"
+                     @keyup.native.enter="doLogin"
+                     label-position="left"
+                     label-width="0px">
+                <el-form-item prop="account">
+                    <el-input type="text" v-model="form.account" auto-complete="off" placeholder="帐号"/>
                 </el-form-item>
-                <el-form-item label="验证码" prop="verify_code">
-                    <el-input type="text" v-model="dialogForgetPasswordForm.verify_code" auto-complete="off" placeholder="请输入验证码" class="w-180" maxlength="4"/>
-                    <el-button type="primary" class="fr" style="width:132px;" :disabled="buttonCode.isDisabled" @click.native.prevent="sendCode">{{buttonCode.buttonName}}</el-button>
+                <el-form-item prop="password">
+                    <el-input type="password" v-model="form.password" auto-complete="off" placeholder="密码"/>
+                </el-form-item>
+                <el-form-item prop="verifyCode">
+                    <el-input type="text" v-model="form.verifyCode" auto-complete="off" class="w-150"
+                              placeholder="验证码"/>
+                    <img class="verify-img" :src="captchaSrc" @click="refreshVerify()" width="150"/>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" style="width:100%;" v-loading="loading" :disabled="loading"
+                               @click.native.prevent="doLogin">登录
+                    </el-button>
                 </el-form-item>
             </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button  v-loading="forgetPasswordLoading" :disabled="forgetPasswordLoading" type="primary" @click="forgetPassword">提交</el-button>
-            </div>
-        </el-dialog>
 
-        <!-- 重设密码弹框 -->
-        <el-dialog title="设置密码" :visible.sync="dialogSetPassword" width="454px">
-            <el-form class="form-label-noBefore" :model="dialogSetPasswordForm" ref="dialogSetPasswordForm" :rules="dialogSetPasswordFormRules" label-width="108px">
-                <el-form-item label="设置密码" prop="password">
-                    <el-input type="password" v-model="dialogSetPasswordForm.password" auto-complete="off" placeholder="请设置6-12位密码，不区分大小写"/>
-                </el-form-item>
-                <el-form-item label="再次输入密码" prop="confirm_password">
-                    <el-input type="password" v-model="dialogSetPasswordForm.confirm_password" auto-complete="off" placeholder="请再次输入密码"/>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button type="primary"  v-loading="setPasswordLoading" :disabled="setPasswordLoading" @click="setPassword">提交</el-button>
-            </div>
-        </el-dialog>
+            <!-- 忘记密码弹框 -->
+            <el-dialog title="忘记密码" :visible.sync="dialogForgetPassword" width="434px">
+                <el-form class="form-label-noBefore" :model="dialogForgetPasswordForm" ref="dialogForgetPasswordForm" :rules="dialogForgetPasswordFormRules" label-width="70px">
+                    <el-form-item label="帐号" prop="mobile">
+                        <el-input type="text" v-model="dialogForgetPasswordForm.mobile" auto-complete="off" placeholder="请输入手机号"/>
+                    </el-form-item>
+                    <el-form-item label="验证码" prop="verify_code">
+                        <el-input type="text" v-model="dialogForgetPasswordForm.verify_code" auto-complete="off" placeholder="请输入验证码" class="w-180" maxlength="4"/>
+                        <el-button type="primary" class="fr" style="width:132px;" :disabled="buttonCode.isDisabled" @click.native.prevent="sendCode">{{buttonCode.buttonName}}</el-button>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button  v-loading="forgetPasswordLoading" :disabled="forgetPasswordLoading" type="primary" @click="forgetPassword">提交</el-button>
+                </div>
+            </el-dialog>
+
+            <!-- 重设密码弹框 -->
+            <el-dialog title="设置密码" :visible.sync="dialogSetPassword" width="454px">
+                <el-form class="form-label-noBefore" :model="dialogSetPasswordForm" ref="dialogSetPasswordForm" :rules="dialogSetPasswordFormRules" label-width="108px">
+                    <el-form-item label="设置密码" prop="password">
+                        <el-input type="password" v-model="dialogSetPasswordForm.password" auto-complete="off" placeholder="请设置6-12位密码，不区分大小写"/>
+                    </el-form-item>
+                    <el-form-item label="再次输入密码" prop="confirm_password">
+                        <el-input type="password" v-model="dialogSetPasswordForm.confirm_password" auto-complete="off" placeholder="请再次输入密码"/>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button type="primary"  v-loading="setPasswordLoading" :disabled="setPasswordLoading" @click="setPassword">提交</el-button>
+                </div>
+            </el-dialog>
+        </div>
     </div>
 </template>
 
@@ -286,25 +289,13 @@
 
 <style lang="less" scoped>
 
-    .login-form {
+    .login-panel {
         position: absolute;
         top: 50%;
-        left: 50%;
-        margin: -230px 0 0 -180px;
-        width: 310px;
-        padding: 25px;
-        box-shadow: 0 0 100px rgba(0, 0, 0, .08);
-        background-color: #fff;
-        border-radius: 4px;
-        z-index: 3;
-        .login-link {
-            text-align: right;
-            color: #eee;
-            margin: -10px 0 10px;
-            .el-button {
-                margin: 0 5px;
-            }
-        }
+        left: 70%;
+        margin: -230px 0 0 -150px;
+        width: 360px;
+        height: 400px;
         .login-logo {
             text-align: center;
             height: 40px;
@@ -317,9 +308,29 @@
             }
             span {
                 vertical-align: text-bottom;
-                font-size: 16px;
+                font-size: 32px;
                 text-transform: uppercase;
                 display: inline-block;
+                color: #fff;
+            }
+        }
+
+    }
+    .login-form {
+        width: 310px;
+        height: 280px;
+        padding: 45px 25px 25px;
+        box-shadow: 0 0 100px rgba(0,0,0,.08);
+        background-color: #fff;
+        border-radius: 4px;
+        z-index: 3;
+
+        .login-link {
+            text-align: right;
+            color: #eee;
+            margin: -10px 0 10px;
+            .el-button {
+                margin: 0 5px;
             }
         }
         .el-form-item:last-child {
