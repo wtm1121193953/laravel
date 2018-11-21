@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Jobs\Schedule;
+namespace App\Jobs;
 
-use App\Jobs\MerchantStatisticsJob;
-use App\Jobs\OperStatisticsJob;
-use App\Jobs\UserStatisticsJob;
+use App\Modules\Merchant\MerchantStatisticsService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -12,21 +10,15 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Log;
 
-/**
- * 用于每日新增 营销统计
- * Class OperStatisticsDailyJob
- * Author:   JerryChan
- * Date:     2018/9/20 16:46
- * @package App\Jobs\Schedule
- */
-class OperAndMerchantAndUserStatisticsDailyJob implements ShouldQueue
+class MerchantStatisticsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $endTime = '';
+    protected $endTime;
 
     /**
      * Create a new job instance.
+     *
      * @param string $endTime
      */
     public function __construct($endTime = '')
@@ -39,16 +31,15 @@ class OperAndMerchantAndUserStatisticsDailyJob implements ShouldQueue
 
     /**
      * Execute the job.
+     *
      * @return void
      */
     public function handle()
     {
-        Log::info('生成 营销统计数据 :Start');
+        Log::info('生成 商户营销统计数据 :Start');
 
-        MerchantStatisticsJob::dispatch($this->endTime);
-        OperStatisticsJob::dispatch($this->endTime);
-        UserStatisticsJob::dispatch($this->endTime);
+        MerchantStatisticsService::statistics($this->endTime);
 
-        Log::info('生成 营销统计数据 :end');
+        Log::info('生成 商户营销统计数据 :end');
     }
 }
