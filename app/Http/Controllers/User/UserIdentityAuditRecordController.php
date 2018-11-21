@@ -95,8 +95,8 @@ class UserIdentityAuditRecordController extends Controller
 
         $saveData = [
             'name' => $request->get('name'),
-            'country_id' => $request->get('country_id'),
-            'id_card_no' => $request->get('id_card_no'),
+            'country_id' => $countryId,
+            'id_card_no' => $idCardNo,
             'front_pic' => $request->get('front_pic'),
             'opposite_pic' => $request->get('opposite_pic')
         ];
