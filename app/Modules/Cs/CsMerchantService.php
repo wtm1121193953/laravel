@@ -13,6 +13,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Area\Area;
 use App\Modules\Country\CountryService;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantFollow;
 use App\Modules\Oper\Oper;
 use App\Support\Lbs;
@@ -443,39 +444,44 @@ class CsMerchantService extends BaseService {
      */
     public static function add($currentOperId)
     {
-        $merchant = new CsMerchant();
-        $merchant->fillMerchantPoolInfoFromRequest();
-        $merchant->fillMerchantActiveInfoFromRequest();
+        $csmerchant = new CsMerchant();
+        $csmerchant->fillMerchantPoolInfoFromRequest();
+        $csmerchant->fillMerchantActiveInfoFromRequest();
 
         // 补充商家创建者及审核提交者
-        $merchant->audit_oper_id = $currentOperId;
-        $merchant->creator_oper_id = $currentOperId;
+        $csmerchant->audit_oper_id = $currentOperId;
+        $csmerchant->creator_oper_id = $currentOperId;
 
         // 商户名不能重复
-        $exists = CsMerchant::where('name', $merchant->name)->first();
-        if ($exists) {
+        //查询超市表
+        $exists = CsMerchant::where('name', $csmerchant->name)->first();
+        //查询普通商户表
+        $existsMerchant = Merchant::where('name', $csmerchant->name)->first();
+        //查询超市审核记录表
+        $existsCsmerchantAudit = CsMerchantAudit::where('name', $csmerchant->name)->first();
+        if ($exists || $existsMerchant || $existsCsmerchantAudit) {
             throw new ParamInvalidException('商户名称不能重复');
         }
         // 招牌名不能重复
-        $signboardName = CsMerchant::where('signboard_name', $merchant->signboard_name)->first();
-
-        if ($signboardName) {
+        $signboardName = CsMerchant::where('signboard_name', $csmerchant->signboard_name)->first();
+        $existsMerchantSignboardName = Merchant::where('signboard_name',$csmerchant->signboard_name)->first();
+        if ($signboardName || $existsMerchantSignboardName) {
             throw new ParamInvalidException('招牌名称不能重复');
         }
 
-        $merchant->toArray();
-        $jsonTomerchant = json_encode($merchant);
+        $csmerchant->toArray();
+        $jsonTomerchant = json_encode($csmerchant);
 
         $params = [
             'oper_id' => $currentOperId,
-            'name' => $merchant['name'],
+            'name' => $csmerchant['name'],
             'dataAfter' => $jsonTomerchant,
         ];
 
         // 添加审核记录
         CsMerchantAuditService::addAudit($params);
 
-        return $merchant;
+        return $csmerchant;
     }
 
     public static function addFromDraft()

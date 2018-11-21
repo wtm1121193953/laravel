@@ -19,7 +19,16 @@ class CsMerchantAudit extends BaseModel
     const INSERT_TYPE = 1;
     const UPDATE_TYPE= 2;
 
-    const ING_AUDIT = 1;
-    const PASS_AUDIT= 2;
-    const NO_AUDIT = 3;
+    /**
+     * 未审核(审核中)
+     */
+    const AUDIT_STATUS_AUDITING = 1;
+    /**
+     * 审核通过
+     */
+    const AUDIT_STATUS_SUCCESS = 2;
+    /**
+     * 审核不通过
+     */
+    const AUDIT_STATUS_FAIL = 3;
 }

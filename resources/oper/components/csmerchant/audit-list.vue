@@ -1,16 +1,14 @@
 <template>
-    <page title="商户审核记录">
+    <page title="超市商户审核记录">
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="提交审核时间"/>
             <el-table-column prop="updated_at" label="审核时间"/>
-            <el-table-column prop="merchantName" label="商户名称"/>
+            <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 0" class="c-warning">待审核</span>
-                    <span v-else-if="scope.row.status === 1" class="c-green">审核通过</span>
-                    <span v-else-if="scope.row.status === 2" class="c-danger">审核不通过</span>
-                    <span v-else-if="scope.row.status === 3" class="c-warning">待审核(重新提交)</span>
-                    <span v-else-if="scope.row.status === 4" class="c-danger">已打回商户池</span>
+                    <span v-if="scope.row.status === 1" class="c-warning">待审核</span>
+                    <span v-else-if="scope.row.status === 2" class="c-green">审核通过</span>
+                    <span v-else-if="scope.row.status === 3" class="c-danger">审核不通过</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
@@ -41,7 +39,7 @@
         },
         methods: {
             getList(){
-                api.get('/merchant/audit/list', this.query).then(data => {
+                api.get('/cs/merchant/audit/list', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
                 })
