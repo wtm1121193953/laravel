@@ -28,6 +28,7 @@ use App\Modules\User\User;
 use App\Modules\Oper\Oper;
 use App\Modules\UserCredit\UserCreditRecord;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -68,8 +69,15 @@ class OrderService extends BaseService
                         ->whereIn('status', [4, 6, 7]);
                 })->orWhere(function (Builder $query) {
                     $query->where('type', Order::TYPE_DISHES);
+                })->orWhere(function (Builder $query) {
+                    $query->where('type', Order::TYPE_SUPERMARKET)
+                        ->whereIn('status', [Order::STATUS_REFUNDED, Order::STATUS_FINISHED, Order::STATUS_UNDELIVERED, Order::STATUS_NOT_TAKE_BY_SELF, Order::STATUS_DELIVERED]);
                 });
         });
+
+        if ($merchantType == Order::MERCHANT_TYPE_SUPERMARKET) {
+            $query->with('csOrderGoods');
+        }
 
         if ($userId > 0) {
             $query->where('user_id', $userId);
@@ -167,13 +175,25 @@ class OrderService extends BaseService
             $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
             $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
             $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
-            if ($item->type == 3){
+
+            if ($item->type == Order::TYPE_DISHES){
                 $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
                 $data[$key]['dishes_items'] = $dishesItems;
             }
             $item->items = OrderItem::where('order_id', $item->id)->get();
+
             $item->goods_end_date = Goods::where('id', $item->goods_id)->value('end_date');
             $item->pay_type_name = $payments[$item->pay_type]??'未知('.$item->pay_type.')';
+
+            if ($merchantType == Order::MERCHANT_TYPE_SUPERMARKET) {
+                if (in_array($item->status, [Order::STATUS_UNDELIVERED, Order::STATUS_NOT_TAKE_BY_SELF, Order::STATUS_DELIVERED])) {
+                    $item->take_time = date('H时i分', time() - strtotime($item->pay_time));
+                } elseif ($item->status == Order::STATUS_FINISHED) {
+                    $item->take_time = date('H时i分', time() - strtotime($item->finish_time));
+                } elseif ($item->status == Order::STATUS_REFUNDED) {
+                    $item->take_time = date('H时i分', time() - strtotime($item->refund_time));
+                }
+            }
         }
 
         return $data;
