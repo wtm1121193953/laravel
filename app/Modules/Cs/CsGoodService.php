@@ -24,6 +24,12 @@ class CsGoodService extends BaseService
     {
 
         $query = CsGood::select('*')
+            ->when(!empty($params['id']),function (Builder $query) use ($params){
+                $query->where('id','=', $params['id']);
+            })
+            ->when(!empty($params['oper_id']),function (Builder $query) use ($params){
+                $query->where('oper_id','=', $params['oper_id']);
+            })
             ->when(!empty($params['cs_merchant_id']),function (Builder $query) use ($params){
                 $query->where('cs_merchant_id','=', $params['cs_merchant_id']);
             })
@@ -35,6 +41,15 @@ class CsGoodService extends BaseService
             })
             ->when(!empty($params['cs_platform_cat_id_level2']),function (Builder $query) use ($params){
                 $query->where('cs_platform_cat_id_level2','=', $params['cs_platform_cat_id_level2']);
+            })
+            ->when(!empty($params['status']),function (Builder $query) use ($params){
+                $query->whereIn('status', $params['status']);
+            })
+            ->when(!empty($params['audit_status']),function (Builder $query) use ($params){
+                $query->whereIn('audit_status', $params['audit_status']);
+            })
+            ->when(!empty($params['with_merchant']),function (Builder $query) use ($params){
+                $query->with('cs_merchant:id,name');
             })
         ;
 
