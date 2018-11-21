@@ -50,12 +50,16 @@ use Illuminate\Support\Facades\Log;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Oper\Oper;
+use App\Modules\Cs\CsMerchant;
+use App\Modules\CsOrder\CsOrderGood;
+
 
 class OrderController extends Controller
 {
 
     public function getList()
     {
+
         $status = request('status');
         $user = request()->get('current_user');
 
@@ -83,14 +87,27 @@ class OrderController extends Controller
         $data->each(function ($item) use ($currentOperId) {
             $item->items = OrderItem::where('order_id', $item->id)->get();
             // 判断商户是否是当前小程序关联运营中心下的商户
-            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
-            $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
-            $item->merchant = Merchant::where('id', $item->merchant_id)->first();
-            $item->merchant_logo = $item->merchant->logo;
-            $item->signboard_name = $item->merchant->signboard_name;
+//            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
 
+            $item->goods_end_date = '';
             if ($item->type == Order::TYPE_DISHES) {
                 $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
+                $item->order_goods_number = DishesItem::where('dishes_id',$item->dishes_id)->sum('number');
+            }else if($item->type == Order::TYPE_GROUP_BUY){
+                $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
+            }
+
+            if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
+                $csMerchat = CsMerchant::where('id',$item->merchant_id)->first();
+                $item->merchant_name = $csMerchat->name;
+                $item->merchant_logo = $csMerchat->logo;
+                $item->merchant_service_phone = $csMerchat->service_phone;
+                $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
+
+            }else {
+                $item->merchant = Merchant::where('id', $item->merchant_id)->first();
+                $item->merchant_logo = $item->merchant->logo;
+                $item->signboard_name = $item->merchant->signboard_name;
             }
         });
         return Result::success([
