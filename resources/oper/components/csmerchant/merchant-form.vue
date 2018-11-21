@@ -65,7 +65,6 @@
                     data.audit_status = this.data.audit_status;
                 }
 
-                // data.merchant_category_id = (data.merchant_category.length != 0) ? data.merchant_category[data.merchant_category.length - 1] : 0;
                 data.province_id = data.area[0];
                 data.city_id = data.area[1];
                 data.area_id = data.area[2];

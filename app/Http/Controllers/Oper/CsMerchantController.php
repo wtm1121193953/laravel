@@ -185,7 +185,7 @@ class CsMerchantController extends Controller
             //'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
-        if (request('is_pilot') !== Merchant::PILOT_MERCHANT){
+        if (request('is_pilot') !== CsMerchant::PILOT_MERCHANT){
             $validate = array_merge($validate, [
                 'business_licence_pic_url' => 'required',
                 'organization_code' => 'required',

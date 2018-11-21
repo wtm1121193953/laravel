@@ -1,5 +1,5 @@
 <template>
-    <page title="我的商户" v-loading="isLoading">
+    <page title="我的超市商户" v-loading="isLoading">
         <el-form class="fl" inline size="small">
             <el-form-item label="商户ID">
                 <el-select v-model="query.merchantId" placeholder="输入商户ID或商户名" filterable clearable >
@@ -14,21 +14,6 @@
             <el-form-item prop="signboardName" label="商户招牌名" >
                 <el-input v-model="query.signboardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
             </el-form-item>
-
-            <!--<el-form-item prop="merchant_category" label="所属行业">
-                <el-cascader
-                        change-on-select
-                        clearable
-                        filterable
-                        :options="categoryOptions"
-                        :props="{
-                            value: 'id',
-                            label: 'name',
-                            children: 'sub',
-                        }"
-                        v-model="query.merchant_category">
-                </el-cascader>
-            </el-form-item>-->
             <el-form-item label="商户状态" prop="status">
                 <el-select v-model="query.status" size="small" class="w-150">
                     <el-option label="全部" value=""/>
@@ -46,12 +31,6 @@
                     <el-option label="重新提交审核" value="3"/>
                 </el-select>
             </el-form-item>
-            <!--<el-form-item prop="memberNameOrMobile" label="我的员工"  >
-                <el-input v-model="query.memberNameOrMobile" size="small"  placeholder="请输入员工姓名或手机号码搜索"  clearable></el-input>
-            </el-form-item>-->
-            <!--<el-form-item prop="bizerNameOrMobile" label="业务员"  >
-                <el-input v-model="query.bizerNameOrMobile" size="small"  placeholder="请输入业务员昵称或手机号码搜索"  clearable></el-input>
-            </el-form-item>-->
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
@@ -60,45 +39,21 @@
 
             <el-button class="fr inline" size="small" type="success" @click="add">录入并激活商户</el-button>
         </el-form>
-        <!--<el-dropdown class="fr" @command="addBtnClick" trigger="click">
-            <el-button type="primary">
-                添加商户<i class="el-icon-arrow-down el-icon&#45;&#45;right"></i>
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="from-pool">从商户池添加</el-dropdown-item>
-                <el-dropdown-item command="add">添加新商户</el-dropdown-item>
-            </el-dropdown-menu>
-        </el-dropdown>-->
-
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="id"  width="80" label="商户ID"/>
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column label="商户类型">
                 <template slot-scope="scope">
-                    <span>普通商户</span>
+                    <span>超市商户</span>
                 </template>
             </el-table-column>
             <el-table-column prop="signboard_name" label="商户招牌名"/>
-            <el-table-column prop="categoryPath" label="行业">
-                <template slot-scope="scope">
-                    <span v-for="item in scope.row.categoryPath" :key="item.id">
-                        {{ item.name }}
-                    </span>
-                </template>
-            </el-table-column>
             <el-table-column prop="city" label="城市">
                 <template slot-scope="scope">
                     <!--<span> {{ scope.row.province }} </span>-->
                     <span> {{ scope.row.city }} </span>
                     <span> {{ scope.row.area }} </span>
-                </template>
-            </el-table-column>
-            <el-table-column label="签约人">
-                <template slot-scope="scope">
-                    <span v-if="scope.row.bizer"><span class="c-green">业务员 </span>{{scope.row.bizer.name}}/{{scope.row.bizer.mobile}}</span>
-                    <span v-else-if="scope.row.operBizMember"><span class="c-light-gray">员工 </span>{{scope.row.operBizMember.name}}/{{scope.row.operBizMember.mobile}}</span>
-                    <span v-else>无</span>
                 </template>
             </el-table-column>
             <el-table-column prop="status" label="商户状态">
@@ -173,7 +128,6 @@
         name: "merchant-list",
         data(){
             return {
-                //categoryOptions: [],
                 auditRecord:[],
                 isLoading: false,
                 query: {
@@ -183,8 +137,6 @@
                     page: 1,
                     audit_status: '',
                     signboardName:'',
-                    //memberNameOrMobile: '',
-                    //bizerNameOrMobile: '',
                 },
                 list: [],
                 total: 0,
