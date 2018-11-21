@@ -22,24 +22,18 @@ Route::get('/', function () {
 
 Route::view('/developer', 'developer');
 // 后端页面
-Route::get('/admin', function () {
-    return view('admin');
-});
+Route::view('/admin', 'admin');
 
 // 运营中心页面
-Route::get('/oper', function () {
-    return view('oper');
-});
+Route::view('/oper', 'oper');
 
 // 商户中心页面
-Route::get('/merchant', function () {
-    return view('merchant');
-});
+Route::view('/merchant', 'merchant');
+// 商户中心页面
+Route::view('/cs', 'cs');
 
 // 商户中心h5页面
-Route::get('/merchant-h5', function () {
-    return view('merchant-h5');
-});
+Route::view('/merchant-h5', 'merchant-h5');
 
 // 用户端h5页面
 /*Route::get('/user-h5', function () {
@@ -48,9 +42,7 @@ Route::get('/merchant-h5', function () {
 
 
 // 业务员端
-Route::get('/bizer', function () {
-    return view('bizer');
-});
+Route::view('/bizer', 'bizer');
 
 Route::get('/article/{code}', 'ArticleController@index');
 

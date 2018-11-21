@@ -14,7 +14,7 @@ import routes from './routes/index'
 import VueRouter from 'vue-router'
 const router = new VueRouter({
     mode: 'history',
-    base: '/merchant',
+    base: '/cs',
     routes
 })
 router.beforeEach((to, from, next) => {
@@ -54,7 +54,7 @@ import quillEditorPlugin from './quill-editor-plugin'
 Vue.use(quillEditorPlugin.VueQuillEditor, quillEditorPlugin.globalOptions)
 
 // 根据商户类型, 初始化接口根地址
-window.baseApiUrl = '/api/merchant/'
+window.baseApiUrl = '/api/cs/'
 
 import api from '../assets/js/api'
 window.api = api;

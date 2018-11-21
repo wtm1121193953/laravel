@@ -100,6 +100,7 @@ mix.js('./resources/developer/app.js', 'public/js/developer.js');
 mix.js('./resources/admin/app.js', 'public/js/admin.js');
 mix.js('./resources/oper/app.js', 'public/js/oper.js');
 mix.js('./resources/merchant/app.js', 'public/js/merchant.js');
+mix.js('./resources/cs/app.js', 'public/js/cs.js');
 mix.js('./resources/merchant-h5/app.js', 'public/js/merchant-h5.js');
 // 业务员前端模块
 mix.js('./resources/bizer/app.js', 'public/js/bizer.js');

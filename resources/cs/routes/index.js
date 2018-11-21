@@ -28,7 +28,6 @@ import Setting from '../components/setting/list.vue'
 import TpsBind from '../components/setting/tps-bind.vue'
 import message from './message'
 
-
 /**
  *
  */

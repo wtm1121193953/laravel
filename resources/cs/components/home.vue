@@ -25,7 +25,7 @@
                             </el-button>
                             <el-dropdown-menu slot="dropdown">
                                 <!--<el-dropdown-item command="refresh-rules">刷新权限</el-dropdown-item>-->
-                                <el-dropdown-item command="merchant-info">商户资料</el-dropdown-item>
+                                <!--<el-dropdown-item command="merchant-info">商户资料</el-dropdown-item>-->
                                 <el-dropdown-item command="theme-setting">主题设置</el-dropdown-item>
                                 <el-dropdown-item command="modify-password">修改密码</el-dropdown-item>
                                 <el-dropdown-item command="logout">退出</el-dropdown-item>

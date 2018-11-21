@@ -171,16 +171,16 @@
                     if(valid){
                         _self.loading = true;
                         api.post('/login', this.form).then(data => {
-                            if(data.user.type == 2){
-                                window.Lockr.prefix = 'cs_'
+                            if(data.user.type == 1){
+                                window.Lockr.prefix = 'merchant_'
                                 setTimeout(function(){
-                                    location.href = '/cs/'
+                                    location.href = '/merchant/'
                                 }, 500)
                             }
                             store.dispatch('storeUserInfo', data);
                             store.dispatch('setLoginUserName', this.rememberUsername ? this.form.username : '');
-                            if(data.user.type == 1){
-                                _self.getNormalMerchantElectronicContractConfig();
+                            if(data.user.type == 2){
+                                _self.relocation();
                             }
                         }).catch(() => {
                             _self.refreshVerify();
