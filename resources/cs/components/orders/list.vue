@@ -9,6 +9,16 @@
                     <el-form-item label="手机号">
                         <el-input type="text" clearable v-model="query.mobile" placeholder="输入手机号" class="w-150"/>
                     </el-form-item>
+                    <el-form-item label="订单状态" v-if="activeTab == 'all'">
+                        <el-select v-model="query.status" class="w-100" clearable>
+                            <el-option label="全部" value=""/>
+                            <el-option label="待发货" value="8"/>
+                            <el-option label="待自提" value="9"/>
+                            <el-option label="已发货" value="10"/>
+                            <el-option label="已完成" value="7"/>
+                            <el-option label="已退款" value="6"/>
+                        </el-select>
+                    </el-form-item>
 
                     <el-form-item label="支付时间">
                         <el-date-picker
@@ -108,8 +118,9 @@
                 </template>
             </el-table-column>
             <el-table-column prop="merchant_name" width="250" label="商户名称"/>
-            <el-table-column label="操作">
+            <el-table-column label="操作" width="130">
                 <template slot-scope="scope">
+                    <el-button type="text" @click="showDeliver(scope.row)">发货</el-button>
                     <el-button type="text" @click="showDetail(scope.row)">订单详情</el-button>
                 </template>
             </el-table-column>
@@ -140,6 +151,27 @@
                 <div v-if="verify_success" class="fl">核销成功！<el-button type="text" @click="showDetail(order)">查看订单</el-button></div>
                 <div v-if="verify_fail">核销失败！请检查消费码</div>
             </el-row>
+        </el-dialog>
+
+        <el-dialog title="准备发货" :visible.sync="isShowDeliver" center width="25%" :close-on-click-modal="false" :close-on-press-escape="false" @close="closeDeliver">
+            <div style="text-align: center; margin-bottom: 15px;">仅限同城配送</div>
+            <el-form v-model="form" ref="form" :rules="formRules" label-width="100px">
+                <el-form-item prop="expressCompany" label="快递公司">
+                    <el-input v-model="form.expressCompany" placeholder="50字以内"/>
+                </el-form-item>
+                <el-form-item prop="expressNo" label="快递编号">
+                    <el-input v-model="form.expressNo" placeholder="50字以内"/>
+                </el-form-item>
+                <div>
+                    <p>发货须知：</p>
+                    <p>1.为了保证良好的用户体验，商户需要在24H内进行发货，超出24H还未发货，平台有权对商户进行罚款，金额视情况而定。</p>
+                    <p>2.商户虚假发货，平台一经查实，订单内商品将下架处理，并承担原订单金额2倍的罚款。</p>
+                </div>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="closeDeliver">取 消</el-button>
+                <el-button type="primary" @click="deliver">确 定</el-button>
+            </span>
         </el-dialog>
     </el-col>
 </template>
@@ -179,6 +211,23 @@
                 verify_code: '',
                 verify_success: false,
                 verify_fail: false,
+
+                deliverOrder: {},
+                isShowDeliver: false,
+                form: {
+                    expressCompany: '',
+                    expressNo: '',
+                },
+                formRules: {
+                    expressCompany: [
+                        {required: true, message: '快递公司不能为空'},
+                        {max: 50, message: '快递公司不能超过50个字'},
+                    ],
+                    expressNo: [
+                        {required: true, message: '快递编号不能为空'},
+                        {max: 50, message: '快递编号不能超过50个字'},
+                    ]
+                }
             }
         },
         methods: {
@@ -207,6 +256,7 @@
                 this.order = scope;
                 this.isShow = true;
                 this.isShowItems = false;
+                this.isShowDeliver = false;
             },
             showItems() {
                 this.isShowItems = true;
@@ -216,6 +266,30 @@
                 setTimeout(() => {
                     this.$refs.verifyInput.focus();
                 }, 1000)
+            },
+            showDeliver(row) {
+                this.deliverOrder = row;
+                this.isShowDeliver = true;
+            },
+            closeDeliver() {
+                this.isShowDeliver = false;
+                this.$refs.form.resetFields();
+            },
+            deliver() {
+                this.$refs.form.validate(valid => {
+                    if (valid) {
+                        let param = {
+                            id: this.deliverOrder.id,
+                            expressCompany: this.form.expressCompany,
+                            expressNo: this.form.expressNo,
+                        };
+                        api.post('', param).then(data => {
+                            this.$message.success('发货成功');
+                            this.closeDeliver();
+                            this.$emit('refresh');
+                        })
+                    }
+                })
             },
             verification(){
                 this.verify_success = false;
