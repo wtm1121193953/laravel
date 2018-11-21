@@ -21,14 +21,14 @@
         },
         methods: {
             cancel(){
-                router.push('/cs/goods');
+                router.push('/goods');
             },
             doAdd(data){
                 this.isLoading = true;
-                api.post('/cs/goods/add', data).then(() => {
+                api.post('/goods/add', data).then(() => {
                     this.$message.success('添加成功');
                     this.$refs.addForm.resetForm();
-                    router.push('/cs/goods');
+                    router.push('/goods');
                 }).finally(() => {
                     this.isLoading = false;
                 })

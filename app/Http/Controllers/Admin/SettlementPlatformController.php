@@ -69,6 +69,8 @@ class SettlementPlatformController extends Controller
         $settlementCycleType = request('settlement_cycle_type');
         $isAutoSettlement = request('is_auto_settlement');
 
+        $uri = request()->getRequestUri();
+        $merchantType = (strpos($uri,'csDownload')) ? SettlementPlatform::MERCHANT_TYPE_CS : ((request('merchant_type')) ? request('merchant_type') : '');
 
         $query = SettlementPlatformService::getListForSaas([
             'merchant_name' => $merchant_name,
@@ -78,6 +80,7 @@ class SettlementPlatformController extends Controller
             'status' => $status,
             'settlementCycleType' => $settlementCycleType,
             'isAutoSettlement' => $isAutoSettlement,
+            'merchantType'   => $merchantType
         ],true);
 
         return (new SettlementPlatformExport($query))->download('结算报表.xlsx');

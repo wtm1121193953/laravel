@@ -5,11 +5,11 @@
                 <el-form-item prop="goods_name" label="商品名称" >
                     <el-input v-model="query.goods_name"  placeholder="商品名称"  clearable></el-input>
                 </el-form-item>
-                <el-form-item label="一级分类" prop="cs_merchant_cat_id_level1">
+                <el-form-item label="一级分类" prop="cs_platform_cat_id_level1">
                     <template>
-                        <el-select v-model="query.cs_merchant_cat_id_level1" placeholder="请选择" @change="getLevel2()">
+                        <el-select v-model="query.cs_platform_cat_id_level1" placeholder="请选择" @change="getLevel2()">
                             <el-option
-                                    v-for="item in cs_merchant_cat_id_level1"
+                                    v-for="item in cs_platform_cat_id_level1"
                                     :key="item.value"
                                     :label="item.label"
                                     :value="item.value">
@@ -19,11 +19,11 @@
 
                 </el-form-item>
 
-                <el-form-item label="二级分类" prop="cs_merchant_cat_id_level2">
+                <el-form-item label="二级分类" prop="cs_platform_cat_id_level2">
                     <template>
-                        <el-select v-model="query.cs_merchant_cat_id_level2" placeholder="请选择">
+                        <el-select v-model="query.cs_platform_cat_id_level2" placeholder="请选择">
                             <el-option
-                                    v-for="item in cs_merchant_cat_id_level2"
+                                    v-for="item in cs_platform_cat_id_level2"
                                     :key="item.value"
                                     :label="item.label"
                                     :value="item.value">
@@ -44,8 +44,8 @@
             <el-table-column prop="id" label="商品ID"/>
             <el-table-column prop="goods_name" label="商品名称"/>
             <el-table-column prop="price" label="销售价"/>
-            <el-table-column prop="cs_merchant_cat_id_level1" label="一级分类"/>
-            <el-table-column prop="cs_merchant_cat_id_level2" label="二级分类"/>
+            <el-table-column prop="cs_platform_cat_id_level1" label="一级分类"/>
+            <el-table-column prop="cs_platform_cat_id_level2" label="二级分类"/>
             <el-table-column prop="logo" label="商品图片">
                 <template slot-scope="scope">
                     <div class="detail_image" style="height: 50px; width: 50px" v-viewer @click="previewImage($event)">
@@ -120,15 +120,15 @@
                 isLoading: false,
                 query: {
                     goods_name:'',
-                    cs_merchant_cat_id_level1:'',
-                    cs_merchant_cat_id_level2:'',
+                    cs_platform_cat_id_level1:'',
+                    cs_platform_cat_id_level2:'',
                     page: 1,
                     pageSize: 15,
                 },
                 list: [],
                 total: 0,
-                cs_merchant_cat_id_level1:[],
-                cs_merchant_cat_id_level2:[],
+                cs_platform_cat_id_level1:[],
+                cs_platform_cat_id_level2:[],
             }
         },
         computed: {
@@ -143,17 +143,17 @@
             getLevel1() {
                 api.get('/sub_cat', {parent_id:0}).then(data => {
 
-                    this.cs_merchant_cat_id_level1 = data;
+                    this.cs_platform_cat_id_level1 = data;
                 })
             },
             getLevel2() {
-                if (this.query.cs_merchant_cat_id_level1 == 0) {
+                if (this.query.cs_platform_cat_id_level1 == 0) {
                     return true;
 
                 }
-                api.get('/sub_cat', {parent_id:this.query.cs_merchant_cat_id_level1}).then(data => {
+                api.get('/sub_cat', {parent_id:this.query.cs_platform_cat_id_level1}).then(data => {
 
-                    this.cs_merchant_cat_id_level2 = data;
+                    this.cs_platform_cat_id_level2 = data;
                 })
             },
             getList(){
@@ -167,7 +167,7 @@
             },
             add(){
                 router.push({
-                    path: '/cs/goods/add',
+                    path: '/goods/add',
                 });
                 this.isAdd = true;
             },

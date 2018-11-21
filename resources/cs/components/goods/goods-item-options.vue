@@ -36,7 +36,7 @@
         methods: {
             edit(){
                 router.push({
-                    path: '/cs/goods/edit',
+                    path: '/goods/edit',
                     query: {id: this.scope.row.id}
                 });
                 return false;
@@ -44,7 +44,7 @@
             },
             doEdit(data){
                 this.$emit('before-request')
-                api.post('/cs/goods/edit', data).then((data) => {
+                api.post('/goods/edit', data).then((data) => {
                     this.isEdit = false;
                     this.$emit('change', this.scope.$index, data)
                 }).finally(() => {

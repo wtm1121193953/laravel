@@ -14,7 +14,7 @@ use App\Result;
 class OrderController extends Controller
 {
 
-    public function getList()
+    private static function getListQuery($withQuery = false)
     {
         $orderNo = request('orderNo');
         $mobile = request('mobile');
@@ -51,50 +51,29 @@ class OrderController extends Controller
             'status' => $status,
             'type' => $type,
             'merchantType' => $merchantType,
-        ]);
+        ], $withQuery);
+
+        return $data;
+    }
+
+    public function getList()
+    {
+        $data = self::getListQuery();
 
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
-
-
     }
+
+
 
     /**
      * 导出订单
      */
     public function export()
     {
-        $orderNo = request('orderNo');
-        $mobile = request('mobile');
-        $merchantId = request('merchantId');
-        $timeType = request('timeType', 'payTime');
-        $startTime = request('startTime');
-        $endTime = request('endTime');
-        $type = request('type');
-        $status = request('status');
-
-        if($timeType == 'payTime'){
-            $startPayTime = $startTime;
-            $endPayTime = $endTime;
-        }else {
-            $startFinishTime = $startTime;
-            $endFinishTime = $endTime;
-        }
-
-        $query = OrderService::getList([
-            'operId' => request()->get('current_user')->oper_id,
-            'merchantId' => $merchantId,
-            'orderNo' => $orderNo,
-            'notifyMobile' => $mobile,
-            'startPayTime' => $startPayTime ?? null,
-            'endPayTime' => $endPayTime ?? null,
-            'startFinishTime' => $startFinishTime ?? null,
-            'endFinishTime' => $endFinishTime ?? null,
-            'status' => $status,
-            'type' => $type,
-        ], true);
+        $query = self::getListQuery(true);
 
         $list = $query->get();
         $merchantIds = $list->pluck('merchant_id');
@@ -127,5 +106,54 @@ class OrderController extends Controller
         return Result::success([
             'total' => $count,
         ]);
+    }
+
+    /**
+     * oper 超市订单导出
+     */
+    public function csExport()
+    {
+        $query = self::getListQuery(true);
+
+        $fileName = '超市订单列表';
+        header('Content-Type: application/vnd.ms-execl');
+        header('Content-Disposition: attachment;filename="' . $fileName . '.csv"');
+
+        $fp = fopen('php://output', 'a');
+        $title = ['支付时间', '订单号', '历时', '订单类型', '商品名称', '总价（元）', '手机号码', '订单状态', '发货方式', '商户名称'];
+        foreach ($title as $key => $value) {
+            $title[$key] = iconv('UTF-8', 'GBK', $value);
+        }
+        fputcsv($fp, $title);
+
+        $query->chunk(1000, function ($data) use ($fp) {
+            foreach ($data as $key => $value) {
+                $item = [];
+
+                $item['pay_time'] = $value['pay_time'];
+                $item['order_no'] = $value['order_no'];
+                if (in_array($value['status'], [Order::STATUS_UNDELIVERED, Order::STATUS_NOT_TAKE_BY_SELF, Order::STATUS_DELIVERED])) {
+                    $item['take_time'] = date('H时i分', time() - strtotime($value['pay_time']));
+                } elseif ($value['status'] == Order::STATUS_FINISHED) {
+                    $item['take_time'] = date('H时i分', time() - strtotime($value['pay_time']));
+                } elseif ($value['status'] == Order::STATUS_REFUNDED) {
+                    $item['take_time'] = date('H时i分', time() - strtotime($value['pay_time']));
+                }
+                $item['type'] = Order::getTypeText($value['type']);
+                $item['goods_name'] = Order::getGoodsNameText($value['type'], $value['csOrderGoods'], $value['goods_name']);
+                $item['pay_price'] = $value['pay_price'];
+                $item['notify_mobile'] = $value['notify_mobile'];
+                $item['status'] = Order::getStatusText($value['status']);
+                $item['deliver_type'] = Order::getDeliverTypeText($value['deliver_type']);
+                $item['merchant_name'] = $value['merchant_name'];
+
+                foreach ($item as $k => $v) {
+                    $item[$k] = iconv('UTF-8', 'GBK', $v);
+                }
+                fputcsv($fp, $item);
+            }
+            ob_flush();
+            flush();
+        });
     }
 }
