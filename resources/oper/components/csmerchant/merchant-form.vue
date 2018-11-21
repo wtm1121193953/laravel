@@ -17,7 +17,7 @@
         <el-col>
             <el-form-item>
                 <el-button @click="cancel">取消</el-button>
-                <el-button type="primary" v-if="isDraft" @click="saveIntoDraft">存入草稿箱</el-button>
+                <!--<el-button type="primary" v-if="isDraft" @click="saveIntoDraft">存入草稿箱</el-button>-->
                 <el-button type="success" @click="save">保存并提审</el-button>
             </el-form-item>
         </el-col>
@@ -65,7 +65,7 @@
                     data.audit_status = this.data.audit_status;
                 }
 
-                data.merchant_category_id = (data.merchant_category.length != 0) ? data.merchant_category[data.merchant_category.length - 1] : 0;
+                // data.merchant_category_id = (data.merchant_category.length != 0) ? data.merchant_category[data.merchant_category.length - 1] : 0;
                 data.province_id = data.area[0];
                 data.city_id = data.area[1];
                 data.area_id = data.area[2];

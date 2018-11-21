@@ -23,10 +23,15 @@ class CsGoodService extends BaseService
     public static function getList(array $params = [], bool $getWithQuery = false)
     {
 
-        $id = array_get($params, 'id');
         $query = CsGood::select('*')
-            ->when($id,function (Builder $query) use ($id){
-                $query->where('id','=', $id);
+            ->when(!empty($params['goods_name']),function (Builder $query) use ($params){
+                $query->where('goods_name','like', "%{$params['goods_name']}%");
+            })
+            ->when(!empty($params['cs_merchant_cat_id_level1']),function (Builder $query) use ($params){
+                $query->where('cs_merchant_cat_id_level1','=', $params['cs_merchant_cat_id_level1']);
+            })
+            ->when(!empty($params['cs_merchant_cat_id_level2']),function (Builder $query) use ($params){
+                $query->where('cs_merchant_cat_id_level2','=', $params['cs_merchant_cat_id_level2']);
             })
         ;
 

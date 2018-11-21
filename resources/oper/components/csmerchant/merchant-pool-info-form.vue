@@ -2,7 +2,7 @@
     <!-- 商户录入信息表单 -->
     <el-form :model="form" size="small" label-width="120px" :rules="formRules" ref="form" @submit.native.prevent>
         <el-col>
-            <div class="title">商户录入信息</div>
+            <div class="title">超市商户录入信息</div>
         </el-col>
         <!--商户录入信息表单-->
         <el-col v-if="!readonly" :span="16">
@@ -13,7 +13,7 @@
             <el-form-item prop="signboard_name" label="招牌名称">
                 <el-input v-model="form.signboard_name"/>
             </el-form-item>
-            <el-form-item prop="merchant_category" label="所属行业">
+            <!--<el-form-item prop="merchant_category" label="所属行业">
                 <el-cascader
                         :options="categoryOptions"
                         :props="{
@@ -23,7 +23,7 @@
                         }"
                         v-model="form.merchant_category">
                 </el-cascader>
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item ref="lngAndLat" prop="lng_and_lat" label="商户坐标">
                 {{form.lng_and_lat || '请选择位置'}}
             </el-form-item>
@@ -52,11 +52,11 @@
             <el-form-item prop="name" label="商户名称">
                 {{data.name}}
             </el-form-item>
-            <el-form-item prop="merchant_category" label="所属行业">
+            <!--<el-form-item prop="merchant_category" label="所属行业">
                 <span v-for="item in data.categoryPath" :key="item.id">
                     {{ item.name }}
                 </span>
-            </el-form-item>
+            </el-form-item>-->
 
             <el-form-item prop="location" label="商户坐标">
                 {{[data.lng, data.lat]}}
@@ -85,7 +85,7 @@
         /////// 商户录入信息
         name: '',
         signboard_name: '',
-        merchant_category: [],
+        //merchant_category: [],
 
         // 位置信息
         lng_and_lat: null,
@@ -117,9 +117,9 @@
                         {required: true, message: '招牌名称不能为空'},
                         {max: 20, message: '招牌名称不能超过20个字'}
                     ],
-                    merchant_category: [
+                    /*merchant_category: [
                         {type: 'array', required: true, message: '所属行业不能为空'}
-                    ],
+                    ],*/
                     // 位置信息
                     lng_and_lat: [
                         {required: true, message: '商户位置不能为空'},
@@ -147,13 +147,13 @@
                     for (let key in defaultForm){
                         this.form[key] = this.data[key];
                     }
-                    let merchant_category_array = [];
+                    /*let merchant_category_array = [];
                     if(data.merchant_category_id && data.categoryPathOnlyEnable){
                         data.categoryPathOnlyEnable.forEach(function (item) {
                             merchant_category_array.push(parseInt(item.id));
                         })
                     }
-                    this.form.merchant_category = merchant_category_array;
+                    this.form.merchant_category = merchant_category_array;*/
                     if (parseInt(data.province_id) == 0 && parseInt(data.city_id) == 0 && parseInt(data.area_id) == 0) {
                         this.form.area = [];
                     }else {
@@ -182,7 +182,7 @@
                     data.id = this.data.id;
                 }
 
-                data.merchant_category_id = (data.merchant_category.length != 0) ? data.merchant_category[data.merchant_category.length - 1] : 0;
+                //data.merchant_category_id = (data.merchant_category.length != 0) ? data.merchant_category[data.merchant_category.length - 1] : 0;
                 data.province_id = data.area[0];
                 data.city_id = data.area[1];
                 data.area_id = data.area[2];
@@ -214,7 +214,7 @@
             }
         },
         created(){
-            api.get('merchant/categories/tree').then(data => {
+            /*api.get('merchant/categories/tree').then(data => {
                 this.categoryOptions = data.list;
 
                 let self = this;
@@ -223,7 +223,7 @@
                         self.categoryOptions.splice(i, 1);
                     }
                 }
-            });
+            });*/
             api.get('area/tree').then(data => {
                 this.areaOptions = data.list;
             });
