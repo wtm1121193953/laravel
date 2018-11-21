@@ -45,6 +45,10 @@ Route::prefix('oper')
 
         Route::get('/country/list', 'CountryController@getList');
 
+        Route::get('goods', 'CsGoodsController@getList');
+        Route::get('sub_cat', 'CsGoodsController@getSubCat');
+        Route::get('goods/detail', 'CsGoodsController@detail');
+
         Route::group([], base_path('routes/api/oper/merchant.php'));
         Route::group([], base_path('routes/api/oper/csmerchant.php'));
         Route::group([], base_path('routes/api/oper/settlements.php'));
