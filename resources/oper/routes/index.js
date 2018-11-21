@@ -22,6 +22,7 @@ import message from './message'
 
 import GoodsList from '../components/cs_goods/list'
 import GoodsAudit from '../components/cs_goods/audit'
+import GoodsCheck from '../components/cs_goods/check'
 
 //系统设置
 import SettingMappingUser from '../components/setting/mapping-user'
@@ -62,6 +63,7 @@ const routes = [
         children: [
             {path: 'cs/goods', component: GoodsList, name: 'GoodsList'},
             {path: 'cs_goods/audit', component: GoodsAudit, name: 'GoodsAudit'},
+            {path: 'cs_goods/check', component: GoodsCheck, name: 'GoodsCheck'},
         ]
     },
 

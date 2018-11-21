@@ -61,8 +61,14 @@
                         </div>
                         <el-button v-if="goods.certificate3.length > 0" type="text" @click="previewImage('desc3')">查看</el-button>
                     </el-form-item>
-                    <el-form-item>
+                    <el-form-item prop="audit_suggestion" label="审核意见">
+                        <el-input placeholder="最多输入50个汉字"  maxlength="50" v-model="goods.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
 
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="success" @click="audit(1)">审核通过</el-button>
+                        <el-button type="warning" @click="audit(2)">审核不通过</el-button>
+                        <el-button type="primary" @click="back()">返回</el-button>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -91,6 +97,11 @@
                 id: null,
                 goods: {
                     goods_name: '',
+                    detail_imgs:[],
+                    certificate1 :[],
+                    certificate2 :[],
+                    certificate3:[],
+                    audit_suggestion:'',
                 },
                 auditType:null
             }
@@ -104,7 +115,7 @@
                 viewer.show()
             },
             audit(type){
-                api.post('/merchant/audit', {id: this.data.id, type: type,audit_suggestion:this.data.audit_suggestion}).then(data => {
+                api.post('/cs_goods/audit', {id: this.id, type: type,audit_suggestion:this.goods.audit_suggestion}).then(data => {
                     this.$alert(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
                     this.$emit('change')
                 })
