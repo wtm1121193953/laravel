@@ -15,7 +15,7 @@
                 <el-input v-model="query.signboardName" size="small" placeholder="商家招牌名" clearable @keyup.enter.native="search"/>
             </el-form-item>
 
-            <el-form-item prop="merchant_category" label="所属行业">
+            <!--<el-form-item prop="merchant_category" label="所属行业">
                 <el-cascader
                         change-on-select
                         clearable
@@ -28,7 +28,7 @@
                         }"
                         v-model="query.merchant_category">
                 </el-cascader>
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item label="商户状态" prop="status">
                 <el-select v-model="query.status" size="small" class="w-150">
                     <el-option label="全部" value=""/>
@@ -46,12 +46,12 @@
                     <el-option label="重新提交审核" value="3"/>
                 </el-select>
             </el-form-item>
-            <el-form-item prop="memberNameOrMobile" label="我的员工"  >
+            <!--<el-form-item prop="memberNameOrMobile" label="我的员工"  >
                 <el-input v-model="query.memberNameOrMobile" size="small"  placeholder="请输入员工姓名或手机号码搜索"  clearable></el-input>
-            </el-form-item>
-            <el-form-item prop="bizerNameOrMobile" label="业务员"  >
+            </el-form-item>-->
+            <!--<el-form-item prop="bizerNameOrMobile" label="业务员"  >
                 <el-input v-model="query.bizerNameOrMobile" size="small"  placeholder="请输入业务员昵称或手机号码搜索"  clearable></el-input>
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item>
                 <el-button type="primary" @click="search"><i class="el-icon-search">搜索</i></el-button>
             </el-form-item>
@@ -173,7 +173,7 @@
         name: "merchant-list",
         data(){
             return {
-                categoryOptions: [],
+                //categoryOptions: [],
                 auditRecord:[],
                 isLoading: false,
                 query: {
@@ -183,8 +183,8 @@
                     page: 1,
                     audit_status: '',
                     signboardName:'',
-                    memberNameOrMobile: '',
-                    bizerNameOrMobile: '',
+                    //memberNameOrMobile: '',
+                    //bizerNameOrMobile: '',
                 },
                 list: [],
                 total: 0,
@@ -200,7 +200,7 @@
                 for (let key in this.query){
                     array.push(key + '=' + this.query[key]);
                 }
-                location.href = '/api/oper/merchant/export?' + array.join('&');
+                location.href = '/api/oper/cs/merchant/export?' + array.join('&');
             },
             search(){
                 this.query.page = 1;
@@ -210,7 +210,7 @@
                 this.isLoading = true;
                 let params = {};
                 Object.assign(params, this.query);
-                api.get('/merchants', params).then(data => {
+                api.get('cs/merchants', params).then(data => {
                     this.query.page = params.page;
                     this.isLoading = false;
                     this.list = data.list;
@@ -224,19 +224,19 @@
                 if(command === 'add'){
                     this.add()
                 }else {
-                    this.$menu.change('/merchant/pool')
+                    this.$menu.change('cs/merchant/pool')
                 }
             },
             add(){
                 router.push({
-                    path: '/merchant/add',
+                    path: '/cs/merchant/add',
                     query: {
                         type: 'merchant-list'
                     }
                 });
             },
             showMessage(scope){
-                api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
+                api.get('/cs/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
                     this.auditRecord = [data];
                 })
             },
@@ -249,7 +249,7 @@
             },
 
             getMerchants(){
-                api.get('/merchant/allNames').then(data => {
+                api.get('/cs/merchant/allNames').then(data => {
                     this.merchants = data.list;
                 })
             },
@@ -259,9 +259,9 @@
 
 
         created(){
-            api.get('merchant/categories/tree').then(data => {
+            /*api.get('merchant/categories/tree').then(data => {
                 this.categoryOptions = data.list;
-            });
+            });*/
             if (this.$route.params){
                 Object.assign(this.query, this.$route.params);
             }

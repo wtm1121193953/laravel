@@ -2,8 +2,8 @@
     <el-row>
         <el-col :span="22">
             <el-form :model="form" label-width="120px" :rules="formRules" ref="form" @submit.native.prevent>
-                <el-form-item prop="name" label="商品名称">
-                    <el-input v-model="form.name"/>
+                <el-form-item prop="goods_name" label="商品名称">
+                    <el-input v-model="form.goods_name"/>
                 </el-form-item>
                 <el-form-item prop="categoryOptions" label="分类">
                     <el-cascader
@@ -22,8 +22,8 @@
                 <el-form-item prop="price" label="销售价">
                     <el-input-number v-model="form.price" :min="0"/>
                 </el-form-item>
-                <el-form-item prop="price" label="库存">
-                    <el-input-number v-model="form.price" :min="0"/>
+                <el-form-item prop="stock" label="库存">
+                    <el-input-number v-model="form.stock" :min="0"/>
                 </el-form-item>
 
                 <el-form-item prop="logo" label="产品logo图">
@@ -60,9 +60,10 @@
 </template>
 <script>
     let defaultForm = {
-        name: '',
+        goods_name: '',
         market_price: 0,
         price: 0,
+        stock: 0,
         detail_imgs: [],
         logo: '',
         desc: '',
@@ -97,7 +98,7 @@
             return {
                 form: deepCopy(defaultForm),
                 formRules: {
-                    name: [
+                    goods_name: [
                         {required: true, message: '商品名称不能为空'},
                         {max: 30, message: '商品名称不能超过30个字'}
                     ],

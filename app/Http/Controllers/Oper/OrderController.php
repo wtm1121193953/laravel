@@ -7,6 +7,7 @@ use App\Exports\OperOrderExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Dishes\DishesItem;
+use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
 use App\Result;
 
@@ -23,7 +24,7 @@ class OrderController extends Controller
         $endTime = request('endTime');
         $status = request('status');
         $type = request('type');
-        $merchantType = request('merchantType');
+        $merchantType = request('merchantType', Order::MERCHANT_TYPE_NORMAL);
 
         if($timeType == 'payTime'){
             $startPayTime = $startTime;
@@ -107,5 +108,24 @@ class OrderController extends Controller
         });
 
         return (new OperOrderExport($list))->download('订单列表.xlsx');
+    }
+
+    /**
+     * 获取未发货超市订单的数量
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUndeliveredNum()
+    {
+        $params = [
+            'operId' => request()->get('current_user')->oper_id,
+            'status' => Order::STATUS_UNDELIVERED,
+            'merchantType' => Order::MERCHANT_TYPE_SUPERMARKET,
+        ];
+        $query = OrderService::getList($params, true);
+        $count = $query->count();
+
+        return Result::success([
+            'total' => $count,
+        ]);
     }
 }

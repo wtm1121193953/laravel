@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Oper;
+namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
-use App\Exports\OperCsMerchantExport;
+use App\Exports\AdminCsMerchantExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Bizer\BizerService;
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAccountService;
-use App\Modules\Cs\CsMerchantAuditService;
+use App\Modules\Merchant\MerchantAuditService;
 use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Cs\CsMerchantService;
 use App\Modules\Oper\Oper;
@@ -28,12 +28,6 @@ class CsMerchantController extends Controller
      */
     public function getList()
     {
-        //$memberNameOrMobile = request('memberNameOrMobile');
-        //$bizerNameOrMobile = request('bizerNameOrMobile');
-
-        //$operBizMemberCodes = $memberNameOrMobile ? OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile)->pluck('code') : '';
-        //$bizerIds = $bizerNameOrMobile ? BizerService::getBizersByNameOrMobile($bizerNameOrMobile)->pluck('id') : '';
-
         $data = [
             'id' => request('id'),
             'operId' => request()->get('current_user')->oper_id,
@@ -47,21 +41,9 @@ class CsMerchantController extends Controller
             'isPilot' => request('isPilot'),
             'startCreatedAt' => request('startCreatedAt'),
             'endCreatedAt' => request('endCreatedAt'),
-            //'bizer_id' => $bizerIds,
-            //'operBizMemberCodes' => $operBizMemberCodes,
         ];
 
         $data = CsMerchantService::getList($data);
-
-        /*$isPayToPlatform = $this->isPayToPlatform();
-        foreach ($data as $key){
-            if($isPayToPlatform){
-                $key->settlement_cycle_type = 7;//运营中心切换到平台，显示为未知
-            }else{
-                $key->settlement_cycle_type = 1;//运营中心切未换到平台，显示为周结
-            }
-
-        }*/
 
         return Result::success([
             'list' => $data->items(),
@@ -73,11 +55,6 @@ class CsMerchantController extends Controller
      * 导出商户
      */
     public function export(){
-        //$memberNameOrMobile = request('memberNameOrMobile');
-        //$bizerNameOrMobile = request('bizerNameOrMobile');
-
-        //$operBizMemberCodes = $memberNameOrMobile ? OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile)->pluck('code') : '';
-        //$bizerIds = $bizerNameOrMobile ? BizerService::getBizersByNameOrMobile($bizerNameOrMobile)->pluck('id') : '';
 
         $data = [
             'id' => request('id'),
@@ -88,19 +65,15 @@ class CsMerchantController extends Controller
             'signboardName' => request('signboardName'),
             'status' => request('status'),
             'auditStatus' => request('audit_status'),
-            //'merchantCategory' => request('merchant_category'),
-            'isPilot' => request('isPilot'),
             'startCreatedAt' => request('startCreatedAt'),
             'endCreatedAt' => request('endCreatedAt'),
-            //'bizer_id' => $bizerIds,
-            //'operBizMemberCodes' => $operBizMemberCodes,
         ];
 
         $query = CsMerchantService::getList($data,true);
 
         $list = $query->get();
 
-        return (new OperCsMerchantExport($list,request('isPilot')))->download('我的超市商户列表.xlsx');
+        return (new AdminCsMerchantExport($list,request('isPilot')))->download('超市商户列表.xlsx');
 
     }
 
@@ -182,7 +155,6 @@ class CsMerchantController extends Controller
     {
         $validate = [
             'name' => 'required|max:50',
-            //'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
         if (request('is_pilot') !== Merchant::PILOT_MERCHANT){
@@ -201,36 +173,6 @@ class CsMerchantController extends Controller
         $merchant = CsMerchantService::edit(request('id'), request('audit_oper_id'),request('audit_status'));
 
         return Result::success($merchant);
-    }
-
-    /**
-     * 从商户池添加商户, 即补充商户池中商户的合同信息
-     */
-    public function addFromMerchantPool()
-    {
-        $this->validate(request(), [
-            'id' => 'required|integer|min:1',
-            'business_licence_pic_url' => 'required',
-            'organization_code' => 'required',
-            'settlement_rate' => 'required|numeric|min:0',
-        ]);
-
-        $merchantId = request('id');
-        $merchant = CsMerchantService::getById($merchantId);
-        if(empty($merchant)){
-            throw new DataNotFoundException('商户池信息不存在');
-        }
-        if($merchant->oper_id > 0){
-            throw new ParamInvalidException('该商户已不在商户池中');
-        }
-        if($merchant->audit_oper_id > 0){
-            throw new ParamInvalidException('该商户已被其他运营中心认领');
-        }
-
-        $currentOperId = request()->get('current_user')->oper_id;
-        $merchant = CsMerchantService::addFromMerchantPool($currentOperId, $merchant);
-
-        return Result::success('操作成功', $merchant);
     }
 
     /**
@@ -315,7 +257,7 @@ class CsMerchantController extends Controller
 
     public function getAuditList()
     {
-        $data = CsMerchantAuditService::getAuditResultList(['oper_id' => request()->get('current_user')->oper_id]);
+        $data = MerchantAuditService::getAuditResultList(['oper_id' => request()->get('current_user')->oper_id]);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),

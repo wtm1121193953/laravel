@@ -90,7 +90,6 @@ class CreateCsMerchantsTable extends Migration
             $table->tinyInteger('level')->default(1)->comment('商户等级 1-签约商户 2-联盟商户 3-品牌商户');
             $table->decimal('lowest_amount')->default(0.00)->comment('最低消费');
             $table->integer('user_follows')->dafault(0)->comment('用户关注总数');
-            $table->integer('bizer_id')->dafault(0)->comment('业务员ID');
             $table->timestamps();
 
             $table->softDeletes();
