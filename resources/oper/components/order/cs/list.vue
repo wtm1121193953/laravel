@@ -121,7 +121,7 @@
             <el-table-column prop="merchant_name" width="250" label="商户名称"/>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <el-button type="text" @click="">订单详情</el-button>
+                    <el-button type="text" @click="showDetail(scope.row)">订单详情</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -133,11 +133,19 @@
                 @current-change="getList"
                 :page-size="15"
                 :total="total"/>
+
+
+        <el-dialog title="订单详情" :visible.sync="isShow">
+            <order-form :scope="order"/>
+        </el-dialog>
+
+
     </el-col>
 </template>
 
 <script>
     import api from '../../../../assets/js/api'
+    import OrderForm from './form'
 
     export default {
         name: "merchant-list",
@@ -167,6 +175,9 @@
                 list: [],
                 total: 0,
                 merchants: [],
+
+                order: {},
+                isShow: false,
             }
         },
         computed: {
@@ -204,7 +215,11 @@
                     num = num + item.number;
                 })
                 return num;
-            }
+            },
+            showDetail(scope) {
+                this.order = scope;
+                this.isShow = true;
+            },
         },
         created(){
             this.query.status = this.status;
@@ -213,6 +228,7 @@
             this.getMerchants();
         },
         components: {
+            OrderForm,
         }
     }
 </script>
