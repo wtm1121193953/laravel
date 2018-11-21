@@ -4,6 +4,12 @@
 
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="create_date" label="日期" />
+            <el-table-column prop="type" label="商户类型">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.merchant_type === 1">普通商户</span>
+                    <span v-else-if="scope.row.merchant_type === 2">超市商户</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="batch_no" label="批次号"  />
             <el-table-column prop="amount" label="需代付总金额"  width="160px" />
             <el-table-column prop="status" label="确认自动打款">

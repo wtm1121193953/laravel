@@ -94,6 +94,7 @@ Route::prefix('admin')
 
         Route::get('settlement/platforms', 'SettlementPlatformController@getList');
         Route::get('settlement/allPlatforms', 'SettlementPlatformController@getList');
+        Route::get('settlement/csPlatforms', 'SettlementPlatformController@getList');
         Route::get('settlement/download', 'SettlementPlatformController@downloadExcel');
         Route::get('settlement/modifyStatus', 'SettlementPlatformController@modifyStatus');
         Route::get('settlement/reBatchAgain', 'SettlementPlatformController@reBatchAgain');

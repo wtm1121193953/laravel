@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Class PlatformTradeRecord
  * @package App\Modules\Platform
+ * @property number merchant_type
  * @property number type
  * @property number pay_id
  * @property float trade_amount
@@ -26,6 +27,10 @@ class PlatformTradeRecord extends Model
     //
     const TYPE_PAY = 1;
     const TYPE_REFUND = 2;
+
+    // 商户类型
+    const MERCHANT_TYPE_NORMAL = 1;         // 默认商家
+    const MERCHANT_TYPE_SUPERMARKET = 2;    // 超市商家
 
     public function oper()
     {

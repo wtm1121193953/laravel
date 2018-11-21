@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
  * Class SettlementPlatformKuaiQianBatch
  * @package App\Modules\Settlement
  * @property int type
+ * @property int merchant_type
  * @property string batch_no
  * @property string settlement_platfrom_ids
  * @property string data_send
@@ -32,4 +33,8 @@ class SettlementPlatformKuaiQianBatch extends Model
 
     const TYPE_AUTO = 1;
     const TYPE_RE_PAY = 2;
+
+    // 商户类型
+    const MERCHANT_TYPE_NORMAL = 1;         // 默认商家
+    const MERCHANT_TYPE_SUPERMARKET = 2;    // 超市商家
 }
