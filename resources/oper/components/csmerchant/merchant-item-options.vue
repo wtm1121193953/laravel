@@ -2,10 +2,10 @@
     <!-- 商户列表项操作 v-if="parseInt(scope.row.audit_status) !== 1" -->
     <div>
         <el-button  type="text" @click="showMearchant(scope)">查看</el-button>
-        <el-button type="text" @click="edit">编辑</el-button>
+        <el-button v-if="parseInt(scope.row.audit_status)!==0" type="text" @click="edit(scope)">编辑</el-button>
         <el-button v-if="parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="changeStatus">{{parseInt(scope.row.status) === 1 ? '冻结' : ''}}</el-button>
         <el-button  style=" margin-left: 0px;" v-if="!scope.row.account && parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="showCreateAccountDialog = true">生成帐户</el-button>
-        <el-button  style=" margin-left: 0px;" v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改帐户密码</el-button>
+        <!--<el-button  style=" margin-left: 0px;" v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改帐户密码</el-button>-->
         <el-dialog title="创建商户帐号" :visible.sync="showCreateAccountDialog">
             <el-row>
                 <el-col :span="16">
@@ -101,22 +101,18 @@
 
         },
         methods: {
-            edit(){
+            edit(scope){
                 let self = this;
                 router.push({
-                    path: '/merchant/edit',
-                    name: 'MerchantEdit',
-                    query: {
-                        id: this.scope.row.id,
-                        type: 'merchant-list'
-                    },
-                    params: self.query,
+                    path: '/cs/merchant/edit',
+                    query: {id: scope.row.id,type: 'merchant-list'},
                 })
+                return false;
             },
 
             showMearchant(scope){
                 router.push({
-                    path: '/merchant/detail',
+                    path: '/cs/merchant/detail',
                     query: {id: scope.row.id},
                 })
                 return false;
@@ -125,7 +121,7 @@
             changeStatus(){
                 let status = this.scope.row.status === 1 ? 2 : 1;
                 this.$emit('before-request')
-                api.post('/merchant/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
+                api.post('/cs/merchant/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
                     this.scope.row.status = status;
                     this.$emit('change', this.scope.$index, data)
                 }).finally(() => {
@@ -137,7 +133,7 @@
                 data.merchant_id = this.scope.row.id;
                 this.$refs.form.validate(valid => {
                     if (valid) {
-                        api.post('/merchant/createAccount', data).then(data => {
+                        api.post('/cs/merchant/createAccount', data).then(data => {
                             this.$alert('创建帐户成功');
                             this.showCreateAccountDialog = false;
                             this.$emit('accountChanged', this.scope, data)
@@ -151,7 +147,7 @@
                 data.merchant_id = this.scope.row.id;
                 this.$refs.modifyPasswordForm.validate(valid => {
                     if (valid) {
-                        api.post('/merchant/editAccount', data).then(data => {
+                        api.post('/cs/merchant/editAccount', data).then(data => {
                             this.$alert('修改密码成功')
                             this.showModifyAccountDialog = false;
                             this.$emit('accountChanged', this.scope, data)

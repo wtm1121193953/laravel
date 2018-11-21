@@ -9,6 +9,7 @@ namespace App\Modules\Cs;
 
 use App\BaseService;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\MyOperBizer;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizMember;
@@ -25,18 +26,12 @@ class CsMerchantAuditService extends BaseService {
     public static function getAuditResultList(array $params = [])
     {
 
-        $data = MerchantAudit::when(isset($params['oper_id']), function (Builder $query) use ($params){
+        $data = CsMerchantAudit::when(isset($params['oper_id']), function (Builder $query) use ($params){
             $query->where('oper_id', $params['oper_id']);
         })
-            ->whereIn('status', [
-                Merchant::AUDIT_STATUS_SUCCESS,
-                Merchant::AUDIT_STATUS_FAIL,
-                Merchant::AUDIT_STATUS_FAIL_TO_POOL,
-            ])
             ->orderByDesc('updated_at')->paginate();
 
         $data->each(function($item) {
-            $item->merchantName = Merchant::where('id', $item->merchant_id)->value('name');
             $item->operName = Oper::where('id', $item->oper_id)->value('name');
         });
         return $data;
@@ -81,7 +76,7 @@ class CsMerchantAuditService extends BaseService {
         $audit->data_before = $dataBefore;
         $audit->data_after = $dataAfter;
         $audit->data_modify = $dataModify;
-        $audit->status = CsMerchantAudit::ING_AUDIT;
+        $audit->status = CsMerchantAudit::AUDIT_STATUS_AUDITING;
         $audit->save();
         return $audit;
     }

@@ -10,6 +10,17 @@
             <el-form-item label="所属商户ID">
                 <el-input type="text" clearable placeholder="请输入所属商户ID" v-model="query.merchant_id" class="w-150"/>
             </el-form-item>
+            <el-form-item label="商户类型">
+                <el-select v-model="query.merchant_type">
+                    <el-option label="全部" value=""/>
+                    <el-option
+                            v-for="item in merchant_type_select"
+                            :label="item.title"
+                            :key="item.value"
+                            :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
             <el-form-item label="交易时间">
                 <el-date-picker
                         class="w-150"
@@ -82,11 +93,13 @@
                     startTime: '',
                     endTime: '',
                     user_id: '',
+                    merchant_type:'',
                 },
                 list: [],
                 total: 0,
                 opers:[],
                 merchants: [],
+                merchant_type_select:[{value:1,title:'普通'},{value:2,title:'超市'}]
             }
         },
         computed: {

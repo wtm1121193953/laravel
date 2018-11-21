@@ -172,50 +172,50 @@ class MerchantAccountService extends BaseService
             $menus = [
                 [ 'id' => 1, 'name' => '商品管理', 'level' => 1, 'url' => 'goods', 'sub' =>
                     [
-                        ['id' => 9, 'name' => '商品管理', 'level' => 2, 'url' => '/merchant/cs/goods', 'pid' => 1],
-                        ['id' => 10, 'name' => '商品分类管理', 'level' => 2, 'url' => '/merchant/cs/categories', 'pid' => 1],
+                        ['id' => 9, 'name' => '商品管理', 'level' => 2, 'url' => '/cs/goods', 'pid' => 1],
+                        ['id' => 10, 'name' => '商品分类管理', 'level' => 2, 'url' => '/cs/categories', 'pid' => 1],
                     ]
                 ],
                 [ 'id' => 2, 'name' => '订单管理', 'level' => 1, 'url' => 'order', 'sub' =>
                     [
-                        ['id' => 201, 'name' => '超市订单管理', 'level' => 2, 'url' => '/merchant/cs/orders', 'pid' => 2],
+                        ['id' => 201, 'name' => '超市订单管理', 'level' => 2, 'url' => '/cs/orders', 'pid' => 2],
                     ]
                 ],
                 ['id' => 3, 'name' => '消息管理', 'level' => 1, 'url' => '', 'sub' =>
                     [
-                        ['id' => 301, 'name' => '公告', 'level' => 2, 'url' => '/message/cs/systems', 'pid' => 61],
+                        ['id' => 301, 'name' => '公告', 'level' => 2, 'url' => '/cs/message/systems', 'pid' => 61],
                     ]
                 ],
                 [ 'id' => 4, 'name' => '用户管理', 'level' => 1, 'url' => 'user', 'sub' =>
                     [
-                        [ 'id' => 401, 'name' => '我的用户', 'level' => 2, 'url' => '/merchant/cs/invite/statistics/list', 'pid' => 3,],
+                        [ 'id' => 401, 'name' => '我的用户', 'level' => 2, 'url' => '/cs/invite/statistics/list', 'pid' => 3,],
                         [ 'id' => 402, 'name' => '用户分析', 'level' => 2, 'url' => '/cs/merchant/invite/statistics/daily', 'pid' => 3,],
                     ]
                 ],
                 [ 'id' => 5, 'name' => '财务管理', 'level' => 1, 'url' => 'settlements',
                     'sub' => [
-                        [ 'id' => 501, 'name' => '平台结算管理', 'level' => 2, 'url' => '/merchant/cs/settlement/platform/list', 'pid' => 5,],
+                        [ 'id' => 501, 'name' => '平台结算管理', 'level' => 2, 'url' => '/cs/settlement/platform/list', 'pid' => 5,],
                     ]
                 ],
                 [ 'id' => 6, 'name' => '账户管理', 'level' => 1, 'url' => '/wallet', 'sub' =>
                     [
-                        [ 'id' => 601, 'name' => '账户总览', 'level' => 2, 'url' => '/merchant/cs/wallet/summary/list', 'pid' => 15,],
-                        [ 'id' => 602, 'name' => '提现记录', 'level' => 2, 'url' => '/merchant/cs/wallet/withdraw/list', 'pid' => 15,],
-                        [ 'id' => 603, 'name' => '我的贡献值', 'level' => 2, 'url' => '/merchant/cs/wallet/consume/list', 'pid' => 15,],
-                        [ 'id' => 604, 'name' => '提现密码管理', 'level' => 2, 'url' => '/merchant/cs/wallet/withdraw/password', 'pid' => 15,],
+                        [ 'id' => 601, 'name' => '账户总览', 'level' => 2, 'url' => '/cs/wallet/summary/list', 'pid' => 15,],
+                        [ 'id' => 602, 'name' => '提现记录', 'level' => 2, 'url' => '/cs/wallet/withdraw/list', 'pid' => 15,],
+                        [ 'id' => 603, 'name' => '我的贡献值', 'level' => 2, 'url' => '/cs/wallet/consume/list', 'pid' => 15,],
+                        [ 'id' => 604, 'name' => '提现密码管理', 'level' => 2, 'url' => '/cs/wallet/withdraw/password', 'pid' => 15,],
                     ]
                 ],
                 [ 'id' => 7, 'name' => '素材中心', 'level' => 1, 'url' => 'material', 'sub' =>
                     [
-                        [ 'id' => 701, 'name' => '分享用户二维码', 'level' => 2, 'url' => '/merchant/cs/invite/channel', 'pid' => 6,],
-                        [ 'id' => 702, 'name' => '支付二维码', 'level' => 2, 'url' => '/merchant/cs/pay/qrcode', 'pid' => 6,],
+                        [ 'id' => 701, 'name' => '分享用户二维码', 'level' => 2, 'url' => '/cs/invite/channel', 'pid' => 6,],
+                        [ 'id' => 702, 'name' => '支付二维码', 'level' => 2, 'url' => '/cs/pay/qrcode', 'pid' => 6,],
                     ]
                 ],
-                [ 'id' => 8, 'name' => '电子合同管理', 'level' => 1, 'url' => '/merchant/cs/electronic/contract',],
-                [ 'id' => 9, 'name' => '配送设置', 'level' => 1, 'url' => '/merchant/cs/electronic/contract',],
+                [ 'id' => 8, 'name' => '电子合同管理', 'level' => 1, 'url' => '/cs/electronic/contract',],
+                [ 'id' => 9, 'name' => '配送设置', 'level' => 1, 'url' => '/cs/electronic/contract',],
                 [ 'id' => 10, 'name' => '系统设置', 'level' => 1, 'url' => 'setting', 'sub' =>
                     [
-                        [ 'id' => 1001, 'name' => '系统配置', 'level' => 2, 'url' => '/merchant/cs/setting', 'pid' => 9 ],
+                        [ 'id' => 1001, 'name' => '系统配置', 'level' => 2, 'url' => '/cs/setting', 'pid' => 9 ],
                     ]
                 ],
             ];

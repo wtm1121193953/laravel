@@ -21,6 +21,7 @@ use Carbon\Carbon;
  * @property string user_name
  * @property string notify_mobile
  * @property number merchant_id
+ * @property number merchant_type
  * @property string merchant_name
  * @property number type
  * @property number goods_id

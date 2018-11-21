@@ -62,12 +62,6 @@ const stateLocalstorePlugin = function(store){
         store.commit('setCurrentMenu', state.currentMenu || getFirstMenu(store.state.menus));
         store.commit('setLoginUsername', state.loginUsername);
         store.commit('setElectronicContract', state.electronicContract);
-        // 根据用户类型, 初始化接口地址
-        if(state.user && state.user.type == 2){
-            window.baseApiUrl = '/api/cs'
-        }else {
-            window.baseApiUrl = '/api/merchant/'
-        }
     }
 
     store.subscribe((mutation, state) => {

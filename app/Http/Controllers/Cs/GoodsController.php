@@ -21,8 +21,9 @@ class GoodsController extends Controller
     public function getList()
     {
         $params['goods_name'] = request('goods_name','');
-        $params['cs_merchant_cat_id_level1'] = request('cs_merchant_cat_id_level1','');
-        $params['cs_merchant_cat_id_level2'] = request('cs_merchant_cat_id_level2','');
+        $params['cs_platform_cat_id_level1'] = request('cs_platform_cat_id_level1','');
+        $params['cs_platform_cat_id_level2'] = request('cs_platform_cat_id_level2','');
+        $params['cs_merchant_id'] = 1000000000;
         $data = CsGoodService::getList($params);
 
         return Result::success([
@@ -56,14 +57,17 @@ class GoodsController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-        $id = request('id');
-        $merchantId = request()->get('current_user')->merchant_id;
-        $goods = GoodsService::getByIdAndMerchantId($id, $merchantId);
+        //$cs_merchant_id = request()->get('current_user')->merchant_id;
+        $cs_merchant_id = 1000000000;
+        $goods = CsGoodService::detail(request('id'),$cs_merchant_id);
         if(empty($goods)){
             throw new DataNotFoundException('商品信息不存在或已删除');
         }
 
-        $goods->pic_list = $goods->pic_list ? explode(',', $goods->pic_list) : [];
+        $goods->detail_imgs = $goods->detail_imgs ? explode(',', $goods->detail_imgs) : [];
+        $goods->certificate1 = $goods->certificate1 ? explode(',', $goods->certificate1) : [];
+        $goods->certificate2 = $goods->certificate2 ? explode(',', $goods->certificate2) : [];
+        $goods->certificate3 = $goods->certificate3 ? explode(',', $goods->certificate3) : [];
 
         return Result::success($goods);
     }
@@ -83,14 +87,14 @@ class GoodsController extends Controller
         $cs_goods = new CsGood();
         $cs_goods->goods_name = $request->goods_name;
         $cs_goods->cs_merchant_id = 1000000000;
-        $cs_goods->cs_merchant_cat_id_level1 = 1;
-        $cs_goods->cs_merchant_cat_id_level2 = 3;
+        $cs_goods->cs_platform_cat_id_level1 = 1;
+        $cs_goods->cs_platform_cat_id_level2 = 3;
         $cs_goods->market_price = $request->market_price;
         $cs_goods->price = $request->price;
         $cs_goods->stock = $request->stock;
         $cs_goods->logo = $request->logo;
         $cs_goods->detail_imgs = implode(',',$request->detail_imgs);
-        $cs_goods->summary = $request->desc;
+        $cs_goods->summary = $request->summary;
         $cs_goods->certificate1 = implode(',',$request->certificate1);
         $cs_goods->certificate2 = implode(',',$request->certificate2);
         $cs_goods->certificate3 = implode(',',$request->certificate3);
@@ -110,22 +114,47 @@ class GoodsController extends Controller
     /**
      * 编辑
      */
-    public function edit()
+    public function edit(Request $request)
     {
-        $this->validate(request(), [
-            'id' => 'required|integer|min:1',
-            'name' => 'required',
+        $request->validate([
+            'id' =>'required',
+            'goods_name' => 'required',
             'market_price' => 'required',
             'price' => 'required',
-            'start_date' => 'required',
-            'end_date' => 'required',
         ]);
-        $merchantId = request()->get('current_user')->merchant_id;
-        $goods = GoodsService::editFromRequest(request('id'), $merchantId);
+        $id = $request->id;
+        //$cs_merchant_id = request()->get('current_user')->merchant_id;
+        $cs_merchant_id = 1000000000;
+        $cs_goods = CsGood::findOrFail($id);
+        if ($cs_goods->cs_merchant_id != $cs_merchant_id) {
+            throw new BaseResponseException('参数错误2');
+        }
 
-        $goods->pic_list = $goods->pic_list ? explode(',', $goods->pic_list) : [];
+        $cs_goods->goods_name = $request->goods_name;
+        $cs_goods->cs_merchant_id = 1000000000;
+        $cs_goods->cs_platform_cat_id_level1 = 1;
+        $cs_goods->cs_platform_cat_id_level2 = 3;
+        $cs_goods->market_price = $request->market_price;
+        $cs_goods->price = $request->price;
+        $cs_goods->stock = $request->stock;
+        $cs_goods->logo = $request->logo;
+        $cs_goods->detail_imgs = implode(',',$request->detail_imgs);
+        $cs_goods->summary = $request->summary;
+        $cs_goods->certificate1 = implode(',',$request->certificate1);
+        $cs_goods->certificate2 = implode(',',$request->certificate2);
+        $cs_goods->certificate3 = implode(',',$request->certificate3);
+        $cs_goods->status = CsGood::STATUS_OFF;
+        $cs_goods->audit_status = CsGood::AUDIT_STATUS_AUDITING;
 
-        return Result::success($goods);
+        $rs = $cs_goods->save();
+
+        if ($rs) {
+
+            return Result::success('修改成功');
+        } else {
+            throw new BaseResponseException('添加失败');
+        }
+        return Result::success();
     }
 
     /**
@@ -135,14 +164,13 @@ class GoodsController extends Controller
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
-            'status' => 'required|integer',
         ]);
-        $merchantId = request()->get('current_user')->merchant_id;
-        $goods = GoodsService::changeStatus(request('id'), $merchantId, request('status'));
+        //$cs_merchant_id = request()->get('current_user')->merchant_id;
+        $cs_merchant_id = 1000000000;
 
-        $goods->pic_list = $goods->pic_list ? explode(',', $goods->pic_list) : [];
+        $new_status = CsGoodService::changeStatus(request('id'),$cs_merchant_id);
 
-        return Result::success($goods);
+        return Result::success($new_status);
     }
 
     /**
@@ -155,9 +183,9 @@ class GoodsController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        $goods = GoodsService::del(request('id'), request()->get('current_user')->merchant_id);
-
-        $goods->pic_list = $goods->pic_list ? explode(',', $goods->pic_list) : [];
+        //$cs_merchant_id = request()->get('current_user')->merchant_id;
+        $cs_merchant_id = 1000000000;
+        $goods = CsGoodService::del(request('id'),$cs_merchant_id);
 
         return Result::success($goods);
     }

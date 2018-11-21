@@ -21,7 +21,7 @@ export default [
             {path: '/cs/merchant/add', component: CsMerchantAdd, name: 'CsMerchantAdd'},
             {path: '/cs/merchant/edit', component: CsMerchantEdit, name: 'CsMerchantEdit'},
 
-            {path: '/cs/merchant/audits', component: CsMerchantAuditList, name: 'CsMerchantAuditList'},
+            {path: '/cs/merchant/audit/list', component: CsMerchantAuditList, name: 'CsMerchantAuditList'},
             {path: '/cs/merchant/drafts', component: CsMerchantDraftList, name: 'CsMerchantDraftList'},
             {path: '/cs/merchant/detail', component: CsMerchantDetail, name: 'CsMerchantDetail'},
         ]

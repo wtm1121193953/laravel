@@ -450,6 +450,7 @@ class OrderService extends BaseService
                 if ($order->pay_target_type != Order::PAY_TARGET_TYPE_OPER ) {
                     $platform_trade_record = new PlatformTradeRecord();
                     $platform_trade_record->type = PlatformTradeRecord::TYPE_PAY;
+                    $platform_trade_record->merchant_type = $order->merchant_type;
                     $platform_trade_record->pay_id = 1;
                     $platform_trade_record->trade_amount = $totalFee;
                     $platform_trade_record->trade_time = $payTime;

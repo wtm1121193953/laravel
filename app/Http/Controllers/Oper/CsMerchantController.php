@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Oper;
 
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
-use App\Exports\OperMerchantExport;
+use App\Exports\OperCsMerchantExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Bizer\BizerService;
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAccountService;
-use App\Modules\Merchant\MerchantAuditService;
+use App\Modules\Cs\CsMerchantAuditService;
 use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Cs\CsMerchantService;
 use App\Modules\Oper\Oper;
@@ -100,23 +100,7 @@ class CsMerchantController extends Controller
 
         $list = $query->get();
 
-        /*$isPayToPlatform = $this->isPayToPlatform();
-        foreach ($list as $key){
-            if($isPayToPlatform){
-                $key->settlement_cycle_type = 7;//运营中心切换到平台，显示为未知
-            }else{
-                $key->settlement_cycle_type = 1;//运营中心切未换到平台，显示为周结
-            }
-
-        }*/
-
-        if(request('isPilot')){
-            $downloadName = '试点商户列表';
-        }else{
-            $downloadName = '我的商户列表';
-        }
-
-        return (new OperMerchantExport($list,request('isPilot')))->download($downloadName.'.xlsx');
+        return (new OperCsMerchantExport($list,request('isPilot')))->download('我的超市商户列表.xlsx');
 
     }
 
@@ -168,7 +152,6 @@ class CsMerchantController extends Controller
     {
         $validate = [
             'name' => 'required|max:50',
-            //'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
         if (request('is_pilot') !== CsMerchant::PILOT_MERCHANT){
@@ -202,7 +185,7 @@ class CsMerchantController extends Controller
             //'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
-        if (request('is_pilot') !== Merchant::PILOT_MERCHANT){
+        if (request('is_pilot') !== CsMerchant::PILOT_MERCHANT){
             $validate = array_merge($validate, [
                 'business_licence_pic_url' => 'required',
                 'organization_code' => 'required',
@@ -332,7 +315,7 @@ class CsMerchantController extends Controller
 
     public function getAuditList()
     {
-        $data = MerchantAuditService::getAuditResultList(['oper_id' => request()->get('current_user')->oper_id]);
+        $data = CsMerchantAuditService::getAuditResultList(['oper_id' => request()->get('current_user')->oper_id]);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),

@@ -68,6 +68,11 @@
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="merchant.id" label="商户ID"  width="100px" />
             <el-table-column prop="merchant.name" label="商户名称"  width="160px" />
+            <el-table-column prop="merchant.merchant_type" label="商户类型"  width="160px" >
+                <template slot-scope="scope">
+                    <span>{{ {1: '普通', 2: '超市'}[scope.row.merchant_type] }}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="oper.name" size="mini" label="运营中心"/>
             <el-table-column prop="settlement_cycle_type" label="结算周期">
                 <template slot-scope="scope">

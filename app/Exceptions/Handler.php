@@ -76,6 +76,10 @@ class Handler extends ExceptionHandler
             if($exception instanceof NotFoundHttpException){
                 return redirect('/merchant?_from=' . urlencode(substr($request->getRequestUri(), 9)));
             }
+        }else if($request->is('cs/*')){
+            if($exception instanceof NotFoundHttpException){
+                return redirect('/cs?_from=' . urlencode(substr($request->getRequestUri(), 3)));
+            }
         }else if($request->is('merchant-h5/*')){
             if($exception instanceof NotFoundHttpException){
                 return redirect('/merchant-h5');

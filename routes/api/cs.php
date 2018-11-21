@@ -6,6 +6,22 @@
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('cs')
+    ->namespace('Merchant')
+    ->middleware('merchant')->group(function (){
+
+        Route::post('login', 'SelfController@login');
+        Route::post('logout', 'SelfController@logout');
+        Route::post('self/modifyPassword', 'SelfController@modifyPassword');
+        Route::get('self/getMerchantInfo', 'SelfController@getMerchantInfo');
+        Route::get('self/menus', 'SelfController@getMenus');
+        Route::get('self/checkElectronicContract', 'SelfController@checkElectronicContract');
+        Route::get('self/getMerchantAndElectronicContract', 'SelfController@getMerchantAndElectronicContract');
+        Route::post('self/signElectronicContract', 'SelfController@signElectronicContract');
+        Route::get('self/showElectronicContract', 'SelfController@showElectronicContract');
+
+    });
+
+Route::prefix('cs')
     ->namespace('Cs')
     ->middleware('merchant')->group(function (){
 
@@ -17,16 +33,6 @@ Route::prefix('cs')
         Route::post('goods/changeStatus', 'GoodsController@changeStatus');
         Route::post('goods/del', 'GoodsController@del');
         Route::post('goods/saveOrder', 'GoodsController@saveOrder');
-
-        Route::post('login', 'SelfController@login');
-        Route::post('logout', 'SelfController@logout');
-        Route::post('self/modifyPassword', 'SelfController@modifyPassword');
-        Route::get('self/getMerchantInfo', 'SelfController@getMerchantInfo');
-        Route::get('self/menus', 'SelfController@getMenus');
-        Route::get('self/checkElectronicContract', 'SelfController@checkElectronicContract');
-        Route::get('self/getMerchantAndElectronicContract', 'SelfController@getMerchantAndElectronicContract');
-        Route::post('self/signElectronicContract', 'SelfController@signElectronicContract');
-        Route::get('self/showElectronicContract', 'SelfController@showElectronicContract');
 
         Route::get('inviteChannel/inviteQrcode', 'InviteChannelController@getInviteQrcode');
         Route::get('inviteChannel/downloadInviteQrcode', 'InviteChannelController@downloadInviteQrcode');

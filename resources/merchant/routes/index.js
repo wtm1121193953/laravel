@@ -28,8 +28,6 @@ import Setting from '../components/setting/list.vue'
 import TpsBind from '../components/setting/tps-bind.vue'
 import message from './message'
 
-// 大千超市
-import cs from '../cs/routes'
 
 /**
  *
@@ -37,9 +35,6 @@ import cs from '../cs/routes'
 const routes = [
 
     {path: '/login', component: Login, name: 'Login'},
-
-    // 大千超市
-    ...cs,
 
     ...goods,
     ...settlements,

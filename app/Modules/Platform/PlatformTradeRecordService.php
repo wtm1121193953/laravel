@@ -30,6 +30,9 @@ class PlatformTradeRecordService extends BaseService
             ->when($params['merchant_id'],function (Builder $query) use ($params) {
                 $query->where('merchant_id','=',"{$params['merchant_id']}");
             })
+            ->when($params['merchant_type'],function (Builder $query) use ($params) {
+                $query->where('merchant_type',$params['merchant_type']);
+            })
             ->when($params['user_id'],function (Builder $query) use ($params) {
                 $query->whereHas('user',function($q) use ($params) {
                     $q->where('user_id', "{$params['user_id']}");

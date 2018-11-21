@@ -1,5 +1,5 @@
 <template>
-    <page title="商户详情 ">
+    <page title="超市商户详情 ">
         <merchant-detail v-if="merchant" :data="merchant" />
     </page>
 </template>
@@ -17,7 +17,7 @@
         },
         methods: {
             getDetail(){
-                api.get('merchant/detail', {id: this.id,}).then(data => {
+                api.get('cs/merchant/detail', {id: this.id,}).then(data => {
                     this.merchant = data;
                 });
             }
