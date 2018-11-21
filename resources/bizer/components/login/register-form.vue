@@ -1,38 +1,40 @@
 <template>
-    <div class="login-form form-label-noBefore" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
-        <div class="login-link">
-            <el-button type="text" @click="goLogin">已有帐号，立即登录</el-button>
-        </div>
+    <div class="login-panel">
         <div class="login-logo">
             <span>{{projectName}} - {{systemName}}</span>
         </div>
-        <el-form :model="form" :rules="formRules" ref="form"
-                 @keyup.native.enter="doLogin"
-                 label-position="right"
-                 label-width="98px">
-            <el-form-item label="帐号" prop="mobile" ref="mobile">
-                <el-input type="text" v-model="form.mobile" auto-complete="off" placeholder="请输入手机号"/>
-            </el-form-item>
-            <el-form-item label="验证码" prop="verify_code">
-                <el-input type="text" v-model="form.verify_code" auto-complete="off" class="w-150"
-                          placeholder="请输入验证码" maxlength="4"/>
-                <el-button type="primary" class="fr" style="width:132px;" :disabled="buttonCode.isDisabled" @click.native.prevent="sendCode">{{buttonCode.buttonName}}</el-button>
-            </el-form-item>
-            <el-form-item prop="name" label="昵称">
-                <el-input v-model="form.name" maxlength="10" placeholder="请输入昵称"/>
-            </el-form-item>
-            <el-form-item label="设置密码" prop="password">
-                <el-input type="password" v-model="form.password" auto-complete="off" placeholder="请设置6-12位密码，不区分大小写"/>
-            </el-form-item>
-            <el-form-item label="再次输入密码" prop="confirmPassword">
-                <el-input type="password" v-model="form.confirmPassword" auto-complete="off" placeholder="请再次输入密码"/>
-            </el-form-item>
-            <el-form-item label-width="0">
-                <el-button type="primary" style="width:75%; display: block; margin: 0 auto;" v-loading="loading" :disabled="loading"
-                           @click.native.prevent="doLogin">立即注册
-                </el-button>
-            </el-form-item>
-        </el-form>
+        <div class="login-form form-label-noBefore" v-show="showLogin" v-loading="autoLoginLoading" element-loading-text="自动登录中...">
+            <div class="login-link">
+                <el-button type="text" @click="goLogin">已有帐号，立即登录</el-button>
+            </div>
+            <el-form :model="form" :rules="formRules" ref="form"
+                     @keyup.native.enter="doLogin"
+                     label-position="right"
+                     label-width="98px">
+                <el-form-item label="帐号" prop="mobile" ref="mobile">
+                    <el-input type="text" v-model="form.mobile" auto-complete="off" placeholder="请输入手机号"/>
+                </el-form-item>
+                <el-form-item label="验证码" prop="verify_code">
+                    <el-input type="text" v-model="form.verify_code" auto-complete="off" class="w-150"
+                              placeholder="请输入验证码" maxlength="4"/>
+                    <el-button type="primary" class="fr" style="width:132px;" :disabled="buttonCode.isDisabled" @click.native.prevent="sendCode">{{buttonCode.buttonName}}</el-button>
+                </el-form-item>
+                <el-form-item prop="name" label="昵称">
+                    <el-input v-model="form.name" maxlength="10" placeholder="请输入昵称"/>
+                </el-form-item>
+                <el-form-item label="设置密码" prop="password">
+                    <el-input type="password" v-model="form.password" auto-complete="off" placeholder="请设置6-12位密码，不区分大小写"/>
+                </el-form-item>
+                <el-form-item label="再次输入密码" prop="confirmPassword">
+                    <el-input type="password" v-model="form.confirmPassword" auto-complete="off" placeholder="请再次输入密码"/>
+                </el-form-item>
+                <el-form-item label-width="0">
+                    <el-button type="primary" style="width:75%; display: block; margin: 0 auto;" v-loading="loading" :disabled="loading"
+                               @click.native.prevent="doLogin">立即注册
+                    </el-button>
+                </el-form-item>
+            </el-form>
+        </div>
     </div>
 </template>
 
@@ -177,22 +179,13 @@
 </script>
 <style lang="less" scoped>
 
-    .login-form {
+    .login-panel {
         position: absolute;
         top: 50%;
-        left: 50%;
-        margin: -230px 0 0 -225px;
-        width: 400px;
-        padding: 25px;
-        box-shadow: 0 0 100px rgba(0,0,0,.08);
-        background-color: #fff;
-        border-radius: 4px;
-        z-index: 3;
-        .login-link {
-            text-align: right;
-            color: #eee;
-            margin: -10px 0 10px;
-        }
+        left: 70%;
+        margin: -280px 0 0 -200px;
+        width: 360px;
+        height: 400px;
         .login-logo {
             text-align: center;
             height: 40px;
@@ -205,10 +198,26 @@
             }
             span {
                 vertical-align: text-bottom;
-                font-size: 16px;
+                font-size: 32px;
                 text-transform: uppercase;
                 display: inline-block;
+                color: #fff;
             }
+        }
+
+    }
+    .login-form {
+        width: 400px;
+        height: 390px;
+        padding: 45px 25px 25px;
+        box-shadow: 0 0 100px rgba(0,0,0,.08);
+        background-color: #fff;
+        border-radius: 4px;
+        z-index: 3;
+        .login-link {
+            text-align: right;
+            color: #eee;
+            margin: -10px 0 10px;
         }
         .el-form-item:last-child {
             margin-bottom: 0;
