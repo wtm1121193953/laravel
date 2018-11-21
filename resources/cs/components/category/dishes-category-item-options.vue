@@ -3,17 +3,8 @@
     <div>
         <el-button type="text" :disabled="isFirst" @click="saveOrder(scope.row, 'up')">上移</el-button>
         <el-button type="text" :disabled="isLast" @click="saveOrder(scope.row, 'down')">下移</el-button>
-        <el-button type="text" @click="edit">编辑</el-button>
-        <el-button type="text" @click="changeStatus">{{parseInt(scope.row.status) === 1 ? '禁用' : '启用'}}</el-button>
-        <el-button type="text" @click="del">删除</el-button>
-
-        <el-dialog title="编辑分类信息" :visible.sync="isEdit" @close="dialogClose" width="25%">
-            <dishes-category-form
-                    ref="form"
-                    :data="scope.row"
-                    @cancel="isEdit = false"
-                    @save="doEdit"/>
-        </el-dialog>
+        <el-button type="text" @click="changeStatus">{{parseInt(scope.row.status) === 1 ? '下架' : '上架'}}</el-button>
+        <el-button type="text" @click="edit">查看子分类</el-button>
     </div>
 </template>
 
@@ -50,11 +41,9 @@
                 })
             },
             changeStatus(){
-                let status = this.scope.row.status === 1 ? 2 : 1;
                 this.$emit('before-request')
-                api.post('/dishes/category/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
-                    this.scope.row.status = status;
-                    this.$emit('change', this.scope.$index, data)
+                api.post('/category/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
+                    this.scope.row.status = data;
                 }).finally(() => {
                     this.$emit('after-request')
                 })

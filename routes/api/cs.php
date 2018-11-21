@@ -25,6 +25,9 @@ Route::prefix('cs')
     ->namespace('Cs')
     ->middleware('merchant')->group(function (){
 
+        Route::get('/categories', 'CategoryController@getList');
+        Route::post('/category/changeStatus', 'CategoryController@changeStatus');
+
         Route::get('goods', 'GoodsController@getList');
         Route::get('sub_cat', 'GoodsController@getSubCat');
         Route::get('goods/detail', 'GoodsController@detail');

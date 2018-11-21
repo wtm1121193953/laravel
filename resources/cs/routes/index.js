@@ -6,7 +6,7 @@ import welcome from '../components/welcome.vue'
 
 import goods from './goods'
 import settlements from './settlements'
-import dishesCategory from './dishesCategory'
+import categoryList from '../components/category/list'
 import dishesGoods from './dishesGoods'
 import wallet from './wallet'
 
@@ -37,10 +37,18 @@ const routes = [
 
     ...goods,
     ...settlements,
-    ...dishesCategory,
     ...dishesGoods,
     ...wallet,
     ...message,
+
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: '/categories', component: categoryList, name: 'categoryList'},
+        ]
+    },
+
     // 我的用户
     {
         path: '/',
