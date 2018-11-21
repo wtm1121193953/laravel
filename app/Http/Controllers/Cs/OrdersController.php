@@ -2,44 +2,61 @@
 
 namespace App\Http\Controllers\Cs;
 
-use App\Exports\MerchantOrderExport;
 use App\Http\Controllers\Controller;
-use App\Modules\Dishes\DishesItem;
-use App\Modules\Merchant\Merchant;
+use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
-use App\Modules\Payment\Payment;
 use App\Result;
 
 class OrdersController extends Controller
 {
-    public function getList()
+    private static function getListQuery($withQuery = false)
     {
-        $keyword = request('keyword');
-        $orderNo = request('orderNo');
-        $notifyMobile = request('notifyMobile');
         $merchantId = request()->get('current_user')->merchant_id;
-        $createdAt = request('createdAt');
-        $type = request('type');
+        $orderNo = request('orderNo');
+        $mobile = request('mobile');
+        $timeType = request('timeType', 'payTime');
+        $startTime = request('startTime');
+        $endTime = request('endTime');
         $status = request('status');
-        $goodsName = request('goodsName');
-        if(count($createdAt) > 1){
-            $startCreatedAt = $createdAt[0] . ' 00:00:00';
-            $endCreatedAt = $createdAt[1] . ' 23:59:59';
+        $type = request('type');
+        $merchantType = request('merchantType', Order::MERCHANT_TYPE_SUPERMARKET);
+
+        if($timeType == 'payTime'){
+            $startPayTime = $startTime;
+            $endPayTime = $endTime;
+        } elseif ($timeType == 'createdTime') {
+            $startCreatedTime = $startTime;
+            $endCreatedTime = $endTime;
         }else {
-            $startCreatedAt = $endCreatedAt = null;
+            $startFinishTime = $startTime;
+            $endFinishTime = $endTime;
         }
+
         $data = OrderService::getList([
             'merchantId' => $merchantId,
             'orderNo' => $orderNo,
-            'notifyMobile' => $notifyMobile,
-            'keyword' => $keyword,
-            'type' => $type,
+            'notifyMobile' => $mobile,
+            'startPayTime' => $startPayTime ?? null,
+            'endPayTime' => $endPayTime ?? null,
+            'startFinishTime' => $startFinishTime ?? null,
+            'endFinishTime' => $endFinishTime ?? null,
+            'startCreatedAt' => $startCreatedTime ?? null,
+            'endCreatedAt' => $endCreatedTime ?? null,
             'status' => $status,
-            'goodsName' => $goodsName,
-            'getWithQuery' => false,
-            'startCreatedAt' => $startCreatedAt,
-            'endCreatedAt' => $endCreatedAt,
-        ]);
+            'type' => $type,
+            'merchantType' => $merchantType,
+        ], $withQuery);
+
+        return $data;
+    }
+
+    /**
+     * 获取超市订单列表
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getList()
+    {
+        $data = self::getListQuery();
 
         return Result::success([
             'list' => $data->items(),
@@ -47,46 +64,53 @@ class OrdersController extends Controller
         ]);
     }
 
+    /**
+     * 导出超市订单列表
+     */
     public function export()
     {
+        $query = self::getListQuery(true);
 
-        $keyword = request('keyword');
-        $orderNo = request('orderNo');
-        $notifyMobile = request('notifyMobile');
-        $merchantId = request()->get('current_user')->merchant_id;
-        $createdAt = explode(',',request('createdAt', ''));
-        $type = request('type');
-        $status = request('status');
-        $goodsName = request('goodsName');
-        if(count($createdAt) > 1){
-            $startCreatedAt = $createdAt[0] . ' 00:00:00';
-            $endCreatedAt = $createdAt[1] . ' 23:59:59';
-        }else {
-            $startCreatedAt = $endCreatedAt = null;
+        $fileName = '超市订单列表';
+        header('Content-Type: application/vnd.ms-execl');
+        header('Content-Disposition: attachment;filename="' . $fileName . '.csv"');
+
+        $fp = fopen('php://output', 'a');
+        $title = ['支付时间', '订单号', '历时', '订单类型', '商品名称', '总价（元）', '手机号码', '订单状态', '发货方式', '商户名称'];
+        foreach ($title as $key => $value) {
+            $title[$key] = iconv('UTF-8', 'GBK', $value);
         }
+        fputcsv($fp, $title);
 
-        $query = OrderService::getList([
-            'merchantId' => $merchantId,
-            'orderNo' => $orderNo,
-            'notifyMobile' => $notifyMobile,
-            'keyword' => $keyword,
-            'createdAt' => $createdAt,
-            'type' => $type,
-            'status' => $status,
-            'goodsName' => $goodsName,
-            'startCreatedAt' => $startCreatedAt,
-            'endCreatedAt' => $endCreatedAt,
-        ], true);
+        $query->chunk(1000, function ($data) use ($fp) {
+            foreach ($data as $key => $value) {
+                $item = [];
 
-        $list = $query->get();
-        $list->each(function($item){
-            if ($item->type == 3){
-                $dishesItems = DishesItem::where('dishes_id', $item->dishes_id)->get();
-                $item->dishes_items = $dishesItems;
+                $item['pay_time'] = $value['pay_time'];
+                $item['order_no'] = $value['order_no'];
+                if (in_array($value['status'], [Order::STATUS_UNDELIVERED, Order::STATUS_NOT_TAKE_BY_SELF, Order::STATUS_DELIVERED])) {
+                    $item['take_time'] = date('H时i分', time() - strtotime($value['pay_time']));
+                } elseif ($value['status'] == Order::STATUS_FINISHED) {
+                    $item['take_time'] = date('H时i分', time() - strtotime($value['pay_time']));
+                } elseif ($value['status'] == Order::STATUS_REFUNDED) {
+                    $item['take_time'] = date('H时i分', time() - strtotime($value['pay_time']));
+                }
+                $item['type'] = Order::getTypeText($value['type']);
+                $item['goods_name'] = Order::getGoodsNameText($value['type'], $value['csOrderGoods'], $value['goods_name']);
+                $item['pay_price'] = $value['pay_price'];
+                $item['notify_mobile'] = $value['notify_mobile'];
+                $item['status'] = Order::getStatusText($value['status']);
+                $item['deliver_type'] = Order::getDeliverTypeText($value['deliver_type']);
+                $item['merchant_name'] = $value['merchant_name'];
+
+                foreach ($item as $k => $v) {
+                    $item[$k] = iconv('UTF-8', 'GBK', $v);
+                }
+                fputcsv($fp, $item);
             }
+            ob_flush();
+            flush();
         });
-
-        return (new MerchantOrderExport($list))->download('商户中心订单管理列表.xlsx');
     }
 
     public function verification()
@@ -97,6 +121,30 @@ class OrdersController extends Controller
         $order = OrderService::verifyOrder($merchantId, $verify_code);
 
         return Result::success($order);
+    }
+
+    /**
+     * 获取待发货 待自提 的总数
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getOrderFieldStatistics()
+    {
+        $undeliveredNum = OrderService::getList([
+            'merchantId' => request()->get('current_user')->merchantId,
+            'status' => Order::STATUS_UNDELIVERED,
+            'merchantType' => Order::MERCHANT_TYPE_SUPERMARKET,
+        ], true)->count();
+
+        $notTakeBySelfNum = OrderService::getList([
+            'merchantId' => request()->get('current_user')->merchantId,
+            'status' => Order::STATUS_NOT_TAKE_BY_SELF,
+            'merchantType' => Order::MERCHANT_TYPE_SUPERMARKET,
+        ], true)->count();
+
+        return Result::success([
+            'undeliveredNum' => $undeliveredNum,
+            'notTakeBySelfNum' => $notTakeBySelfNum,
+        ]);
     }
 
 }

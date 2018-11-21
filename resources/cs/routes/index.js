@@ -17,7 +17,7 @@ import PayQrcode from '../components/pay-qrcode'
 import InviteStatisticsList from '../components/invite-statistics/list'
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
-import OrdersList from '../components/orders/list.vue'
+import OrdersList from '../components/orders/tabs'
 
 //电子合同管理
 import ElectronicContract from '../components/electronic-contract/form'

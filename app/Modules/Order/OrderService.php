@@ -12,6 +12,7 @@ namespace App\Modules\Order;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Jobs\OrderPaidJob;
+use App\Modules\Cs\CsMerchant;
 use App\Modules\Dishes\DishesGoods;
 use App\Jobs\OrderFinishedJob;
 use App\Modules\Dishes\DishesItem;
@@ -52,7 +53,7 @@ class OrderService extends BaseService
         $notifyMobile = array_get($params, 'notifyMobile');
         $keyword = array_get($params, 'keyword');
         $type = array_get($params, 'type');
-        $merchantType = array_get($params, 'merchantType', 1);
+        $merchantType = array_get($params, 'merchantType', Order::MERCHANT_TYPE_NORMAL);
         $status = array_get($params, 'status');
         $goodsName = array_get($params, 'goodsName');
         $startCreatedAt = array_get($params, 'startCreatedAt');
@@ -169,10 +170,16 @@ class OrderService extends BaseService
         $data = $query->paginate();
 
         $merchantIds = $data->pluck('merchant_id');
-        $merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
+        if ($merchantType == Order::MERCHANT_TYPE_NORMAL) {
+            $merchants = Merchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
+        } elseif ($merchantType == Order::MERCHANT_TYPE_SUPERMARKET) {
+            $merchants = CsMerchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
+        } else {
+            throw new BaseResponseException('merchant_type 订单类型错误');
+        }
         $payments = Payment::getAllType();
         foreach ($data as $key => $item) {
-            $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : '';
+            $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : $item->merchant_name;
             $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
             $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
 

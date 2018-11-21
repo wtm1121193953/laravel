@@ -23,14 +23,13 @@
                     <el-option label="已退款" value="6"/>
                 </el-select>
             </el-form-item>
-            <el-form-item label="下单时间">
+            <el-form-item label="支付时间">
                 <el-date-picker
                         class="w-150"
                         v-model="query.startTime"
                         type="date"
                         placeholder="开始日期"
                         value-format="yyyy-MM-dd 00:00:00"
-
                 />
                 -
                 <el-date-picker
@@ -39,6 +38,7 @@
                         type="date"
                         placeholder="结束日期"
                         value-format="yyyy-MM-dd 23:59:59"
+                        :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(query.startTime)}}"
                 />
             </el-form-item>
             <el-form-item>
@@ -166,7 +166,7 @@
                     orderNo: '',
                     mobile: '',
                     merchantId: '',
-                    timeType: 'createdTime',
+                    timeType: 'payTime',
                     startTime: '',
                     endTime: '',
                     status: '',
