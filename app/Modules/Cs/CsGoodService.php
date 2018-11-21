@@ -8,6 +8,8 @@
 namespace App\Modules\Cs;
 
 use App\BaseService;
+use App\Exceptions\BaseResponseException;
+use App\Modules\Goods\Goods;
 use Illuminate\Database\Eloquent\Builder;
 
 class CsGoodService extends BaseService
@@ -45,5 +47,53 @@ class CsGoodService extends BaseService
 
             return $data;
         }
+    }
+
+
+    public static function changeStatus(int $id, int $cs_merchant_id)
+    {
+        if ($id<0 || $cs_merchant_id<0) {
+            throw new BaseResponseException('参数错误1');
+        }
+
+        $goods = CsGood::findOrFail($id);
+        if ($goods->cs_merchant_id != $cs_merchant_id) {
+            throw new BaseResponseException('参数错误2');
+        }
+
+        if ($goods->audit_status != CsGood::AUDIT_STATUS_SUCCESS) {
+            throw new BaseResponseException('商品未审核通过');
+        }
+
+        $goods->status = $goods->status == CsGood::STATUS_ON?CsGood::STATUS_OFF:CsGood::STATUS_ON;
+
+        $rs = $goods->save();
+        if ($rs) {
+            return $goods->status;
+        }
+
+    }
+
+    public static function del(int $id, int $cs_merchant_id)
+    {
+        if ($id<0 || $cs_merchant_id<0) {
+            throw new BaseResponseException('参数错误1');
+        }
+
+        $goods = CsGood::findOrFail($id);
+        if ($goods->cs_merchant_id != $cs_merchant_id) {
+            throw new BaseResponseException('参数错误2');
+        }
+
+        return $goods->delete();
+    }
+
+    public static function detail(int $id, int $cs_merchant_id)
+    {
+        $goods = CsGood::findOrFail($id);
+        if ($goods->cs_merchant_id != $cs_merchant_id) {
+            throw new BaseResponseException('参数错误2');
+        }
+        return $goods;
     }
 }
