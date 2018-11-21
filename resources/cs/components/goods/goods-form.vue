@@ -5,16 +5,32 @@
                 <el-form-item prop="goods_name" label="商品名称">
                     <el-input v-model="form.goods_name"/>
                 </el-form-item>
-                <el-form-item prop="categoryOptions" label="分类">
-                    <el-cascader
-                            :options="form.categoryOptions"
-                            :props="{
-                            value: 'id',
-                            label: 'name',
-                            children: 'sub',
-                        }"
-                            v-model="form.categoryOptions">
-                    </el-cascader>
+                <el-form-item label="一级分类" prop="cs_platform_cat_id_level1">
+                    <template>
+                        <el-select v-model="form.cs_platform_cat_id_level1" placeholder="请选择" @change="getLevel2()">
+                            <el-option
+                                    v-for="item in cs_platform_cat_id_level1"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </template>
+
+                </el-form-item>
+
+                <el-form-item label="二级分类" prop="cs_platform_cat_id_level2">
+                    <template>
+                        <el-select v-model="form.cs_platform_cat_id_level2" placeholder="请选择">
+                            <el-option
+                                    v-for="item in cs_platform_cat_id_level2"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </template>
+
                 </el-form-item>
                 <el-form-item prop="market_price" label="市场价">
                     <el-input-number v-model="form.market_price" :min="0"/>
@@ -34,8 +50,8 @@
                     <image-upload  v-model="form.detail_imgs" :limit="6"/>
                     <div>图片尺寸: 750 px * 750 px</div>
                 </el-form-item>
-                <el-form-item prop="desc" label="商品简介">
-                    <el-input v-model="form.desc" :autosize="{minRows: 2}" type="textarea"/>
+                <el-form-item prop="summary" label="商品简介">
+                    <el-input v-model="form.summary" :autosize="{minRows: 2}" type="textarea"/>
                 </el-form-item>
                 <el-form-item prop="pic_list" label="其他证书1">
                     <image-upload  v-model="form.certificate1" :limit="6"/>
@@ -59,14 +75,17 @@
 
 </template>
 <script>
+    import api from '../../../assets/js/api'
     let defaultForm = {
         goods_name: '',
+        cs_platform_cat_id_level1: '',
+        cs_platform_cat_id_level2: '',
         market_price: 0,
         price: 0,
         stock: 0,
         detail_imgs: [],
         logo: '',
-        desc: '',
+        summary: '',
         certificate1:[],
         certificate2:[],
         certificate3:[],
@@ -97,10 +116,18 @@
             };
             return {
                 form: deepCopy(defaultForm),
+                cs_platform_cat_id_level1:[],
+                cs_platform_cat_id_level2:[],
                 formRules: {
                     goods_name: [
                         {required: true, message: '商品名称不能为空'},
                         {max: 30, message: '商品名称不能超过30个字'}
+                    ],
+                    cs_platform_cat_id_level1: [
+                        {required: true, message: '一级分类不能为空'},
+                    ],
+                    cs_platform_cat_id_level2: [
+                        {required: true, message: '二级分类不能为空'},
                     ],
                     market_price: [
                         {required: true, message: '市场价不能为空'},
@@ -109,6 +136,9 @@
                     price: [
                         {required: true, message: '销售价不能为空'},
                         {validator: validatePrice, trigger: 'blur'}
+                    ],
+                    summary: [
+                        {required: true, message: '简介不能为空'}
                     ],
                     logo: [
                         {required: true, message: '缩略图不能为空'}
@@ -126,6 +156,22 @@
                 }else {
                     this.form = deepCopy(defaultForm)
                 }
+            },
+            getLevel1() {
+                api.get('/sub_cat', {parent_id:0}).then(data => {
+
+                    this.cs_platform_cat_id_level1 = data;
+                })
+            },
+            getLevel2() {
+                if (this.form.cs_platform_cat_id_level1 == 0) {
+                    return true;
+
+                }
+                api.get('/sub_cat', {parent_id:this.form.cs_platform_cat_id_level1}).then(data => {
+
+                    this.cs_platform_cat_id_level2 = data;
+                })
             },
             resetForm(){
                 this.$refs.form.resetFields();
@@ -150,6 +196,10 @@
         },
         created(){
             this.initForm();
+            this.getLevel1();
+            if (this.form.cs_platform_cat_id_level2 !=0) {
+                this.getLevel2();
+            }
         },
         watch: {
             data(){

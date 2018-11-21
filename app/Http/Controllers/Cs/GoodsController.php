@@ -81,14 +81,16 @@ class GoodsController extends Controller
             'goods_name' => 'required',
             'market_price' => 'required',
             'price' => 'required',
+            'cs_platform_cat_id_level1' => 'required',
+            'cs_platform_cat_id_level2' => 'required',
         ]);
 
 
         $cs_goods = new CsGood();
         $cs_goods->goods_name = $request->goods_name;
         $cs_goods->cs_merchant_id = 1000000000;
-        $cs_goods->cs_platform_cat_id_level1 = 1;
-        $cs_goods->cs_platform_cat_id_level2 = 3;
+        $cs_goods->cs_platform_cat_id_level1 = $request->cs_platform_cat_id_level1;
+        $cs_goods->cs_platform_cat_id_level2 = $request->cs_platform_cat_id_level2;
         $cs_goods->market_price = $request->market_price;
         $cs_goods->price = $request->price;
         $cs_goods->stock = $request->stock;
@@ -121,6 +123,8 @@ class GoodsController extends Controller
             'goods_name' => 'required',
             'market_price' => 'required',
             'price' => 'required',
+            'cs_platform_cat_id_level1' => 'required',
+            'cs_platform_cat_id_level2' => 'required',
         ]);
         $id = $request->id;
         //$cs_merchant_id = request()->get('current_user')->merchant_id;
@@ -132,8 +136,8 @@ class GoodsController extends Controller
 
         $cs_goods->goods_name = $request->goods_name;
         $cs_goods->cs_merchant_id = 1000000000;
-        $cs_goods->cs_platform_cat_id_level1 = 1;
-        $cs_goods->cs_platform_cat_id_level2 = 3;
+        $cs_goods->cs_platform_cat_id_level1 = $request->cs_platform_cat_id_level1;
+        $cs_goods->cs_platform_cat_id_level2 = $request->cs_platform_cat_id_level2;
         $cs_goods->market_price = $request->market_price;
         $cs_goods->price = $request->price;
         $cs_goods->stock = $request->stock;
