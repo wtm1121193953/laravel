@@ -53,7 +53,15 @@ Vue.component(ImageUpload.name, ImageUpload)
 import quillEditorPlugin from './quill-editor-plugin'
 Vue.use(quillEditorPlugin.VueQuillEditor, quillEditorPlugin.globalOptions)
 
-window.baseApiUrl = '/api/cs/'
+// 根据商户类型, 初始化接口根地址
+// window.baseApiUrl = '/api/merchant/'
+console.log(store.state.user)
+if(store.state.user && store.state.user.type == 2){
+    window.baseApiUrl = '/api/cs/'
+}else {
+    window.baseApiUrl = '/api/merchant/'
+}
+
 import api from '../assets/js/api'
 window.api = api;
 Vue.prototype.$api = api;

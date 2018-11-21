@@ -110,7 +110,7 @@
 
 <script>
     import api from '../../assets/js/api'
-    import THREE from '../../assets/js/three/three';
+    // import THREE from '../../assets/js/three/three';
     import {mapState} from 'vuex'
     export default {
         data(){
