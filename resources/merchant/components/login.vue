@@ -173,14 +173,19 @@
                         api.post('/login', this.form).then(data => {
                             if(data.user.type == 2){
                                 window.Lockr.prefix = 'cs_'
+                                store.dispatch('storeUserInfo', data);
+                                store.dispatch('setLoginUserName', this.rememberUsername ? this.form.username : '');
                                 setTimeout(function(){
                                     location.href = '/cs/'
                                 }, 500)
-                            }
-                            store.dispatch('storeUserInfo', data);
-                            store.dispatch('setLoginUserName', this.rememberUsername ? this.form.username : '');
-                            if(data.user.type == 1){
+                                Lockr.rm('merchant_userMenuList', {noPrefix: true})
+                                Lockr.rm('merchant_userInfo', {noPrefix: true})
+                            } else if(data.user.type == 1){
+                                store.dispatch('storeUserInfo', data);
+                                store.dispatch('setLoginUserName', this.rememberUsername ? this.form.username : '');
                                 _self.getNormalMerchantElectronicContractConfig();
+                                Lockr.rm('cs_userMenuList', {noPrefix: true})
+                                Lockr.rm('cs_userInfo', {noPrefix: true})
                             }
                         }).catch(() => {
                             _self.refreshVerify();

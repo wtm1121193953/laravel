@@ -274,7 +274,11 @@
 
             getMenus(){
                 api.get('/self/menus').then(data => {
-                    store.dispatch('storeUserInfo', data);
+                    if(data.user && data.user.type == 2){
+                        location.href = '/cs/'
+                    }else {
+                        store.dispatch('storeUserInfo', data);
+                    }
                 });
             },
 

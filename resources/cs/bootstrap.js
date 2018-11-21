@@ -34,8 +34,12 @@ window.Lockr = Lockr
 Lockr.prefix = 'cs_'
 // 修复Lockr的rm方法没有使用前缀的bug
 let Lockrm = Lockr.rm;
-Lockr.rm = function(key){
-    Lockrm(Lockr.prefix + key)
+Lockr.rm = function(key, options){
+    let rmkey = Lockr.prefix + key
+    if(options && options.noPrefix){
+        rmkey = key;
+    }
+    Lockrm(rmkey)
 }
 
 // Date对象追加格式化方法

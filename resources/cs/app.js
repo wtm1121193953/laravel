@@ -9,6 +9,9 @@ window.Vue = Vue;
 
 import store from './store'
 window.store = store;
+if(store.state.user && store.state.user.type == 1){
+    location.href = '/merchant/'
+}
 
 import routes from './routes/index'
 import VueRouter from 'vue-router'
