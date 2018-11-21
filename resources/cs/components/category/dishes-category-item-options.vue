@@ -60,7 +60,7 @@
                 })
             },
             saveOrder(row, type) {
-                api.post('/dishes/category/saveOrder', {id: row.id, type: type}).then(() => {
+                api.post('/category/changeSort', {platform_category_id: row.platform_category_id, type: type}).then(() => {
                     this.$emit('refresh');
                 })
             },

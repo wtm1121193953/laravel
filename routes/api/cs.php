@@ -27,6 +27,7 @@ Route::prefix('cs')
 
         Route::get('/categories', 'CategoryController@getList');
         Route::post('/category/changeStatus', 'CategoryController@changeStatus');
+        Route::post('/category/changeSort', 'CategoryController@changeSort');
 
         Route::get('goods', 'GoodsController@getList');
         Route::get('sub_cat', 'GoodsController@getSubCat');
