@@ -57,18 +57,48 @@ class CsMerchantCategoryService extends BaseService
 
         foreach ($platform_cat as $cat) {
 
-            $where['cs_merchant_id'] = $cs_merchant_id;
-            $where['platform_category_id'] = $cat['id'];
+            $cat = CsMerchantCategory::where('cs_merchant_id',$cs_merchant_id)
+                ->where('platform_category_id',$cat['id'])->first();
 
-            $row['cs_merchant_id'] = $cs_merchant_id;
-            $row['platform_category_id'] = $cat['id'];
-            $row['cs_cat_name'] = $cat['cat_name'];
-            $row['cs_category_parent_id'] = $cat['parent_id'];
-            $row['cs_category_level'] = $cat['level'];
+            if ($cat) {
+                $cat->cs_merchant_id = $cs_merchant_id;
+                $cat->platform_category_id =$cat['id'];
+                $cat->cs_cat_name =$cat['cat_name'];
+                $cat->cs_category_parent_id =$cat['parent_id'];
+                $cat->cs_category_level =$cat['level'];
+                $cat->platform_cat_status =$cat['status'];
 
-            CsMerchantCategory::updateOrCreate($where, $row);
+                $cat->save();
+            } else {
+
+                $cat = new CsMerchantCategory();
+
+                $cat->cs_merchant_id = $cs_merchant_id;
+                $cat->platform_category_id =$cat['id'];
+                $cat->cs_cat_name =$cat['cat_name'];
+                $cat->cs_category_parent_id =$cat['parent_id'];
+                $cat->cs_category_level =$cat['level'];
+                $cat->platform_cat_status =$cat['status'];
+                $cat->status = CsMerchantCategory::STATUS_OFF;
+                $cat->sort = self::getMaxSort() + 1;
+                $cat->save();
+            }
+
         }
         return true;
+    }
+
+    /**
+     * 获取商户分类里的最大排序
+     * @param int $cs_merchant_id
+     * @return bool|number
+     */
+    public static function getMaxSort(int $cs_merchant_id)
+    {
+        if ($cs_merchant_id<=0) {
+            return false;
+        }
+        return CsMerchantCategory::where('cs_merchant_id',$cs_merchant_id)->max('sort');
     }
 
     public static function getTree($merchantId){
