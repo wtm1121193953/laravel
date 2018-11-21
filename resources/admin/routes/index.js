@@ -26,6 +26,7 @@ import TradeRecordsDaily from '../components/order/trade_records_daily';
 import SettlementPlatfroms from '../components/settlement/platform.vue'
 
 import AllSettlementPlatfroms from '../components/settlement/all-platform'
+import CsSettlementPlatforms from '../components/settlement/cs-supermarket-platform'
 
 import SettlementPlatfromBatches from '../components/settlementPlatformBatches/list'
 
@@ -84,6 +85,17 @@ const routes = [
         component: Home,
         children: [
             {path: '/settlement/allPlatforms', component: AllSettlementPlatfroms, name: 'AllSettlementPlatfroms'},
+
+        ]
+    },
+
+    // 财务模块--超市商户结算
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: '/settlement/csPlatforms', component: CsSettlementPlatforms, name: 'CsSettlementPlatfroms'},
+
         ]
     },
 

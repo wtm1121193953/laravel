@@ -46,7 +46,6 @@
                 <el-form-item label="结算周期类型" prop="settlement_cycle_type">
                     <el-select v-model="query.settlement_cycle_type" size="small" class="w-150">
                         <el-option label="全部" value=""/>
-                        <el-option label="周结" value="1"/>
                         <el-option label="T+1(自动)" value="3"/>
                         <el-option label="T+1(人工)" value="6"/>
                     </el-select>
@@ -124,7 +123,7 @@
     import SettlementDetail from './platform-detail'
 
     export default {
-        name: "all-settlement-platform",
+        name: "cs-settlement-platform",
         data(){
             return {
                 isShowSettlementDetail: false,
@@ -165,7 +164,7 @@
                 this.tableLoading = true;
                 let params = {};
                 Object.assign(params, this.query);
-                api.get('/settlement/allPlatforms', params).then(data => {
+                api.get('/settlement/csPlatforms', params).then(data => {
                     this.query.page = params.page;
                     this.list = data.list;
                     this.total = data.total;
