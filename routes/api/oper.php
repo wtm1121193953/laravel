@@ -32,6 +32,7 @@ Route::prefix('oper')
 
         Route::get('orders', 'OrderController@getList');
         Route::get('order/export', 'OrderController@export');
+        Route::get('order/cs/export', 'OrderController@csExport');
         Route::get('order/undelivered/num', 'OrderController@getUndeliveredNum');
 
         Route::get('/tps/getBindInfo', 'TpsBindController@getBindInfo');

@@ -137,12 +137,12 @@ class Order extends BaseModel
 
     public static function getTypeText($type)
     {
-        return ['', '团购', '买单','单品'][$type];
+        return ['', '团购', '买单', '单品', '超市'][$type];
     }
 
     public static function getStatusText($status)
     {
-        return ['', '未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成'][$status];
+        return ['', '未支付', '已取消', '已关闭[超时自动关闭]', '已支付', '退款中[保留状态]', '已退款', '已完成', '待发货', '待自提', '已发货'][$status];
     }
 
     public static function getPayTypeText($payType){
@@ -169,15 +169,26 @@ class Order extends BaseModel
         return ['', '安卓', 'iOS', '小程序'][$originAppType];
     }
 
-    public static function getGoodsNameText($type,$dishes_items,$goods_name){
-        if($type == 3 && count($dishes_items) == 1){
-            $goods_name = $dishes_items[0]->dishes_goods_name;
-        }elseif($type == 3 && count($dishes_items) > 1){
-            $goods_name = $dishes_items[0]->dishes_goods_name.'等'.count($dishes_items).'件商品';
-        }elseif ($type == 2){
+    public static function getGoodsNameText($type, $goods_items, $goods_name){
+        if($type == self::TYPE_DISHES && count($goods_items) == 1){
+            $goods_name = $goods_items[0]->dishes_goods_name;
+        }elseif($type == self::TYPE_DISHES && count($goods_items) > 1){
+            $goods_name = $goods_items[0]->dishes_goods_name.'等'.count($goods_items).'件商品';
+        }elseif ($type == self::TYPE_SCAN_QRCODE_PAY){
             $goods_name = '无';
+        }elseif ($type == self::TYPE_SUPERMARKET) {
+            if (count($goods_items) == 1){
+                $goods_name = $goods_items[0]->goods_name;
+            } elseif (count($goods_items) > 1){
+                $goods_name = $goods_items[0]->goods_name.'等'.count($goods_items).'件商品';
+            }
         }
         return $goods_name;
+    }
+
+    public static function getDeliverTypeText($deliver_type)
+    {
+        return ['', '配送', '自提'][$deliver_type];
     }
 
     /**

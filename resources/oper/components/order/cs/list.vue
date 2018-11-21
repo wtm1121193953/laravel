@@ -51,15 +51,15 @@
             </el-form-item>
         </el-form>
         <el-table :data="list" stripe>
-            <el-table-column prop="pay_time" label="支付时间"/>
-            <el-table-column prop="order_no" label="订单号"/>
+            <el-table-column prop="pay_time" width="150" label="支付时间"/>
+            <el-table-column prop="order_no" width="200" label="订单号"/>
             <el-table-column prop="take_time" label="历时"/>
             <el-table-column prop="type" width="80" label="订单类型">
                 <template slot-scope="scope">
                     <span>超市订单</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="goods_name" label="商品名称">
+            <el-table-column prop="goods_name" width="250" label="商品名称">
                 <template slot-scope="scope">
                     <span v-if="scope.row.cs_order_goods.length == 1">
                         {{scope.row.cs_order_goods[0].goods_name}}
@@ -118,17 +118,7 @@
                     <span v-else>无</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="merchant_name" label="商户名称"/>
-            <el-table-column prop="operName" label="运营中心名称"/>
-            <el-table-column prop="pay_type" label="支付方式">
-                <template slot-scope="scope">
-                    <span v-if="parseInt(scope.row.pay_type) === 1">微信</span>
-                    <span v-else-if="parseInt(scope.row.pay_type) === 2">支付宝</span>
-                    <span v-else-if="parseInt(scope.row.pay_type) === 3">融宝</span>
-                    <span v-else-if="parseInt(scope.row.pay_type) === 4">钱包余额</span>
-                    <span v-else>未知 ({{scope.row.pay_type}})</span>
-                </template>
-            </el-table-column>
+            <el-table-column prop="merchant_name" width="250" label="商户名称"/>
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button type="text" @click="">订单详情</el-button>
@@ -188,7 +178,7 @@
                 for (let key in this.query){
                     array.push(key + '=' + this.query[key]);
                 }
-                location.href = '/api/oper/order/export?' + array.join('&');
+                location.href = '/api/oper/order/cs/export?' + array.join('&');
             },
             search(){
                 this.query.page = 1;
