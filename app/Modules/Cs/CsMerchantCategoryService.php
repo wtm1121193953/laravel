@@ -57,31 +57,31 @@ class CsMerchantCategoryService extends BaseService
 
         foreach ($platform_cat as $cat) {
 
-            $cat = CsMerchantCategory::where('cs_merchant_id',$cs_merchant_id)
+            $merchant_cat = CsMerchantCategory::where('cs_merchant_id',$cs_merchant_id)
                 ->where('platform_category_id',$cat['id'])->first();
 
-            if ($cat) {
-                $cat->cs_merchant_id = $cs_merchant_id;
-                $cat->platform_category_id =$cat['id'];
-                $cat->cs_cat_name =$cat['cat_name'];
-                $cat->cs_category_parent_id =$cat['parent_id'];
-                $cat->cs_category_level =$cat['level'];
-                $cat->platform_cat_status =$cat['status'];
+            if ($merchant_cat) {
+                $merchant_cat->cs_merchant_id = $cs_merchant_id;
+                $merchant_cat->platform_category_id =$cat['id'];
+                $merchant_cat->cs_cat_name =$cat['cat_name'];
+                $merchant_cat->cs_category_parent_id =$cat['parent_id'];
+                $merchant_cat->cs_category_level =$cat['level'];
+                $merchant_cat->platform_cat_status =$cat['status'];
 
-                $cat->save();
+                $merchant_cat->save();
             } else {
 
-                $cat = new CsMerchantCategory();
+                $merchant_cat = new CsMerchantCategory();
 
-                $cat->cs_merchant_id = $cs_merchant_id;
-                $cat->platform_category_id =$cat['id'];
-                $cat->cs_cat_name =$cat['cat_name'];
-                $cat->cs_category_parent_id =$cat['parent_id'];
-                $cat->cs_category_level =$cat['level'];
-                $cat->platform_cat_status =$cat['status'];
-                $cat->status = CsMerchantCategory::STATUS_OFF;
-                $cat->sort = self::getMaxSort() + 1;
-                $cat->save();
+                $merchant_cat->cs_merchant_id = $cs_merchant_id;
+                $merchant_cat->platform_category_id =$cat['id'];
+                $merchant_cat->cs_cat_name =$cat['cat_name'];
+                $merchant_cat->cs_category_parent_id =$cat['parent_id'];
+                $merchant_cat->cs_category_level =$cat['level'];
+                $merchant_cat->platform_cat_status =$cat['status'];
+                $merchant_cat->status = CsMerchantCategory::STATUS_OFF;
+                $merchant_cat->sort = self::getMaxSort($cs_merchant_id) + 1;
+                $merchant_cat->save();
             }
 
         }

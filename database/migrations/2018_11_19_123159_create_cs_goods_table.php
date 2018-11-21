@@ -16,8 +16,8 @@ class CreateCsGoodsTable extends Migration
         Schema::create('cs_goods', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('cs_merchant_id')->default(0)->comment('超市商户ID');
-            $table->integer('cs_merchant_cat_id_level1')->default(0)->comment('一级分类ID');
-            $table->integer('cs_merchant_cat_id_level2')->default(0)->comment('二级分类ID');
+            $table->integer('cs_platform_cat_id_level1')->default(0)->comment('平台一级分类ID');
+            $table->integer('cs_platform_cat_id_level2')->default(0)->comment('平台二级分类ID');
             $table->string('goods_name')->default('')->comment('商品名称');
             $table->decimal('market_price')->default(0.00)->comment('市场价');
             $table->decimal('price')->default(0.00)->comment('销售价');

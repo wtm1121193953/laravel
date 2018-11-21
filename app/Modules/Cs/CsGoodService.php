@@ -27,11 +27,11 @@ class CsGoodService extends BaseService
             ->when(!empty($params['goods_name']),function (Builder $query) use ($params){
                 $query->where('goods_name','like', "%{$params['goods_name']}%");
             })
-            ->when(!empty($params['cs_merchant_cat_id_level1']),function (Builder $query) use ($params){
-                $query->where('cs_merchant_cat_id_level1','=', $params['cs_merchant_cat_id_level1']);
+            ->when(!empty($params['cs_platform_cat_id_level1']),function (Builder $query) use ($params){
+                $query->where('cs_platform_cat_id_level1','=', $params['cs_platform_cat_id_level1']);
             })
-            ->when(!empty($params['cs_merchant_cat_id_level2']),function (Builder $query) use ($params){
-                $query->where('cs_merchant_cat_id_level2','=', $params['cs_merchant_cat_id_level2']);
+            ->when(!empty($params['cs_platform_cat_id_level2']),function (Builder $query) use ($params){
+                $query->where('cs_platform_cat_id_level2','=', $params['cs_platform_cat_id_level2']);
             })
         ;
 
@@ -100,10 +100,10 @@ class CsGoodService extends BaseService
         $query = CsGood::where('cs_merchant_id',$merchant_id)
         ->where('audit_status',2);
         if (!empty($secondLevelId)){
-            $query->where('cs_merchant_cat_id_level2',$secondLevelId);
+            $query->where('cs_platform_cat_id_level2',$secondLevelId);
         }
         elseif (!empty($firstLevelId)){
-            $query->where('cs_merchant_cat_id_level1',$firstLevelId);
+            $query->where('cs_platform_cat_id_level1',$firstLevelId);
         }
         if (!empty($isSaleAsc)){
             if ($isSaleAsc == '1'){
