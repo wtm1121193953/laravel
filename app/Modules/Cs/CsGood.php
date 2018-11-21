@@ -35,4 +35,9 @@ class CsGood extends BaseModel
     const AUDIT_STATUS_AUDITING = 1; //审核中
     const AUDIT_STATUS_SUCCESS = 2; //审核通过
     const AUDIT_STATUS_FAIL = 3; //审核不通过
+
+    public function cs_merchant()
+    {
+        return $this->belongsTo(CsMerchant::class);
+    }
 }

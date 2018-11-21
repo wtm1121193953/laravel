@@ -20,6 +20,8 @@ import InviteRecords from '../components/invite-record/list'
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
 import message from './message'
 
+import GoodsList from '../components/cs_goods/list'
+
 //系统设置
 import SettingMappingUser from '../components/setting/mapping-user'
 
@@ -49,6 +51,15 @@ const routes = [
         children: [
             {path: 'orders', component: OrderList, name: 'OrderList'},
             {path: 'cs/orders', component: CsOrderList, name: 'CsOrderList'},
+        ]
+    },
+
+    // 商品模块
+    {
+        path: '/',
+        component: Home,
+        children: [
+            {path: 'cs/goods', component: GoodsList, name: 'GoodsList'},
         ]
     },
 
