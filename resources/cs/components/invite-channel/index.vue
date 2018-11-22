@@ -33,7 +33,7 @@
         },
         methods: {
             download(type){
-                location.href = '/api/merchant/inviteChannel/downloadInviteQrcode?type=' + type +'&rand=' + Math.random();;
+                location.href = '/api/cs/inviteChannel/downloadInviteQrcode?type=' + type +'&rand=' + Math.random();;
             },
             init(){
                 api.get('/inviteChannel/inviteQrcode').then(data => {
