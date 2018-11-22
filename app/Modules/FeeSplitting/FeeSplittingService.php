@@ -448,6 +448,32 @@ class FeeSplittingService extends BaseService
     }
 
     /**
+     * 获取用户自己的分润比例（相对于订单总金额的比例）
+     * @param Order $order
+     * @return float|int
+     */
+    public static function getUserFeeSplittingRatio(Order $order)
+    {
+        // 如果平台没有参与运营中心的分润, 则用户自返比例为0
+        if ($order->merchant_type == Order::MERCHANT_TYPE_NORMAL) {
+            $operId = Merchant::where('id', $order->merchant_id)->value('oper_id');
+        } elseif ($order->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET) {
+            $operId = CsMerchant::where('id', $order->merchant_id)->value('oper_id');
+        } else {
+            return 0;
+        }
+        $oper = Oper::where('id', $operId)->first();
+        if($oper->pay_to_platform != Oper::PAY_TO_PLATFORM_WITH_SPLITTING){
+            return 0;
+        }
+
+        $feeRatio = UserCreditSettingService::getFeeSplittingRatioToSelfSetting(); // 自反的分润比例
+        $settlementRate = $order->settlement_rate;
+        $ratio = self::calculationRatio($feeRatio, $settlementRate);
+        return $ratio;
+    }
+
+    /**
      * 获取上级的分润比例（相对于订单总金额的比例）
      * @param Order $order
      * @return float|int
@@ -560,7 +586,7 @@ class FeeSplittingService extends BaseService
     {
         $orderProfit = OrderService::getProfitAmount($order);
 
-        $userRatio = self::getUserFeeSplittingRatioToSelfByMerchantId($order->merchant_id);
+        $userRatio = self::getUserFeeSplittingRatio($order);
         $parentRatio = self::getParentFeeSplittingRatio($order);
         $operAndBizerRatio = self::getOperAndBizerFeeSplittingRatio($order);
         $ratio = $userRatio + $parentRatio + $operAndBizerRatio['operRatio'] + $operAndBizerRatio['bizerRatio'];
