@@ -147,6 +147,10 @@ class OrdersController extends Controller
         ]);
     }
 
+    /**
+     * 超市订单发货
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function orderDeliver()
     {
         $this->validate(request(), [
@@ -159,6 +163,8 @@ class OrdersController extends Controller
         $expressCompany = request('expressCompany');
         $expressNo = request('expressNo');
 
-//        $order = OrderService::deliver();
+        $order = OrderService::deliver($id, $expressCompany, $expressNo);
+
+        return Result::success($order);
     }
 }

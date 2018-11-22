@@ -6,15 +6,12 @@ use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Exports\OperCsMerchantExport;
 use App\Http\Controllers\Controller;
-use App\Modules\Bizer\BizerService;
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAccountService;
 use App\Modules\Cs\CsMerchantAuditService;
-use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Cs\CsMerchantService;
 use App\Modules\Oper\Oper;
-use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperService;
 use App\Result;
 
@@ -28,40 +25,16 @@ class CsMerchantController extends Controller
      */
     public function getList()
     {
-        //$memberNameOrMobile = request('memberNameOrMobile');
-        //$bizerNameOrMobile = request('bizerNameOrMobile');
-
-        //$operBizMemberCodes = $memberNameOrMobile ? OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile)->pluck('code') : '';
-        //$bizerIds = $bizerNameOrMobile ? BizerService::getBizersByNameOrMobile($bizerNameOrMobile)->pluck('id') : '';
-
         $data = [
-            'id' => request('id'),
             'operId' => request()->get('current_user')->oper_id,
-            'creatorOperId' => request('creatorOperId'),
             'name' => request('name'),
             'merchantId' => request('merchantId'),
             'signboardName' => request('signboardName'),
             'status' => request('status'),
-            'auditStatus' => request('audit_status'),
-            //'merchantCategory' => request('merchant_category'),
-            'isPilot' => request('isPilot'),
-            'startCreatedAt' => request('startCreatedAt'),
-            'endCreatedAt' => request('endCreatedAt'),
-            //'bizer_id' => $bizerIds,
-            //'operBizMemberCodes' => $operBizMemberCodes,
+            'auditStatus' => request('audit_status')
         ];
 
         $data = CsMerchantService::getList($data);
-
-        /*$isPayToPlatform = $this->isPayToPlatform();
-        foreach ($data as $key){
-            if($isPayToPlatform){
-                $key->settlement_cycle_type = 7;//运营中心切换到平台，显示为未知
-            }else{
-                $key->settlement_cycle_type = 1;//运营中心切未换到平台，显示为周结
-            }
-
-        }*/
 
         return Result::success([
             'list' => $data->items(),
@@ -73,34 +46,21 @@ class CsMerchantController extends Controller
      * 导出商户
      */
     public function export(){
-        //$memberNameOrMobile = request('memberNameOrMobile');
-        //$bizerNameOrMobile = request('bizerNameOrMobile');
-
-        //$operBizMemberCodes = $memberNameOrMobile ? OperBizerService::getOperBizMembersByNameOrMobile($memberNameOrMobile)->pluck('code') : '';
-        //$bizerIds = $bizerNameOrMobile ? BizerService::getBizersByNameOrMobile($bizerNameOrMobile)->pluck('id') : '';
 
         $data = [
-            'id' => request('id'),
             'operId' => request()->get('current_user')->oper_id,
-            'creatorOperId' => request('creatorOperId'),
             'name' => request('name'),
             'merchantId' => request('merchantId'),
             'signboardName' => request('signboardName'),
             'status' => request('status'),
-            'auditStatus' => request('audit_status'),
-            //'merchantCategory' => request('merchant_category'),
-            'isPilot' => request('isPilot'),
-            'startCreatedAt' => request('startCreatedAt'),
-            'endCreatedAt' => request('endCreatedAt'),
-            //'bizer_id' => $bizerIds,
-            //'operBizMemberCodes' => $operBizMemberCodes,
+            'auditStatus' => request('audit_status')
         ];
 
         $query = CsMerchantService::getList($data,true);
 
         $list = $query->get();
 
-        return (new OperCsMerchantExport($list,request('isPilot')))->download('我的超市商户列表.xlsx');
+        return (new OperCsMerchantExport($list))->download('我的超市商户列表.xlsx');
 
     }
 
