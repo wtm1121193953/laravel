@@ -1,9 +1,8 @@
 <template>
     <!-- 商品列表项操作 -->
     <div>
-        <el-button type="text" @click="edit">编辑</el-button>
-        <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '下架' : '上架'}}</el-button>
-        <el-button type="text" @click="del">删除</el-button>
+        <el-button type="text" @click="check">查看</el-button>
+        <el-button type="text" @click="audit">审核</el-button>
 
     </div>
 </template>
@@ -35,6 +34,18 @@
                 });
                 return false;
                 this.isEdit = true;
+            },
+            check() {
+                router.push({
+                    path: '/cs_goods/check',
+                    query: {id: this.scope.row.id}
+                });
+            },
+            audit() {
+                router.push({
+                    path: '/cs_goods/audit',
+                    query: {id: this.scope.row.id}
+                });
             },
             doEdit(data){
                 this.$emit('before-request')

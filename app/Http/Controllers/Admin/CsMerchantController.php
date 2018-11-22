@@ -8,6 +8,7 @@ use App\Exports\AdminCsMerchantExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Bizer\BizerService;
 use App\Modules\Cs\CsMerchant;
+use App\Modules\Cs\CsMerchantAuditService;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAccountService;
 use App\Modules\Merchant\MerchantAuditService;
@@ -255,9 +256,17 @@ class CsMerchantController extends Controller
         return Result::success($account);
     }
 
+    /**
+     * 获取审核记录列表
+     */
     public function getAuditList()
     {
-        $data = MerchantAuditService::getAuditResultList(['oper_id' => request()->get('current_user')->oper_id]);
+        $params = [];
+        $user = request()->get('current_user');
+        if($user instanceof Oper){
+            $params['oper_id'] = $user->oper_id;
+        }
+        $data = CsMerchantAuditService::getAuditResultList($params);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
