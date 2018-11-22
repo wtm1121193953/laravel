@@ -49,6 +49,8 @@ Route::prefix('oper')
         Route::get('sub_cat', 'CsGoodsController@getSubCat');
         Route::get('goods/detail', 'CsGoodsController@detail');
         Route::post('cs_goods/audit', 'CsGoodsController@audit');
+        Route::get('cs_goods/download', 'CsGoodsController@download');
+
 
         Route::group([], base_path('routes/api/oper/merchant.php'));
         Route::group([], base_path('routes/api/oper/csmerchant.php'));

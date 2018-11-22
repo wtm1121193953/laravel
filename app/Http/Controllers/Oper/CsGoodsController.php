@@ -8,6 +8,7 @@
 namespace App\Http\Controllers\Oper;
 
 use App\Exceptions\BaseResponseException;
+use App\Exports\CsGoodsExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsGoodService;
@@ -47,6 +48,31 @@ class CsGoodsController extends Controller
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
+
+    /**
+     * 导出
+     */
+    public function download()
+    {
+        $params = [];
+        $cs_merchant_name = request('merchant_name','');
+        if (!empty($cs_merchant_name)) {
+            $params['cs_merchant_ids'] = CsMerchantService::getIdsByName($cs_merchant_name);
+        }
+        $params['goods_name'] = request('goods_name','');
+        $params['cs_platform_cat_id_level1'] = request('cs_platform_cat_id_level1','');
+        $params['cs_platform_cat_id_level2'] = request('cs_platform_cat_id_level2','');
+        $params['oper_id'] = request()->get('current_user')->oper_id;
+        $params['id'] = request('id',0);
+        $params['status'] = request('status',[]);
+        $params['audit_status'] = request('auditStatus',[]);
+        $params['with_merchant'] = 1;
+        $params['cs_merchant_id'] = request('cs_merchant_id',0);
+
+        $query = CsGoodService::getList($params,true);
+        return (new CsGoodsExport($query))->download('商品列表.xlsx');
+
     }
 
     public function getSubCat()

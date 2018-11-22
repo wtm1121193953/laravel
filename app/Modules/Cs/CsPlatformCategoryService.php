@@ -47,7 +47,7 @@ class CsPlatformCategoryService extends BaseService
         $rs = CsPlatformCategory::select('id','cat_name')->get();
         $rt = [];
         foreach ($rs as $v) {
-            $rt[$v->id] = [$v->cat_name];
+            $rt[$v->id] = $v->cat_name;
         }
         return $rt;
     }
