@@ -12,6 +12,7 @@ import goods from './goods'
 import oper from './oper'
 import oper_accounts from './oper_account'
 import merchant from './merchant'
+import csMerchant from './cs-merchant'
 import members from './members'
 import setting from './setting'
 import withdraw from './withdraw'
@@ -60,6 +61,7 @@ const routes = [
     ...oper,
     ...oper_accounts,
     ...merchant,
+    ...csMerchant,
     ...members,
     ...setting,
     ...withdraw,
