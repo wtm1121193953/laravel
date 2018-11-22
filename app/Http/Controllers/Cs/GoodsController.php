@@ -5,25 +5,29 @@ namespace App\Http\Controllers\Cs;
 
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
-use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsGoodService;
-use App\Modules\Cs\CsMerchantCategory;
 use App\Modules\Cs\CsMerchantCategoryService;
 use App\Result;
 use Illuminate\Http\Request;
 
-class GoodsController extends Controller
+class GoodsController extends BaseController
 {
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     /**
      * 获取列表 (分页)
      */
     public function getList()
     {
+        parent::__init();
         $params['goods_name'] = request('goods_name','');
         $params['cs_platform_cat_id_level1'] = request('cs_platform_cat_id_level1','');
         $params['cs_platform_cat_id_level2'] = request('cs_platform_cat_id_level2','');
-        $params['cs_merchant_id'] = 1000000000;
+        $params['cs_merchant_id'] = $this->_cs_merchant_id;
         $data = CsGoodService::getList($params);
 
         return Result::success([
@@ -32,11 +36,15 @@ class GoodsController extends Controller
         ]);
     }
 
+    /**
+     * 获取子分类
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getSubCat()
     {
-
+        parent::__init();
         $parent_id = request('parent_id');
-        $cs_merchant_id = 1000000000;
+        $cs_merchant_id = $this->_cs_merchant_id;
         $rt = CsMerchantCategoryService::getSubCat($cs_merchant_id,$parent_id);
 
         $data = [['label'=>'全部','value'=>'0']];
@@ -52,13 +60,18 @@ class GoodsController extends Controller
 
     }
 
+
+    /**
+     * 获取商品详情
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function detail()
     {
+        parent::__init();
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-        //$cs_merchant_id = request()->get('current_user')->merchant_id;
-        $cs_merchant_id = 1000000000;
+        $cs_merchant_id = $this->_cs_merchant_id;
         $goods = CsGoodService::detail(request('id'),$cs_merchant_id);
         if(empty($goods)){
             throw new DataNotFoundException('商品信息不存在或已删除');
@@ -72,11 +85,15 @@ class GoodsController extends Controller
         return Result::success($goods);
     }
 
+
     /**
-     * 添加数据
+     * 添加商品信息
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function add(Request $request)
     {
+        parent::__init();
         $request->validate([
             'goods_name' => 'required',
             'market_price' => 'required',
@@ -88,7 +105,8 @@ class GoodsController extends Controller
 
         $cs_goods = new CsGood();
         $cs_goods->goods_name = $request->goods_name;
-        $cs_goods->cs_merchant_id = 1000000000;
+        $cs_goods->oper_id = $this->_oper_id;
+        $cs_goods->cs_merchant_id = $this->_cs_merchant_id;
         $cs_goods->cs_platform_cat_id_level1 = $request->cs_platform_cat_id_level1;
         $cs_goods->cs_platform_cat_id_level2 = $request->cs_platform_cat_id_level2;
         $cs_goods->market_price = $request->market_price;
@@ -114,10 +132,11 @@ class GoodsController extends Controller
     }
 
     /**
-     * 编辑
+     * 编辑商品
      */
     public function edit(Request $request)
     {
+        parent::__init();
         $request->validate([
             'id' =>'required',
             'goods_name' => 'required',
@@ -127,15 +146,15 @@ class GoodsController extends Controller
             'cs_platform_cat_id_level2' => 'required',
         ]);
         $id = $request->id;
-        //$cs_merchant_id = request()->get('current_user')->merchant_id;
-        $cs_merchant_id = 1000000000;
+        $cs_merchant_id = $this->_cs_merchant_id;
         $cs_goods = CsGood::findOrFail($id);
         if ($cs_goods->cs_merchant_id != $cs_merchant_id) {
             throw new BaseResponseException('参数错误2');
         }
 
         $cs_goods->goods_name = $request->goods_name;
-        $cs_goods->cs_merchant_id = 1000000000;
+        $cs_goods->oper_id = $this->_oper_id;
+        $cs_goods->cs_merchant_id = $this->_cs_merchant_id;
         $cs_goods->cs_platform_cat_id_level1 = $request->cs_platform_cat_id_level1;
         $cs_goods->cs_platform_cat_id_level2 = $request->cs_platform_cat_id_level2;
         $cs_goods->market_price = $request->market_price;
@@ -162,15 +181,17 @@ class GoodsController extends Controller
     }
 
     /**
-     * 修改状态
+     * 修改上下架
+     * @return \Illuminate\Http\JsonResponse
      */
     public function changeStatus()
     {
+        parent::__init();
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
         //$cs_merchant_id = request()->get('current_user')->merchant_id;
-        $cs_merchant_id = 1000000000;
+        $cs_merchant_id = $this->_cs_merchant_id;
 
         $new_status = CsGoodService::changeStatus(request('id'),$cs_merchant_id);
 
@@ -184,27 +205,15 @@ class GoodsController extends Controller
      */
     public function del()
     {
+        parent::__init();
         $this->validate(request(), [
             'id' => 'required|integer|min:1',
         ]);
-        //$cs_merchant_id = request()->get('current_user')->merchant_id;
-        $cs_merchant_id = 1000000000;
+        $cs_merchant_id = $this->_cs_merchant_id;
         $goods = CsGoodService::del(request('id'),$cs_merchant_id);
 
         return Result::success($goods);
     }
 
-    /**
-     * 团购商品排序
-     */
-    public function saveOrder(){
-        $this->validate(request(), [
-            'id' => 'required|integer|min:1',
-        ]);
-        $type = request('type', 'up');
-        $merchantId = request()->get('current_user')->merchant_id;
-        GoodsService::changeSort(request('id'), $merchantId, $type);
-        return Result::success();
-    }
 
 }

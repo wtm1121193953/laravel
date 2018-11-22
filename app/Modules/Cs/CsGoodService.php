@@ -48,6 +48,9 @@ class CsGoodService extends BaseService
             ->when(!empty($params['audit_status']),function (Builder $query) use ($params){
                 $query->whereIn('audit_status', $params['audit_status']);
             })
+            ->when(!empty($params['cs_merchant_ids']),function (Builder $query) use ($params){
+                $query->whereIn('cs_merchant_id', $params['cs_merchant_ids']);
+            })
             ->when(!empty($params['with_merchant']),function (Builder $query) use ($params){
                 $query->with('cs_merchant:id,name');
             })
@@ -105,10 +108,32 @@ class CsGoodService extends BaseService
         return $goods->delete();
     }
 
+    /**
+     * 商户查看详情
+     * @param int $id
+     * @param int $cs_merchant_id
+     * @return CsGood
+     */
     public static function detail(int $id, int $cs_merchant_id)
     {
         $goods = CsGood::findOrFail($id);
         if ($goods->cs_merchant_id != $cs_merchant_id) {
+            throw new BaseResponseException('参数错误2');
+        }
+        return $goods;
+    }
+
+    /**
+     * 运营中心查看详情
+     * @param int $id
+     * @param int $oper_id
+     * @return CsGood
+     */
+    public static function operDetail(int $id, int $oper_id)
+    {
+
+        $goods = CsGood::findOrFail($id);
+        if ($goods->oper_id != $oper_id) {
             throw new BaseResponseException('参数错误2');
         }
         return $goods;
