@@ -193,7 +193,7 @@
 
 <script>
     import api from '../../../assets/js/api'
-    import MerchantDetail from './merchant-detail'
+    import CsMerchantDetail from './merchant-detail'
     import UnauditMessage from './unaudit-message'
     import UnauditRecordReason from './unaudit-record-reason'
 
@@ -271,29 +271,24 @@
                     this.tableLoading = false;
                 })
             },
-            detail(scope,type){
+            detail(scope){
                 let self = this;
                 router.push({
-                    path: '/merchant/detail',
-                    name: 'MerchantDetail',
+                    path: 'CsMerchant/detail',
+                    name: 'CsMerchantDetail',
                     query: {
                         id: scope.row.id,
-                        auditType: type,
-                        isAudit: this.isAudit,
                     },
                     params: self.query,
                 })
             },
+
             edit(scope){
-                let self = this;
                 router.push({
-                    path: 'merchant/edit',
-                    name: 'MerchantEdit',
-                    query: {
-                        id: scope.row.id
-                    },
-                    params: self.query,
+                    path: '/Csmerchant/edit',
+                    query: {id: scope.row.id},
                 })
+                return false;
             },
             //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
             audit(scope, type){
@@ -365,7 +360,7 @@
 
         },
         components: {
-            MerchantDetail,
+            CsMerchantDetail,
             UnauditMessage,
             UnauditRecordReason,
         }

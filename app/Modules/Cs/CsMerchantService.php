@@ -311,6 +311,11 @@ class CsMerchantService extends BaseService {
             $currentOperId = 0;
         }
 
+        $existCsMerchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)->where('type',CsMerchantAudit::UPDATE_TYPE)->first();
+        if($existCsMerchantAudit){
+            throw new BaseResponseException('该商户已存在待审核记录');
+        }
+
         $csmerchant = CsMerchant::where('id', $id)
             //->where('audit_oper_id', $currentOperId)
             ->first();
@@ -352,14 +357,9 @@ class CsMerchantService extends BaseService {
         }
         $csmerchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
 
-        //admin编辑商户，除审核通过的商户编辑完成直接默认审核通过外，其他状态的商户编辑后都是待审核
-        /*if ($isAdmin) {
-            if ($auditStauts != CsMerchant::AUDIT_STATUS_SUCCESS) {
-                $merchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
-            } else {
-                $merchant->audit_status = CsMerchant::AUDIT_STATUS_SUCCESS;
-            }
-        }*/
+        //编辑商户，商户编辑后是待审核
+
+        CsMerchant::where('id',$id)->update(['audit_status' => CsMerchant::AUDIT_STATUS_AUDITING]);
 
         $csmerchant->toArray();
         $afterCsmerchantToJson = json_encode($csmerchant);
@@ -374,6 +374,8 @@ class CsMerchantService extends BaseService {
         $modifyCsMerchantToJson = json_encode($modifyCsMerchant);
         $params = [
             'oper_id' => $currentOperId,
+            'type' => CsMerchantAudit::UPDATE_TYPE,
+            'CsmerchantId' => $csmerchant['id'],
             'name' => $csmerchant['name'],
             'dataBefore' => $beforeCsmerchantToJson,
             'dataAfter' => $afterCsmerchantToJson,
