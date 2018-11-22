@@ -1,7 +1,8 @@
 <template>
     <!-- 商品列表项操作 -->
     <div>
-        <el-button type="text" @click="edit">编辑</el-button>
+        <el-button v-if="parseInt(scope.row.audit_status) === 2" type="text" @click="fastEdit">编辑</el-button>
+        <el-button v-else type="text" @click="edit">编辑</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '下架' : '上架'}}</el-button>
         <el-button type="text" @click="sort">排序</el-button>
         <el-button type="text" @click="del">删除</el-button>
@@ -38,6 +39,14 @@
             edit(){
                 router.push({
                     path: '/goods/edit',
+                    query: {id: this.scope.row.id}
+                });
+                return false;
+                this.isEdit = true;
+            },
+            fastEdit(){
+                router.push({
+                    path: '/goods/fast_edit',
                     query: {id: this.scope.row.id}
                 });
                 return false;
