@@ -12,12 +12,9 @@ use App\Exports\CsGoodsExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsGoodService;
-use App\Modules\Cs\CsMerchantCategoryService;
 use App\Modules\Cs\CsMerchantService;
-use App\Modules\Cs\CsPlatformCategory;
 use App\Modules\Cs\CsPlatformCategoryService;
 use App\Result;
-use Illuminate\Http\Request;
 
 class CsGoodsController extends Controller
 {
@@ -128,6 +125,10 @@ class CsGoodsController extends Controller
         return Result::success($goods);
     }
 
+    /**
+     * 审核
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function audit()
     {
         $this->validate(request(), [
