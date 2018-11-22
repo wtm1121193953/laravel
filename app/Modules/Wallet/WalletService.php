@@ -7,6 +7,7 @@ use App\BaseService;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Bizer\Bizer;
 use App\Modules\Bizer\BizerService;
+use App\Modules\Cs\CsMerchant;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Merchant\Merchant;
@@ -42,6 +43,8 @@ class WalletService extends BaseService
             $originType = Wallet::ORIGIN_TYPE_OPER;
         } elseif ($user instanceof Bizer) {
             $originType = Wallet::ORIGIN_TYPE_BIZER;
+        } elseif ($user instanceof CsMerchant) {
+            $originType = Wallet::ORIGIN_TYPE_CS;
         } else {
             throw new ParamInvalidException('参数错误');
         }

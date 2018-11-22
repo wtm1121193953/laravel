@@ -35,6 +35,8 @@ class FeeSplittingRecord extends BaseModel
     const ORIGIN_TYPE_OPER = 3;
     // 用户类型  4-业务员
     const ORIGIN_TYPE_BIZER = 4;
+    // 用户类型  5-超市
+    const ORIGIN_TYPE_CS = 5;
 
     // 状态 冻结中
     const STATUS_FREEZE = 1;

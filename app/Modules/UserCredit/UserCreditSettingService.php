@@ -223,4 +223,22 @@ class UserCreditSettingService extends SettingService
         return 7;
     }
 
+    /**
+     * 获取 超市订单 分润给上级的分润比例%
+     * @return int
+     */
+    public static function getFeeSplittingRatioToParentOfCs()
+    {
+        return 20;
+    }
+
+    /**
+     * 获取 超市订单 分润给运营中心的分润比例%
+     * @return int
+     */
+    public static function getFeeSplittingRatioToOperOfCs()
+    {
+        return 40;
+    }
+
 }

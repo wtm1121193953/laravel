@@ -8,6 +8,8 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Bizer\Bizer;
 use App\Modules\Bizer\BizerService;
+use App\Modules\Cs\CsMerchant;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
@@ -38,17 +40,32 @@ class FeeSplittingService extends BaseService
         DB::beginTransaction();
         try {
             $oper = OperService::getById($order->oper_id);
-            // 只有切换到平台并且平台参与分成的运营中心才执行返利
-            if ($oper->pay_to_platform == Oper::PAY_TO_PLATFORM_WITH_SPLITTING) {
-                // 1 分给自己 5%
-                self::feeSplittingToSelf($order, $profitAmount);
-                // 2 分给上级 25%
-                self::feeSplittingToParent($order, $profitAmount);
-            }
-            // 只有切换到平台的才给运营中心分润
-            if ($oper->pay_to_platform != Oper::PAY_TO_OPER) {
-                // 3 分给运营中心  50% || 100%
-                self::feeSplittingToOper($order, $profitAmount);
+
+            if ($order->merchant_type == Order::MERCHANT_TYPE_NORMAL) {
+                // 普通订单分润
+
+                // 只有切换到平台并且平台参与分成的运营中心才执行返利
+                if ($oper->pay_to_platform == Oper::PAY_TO_PLATFORM_WITH_SPLITTING) {
+                    // 1 分给自己 5%
+                    self::feeSplittingToSelf($order, $profitAmount);
+                    // 2 分给上级 25%
+                    self::feeSplittingToParent($order, $profitAmount);
+                }
+                // 只有切换到平台的才给运营中心分润
+                if ($oper->pay_to_platform != Oper::PAY_TO_OPER) {
+                    // 3 分给运营中心  50% || 100%
+                    self::feeSplittingToOper($order, $profitAmount);
+                }
+            } elseif ($order->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET) {
+                // 超市订单分润
+                if ($oper->pay_to_platform != Oper::PAY_TO_OPER) {
+                    // 1. 分润给上级 20%
+                    self::feeSplittingToParent($order, $profitAmount);
+                    // 2. 分润给运营中心 40%
+                    self::feeSplittingToOperOfCs($order, $profitAmount);
+                }
+            } else {
+                throw new BaseResponseException('该订单类型不存在 merchant_type');
             }
             // 4 修改订单中的分润状态
             OrderService::updateSplittingStatus($order);
@@ -267,6 +284,8 @@ class FeeSplittingService extends BaseService
             $originType = FeeSplittingRecord::ORIGIN_TYPE_OPER;
         }else if($originInfo instanceof Bizer){
             $originType = FeeSplittingRecord::ORIGIN_TYPE_BIZER;
+        }else if($originInfo instanceof CsMerchant){
+            $originType = FeeSplittingRecord::ORIGIN_TYPE_CS;
         }else {
             throw new BaseResponseException('用户类型错误');
         }
@@ -282,6 +301,8 @@ class FeeSplittingService extends BaseService
                 $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfMerchantSetting($merchantLevel);
             } else if ($originType == FeeSplittingRecord::ORIGIN_TYPE_OPER) {
                 $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfOperSetting();
+            } else if ($originType == FeeSplittingRecord::ORIGIN_TYPE_CS) {
+                $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfCs();
             } else {
                 throw new BaseResponseException();
             }
@@ -603,5 +624,46 @@ class FeeSplittingService extends BaseService
         $newFeeSplittingRecord->save();
 
         return $newFeeSplittingRecord;
+    }
+
+    /**
+     * 超市订单 分润给运营中心
+     * @param Order $order
+     * @param float $profitAmount
+     * @throws \Exception
+     */
+    private static function feeSplittingToOperOfCs(Order $order, float $profitAmount)
+    {
+        // 通过订单中的merchant_id查找该商户的运营中心（准确点）
+        $csMerchant = CsMerchantService::getById($order->merchant_id);
+        $oper = OperService::getById($csMerchant->oper_id);
+        if (empty($oper)) {
+            return;
+        }
+        if ($oper->pay_to_platform == Oper::PAY_TO_OPER) {
+            return;
+        }
+
+        $operFeeRatio = UserCreditSettingService::getFeeSplittingRatioToOperOfCs();
+
+        if ($operFeeRatio == null || $operFeeRatio <= 0) {
+            return;
+        }
+
+        DB::beginTransaction();
+        try {
+            // 计算运营中心
+            $feeSplittingRecord = self::createFeeSplittingRecord($order, $oper, FeeSplittingRecord::TYPE_TO_OPER, $profitAmount, $operFeeRatio);
+
+            // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
+            $wallet = WalletService::getWalletInfo($oper);
+            if (!empty($feeSplittingRecord)) {
+                WalletService::addFreezeBalanceByFeeSplitting($feeSplittingRecord, $wallet);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 }
