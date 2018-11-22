@@ -211,7 +211,7 @@ class GoodsController extends BaseController
         $cs_goods->stock = $request->stock;
         $cs_goods->logo = $request->logo;
         $cs_goods->summary = $request->summary;
-        
+
         $rs = $cs_goods->save();
 
         if ($rs) {

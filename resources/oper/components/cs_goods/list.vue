@@ -178,7 +178,7 @@
 
                 }
                 api.get('/sub_cat', {parent_id:this.query.cs_platform_cat_id_level1}).then(data => {
-
+                    this.query.cs_platform_cat_id_level2 = ''
                     this.cs_platform_cat_id_level2 = data;
                 })
             },

@@ -186,12 +186,12 @@
                         <el-form-item prop="service_phone" label="客服电话">
                             {{data.service_phone}}
                         </el-form-item>
-                        <el-form-item prop="site_acreage" label="商户面积">
+                        <!--<el-form-item prop="site_acreage" label="商户面积">
                             {{data.site_acreage}} ㎡
-                        </el-form-item>
-                        <el-form-item prop="employees_number" label="商户员工人数">
+                        </el-form-item>-->
+                        <!--<el-form-item prop="employees_number" label="商户员工人数">
                             {{data.employees_number}} 人
-                        </el-form-item>
+                        </el-form-item>-->
                     </el-col>
 
                 </el-col>
