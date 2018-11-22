@@ -28,6 +28,8 @@ Route::get('/download', 'DownloadController@download');
 
 // 微信支付回调
 Route::any('/pay/notify', 'PayController@notify');
+// 获取全部的运营中心列表, 用于对外开放运营中心列表, 只提供id与名称
+Route::get('/public/opers/all', 'PublicController@allOpers');
 
 //融宝支付
 Route::any('/pay/reapalPayNotify', 'PayController@notifyRealpay');
