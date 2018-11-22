@@ -1,5 +1,5 @@
 <template>
-    <page title="添加商品" v-loading="isLoading" :breadcrumbs="{商品管理: '/cs/goods'}">
+    <page title="添加商品" v-loading="isLoading" :breadcrumbs="{商品管理: '/goods'}">
         <el-col :span="16">
             <goods-form
                     ref="addForm"

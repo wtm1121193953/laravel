@@ -1,5 +1,5 @@
 <template>
-    <page title="商品分类" v-loading="isLoading">
+    <page title="子分类" v-loading="isLoading" :breadcrumbs="{分类管理: '/categories'}">
         <el-table :data="list" stripe>
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="cs_cat_name" label="分类名称"/>
