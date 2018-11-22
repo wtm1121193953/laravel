@@ -3,13 +3,27 @@
     <div>
         <el-button type="text" @click="check">查看</el-button>
         <el-button type="text" @click="audit">审核</el-button>
-
+        <template>
+            <el-dropdown trigger="click" @command="(command) => {fastAudit(scope, command)}">
+                <el-button type="text">
+                    快捷审核 <i class="el-icon-arrow-down"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="1">审核通过</el-dropdown-item>
+                    <el-dropdown-item command="2">审核不通过</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
+        </template>
+        <el-dialog title="审核意见" :visible.sync="unAudit" :close-on-click-modal="false">
+            <unaudit-message   @cancel="unAudit = false"  :data="scope.row"   @change="goodsChange"/>
+        </el-dialog>
     </div>
+
 </template>
 
 <script>
     import api from '../../../assets/js/api'
-
+    import UnauditMessage from './unaudit-message'
 
     export default {
         name: "goods-item-options",
@@ -21,6 +35,7 @@
         data(){
             return {
                 isEdit: false,
+                unAudit:false,
             }
         },
         computed: {
@@ -46,6 +61,17 @@
                     path: '/cs_goods/audit',
                     query: {id: this.scope.row.id}
                 });
+            },
+            goodsChange() {
+                this.$emit('refresh')
+            },
+            //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
+            fastAudit(scope, type){
+                if(type==2 ||type==1){
+                    scope.row.type = type;
+                    this.unAudit = true;
+                }
+
             },
             doEdit(data){
                 this.$emit('before-request')
@@ -82,6 +108,7 @@
             },
         },
         components: {
+            UnauditMessage,
         }
     }
 </script>

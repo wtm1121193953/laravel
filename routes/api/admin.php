@@ -74,7 +74,8 @@ Route::prefix('admin')
         Route::get('merchant/audit/record/newest', 'MerchantController@getNewestAuditRecord');
 
 
-        Route::get('CsMerchant/audit/list', 'CsMerchantController@getAuditList');
+        Route::get('CsMerchant/audit/list', 'CsMerchantController@getList');
+        Route::post('CsMerchant/changeStatus', 'CsMerchantController@changeStatus');
 
         Route::get('merchant/pool', 'MerchantPoolController@getList');
         Route::get('merchant/pool/detail', 'MerchantPoolController@detail');

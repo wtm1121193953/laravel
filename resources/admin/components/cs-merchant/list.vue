@@ -1,5 +1,5 @@
 <template>
-    <page :title=" isAudit ? '审核商户': '商户列表'"     v-loading="isLoading" >
+    <page :title=" isAudit ? '审核商户': '超市商户列表'"     v-loading="isLoading" >
         <el-col>
             <el-form v-model="query" inline>
                 <el-form-item prop="merchantId" label="商户ID" >
@@ -68,12 +68,12 @@
                         <el-option label="未知" value="3"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item prop="memberNameOrMobile" label="我的员工"  >
+                <!--<el-form-item prop="memberNameOrMobile" label="我的员工"  >
                     <el-input v-model="query.memberNameOrMobile" size="small"  placeholder="请输入员工姓名或手机号码搜索"  clearable></el-input>
                 </el-form-item>
                 <el-form-item prop="bizerNameOrMobile" label="业务员"  >
                     <el-input v-model="query.bizerNameOrMobile" size="small"  placeholder="请输入业务员昵称或手机号码搜索"  clearable></el-input>
-                </el-form-item>
+                </el-form-item>-->
                 <el-form-item>
                     <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                 </el-form-item>
@@ -97,7 +97,7 @@
                 <el-table-column prop="operName" label="激活运营中心名称"/>
                 <!--<el-table-column prop="creatorOperId"  size="mini" label="录入运营中心ID"/>-->
                 <!--<el-table-column prop="creatorOperName" label="录入运营中心名称"/>-->
-                <el-table-column label="签约人">
+                <!--<el-table-column label="签约人">
                     <template slot-scope="scope">
                         <span v-if="scope.row.bizer"><span class="c-green">业务员 </span>{{scope.row.bizer.name}}/{{scope.row.bizer.mobile}}</span>
                         <span v-else-if="scope.row.operBizMember"><span class="c-light-gray">员工 </span>{{scope.row.operBizMember.name}}/{{scope.row.operBizMember.mobile}}</span>
@@ -110,7 +110,7 @@
                     {{ item.name }}
                 </span>
                     </template>
-                </el-table-column>
+                </el-table-column>-->
                 <el-table-column prop="city" label="城市">
                     <template slot-scope="scope">
                         <!--<span> {{ scope.row.province }} </span>-->
@@ -125,11 +125,11 @@
                         <span v-else>未知 ({{scope.row.status}})</span>
                     </template>
                 </el-table-column>
-            <el-table-column prop="status" label="审核状态">
+            <el-table-column prop="audit_status" label="审核状态">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.status === 1" class="c-warning">待审核</span>
+                    <span v-if="scope.row.audit_status === 0" class="c-warning">待审核</span>
                         <el-popover
-                                v-else-if="scope.row.status === 2"
+                                v-else-if="scope.row.audit_status === 1"
                                 placement="bottom-start"
                                 width="200px"  trigger="hover"
                                 @show="showMessage(scope)"
@@ -138,7 +138,7 @@
                             <unaudit-record-reason    :data="auditRecord"  />
                         </el-popover>
                           <el-popover
-                              v-else-if="scope.row.status === 3"
+                              v-else-if="scope.row.audit_status === 2"
                               placement="bottom-start"
                               width="200px"  trigger="hover"
                               @show="showMessage(scope)"
@@ -146,7 +146,7 @@
                               <div   slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
                                 <unaudit-record-reason    :data="auditRecord"  />
                           </el-popover>
-                    <span v-else>未知 ({{scope.row.status}})</span>
+                    <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
                 </el-table-column>
                 <el-table-column prop="settlement_cycle_type" label="结算周期">
@@ -159,7 +159,7 @@
                     <el-button type="text" @click="detail(scope)">查看</el-button>
                     <el-button type="text" @click="edit(scope)">编辑</el-button>
                     <el-button v-if="parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="changeStatus(scope.row)">{{parseInt(scope.row.status) === 1 ? '冻结' : '解冻'}}</el-button>
-                    <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
+                    <!--<template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
                         <el-button type="text" @click="detail(scope,3)">审核</el-button>
                         <el-dropdown trigger="click" @command="(command) => {audit(scope, command)}">
                             <el-button type="text">
@@ -168,10 +168,10 @@
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item command="1">审核通过</el-dropdown-item>
                                 <el-dropdown-item command="2">审核不通过</el-dropdown-item>
-                                <el-dropdown-item  v-if="scope.row.oper_id == 0"  command="3">打回到商户池</el-dropdown-item>
+                                &lt;!&ndash;<el-dropdown-item  v-if="scope.row.oper_id == 0"  command="3">打回到商户池</el-dropdown-item>&ndash;&gt;
                             </el-dropdown-menu>
                         </el-dropdown>
-                    </template>
+                    </template>-->
                 </template>
             </el-table-column>
         </el-table>
@@ -262,6 +262,7 @@
                 let params = {};
                 Object.assign(params, this.query);
                 api.get('/CsMerchant/audit/list', params).then(data => {
+                    console.log(data.list);
                     this.query.page = params.page;
                     this.list = data.list;
                     this.total = data.total;
@@ -341,11 +342,16 @@
                     location.href = `/api/admin/merchant/download?${uri}`;
                 })
             },
-            changeStatus(row) {
-                api.post('/merchant/changeStatus', {id: row.id}).then((data) => {
-                    row.status = data.status;
+            changeStatus(row){
+                let status = row.status === 1 ? 2 : 1;
+                this.$emit('before-request')
+                api.post('/CsMerchant/changeStatus', {id: row.id, status: status}).then((data) => {
+                    row.status = status;
+                    this.$emit('change', this.scope, data)
+                }).finally(() => {
+                    this.$emit('after-request')
                 })
-            }
+            },
         },
         created(){
             if(this.isAudit){
