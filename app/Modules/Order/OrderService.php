@@ -71,8 +71,8 @@ class OrderService extends BaseService
                 })->orWhere(function (Builder $query) {
                     $query->where('type', Order::TYPE_DISHES);
                 })->orWhere(function (Builder $query) {
-                    $query->where('type', Order::TYPE_SUPERMARKET)
-                        ->whereIn('status', [Order::STATUS_REFUNDED, Order::STATUS_FINISHED, Order::STATUS_UNDELIVERED, Order::STATUS_NOT_TAKE_BY_SELF, Order::STATUS_DELIVERED]);
+                    $query->where('merchant_type', Order::MERCHANT_TYPE_SUPERMARKET)
+                        ->whereIn('status', [Order::STATUS_PAID, Order::STATUS_REFUNDED, Order::STATUS_FINISHED, Order::STATUS_UNDELIVERED, Order::STATUS_NOT_TAKE_BY_SELF, Order::STATUS_DELIVERED]);
                 });
         });
 

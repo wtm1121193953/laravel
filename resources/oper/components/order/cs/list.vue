@@ -56,7 +56,11 @@
             <el-table-column prop="take_time" label="历时"/>
             <el-table-column prop="type" width="80" label="订单类型">
                 <template slot-scope="scope">
-                    <span>超市订单</span>
+                    <span v-if="scope.row.type == 1">团购订单</span>
+                    <span v-else-if="scope.row.type == 2">扫码支付订单</span>
+                    <span v-else-if="scope.row.type == 3">点菜订单</span>
+                    <span v-else-if="scope.row.type == 4">超市订单</span>
+                    <span>其他({{scope.row.type}})</span>
                 </template>
             </el-table-column>
             <el-table-column prop="goods_name" width="250" label="商品名称">
