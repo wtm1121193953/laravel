@@ -75,6 +75,10 @@ class CsGoodsController extends Controller
 
     }
 
+    /**
+     * 获取子分类
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getSubCat()
     {
 
@@ -94,6 +98,10 @@ class CsGoodsController extends Controller
 
     }
 
+    /**
+     * 获取商品详情
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function detail()
     {
         $this->validate(request(), [
@@ -110,6 +118,12 @@ class CsGoodsController extends Controller
         $goods->certificate1 = $goods->certificate1 ? explode(',', $goods->certificate1) : [];
         $goods->certificate2 = $goods->certificate2 ? explode(',', $goods->certificate2) : [];
         $goods->certificate3 = $goods->certificate3 ? explode(',', $goods->certificate3) : [];
+
+        $all_cats = CsPlatformCategoryService::getAllIdName();
+        $goods->cs_platform_cat_id_level1_name = $all_cats[$goods->cs_platform_cat_id_level1];
+        $goods->cs_platform_cat_id_level2_name = $all_cats[$goods->cs_platform_cat_id_level2];
+        $goods->status_name = CsGood::statusName($goods->status);
+        $goods->audit_status_name = CsGood::auditStatusName($goods->audit_status);
 
         return Result::success($goods);
     }
