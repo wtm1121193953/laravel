@@ -33,6 +33,17 @@ class CsMerchantAuditService extends BaseService {
 
         $data->each(function($item) {
             $item->operName = Oper::where('id', $item->oper_id)->value('name');
+            // 解析JSON格式
+            $detail = json_decode($item->data_after,true);
+            if($item['cs_merchant_id']!=0){
+                $item->merchant_status = CsMerchant::find($item['cs_merchant_id'],'audit_status');
+            }
+            foreach ($detail as $k => $v){
+                if(!$v){
+                    continue;
+                }
+                $item->$k = $v;
+            }
         });
         return $data;
     }

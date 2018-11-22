@@ -7,7 +7,9 @@
  */
 namespace App\Http\Controllers\Oper;
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsGoodService;
 use App\Modules\Cs\CsMerchantCategoryService;
 use App\Modules\Cs\CsPlatformCategory;
@@ -77,5 +79,32 @@ class CsGoodsController extends Controller
         $goods->certificate3 = $goods->certificate3 ? explode(',', $goods->certificate3) : [];
 
         return Result::success($goods);
+    }
+
+    public function audit()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $id = request('id');
+        $type = request('type');
+        $oper_id = request()->get('current_user')->oper_id;
+        $cs_goods = CsGood::findOrFail($id);
+
+        if ($cs_goods->oper_id != $oper_id) {
+            throw new BaseResponseException('参数错误');
+        }
+
+        if ($type == 1) {
+            $cs_goods->audit_status = CsGood::AUDIT_STATUS_SUCCESS;
+        } else {
+
+            $cs_goods->audit_status = CsGood::AUDIT_STATUS_FAIL;
+            $cs_goods->audit_suggestion = request('audit_suggestion','');
+        }
+        $rs = $cs_goods->save();
+        return Result::success('审核成功');
+
+
     }
 }

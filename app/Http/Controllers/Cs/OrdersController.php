@@ -147,4 +147,18 @@ class OrdersController extends Controller
         ]);
     }
 
+    public function orderDeliver()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'expressCompany' => 'required|max:50',
+            'expressNo' => 'required|max:50',
+        ]);
+
+        $id = request('id');
+        $expressCompany = request('expressCompany');
+        $expressNo = request('expressNo');
+
+//        $order = OrderService::deliver();
+    }
 }

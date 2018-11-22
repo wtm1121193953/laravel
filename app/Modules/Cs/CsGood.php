@@ -9,6 +9,7 @@ use App\BaseModel;
  * Class CsGood
  * @package App\Modules\Cs
  * @property integer  id
+ * @property integer  oper_id
  * @property integer cs_merchant_id
  * @property integer cs_platform_cat_id_level1
  * @property integer cs_platform_cat_id_level2

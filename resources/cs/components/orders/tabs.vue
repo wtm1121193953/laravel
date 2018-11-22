@@ -5,13 +5,13 @@
             <span slot="label">
                 待发货 <span style="color: red">{{undeliveredNum}}</span>
             </span>
-                <cs-list activeTab="undelivered" status="8"></cs-list>
+                <cs-list activeTab="undelivered" status="8" @refresh="getUndeliveredNum"></cs-list>
             </el-tab-pane>
             <el-tab-pane name="notTakeBySelf">
             <span slot="label">
                 待自提 <span style="color: red">{{notTakeBySelfNum}}</span>
             </span>
-                <cs-list activeTab="notTakeBySelf" status="9"></cs-list>
+                <cs-list activeTab="notTakeBySelf" status="9" @refresh="getUndeliveredNum"></cs-list>
             </el-tab-pane>
             <el-tab-pane name="delivered" label="已发货">
                 <cs-list activeTab="delivered" status="10"></cs-list>
@@ -23,7 +23,7 @@
                 <cs-list activeTab="refunded" status="6"></cs-list>
             </el-tab-pane>
             <el-tab-pane name="all" label="全部">
-                <cs-list activeTab="all" status=""></cs-list>
+                <cs-list activeTab="all" status="" @refresh="getUndeliveredNum"></cs-list>
             </el-tab-pane>
         </el-tabs>
     </page>
