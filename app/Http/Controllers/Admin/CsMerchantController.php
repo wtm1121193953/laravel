@@ -32,14 +32,11 @@ class CsMerchantController extends Controller
         $data = [
             'id' => request('id'),
             'operId' => request()->get('current_user')->oper_id,
-            'creatorOperId' => request('creatorOperId'),
             'name' => request('name'),
             'merchantId' => request('merchantId'),
             'signboardName' => request('signboardName'),
             'status' => request('status'),
             'auditStatus' => request('audit_status'),
-            //'merchantCategory' => request('merchant_category'),
-            'isPilot' => request('isPilot'),
             'startCreatedAt' => request('startCreatedAt'),
             'endCreatedAt' => request('endCreatedAt'),
         ];
@@ -187,14 +184,10 @@ class CsMerchantController extends Controller
         ]);
         $merchant = CsMerchantService::getById(request('id'));
         if(empty($merchant)){
-            throw new DataNotFoundException('商户信息不存在');
+            throw new DataNotFoundException('超市商户信息不存在');
         }
         $merchant->status = request('status');
         $merchant->save();
-
-        //$merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
-        $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
-
         return Result::success($merchant);
     }
 
