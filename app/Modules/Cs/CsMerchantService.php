@@ -371,6 +371,9 @@ class CsMerchantService extends BaseService {
         $csmerchant = CsMerchant::where('id', $id)
             //->where('audit_oper_id', $currentOperId)
             ->first();
+        //保留原有数据转存json到审核记录表
+        $beforeCsmerchant = $csmerchant->toArray();
+        $beforeCsmerchantToJson = json_encode($beforeCsmerchant);
         //获取原有结算周期
         $settlement_cycle_type = $csmerchant->settlement_cycle_type;
         if (empty($csmerchant)) {
@@ -416,12 +419,22 @@ class CsMerchantService extends BaseService {
         }*/
 
         $csmerchant->toArray();
-        $jsonTomerchant = json_encode($csmerchant);
+        $afterCsmerchantToJson = json_encode($csmerchant);
 
+        //与原有数据对比，有修改字段另存储json到审核表
+        $modifyCsMerchant = [];
+        foreach ($beforeCsmerchant as $key => $val){
+            if($csmerchant[$key] != $val){
+                array_push($modifyCsMerchant,[$key => $csmerchant[$key]]);
+            }
+        }
+        $modifyCsMerchantToJson = json_encode($modifyCsMerchant);
         $params = [
             'oper_id' => $currentOperId,
             'name' => $csmerchant['name'],
-            'dataAfter' => $jsonTomerchant,
+            'dataBefore' => $beforeCsmerchantToJson,
+            'dataAfter' => $afterCsmerchantToJson,
+            'dataModify' => $modifyCsMerchantToJson,
         ];
 
         // 添加审核记录
