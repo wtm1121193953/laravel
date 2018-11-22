@@ -41,7 +41,7 @@ class CsGoodsController extends Controller
         $params['audit_status'] = request('auditStatus',[]);
         $params['with_merchant'] = 1;
         $params['cs_merchant_id'] = request('cs_merchant_id',0);
-
+        $params['sort'] = 2;
         $data = CsGoodService::getList($params);
 
         return Result::success([

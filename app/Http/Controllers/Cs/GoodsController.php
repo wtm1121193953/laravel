@@ -28,6 +28,7 @@ class GoodsController extends BaseController
         $params['cs_platform_cat_id_level1'] = request('cs_platform_cat_id_level1','');
         $params['cs_platform_cat_id_level2'] = request('cs_platform_cat_id_level2','');
         $params['cs_merchant_id'] = $this->_cs_merchant_id;
+        $params['sort'] = 1;
         $data = CsGoodService::getList($params);
 
         return Result::success([
@@ -215,5 +216,22 @@ class GoodsController extends BaseController
         return Result::success($goods);
     }
 
+    /**
+     * 修改排序
+     */
+    public function modifySort()
+    {
+        parent::__init();
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'sort' => 'required|integer|min:0',
+
+        ]);
+        $cs_merchant_id = $this->_cs_merchant_id;
+        $goods = CsGoodService::detail(request('id'),$cs_merchant_id);
+        $goods->sort = request('sort',0);
+        $goods->save();
+        return Result::success($goods);
+    }
 
 }

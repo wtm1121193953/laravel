@@ -3,6 +3,7 @@
     <div>
         <el-button type="text" @click="edit">编辑</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '下架' : '上架'}}</el-button>
+        <el-button type="text" @click="sort">排序</el-button>
         <el-button type="text" @click="del">删除</el-button>
 
         <el-dialog title="编辑商品信息" :visible.sync="isEdit">
@@ -75,6 +76,24 @@
                     this.$emit('refresh');
                 })
             },
+            sort() {
+                let data = this.scope.row;
+                this.$prompt('请输入排序数值（越大越靠前）', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputPattern: /^\d+$/,
+                    inputErrorMessage: '请输入数字'
+                }).then(({ value }) => {
+                    this.$emit('before-request')
+                    api.post('/goods/modifySort', {id: data.id,sort:value}).then(() => {
+                        this.$emit('refresh')
+                    }).finally(() => {
+                        this.$emit('after-request')
+                    })
+                }).catch(() => {
+
+                });
+            }
         },
         components: {
             GoodsForm
