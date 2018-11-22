@@ -61,7 +61,11 @@ class CsGoodService extends BaseService
         } else {
 
             $data = $query->paginate();
-            $data->each(function ($item) {
+            $all_cats = CsPlatformCategoryService::getAllIdName();
+            $data->each(function ($item) use ($all_cats) {
+
+                $item->cs_platform_cat_id_level1_name = !empty($all_cats[$item->cs_platform_cat_id_level1])?$all_cats[$item->cs_platform_cat_id_level1]:'';
+                $item->cs_platform_cat_id_level2_name = !empty($all_cats[$item->cs_platform_cat_id_level2])?$all_cats[$item->cs_platform_cat_id_level2]:'';
 
             });
 

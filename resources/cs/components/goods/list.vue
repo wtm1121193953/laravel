@@ -44,8 +44,8 @@
             <el-table-column prop="id" label="商品ID"/>
             <el-table-column prop="goods_name" label="商品名称"/>
             <el-table-column prop="price" label="销售价"/>
-            <el-table-column prop="cs_platform_cat_id_level1" label="一级分类"/>
-            <el-table-column prop="cs_platform_cat_id_level2" label="二级分类"/>
+            <el-table-column prop="cs_platform_cat_id_level1_name" label="一级分类"/>
+            <el-table-column prop="cs_platform_cat_id_level2_name" label="二级分类"/>
             <el-table-column prop="logo" label="商品图片">
                 <template slot-scope="scope">
                     <div class="detail_image" style="height: 50px; width: 50px" v-viewer @click="previewImage($event)">

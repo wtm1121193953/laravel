@@ -4,6 +4,15 @@ namespace App\Modules\Cs;
 
 use App\BaseModel;
 
+/**
+ * Class CsPlatformCategory
+ * @package App\Modules\Cs
+ * @property string cat_name
+ * @property int status
+ * @property int parent_id
+ * @property int level
+ *
+ */
 class CsPlatformCategory extends BaseModel
 {
     //
