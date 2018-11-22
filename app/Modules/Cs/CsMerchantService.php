@@ -316,12 +316,6 @@ class CsMerchantService extends BaseService {
 
         $userId = request()->get('current_user')->id;
         $merchant = CsMerchant::findOrFail($id);
-        /*$merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
-        $merchant->categoryPathText = '';
-        foreach ($merchant->categoryPath as $item) {
-            $merchant->categoryPathText .= $item->name . ' ';
-        }
-        $merchant->categoryPathOnlyEnable = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id, true);*/
         $merchant->account = $merchant->name;
         $merchant->business_time = json_decode($merchant->business_time, 1);
         $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
@@ -331,14 +325,6 @@ class CsMerchantService extends BaseService {
 
         $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
         $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
-        /*if ($merchant->oper_biz_member_code) {
-            $operBizMember = OperBizMember::where('code', $merchant->oper_biz_member_code)->first();
-            $merchant->operBizMember = $operBizMember;
-            $merchant->operBizMemberName = !empty($operBizMember) ? $operBizMember->name : '';
-        }
-        if ($merchant->bizer_id) {
-            $merchant->bizer = BizerService::getById($merchant->bizer_id);
-        }*/
         $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
