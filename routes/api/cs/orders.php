@@ -13,3 +13,5 @@ Route::get('/orders/export', 'OrdersController@export');
 
 Route::get('/orders/field/sta', 'OrdersController@getOrderFieldStatistics');
 
+Route::post('/order/deliver', 'OrdersController@orderDeliver');
+
