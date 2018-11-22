@@ -25,6 +25,18 @@ use Illuminate\Support\Carbon;
 class CsMerchantService extends BaseService {
 
     /**
+     * 通过名字获取ID数组
+     * @param string $name
+     * @return bool|\Illuminate\Support\Collection
+     */
+    public static function getIdsByName(string $name)
+    {
+        if (empty($name)) {
+            return false;
+        }
+        return CsMerchant::where('name','like',"%{$name}%")->pluck('id');
+    }
+    /**
      * 根据ID获取商户信息
      * @param $id
      * @param array|string $fields

@@ -44,8 +44,8 @@
             <el-table-column prop="id" label="商品ID"/>
             <el-table-column prop="goods_name" label="商品名称"/>
             <el-table-column prop="price" label="销售价"/>
-            <el-table-column prop="cs_platform_cat_id_level1" label="一级分类"/>
-            <el-table-column prop="cs_platform_cat_id_level2" label="二级分类"/>
+            <el-table-column prop="cs_platform_cat_id_level1_name" label="一级分类"/>
+            <el-table-column prop="cs_platform_cat_id_level2_name" label="二级分类"/>
             <el-table-column prop="logo" label="商品图片">
                 <template slot-scope="scope">
                     <div class="detail_image" style="height: 50px; width: 50px" v-viewer @click="previewImage($event)">
@@ -63,8 +63,8 @@
             <el-table-column prop="audit_status" label="审核状态">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.audit_status) === 1" class="c-warning">审核中</span>
-                    <span v-else-if="parseInt(scope.row.audit_status) === 2" class="c-green">审核通过</span>
-                    <span v-else-if="parseInt(scope.row.audit_status) === 3" class="c-danger">审核不通过</span>
+                    <div v-else-if="parseInt(scope.row.audit_status) === 2"  slot="reference" class="c-green"><p>审核通过</p></div>
+                    <div  v-else-if="parseInt(scope.row.audit_status) === 3" slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>

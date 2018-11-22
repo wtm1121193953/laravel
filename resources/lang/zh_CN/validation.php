@@ -157,7 +157,7 @@ return [
             'unique'    =>  '不可重复提交'
         ],
         'country_id'   =>  [
-            'required'    =>  '身份证号码类型不能为空'
+            'required'    =>  '国别不能为空'
         ],
         'id_card_no'    =>  [
             'unique'        =>  '身份证号码已验证过',
