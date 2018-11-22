@@ -316,9 +316,9 @@
                     /*business_time: [
                         {type: 'array', required: true, message: '营业时间不能为空'},
                     ],*/
-                    brand: [
+                    /*brand: [
                         {max: 20, message: '品牌名称不能超过20个字'}
-                    ],
+                    ],*/
                     business_start_time: [
                         {type: 'date', required: true, message: '营业时间不能为空'},
                     ],
