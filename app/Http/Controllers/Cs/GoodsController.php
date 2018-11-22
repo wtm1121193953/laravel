@@ -28,6 +28,7 @@ class GoodsController extends BaseController
         $params['cs_platform_cat_id_level1'] = request('cs_platform_cat_id_level1','');
         $params['cs_platform_cat_id_level2'] = request('cs_platform_cat_id_level2','');
         $params['cs_merchant_id'] = $this->_cs_merchant_id;
+        $params['sort'] = 1;
         $data = CsGoodService::getList($params);
 
         return Result::success([
@@ -181,6 +182,48 @@ class GoodsController extends BaseController
     }
 
     /**
+     * 审核通过后的编辑
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function fastEdit(Request $request)
+    {
+        parent::__init();
+        $request->validate([
+            'id' =>'required',
+            'market_price' => 'required',
+            'price' => 'required',
+            'cs_platform_cat_id_level1' => 'required',
+            'cs_platform_cat_id_level2' => 'required',
+        ]);
+        $id = $request->id;
+        $cs_merchant_id = $this->_cs_merchant_id;
+        $cs_goods = CsGood::findOrFail($id);
+        if ($cs_goods->cs_merchant_id != $cs_merchant_id) {
+            throw new BaseResponseException('参数错误2');
+        }
+
+
+        $cs_goods->cs_platform_cat_id_level1 = $request->cs_platform_cat_id_level1;
+        $cs_goods->cs_platform_cat_id_level2 = $request->cs_platform_cat_id_level2;
+        $cs_goods->market_price = $request->market_price;
+        $cs_goods->price = $request->price;
+        $cs_goods->stock = $request->stock;
+        $cs_goods->logo = $request->logo;
+        $cs_goods->summary = $request->summary;
+        
+        $rs = $cs_goods->save();
+
+        if ($rs) {
+
+            return Result::success('修改成功');
+        } else {
+            throw new BaseResponseException('添加失败');
+        }
+        return Result::success();
+    }
+
+    /**
      * 修改上下架
      * @return \Illuminate\Http\JsonResponse
      */
@@ -215,5 +258,22 @@ class GoodsController extends BaseController
         return Result::success($goods);
     }
 
+    /**
+     * 修改排序
+     */
+    public function modifySort()
+    {
+        parent::__init();
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'sort' => 'required|integer|min:0',
+
+        ]);
+        $cs_merchant_id = $this->_cs_merchant_id;
+        $goods = CsGoodService::detail(request('id'),$cs_merchant_id);
+        $goods->sort = request('sort',0);
+        $goods->save();
+        return Result::success($goods);
+    }
 
 }

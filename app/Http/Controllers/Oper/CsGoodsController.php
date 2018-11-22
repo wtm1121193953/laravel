@@ -41,7 +41,7 @@ class CsGoodsController extends Controller
         $params['audit_status'] = request('auditStatus',[]);
         $params['with_merchant'] = 1;
         $params['cs_merchant_id'] = request('cs_merchant_id',0);
-
+        $params['sort'] = 2;
         $data = CsGoodService::getList($params);
 
         return Result::success([
@@ -119,7 +119,7 @@ class CsGoodsController extends Controller
         $goods->certificate2 = $goods->certificate2 ? explode(',', $goods->certificate2) : [];
         $goods->certificate3 = $goods->certificate3 ? explode(',', $goods->certificate3) : [];
 
-        $all_cats = CsPlatformCategoryService::getAllIdName();
+        $all_cats = DataCacheService::getPlatformCats();
         $goods->cs_platform_cat_id_level1_name = $all_cats[$goods->cs_platform_cat_id_level1];
         $goods->cs_platform_cat_id_level2_name = $all_cats[$goods->cs_platform_cat_id_level2];
         $goods->status_name = CsGood::statusName($goods->status);

@@ -23,7 +23,7 @@ class CsGoodsExport implements FromQuery, WithHeadings, WithMapping
     public function __construct($query)
     {
         $this->query = $query;
-        $this->all_cats = CsPlatformCategoryService::getAllIdName();
+        $this->all_cats = DataCacheService::getPlatformCats();
     }
 
     /**

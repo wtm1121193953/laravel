@@ -26,6 +26,7 @@ use App\BaseModel;
  * @property integer status
  * @property integer audit_status
  * @property string audit_suggestion
+ * @property integer sort
  */
 class CsGood extends BaseModel
 {
