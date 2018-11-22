@@ -500,4 +500,26 @@ class OrderService extends BaseService
         }
         return false;
     }
+
+    /**
+     * 超市订单发货
+     * @param $orderId
+     * @param $expressCompany
+     * @param $expressNo
+     * @return Order
+     */
+    public static function deliver($orderId, $expressCompany, $expressNo)
+    {
+        $order = self::getById($orderId);
+        if (empty($order)) {
+            throw new BaseResponseException('该订单不存在');
+        }
+        $order->express_company = $expressCompany;
+        $order->express_no = $expressNo;
+        $order->deliver_time = Carbon::now();
+        $order->status = Order::STATUS_DELIVERED;
+        $order->save();
+
+        return $order;
+    }
 }

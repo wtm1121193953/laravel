@@ -33,6 +33,9 @@ use Carbon\Carbon;
  * @property number buy_number
  * @property number status
  * @property number  pay_type
+ * @property number deliver_price
+ * @property number total_price
+ * @property number discount_price
  * @property number pay_price
  * @property Carbon pay_time
  * @property number pay_target_type
@@ -53,6 +56,10 @@ use Carbon\Carbon;
  * @property integer deliver_type
  * @property string express_company
  * @property string express_no
+ * @property string express_address
+ * @property Carbon deliver_time
+ * @property Carbon take_delivery_time
+ * @property integer deliver_code
  */
 
 class Order extends BaseModel
