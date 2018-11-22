@@ -102,18 +102,7 @@
                         </div>
                         <span slot="reference">配送</span>
                     </el-popover>
-                    <el-popover
-                            v-else-if="scope.row.deliver_type == 2"
-                            placement="bottom"
-                            trigger="hover"
-                            width="400"
-                    >
-                        <div>
-                            <div>{{scope.row.express_company}}</div>
-                            <div>{{scope.row.express_no}}</div>
-                        </div>
-                        <span slot="reference">自提</span>
-                    </el-popover>
+                    <span v-else-if="scope.row.deliver_type == 2">自提</span>
                     <span v-else>无</span>
                 </template>
             </el-table-column>
@@ -121,6 +110,7 @@
             <el-table-column label="操作" width="130">
                 <template slot-scope="scope">
                     <el-button type="text" @click="showDeliver(scope.row)" v-if="scope.row.status == 8">发货</el-button>
+                    <el-button type="text" @click="verification(scope.row)" v-if="scope.row.status == 9">核销</el-button>
                     <el-button type="text" @click="showDetail(scope.row)">订单详情</el-button>
                 </template>
             </el-table-column>
@@ -137,20 +127,6 @@
 
         <el-dialog title="订单详情" :visible.sync="isShow">
             <order-form :scope="order"/>
-        </el-dialog>
-
-        <el-dialog title="核销" :visible.sync="isShowItems" width="30%">
-            <div>(仅支持一次核销订单全部消费码)</div>
-            <el-row>
-                <el-col :span="16">
-                    <el-input placeholder="请输入消费码" @keyup.native.enter="verification" v-model="verify_code"/>
-                </el-col>
-                <el-col :span="7" :offset="1">
-                    <el-button type="primary" ref="verifyInput" @click="verification">核销</el-button>
-                </el-col>
-                <div v-if="verify_success" class="fl">核销成功！<el-button type="text" @click="showDetail(order)">查看订单</el-button></div>
-                <div v-if="verify_fail">核销失败！请检查消费码</div>
-            </el-row>
         </el-dialog>
 
         <el-dialog title="准备发货" :visible.sync="isShowDeliver" center width="25%" :close-on-click-modal="false" :close-on-press-escape="false" @close="closeDeliver">
@@ -170,7 +146,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="closeDeliver">取 消</el-button>
-                <el-button type="primary" @click="deliver">确 定</el-button>
+                <el-button type="primary" @click="deliver">确定发货</el-button>
             </span>
         </el-dialog>
     </el-col>
@@ -194,7 +170,6 @@
             return {
                 isLoading: false,
                 isShow: false,
-                isShowItems: false,
                 list: [],
                 query: {
                     page: 1,
@@ -208,9 +183,6 @@
                 },
                 total: 0,
                 order: {},
-                verify_code: '',
-                verify_success: false,
-                verify_fail: false,
 
                 deliverOrder: {},
                 isShowDeliver: false,
@@ -255,17 +227,7 @@
             showDetail(scope) {
                 this.order = scope;
                 this.isShow = true;
-                this.isShowItems = false;
                 this.isShowDeliver = false;
-            },
-            showItems() {
-                this.isShowItems = true;
-                this.verify_success = false;
-                this.verify_fail = false;
-                this.verify_code = '';
-                setTimeout(() => {
-                    this.$refs.verifyInput.focus();
-                }, 1000)
             },
             showDeliver(row) {
                 this.deliverOrder = row;
@@ -292,25 +254,34 @@
                     }
                 })
             },
-            verification(){
-                this.verify_success = false;
-                this.verify_fail = false;
-                if (!this.verify_code){
-                    this.$message.error('请填写消费码');
-                    return false;
-                }
-                api.post('/verification', {verify_code: this.verify_code}, false).then(result => {
-                    console.log(result);
-                    if(result && parseInt(result.code) === 0){
-                        this.order = result.data;
-                        console.log('order',this.order);
-                        this.verify_success = true;
-                    }else{
-                        this.verify_code = '';
-                        this.verify_fail = true;
-                        this.$message.error(result.message);
-                    }
-                })
+            verification(row){
+                this.$prompt('', '自提订单确认', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    center: true,
+                    dangerouslyUseHTMLString: true,
+                    inputType: 'text',
+                    inputPlaceholder: '请输入核销码',
+                    inputValidator: (val) => {if(!val || val.length > 6) return '输入核销码，不能超过6位'}
+                }).then(({value}) => {
+                    let param = {
+                        id: row.id,
+                        deliver_code: value,
+                    };
+                    api.post('/order/check/deliver_code', param).then(data => {
+                        this.$confirm(`<div><p>订单号：${data.order_no}</p><p>手机号：${data.notify_mobile}</p></div>`, '自提订单确认', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            center: true,
+                            dangerouslyUseHTMLString: true,
+                        }).then(() => {
+                            api.post('/verification', param).then(data => {
+                                this.$message.success('核销成功');
+                                this.getList();
+                            });
+                        }).catch(() => {});
+                    })
+                }).catch(() => {})
             },
             getNumber(row) {
                 let num = 0;

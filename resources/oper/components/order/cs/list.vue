@@ -103,18 +103,7 @@
                         </div>
                         <span slot="reference">配送</span>
                     </el-popover>
-                    <el-popover
-                            v-else-if="scope.row.deliver_type == 2"
-                            placement="bottom"
-                            trigger="hover"
-                            width="400"
-                    >
-                        <div>
-                            <div>{{scope.row.express_company}}</div>
-                            <div>{{scope.row.express_no}}</div>
-                        </div>
-                        <span slot="reference">自提</span>
-                    </el-popover>
+                    <span v-else-if="scope.row.deliver_type == 2">自提</span>
                     <span v-else>无</span>
                 </template>
             </el-table-column>
