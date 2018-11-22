@@ -120,7 +120,7 @@
             <el-table-column prop="merchant_name" width="250" label="商户名称"/>
             <el-table-column label="操作" width="130">
                 <template slot-scope="scope">
-                    <el-button type="text" @click="showDeliver(scope.row)">发货</el-button>
+                    <el-button type="text" @click="showDeliver(scope.row)" v-if="scope.row.status == 8">发货</el-button>
                     <el-button type="text" @click="showDetail(scope.row)">订单详情</el-button>
                 </template>
             </el-table-column>
@@ -155,7 +155,7 @@
 
         <el-dialog title="准备发货" :visible.sync="isShowDeliver" center width="25%" :close-on-click-modal="false" :close-on-press-escape="false" @close="closeDeliver">
             <div style="text-align: center; margin-bottom: 15px;">仅限同城配送</div>
-            <el-form v-model="form" ref="form" :rules="formRules" label-width="100px">
+            <el-form :model="form" ref="form" :rules="formRules" label-width="100px">
                 <el-form-item prop="expressCompany" label="快递公司">
                     <el-input v-model="form.expressCompany" placeholder="50字以内"/>
                 </el-form-item>
@@ -283,9 +283,10 @@
                             expressCompany: this.form.expressCompany,
                             expressNo: this.form.expressNo,
                         };
-                        api.post('', param).then(data => {
+                        api.post('/order/deliver', param).then(data => {
                             this.$message.success('发货成功');
                             this.closeDeliver();
+                            this.getList();
                             this.$emit('refresh');
                         })
                     }
@@ -323,6 +324,11 @@
             this.query.status = this.status;
 
             this.getList();
+        },
+        watch: {
+            activeTab() {
+                this.getList();
+            }
         },
         components: {
             OrderForm,

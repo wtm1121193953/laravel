@@ -316,12 +316,6 @@ class CsMerchantService extends BaseService {
 
         $userId = request()->get('current_user')->id;
         $merchant = CsMerchant::findOrFail($id);
-        /*$merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
-        $merchant->categoryPathText = '';
-        foreach ($merchant->categoryPath as $item) {
-            $merchant->categoryPathText .= $item->name . ' ';
-        }
-        $merchant->categoryPathOnlyEnable = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id, true);*/
         $merchant->account = $merchant->name;
         $merchant->business_time = json_decode($merchant->business_time, 1);
         $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
@@ -331,14 +325,6 @@ class CsMerchantService extends BaseService {
 
         $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
         $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
-        /*if ($merchant->oper_biz_member_code) {
-            $operBizMember = OperBizMember::where('code', $merchant->oper_biz_member_code)->first();
-            $merchant->operBizMember = $operBizMember;
-            $merchant->operBizMemberName = !empty($operBizMember) ? $operBizMember->name : '';
-        }
-        if ($merchant->bizer_id) {
-            $merchant->bizer = BizerService::getById($merchant->bizer_id);
-        }*/
         $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
@@ -371,6 +357,9 @@ class CsMerchantService extends BaseService {
         $csmerchant = CsMerchant::where('id', $id)
             //->where('audit_oper_id', $currentOperId)
             ->first();
+        //保留原有数据转存json到审核记录表
+        $beforeCsmerchant = $csmerchant->toArray();
+        $beforeCsmerchantToJson = json_encode($beforeCsmerchant);
         //获取原有结算周期
         $settlement_cycle_type = $csmerchant->settlement_cycle_type;
         if (empty($csmerchant)) {
@@ -416,12 +405,22 @@ class CsMerchantService extends BaseService {
         }*/
 
         $csmerchant->toArray();
-        $jsonTomerchant = json_encode($csmerchant);
+        $afterCsmerchantToJson = json_encode($csmerchant);
 
+        //与原有数据对比，有修改字段另存储json到审核表
+        $modifyCsMerchant = [];
+        foreach ($beforeCsmerchant as $key => $val){
+            if($csmerchant[$key] != $val){
+                array_push($modifyCsMerchant,[$key => $csmerchant[$key]]);
+            }
+        }
+        $modifyCsMerchantToJson = json_encode($modifyCsMerchant);
         $params = [
             'oper_id' => $currentOperId,
             'name' => $csmerchant['name'],
-            'dataAfter' => $jsonTomerchant,
+            'dataBefore' => $beforeCsmerchantToJson,
+            'dataAfter' => $afterCsmerchantToJson,
+            'dataModify' => $modifyCsMerchantToJson,
         ];
 
         // 添加审核记录
