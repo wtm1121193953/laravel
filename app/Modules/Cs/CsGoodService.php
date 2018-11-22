@@ -8,6 +8,7 @@
 namespace App\Modules\Cs;
 
 use App\BaseService;
+use App\DataCacheService;
 use App\Exceptions\BaseResponseException;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -71,7 +72,7 @@ class CsGoodService extends BaseService
         } else {
 
             $data = $query->paginate();
-            $all_cats = CsPlatformCategoryService::getAllIdName();
+            $all_cats = DataCacheService::getPlatformCats();
             $data->each(function ($item) use ($all_cats) {
 
                 $item->cs_platform_cat_id_level1_name = !empty($all_cats[$item->cs_platform_cat_id_level1])?$all_cats[$item->cs_platform_cat_id_level1]:'';
