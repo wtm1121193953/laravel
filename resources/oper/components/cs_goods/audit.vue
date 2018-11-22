@@ -1,21 +1,20 @@
 <template>
     <page title="商品详细" :breadcrumbs="{商品列表: '/cs/goods'}">
         <el-row>
-            <el-col></el-col>
-            <el-col></el-col>
+            <el-col>商品状态：{{goods.status_name}},审核状态：{{goods.audit_status_name}}</el-col>
         </el-row>
         <el-row>
             <el-col :span="22">
-                <el-form label-width="120px" :inline="true">
+                <el-form label-width="120px">
                     <el-form-item prop="goods_name" label="商品名称">
                         {{goods.goods_name}}
                     </el-form-item>
 
                     <el-form-item label="一级分类" prop="cs_platform_cat_id_level1">
-                        {{goods.cs_platform_cat_id_level1}}
+                        {{goods.cs_platform_cat_id_level1_name}}
                     </el-form-item>
                     <el-form-item label="二级分类" prop="cs_platform_cat_id_level2">
-                        {{goods.cs_platform_cat_id_level2}}
+                        {{goods.cs_platform_cat_id_level2_name}}
                     </el-form-item>
 
                     <el-form-item prop="market_price" label="市场价">

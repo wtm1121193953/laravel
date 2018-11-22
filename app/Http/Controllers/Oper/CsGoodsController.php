@@ -8,6 +8,7 @@
 namespace App\Http\Controllers\Oper;
 
 use App\Exceptions\BaseResponseException;
+use App\Exports\CsGoodsExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsGoodService;
@@ -49,6 +50,35 @@ class CsGoodsController extends Controller
         ]);
     }
 
+    /**
+     * 导出
+     */
+    public function download()
+    {
+        $params = [];
+        $cs_merchant_name = request('merchant_name','');
+        if (!empty($cs_merchant_name)) {
+            $params['cs_merchant_ids'] = CsMerchantService::getIdsByName($cs_merchant_name);
+        }
+        $params['goods_name'] = request('goods_name','');
+        $params['cs_platform_cat_id_level1'] = request('cs_platform_cat_id_level1','');
+        $params['cs_platform_cat_id_level2'] = request('cs_platform_cat_id_level2','');
+        $params['oper_id'] = request()->get('current_user')->oper_id;
+        $params['id'] = request('id',0);
+        $params['status'] = request('status',[]);
+        $params['audit_status'] = request('auditStatus',[]);
+        $params['with_merchant'] = 1;
+        $params['cs_merchant_id'] = request('cs_merchant_id',0);
+
+        $query = CsGoodService::getList($params,true);
+        return (new CsGoodsExport($query))->download('商品列表.xlsx');
+
+    }
+
+    /**
+     * 获取子分类
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getSubCat()
     {
 
@@ -68,6 +98,10 @@ class CsGoodsController extends Controller
 
     }
 
+    /**
+     * 获取商品详情
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function detail()
     {
         $this->validate(request(), [
@@ -84,6 +118,12 @@ class CsGoodsController extends Controller
         $goods->certificate1 = $goods->certificate1 ? explode(',', $goods->certificate1) : [];
         $goods->certificate2 = $goods->certificate2 ? explode(',', $goods->certificate2) : [];
         $goods->certificate3 = $goods->certificate3 ? explode(',', $goods->certificate3) : [];
+
+        $all_cats = CsPlatformCategoryService::getAllIdName();
+        $goods->cs_platform_cat_id_level1_name = $all_cats[$goods->cs_platform_cat_id_level1];
+        $goods->cs_platform_cat_id_level2_name = $all_cats[$goods->cs_platform_cat_id_level2];
+        $goods->status_name = CsGood::statusName($goods->status);
+        $goods->audit_status_name = CsGood::auditStatusName($goods->audit_status);
 
         return Result::success($goods);
     }

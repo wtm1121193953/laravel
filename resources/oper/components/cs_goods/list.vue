@@ -56,7 +56,9 @@
                 <el-form-item>
                     <el-button type="primary"  @click="search"><i class="el-icon-search">搜 索</i></el-button>
                 </el-form-item>
-
+                <el-form-item>
+                    <el-button type="success" @click="downloadExcel">导出Excel</el-button>
+                </el-form-item>
             </el-form>
         </el-col>
 
@@ -220,7 +222,25 @@
             search() {
                 this.query.cs_merchant_id = '';
                 this.getList();
-            }
+            },
+            downloadExcel() {
+                let message = '确定要导出当前筛选的商品列表么？';
+
+                this.$confirm(message).then(() => {
+                    let data = this.query;
+                    let params = [];
+                    Object.keys(data).forEach((key) => {
+                        let value =  data[key];
+                        if (typeof value === 'undefined' || value == null) {
+                            value = '';
+                        }
+                        params.push([key, encodeURIComponent(value)].join('='))
+                    }) ;
+                    let uri = params.join('&');
+
+                    location.href = `/api/oper/cs_goods/download?${uri}`;
+                })
+            },
 
         },
         created(){
