@@ -139,14 +139,10 @@ class CsMerchantService extends BaseService {
         $status = array_get($data,'status');
         $settlementCycleType = array_get($data,'settlementCycleType');
         $auditStatus = array_get($data,'auditStatus');
-        //$merchantCategory = array_get($data,'merchantCategory');
-        //$isPilot = array_get($data,'isPilot');
         $startCreatedAt = array_get($data,'startCreatedAt');
         $endCreatedAt = array_get($data,'endCreatedAt');
 
         $cityId = array_get($data, "cityId");
-        //$bizerIds = array_get($data, "bizer_id");
-        //$operBizMemberCodes = array_get($data, 'operBizMemberCodes');
 
         // 全局限制条件
         $query = CsMerchant::where('audit_oper_id', '>', 0)
@@ -176,22 +172,6 @@ class CsMerchantService extends BaseService {
                 $query->where('creator_oper_id', $creatorOperId);
             }
         }
-
-        /*if (!empty($bizerIds)) {
-            if (is_array($bizerIds) || $bizerIds instanceof Collection) {
-                $query->whereIn('bizer_id', $bizerIds);
-            } else {
-                $query->where('bizer_id', $bizerIds);
-            }
-        }*/
-
-        /*if (!empty($operBizMemberCodes)) {
-            if (is_array($operBizMemberCodes) || $operBizMemberCodes instanceof Collection) {
-                $query->whereIn('oper_biz_member_code', $operBizMemberCodes);
-            } else {
-                $query->where('oper_biz_member_code', $operBizMemberCodes);
-            }
-        }*/
 
         if(!empty($cityId)){
             if(isset($cityId[0]) && $cityId[0]){
@@ -253,25 +233,6 @@ class CsMerchantService extends BaseService {
         if ($signboardName) {
             $query->where('signboard_name', 'like', "%$signboardName%");
         }
-        /*if (!empty($merchantCategory)) {
-            if (count($merchantCategory) == 1) {
-                $merchantCategoryFinalId = MerchantCategory::where('pid', $merchantCategory[0])
-                    ->select('id')->get()
-                    ->pluck('id')->toArray();
-            } else {
-                $merchantCategoryFinalId = intval($merchantCategory[1]);
-            }
-            if (is_array($merchantCategoryFinalId) || $merchantCategoryFinalId instanceof Collection) {
-                $query->whereIn('merchant_category_id', $merchantCategoryFinalId);
-            } else {
-                $query->where('merchant_category_id', $merchantCategoryFinalId);
-            }
-        }*/
-        /*if ($isPilot) {
-            $query->where('is_pilot', Merchant::PILOT_MERCHANT);
-        } else {
-            $query->where('is_pilot', Merchant::NORMAL_MERCHANT);
-        }*/
 
         if ($getWithQuery) {
             return $query;
@@ -279,29 +240,13 @@ class CsMerchantService extends BaseService {
 
             $data = $query->paginate();
             $data->each(function ($item) {
-                /*if ($item->merchant_category_id) {
-                    $item->categoryPath = MerchantCategoryService::getCategoryPath($item->merchant_category_id);
-                }*/
+
                 $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
                 $item->account = $item->name;
                 $item->business_time = json_decode($item->business_time, 1);
                 $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
                 $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
-                /*if ($item->bizer_id) {
-                    $operBizer = OperBizerService::getOperBizerByParam([
-                        'operId' => $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id,
-                        'bizerId' => $item->bizer_id,
-                    ]);
-                    $item->divide = empty($operBizer) ? 0 : $operBizer->divide;
-                }
-                $item->bizer = BizerService::getById($item->bizer_id);
-                $operBizMember = OperBizMember::where('oper_id', $item->operId)
-                    ->where('code', $item->oper_biz_member_code)
-                    ->first();
-                $item->operBizMember = $operBizMember;
-                $item->operBizMemberName = !empty($operBizMember) ? $operBizMember->value('name') : '无';*/
             });
-
             return $data;
         }
     }
