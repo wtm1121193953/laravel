@@ -163,9 +163,29 @@ class CsMerchantCategoryService extends BaseService
 
         $merchant_cat->status = $merchant_cat->status == CsMerchantCategory::STATUS_ON?CsMerchantCategory::STATUS_OFF:CsMerchantCategory::STATUS_ON;
 
-        $rs = $merchant_cat->save();
-        if ($rs) {
+        DB::beginTransaction();
+        try {
+            $merchant_cat->save();
+            if ($merchant_cat->status == CsMerchantCategory::STATUS_OFF) {
+                //如果下架分类对应子分类和相关的商品
+                CsMerchantCategory::where('cs_merchant_id',$cs_merchant_id)
+                    ->where('cs_category_parent_id',$merchant_cat->platform_category_id)
+                    ->update(['status'=>CsMerchantCategory::STATUS_OFF])
+                ;
+                if ($merchant_cat->cs_category_level == 1) {
+                    CsGood::where('cs_platform_cat_id_level1',$merchant_cat->platform_category_id)
+                        ->update(['status'=>CsGood::STATUS_OFF])
+                    ;
+                } elseif ($merchant_cat->cs_category_level == 2) {
+                    CsGood::where('cs_platform_cat_id_level2',$merchant_cat->platform_category_id)
+                        ->update(['status'=>CsGood::STATUS_OFF])
+                    ;
+                }
+            }
+            DB::commit();
             return $merchant_cat->status;
+        } catch (\Exception $e) {
+            throw $e;
         }
 
     }

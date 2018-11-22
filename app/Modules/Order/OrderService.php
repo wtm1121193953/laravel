@@ -71,8 +71,8 @@ class OrderService extends BaseService
                 })->orWhere(function (Builder $query) {
                     $query->where('type', Order::TYPE_DISHES);
                 })->orWhere(function (Builder $query) {
-                    $query->where('type', Order::TYPE_SUPERMARKET)
-                        ->whereIn('status', [Order::STATUS_REFUNDED, Order::STATUS_FINISHED, Order::STATUS_UNDELIVERED, Order::STATUS_NOT_TAKE_BY_SELF, Order::STATUS_DELIVERED]);
+                    $query->where('merchant_type', Order::MERCHANT_TYPE_SUPERMARKET)
+                        ->whereIn('status', [Order::STATUS_PAID, Order::STATUS_REFUNDED, Order::STATUS_FINISHED, Order::STATUS_UNDELIVERED, Order::STATUS_NOT_TAKE_BY_SELF, Order::STATUS_DELIVERED]);
                 });
         });
 
@@ -179,6 +179,7 @@ class OrderService extends BaseService
         }
         $payments = Payment::getAllType();
         foreach ($data as $key => $item) {
+            $item->makeHidden('deliver_code');
             $item->merchant_name = isset($merchants[$item->merchant_id]) ? $merchants[$item->merchant_id]->name : $item->merchant_name;
             $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
             $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
@@ -521,5 +522,47 @@ class OrderService extends BaseService
         $order->save();
 
         return $order;
+    }
+
+    /**
+     * 核销 超市订单 取货码
+     * @param $orderId
+     * @param $deliverCode
+     * @return Order
+     */
+    public static function verifyCsOrder($orderId, $deliverCode)
+    {
+        $order = self::getById($orderId);
+        if (empty($order)) {
+            throw new BaseResponseException('该订单不存在');
+        }
+        if ($order->deliver_code == $deliverCode) {
+            $order->deliver_time = Carbon::now();
+            $order->status = Order::STATUS_DELIVERED;
+            $order->save();
+        } else {
+            throw new BaseResponseException('该订单核销码错误');
+        }
+
+        return $order;
+    }
+
+    /**
+     * 检查超市订单 取货码
+     * @param $orderId
+     * @param $deliverCode
+     * @return Order
+     */
+    public static function checkDeliverCode($orderId, $deliverCode)
+    {
+        $order = self::getById($orderId);
+        if (empty($order)) {
+            throw new BaseResponseException('该订单不存在');
+        }
+        if ($order->deliver_code == $deliverCode) {
+            return $order;
+        } else {
+            throw new BaseResponseException('该订单核销码错误');
+        }
     }
 }

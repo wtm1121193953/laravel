@@ -113,12 +113,38 @@ class OrdersController extends Controller
         });
     }
 
+    /**
+     * 检查超市订单 取货码
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkDeliverCode()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'deliver_code' => 'required|max:6',
+        ]);
+        $id = request('id');
+        $deliver_code = request('deliver_code');
+
+        $order = OrderService::checkDeliverCode($id, $deliver_code);
+
+        return Result::success($order);
+    }
+
+    /**
+     * 超市订单核销
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function verification()
     {
-        $verify_code = request('verify_code');
-        $merchantId = request()->get('current_user')->merchant_id;
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'deliver_code' => 'required|max:6',
+        ]);
+        $id = request('id');
+        $deliver_code = request('deliver_code');
 
-        $order = OrderService::verifyOrder($merchantId, $verify_code);
+        $order = OrderService::verifyCsOrder($id, $deliver_code);
 
         return Result::success($order);
     }

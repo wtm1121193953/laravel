@@ -17,7 +17,9 @@ import PayQrcode from '../components/pay-qrcode'
 import InviteStatisticsList from '../components/invite-statistics/list'
 import InviteStatisticsDaily from '../components/invite-statistics/daily'
 
+// 订单管理
 import OrdersList from '../components/orders/tabs'
+import ScanOrderList from '../components/orders/scan/list'
 
 //电子合同管理
 import ElectronicContract from '../components/electronic-contract/form'
@@ -77,6 +79,7 @@ const routes = [
         component: Home,
         children: [
             {path: 'orders', component: OrdersList, name: 'OrdersList'},
+            {path: 'scan/orders', component: ScanOrderList, name: 'ScanOrderList'},
         ]
     },
 

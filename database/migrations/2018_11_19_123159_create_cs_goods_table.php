@@ -33,6 +33,7 @@ class CreateCsGoodsTable extends Migration
             $table->tinyInteger('status')->default(0)->comment('状态 1上架 2下架');
             $table->tinyInteger('audit_status')->default(0)->comment('审核状态 1待审核 2审核通过 3审核不通过');
             $table->string('audit_suggestion',600)->default('')->comment('审核意见');
+            $table->integer('sort')->default(0)->comment('排序');
             $table->timestamps();
         });
     }

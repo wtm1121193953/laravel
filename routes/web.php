@@ -29,11 +29,13 @@ Route::view('/oper', 'oper');
 
 // 商户中心页面
 Route::view('/merchant', 'merchant');
-// 商户中心页面
-Route::view('/cs', 'cs');
-
 // 商户中心h5页面
 Route::view('/merchant-h5', 'merchant-h5');
+// 超市商户页面
+Route::view('/cs', 'cs');
+// 超市商户h5页面
+Route::view('/cs-h5', 'cs-h5');
+
 
 // 用户端h5页面
 /*Route::get('/user-h5', function () {

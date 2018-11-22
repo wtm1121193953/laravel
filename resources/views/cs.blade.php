@@ -242,7 +242,7 @@
     if(!checkClient()) {
         //手机端
         var href = window.location.href;
-        window.location.href = href.replace('cs', 'merchant-h5')
+        window.location.href = href.replace('cs', 'cs-h5')
     }
 </script>
 

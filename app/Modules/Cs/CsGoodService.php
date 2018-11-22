@@ -8,6 +8,7 @@
 namespace App\Modules\Cs;
 
 use App\BaseService;
+use App\DataCacheService;
 use App\Exceptions\BaseResponseException;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -51,6 +52,16 @@ class CsGoodService extends BaseService
             ->when(!empty($params['cs_merchant_ids']),function (Builder $query) use ($params){
                 $query->whereIn('cs_merchant_id', $params['cs_merchant_ids']);
             })
+            ->when(!empty($params['sort']),function (Builder $query) use ($params){
+                if ($params['sort'] == 1) {
+                    $query->orderBy('sort','desc');
+                } elseif ($params['sort'] == 2) {
+                    $query->orderBy('created_at','desc');
+                } else {
+                    $query->orderBy('sort','desc');
+                }
+
+            })
             ->when(!empty($params['with_merchant']),function (Builder $query) use ($params){
                 $query->with('cs_merchant:id,name');
             })
@@ -61,7 +72,7 @@ class CsGoodService extends BaseService
         } else {
 
             $data = $query->paginate();
-            $all_cats = CsPlatformCategoryService::getAllIdName();
+            $all_cats = DataCacheService::getPlatformCats();
             $data->each(function ($item) use ($all_cats) {
 
                 $item->cs_platform_cat_id_level1_name = !empty($all_cats[$item->cs_platform_cat_id_level1])?$all_cats[$item->cs_platform_cat_id_level1]:'';

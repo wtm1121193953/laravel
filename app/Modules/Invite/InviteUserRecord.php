@@ -22,6 +22,8 @@ class InviteUserRecord extends BaseModel
     const ORIGIN_TYPE_MERCHANT = 2;
     //推广人类型  3-运营中心
     const ORIGIN_TYPE_OPER = 3;
+    //推广人类型  5-超市
+    const ORIGIN_TYPE_CS = 5;
 
     public function user()
     {

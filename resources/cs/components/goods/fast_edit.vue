@@ -1,7 +1,7 @@
 <template>
     <page title="编辑商品" :breadcrumbs="{商品管理: '/goods'}">
         <el-col :span="16">
-            <goods-form
+            <fast-goods-form
                     v-if="goods"
                     :data="goods"
                     @cancel="cancel"
@@ -12,9 +12,9 @@
 
 <script>
     import api from '../../../assets/js/api'
-    import GoodsForm from './goods-form'
+    import FastGoodsForm from './fast-goods-form'
     export default {
-        name: "edit",
+        name: "fast-edit",
         data(){
             return {
                 id: null,
@@ -26,7 +26,7 @@
                 router.push('/goods');
             },
             doEdit(data){
-                api.post('/goods/edit', data).then((data) => {
+                api.post('/goods/fastEdit', data).then((data) => {
                     router.push('/goods');
                 }).finally(() => {
 
@@ -48,7 +48,7 @@
             this.getDetail();
         },
         components: {
-            GoodsForm
+            FastGoodsForm
         }
     }
 </script>
