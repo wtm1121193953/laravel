@@ -101,6 +101,7 @@ class CsMerchantAuditService extends BaseService {
         $audit->data_before = $dataBefore;
         $audit->data_after = $dataAfter;
         $audit->data_modify = $dataModify;
+        $audit->settlement_cycle_type = CsMerchant::SETTLE_DAY_ADD_ONE;
         $audit->status = CsMerchantAudit::AUDIT_STATUS_AUDITING;
         $audit->save();
         return $audit;
@@ -141,7 +142,7 @@ class CsMerchantAuditService extends BaseService {
         if(is_null($merchant)){
             // 商户表无数据则新增
             $merchant = new CsMerchant();
-            $saveColumn = json_decode($auditSuggestion->data_after);
+            $saveColumn = json_decode($merchantAudit->data_after);
             foreach ($saveColumn as $k=>$v){
                 $merchant->$k = $v;
             }
