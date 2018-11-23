@@ -26,6 +26,7 @@ use Carbon\Carbon;
  * @property number type
  * @property number goods_id
  * @property number dishes_id
+ * @property string cs_goods_buy
  * @property string goods_name
  * @property string goods_pic
  * @property string goods_thumb_url
@@ -33,6 +34,8 @@ use Carbon\Carbon;
  * @property number buy_number
  * @property number status
  * @property number  pay_type
+ * @property integer  delivery_type
+ * @property string  delivery_address_id
  * @property number deliver_price
  * @property number total_price
  * @property number discount_price
@@ -120,6 +123,9 @@ class Order extends BaseModel
     const MERCHANT_TYPE_NORMAL = 1;         // 默认商家
     const MERCHANT_TYPE_SUPERMARKET = 2;    // 超市商家
 
+    //配送方式
+    const  DELIVERY_SELF_MENTION = 1;       //自提
+    const  DELIVERY_MERCHANT_POST = 1;       //商家配送
     /**
      * 分润状态
      */

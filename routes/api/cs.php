@@ -39,6 +39,9 @@ Route::prefix('cs')
         Route::post('goods/del', 'GoodsController@del');
         Route::post('goods/modifySort', 'GoodsController@modifySort');
 
+        Route::get('setting/getDeliverySetting', 'SettingController@getDeliverySetting');
+        Route::post('setting/saveDeliverySetting', 'SettingController@saveDeliverySetting');
+
 
         Route::get('inviteChannel/inviteQrcode', 'InviteChannelController@getInviteQrcode');
         Route::get('inviteChannel/downloadInviteQrcode', 'InviteChannelController@downloadInviteQrcode');

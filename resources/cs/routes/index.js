@@ -26,6 +26,7 @@ import ElectronicContract from '../components/electronic-contract/form'
 
 //系统设置
 import SettingMappingUser from '../components/setting/mapping-user.vue'
+import DeliverySetting from '../components/setting/delivery_setting'
 //setting 商户系统配置
 import Setting from '../components/setting/list.vue'
 import TpsBind from '../components/setting/tps-bind.vue'
@@ -100,6 +101,7 @@ const routes = [
             {path: 'setting/mapping_user', component: SettingMappingUser, name: 'SettingMappingUser'},
             {path: 'setting', component: Setting, name: 'Setting'},
             {path: 'tps-bind', component: TpsBind, name: 'TpsBind'},
+            {path: 'setting/delivery', component: DeliverySetting, name: 'DeliverySetting'},
         ]
     },
 

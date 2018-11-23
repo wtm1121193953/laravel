@@ -31,6 +31,8 @@ class WalletConsumeQuotaRecord extends BaseModel
     const ORIGIN_TYPE_USER = 1; // 用户
     const ORIGIN_TYPE_MERCHANT = 2; // 商户
     const ORIGIN_TYPE_OPER = 3; // 运营中心
+    const ORIGIN_TYPE_BIZER = 4; // 业务员
+    const ORIGIN_TYPE_CS = 5; // 超市
 
     /**
      * 来源类型 1-消费自返 2-直接下级消费返[下级返时只有积分 其他全部为0]
