@@ -151,13 +151,22 @@ class CsMerchantCategoryService extends BaseService
         }
         $query = collect($query);
         $query->each(function ($item){
+            $totalCategory =new CsMerchantCategory();
+            $totalCategory->cs_cat_name = '全部分类';
+            $totalCategory->status = CsMerchantCategory::STATUS_ON;
+            $totalCategory->id = 0;
+            $totalSub = Array();
             if ($item->id == 0){
-                $totalCategory =new CsMerchantCategory();
-                $totalCategory->cs_cat_name = '全部分类';
-                $totalCategory->status = CsMerchantCategory::STATUS_ON;
-                $totalCategory->id = 0;
-                $totalSub = Array();
                 array_push($totalSub,$totalCategory);
+                $item->sub = $totalSub;
+            }
+            else{
+                array_push($totalSub,$totalCategory);
+                if (!empty($item->sub)){
+                    foreach ($item->sub as $subItem){
+                        array_push($totalSub,$subItem);
+                    }
+                }
                 $item->sub = $totalSub;
             }
         });
