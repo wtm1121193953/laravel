@@ -32,8 +32,10 @@ class CsMerchantAuditService extends BaseService {
 
         $data = CsMerchantAudit::when(isset($params['oper_id']), function (Builder $query) use ($params){
             $query->where('oper_id', $params['oper_id']);
-        })
-            ->where('status',CsMerchantAudit::AUDIT_STATUS_AUDITING)
+            })
+            ->when(isset($params['is_admin']), function (Builder $query) use ($params){
+                $query->where('status',CsMerchantAudit::AUDIT_STATUS_AUDITING);
+            })
             ->orderByDesc('updated_at')->paginate();
         $data->each(function($item) {
             $item->operName = Oper::where('id', $item->oper_id)->value('name');
