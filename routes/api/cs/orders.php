@@ -17,3 +17,7 @@ Route::post('/order/deliver', 'OrdersController@orderDeliver');
 
 Route::post('/order/check/deliver_code', 'OrdersController@checkDeliverCode');
 
+Route::get('/order/batch_delivery/template', 'OrdersController@getBatchDeliveryTemplatePath');
+
+Route::post('/order/batch/delivery', 'OrdersController@batchDelivery');
+

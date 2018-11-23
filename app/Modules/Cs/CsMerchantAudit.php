@@ -12,6 +12,7 @@ use App\BaseModel;
  * @property  int status
  * @property int oper_id
  * @property string name
+ * @property string suggestion
  * @property  int cs_merchant_id
  */
 class CsMerchantAudit extends BaseModel
@@ -32,4 +33,9 @@ class CsMerchantAudit extends BaseModel
      * 审核不通过
      */
     const AUDIT_STATUS_FAIL = 3;
+
+    /**
+     * 撤回
+     */
+    const AUDIT_STATUS_RECALL = 4;
 }

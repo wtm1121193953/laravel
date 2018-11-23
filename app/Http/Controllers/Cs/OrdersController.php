@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
 use App\Result;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrdersController extends Controller
 {
@@ -194,5 +195,23 @@ class OrdersController extends Controller
         $order = OrderService::deliver($id, $expressCompany, $expressNo);
 
         return Result::success($order);
+    }
+
+    /**
+     * 获取批量发货模板
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getBatchDeliveryTemplatePath()
+    {
+        $path = storage_path('app/help-doc/batch_delivery_template.xlsx');
+        return Result::success(['url' => $path]);
+    }
+
+    public function batchDelivery()
+    {
+        $file = request()->file('file');
+
+        $read = Excel::import($file, $file, null, ucfirst($file->getClientOriginalExtension()));
+        dd($read);
     }
 }
