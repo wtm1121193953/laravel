@@ -271,10 +271,8 @@ class CsMerchantService extends BaseService {
      * @param $id
      * @return CsMerchant
      */
-    public static function detail($id)
+    public static function detail($id,$userId)
     {
-
-        $userId = request()->get('current_user')->id;
         $merchant = CsMerchant::findOrFail($id);
         $merchant->account = $merchant->name;
         $merchant->business_time = json_decode($merchant->business_time, 1);
@@ -314,7 +312,7 @@ class CsMerchantService extends BaseService {
             $currentOperId = 0;
         }
 
-        $existCsMerchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)->where('type',CsMerchantAudit::UPDATE_TYPE)->first();
+        $existCsMerchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)->where('status',CsMerchantAudit::AUDIT_STATUS_AUDITING)->first();
         if($existCsMerchantAudit){
             throw new BaseResponseException('该商户已存在待审核记录');
         }

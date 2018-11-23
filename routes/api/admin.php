@@ -90,8 +90,12 @@ Route::prefix('admin')
         Route::post('cs/merchant/edit', 'CsMerchantController@edit');
         Route::get('cs/merchant/export', 'CsMerchantController@export');
         Route::post('cs/merchant/changeStatus', 'CsMerchantController@changeStatus');
+        Route::get('cs/merchant/list', 'CsMerchantController@getList');
 
         Route::get('cs/merchant/audit/list', 'CsMerchantController@getAuditList');
+        Route::get('cs/merchant/audit/detail', 'CsMerchantController@getAuditDetail');
+        Route::post('cs/merchant/audit', 'CsMerchantController@audit');
+        Route::get('cs/merchant/audit/record/newest', 'CsMerchantController@getNewestAuditRecord');
 
         Route::get('/tps/getBindInfo', 'TpsBindController@getBindInfo');
         Route::post('/tps/bindAccount', 'TpsBindController@bindAccount');
