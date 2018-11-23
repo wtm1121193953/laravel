@@ -95,17 +95,18 @@
             <el-table-column prop="deliver_type" label="发货方式">
                 <template slot-scope="scope">
                     <el-popover
-                            v-if="scope.row.deliver_type == 1"
+                            v-if="scope.row.deliver_type == 1 && scope.row.status != 8"
                             placement="bottom"
                             trigger="hover"
                             width="250"
                     >
                         <div>
                             <div>快递公司：{{scope.row.express_company}}</div>
-                            <div>快递公司：{{scope.row.express_no}}</div>
+                            <div>快递单号：{{scope.row.express_no}}</div>
                         </div>
                         <span slot="reference">配送</span>
                     </el-popover>
+                    <span v-else-if="scope.row.deliver_type == 1">配送</span>
                     <span v-else-if="scope.row.deliver_type == 2">自提</span>
                     <span v-else>无</span>
                 </template>

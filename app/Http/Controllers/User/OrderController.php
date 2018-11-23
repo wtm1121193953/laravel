@@ -101,6 +101,67 @@ class OrderController extends Controller
         ]);
     }
 
+    /**
+     *新用户订单列表,超市版
+     */
+    public function getOrderList()
+    {
+        $status = request('status');
+        $user = request()->get('current_user');
+
+        $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
+
+        $currentOperId = request()->get('current_oper_id');
+        $data = Order::where('user_id', $user->id)
+            ->where('pay_target_type',Order::PAY_TARGET_TYPE_PLATFORM)
+            ->where('type','<>',Order::MERCHANT_TYPE_SUPERMARKET)//排除超市订单
+            ->where(function (Builder $query) {
+                $query->where('type', Order::TYPE_GROUP_BUY)
+                    ->orWhere(function (Builder $query) {
+                        $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
+                            ->whereIn('status', [4, 6, 7]);
+                    })->orWhere('type', Order::TYPE_DISHES);
+            })
+            ->when($merchantShareInMiniprogram != 1, function (Builder $query) use ($currentOperId) {
+                $query->where('oper_id', $currentOperId);
+            })
+            ->when($status, function (Builder $query) use ($status) {
+                $query->where('status', $status);
+            })
+            ->orderByDesc('id')
+            ->paginate();
+        $data->each(function ($item) use ($currentOperId) {
+            $item->items = OrderItem::where('order_id', $item->id)->get();
+            // 判断商户是否是当前小程序关联运营中心下的商户
+//            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
+
+            $item->goods_end_date = '';
+            if ($item->type == Order::TYPE_DISHES) {
+                $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
+                $item->order_goods_number = DishesItem::where('dishes_id',$item->dishes_id)->sum('number');
+            }else if($item->type == Order::TYPE_GROUP_BUY){
+                $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
+            }
+
+            if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
+                $csMerchat = CsMerchant::where('id',$item->merchant_id)->first();
+                $item->merchant_name = $csMerchat->name;
+                $item->merchant_logo = $csMerchat->logo;
+                $item->merchant_service_phone = $csMerchat->service_phone;
+                $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
+
+            }else {
+                $item->merchant = Merchant::where('id', $item->merchant_id)->first();
+                $item->merchant_logo = $item->merchant->logo;
+                $item->signboard_name = $item->merchant->signboard_name;
+            }
+        });
+        return Result::success([
+            'list' => $data->items(),
+            'total' => $data->total(),
+        ]);
+    }
+
     public function detail()
     {
         $this->validate(request(), [

@@ -12,6 +12,7 @@ use App\BaseModel;
  * @property  int status
  * @property int oper_id
  * @property string name
+ * @property string suggestion
  * @property  int cs_merchant_id
  */
 class CsMerchantAudit extends BaseModel

@@ -159,12 +159,14 @@ class OrdersController extends Controller
             'merchantId' => request()->get('current_user')->merchantId,
             'status' => Order::STATUS_UNDELIVERED,
             'merchantType' => Order::MERCHANT_TYPE_SUPERMARKET,
+            'type' => Order::TYPE_SUPERMARKET,
         ], true)->count();
 
         $notTakeBySelfNum = OrderService::getList([
             'merchantId' => request()->get('current_user')->merchantId,
             'status' => Order::STATUS_NOT_TAKE_BY_SELF,
             'merchantType' => Order::MERCHANT_TYPE_SUPERMARKET,
+            'type' => Order::TYPE_SUPERMARKET,
         ], true)->count();
 
         return Result::success([
