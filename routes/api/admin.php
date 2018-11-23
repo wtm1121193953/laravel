@@ -78,6 +78,11 @@ Route::prefix('admin')
 
         Route::get('/operBizMembers/search', 'OperBizMemberController@search');
 
+        Route::get('navigation/all', 'NavigationController@getAll');
+        Route::post('navigation/add', 'NavigationController@add');
+        Route::post('navigation/edit', 'NavigationController@edit');
+        Route::get('navigation/getAllTopMerchantCategories', 'NavigationController@getAllTopCategories');
+
 
         Route::get('cs/category/all', 'CsCategoryController@getAll');
         Route::get('cs/category/tree', 'CsCategoryController@getTree');

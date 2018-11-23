@@ -72,43 +72,22 @@ const routes = [
     ...message,
     ...agentpay,
 
-    // 财务模块--人工
+    // 财务模块
     {
         path: '/',
         component: Home,
         children: [
+            // 财务模块--人工
             {path: '/settlement/platforms', component: SettlementPlatfroms, name: 'SettlementPlatfroms'},
-        ]
-    },
-
-    // 财务模块--全部
-    {
-        path: '/',
-        component: Home,
-        children: [
+            // 财务模块--全部
             {path: '/settlement/allPlatforms', component: AllSettlementPlatfroms, name: 'AllSettlementPlatfroms'},
-
-        ]
-    },
-
-    // 财务模块--超市商户结算
-    {
-        path: '/',
-        component: Home,
-        children: [
+            // 财务模块--超市商户结算
             {path: '/settlement/csPlatforms', component: CsSettlementPlatforms, name: 'CsSettlementPlatfroms'},
-
-        ]
-    },
-
-    //自动结算模块
-    {
-        path: '/',
-        component: Home,
-        children: [
+            //自动结算模块
             {path: '/settlementPlatformBatches/list', component: SettlementPlatfromBatches, name: 'SettlementPlatfromBatches'},
         ]
     },
+
     // 营销报表模块,,
     {
         path: '/',

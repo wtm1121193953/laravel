@@ -256,4 +256,19 @@ class MerchantCategoryService extends BaseService
         return $parentPath;
     }
 
+    /**
+     * 获取全部的顶级分类
+     * @param bool $enabled
+     * @return MerchantCategory[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getAllTopCategories($enabled = true)
+    {
+        $list = MerchantCategory::where('pid', 0)
+            ->when($enabled, function(Builder $query){
+                $query->where('status', 1);
+            })
+            ->get();
+        return $list;
+    }
+
 }
