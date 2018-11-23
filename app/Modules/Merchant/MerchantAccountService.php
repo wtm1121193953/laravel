@@ -201,9 +201,8 @@ class MerchantAccountService extends BaseService
                 [ 'id' => 6, 'name' => '账户管理', 'level' => 1, 'url' => '/wallet', 'sub' =>
                     [
                         [ 'id' => 601, 'name' => '账户总览', 'level' => 2, 'url' => '/cs/wallet/summary/list', 'pid' => 15,],
-                        [ 'id' => 602, 'name' => '提现记录', 'level' => 2, 'url' => '/cs/wallet/withdraw/list', 'pid' => 15,],
-                        [ 'id' => 603, 'name' => '我的贡献值', 'level' => 2, 'url' => '/cs/wallet/consume/list', 'pid' => 15,],
-                        [ 'id' => 604, 'name' => '提现密码管理', 'level' => 2, 'url' => '/cs/wallet/withdraw/password', 'pid' => 15,],
+                        [ 'id' => 602, 'name' => '我的贡献值', 'level' => 2, 'url' => '/cs/wallet/consume/list', 'pid' => 15,],
+                        [ 'id' => 603, 'name' => '提现密码管理', 'level' => 2, 'url' => '/cs/wallet/withdraw/password', 'pid' => 15,],
                     ]
                 ],
                 [ 'id' => 7, 'name' => '素材中心', 'level' => 1, 'url' => 'material', 'sub' =>
