@@ -8,12 +8,11 @@ use App\Exports\WalletBillExport;
 use App\Exports\WalletConsumeQuotaRecordExport;
 use App\Exports\WalletTpsCreditExport;
 use App\Http\Controllers\Controller;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\FeeSplitting\FeeSplittingService;
-use App\Modules\Merchant\MerchantService;
 use App\Modules\Order\OrderService;
 use App\Modules\Wallet\ConsumeQuotaService;
 use App\Modules\Wallet\WalletBill;
-use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use App\Modules\Wallet\WalletService;
 use App\Modules\Wallet\WalletWithdrawService;
 use App\Result;
@@ -45,7 +44,7 @@ class WalletController extends Controller
         }
 
         $originId = request()->get('current_user')->merchant_id;
-        $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
+        $originType = WalletBill::ORIGIN_TYPE_CS;
         $param = compact('billNo', 'startDate', 'endDate', 'type', 'originId', 'originType');
         $data = WalletService::getBillList($param, $pageSize);
         // 获取钱包信息
@@ -103,7 +102,7 @@ class WalletController extends Controller
         $walletBill = WalletService::getBillById($id);
         if (empty($walletBill)) throw new BaseResponseException('该钱包流水不存在');
 
-        $walletBill->merchant_name = MerchantService::getNameById($walletBill->origin_id);
+        $walletBill->merchant_name = CsMerchantService::getNameById($walletBill->origin_id);
         $walletBill->balance_unfreeze_time = '';
 
         $orderOrWithdrawData = null;
