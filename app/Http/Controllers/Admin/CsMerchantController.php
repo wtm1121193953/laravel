@@ -7,6 +7,7 @@ use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Exports\AdminCsMerchantExport;
 use App\Http\Controllers\Controller;
+use App\Modules\Admin\AdminUser;
 use App\Modules\Bizer\BizerService;
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Cs\CsMerchantAudit;
@@ -268,7 +269,8 @@ class CsMerchantController extends Controller
         $user = request()->get('current_user');
         if($user instanceof Oper){
             $params['oper_id'] = $user->oper_id;
-            $params['is_admin'] = true;
+        }elseif($user instanceof AdminUser){
+            $params['status'] = CsMerchantAudit::AUDIT_STATUS_AUDITING;
         }
         $data = CsMerchantAuditService::getAuditResultList($params);
         return Result::success([
