@@ -268,6 +268,7 @@ class CsMerchantController extends Controller
         $user = request()->get('current_user');
         if($user instanceof Oper){
             $params['oper_id'] = $user->oper_id;
+            $params['is_admin'] = true;
         }
         $data = CsMerchantAuditService::getAuditResultList($params);
         return Result::success([
