@@ -189,7 +189,7 @@ class GoodsController extends BaseController
     public function fastEdit(Request $request)
     {
         parent::__init();
-        $request->validate([
+        $this->validate($request, [
             'id' =>'required',
             'market_price' => 'required',
             'price' => 'required',
@@ -215,12 +215,10 @@ class GoodsController extends BaseController
         $rs = $cs_goods->save();
 
         if ($rs) {
-
             return Result::success('修改成功');
         } else {
             throw new BaseResponseException('添加失败');
         }
-        return Result::success();
     }
 
     /**
@@ -236,9 +234,9 @@ class GoodsController extends BaseController
         //$cs_merchant_id = request()->get('current_user')->merchant_id;
         $cs_merchant_id = $this->_cs_merchant_id;
 
-        $new_status = CsGoodService::changeStatus(request('id'),$cs_merchant_id);
+        $csGoods = CsGoodService::changeStatus(request('id'), $cs_merchant_id);
 
-        return Result::success($new_status);
+        return Result::success($csGoods);
     }
 
     /**

@@ -43,15 +43,16 @@
             changeStatus(){
                 this.$emit('before-request')
                 console.log(this.scope)
-                let data = this.scope.row;
-                if(data.status == 1){
-                    let message = `下架顶级分类将会下架该分类下的所有子分类, 以及子分类下的所有商品, 确定下架分类 ${data.cs_cat_name} 吗?`
-                    if(data.cs_category_parent_id > 0){
-                        message = `下架分类将会该分类下的所有商品, 确定下架分类 ${data.cs_cat_name} 吗?`
+                let row = this.scope.row;
+                if(row.status == 1){
+                    let message = `下架顶级分类将会下架该分类下的所有子分类, 以及子分类下的所有商品, 确定下架分类 ${row.cs_cat_name} 吗?`
+                    if(row.cs_category_parent_id > 0){
+                        message = `下架分类将会该分类下的所有商品, 确定下架分类 ${row.cs_cat_name} 吗?`
                     }
                     this.$confirm(message).then(() => {
                         api.post('/category/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
                             this.scope.row.status = data;
+                            this.$message.success((row.status == 1 ? '下架' : '上架') + '分类成功' )
                         }).finally(() => {
                             this.$emit('after-request')
                         })
