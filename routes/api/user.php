@@ -117,6 +117,7 @@ Route::prefix('user')
         Route::get('cs/merchant/list','CsMerchantController@getList');
         Route::get('cs/merchant/category','MerchantCategoryController@getCsTree');
         Route::get('cs/merchant/goods','CsGoodsController@getAllGoods');
+        Route::post('cs/dishes/add','OrderController@csOrderCreate')->middleware(UserLoginFilter::class);
     });
 
 Route::prefix('user')->middleware('user')->group(function (){
