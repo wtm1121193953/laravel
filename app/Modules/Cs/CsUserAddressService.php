@@ -12,6 +12,7 @@ use App\Exceptions\BaseResponseException;
 use App\Modules\Area\Area;
 use App\ResultCode;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Expr\Array_;
 
 
 class CsUserAddressService extends BaseService {
@@ -21,14 +22,14 @@ class CsUserAddressService extends BaseService {
     public static function addAddresses($data){
         $user = request()->get('current_user');
         $userAddress = new CsUserAddress();
-        $userAddress->contacts = $data['contacts'];
-        $userAddress->contact_phone = $data['contact_phone'];
-        $userAddress->province_id = $data['province_id'];
+        $userAddress->contacts = array_get($data,'contacts','');
+        $userAddress->contact_phone = array_get($data,'contact_phone','');
+        $userAddress->province_id =array_get($data,'province_id',0);
         $userAddress->user_id = $user->id;
-        $userAddress->city_id = empty($data['city_id'])?'0':$data['city_id'];
-        $userAddress->area_id = empty($data['area_id'])?'0':$data['area_id'];
-        $userAddress->address = $data['address'];
-        $userAddress->is_default = $data['is_default'];
+        $userAddress->city_id = array_get($data,'city_id',0);
+        $userAddress->area_id = array_get($data,'area_id',0);
+        $userAddress->address = array_get($data,'address','');
+        $userAddress->is_default = array_get($data,'is_default',0);
 
         $exist= CsUserAddress::where('contacts', $userAddress->contacts)
             ->where('contact_phone', $userAddress->contact_phone)
@@ -62,7 +63,7 @@ class CsUserAddressService extends BaseService {
             //设置默认
             $query  = CsUserAddress::where('user_id', $user->id )
                 ->where("is_default", CsUserAddress::DEFAULT);
-            if (sizeof($query) > 0){
+            if (!empty($query->get())){
                 // 开启事务
                 DB::beginTransaction();
                 try{
@@ -122,15 +123,23 @@ class CsUserAddressService extends BaseService {
      */
     public static function editAddress($data){
         $user = request()->get('current_user');
+
         $userAddress = CsUserAddress::where('user_id',$user->id)
             ->where('id',$data['id'])
             ->first();
          if (!empty($data['contacts']))  {
              $userAddress->contacts = $data['contacts'];
          }
-        if (!empty($data['contact_phone']))  {
-            $userAddress->contact_phone = $data['contact_phone'];
-        }
+        $userAddress->contacts = array_get($data,'contacts',$userAddress->contacts);
+        $userAddress->contact_phone = array_get($data,'contact_phone',$userAddress->contact_phone);
+        $userAddress->province_id =array_get($data,'province_id',$userAddress->province_id);
+
+        $userAddress->city_id = array_get($data,'city_id',$userAddress->city_id);
+        $userAddress->area_id = array_get($data,'area_id',$userAddress->area_id);
+        $userAddress->address = array_get($data,'address',$userAddress->address);
+        $userAddress->is_default = array_get($data,'is_default',$userAddress->is_default);
+
+
         if (!empty($data['province_id']))  {
             $userAddress->province_id = $data['province_id'];
             $userAddress->province = Area::getNameByAreaId($userAddress->area_id);
@@ -151,17 +160,11 @@ class CsUserAddressService extends BaseService {
             $userAddress->area_id = '0';
             $userAddress->area = '0';
         }
-        if (!empty($data['address']))  {
-            $userAddress->address = $data['address'];
-        }
-        if (!empty($data['is_default']))  {
-            $userAddress->is_default = $data['is_default'];
-        }
         if ($userAddress->is_default == CsUserAddress::DEFAULT){
             //设置默认
             $query  = CsUserAddress::where('user_id', $user->id )
                 ->where("is_default", CsUserAddress::DEFAULT);
-            if (sizeof($query) > 0){
+            if (!empty($query->get())){
                 // 开启事务
                 DB::beginTransaction();
                 try{
