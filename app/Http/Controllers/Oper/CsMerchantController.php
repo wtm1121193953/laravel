@@ -292,7 +292,7 @@ class CsMerchantController extends Controller
             'id' => 'required|integer|min:1'
         ]);
         $merchantId = request('id');
-        $record = MerchantAuditService::getNewestAuditRecordByMerchantId($merchantId);
+        $record = CsMerchantAuditService::getNewestAuditRecordByMerchantId($merchantId);
         return Result::success($record);
     }
 

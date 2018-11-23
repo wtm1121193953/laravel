@@ -185,7 +185,7 @@ class CsMerchantAuditService extends BaseService {
                 $merchant->save();
             }
             $merchantAudit->save();
-            BD::commit();
+            DB::commit();
         }catch (\Exception $e){
             DB::rollBack();
             throw new BaseResponseException( $e->getMessage(),ResultCode::DB_INSERT_FAIL);
