@@ -8,6 +8,7 @@
         <el-dialog title="编辑商品分类信息" :visible.sync="isEdit">
             <category-form
                     :data="scope.row"
+                    :top-list="tree"
                     @cancel="isEdit = false"
                     @save="doEdit"/>
         </el-dialog>
@@ -21,7 +22,8 @@
     export default {
         name: "category-item-options",
         props: {
-            scope: {type: Object, required: true}
+            scope: {type: Object, required: true},
+            tree: Array,
         },
         data(){
             return {
@@ -37,7 +39,7 @@
             },
             doEdit(data){
                 this.$emit('before-request')
-                api.post('/category/edit', data).then((data) => {
+                api.post('/cs/category/edit', data).then((data) => {
                     this.isEdit = false;
                     this.$emit('change', this.scope.$index, data)
                 }).finally(() => {

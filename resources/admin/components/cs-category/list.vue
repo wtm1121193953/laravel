@@ -25,6 +25,7 @@
                 <template slot-scope="scope">
                     <category-item-options
                             :scope="scope"
+                            :tree="tree"
                             @change="itemChanged"
                             @refresh="getList"
                             @add-sub="addSub"
@@ -67,6 +68,7 @@
                 },
                 parent: null,
                 list: [],
+                tree: [],
                 total: 0,
             }
         },

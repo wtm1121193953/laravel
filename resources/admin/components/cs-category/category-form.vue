@@ -2,8 +2,13 @@
     <el-row>
         <el-col :span="22">
             <el-form :model="form" label-width="120px" :rules="formRules" ref="form" @submit.native.prevent>
-                <el-form-item prop="name" label="商品分类名称">
-                    <el-input v-model="form.name"/>
+                <el-form-item v-if="form.parent_id > 0" prop="parent_id" label="所属分类">
+                    <el-select v-model="form.parent_id">
+                        <el-option v-for="item in topList" :key="item.id" :value="parseInt(item.id)" :label="item.cat_name"/>
+                    </el-select>
+                </el-form-item>
+                <el-form-item prop="cat_name" label="商品分类名称">
+                    <el-input v-model="form.cat_name"/>
                 </el-form-item>
                 <el-form-item prop="status" label="状态">
                     <el-radio-group v-model="form.status">
@@ -22,13 +27,16 @@
 </template>
 <script>
     let defaultForm = {
-        name: '',
+        cat_name: '',
         status: 1,
+        parent_id: 0,
     };
     export default {
         name: 'category-form',
         props: {
             data: Object,
+            parent: Object,
+            topList: Array,
         },
         computed:{
 
@@ -37,7 +45,7 @@
             return {
                 form: deepCopy(defaultForm),
                 formRules: {
-                    name: [
+                    cat_name: [
                         {required: true, message: '名称不能为空'}
                     ]
                 },
@@ -49,6 +57,9 @@
                     this.form = deepCopy(this.data)
                 }else {
                     this.form = deepCopy(defaultForm)
+                    if(this.parent && this.parent.id > 0){
+                        this.form.parent_id = this.parent.id
+                    }
                 }
             },
             cancel(){
@@ -72,6 +83,9 @@
         },
         watch: {
             data(){
+                this.initForm();
+            },
+            parent(){
                 this.initForm();
             }
         },
