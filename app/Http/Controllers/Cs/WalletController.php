@@ -84,7 +84,7 @@ class WalletController extends Controller
         }
 
         $originId = request()->get('current_user')->merchant_id;
-        $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
+        $originType = WalletBill::ORIGIN_TYPE_CS;
         $param = compact('billNo', 'startDate', 'endDate', 'type', 'originId', 'originType');
         $query = WalletService::getBillList($param, $pageSize, true);
 
@@ -138,7 +138,7 @@ class WalletController extends Controller
         $pageSize = request('pageSize', 15);
 
         $originId = request()->get('current_user')->merchant_id;
-        $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
+        $originType = WalletBill::ORIGIN_TYPE_CS;
         $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
         $data = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
         // 获取钱包信息
@@ -171,7 +171,7 @@ class WalletController extends Controller
         $pageSize = request('pageSize', 15);
 
         $originId = request()->get('current_user')->merchant_id;
-        $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
+        $originType = WalletBill::ORIGIN_TYPE_CS;
         $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
         $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize, true);
 
@@ -205,7 +205,7 @@ class WalletController extends Controller
         $pageSize = request('pageSize', 15);
 
         $originId = request()->get('current_user')->merchant_id;
-        $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
+        $originType = WalletBill::ORIGIN_TYPE_CS;
         $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
         $data = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize);
         // 获取钱包信息
@@ -233,7 +233,7 @@ class WalletController extends Controller
         $pageSize = request('pageSize', 15);
 
         $originId = request()->get('current_user')->merchant_id;
-        $originType = WalletBill::ORIGIN_TYPE_MERCHANT;
+        $originType = WalletBill::ORIGIN_TYPE_CS;
         $param = compact('consumeQuotaNo', 'startDate', 'endDate', 'status', 'originId', 'originType');
         $query = ConsumeQuotaService::getConsumeQuotaRecordList($param, $pageSize, true);
 
