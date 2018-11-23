@@ -57,18 +57,13 @@ class CsUserAddressController extends Controller{
         $this->validate(request(), [
             'id' => 'required'
         ]);
-        $default = 0;
-        if (!empty(request('is_default'))){
-            $default = request('is_default');
-        }
         $data = ['id' => request('id'),
             'contacts' => request('contacts'),
             'contact_phone' => request('contact_phone'),
             'province_id' => request('province_id'),
             'city_id' => request('city_id'),
             'area_id' => request('area_id'),
-            'address' => request('address'),
-            'is_default' => $default];
+            'address' => request('address')];
         CsUserAddressService::editAddress($data);
         return Result::success('更新收货地址成功');
     }
