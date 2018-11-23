@@ -81,8 +81,8 @@ Route::prefix('admin')
         Route::get('navigation/all', 'NavigationController@getAll');
         Route::post('navigation/add', 'NavigationController@add');
         Route::post('navigation/edit', 'NavigationController@edit');
+        Route::post('navigation/sort', 'NavigationController@changeSort');
         Route::get('navigation/getAllTopMerchantCategories', 'NavigationController@getAllTopCategories');
-
 
         Route::get('cs/category/all', 'CsCategoryController@getAll');
         Route::get('cs/category/tree', 'CsCategoryController@getTree');

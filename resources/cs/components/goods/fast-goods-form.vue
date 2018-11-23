@@ -47,23 +47,23 @@
                 </el-form-item>
 
                 <el-form-item prop="logo" label="产品logo图">
-                    <preview-img :url="form.logo" alt="" width="200px"/>
+                    <preview-img :url="form.logo" alt="" width="200px" height="200px"/>
                     <div>图片尺寸: 750 px * 750 px</div>
                 </el-form-item>
                 <el-form-item prop="pic_list" label="产品详情图">
-                    <preview-img v-for="(url,index) in form.detail_imgs" :url="url" :key="index" alt="" width="200px"/>
+                    <preview-img v-for="(url,index) in form.detail_imgs" :url="url" :key="index" alt="" width="200px" height="200px"/>
                     <div>图片尺寸: 750 px * 750 px</div>
                 </el-form-item>
                 <el-form-item prop="pic_list" label="其他证书1">
-                    <preview-img class="m-r-15 m-t-15" v-for="(url,index) in form.certificate1" :url="url" :key="index" alt="" width="200px"/>
+                    <preview-img class="m-r-15 m-t-15" v-for="(url,index) in form.certificate1" :url="url" :key="index" alt="" width="200px" height="200px"/>
                     <div></div>
                 </el-form-item>
                 <el-form-item prop="pic_list" label="其他证书2">
-                    <preview-img class="m-r-15 m-t-15" v-for="(url,index) in form.certificate2" :url="url" :key="index" alt="" width="200px"/>
+                    <preview-img class="m-r-15 m-t-15" v-for="(url,index) in form.certificate2" :url="url" :key="index" alt="" width="200px" height="200px"/>
                     <div></div>
                 </el-form-item>
                 <el-form-item prop="pic_list" label="其他证书3">
-                    <preview-img class="m-r-15 m-t-15" v-for="(url,index) in form.certificate3" :url="url" :key="index" alt="" width="200px"/>
+                    <preview-img class="m-r-15 m-t-15" v-for="(url,index) in form.certificate3" :url="url" :key="index" alt="" width="200px" height="200px"/>
                     <div></div>
                 </el-form-item>
                 <el-form-item>

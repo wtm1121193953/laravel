@@ -6,9 +6,10 @@
             <el-table-column prop="title" label="标题"/>
             <el-table-column prop="icon" label="图标">
                 <template slot-scope="scope">
-                    <preview-img :url="scope.row.icon" width="50px"></preview-img>
+                    <preview-img :url="scope.row.icon" width="50px" height="50px"></preview-img>
                 </template>
             </el-table-column>
+            <el-table-column prop="sort" label="排序"/>
             <el-table-column prop="created_at" label="添加时间">
                 <template slot-scope="scope">
                     {{scope.row.created_at}}
@@ -16,7 +17,7 @@
             </el-table-column>
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
-                    <category-item-options
+                    <navigation-item-options
                             :scope="scope"
                             @change="itemChanged"
                             @refresh="getList"
@@ -26,7 +27,7 @@
         </el-table>
 
         <el-dialog title="添加商品分类" :visible.sync="isAdd">
-            <category-form
+            <navigation-form
                     @cancel="isAdd = false"
                     @save="doAdd"/>
         </el-dialog>
@@ -36,8 +37,8 @@
 <script>
     import api from '../../../assets/js/api'
 
-    import CategoryItemOptions from './navigation-item-options'
-    import CategoryForm from './navigation-form'
+    import NavigationItemOptions from './navigation-item-options'
+    import NavigationForm from './navigation-form'
     import PreviewImg from '../../../assets/components/img/preview-img'
 
     export default {
@@ -47,7 +48,6 @@
                 isAdd: false,
                 isLoading: false,
                 query: {
-                    page: 1,
                 },
                 parent: null,
                 list: [],
@@ -86,8 +86,8 @@
             this.getList();
         },
         components: {
-            CategoryItemOptions,
-            CategoryForm,
+            NavigationItemOptions,
+            NavigationForm,
             PreviewImg,
         }
     }

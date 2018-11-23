@@ -2,6 +2,7 @@
     <!-- 商品分类列表项操作 -->
     <div>
         <el-button type="text" @click="edit">编辑</el-button>
+        <el-button type="text" @click="sort">修改排序</el-button>
 
         <el-dialog title="编辑商品分类信息" :visible.sync="isEdit">
             <category-form
@@ -40,6 +41,14 @@
                     this.$emit('change', this.scope.$index, data)
                 }).finally(() => {
                     this.$emit('after-request')
+                })
+            },
+            sort(){
+                this.$prompt('请输入排序(越大的排在越前面)').then(({value}) => {
+                    api.post('/navigation/sort', {id: this.scope.row.id, sort: value}).then((data) => {
+                        this.$message.success('修改排序成功')
+                        this.$emit('refresh')
+                    })
                 })
             },
             del(){

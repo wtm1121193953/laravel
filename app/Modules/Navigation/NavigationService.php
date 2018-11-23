@@ -17,11 +17,11 @@ class NavigationService extends BaseService
 
     public static function getAll()
     {
-        $list = Navigation::all();
+        $list = Navigation::orderBy('sort', 'desc')->get();
         $list->each(function($item){
             $item->payload = json_decode($item->payload, 1);
         });
-        return Navigation::all();
+        return $list;
     }
 
     /**
@@ -35,6 +35,9 @@ class NavigationService extends BaseService
         $nav->title = $data['title'];
         $nav->icon = $data['icon'];
         $nav->type = $data['type'];
+        if(!empty($data['payload'])){
+            $nav->payload = json_encode($data['payload']);
+        }
         $nav->save();
         return $nav;
     }
@@ -54,9 +57,27 @@ class NavigationService extends BaseService
         $nav->title = $data['title'];
         $nav->icon = $data['icon'];
         $nav->type = $data['type'];
-        if(isset($data['payload'])){
+        if(!empty($data['payload'])){
             $nav->payload = json_encode($data['payload']);
         }
+        $nav->sort = array_get($data, 'sort', 0);
+        $nav->save();
+        return $nav;
+    }
+
+    /**
+     * 修改排序
+     * @param $id
+     * @param $sort
+     * @return Navigation
+     */
+    public static function changeSort($id, $sort)
+    {
+        $nav = Navigation::find($id);
+        if(empty($nav)){
+            throw new DataNotFoundException('导航数据不存在');
+        }
+        $nav->sort = $sort;
         $nav->save();
         return $nav;
     }
@@ -76,4 +97,5 @@ class NavigationService extends BaseService
         $nav->delete();
         return $nav;
     }
+
 }

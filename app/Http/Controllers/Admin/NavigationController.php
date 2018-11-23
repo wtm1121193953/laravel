@@ -43,6 +43,7 @@ class NavigationController extends Controller
         $icon = request('icon');
         $type = request('type');
         $categoryId = request('categoryId');
+        $sort = request('sort', 0);
         if($type == 'merchant_category'){
             if(empty($categoryId)){
                 throw new ParamInvalidException('分类ID不能为空');
@@ -58,6 +59,7 @@ class NavigationController extends Controller
             'icon' => $icon,
             'type' => $type,
             'payload' => $payload,
+            'sort' => $sort,
         ]);
         return Result::success($nav);
     }
@@ -75,6 +77,7 @@ class NavigationController extends Controller
         $icon = request('icon');
         $type = request('type');
         $categoryId = request('categoryId');
+        $sort = request('sort', 0);
         if($type == 'merchant_category'){
             if(empty($categoryId)){
                 throw new ParamInvalidException('分类ID不能为空');
@@ -91,7 +94,21 @@ class NavigationController extends Controller
             'icon' => $icon,
             'type' => $type,
             'payload' => $payload,
+            'sort' => $sort,
         ]);
+        return Result::success($nav);
+    }
+
+    public function changeSort()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'sort' => 'required|integer',
+        ]);
+        $id = request('id');
+        $sort = request('sort');
+
+        $nav = NavigationService::changeSort($id, $sort);
         return Result::success($nav);
     }
 }

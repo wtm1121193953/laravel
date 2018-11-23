@@ -12,6 +12,7 @@ use App\BaseModel;
  * @property string icon
  * @property string type
  * @property string payload
+ * @property int sort
  */
 class Navigation extends BaseModel
 {

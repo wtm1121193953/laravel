@@ -6,7 +6,7 @@
                     <el-input v-model="form.title"/>
                 </el-form-item>
                 <el-form-item prop="icon" label="图标">
-                    <image-upload v-model="form.icon"></image-upload>
+                    <image-upload v-model="form.icon" :limit="1"></image-upload>
                 </el-form-item>
                 <el-form-item prop="type" label="类型">
                     <el-select v-model="form.type">
@@ -16,7 +16,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item v-if="form.type == 'merchant_category'" prop="categoryId" label="商家类目">
-                    <el-select v-model="form.categoryId">
+                    <el-select v-model="form.categoryId" @change="selectChange">
                         <el-option v-for="item in topCategories" :key="item.id" :value="item.id" :label="item.name"></el-option>
                     </el-select>
                 </el-form-item>
@@ -63,9 +63,19 @@
             }
         },
         methods: {
+            selectChange(a){
+                console.log(a, this.form)
+            },
             initForm(){
                 if(this.data){
-                    this.form = deepCopy(this.data)
+                    this.form.id = this.data.id;
+                    this.form.title = this.data.title;
+                    this.form.icon = this.data.icon;
+                    this.form.type = this.data.type;
+                    if(this.form.type == 'merchant_category'){
+                        console.log(this.data)
+                        this.form.categoryId = this.data.payload.category_id;
+                    }
                 }else {
                     this.form = deepCopy(defaultForm)
                 }
