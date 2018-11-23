@@ -157,10 +157,12 @@ class CsMerchantCategoryService extends BaseService
             $totalCategory->id = 0;
             $totalSub = Array();
             if ($item->id == 0){
+                $totalCategory->cs_category_parent_id = 0;
                 array_push($totalSub,$totalCategory);
                 $item->sub = $totalSub;
             }
             else{
+                $totalCategory->id = $item->id;
                 array_push($totalSub,$totalCategory);
                 if (!empty($item->sub)){
                     foreach ($item->sub as $subItem){
