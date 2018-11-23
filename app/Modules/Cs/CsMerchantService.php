@@ -299,6 +299,41 @@ class CsMerchantService extends BaseService {
     }
 
     /**
+     * 通过审核id获取最新修改的数据
+     * @param $id
+     * @return mixed
+     */
+    public static function getReEditData($id){
+
+        $userId = request()->get('current_user')->id;
+        $csMerchantAudit = CsMerchantAuditService::getById($id);
+        $data = $csMerchantAudit->data_after;
+        $merchant = json_decode($data,false);
+        $merchant->account = $merchant->name;
+        $merchant->business_time = json_decode($merchant->business_time, 1);
+        $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
+        $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
+        $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
+        $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
+
+        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
+        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
+        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
+        if ($oper) {
+            $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
+            $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
+        }
+        $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
+        if($merchantFollow){
+            $merchant->user_follow_status = 2;
+        }else{
+            $merchant->user_follow_status =1;
+        }
+        $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
+        return $merchant;
+    }
+
+    /**
      * 编辑商户
      * @param $id
      * @param $currentOperId
@@ -312,7 +347,10 @@ class CsMerchantService extends BaseService {
             $currentOperId = 0;
         }
 
-        $existCsMerchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)->where('type',CsMerchantAudit::UPDATE_TYPE)->first();
+        $existCsMerchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)
+            ->where('type',CsMerchantAudit::UPDATE_TYPE)
+            ->where('status',CsMerchantAudit::AUDIT_STATUS_AUDITING)
+            ->first();
         if($existCsMerchantAudit){
             throw new BaseResponseException('该商户已存在待审核记录');
         }

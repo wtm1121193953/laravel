@@ -24,6 +24,7 @@
             return {
                 isLoading: false,
                 id: null,
+                isReEdit: null,
                 merchant: null,
                 isDraft: false,
                 breadcrumbs: {},
@@ -61,7 +62,7 @@
                 }else {
                     url = '/cs/merchant/detail';
                 }
-                api.get(url , {id: this.id}).then(data => {
+                api.get(url , {id: this.id, isReEdit: this.isReEdit}).then(data => {
                     this.merchant = data;
                 }).finally(() => {
                     this.isLoading = false;
@@ -90,6 +91,7 @@
         },
         created(){
             this.id = this.$route.query.id;
+            this.isReEdit = this.$route.query.type == 'cs-merchant-reedit';
             this.isDraft = this.$route.query.type == 'draft-list';
             if (this.isDraft){
                 this.breadcrumbs = {'草稿箱': '/cs/merchant/drafts'};
