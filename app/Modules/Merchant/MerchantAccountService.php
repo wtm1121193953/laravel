@@ -211,7 +211,7 @@ class MerchantAccountService extends BaseService
                         [ 'id' => 702, 'name' => '支付二维码', 'level' => 2, 'url' => '/cs/pay/qrcode', 'pid' => 6,],
                     ]
                 ],
-                [ 'id' => 8, 'name' => '电子合同管理', 'level' => 1, 'url' => '/cs/electronic/contract',],
+//                [ 'id' => 8, 'name' => '电子合同管理', 'level' => 1, 'url' => '/cs/electronic/contract',],
                 [ 'id' => 9, 'name' => '配送设置', 'level' => 1, 'url' => '/cs/setting/delivery',],
                 [ 'id' => 10, 'name' => '系统设置', 'level' => 1, 'url' => 'setting', 'sub' =>
                     [
