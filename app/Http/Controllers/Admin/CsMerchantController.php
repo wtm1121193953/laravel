@@ -29,19 +29,53 @@ class CsMerchantController extends Controller
      */
     public function getList()
     {
-        $data = [
-            'id' => request('id'),
-            'operId' => request()->get('current_user')->oper_id,
-            'name' => request('name'),
-            'merchantId' => request('merchantId'),
-            'signboardName' => request('signboardName'),
-            'status' => request('status'),
-            'auditStatus' => request('audit_status'),
-            'startCreatedAt' => request('startCreatedAt'),
-            'endCreatedAt' => request('endCreatedAt'),
-        ];
+        $id = request('merchantId');
+        $startDate = request('startDate');
+        $endDate = request('endDate');
+        $name = request('name');
+        $signboardName = request('signboardName');
+        $status = request('status');
+        $settlementCycleType = request('settlementCycleType');
+        $auditStatus = request('auditStatus');
+        $merchantCategory = request('merchantCategory');
 
-        $data = CsMerchantService::getList($data);
+        if(is_string($auditStatus)){
+            $auditStatus = explode(',', $auditStatus);
+        }
+
+        if(is_string($settlementCycleType)){
+            $settlementCycleType = explode(',', $settlementCycleType);
+        }
+
+        $operId = request('operId');
+
+        // 根据输入的运营中心名称获取所属运营中心ID列表
+        $operName = request('operName');
+        if($operName) {
+            $operIds = OperService::getAll(['name' => $operName], 'id')->pluck('id');
+        }
+        $creatorOperId = request('creatorOperId');
+        // 根据输入的运营中心名称获取录入信息的运营中心ID列表
+        $creatorOperName = request('creatorOperName');
+        if($creatorOperName){
+            $createOperIds = OperService::getAll(['name' => $creatorOperName], 'id')->pluck('id');
+        }
+
+
+
+        $data = CsMerchantService::getList([
+            'id' => $id,
+            'operId' => $operIds ?? $operId,
+            'name' => $name,
+            'signboardName' => $signboardName,
+            'creatorOperId' => $createOperIds ?? $creatorOperId,
+            'status' => $status,
+            'settlementCycleType' => $settlementCycleType,
+            'auditStatus' => $auditStatus,
+            'merchantCategory' => $merchantCategory,
+            'startCreatedAt' => $startDate,
+            'endCreatedAt' => $endDate,
+        ]);
 
         return Result::success([
             'list' => $data->items(),
@@ -54,24 +88,26 @@ class CsMerchantController extends Controller
      */
     public function export(){
 
-        $data = [
-            'id' => request('id'),
-            'operId' => request()->get('current_user')->oper_id,
-            'creatorOperId' => request('creatorOperId'),
-            'name' => request('name'),
-            'merchantId' => request('merchantId'),
-            'signboardName' => request('signboardName'),
-            'status' => request('status'),
-            'auditStatus' => request('audit_status'),
-            'startCreatedAt' => request('startCreatedAt'),
-            'endCreatedAt' => request('endCreatedAt'),
-        ];
+        $id = request('merchantId');
+        $startDate = request('startDate');
+        $endDate = request('endDate');
+        $name = request('name');
+        $status = request('status');
+        $settlementCycleType = request('settlementCycleType');
+        $auditStatus = request('auditStatus');
+        $signboardName = request('signboardName');
+        if ($auditStatus || $auditStatus==="0"){
+            $auditStatus = explode(',', $auditStatus);
+        }
+        if(is_string($settlementCycleType)){
+            $settlementCycleType = explode(',', $settlementCycleType);
+        }
+        $operId = request('operId');
+        $operName = request('operName');
 
-        $query = CsMerchantService::getList($data,true);
+        $merchantCategory = request('merchantCategory', '');
 
-        $list = $query->get();
-
-        return (new AdminCsMerchantExport($list,request('isPilot')))->download('超市商户列表.xlsx');
+        return (new AdminCsMerchantExport($id, $startDate, $endDate,$signboardName, $name, $status, $settlementCycleType, $auditStatus, $operId, $operName, $merchantCategory))->download('超市商户列表.xlsx');
 
     }
 
@@ -257,6 +293,50 @@ class CsMerchantController extends Controller
         $isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
 
         return $isPayToPlatform;
+    }
+
+    public function audit()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'type' => 'required|integer|in:1,2,3',
+            'audit_suggestion' => 'max:50',
+        ]);
+
+        $type = request('type');
+        $merchantId = request('id');
+        $auditSuggestion = request('audit_suggestion', '');
+
+        $merchant = CsMerchantService::getById($merchantId);
+        if(empty($merchant)){
+            throw new ParamInvalidException('商户信息不存在');
+        }
+
+        // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
+        $merchantCurrentAudit = CsMerchantAudit::where('merchant_id', $merchantId)
+            ->where('oper_id', $merchant->audit_oper_id)
+            ->whereIn('status', [0,3])
+            ->orderBy('updated_at','desc')
+            ->first();
+        if(empty($merchantCurrentAudit)){
+            MerchantAuditService::addAudit($merchantId, $merchant->audit_oper_id);
+        }
+
+        switch ($type){
+            case '1': // 审核通过
+                $merchant = MerchantAuditService::auditSuccess($merchant, $auditSuggestion);
+                break;
+            case '2': // 审核不通过
+                $merchant = MerchantAuditService::auditFail($merchant, $auditSuggestion);
+                break;
+            case '3': // 审核不通过并打回到商户池
+                $merchant = MerchantAuditService::auditFailAndPushToPool($merchant, $auditSuggestion);
+                break;
+            default:
+                throw new BaseResponseException('错误的操作');
+        }
+
+        return Result::success($merchant);
     }
 
 
