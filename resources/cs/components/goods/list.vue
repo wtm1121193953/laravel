@@ -40,7 +40,7 @@
             </el-form>
         </el-col>
 
-        <el-table :data="list" stripe>
+        <el-table :data="list" stripe v-loading="tableLoading">
 
             <el-table-column prop="id" label="商品ID"/>
             <el-table-column prop="goods_name" label="商品名称"/>
@@ -120,6 +120,7 @@
             return {
                 isAdd: false,
                 isLoading: false,
+                tableLoading: false,
                 query: {
                     goods_name:'',
                     cs_platform_cat_id_level1:'',
@@ -159,9 +160,12 @@
                 })
             },
             getList(){
+                this.tableLoading = true;
                 api.get('/goods', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                }).finally(() => {
+                    this.tableLoading = false;
                 })
             },
             itemChanged(index, data){
@@ -178,6 +182,7 @@
                 api.post('/goods/add', data).then(() => {
                     this.isAdd = false;
                     this.$refs.addForm.resetForm();
+                    this.$message.success('添加商品成功' )
                     this.getList();
                 }).finally(() => {
                     this.isLoading = false;

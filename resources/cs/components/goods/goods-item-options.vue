@@ -63,8 +63,10 @@
             },
             changeStatus(){
                 this.$emit('before-request')
+                let opt = this.scope.row.status == 1 ? '下架' : '上架';
                 api.post('/goods/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
-                    this.scope.row.status = data;
+                    this.scope.row.status = data.status;
+                    this.$message.success(opt + '商品成功')
                 }).finally(() => {
                     this.$emit('after-request')
                 })
