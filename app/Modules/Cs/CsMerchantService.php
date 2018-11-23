@@ -501,8 +501,8 @@ class CsMerchantService extends BaseService {
      */
     public static function getListAndDistance(array $params = [])
     {
-        $query = CsMerchant::all();
-        return $query;
+//        $query = CsMerchant::all();
+//        return $query;
 
         $city_id = array_get($params, 'city_id');
         $lng = array_get($params,'lng');
@@ -577,10 +577,9 @@ class CsMerchantService extends BaseService {
             $allList = $query->select('id')->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat, $user_key) {
-                $item->distance = Lbs::getDistanceOfMerchant($item->id, $user_key, floatval($lng), floatval($lat));
-
-                return $item;
-            })
+                    $item->distance = Lbs::getDistanceOfMerchant($item->id, $user_key, floatval($lng), floatval($lat));
+                    return $item;
+                })
                 ->sortBy('distance')
                 ->forPage(request('page', 1), 15)
                 ->values()
@@ -614,10 +613,26 @@ class CsMerchantService extends BaseService {
             $item->grade = 5;
             // 首页商户列表，显示价格最低的n个团购商品
             $item->lowestGoods = CsGoodService::getLowestPriceGoodsForMerchant($item->id, 2);
+
+            //商户销量:
+            $merchantOrderData = CsStatisticsMerchantOrder::where('cs_merchant_id',$item->id)->select('order_number_30d','order_number_today')->first();
+            if($merchantOrderData){
+                $item->month_order_number = $merchantOrderData->order_number_today + $merchantOrderData->order_number_30d;//月销售量加入当前销售量
+            }
+
+            //配送信息:
+            $MerchantInfo = CsMerchantSetting::where('cs_merchant_id',$item->id)->first();
+            if($MerchantInfo){
+                $item->delivery_start_price = $MerchantInfo->delivery_start_price;
+                $item->delivery_charges = $MerchantInfo->delivery_charges;
+                $item->delivery_free_start = $MerchantInfo->delivery_free_start;
+                $item->delivery_free_order_amount = $MerchantInfo->delivery_free_order_amount;
+            }
         });
 
         return ['list' => $list, 'total' => $total];
     }
+
 
     public static function userAppMerchantDetial($data)
     {
