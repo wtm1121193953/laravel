@@ -7,6 +7,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Exports\OperCsMerchantExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsMerchant;
+use App\Modules\Cs\CsMerchantAudit;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAccountService;
 use App\Modules\Cs\CsMerchantAuditService;
@@ -93,15 +94,13 @@ class CsMerchantController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-        $userId = request()->get('current_user')->id;
-        $merchant = CsMerchantService::detail(request('id'),$userId);
 
-        /*$isPayToPlatform = $this->isPayToPlatform();
-        if($isPayToPlatform){
-            $merchant->settlement_cycle_type = 7;//运营中心切换到平台，显示为未知
+        //为重新编辑，提取审核记录表里最新的数据进行填充到详情页面
+        if(request('isReEdit') == 'true'){
+            $merchant = CsMerchantService::getReEditData(request('id'));
         }else{
-            $merchant->settlement_cycle_type = 1;//运营中心切未换到平台，显示为周结
-        }*/
+            $merchant = CsMerchantService::detail(request('id'));
+        }
 
         return Result::success($merchant);
     }
@@ -232,6 +231,20 @@ class CsMerchantController extends Controller
         }
         $merchant->delete();
         return Result::success($merchant);
+    }
+
+    public function recall()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+        ]);
+        $csMerchantAudit = CsMerchantAuditService::getById(request('id'));
+        if(empty($csMerchantAudit)){
+            throw new DataNotFoundException('超市商户审核信息不存在');
+        }
+        $csMerchantAudit->status = CsMerchantAudit::AUDIT_STATUS_RECALL;
+        $csMerchantAudit->save();
+        return Result::success($csMerchantAudit);
     }
 
     /**

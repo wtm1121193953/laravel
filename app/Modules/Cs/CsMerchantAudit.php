@@ -33,4 +33,9 @@ class CsMerchantAudit extends BaseModel
      * 审核不通过
      */
     const AUDIT_STATUS_FAIL = 3;
+
+    /**
+     * 撤回
+     */
+    const AUDIT_STATUS_RECALL = 4;
 }

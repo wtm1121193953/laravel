@@ -9,7 +9,15 @@
                     <span v-if="scope.row.status === 1" class="c-warning">待审核</span>
                     <span v-else-if="scope.row.status === 2" class="c-green">审核通过</span>
                     <span v-else-if="scope.row.status === 3" class="c-danger">审核不通过</span>
+                    <span v-else-if="scope.row.status === 4" class="c-danger">撤回审核</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
+                </template>
+            </el-table-column>
+            <!--v-if="parseInt(scope.row.status)!==2"-->
+            <el-table-column label="操作" width="250px">
+                <template slot-scope="scope">
+                    <el-button v-if="parseInt(scope.row.status) === 1" type="text" @click="recall(scope)">撤回审核</el-button>
+                    <el-button v-if="parseInt(scope.row.status) > 2" type="text" @click="edit(scope)">重新编辑</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -38,6 +46,28 @@
             }
         },
         methods: {
+            recall(scope){
+
+                this.$confirm('确定撤回吗？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    api.post('/cs/merchant/recall', {id: scope.row.id,type: 'merchant-list'}).then(data => {
+                        this.$message.success('撤回成功');
+                        this.getList();
+                    })
+                }).catch(() => {
+
+                })
+            },
+            edit(scope){
+                router.push({
+                    path: '/cs/merchant/edit',
+                    query: {id: scope.row.id,type: 'cs-merchant-reedit'},
+                })
+                return false;
+            },
             getList(){
                 api.get('/cs/merchant/audit/list', this.query).then(data => {
                     this.list = data.list;

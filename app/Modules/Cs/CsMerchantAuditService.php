@@ -57,6 +57,20 @@ class CsMerchantAuditService extends BaseService {
     }
 
     /**
+     * 根据ID获取商户信息
+     * @param $id
+     * @param array|string $fields
+     * @return CsMerchantAudit
+     */
+    public static function getById($id, $fields = ['*'])
+    {
+        if(is_string($fields)){
+            $fields = explode(',', $fields);
+        }
+        return CsMerchantAudit::find($id, $fields);
+    }
+
+    /**
      * @param $merchantId
      * @return CsMerchant
      */
