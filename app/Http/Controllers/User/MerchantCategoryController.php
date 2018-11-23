@@ -23,6 +23,16 @@ class MerchantCategoryController extends Controller
     }
 
     /**
+     * 获取新的分类列表
+     * @author zwg
+     */
+    public function getTypeTree(){
+        $tree = MerchantCategoryService::getTypeTree();
+        return Result::success(['list' => $tree]);
+    }
+
+
+    /**
      * 获取超市商户分类
      */
     public function getCsTree(){

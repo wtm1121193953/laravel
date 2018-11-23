@@ -31,6 +31,8 @@ Route::prefix('user')
         Route::get('area/search', 'AreaController@searchCityList');
 
         Route::get('merchant/categories/tree', 'MerchantCategoryController@getTree');
+        Route::get('merchant/categories/typeTree', 'MerchantCategoryController@getTypeTree');
+
         Route::get('merchants', 'MerchantController@getList');
         Route::get('merchant/detail', 'MerchantController@detail');
         Route::get('merchant/followStatus', 'MerchantFollowController@modifyFollowStatus')->middleware(UserLoginFilter::class);

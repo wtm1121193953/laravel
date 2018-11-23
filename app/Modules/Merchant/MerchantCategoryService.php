@@ -48,6 +48,50 @@ class MerchantCategoryService extends BaseService
     }
 
     /**
+     * 新版本获取树形分类信息
+     * @param bool $withDisabled
+     * @return array|mixed
+     */
+    public static function getTypeTree($withDisabled = false)
+    {
+        $cacheKey = $withDisabled ? 'merchant_category_tree_with_disabled' : 'merchant_category_tree';
+        $tree = Cache::get($cacheKey);
+        $result = Array();
+        if(!$tree) {
+            $list = MerchantCategory::when(!$withDisabled, function (Builder $query) {
+                $query->where('status', 1);
+            })->orderBy('sort')->get();
+            $tree = Utils::convertListToTree($list);
+
+            if (sizeof($tree) >= 18) {
+                $tree = array_slice($tree, 0, 18);
+            }
+            $merchantCategory = new MerchantCategory();
+            $merchantCategory->name = '大千超市';
+            $merchantCategory->type = MerchantCategory::TYPE_CS_INDEX;
+            $merchantCategory->status = MerchantCategory::STATUS_ON;
+            $merchantCategory->icon = 'https://xiaochengxu.niucha.ren/storage/image/item/f1cQ4X4OxXk0o2j1T9bH2wl1B0wr9P5M5VOxTkvq.png';
+            array_push($result, $merchantCategory);
+
+            foreach ($tree as $item){
+                array_push($result, $item);
+            }
+            $merchantCategory = new MerchantCategory();
+            $merchantCategory->name = '更多';
+            $merchantCategory->type = MerchantCategory::TYPE_MERCHANT_CATEGORY_ALL;
+            $merchantCategory->status = MerchantCategory::STATUS_ON;
+            $merchantCategory->icon = 'https://xiaochengxu.niucha.ren/storage/image/item/f1cQ4X4OxXk0o2j1T9bH2wl1B0wr9P5M5VOxTkvq.png';
+            array_push($result, $merchantCategory);
+
+            Cache::forever($cacheKey, $result);
+        }
+        else{
+            return $tree;
+        }
+        return $result;
+    }
+
+    /**
      * 添加分类信息
      * @param $name
      * @param string $icon
