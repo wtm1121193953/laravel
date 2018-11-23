@@ -93,7 +93,8 @@ class CsMerchantController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-        $merchant = CsMerchantService::detail(request('id'));
+        $userId = request()->get('current_user')->id;
+        $merchant = CsMerchantService::detail(request('id'),$userId);
 
         /*$isPayToPlatform = $this->isPayToPlatform();
         if($isPayToPlatform){
