@@ -102,11 +102,9 @@ class CsGoodService extends BaseService
 
         $goods->status = $goods->status == CsGood::STATUS_ON?CsGood::STATUS_OFF:CsGood::STATUS_ON;
 
-        $rs = $goods->save();
-        if ($rs) {
-            return $goods->status;
-        }
+        $goods->save();
 
+        return $goods;
     }
 
     public static function del(int $id, int $cs_merchant_id)
