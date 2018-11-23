@@ -46,6 +46,26 @@
                     <el-input v-model="form.summary" :autosize="{minRows: 2}" type="textarea"/>
                 </el-form-item>
 
+                <el-form-item prop="logo" label="产品logo图">
+                    <preview-img :url="form.logo" alt="" width="200px"/>
+                    <div>图片尺寸: 750 px * 750 px</div>
+                </el-form-item>
+                <el-form-item prop="pic_list" label="产品详情图">
+                    <preview-img v-for="url in form.detail_imgs" :url="url" alt="" width="200px"/>
+                    <div>图片尺寸: 750 px * 750 px</div>
+                </el-form-item>
+                <el-form-item prop="pic_list" label="其他证书1">
+                    <preview-img class="m-r-15 m-t-15" v-for="url in form.certificate1" :url="url" alt="" width="200px"/>
+                    <div></div>
+                </el-form-item>
+                <el-form-item prop="pic_list" label="其他证书2">
+                    <preview-img class="m-r-15 m-t-15" v-for="url in form.certificate2" :url="url" alt="" width="200px"/>
+                    <div></div>
+                </el-form-item>
+                <el-form-item prop="pic_list" label="其他证书3">
+                    <preview-img class="m-r-15 m-t-15" v-for="url in form.certificate3" :url="url" alt="" width="200px"/>
+                    <div></div>
+                </el-form-item>
                 <el-form-item>
                     <el-button @click="cancel">取消</el-button>
                     <el-button type="primary" @click="save">保存</el-button>
@@ -56,6 +76,7 @@
 
 </template>
 <script>
+    import PreviewImg from '../../../assets/components/img/preview-img'
     import api from '../../../assets/js/api'
     let defaultForm = {
         goods_name: '',
@@ -180,6 +201,7 @@
             }
         },
         components: {
+            PreviewImg
         }
     }
 </script>
