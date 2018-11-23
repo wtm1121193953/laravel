@@ -36,7 +36,12 @@
                 if (!this.isDraft){
                     api.post('/cs/merchant/edit', data).then(() => {
                         this.$message.success('保存成功');
-                        router.push('/cs/merchants');
+                        if(this.isReEdit){
+                            router.push('/cs/merchant/audit/list');
+                        }else{
+                            router.push('/cs/merchants');
+                        }
+
                     }).finally(() => {
                         this.isLoading = false;
                     })
@@ -72,7 +77,11 @@
                 if (this.isDraft) {
                     router.push('/cs/merchant/drafts');
                 }else {
-                    router.push('/cs/merchants');
+                    if(this.isReEdit){
+                        router.push('/cs/merchant/audit/list');
+                    }else{
+                        router.push('/cs/merchants');
+                    }
                 }
             },
             doEditDraft(data) {
