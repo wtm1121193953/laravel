@@ -47,6 +47,8 @@ Route::prefix('app/user')
         Route::get('goods/detail', 'GoodsController@detail');
 
         Route::get('orders', 'OrderController@getList')->middleware(UserLoginFilter::class);
+        Route::get('user/orders', 'OrderController@getOrderList')->middleware(UserLoginFilter::class);
+
         Route::get('order/detail', 'OrderController@detail')->middleware(UserLoginFilter::class);
         Route::post('order/buy', 'OrderController@buy')->middleware(UserLoginFilter::class);
         Route::post('order/pay', 'OrderController@pay')->middleware(UserLoginFilter::class);

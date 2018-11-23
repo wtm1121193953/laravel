@@ -132,15 +132,38 @@ class CsMerchantCategoryService extends BaseService
     }
 
     public static function getTree($merchantId){
-       $list = CsMerchantCategory::where('cs_category_level',1)
-       ->where('cs_merchant_id',$merchantId)
-       ->get();
-        $list->each(function ($item){
-            $item->sub = CsMerchantCategory::where('cs_category_level',2)
-                ->where('cs_category_parent_id',$item->id)
-                ->get();
+        $list = CsMerchantCategory::where('cs_category_level',1)
+            ->where('cs_merchant_id',$merchantId)
+            ->get();
+
+
+        $totalCategory =new CsMerchantCategory();
+        $totalCategory->cs_cat_name = '全部分类';
+        $totalCategory->status = CsMerchantCategory::STATUS_ON;
+        $totalCategory->id = 0;
+        $query = Array();
+        array_push($query,$totalCategory);
+        foreach ($list as $item){
+                $item->sub = CsMerchantCategory::where('cs_category_level',2)
+                    ->where('cs_category_parent_id',$item->id)
+                    ->get();
+            array_push($query,$item);
+        }
+        $query = collect($query);
+        $query->each(function ($item){
+            if ($item->id == 0){
+                $totalCategory =new CsMerchantCategory();
+                $totalCategory->cs_cat_name = '全部分类';
+                $totalCategory->status = CsMerchantCategory::STATUS_ON;
+                $totalCategory->id = 0;
+                $totalSub = Array();
+                array_push($totalSub,$totalCategory);
+                $item->sub = $totalSub;
+            }
         });
-        return $list;
+
+
+        return $query;
     }
 
 

@@ -2,9 +2,9 @@
 
 namespace App\Modules\CsStatistics;
 
-use Illuminate\Database\Eloquent\Model;
+use App\BaseModel;
 
-class CsStatisticsMerchantOrder extends Model
+class CsStatisticsMerchantOrder extends BaseModel
 {
     //
 }
