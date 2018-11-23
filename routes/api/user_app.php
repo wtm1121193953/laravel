@@ -15,6 +15,8 @@ Route::prefix('app/user')
 
         Route::any('sms/verify_code', 'SmsController@sendVerifyCode');
 
+        Route::any('navigation/index', 'NavigationController@index');
+
         Route::any('login', 'LoginController@login');
         Route::any('logout', 'LoginController@logout');
 

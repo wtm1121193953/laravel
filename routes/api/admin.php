@@ -79,9 +79,15 @@ Route::prefix('admin')
         Route::get('/operBizMembers/search', 'OperBizMemberController@search');
 
 
+        Route::get('cs/category/all', 'CsCategoryController@getAll');
+        Route::get('cs/category/tree', 'CsCategoryController@getTree');
+        Route::post('cs/category/add', 'CsCategoryController@add');
+        Route::post('cs/category/edit', 'CsCategoryController@edit');
+        Route::post('cs/category/changeStatus', 'CsCategoryController@changeStatus');
+
         Route::get('cs/merchants', 'CsMerchantController@getList');
         Route::get('cs/merchant/detail', 'CsMerchantController@detail');
-        Route::Post('cs/merchant/edit', 'CsMerchantController@edit');
+        Route::post('cs/merchant/edit', 'CsMerchantController@edit');
         Route::get('cs/merchant/export', 'CsMerchantController@export');
         Route::post('cs/merchant/changeStatus', 'CsMerchantController@changeStatus');
 
