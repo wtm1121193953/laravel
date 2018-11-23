@@ -37,4 +37,18 @@ class CsPlatformCategoryService extends BaseService
         return $rt;
 
     }
+
+    /**
+     * 获取所有的id名称
+     * @return array
+     */
+    public static function getAllIdName()
+    {
+        $rs = CsPlatformCategory::select('id','cat_name')->get();
+        $rt = [];
+        foreach ($rs as $v) {
+            $rt[$v->id] = $v->cat_name;
+        }
+        return $rt;
+    }
 }

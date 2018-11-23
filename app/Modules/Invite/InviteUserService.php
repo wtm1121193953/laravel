@@ -8,6 +8,7 @@ use App\Jobs\InviteStatisticsDailyUpdateByOriginInfoAndDate;
 use App\Jobs\MerchantLevelComputeJob;
 use App\Jobs\UpdateMarketingStatisticsInviteInfo;
 use App\Modules\Admin\AdminUser;
+use App\Modules\Cs\CsMerchant;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
@@ -44,6 +45,8 @@ class InviteUserService
             $object = Merchant::where('id', $inviteRecord->origin_id)->firstOrFail();
         } else if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER) {
             $object = Oper::where('id', $inviteRecord->origin_id)->firstOrFail();
+        } else if ($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_CS) {
+            $object = CsMerchant::where('id', $inviteRecord->origin_id)->firstOrFail();
         } else {
             $object = User::findOrFail($inviteRecord->origin_id);
         }

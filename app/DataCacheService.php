@@ -8,13 +8,21 @@
 
 namespace App;
 
+use App\Modules\Cs\CsPlatformCategoryService;
 use App\Modules\Merchant\Merchant;
 use Illuminate\Support\Facades\Cache;
+use test\Mockery\Fixtures\EmptyTestCaseV5;
 
 class DataCacheService extends BaseService
 {
-    const REDIS_KEY_MERCHANT = 'merchant:id:';
+    const REDIS_KEY_MERCHANT = 'merchant:id:';//商户信息缓存键值
+    const REDIS_KEY_PLATFORM_CATS = 'common_data:platform_cats';//平台分类缓存
 
+    /**
+     * 获取商户详情缓存
+     * @param $id
+     * @return Merchant|mixed
+     */
     public static function getMerchantDetail($id)
     {
         $cache_key = self::REDIS_KEY_MERCHANT . $id;
@@ -26,6 +34,10 @@ class DataCacheService extends BaseService
         return $data;
     }
 
+    /**
+     * 删除商户详情缓存
+     * @param array $ids
+     */
     public static function delMerchantDetail($ids = [])
     {
         if ($ids) {
@@ -34,5 +46,31 @@ class DataCacheService extends BaseService
                 Cache::store('redis')->forget($cache_key);
             }
         }
+    }
+
+    /**
+     * 获取平台分类缓存
+     * @return array|mixed
+     */
+    public static function getPlatformCats()
+    {
+        $data = Cache::store('redis')->get(self::REDIS_KEY_PLATFORM_CATS);
+        if (empty($data)) {
+            $data = CsPlatformCategoryService::getAllIdName();
+            if (!empty($data)) {
+                Cache::store('redis')->forever(self::REDIS_KEY_PLATFORM_CATS, json_encode($data));
+            }
+        } else {
+            $data = json_decode($data,true);
+        }
+        return $data;
+    }
+
+    /**
+     * 删除平台分类缓存
+     */
+    public static function delPlatformCats()
+    {
+        Cache::store('redis')->forget(self::REDIS_KEY_PLATFORM_CATS);
     }
 }

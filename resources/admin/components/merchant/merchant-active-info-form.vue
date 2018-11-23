@@ -69,7 +69,9 @@
             <el-form-item prop="desc" label="商家介绍">
                 <el-input type="textarea" :rows="5" v-model="form.desc"/>
             </el-form-item>
-            <el-form-item v-if="isPayToPlatform" prop="settlement_cycle_type" required label="结算周期">
+            <!--去掉是否切换到平台限制-->
+            <el-form-item prop="settlement_cycle_type" required label="结算周期">
+            <!--<el-form-item v-if="isPayToPlatform" prop="settlement_cycle_type" required label="结算周期">-->
                 <el-select v-model="form.settlement_cycle_type" placeholder="请选择">
                     <el-option :disabled="form.settlement_cycle_type > 1" label="周结" :value="1"/>
                     <el-option label="T+1(自动)" :value="3"/>

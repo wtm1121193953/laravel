@@ -56,7 +56,11 @@
             <el-table-column prop="take_time" label="历时"/>
             <el-table-column prop="type" width="80" label="订单类型">
                 <template slot-scope="scope">
-                    <span>超市订单</span>
+                    <span v-if="scope.row.type == 1">团购订单</span>
+                    <span v-else-if="scope.row.type == 2">扫码支付订单</span>
+                    <span v-else-if="scope.row.type == 3">点菜订单</span>
+                    <span v-else-if="scope.row.type == 4">超市订单</span>
+                    <span>其他({{scope.row.type}})</span>
                 </template>
             </el-table-column>
             <el-table-column prop="goods_name" width="250" label="商品名称">
@@ -103,18 +107,7 @@
                         </div>
                         <span slot="reference">配送</span>
                     </el-popover>
-                    <el-popover
-                            v-else-if="scope.row.deliver_type == 2"
-                            placement="bottom"
-                            trigger="hover"
-                            width="400"
-                    >
-                        <div>
-                            <div>{{scope.row.express_company}}</div>
-                            <div>{{scope.row.express_no}}</div>
-                        </div>
-                        <span slot="reference">自提</span>
-                    </el-popover>
+                    <span v-else-if="scope.row.deliver_type == 2">自提</span>
                     <span v-else>无</span>
                 </template>
             </el-table-column>

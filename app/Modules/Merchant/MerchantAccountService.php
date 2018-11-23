@@ -179,6 +179,7 @@ class MerchantAccountService extends BaseService
                 [ 'id' => 2, 'name' => '订单管理', 'level' => 1, 'url' => 'order', 'sub' =>
                     [
                         ['id' => 201, 'name' => '超市订单管理', 'level' => 2, 'url' => '/cs/orders', 'pid' => 2],
+                        ['id' => 202, 'name' => '买单订单管理', 'level' => 2, 'url' => '/cs/scan/orders', 'pid' => 2],
                     ]
                 ],
                 ['id' => 3, 'name' => '消息管理', 'level' => 1, 'url' => '', 'sub' =>
@@ -212,7 +213,7 @@ class MerchantAccountService extends BaseService
                     ]
                 ],
                 [ 'id' => 8, 'name' => '电子合同管理', 'level' => 1, 'url' => '/cs/electronic/contract',],
-                [ 'id' => 9, 'name' => '配送设置', 'level' => 1, 'url' => '/cs/electronic/contract',],
+                [ 'id' => 9, 'name' => '配送设置', 'level' => 1, 'url' => '/cs/setting/delivery',],
                 [ 'id' => 10, 'name' => '系统设置', 'level' => 1, 'url' => 'setting', 'sub' =>
                     [
                         [ 'id' => 1001, 'name' => '系统配置', 'level' => 2, 'url' => '/cs/setting', 'pid' => 9 ],

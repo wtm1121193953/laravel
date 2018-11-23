@@ -32,14 +32,11 @@ class CsMerchantController extends Controller
         $data = [
             'id' => request('id'),
             'operId' => request()->get('current_user')->oper_id,
-            'creatorOperId' => request('creatorOperId'),
             'name' => request('name'),
             'merchantId' => request('merchantId'),
             'signboardName' => request('signboardName'),
             'status' => request('status'),
             'auditStatus' => request('audit_status'),
-            //'merchantCategory' => request('merchant_category'),
-            'isPilot' => request('isPilot'),
             'startCreatedAt' => request('startCreatedAt'),
             'endCreatedAt' => request('endCreatedAt'),
         ];
@@ -120,36 +117,6 @@ class CsMerchantController extends Controller
     }
 
     /**
-     * 添加数据
-     */
-    public function add()
-    {
-        $validate = [
-            'name' => 'required|max:50',
-            'signboard_name' => 'required|max:20',
-        ];
-        if (request('is_pilot') !== CsMerchant::PILOT_MERCHANT){
-            $validate = array_merge($validate, [
-                'business_licence_pic_url' => 'required',
-                'organization_code' => 'required',
-                'settlement_rate' => 'required|numeric|min:0',
-                ]);
-        }
-
-        $mobile = request('contacter_phone');
-        if(!preg_match('/^1[3456789]\d{9}$/', $mobile)){
-            throw new ParamInvalidException('负责人手机号码不合法');
-        }
-        $this->validate(request(), $validate);
-
-        $currentOperId = request()->get('current_user')->oper_id;
-
-        $merchant = CsMerchantService::add($currentOperId);
-
-        return Result::success($merchant);
-    }
-
-    /**
      * 编辑
      */
     public function edit()
@@ -158,7 +125,7 @@ class CsMerchantController extends Controller
             'name' => 'required|max:50',
             'signboard_name' => 'required|max:20',
         ];
-        if (request('is_pilot') !== Merchant::PILOT_MERCHANT){
+        if (request('is_pilot') !== CsMerchant::PILOT_MERCHANT){
             $validate = array_merge($validate, [
                 'business_licence_pic_url' => 'required',
                 'organization_code' => 'required',
@@ -187,14 +154,10 @@ class CsMerchantController extends Controller
         ]);
         $merchant = CsMerchantService::getById(request('id'));
         if(empty($merchant)){
-            throw new DataNotFoundException('商户信息不存在');
+            throw new DataNotFoundException('超市商户信息不存在');
         }
         $merchant->status = request('status');
         $merchant->save();
-
-        //$merchant->categoryPath = MerchantCategoryService::getCategoryPath($merchant->merchant_category_id);
-        $merchant->account = MerchantAccount::where('merchant_id', $merchant->id)->first();
-
         return Result::success($merchant);
     }
 

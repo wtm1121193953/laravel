@@ -33,17 +33,17 @@ class CsMerchantAuditService extends BaseService {
 
         $data->each(function($item) {
             $item->operName = Oper::where('id', $item->oper_id)->value('name');
-            // 解析JSON格式
+            /*// 解析JSON格式
             $detail = json_decode($item->data_after,true);
             if($item['cs_merchant_id']!=0){
-                $item->merchant_status = CsMerchant::find($item['cs_merchant_id'],'audit_status');
+                $item->csMerchant = CsMerchant::find($item->cs_merchant_id);
             }
             foreach ($detail as $k => $v){
                 if(!$v){
                     continue;
                 }
                 $item->$k = $v;
-            }
+            }*/
         });
         return $data;
     }
@@ -74,7 +74,9 @@ class CsMerchantAuditService extends BaseService {
 
     public static function addAudit($params)
     {
-        $operId = array_get($params,'oper_id','');
+        $operId = array_get($params,'oper_id',0);
+        $type = array_get($params,'type',CsMerchantAudit::INSERT_TYPE);
+        $CsmerchantId = array_get($params,'CsmerchantId',0);
         $name = array_get($params,'name','');
         $dataBefore = array_get($params,'dataBefore','');
         $dataAfter = array_get($params,'dataAfter','');
@@ -82,7 +84,8 @@ class CsMerchantAuditService extends BaseService {
 
         $audit = new CsMerchantAudit();
         $audit->oper_id = $operId;
-        $audit->type = CsMerchantAudit::INSERT_TYPE;
+        $audit->type = $type;
+        $audit->cs_merchant_id = $CsmerchantId;
         $audit->name = $name;
         $audit->data_before = $dataBefore;
         $audit->data_after = $dataAfter;

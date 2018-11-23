@@ -15,3 +15,5 @@ Route::get('/orders/field/sta', 'OrdersController@getOrderFieldStatistics');
 
 Route::post('/order/deliver', 'OrdersController@orderDeliver');
 
+Route::post('/order/check/deliver_code', 'OrdersController@checkDeliverCode');
+

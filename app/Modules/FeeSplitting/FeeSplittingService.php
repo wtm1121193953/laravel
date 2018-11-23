@@ -8,6 +8,8 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Bizer\Bizer;
 use App\Modules\Bizer\BizerService;
+use App\Modules\Cs\CsMerchant;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
@@ -21,6 +23,7 @@ use App\Modules\User\User;
 use App\Modules\User\UserService;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\WalletService;
+use App\Support\Utils;
 use Illuminate\Support\Facades\DB;
 
 class FeeSplittingService extends BaseService
@@ -38,17 +41,32 @@ class FeeSplittingService extends BaseService
         DB::beginTransaction();
         try {
             $oper = OperService::getById($order->oper_id);
-            // 只有切换到平台并且平台参与分成的运营中心才执行返利
-            if ($oper->pay_to_platform == Oper::PAY_TO_PLATFORM_WITH_SPLITTING) {
-                // 1 分给自己 5%
-                self::feeSplittingToSelf($order, $profitAmount);
-                // 2 分给上级 25%
-                self::feeSplittingToParent($order, $profitAmount);
-            }
-            // 只有切换到平台的才给运营中心分润
-            if ($oper->pay_to_platform != Oper::PAY_TO_OPER) {
-                // 3 分给运营中心  50% || 100%
-                self::feeSplittingToOper($order, $profitAmount);
+
+            if ($order->merchant_type == Order::MERCHANT_TYPE_NORMAL) {
+                // 普通订单分润
+
+                // 只有切换到平台并且平台参与分成的运营中心才执行返利
+                if ($oper->pay_to_platform == Oper::PAY_TO_PLATFORM_WITH_SPLITTING) {
+                    // 1 分给自己 5%
+                    self::feeSplittingToSelf($order, $profitAmount);
+                    // 2 分给上级 25%
+                    self::feeSplittingToParent($order, $profitAmount);
+                }
+                // 只有切换到平台的才给运营中心分润
+                if ($oper->pay_to_platform != Oper::PAY_TO_OPER) {
+                    // 3 分给运营中心  50% || 100%
+                    self::feeSplittingToOper($order, $profitAmount);
+                }
+            } elseif ($order->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET) {
+                // 超市订单分润
+                if ($oper->pay_to_platform != Oper::PAY_TO_OPER) {
+                    // 1. 分润给上级 20%
+                    self::feeSplittingToParent($order, $profitAmount);
+                    // 2. 分润给运营中心 40%
+                    self::feeSplittingToOperOfCs($order, $profitAmount);
+                }
+            } else {
+                throw new BaseResponseException('该订单类型不存在 merchant_type');
             }
             // 4 修改订单中的分润状态
             OrderService::updateSplittingStatus($order);
@@ -267,6 +285,8 @@ class FeeSplittingService extends BaseService
             $originType = FeeSplittingRecord::ORIGIN_TYPE_OPER;
         }else if($originInfo instanceof Bizer){
             $originType = FeeSplittingRecord::ORIGIN_TYPE_BIZER;
+        }else if($originInfo instanceof CsMerchant){
+            $originType = FeeSplittingRecord::ORIGIN_TYPE_CS;
         }else {
             throw new BaseResponseException('用户类型错误');
         }
@@ -282,6 +302,8 @@ class FeeSplittingService extends BaseService
                 $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfMerchantSetting($merchantLevel);
             } else if ($originType == FeeSplittingRecord::ORIGIN_TYPE_OPER) {
                 $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfOperSetting();
+            } else if ($originType == FeeSplittingRecord::ORIGIN_TYPE_CS) {
+                $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfCs();
             } else {
                 throw new BaseResponseException();
             }
@@ -392,7 +414,18 @@ class FeeSplittingService extends BaseService
     }
 
     /**
-     * 通过商户id获取商户的分利比例 再获取用户自己的分润比例
+     * @param $feeRatio
+     * @param $settlementRate
+     * @return float|int
+     */
+    private static function calculationRatio($feeRatio, $settlementRate)
+    {
+        $ratio = $feeRatio / 100 * ($settlementRate / 100 - ($settlementRate / 100 * 0.06 * 1.12 / 1.06 + $settlementRate / 100 * 0.1 * 0.25 + 0.0068));
+        return $ratio;
+    }
+
+    /**
+     * 获取用户的自返比例（相对于订单总金额的比例）
      * @param $merchantId
      * @return float|int
      */
@@ -415,19 +448,150 @@ class FeeSplittingService extends BaseService
     }
 
     /**
+     * 获取用户自己的分润比例（相对于订单总金额的比例）
+     * @param Order $order
+     * @return float|int
+     */
+    public static function getUserFeeSplittingRatio(Order $order)
+    {
+        // 如果平台没有参与运营中心的分润, 则用户自返比例为0
+        if ($order->merchant_type == Order::MERCHANT_TYPE_NORMAL) {
+            $operId = Merchant::where('id', $order->merchant_id)->value('oper_id');
+        } elseif ($order->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET) {
+            $operId = CsMerchant::where('id', $order->merchant_id)->value('oper_id');
+        } else {
+            return 0;
+        }
+        $oper = Oper::where('id', $operId)->first();
+        if($oper->pay_to_platform != Oper::PAY_TO_PLATFORM_WITH_SPLITTING){
+            return 0;
+        }
+
+        $feeRatio = UserCreditSettingService::getFeeSplittingRatioToSelfSetting(); // 自反的分润比例
+        $settlementRate = $order->settlement_rate;
+        $ratio = self::calculationRatio($feeRatio, $settlementRate);
+        return $ratio;
+    }
+
+    /**
+     * 获取上级的分润比例（相对于订单总金额的比例）
+     * @param Order $order
+     * @return float|int
+     */
+    public static function getParentFeeSplittingRatio(Order $order)
+    {
+        $oper = OperService::getById($order->oper_id);
+        if (($order->merchant_type == Order::MERCHANT_TYPE_NORMAL && $oper->pay_to_platform != Oper::PAY_TO_PLATFORM_WITH_SPLITTING) || ($order->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET && $oper->pay_to_platform == Oper::PAY_TO_OPER)) {
+            return 0;
+        }
+
+        $parent = InviteUserService::getParent($order->user_id);
+        if ($parent == null) {
+            return 0;
+        }
+
+        if ($parent instanceof User) {
+            $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfUserSetting();
+        } else if ($parent instanceof Merchant) {
+            $merchantLevel = $parent->level;
+            $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfMerchantSetting($merchantLevel);
+        } else if ($parent instanceof Oper) {
+            $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfOperSetting();
+        }else if($parent instanceof CsMerchant){
+            $feeRatio = UserCreditSettingService::getFeeSplittingRatioToParentOfCs();
+        }else {
+            return 0;
+        }
+
+        $settlementRate = $order->settlement_rate;
+        $ratio = self::calculationRatio($feeRatio, $settlementRate);
+
+        return $ratio;
+    }
+
+    /**
+     * 获取运营中心和业务员的分润比例（相对于订单总金额的比例）
+     * @param Order $order
+     * @return array
+     */
+    public static function getOperAndBizerFeeSplittingRatio(Order $order)
+    {
+        $ratio = [
+            'operRatio' => 0,
+            'bizerRatio' => 0,
+        ];
+        $oper = OperService::getById($order->oper_id);
+        if (empty($oper)) {
+            return $ratio;
+        }
+        if ($oper->pay_to_platform == Oper::PAY_TO_OPER) {
+            return $ratio;
+        }
+
+        if ($order->merchant_type == Order::MERCHANT_TYPE_NORMAL) {
+            $operFeeRatio = $operFeeRatioInit = UserCreditSettingService::getFeeSplittingRatioToOper($oper);
+            if ($operFeeRatioInit == null || $operFeeRatioInit <= 0) {
+                return $ratio;
+            }
+
+            if($order->bizer_id){
+                // 查询运营中心业务员信息
+                $operBizer = null;
+                // 如果订单中存在业务员信息
+                $bizer = BizerService::getById($order->bizer_id);
+                if(empty($bizer)){
+                    throw new BaseResponseException('返利时业务员信息不存在', $order->toArray());
+                }
+                $param = [
+                    'operId' => $oper->id,
+                    'bizerId' => $order->bizer_id,
+                ];
+                $operBizer = OperBizerService::getOperBizerByParam($param);
+                if (empty($operBizer)) {
+                    throw new BaseResponseException('运营中心和业务员的签约信息不存在');
+                }
+
+                $bizerDivide = $order->bizer_divide ?: $operBizer->divide;
+                $bizerFeeRatio = $operFeeRatioInit * $bizerDivide / 100;
+                $operFeeRatio = $operFeeRatioInit - $bizerFeeRatio;
+                if ($operFeeRatio < 0) {
+                    throw new BaseResponseException('运营中心与业务员分润比例错误');
+                }
+            } else {
+                $bizerFeeRatio = 0;
+            }
+        } elseif ($order->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET) {
+            $bizerFeeRatio = 0;
+            $operFeeRatio = UserCreditSettingService::getFeeSplittingRatioToOperOfCs();
+        } else {
+            return $ratio;
+        }
+
+        $settlementRate = $order->settlement_rate;
+        $operRatio = self::calculationRatio($operFeeRatio, $settlementRate);
+        $bizerRatio = self::calculationRatio($bizerFeeRatio, $settlementRate);
+
+        return [
+            'operRatio' => $operRatio,
+            'bizerRatio' => $bizerRatio,
+        ];
+    }
+
+    /**
      * 获取订单纯利润 (订单毛利润-税-分润金额)
-     * 分润金额 = 分给用户和商户的金额 + 分给运营中心的订单利润的50%
      * @param Order $order
      * @return float|mixed
      */
     public static function getOrderPureProfitAmountByOrder(Order $order)
     {
         $orderProfit = OrderService::getProfitAmount($order);
-        $feeSplittingAmountOfUserAndMerchant = FeeSplittingRecord::where('order_id', $order->id)
-            ->whereIn('origin_type', [FeeSplittingRecord::ORIGIN_TYPE_USER, FeeSplittingRecord::ORIGIN_TYPE_MERCHANT])
-            ->sum('amount');
-        $feeSplittingAmountOfOper = $orderProfit * 0.5;
-        $orderPureProfit = $orderProfit - $feeSplittingAmountOfUserAndMerchant - $feeSplittingAmountOfOper;
+
+        $userRatio = self::getUserFeeSplittingRatio($order);
+        $parentRatio = self::getParentFeeSplittingRatio($order);
+        $operAndBizerRatio = self::getOperAndBizerFeeSplittingRatio($order);
+        $ratio = $userRatio + $parentRatio + $operAndBizerRatio['operRatio'] + $operAndBizerRatio['bizerRatio'];
+
+        $orderPureProfit = $orderProfit - Utils::getDecimalByNotRounding($order->pay_price * $ratio, 2);
 
         return $orderPureProfit;
     }
@@ -603,5 +767,46 @@ class FeeSplittingService extends BaseService
         $newFeeSplittingRecord->save();
 
         return $newFeeSplittingRecord;
+    }
+
+    /**
+     * 超市订单 分润给运营中心
+     * @param Order $order
+     * @param float $profitAmount
+     * @throws \Exception
+     */
+    private static function feeSplittingToOperOfCs(Order $order, float $profitAmount)
+    {
+        // 通过订单中的merchant_id查找该商户的运营中心（准确点）
+        $csMerchant = CsMerchantService::getById($order->merchant_id);
+        $oper = OperService::getById($csMerchant->oper_id);
+        if (empty($oper)) {
+            return;
+        }
+        if ($oper->pay_to_platform == Oper::PAY_TO_OPER) {
+            return;
+        }
+
+        $operFeeRatio = UserCreditSettingService::getFeeSplittingRatioToOperOfCs();
+
+        if ($operFeeRatio == null || $operFeeRatio <= 0) {
+            return;
+        }
+
+        DB::beginTransaction();
+        try {
+            // 计算运营中心
+            $feeSplittingRecord = self::createFeeSplittingRecord($order, $oper, FeeSplittingRecord::TYPE_TO_OPER, $profitAmount, $operFeeRatio);
+
+            // 钱包表 首先查找是否有钱包，没有则新建钱包; 有钱包则更新钱包（的冻结金额）
+            $wallet = WalletService::getWalletInfo($oper);
+            if (!empty($feeSplittingRecord)) {
+                WalletService::addFreezeBalanceByFeeSplitting($feeSplittingRecord, $wallet);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 }

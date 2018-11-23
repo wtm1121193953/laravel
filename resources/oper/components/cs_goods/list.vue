@@ -54,9 +54,11 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary"  @click="getList"><i class="el-icon-search">搜 索</i></el-button>
+                    <el-button type="primary"  @click="search"><i class="el-icon-search">搜 索</i></el-button>
                 </el-form-item>
-
+                <el-form-item>
+                    <el-button type="success" @click="downloadExcel">导出Excel</el-button>
+                </el-form-item>
             </el-form>
         </el-col>
 
@@ -64,9 +66,13 @@
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="id" label="商品ID"/>
             <el-table-column prop="goods_name" label="商品名称"/>
-            <el-table-column prop="cs_merchant.name" label="商户名称"/>
-            <el-table-column prop="cs_platform_cat_id_level1" label="一级分类"/>
-            <el-table-column prop="cs_platform_cat_id_level2" label="二级分类"/>
+            <el-table-column prop="cs_merchant.name" label="商户名称">
+                <template slot-scope="scope">
+                    <div  slot="reference"><p>{{scope.row.cs_merchant.name}}</p><a @click="checkThis(scope.row.cs_merchant_id)" class="c-green">只看他的</a></div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="cs_platform_cat_id_level1_name" label="一级分类"/>
+            <el-table-column prop="cs_platform_cat_id_level2_name" label="二级分类"/>
             <el-table-column prop="logo" label="商品图片">
                 <template slot-scope="scope">
                     <div class="detail_image" style="height: 50px; width: 50px" v-viewer @click="previewImage($event)">
@@ -84,7 +90,7 @@
             <el-table-column prop="audit_status" label="审核状态">
                 <template slot-scope="scope">
                     <span v-if="parseInt(scope.row.audit_status) === 1" class="c-warning">审核中</span>
-                    <div v-else-if="parseInt(scope.row.audit_status) === 2"  slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
+                    <div v-else-if="parseInt(scope.row.audit_status) === 2"  slot="reference" class="c-green"><p>审核通过</p></div>
                     <div  v-else-if="parseInt(scope.row.audit_status) === 3" slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
@@ -137,6 +143,7 @@
                     goods_name:'',
                     id:'',
                     merchant_name:'',
+                    cs_merchant_id:'',
                     status:'',
                     auditStatus:'',
                     cs_platform_cat_id_level1:'',
@@ -171,7 +178,7 @@
 
                 }
                 api.get('/sub_cat', {parent_id:this.query.cs_platform_cat_id_level1}).then(data => {
-
+                    this.query.cs_platform_cat_id_level2 = ''
                     this.cs_platform_cat_id_level2 = data;
                 })
             },
@@ -207,6 +214,34 @@
                 viewer.show()
                 return
             },
+            checkThis(cs_merchant_id) {
+
+                this.query.cs_merchant_id = cs_merchant_id
+                this.getList();
+            },
+            search() {
+                this.query.cs_merchant_id = '';
+                this.getList();
+            },
+            downloadExcel() {
+                let message = '确定要导出当前筛选的商品列表么？';
+
+                this.$confirm(message).then(() => {
+                    let data = this.query;
+                    let params = [];
+                    Object.keys(data).forEach((key) => {
+                        let value =  data[key];
+                        if (typeof value === 'undefined' || value == null) {
+                            value = '';
+                        }
+                        params.push([key, encodeURIComponent(value)].join('='))
+                    }) ;
+                    let uri = params.join('&');
+
+                    location.href = `/api/oper/cs_goods/download?${uri}`;
+                })
+            },
+
         },
         created(){
             this.getLevel1();

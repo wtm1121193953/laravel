@@ -36,6 +36,7 @@ class WalletWithdraw extends BaseModel
     const ORIGIN_TYPE_MERCHANT = 2; // 商户
     const ORIGIN_TYPE_OPER = 3; // 运营中心
     const ORIGIN_TYPE_BIZER = 4; // 业务员
+    const ORIGIN_TYPE_CS = 5; // 超市
 
     /**
      * 状态 1-审核中 2-审核通过 3-已打款 4-打款失败 5-审核不通过

@@ -26,6 +26,7 @@ use App\BaseModel;
  * @property integer status
  * @property integer audit_status
  * @property string audit_suggestion
+ * @property integer sort
  */
 class CsGood extends BaseModel
 {
@@ -40,5 +41,29 @@ class CsGood extends BaseModel
     public function cs_merchant()
     {
         return $this->belongsTo(CsMerchant::class);
+    }
+
+    public static function allStatus()
+    {
+        return [self::STATUS_ON=>'上架',self::STATUS_OFF=>'下架'];
+    }
+
+    public static function statusName(int $status)
+    {
+
+        $all_status = self::allStatus();
+        return $all_status[$status]??'';
+    }
+
+    public static function allAuditStatus()
+    {
+        return [self::AUDIT_STATUS_AUDITING=>'审核中',self::AUDIT_STATUS_SUCCESS=>'审核通过',self::AUDIT_STATUS_FAIL=>'审核不通过'];
+    }
+
+    public static function auditStatusName(int $audit_status)
+    {
+
+        $all = self::allAuditStatus();
+        return $all[$audit_status]??'';
     }
 }

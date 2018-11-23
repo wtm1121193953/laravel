@@ -86,6 +86,19 @@ class MiniprogramSceneService extends BaseService
     }
 
     /**
+     * @param $cs_merchant_id
+     * @param $oper_id
+     * @return MiniprogramScene
+     */
+    public static function getCsMerchantInviteChannelScene(int $cs_merchant_id, int $oper_id) : MiniprogramScene
+    {
+        $inviteChannel = InviteChannelService::getByOriginInfo($cs_merchant_id, InviteChannel::ORIGIN_TYPE_CS_MERCHANT, $oper_id);
+        $scene = self::getByInviteChannel($inviteChannel);
+        return $scene;
+
+    }
+
+    /**
      * 获取小程序码的url 或文件路径
      * @param MiniprogramScene $scene
      * @param int $width

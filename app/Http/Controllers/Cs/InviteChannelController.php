@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Cs;
 
 
 use App\Http\Controllers\Controller;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
@@ -28,48 +29,10 @@ class InviteChannelController extends Controller
     {
         $currentUser = request()->get('current_user');
 
-        $scene = MiniprogramSceneService::getMerchantInviteChannelScene($currentUser->merchant_id, $currentUser->oper_id);
+        $scene = MiniprogramSceneService::getCsMerchantInviteChannelScene($currentUser->merchant_id, $currentUser->oper_id);
 
-        $oper = OperService::getById($currentUser->oper_id);
-
-        if (empty($scene->qrcode_url)) {
-
-            //如果是支付到平台生成二维码
-            if ($oper->pay_to_platform != Oper::PAY_TO_OPER) {
-                $signboardName = MerchantService::getSignboardNameById($currentUser->merchant_id);
-                $url = MiniprogramSceneService::genSceneQrCode($scene, 375,false,$signboardName);
-            } else {
-
-                $url = MiniprogramSceneService::getMiniprogramAppCode($scene);
-
-                $signboardName = MerchantService::getSignboardNameById($currentUser->merchant_id);
-
-                $fileName = pathinfo($url, PATHINFO_BASENAME);
-                $path = storage_path('app/public/miniprogram/app_code/') . $fileName;
-                WechatService::addNameToAppCode($path, $signboardName);
-
-            }
-
-        } else {
-            //如果是支付到平台老的分享码换成二维码
-            if ( ($oper->pay_to_platform != Oper::PAY_TO_OPER) && strpos($scene->qrcode_url,'scene_qrcode')===false ) {
-                $signboardName = MerchantService::getSignboardNameById($currentUser->merchant_id);
-                $url = MiniprogramSceneService::genSceneQrCode($scene, 375,false,$signboardName);
-
-            } else if (($oper->pay_to_platform == Oper::PAY_TO_OPER) && strpos($scene->qrcode_url,'app_code')===false) {
-                $url = MiniprogramSceneService::getMiniprogramAppCode($scene);
-
-                $signboardName = MerchantService::getSignboardNameById($currentUser->merchant_id);
-
-                $fileName = pathinfo($url, PATHINFO_BASENAME);
-                $path = storage_path('app/public/miniprogram/app_code/') . $fileName;
-                WechatService::addNameToAppCode($path, $signboardName);
-            } else {
-                $url = $scene->qrcode_url;
-            }
-
-        }
-
+        $signboardName = CsMerchantService::getSignboardNameById($currentUser->merchant_id);
+        $url = MiniprogramSceneService::genSceneQrCode($scene, 375,false,$signboardName);
 
         return Result::success([
             'qrcode_url' => $url,
@@ -87,27 +50,13 @@ class InviteChannelController extends Controller
         $type = request('type', 1);
         $currentUser = request()->get('current_user');
 
-        $scene = MiniprogramSceneService::getMerchantInviteChannelScene($currentUser->merchant_id, $currentUser->oper_id);
-
-        $oper = OperService::getById($currentUser->oper_id);
+        $scene = MiniprogramSceneService::getCsMerchantInviteChannelScene($currentUser->merchant_id, $currentUser->oper_id);
 
         $width = $type == 3 ? 1280 : ($type == 2 ? 430 : 258);
+        $signboardName = CsMerchantService::getSignboardNameById($currentUser->merchant_id);
+        $filePath = MiniprogramSceneService::genSceneQrCode($scene, $width,true,$signboardName);
 
-        if ( $oper->pay_to_platform != Oper::PAY_TO_OPER ) {
-
-            $signboardName = MerchantService::getSignboardNameById($currentUser->merchant_id);
-            $filePath = MiniprogramSceneService::genSceneQrCode($scene, $width,true,$signboardName);
-
-            return response()->download($filePath, '分享用户二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
-        } else {
-
-            $filePath = MiniprogramSceneService::getMiniprogramAppCode($scene, $width, true);
-
-            $signboardName = MerchantService::getSignboardNameById($currentUser->merchant_id);
-            WechatService::addNameToAppCode($filePath, $signboardName);
-
-            return response()->download($filePath, '分享用户二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
-        }
+        return response()->download($filePath, '分享用户二维码_' . ['', '小', '中', '大'][$type] . '.jpg');
 
 
     }

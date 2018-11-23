@@ -14,7 +14,7 @@
     import api from '../../../assets/js/api'
     import GoodsForm from './goods-form'
     export default {
-        name: "add",
+        name: "edit",
         data(){
             return {
                 id: null,

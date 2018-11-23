@@ -1,22 +1,22 @@
 <template>
     <page title="商品详细" :breadcrumbs="{商品列表: '/cs/goods'}">
         <el-row>
+            <el-col>商品状态：{{goods.status_name}},审核状态：{{goods.audit_status_name}}</el-col>
+        </el-row>
+        <el-row>
             <el-col :span="22">
                 <el-form label-width="120px">
                     <el-form-item prop="goods_name" label="商品名称">
                         {{goods.goods_name}}
                     </el-form-item>
+
                     <el-form-item label="一级分类" prop="cs_platform_cat_id_level1">
-
-                        {{goods.cs_platform_cat_id_level1}}
-
+                        {{goods.cs_platform_cat_id_level1_name}}
                     </el-form-item>
-
                     <el-form-item label="二级分类" prop="cs_platform_cat_id_level2">
-                        {{goods.cs_platform_cat_id_level2}}
-
-
+                        {{goods.cs_platform_cat_id_level2_name}}
                     </el-form-item>
+
                     <el-form-item prop="market_price" label="市场价">
 
                         {{goods.market_price}}
@@ -117,7 +117,7 @@
             audit(type){
                 api.post('/cs_goods/audit', {id: this.id, type: type,audit_suggestion:this.goods.audit_suggestion}).then(data => {
                     this.$alert(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
-                    this.$emit('change')
+                    this.back()
                 })
             },
             getDetail(){
@@ -126,7 +126,9 @@
                 });
             },
             back(){
-                this.$emit('change')
+                router.push({
+                    path: '/cs/goods',
+                });
             }
         },
         created(){

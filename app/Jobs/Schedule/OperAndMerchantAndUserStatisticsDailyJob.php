@@ -2,9 +2,9 @@
 
 namespace App\Jobs\Schedule;
 
-use App\Modules\Merchant\MerchantStatisticsService;
-use App\Modules\Oper\OperStatisticsService;
-use App\Modules\User\UserStatisticsService;
+use App\Jobs\MerchantStatisticsJob;
+use App\Jobs\OperStatisticsJob;
+use App\Jobs\UserStatisticsJob;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -45,9 +45,9 @@ class OperAndMerchantAndUserStatisticsDailyJob implements ShouldQueue
     {
         Log::info('生成 营销统计数据 :Start');
 
-        MerchantStatisticsService::statistics($this->endTime);
-        OperStatisticsService::statistics($this->endTime);
-        UserStatisticsService::statistics($this->endTime);
+        MerchantStatisticsJob::dispatch($this->endTime);
+        OperStatisticsJob::dispatch($this->endTime);
+        UserStatisticsJob::dispatch($this->endTime);
 
         Log::info('生成 营销统计数据 :end');
     }

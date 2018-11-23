@@ -1,6 +1,9 @@
 <template>
     <page title="商品详细" :breadcrumbs="{商品列表: '/cs/goods'}">
         <el-row>
+            <el-col>商品状态：{{goods.status_name}},审核状态：{{goods.audit_status_name}}</el-col>
+        </el-row>
+        <el-row>
             <el-col :span="22">
                 <el-form label-width="120px">
                     <el-form-item prop="goods_name" label="商品名称">
@@ -8,12 +11,12 @@
                     </el-form-item>
                     <el-form-item label="一级分类" prop="cs_platform_cat_id_level1">
 
-                        {{goods.cs_platform_cat_id_level1}}
+                        {{goods.cs_platform_cat_id_level1_name}}
 
                     </el-form-item>
 
                     <el-form-item label="二级分类" prop="cs_platform_cat_id_level2">
-                        {{goods.cs_platform_cat_id_level2}}
+                        {{goods.cs_platform_cat_id_level2_name}}
 
 
                     </el-form-item>
@@ -62,7 +65,7 @@
                         <el-button v-if="goods.certificate3.length > 0" type="text" @click="previewImage('desc3')">查看</el-button>
                     </el-form-item>
                     <el-form-item>
-
+                        <el-button type="primary" @click="back()">返回</el-button>
                     </el-form-item>
                 </el-form>
             </el-col>
@@ -91,6 +94,11 @@
                 id: null,
                 goods: {
                     goods_name: '',
+                    detail_imgs:[],
+                    certificate1 :[],
+                    certificate2 :[],
+                    certificate3:[],
+                    audit_suggestion:'',
                 },
                 auditType:null
             }
@@ -115,7 +123,9 @@
                 });
             },
             back(){
-                this.$emit('change')
+                router.push({
+                    path: '/cs/goods'
+                });
             }
         },
         created(){
