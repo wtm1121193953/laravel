@@ -103,7 +103,6 @@ class CsMerchantAuditService extends BaseService {
         $audit->data_before = $dataBefore;
         $audit->data_after = $dataAfter;
         $audit->data_modify = $dataModify;
-        $audit->settlement_cycle_type = CsMerchant::SETTLE_DAY_ADD_ONE;
         $audit->status = CsMerchantAudit::AUDIT_STATUS_AUDITING;
         $audit->save();
         return $audit;
@@ -148,6 +147,7 @@ class CsMerchantAuditService extends BaseService {
             foreach ($saveColumn as $k=>$v){
                 $merchant->$k = $v;
             }
+            $merchant->settlement_cycle_type = CsMerchant::SETTLE_DAY_ADD_ONE;
         }
         $merchant->audit_status = CsMerchant::AUDIT_STATUS_SUCCESS;
         $merchant->status = CsMerchant::AUDIT_STATUS_SUCCESS;
