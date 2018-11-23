@@ -133,11 +133,11 @@ class CsUserAddressService extends BaseService {
         }
         if (!empty($data['province_id']))  {
             $userAddress->province_id = $data['province_id'];
-            $userAddress->province = Area::getNameByAreaId($userAddress->area_id);;
+            $userAddress->province = Area::getNameByAreaId($userAddress->area_id);
         }
         if (!empty($data['city_id']))  {
             $userAddress->city_id = $data['city_id'];
-            $userAddress->city = Area::getNameByAreaId($userAddress->city_id);;
+            $userAddress->city = Area::getNameByAreaId($userAddress->city_id);
         }
         else{
             $userAddress->city_id = '0';

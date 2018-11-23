@@ -24,7 +24,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Support\Utils;
 use App\Modules\Invite\InviteUserService;
-use App\Modules\Sms\SmsService;
+use App\Modules\Sms\SmsVerifyCodeService;
 use App\Exceptions\ParamInvalidException;
 //用户账单
 use App\Modules\Wallet\WalletBill;
@@ -226,7 +226,7 @@ class WalletController extends Controller
         ]);
         $verifyCode = request()->get('verify_code');
         $user = request()->get('current_user');
-        $result = SmsService::checkVerifyCode($user->mobile, $verifyCode);
+        $result = SmsVerifyCodeService::checkVerifyCode($user->mobile, $verifyCode);
         if ($result) {
             $token = str_random();
             Cache::put('user_pay_password_modify_temp_token_' . $user->id, $token, 3);

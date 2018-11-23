@@ -10,7 +10,7 @@
 
 <script>
     import api from '../../../assets/js/api'
-    import DishesCategoryForm from './dishes-category-form'
+    import DishesCategoryForm from './cs-category-form'
 
     export default {
             name: "dishes-category-item-options",
@@ -70,7 +70,10 @@
             subCat() {
                 router.push({
                     path: '/subCategories',
-                    query: {cs_category_parent_id: this.scope.row.platform_category_id}
+                    query: {
+                        cs_category_parent_id: this.scope.row.platform_category_id,
+                        cs_category_parent_name: this.scope.row.cs_cat_name,
+                    }
                 });
             }
         },

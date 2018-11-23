@@ -24,7 +24,7 @@ use App\ResultCode;
 use App\Support\Utils;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
-use App\Modules\Sms\SmsService;
+use App\Modules\Sms\SmsVerifyCodeService;
 use Illuminate\Support\Facades\Cache;
 
 class WalletController extends Controller
@@ -349,7 +349,7 @@ class WalletController extends Controller
         ]);
         $verifyCode = $request->get('verify_code');
         $user = $request->get('current_user');
-        $result = SmsService::checkVerifyCode($user->mobile, $verifyCode);
+        $result = SmsVerifyCodeService::checkVerifyCode($user->mobile, $verifyCode);
         if($result) {
             $token = str_random();
             Cache::put('user_pay_password_modify_temp_token_' . $user->id, $token, 3);

@@ -1,6 +1,6 @@
 <template>
     <page title="分类管理" v-loading="isLoading">
-        <el-table :data="list" stripe>
+        <el-table :data="list" stripe v-loading="tableLoading">
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="cs_cat_name" label="分类名称"/>
             <el-table-column prop="status" label="状态">
@@ -17,7 +17,7 @@
             </el-table-column>
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
-                    <dishes-category-item-options
+                    <cs-category-item-options
                             :scope="scope"
                             :isFirst="isFirstPage && scope.$index == 0"
                             :isLast="isLastPage && scope.$index == list.length - 1"
@@ -40,15 +40,16 @@
 <script>
     import api from '../../../assets/js/api'
 
-    import DishesCategoryItemOptions from './dishes-category-item-options'
-    import DishesCategoryForm from './dishes-category-form'
+    import CsCategoryItemOptions from './cs-category-item-options'
+    import CsCategoryForm from './cs-category-form'
 
     export default {
-        name: "dishes-category-list",
+        name: "cs-category-list",
         data(){
             return {
                 isAdd: false,
                 isLoading: false,
+                tableLoading: false,
                 query: {
                     page: 1,
                     pageSize: 10,
@@ -67,9 +68,12 @@
         },
         methods: {
             getList(){
+                this.tableLoading = true;
                 api.get('/categories', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                }).finally(() => {
+                    this.tableLoading = false;
                 })
             },
             itemChanged(index, data){
@@ -96,8 +100,8 @@
             this.getList();
         },
         components: {
-            DishesCategoryItemOptions,
-            DishesCategoryForm,
+            CsCategoryItemOptions,
+            CsCategoryForm,
         }
     }
 </script>

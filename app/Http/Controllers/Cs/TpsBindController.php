@@ -12,7 +12,7 @@ namespace App\Http\Controllers\Cs;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
-use App\Modules\Sms\SmsService;
+use App\Modules\Sms\SmsVerifyCodeService;
 use App\Modules\Tps\TpsBind;
 use App\Modules\Tps\TpsBindService;
 use App\Result;
@@ -38,7 +38,7 @@ class TpsBindController extends Controller
         ]);
         $mobile = request('mobile');
         $verifyCode = request('verifyCode');
-        if ( !SmsService::checkVerifyCode($mobile, $verifyCode) ){
+        if ( !SmsVerifyCodeService::checkVerifyCode($mobile, $verifyCode) ){
             throw new ParamInvalidException('验证码错误');
         }
         $merchantId = request()->get('current_user')->merchant_id;
@@ -56,8 +56,8 @@ class TpsBindController extends Controller
         if(!empty($bindInfo)){
             throw new ParamInvalidException('该手机号已被绑定, 请更换其他手机号');
         }
-        $smsVerifyCode = SmsService::add($mobile);
-        $result = SmsService::sendVerifyCode($smsVerifyCode->mobile, $smsVerifyCode->verify_code);
+        $smsVerifyCode = SmsVerifyCodeService::add($mobile);
+        $result = SmsVerifyCodeService::sendVerifyCode($smsVerifyCode->mobile, $smsVerifyCode->verify_code);
 
         if ($result['code'] == 0){
             return Result::success();

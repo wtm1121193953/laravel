@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Bizer;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
-use App\Modules\Sms\SmsService;
+use App\Modules\Sms\SmsVerifyCodeService;
 use App\Result;
 
 class SmsController extends Controller
@@ -17,8 +17,8 @@ class SmsController extends Controller
         ]);
         $mobile = request('mobile');
 
-        $smsVerifyCode = SmsService::add($mobile);
-        $result = SmsService::sendVerifyCode($smsVerifyCode->mobile, $smsVerifyCode->verify_code);
+        $smsVerifyCode = SmsVerifyCodeService::add($mobile);
+        $result = SmsVerifyCodeService::sendVerifyCode($smsVerifyCode->mobile, $smsVerifyCode->verify_code);
 
         if ($result['code'] == 0){
             return Result::success();
@@ -40,7 +40,7 @@ class SmsController extends Controller
         $mobile = request('mobile');
         $verifyCode = request('verifyCode');
 
-        $res = SmsService::checkVerifyCode($mobile, $verifyCode);
+        $res = SmsVerifyCodeService::checkVerifyCode($mobile, $verifyCode);
 
         if ($res) {
             return Result::success();

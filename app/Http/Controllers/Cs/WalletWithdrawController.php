@@ -8,6 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Cs\CsMerchantService;
 use App\Modules\Sms\SmsService;
+use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
+use App\Modules\Sms\SmsVerifyCodeService;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletService;
@@ -16,7 +19,6 @@ use App\Result;
 
 class WalletWithdrawController extends Controller
 {
-
     /**
      * 获取钱包密码是否设置 和 商户电话号码
      * @return \Illuminate\Http\JsonResponse
@@ -52,7 +54,7 @@ class WalletWithdrawController extends Controller
         $verifyCode = request('verifyCode');
         $password = request('password');
 
-        if (SmsService::checkVerifyCode($mobile, $verifyCode)){
+        if (SmsVerifyCodeService::checkVerifyCode($mobile, $verifyCode)){
             $merchantId = request()->get('current_user')->merchant_id;
             $merchant = CsMerchantService::getById($merchantId);
 
