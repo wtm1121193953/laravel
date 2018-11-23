@@ -349,7 +349,10 @@ class CsMerchantService extends BaseService {
             $currentOperId = 0;
         }
 
-        $existCsMerchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)->where('type',CsMerchantAudit::UPDATE_TYPE)->first();
+        $existCsMerchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)
+            ->where('type',CsMerchantAudit::UPDATE_TYPE)
+            ->where('status',CsMerchantAudit::AUDIT_STATUS_AUDITING)
+            ->first();
         if($existCsMerchantAudit){
             throw new BaseResponseException('该商户已存在待审核记录');
         }
