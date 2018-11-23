@@ -24,7 +24,7 @@ use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Payment\Payment;
 use App\Modules\Platform\PlatformTradeRecord;
-use App\Modules\Sms\SmsService;
+use App\Modules\Sms\SmsVerifyCodeService;
 use App\Modules\User\User;
 use App\Modules\Oper\Oper;
 use App\Modules\UserCredit\UserCreditRecord;
@@ -486,7 +486,7 @@ class OrderService extends BaseService
                 OrderFinishedJob::dispatch($order)->onQueue('order:finished');
             }
 
-            SmsService::sendBuySuccessNotify($orderNo);
+            SmsVerifyCodeService::sendBuySuccessNotify($orderNo);
 
             return true;
         }else if($order->status == Order::STATUS_PAID){

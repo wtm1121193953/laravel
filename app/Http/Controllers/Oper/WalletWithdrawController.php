@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
-use App\Modules\Sms\SmsService;
+use App\Modules\Sms\SmsVerifyCodeService;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletService;
@@ -52,7 +52,7 @@ class WalletWithdrawController extends Controller
         $verifyCode = request('verifyCode');
         $password = request('password');
 
-        if (SmsService::checkVerifyCode($mobile, $verifyCode)){
+        if (SmsVerifyCodeService::checkVerifyCode($mobile, $verifyCode)){
             $operId = request()->get('current_user')->oper_id;
             $oper = OperService::getById($operId);
 
