@@ -295,5 +295,49 @@ class CsMerchantController extends Controller
         return $isPayToPlatform;
     }
 
+    public function audit()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1',
+            'type' => 'required|integer|in:1,2,3',
+            'audit_suggestion' => 'max:50',
+        ]);
+
+        $type = request('type');
+        $merchantId = request('id');
+        $auditSuggestion = request('audit_suggestion', '');
+
+        $merchant = CsMerchantService::getById($merchantId);
+        if(empty($merchant)){
+            throw new ParamInvalidException('商户信息不存在');
+        }
+
+        // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
+        $merchantCurrentAudit = CsMerchantAudit::where('merchant_id', $merchantId)
+            ->where('oper_id', $merchant->audit_oper_id)
+            ->whereIn('status', [0,3])
+            ->orderBy('updated_at','desc')
+            ->first();
+        if(empty($merchantCurrentAudit)){
+            MerchantAuditService::addAudit($merchantId, $merchant->audit_oper_id);
+        }
+
+        switch ($type){
+            case '1': // 审核通过
+                $merchant = MerchantAuditService::auditSuccess($merchant, $auditSuggestion);
+                break;
+            case '2': // 审核不通过
+                $merchant = MerchantAuditService::auditFail($merchant, $auditSuggestion);
+                break;
+            case '3': // 审核不通过并打回到商户池
+                $merchant = MerchantAuditService::auditFailAndPushToPool($merchant, $auditSuggestion);
+                break;
+            default:
+                throw new BaseResponseException('错误的操作');
+        }
+
+        return Result::success($merchant);
+    }
+
 
 }
