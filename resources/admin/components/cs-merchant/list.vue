@@ -334,7 +334,7 @@
                     }) ;
                     let uri = params.join('&');
 
-                    location.href = `/api/admin/merchant/download?${uri}`;
+                    location.href = `/api/admin/CsMerchant/export?${uri}`;
                 })
             },
             changeStatus(row){

@@ -29,19 +29,53 @@ class CsMerchantController extends Controller
      */
     public function getList()
     {
-        $data = [
-            'id' => request('id'),
-            'operId' => request()->get('current_user')->oper_id,
-            'name' => request('name'),
-            'merchantId' => request('merchantId'),
-            'signboardName' => request('signboardName'),
-            'status' => request('status'),
-            'auditStatus' => request('audit_status'),
-            'startCreatedAt' => request('startCreatedAt'),
-            'endCreatedAt' => request('endCreatedAt'),
-        ];
+        $id = request('merchantId');
+        $startDate = request('startDate');
+        $endDate = request('endDate');
+        $name = request('name');
+        $signboardName = request('signboardName');
+        $status = request('status');
+        $settlementCycleType = request('settlementCycleType');
+        $auditStatus = request('auditStatus');
+        $merchantCategory = request('merchantCategory');
 
-        $data = CsMerchantService::getList($data);
+        if(is_string($auditStatus)){
+            $auditStatus = explode(',', $auditStatus);
+        }
+
+        if(is_string($settlementCycleType)){
+            $settlementCycleType = explode(',', $settlementCycleType);
+        }
+
+        $operId = request('operId');
+
+        // 根据输入的运营中心名称获取所属运营中心ID列表
+        $operName = request('operName');
+        if($operName) {
+            $operIds = OperService::getAll(['name' => $operName], 'id')->pluck('id');
+        }
+        $creatorOperId = request('creatorOperId');
+        // 根据输入的运营中心名称获取录入信息的运营中心ID列表
+        $creatorOperName = request('creatorOperName');
+        if($creatorOperName){
+            $createOperIds = OperService::getAll(['name' => $creatorOperName], 'id')->pluck('id');
+        }
+
+
+
+        $data = CsMerchantService::getList([
+            'id' => $id,
+            'operId' => $operIds ?? $operId,
+            'name' => $name,
+            'signboardName' => $signboardName,
+            'creatorOperId' => $createOperIds ?? $creatorOperId,
+            'status' => $status,
+            'settlementCycleType' => $settlementCycleType,
+            'auditStatus' => $auditStatus,
+            'merchantCategory' => $merchantCategory,
+            'startCreatedAt' => $startDate,
+            'endCreatedAt' => $endDate,
+        ]);
 
         return Result::success([
             'list' => $data->items(),
@@ -54,24 +88,26 @@ class CsMerchantController extends Controller
      */
     public function export(){
 
-        $data = [
-            'id' => request('id'),
-            'operId' => request()->get('current_user')->oper_id,
-            'creatorOperId' => request('creatorOperId'),
-            'name' => request('name'),
-            'merchantId' => request('merchantId'),
-            'signboardName' => request('signboardName'),
-            'status' => request('status'),
-            'auditStatus' => request('audit_status'),
-            'startCreatedAt' => request('startCreatedAt'),
-            'endCreatedAt' => request('endCreatedAt'),
-        ];
+        $id = request('merchantId');
+        $startDate = request('startDate');
+        $endDate = request('endDate');
+        $name = request('name');
+        $status = request('status');
+        $settlementCycleType = request('settlementCycleType');
+        $auditStatus = request('auditStatus');
+        $signboardName = request('signboardName');
+        if ($auditStatus || $auditStatus==="0"){
+            $auditStatus = explode(',', $auditStatus);
+        }
+        if(is_string($settlementCycleType)){
+            $settlementCycleType = explode(',', $settlementCycleType);
+        }
+        $operId = request('operId');
+        $operName = request('operName');
 
-        $query = CsMerchantService::getList($data,true);
+        $merchantCategory = request('merchantCategory', '');
 
-        $list = $query->get();
-
-        return (new AdminCsMerchantExport($list,request('isPilot')))->download('超市商户列表.xlsx');
+        return (new AdminCsMerchantExport($id, $startDate, $endDate,$signboardName, $name, $status, $settlementCycleType, $auditStatus, $operId, $operName, $merchantCategory))->download('超市商户列表.xlsx');
 
     }
 
