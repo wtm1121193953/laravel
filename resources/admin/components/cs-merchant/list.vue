@@ -261,7 +261,7 @@
                 this.tableLoading = true;
                 let params = {};
                 Object.assign(params, this.query);
-                api.get('/CsMerchant/audit/list', params).then(data => {
+                api.get('/cs/merchants', params).then(data => {
                     console.log(data.list);
                     this.query.page = params.page;
                     this.list = data.list;
@@ -274,7 +274,7 @@
             detail(scope){
                 let self = this;
                 router.push({
-                    path: 'CsMerchant/detail',
+                    path: 'cs/merchant/detail',
                     name: 'CsMerchantDetail',
                     query: {
                         id: scope.row.id,
@@ -285,7 +285,7 @@
 
             edit(scope){
                 router.push({
-                    path: '/Csmerchant/edit',
+                    path: '/cs/merchant/edit',
                     query: {id: scope.row.id},
                 })
                 return false;
@@ -293,7 +293,7 @@
             //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
             audit(scope, type){
                 if(type==2 ||type==1){
-                    api.get('CsMerchant/detail', {id: scope.row.id}).then(data => {
+                    api.get('cs/merchant/detail', {id: scope.row.id}).then(data => {
                         this.detailMerchant = data;
                         this.detailMerchant.type = type;
                         this.unAudit = true;
@@ -334,13 +334,13 @@
                     }) ;
                     let uri = params.join('&');
 
-                    location.href = `/api/admin/CsMerchant/export?${uri}`;
+                    location.href = `/api/admin/cs/merchant/export?${uri}`;
                 })
             },
             changeStatus(row){
                 let status = row.status === 1 ? 2 : 1;
                 this.$emit('before-request')
-                api.post('/CsMerchant/changeStatus', {id: row.id, status: status}).then((data) => {
+                api.post('/cs/merchant/changeStatus', {id: row.id, status: status}).then((data) => {
                     row.status = status;
                     this.$emit('change', this.scope, data)
                 }).finally(() => {

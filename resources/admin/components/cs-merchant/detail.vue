@@ -1,5 +1,5 @@
 <template>
-    <page title="超市商户详情" :breadcrumbs="{超市商户管理: '/CsMerchant/unaudits'}">
+    <page title="超市商户详情" :breadcrumbs="{超市商户管理: '/cs/merchants'}">
         <merchant-detail v-if="merchant" :data="merchant" :auditType="auditType" @change="merchantChange"/>
     </page>
 </template>
@@ -19,20 +19,20 @@
             merchantChange(){
                 if (this.$route.query.isAudit){
                     router.push({
-                        path: '/merchant/unaudits',
-                        name: 'MerchantUnauditList',
+                        path: '/cs/merchants',
+                        name: 'CsMerchants',
                         params: this.$route.params,
                     });
                 } else {
                     router.push({
-                        path: '/csMerchant/unaudits',
-                        name: 'CsMerchantUnauditList',
+                        path: '/cs/merchants',
+                        name: 'CsMerchants',
                         params: this.$route.params,
                     });
                 }
             },
             getDetail(){
-                api.get('CsMerchant/detail', {id: this.id,}).then(data => {
+                api.get('cs/merchant/detail', {id: this.id,}).then(data => {
                     this.merchant = data;
                 });
             }

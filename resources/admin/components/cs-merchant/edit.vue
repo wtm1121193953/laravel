@@ -1,5 +1,5 @@
 <template>
-    <page title="编辑超市商户信息" :breadcrumbs="{'超市商户管理': '/CsMerchant/unaudits'}">
+    <page title="编辑超市商户信息" :breadcrumbs="{'超市商户管理': '/cs/merchants'}">
         <merchant-form
                 v-loading="isLoading"
                 v-if="merchant"
@@ -28,35 +28,35 @@
         methods: {
             doEdit(data){
                 this.isLoading = true;
-                api.post('/CsMerchant/edit', data).then(() => {
+                api.post('/cs/merchant/edit', data).then(() => {
                     this.$message.success('保存成功');
                     router.push({
-                        path: '/CsMerchant/unaudits',
-                        name: 'CsMerchantUnauditList',
+                        path: '/cs/merchants',
+                        name: 'CsMerchants',
                         params: this.$route.params,
                     });
-                    store.commit('setCurrentMenu', '/csMerchant/unaudits');
+                    store.commit('setCurrentMenu', '/cs/merchants');
                 }).finally(() => {
                     this.isLoading = false;
                 })
             },
             getDetail(){
                 this.isLoading = true;
-                api.get('/CsMerchant/detail' , {id: this.id}).then(data => {
+                api.get('/cs/merchant/detail' , {id: this.id}).then(data => {
                     this.merchant = data;
                 }).finally(() => {
                     this.isLoading = false;
                 })
             },
             cancel(){
-                router.push('/CsMerchant/unaudits');
+                router.push('/cs/merchants');
             },
         },
         created(){
             this.id = this.$route.query.id;
             if(!this.id){
                 this.$message.error('id不能为空');
-                router.push('/CsMerchant/unaudits');
+                router.push('/cs/merchants');
                 return false;
             }
             this.getDetail();
