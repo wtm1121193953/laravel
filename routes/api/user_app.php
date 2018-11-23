@@ -15,6 +15,8 @@ Route::prefix('app/user')
 
         Route::any('sms/verify_code', 'SmsController@sendVerifyCode');
 
+        Route::any('navigation/index', 'NavigationController@index');
+
         Route::any('login', 'LoginController@login');
         Route::any('logout', 'LoginController@logout');
 
@@ -47,6 +49,8 @@ Route::prefix('app/user')
         Route::get('goods/detail', 'GoodsController@detail');
 
         Route::get('orders', 'OrderController@getList')->middleware(UserLoginFilter::class);
+        Route::get('user/orders', 'OrderController@getOrderList')->middleware(UserLoginFilter::class);
+
         Route::get('order/detail', 'OrderController@detail')->middleware(UserLoginFilter::class);
         Route::post('order/buy', 'OrderController@buy')->middleware(UserLoginFilter::class);
         Route::post('order/pay', 'OrderController@pay')->middleware(UserLoginFilter::class);

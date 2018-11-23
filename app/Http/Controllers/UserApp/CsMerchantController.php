@@ -16,10 +16,27 @@ use App\Result;
 class CsMerchantController extends Controller
 {
   public function getList(){
-      $list = CsMerchantService::getListAndDistance();
-      return Result::success([
-          'list'=>$list
+      $user_key =  request()->get('current_device_no');
+      if (empty($user_key)) {
+          $user_key = request()->headers->get('token');
+          if (empty($user_key)) {
+              $user_key = request()->ip();
+          }
+      }
+
+      $data = CsMerchantService::getListAndDistance([
+          'city_id' => request('city_id'),
+          'keyword' => request('keyword'),
+          'lng' => request('lng'),
+          'lat' => request('lat'),
+          'radius' => request('radius'),
+          'user_key' => $user_key,
+          'onlyPayToPlatform' => 1,
+          'pageSize' => request('pageSize',15),
       ]);
+
+      return Result::success($data);
+
   }
 
 }

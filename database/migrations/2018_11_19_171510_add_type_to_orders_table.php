@@ -25,6 +25,10 @@ class AddTypeToOrdersTable extends Migration
             $table->decimal('discount_price')->default(0.00)->comment('优惠金额')->after('pay_type');
             $table->decimal('total_price')->default(0.00)->comment('总价格')->after('pay_type');
             $table->decimal('deliver_price')->default(0.00)->comment('超市配送费')->after('pay_type');
+
+            $table->tinyInteger('user_deleted')->default(0)->comment('用户是否已删除订单')->after('deleted_at');
+            $table->string('deliver_code')->default('')->comment('超市订单 取货码')->after('deliver_type');
+
         });
     }
 
@@ -46,7 +50,9 @@ class AddTypeToOrdersTable extends Migration
                 'take_delivery_time',
                 'discount_price',
                 'total_price',
-                'deliver_price'
+                'deliver_price',
+                'user_deleted',
+                'deliver_code',
             ]);
         });
     }

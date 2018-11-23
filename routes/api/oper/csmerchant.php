@@ -17,7 +17,7 @@ Route::post('/cs/merchant/add', 'CsMerchantController@add');
 Route::post('/cs/merchant/edit', 'CsMerchantController@edit');
 Route::post('/cs/merchant/changeStatus', 'CsMerchantController@changeStatus');
 Route::get('/cs/merchant/export', 'CsMerchantController@export');
-//Route::post('/cs/merchant/del', 'CsMerchantController@del');
+Route::post('/cs/merchant/recall', 'CsMerchantController@recall');
 
 Route::post('/cs/merchant/createAccount', 'CsMerchantController@createAccount');
 Route::post('/cs/merchant/editAccount', 'CsMerchantController@editAccount');

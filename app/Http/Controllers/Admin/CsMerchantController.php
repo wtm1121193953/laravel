@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Exports\AdminCsMerchantExport;
 use App\Http\Controllers\Controller;
+use App\Modules\Admin\AdminUser;
 use App\Modules\Bizer\BizerService;
 use App\Modules\Cs\CsMerchant;
+use App\Modules\Cs\CsMerchantAudit;
 use App\Modules\Cs\CsMerchantAuditService;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAccountService;
@@ -18,6 +21,7 @@ use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizerService;
 use App\Modules\Oper\OperService;
 use App\Result;
+use http\Exception\BadMessageException;
 
 
 class CsMerchantController extends Controller
@@ -140,7 +144,8 @@ class CsMerchantController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-        $merchant = CsMerchantService::detail(request('id'));
+        $userId = request()->get('current_user')->id;
+        $merchant = CsMerchantService::detail(request('id'),$userId);
 
         /*$isPayToPlatform = $this->isPayToPlatform();
         if($isPayToPlatform){
@@ -174,7 +179,7 @@ class CsMerchantController extends Controller
         if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
             throw new ParamInvalidException('负责人手机号码不合法');
         }
-        $merchant = CsMerchantService::edit(request('id'), request('audit_oper_id'),request('audit_status'));
+        $merchant = CsMerchantService::edit(request('id'), request('audit_oper_id'),request('audit_status'),true);
 
         return Result::success($merchant);
     }
@@ -264,6 +269,8 @@ class CsMerchantController extends Controller
         $user = request()->get('current_user');
         if($user instanceof Oper){
             $params['oper_id'] = $user->oper_id;
+        }elseif($user instanceof AdminUser){
+            $params['status'] = CsMerchantAudit::AUDIT_STATUS_AUDITING;
         }
         $data = CsMerchantAuditService::getAuditResultList($params);
         return Result::success([
@@ -281,7 +288,7 @@ class CsMerchantController extends Controller
             'id' => 'required|integer|min:1'
         ]);
         $merchantId = request('id');
-        $record = MerchantAuditService::getNewestAuditRecordByMerchantId($merchantId);
+        $record = CsMerchantAuditService::getNewestAuditRecordByMerchantId($merchantId);
         return Result::success($record);
     }
 
@@ -302,41 +309,50 @@ class CsMerchantController extends Controller
             'type' => 'required|integer|in:1,2,3',
             'audit_suggestion' => 'max:50',
         ]);
-
         $type = request('type');
-        $merchantId = request('id');
         $auditSuggestion = request('audit_suggestion', '');
-
-        $merchant = CsMerchantService::getById($merchantId);
-        if(empty($merchant)){
-            throw new ParamInvalidException('商户信息不存在');
-        }
-
-        // 兼容旧操作, 没有审核记录时创建一条审核记录, 以便于继续走下去
-        $merchantCurrentAudit = CsMerchantAudit::where('merchant_id', $merchantId)
-            ->where('oper_id', $merchant->audit_oper_id)
-            ->whereIn('status', [0,3])
-            ->orderBy('updated_at','desc')
-            ->first();
-        if(empty($merchantCurrentAudit)){
-            MerchantAuditService::addAudit($merchantId, $merchant->audit_oper_id);
+        $merchantAudit = CsMerchantAudit::findOrFail(request()->get('id'));
+        $supermarket = null;
+        // 如果存在商户ID，则不新增新的商户数据
+        if($merchantAudit->cs_merchant_id){
+            $supermarket = CsMerchantService::getById($merchantAudit->cs_merchant_id);
+            if(!$supermarket){
+                // 数据库信息不一致
+                throw new ParamInvalidException('错误的操作');
+            }
         }
 
         switch ($type){
             case '1': // 审核通过
-                $merchant = MerchantAuditService::auditSuccess($merchant, $auditSuggestion);
+                $supermarket = CsMerchantAuditService::auditSuccess($supermarket, $auditSuggestion, $merchantAudit);
                 break;
             case '2': // 审核不通过
-                $merchant = MerchantAuditService::auditFail($merchant, $auditSuggestion);
-                break;
-            case '3': // 审核不通过并打回到商户池
-                $merchant = MerchantAuditService::auditFailAndPushToPool($merchant, $auditSuggestion);
+                $supermarket = CsMerchantAuditService::auditFail($supermarket, $auditSuggestion, $merchantAudit);
                 break;
             default:
                 throw new BaseResponseException('错误的操作');
         }
 
-        return Result::success($merchant);
+        return Result::success($supermarket);
+    }
+
+    public function getAuditDetail()
+    {
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $merchantAudit = CsMerchantAudit::findOrFail(request()->get('id'));
+        $detail = json_decode($merchantAudit->data_after);
+        $detail->other_card_pic_urls = $detail->other_card_pic_urls ? explode(',', $detail->other_card_pic_urls) : '';
+        $unReplaceColumn = ['id'];
+        foreach ($detail as $k=>$v){
+            // 部分字段值避免覆盖
+            if(in_array($k,$unReplaceColumn)){
+                continue;
+            }
+            $merchantAudit->$k = $v;
+        }
+        return Result::success($merchantAudit);
     }
 
 
