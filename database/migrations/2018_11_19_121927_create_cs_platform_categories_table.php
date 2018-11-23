@@ -16,9 +16,9 @@ class CreateCsPlatformCategoriesTable extends Migration
         Schema::create('cs_platform_categories', function (Blueprint $table) {
             $table->increments('id');
             $table->string('cat_name')->default('')->comment('分类名称');
-            $table->tinyInteger('status')->default(0)->comment('分类状态 1启用 2暂停');
-            $table->integer('parent_id')->default(0)->comment('上级分类ID');
-            $table->tinyInteger('level')->default(0)->comment('分类层级');
+            $table->tinyInteger('status')->index()->default(1)->comment('分类状态 1启用 2暂停');
+            $table->integer('parent_id')->index()->default(0)->comment('上级分类ID');
+            $table->tinyInteger('level')->default(1)->comment('分类层级');
             $table->timestamps();
             $table->comment = '平台商品分类';
         });
