@@ -30,7 +30,7 @@ class WalletService extends BaseService
 
     /**
      * 创建钱包
-     * @param User|Merchant|Oper|Bizer $user
+     * @param User|Merchant|Oper|Bizer|CsMerchant $user
      * @return Wallet
      */
     public static function getWalletInfo($user)
@@ -73,6 +73,14 @@ class WalletService extends BaseService
         return Wallet::find($wallet->id);
     }
 
+    /**
+     * @param Wallet $wallet
+     * @param $amount
+     * @param $type
+     * @param int $objId
+     * @return Wallet
+     * @throws \Exception
+     */
     public static function addBalance(Wallet $wallet, $amount, $type, $objId=0)
     {
         if($amount < 0){

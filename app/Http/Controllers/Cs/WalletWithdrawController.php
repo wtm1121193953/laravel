@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Cs;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
-use App\Modules\Merchant\Merchant;
-use App\Modules\Merchant\MerchantService;
+use App\Modules\Cs\CsMerchant;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\Sms\SmsVerifyCodeService;
 use App\Modules\UserCredit\UserCreditSettingService;
 use App\Modules\Wallet\Wallet;
@@ -18,12 +18,12 @@ class WalletWithdrawController extends Controller
 {
     /**
      * 获取钱包密码是否设置 和 商户电话号码
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getWalletPasswordInfo()
     {
         $merchantId = request()->get('current_user')->merchant_id;
-        $merchant = MerchantService::getById($merchantId);
+        $merchant = CsMerchantService::getById($merchantId);
 
         $wallet = WalletService::getWalletInfo($merchant);
         $editPassword = $wallet->withdraw_password != '';
@@ -53,7 +53,7 @@ class WalletWithdrawController extends Controller
 
         if (SmsVerifyCodeService::checkVerifyCode($mobile, $verifyCode)){
             $merchantId = request()->get('current_user')->merchant_id;
-            $merchant = MerchantService::getById($merchantId);
+            $merchant = CsMerchantService::getById($merchantId);
 
             $wallet = WalletService::getWalletInfo($merchant);
             WalletService::updateWalletWithdrawPassword($wallet, $password);
@@ -71,7 +71,7 @@ class WalletWithdrawController extends Controller
     public function getWithdrawInfoAndBankInfo()
     {
         $merchantId = request()->get('current_user')->merchant_id;
-        $merchant = MerchantService::getById($merchantId);
+        $merchant = CsMerchantService::getById($merchantId);
         $wallet = WalletService::getWalletInfo($merchant);
         $ratio = UserCreditSettingService::getMerchantWithdrawChargeRatioByBankCardType($merchant->bank_card_type);
 
@@ -104,13 +104,13 @@ class WalletWithdrawController extends Controller
         $invoiceExpressNo = request('invoiceExpressNo', '');
 
         $merchantId = request()->get('current_user')->merchant_id;
-        $merchant = MerchantService::getById($merchantId);
-        if ($merchant->status != Merchant::STATUS_ON || $merchant->audit_status != Merchant::AUDIT_STATUS_SUCCESS) {
+        $merchant = CsMerchantService::getById($merchantId);
+        if ($merchant->status != CsMerchant::STATUS_ON || $merchant->audit_status != CsMerchant::AUDIT_STATUS_SUCCESS) {
             throw new BaseResponseException('商户状态异常，请联系客服');
         }
 
         $wallet = WalletService::getWalletInfo($merchant);
-        $checkPass = WalletWithdrawService::checkWithdrawPasswordByOriginInfo($withdrawPassword, $merchantId, Wallet::ORIGIN_TYPE_MERCHANT);
+        $checkPass = WalletWithdrawService::checkWithdrawPasswordByOriginInfo($withdrawPassword, $merchantId, Wallet::ORIGIN_TYPE_CS);
 
         if ($checkPass) {
             $param = compact('invoiceExpressCompany', 'invoiceExpressNo');
