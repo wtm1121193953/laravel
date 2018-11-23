@@ -685,7 +685,7 @@ class OrderController extends Controller
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->name ?? '';
         $order->goods_name = $merchant->name ?? '';
-        $order->dishes_id = '';
+        $order->dishes_id = 0;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $this->getCsTotalPrice($dishesList);
         $order->settlement_rate = $merchant->settlement_rate;
