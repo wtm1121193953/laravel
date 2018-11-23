@@ -1,6 +1,6 @@
 <template>
-    <page title="子分类" v-loading="isLoading" :breadcrumbs="{分类管理: '/categories'}">
-        <el-table :data="list" stripe>
+    <page :title="parentName" v-loading="isLoading" :breadcrumbs="{分类管理: '/categories'}">
+        <el-table :data="list" stripe v-loading="tableLoading">
             <el-table-column prop="id" label="ID"/>
             <el-table-column prop="cs_cat_name" label="分类名称"/>
             <el-table-column prop="status" label="状态">
@@ -40,8 +40,8 @@
 <script>
     import api from '../../../assets/js/api'
 
-    import DishesCategoryItemOptions from './dishes-category-item-options'
-    import DishesCategoryForm from './dishes-category-form'
+    import DishesCategoryItemOptions from './cs-category-item-options'
+    import DishesCategoryForm from './cs-category-form'
 
     export default {
         name: "dishes-category-list",
@@ -49,6 +49,8 @@
             return {
                 isAdd: false,
                 isLoading: false,
+                tableLoading: false,
+                parentName: '',
                 query: {
                     platform_category_id:0,
                     page: 1,
@@ -68,9 +70,12 @@
         },
         methods: {
             getList(){
+                this.tableLoading = true;
                 api.get('/categories', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                }).then(() => {
+                    this.tableLoading = false;
                 })
             },
             itemChanged(index, data){
@@ -85,6 +90,7 @@
         },
         created(){
             this.query.cs_category_parent_id = this.$route.query.cs_category_parent_id;
+            this.parentName = this.$route.query.cs_category_parent_name;
             this.getList();
         },
         components: {

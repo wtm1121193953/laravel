@@ -34,7 +34,7 @@ use App\Modules\Payment\PaymentService;
 use App\Modules\Settlement\Settlement;
 use App\Modules\Settlement\SettlementPlatformKuaiQianBatch;
 use App\Modules\Settlement\SettlementPlatformKuaiQianBatchService;
-use App\Modules\Sms\SmsService;
+use App\Modules\Sms\SmsVerifyCodeService;
 use App\Modules\Tps\TpsBind;
 use App\Modules\User\User;
 use App\Modules\User\UserStatisticsService;
@@ -205,7 +205,7 @@ dd('ok');
         $user = User::where('mobile', '13333333333')->first();
         dd($user);
 
-        SmsService::sendBuySuccessNotify('O20180619165606342090');
+        SmsVerifyCodeService::sendBuySuccessNotify('O20180619165606342090');
         dd();
         $orderItems = OrderItem::where('order_id', 102)
             ->select('verify_code')

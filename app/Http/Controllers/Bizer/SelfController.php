@@ -12,7 +12,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Bizer\Bizer;
 use App\Modules\Sms\SmsVerifyCode;
-use App\Modules\Sms\SmsService;
+use App\Modules\Sms\SmsVerifyCodeService;
 use App\Result;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Carbon;
@@ -79,7 +79,7 @@ class SelfController extends Controller {
             throw new BaseResponseException('手机已存在', ResultCode::ACCOUNT_EXISTS);
         }
 
-        $verifyCodeRes = SmsService::checkVerifyCode($mobile, $verifyCode);
+        $verifyCodeRes = SmsVerifyCodeService::checkVerifyCode($mobile, $verifyCode);
         if ($verifyCodeRes === FALSE) {
             throw new ParamInvalidException('验证码错误');
         }
@@ -178,7 +178,7 @@ class SelfController extends Controller {
             'confirm_password' => 'required|same:password',
         ]);
         
-        $verifyCodeRes = SmsService::checkVerifyCode($mobile, $verifyCode);
+        $verifyCodeRes = SmsVerifyCodeService::checkVerifyCode($mobile, $verifyCode);
         if ($verifyCodeRes === FALSE) {
             throw new ParamInvalidException('验证码错误');
         }

@@ -7,6 +7,7 @@ use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Modules\Bizer\Bizer;
 use App\Modules\Bizer\BizerService;
+use App\Modules\Cs\CsMerchant;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
@@ -84,7 +85,7 @@ class WalletWithdrawService extends BaseService
     /**
      * 创建 提现记录 并更新钱包可提现余额
      * @param Wallet $wallet
-     * @param Merchant|Oper|User|Bizer $obj
+     * @param Merchant|Oper|User|Bizer|CsMerchant $obj
      * @param $amount
      * @param $param
      * @return WalletWithdraw
@@ -116,7 +117,9 @@ class WalletWithdrawService extends BaseService
             $obj->bank_open_name = $bizerBankCard->bank_card_open_name;
             $obj->bank_card_no = $bizerBankCard->bank_card_no;
             $obj->sub_bank_name = $bizerBankCard->bank_name;
-        }else {
+        } elseif ($obj instanceof CsMerchant) {
+            $ratio = UserCreditSettingService::getMerchantWithdrawChargeRatioByBankCardType($obj->bank_card_type);
+        } else {
             throw new BaseResponseException('用户类型错误');
         }
 

@@ -72,20 +72,20 @@ Route::prefix('admin')
 
         Route::get('merchant/audit/list', 'MerchantController@getAuditList');
         Route::get('merchant/audit/record/newest', 'MerchantController@getNewestAuditRecord');
-        Route::get('merchant/detail', 'MerchantController@detail');
-
-
-
-        Route::get('CsMerchant/audit/list', 'CsMerchantController@getList');
-        Route::get('CsMerchant/detail', 'CsMerchantController@detail');
-        Route::Post('CsMerchant/edit', 'CsMerchantController@edit');
-        Route::get('CsMerchant/export', 'CsMerchantController@export');
-        Route::post('CsMerchant/changeStatus', 'CsMerchantController@changeStatus');
 
         Route::get('merchant/pool', 'MerchantPoolController@getList');
         Route::get('merchant/pool/detail', 'MerchantPoolController@detail');
 
         Route::get('/operBizMembers/search', 'OperBizMemberController@search');
+
+
+        Route::get('cs/merchants', 'CsMerchantController@getList');
+        Route::get('cs/merchant/detail', 'CsMerchantController@detail');
+        Route::Post('cs/merchant/edit', 'CsMerchantController@edit');
+        Route::get('cs/merchant/export', 'CsMerchantController@export');
+        Route::post('cs/merchant/changeStatus', 'CsMerchantController@changeStatus');
+
+        Route::get('cs/merchant/audit/list', 'CsMerchantController@getAuditList');
 
         Route::get('/tps/getBindInfo', 'TpsBindController@getBindInfo');
         Route::post('/tps/bindAccount', 'TpsBindController@bindAccount');

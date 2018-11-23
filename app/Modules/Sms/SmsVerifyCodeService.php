@@ -21,7 +21,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 
-class SmsService extends BaseService
+class SmsVerifyCodeService extends BaseService
 {
 
     /**

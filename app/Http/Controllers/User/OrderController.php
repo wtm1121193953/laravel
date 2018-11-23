@@ -14,6 +14,10 @@ use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
+use App\Modules\Cs\CsGood;
+use App\Modules\Cs\CsMerchant;
+use App\Modules\Cs\CsUserAddress;
+use App\Modules\CsOrder\CsOrderGood;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
@@ -273,6 +277,140 @@ class OrderController extends Controller
         return $this->_returnOrder($order,$currentOperId,$merchant,$orderNo);
     }
 
+    /**
+     * 生成超市订单
+     */
+    public function csOrderCreate(){
+        //TODO 超市订单生成
+        //必传商家id，支付方式，商品列表 配送方式
+        $this->validate(request(), [
+            'merchant_id' => 'required|integer|min:1',
+            'pay_type' => 'required|integer|min:1',
+            'goods_list' => 'required|min:1',
+            'delivery_type' => 'required|integer|min:1',
+        ]);
+
+        $payType = request('pay_type');
+        $addressId = request('address_id');
+        $deliveryType = request('delivery_type');
+        $remark = request('remark');
+        if (empty($remark)){
+            $remark = '';
+        }
+        if (empty($deliveryType)){
+            $deliveryType = 0;
+        }
+        if (request('delivery_type') == '2'){
+            if (empty($addressId)){
+                throw new ParamInvalidException('请先选择地址');
+            }
+            $address = CsUserAddress::findOrFail($addressId);
+        }
+
+
+
+
+        //判断商家状态
+        $merchant = CsMerchant::findOrFail(request('merchant_id'));
+        if ($merchant->status == CsMerchant::STATUS_OFF){
+            throw new BaseResponseException('该超市已下架，请选择其他商户下单');
+        }
+
+        $oper = Oper::find($merchant->oper_id);
+        if (empty($oper)) {
+            throw new DataNotFoundException('该商户的运营中心不存在！');
+        }
+        if($oper->pay_to_platform == Oper::PAY_TO_OPER){
+            throw new BaseResponseException('该商品不能在APP下单, 请在小程序下单');
+        }
+
+        //运营中心
+        $merchant_oper = Oper::find($merchant->oper_id);
+
+        //TODO 判断商家时候支持配送
+
+        $dishesList = request('goods_list');
+        if (is_string($dishesList)) {
+            $dishesList = json_decode($dishesList, true);
+        }
+        Log::info('disesList11',['diesList' => $dishesList]);
+
+        if (empty($dishesList)) {
+            throw new ParamInvalidException('单品列表为空');
+        }
+        if (sizeof($dishesList) < 1) {
+            throw new ParamInvalidException('参数不合法1');
+        }
+        foreach ($dishesList as $item) {
+            if (!isset($item['id']) || !isset($item['number'])) {
+                throw new ParamInvalidException('参数不合法2');
+            }
+            $good = CsGood::findOrFail($item['id']);
+            if ($good->status == CsGood::STATUS_OFF) {
+                throw new BaseResponseException('订单中 ' . $good->goods_name . ' 已下架，请删除后重试');
+            }
+        }
+
+        $user =  $user = request()->get('current_user');
+        $order = new Order();
+        $orderNo = Order::genOrderNo();
+        $order->oper_id = $merchant->oper_id;
+        $order->order_no = $orderNo;
+        $order->user_id = $user->id;
+        $order->user_name = $user->name ?? '';
+        $order->type = Order::TYPE_SUPERMARKET;
+        $order->notify_mobile = $user->mobile;
+        $order->merchant_id = $merchant->id;
+        $order->merchant_name = $merchant->name ?? '';
+        $order->goods_name = $merchant->name ?? '';
+        $order->dishes_id = 0;
+        $order->status = Order::STATUS_UN_PAY;
+        $order->pay_price = $this->getCsTotalPrice($dishesList);
+        $order->settlement_rate = $merchant->settlement_rate;
+        $order->remark = $remark;
+        $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
+        $order->pay_type = $payType;
+        $order->settlement_rate = $merchant->settlement_rate;
+        $order->origin_app_type = request()->header('app-type');
+        $order->bizer_id = 0;
+        $order->deliver_type = $deliveryType;
+        if (!empty($addressId)){
+            $address = CsUserAddress::findOrFail($addressId);
+            $order->express_address = json_encode($address);
+        }
+        else{
+            $order->express_address ='';
+        }
+
+        $order->merchant_type = Order::MERCHANT_TYPE_SUPERMARKET;
+        if ($order->save()){
+            foreach ($dishesList as $item) {
+                $good = CsGood::findOrFail($item['id']);
+                $csOrderGood = new CsOrderGood();
+                $csOrderGood->oper_id = $merchant->oper_id;
+                $csOrderGood->price = $good->price;
+                $csOrderGood->goods_name = $good->goods_name;
+                $csOrderGood->cs_merchant_id = $merchant->id;
+                $csOrderGood->cs_goods_id = $good->id;
+                $csOrderGood->number = $item['number'];
+                $csOrderGood->order_id = $order->id;
+                $csOrderGood->save();
+            }
+
+        }
+
+        if(!$payType){
+            return Result::success([
+                'order_no' => $order->order_no,
+                'sdk_config' => null,
+                'order' => $order,
+                'pay_type'  => $order->pay_type,
+                'data'  =>  null
+            ]);
+        }
+        return $this->_returnOrder($orde,$merchant->oper_id,$merchant,$order->order_no);
+
+    }
 
     /**
      * 获取总价格
@@ -642,5 +780,19 @@ class OrderController extends Controller
         return true;
     }
 
+    /**
+     * 获取超市商品总价格
+     */
+    public function getCsTotalPrice($goodList){
+        $totalPrice = 0;
+        foreach ($goodList as $item) {
+            if (!isset($item['id']) || !isset($item['number'])) {
+                throw new ParamInvalidException('参数不合法2');
+            }
+            $good = CsGood::findOrFail($item['id']);
+            $totalPrice += ($good->price) * ($item['number']);
+        }
+        return $totalPrice;
+    }
 
 }
