@@ -46,6 +46,18 @@
                     <el-form-item>
                         <el-button type="success" class="m-l-30" @click="exportExcel">导出Excel</el-button>
                     </el-form-item>
+                    <div>
+                        <el-form-item>
+                            <el-upload
+                                :action="actionUrl"
+                            >
+                                <el-button type="primary" class="m-l-30">批量发货(200笔以内)</el-button>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" class="m-l-30" @click="downloadTemplate">批量发货.xls文件模板下载</el-button>
+                        </el-form-item>
+                    </div>
                 </el-form>
             </el-col>
         </el-row>
@@ -205,7 +217,9 @@
                         {required: true, message: '快递编号不能为空'},
                         {max: 50, message: '快递编号不能超过50个字'},
                     ]
-                }
+                },
+
+                actionUrl: '/api/cs/order/batch/delivery',
             }
         },
         methods: {
@@ -295,7 +309,16 @@
                     num = num + item.number;
                 })
                 return num;
-            }
+            },
+            downloadTemplate() {
+                api.get('/order/batch_delivery/template').then(data => {
+                    location.href = `/api/download?path=${data.url}&as=批量发货.xlsx&code=doc`;
+                })
+            },
+            batchDelivery() {
+
+            },
+
         },
         created() {
             this.query.status = this.status;
