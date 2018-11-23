@@ -751,7 +751,7 @@ class OrderController extends Controller
         $order->merchant_id = $merchant->id;
         $order->merchant_name = $merchant->name ?? '';
         $order->goods_name = $merchant->name ?? '';
-        $order->dishes_id = '';
+        $order->dishes_id = 0;
         $order->status = Order::STATUS_UN_PAY;
         $order->pay_price = $this->getCsTotalPrice($dishesList);
         $order->settlement_rate = $merchant->settlement_rate;
@@ -760,11 +760,32 @@ class OrderController extends Controller
         $order->pay_type = $payType;
         $order->settlement_rate = $merchant->settlement_rate;
         $order->origin_app_type = request()->header('app-type');
-        $order->bizer_id = $merchant->bizer_id;
+        $order->bizer_id = 0;
         $order->deliver_type = $deliveryType;
-        $order->delivery_address_id =empty($address)?'':$address->id;
-        $order->cs_goods_buy = request('goods_list');
-        $order->save();
+        if (!empty($addressId)){
+            $address = CsUserAddress::findOrFail($addressId);
+            $order->express_address = json_encode($address);
+        }
+        else{
+            $order->express_address ='';
+        }
+
+        $order->merchant_type = Order::MERCHANT_TYPE_SUPERMARKET;
+        if ($order->save()){
+            foreach ($dishesList as $item) {
+                $good = CsGood::findOrFail($item['id']);
+                $csOrderGood = new CsOrderGood();
+                $csOrderGood->oper_id = $merchant->oper_id;
+                $csOrderGood->price = $good->price;
+                $csOrderGood->goods_name = $good->goods_name;
+                $csOrderGood->cs_merchant_id = $merchant->id;
+                $csOrderGood->cs_goods_id = $good->id;
+                $csOrderGood->number = $item['number'];
+                $csOrderGood->order_id = $order->id;
+                $csOrderGood->save();
+            }
+
+        }
 
         if(!$payType){
             return Result::success([

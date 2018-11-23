@@ -2,72 +2,110 @@
 /**
  * Created by PhpStorm.
  * User: Administrator
- * Date: 2018/5/24
- * Time: 18:40
+ * Date: 2018/6/20
+ * Time: 18:27
  */
 
 namespace App\Exports;
 
-use App\Modules\Bizer\Bizer;
-use App\Modules\Merchant\Merchant;
-use App\Modules\Merchant\MerchantCategoryService;
-use App\Modules\Oper\OperBizMember;
-use Illuminate\Support\Collection;
+use App\Modules\Cs\CsMerchant;
+use App\Modules\Cs\CsMerchantService;
+use App\Modules\Oper\Oper;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-/**
- * 运营中心订单导出
- * Class OperOrderExport
- * @package App\Exports
- */
-class AdminCsMerchantExport implements FromCollection, WithMapping, WithHeadings
+class AdminCsMerchantExport implements FromQuery, WithMapping, WithHeadings
 {
     use Exportable;
 
-    protected $collection;
-    protected $isPilot;
+    protected $id;
+    protected $startDate;
+    protected $endDate;
+    protected $name;
+    protected $status;
+    protected $settlementCycleType;
+    protected $auditStatus;
+    protected $operId;
+    protected $operName;
+    protected $creatorOperId;
+    protected $creatorOperName;
+    protected $signboardName;
+    protected $merchantCategory;
 
-    public function __construct($collection,$isPilot = '')
+    public function __construct($id = '', $startDate = '',$endDate = '',$signboardName='', $name = '', $status = '', $settlementCycleType = '', $auditStatus = [], $operId = '', $operName = '', $merchantCategory = [])
     {
-        $this->collection = $collection;
-        $this->isPilot = $isPilot;
+        $this->id = $id;
+        $this->startDate = $startDate;
+        $this->endDate = $endDate;
+        $this->name = $name;
+        $this->status = $status;
+        $this->settlementCycleType = $settlementCycleType;
+        $this->auditStatus = $auditStatus;
+        $this->operId = $operId;
+        $this->operName = $operName;
+        $this->signboardName = $signboardName;
+        $this->creatorOperId = '';
+        $this->creatorOperName = '';
+        $this->merchantCategory = $merchantCategory;
     }
 
     /**
-     * @return Collection
+     * 在 MerchantExport 类中,添加 FromQuery 关系, 并且添加一个查询, 并且确保不要使用 ->get() 来获取到数据!
+     * @return \Illuminate\Database\Query\Builder
      */
-    public function collection()
+    public function query()
     {
-        return $this->collection;
+        $id = $this->id;
+        $startDate = $this->startDate;
+        $endDate = $this->endDate;
+        $name = $this->name;
+        $status = $this->status;
+        $settlementCycleType = $this->settlementCycleType;
+        $auditStatus = $this->auditStatus;
+        $operId = $this->operId;
+        $operName = $this->operName;
+        $creatorOperId = $this->creatorOperId;
+        $creatorOperName = $this->creatorOperName;
+        $signboardName = $this->signboardName;
+        $merchantCategory = $this->merchantCategory;
+
+        $operIds = null;
+        if($operName) {
+            $operIds = Oper::where('name', 'like', "%$operName%")
+                ->select('id')
+                ->get()
+                ->pluck('id');
+        }
+
+        $createOperIds=null;
+        if($creatorOperName){
+            $createOperIds = Oper::where('name', 'like', "%$creatorOperName%")
+                ->select('id')
+                ->get()
+                ->pluck('id');
+        }
+        $query = CsMerchantService::getList([
+            'id' => $id,
+            'name' => $name,
+            'signboardName' => $signboardName,
+            'operId' => $operIds ?? $operId,
+            'creatorOperId' => $createOperIds ?? $creatorOperId,
+            'status' => $status,
+            'settlementCycleType' => $settlementCycleType,
+            'auditStatus' => $auditStatus,
+            'merchantCategory' => $merchantCategory,
+            'startCreatedAt' => $startDate,
+            'endCreatedAt' => $endDate,
+        ], true);
+
+        return $query;
     }
 
     /**
-     * 定义表头
-     * @return array
-     */
-    public function headings(): array
-    {
-        return [
-            '添加时间',
-            '商户ID',
-            '商户名称',
-            '商户招牌名',
-            '行业',
-            '城市',
-            '签约人',
-            '商户状态',
-            '审核状态',
-            //$this->isPilot ? '' : '结算周期',
-        ];
-    }
-
-    /**
-     * 定义数据结构
+     * 遍历行
      * @param mixed $data
-     *
      * @return array
      */
     public function map($data): array
@@ -76,46 +114,35 @@ class AdminCsMerchantExport implements FromCollection, WithMapping, WithHeadings
             $data->created_at,
             $data->id,
             $data->name,
+            '超市类',
             $data->signboard_name,
-            $this->getCategoryPathName($data->merchant_category_id),
+            $data->operId = $data->oper_id > 0 ? $data->oper_id : $data->audit_oper_id,
+            Oper::where('id', $data->oper_id > 0 ? $data->oper_id : $data->audit_oper_id)->value('name'),
             $data->city . ' ' . $data->area,
-            ($data->bizer_id!=0) ? $this->getOperBizersName($data->bizer_id) :$this->getOperBizMemberName($data->oper_id > 0 ? $data->oper_id : $data->audit_oper_id,$data->oper_biz_member_code),
-            Merchant::getMerchantStatusText($data->audit_status,$data->status),
+            CsMerchant::getMerchantStatusText($data->audit_status,$data->status),
             ['待审核', '审核通过', '审核不通过', '重新提交审核'][$data->audit_status],
-            //$this->isPilot ? '' : ['', '周结', '半月结', '月结', '半年结', '年结', 'T+1', '未知'][$data->settlement_cycle_type],
+            ['', '周结', '半月结', 'T+1(自动)', '半年结', '年结', 'T+1(人工)', '未知'][$data->settlement_cycle_type],
         ];
     }
 
-
     /**
-     * 获取行业名称
-     * @param $merchant_category_id
-     * @return string
+     * 添加表头
+     * @return array
      */
-    public function getCategoryPathName($merchant_category_id)
+    public function headings(): array
     {
-        $categoryPath = MerchantCategoryService::getCategoryPath($merchant_category_id);
-        $categoryPathName = '';
-        foreach ($categoryPath as $item){
-            $categoryPathName = $categoryPathName . $item['name'] . ' ';
-        }
-        return $categoryPathName;
+        return [
+            '添加时间',
+            '商户ID',
+            '商户名称',
+            '商户类型',
+            '商户招牌名',
+            '激活运营中心ID',
+            '激活运营中心名称',
+            '城市',
+            '商户状态',
+            '审核状态',
+            '结算周期',
+        ];
     }
-
-    /**
-     * 获取员工
-     * @param $oper_id
-     * @param $oper_biz_member_code
-     * @return string
-     */
-    public function getOperBizMemberName($oper_id,$oper_biz_member_code){
-        $operBizMember = OperBizMember::where('oper_id', $oper_id)->where('code', $oper_biz_member_code)->first();
-        return (empty($operBizMember->name))? '无' : '员工 '.$operBizMember->name.'/'.$operBizMember->mobile;
-    }
-
-    public function getOperBizersName($bizerId){
-        $bizer =  Bizer::where('id',$bizerId)->first();
-        return (empty($bizer->name))? '' : '业务员 '.$bizer->name.'/'.$bizer->mobile;
-    }
-
 }

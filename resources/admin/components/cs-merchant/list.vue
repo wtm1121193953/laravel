@@ -159,7 +159,7 @@
                     <el-button type="text" @click="detail(scope)">查看</el-button>
                     <el-button type="text" @click="edit(scope)">编辑</el-button>
                     <el-button v-if="parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="changeStatus(scope.row)">{{parseInt(scope.row.status) === 1 ? '冻结' : '解冻'}}</el-button>
-                    <!--<template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
+                    <template v-if="scope.row.audit_status === 0 || scope.row.audit_status === 3">
                         <el-button type="text" @click="detail(scope,3)">审核</el-button>
                         <el-dropdown trigger="click" @command="(command) => {audit(scope, command)}">
                             <el-button type="text">
@@ -168,10 +168,10 @@
                             <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item command="1">审核通过</el-dropdown-item>
                                 <el-dropdown-item command="2">审核不通过</el-dropdown-item>
-                                &lt;!&ndash;<el-dropdown-item  v-if="scope.row.oper_id == 0"  command="3">打回到商户池</el-dropdown-item>&ndash;&gt;
+                                <!--<el-dropdown-item  v-if="scope.row.oper_id == 0"  command="3">打回到商户池</el-dropdown-item>-->
                             </el-dropdown-menu>
                         </el-dropdown>
-                    </template>-->
+                    </template>
                 </template>
             </el-table-column>
         </el-table>
@@ -293,13 +293,13 @@
             //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
             audit(scope, type){
                 if(type==2 ||type==1){
-                    api.get('merchant/detail', {id: scope.row.id}).then(data => {
+                    api.get('CsMerchant/detail', {id: scope.row.id}).then(data => {
                         this.detailMerchant = data;
                         this.detailMerchant.type = type;
                         this.unAudit = true;
                     });
                 }else{
-                    let message = ['', '审核通过', '审核不通过', '打回到商户池'][type];
+                    let message = ['', '审核通过', '审核不通过'/*, '打回到商户池'*/][type];
                     this.$confirm(`确定 ${message} 吗?`, scope.row.name).then(() => {
                         api.post('/merchant/audit', {id: scope.row.id, type: type}).then(data => {
                             this.$alert(message + ' 操作成功');
@@ -334,7 +334,7 @@
                     }) ;
                     let uri = params.join('&');
 
-                    location.href = `/api/admin/merchant/download?${uri}`;
+                    location.href = `/api/admin/CsMerchant/export?${uri}`;
                 })
             },
             changeStatus(row){
