@@ -26,7 +26,6 @@ use Carbon\Carbon;
  * @property number type
  * @property number goods_id
  * @property number dishes_id
- * @property string cs_goods_buy
  * @property string goods_name
  * @property string goods_pic
  * @property string goods_thumb_url
@@ -34,8 +33,6 @@ use Carbon\Carbon;
  * @property number buy_number
  * @property number status
  * @property number  pay_type
- * @property integer  delivery_type
- * @property string  delivery_address_id
  * @property number deliver_price
  * @property number total_price
  * @property number discount_price

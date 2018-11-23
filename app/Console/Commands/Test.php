@@ -87,6 +87,10 @@ class Test extends Command
      */
     public function handle()
     {
+        $order = Order::find(4703);
+        $a = OrderFinishedJob::dispatch($order);
+        dd('over');
+
         $i = 1;
         while (1) {
             $endTime = date('Y-m-d', strtotime("-{$i} day")) . ' 23:59:59';
