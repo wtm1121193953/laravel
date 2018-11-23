@@ -13,6 +13,7 @@ use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Modules\Area\Area;
 use App\Modules\Country\CountryService;
+use App\Modules\CsStatistics\CsStatisticsMerchantOrder;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantFollow;
 use App\Modules\Oper\Oper;
@@ -21,6 +22,7 @@ use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class CsMerchantService extends BaseService {
 
@@ -486,7 +488,7 @@ class CsMerchantService extends BaseService {
      */
     public static function getLowestPriceForMerchant($merchantId)
     {
-        $goodsLowestAmount = CsGood::where('merchant_id', $merchantId)
+        $goodsLowestAmount = CsGood::where('cs_merchant_id', $merchantId)
                 ->where('status', CsGood::STATUS_ON)
                 ->orderBy('price')
                 ->value('price') ?? 0;
@@ -525,19 +527,10 @@ class CsMerchantService extends BaseService {
             $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
         }
         $user_key = array_get($params, 'user_key', 0); //终端的唯一表示，用于计算距离
-        $current_oper_id = array_get($params, 'current_oper_id', 0); //是否只看当前运营中心的商户
 
         //只能查询切换到平台的商户
         $query = CsMerchant::where('status', 1)
             ->where('oper_id', '>', 0)
-            ->when($current_oper_id, function (Builder $query) use ($current_oper_id) {
-                $query->where('oper_id', $current_oper_id);
-            })
-            ->when($onlyPayToPlatform, function (Builder $query) {
-                $query->whereHas('oper', function(Builder $query){
-                    $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
-                });
-            })
             ->whereIn('audit_status', [CsMerchant::AUDIT_STATUS_SUCCESS, CsMerchant::AUDIT_STATUS_RESUBMIT])
             ->when($city_id, function(Builder $query) use ($city_id){
                 // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户
@@ -605,14 +598,10 @@ class CsMerchantService extends BaseService {
         $list->each(function ($item){
             $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
             if($item->business_time) $item->business_time = json_decode($item->business_time, 1);
-            // 最低消费
-            $item->lowestAmount = CsMerchantService::getLowestPriceForMerchant($item->id);
             // 兼容v1.0.0版客服电话字段
             $item->contacter_phone = $item->service_phone;
             // 商户评级字段，暂时全部默认为5星
             $item->grade = 5;
-            // 首页商户列表，显示价格最低的n个团购商品
-            $item->lowestGoods = CsGoodService::getLowestPriceGoodsForMerchant($item->id, 2);
 
             //商户销量:
             $merchantOrderData = CsStatisticsMerchantOrder::where('cs_merchant_id',$item->id)->select('order_number_30d','order_number_today')->first();
