@@ -14,6 +14,8 @@ Route::prefix('user')
         Route::any('wxLogin', 'WechatController@login');
         Route::any('sms/verify_code', 'SmsController@sendVerifyCode');
 
+        Route::any('navigation/index', 'NavigationController@index');
+
         Route::any('login', 'LoginController@login');
         Route::any('logout', 'LoginController@logout');
         Route::any('loginWithSceneId', 'LoginController@loginWithSceneId');
