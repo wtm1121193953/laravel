@@ -191,7 +191,7 @@ class CsMerchantAuditService extends BaseService {
             $merchant->audit_status = CsMerchant::AUDIT_STATUS_FAIL;
             $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
         }
-        $merchantAudit->status = Merchant::AUDIT_STATUS_FAIL;
+        $merchantAudit->status = CsMerchantAudit::AUDIT_STATUS_FAIL;
         $merchantAudit->suggestion = $auditSuggestion ? $auditSuggestion:'';
 
         // 开启事务

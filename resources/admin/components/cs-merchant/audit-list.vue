@@ -72,12 +72,6 @@
                         <el-option label="未知" value="3"/>
                     </el-select>
                 </el-form-item>
-                <!--<el-form-item prop="memberNameOrMobile" label="我的员工"  >
-                    <el-input v-model="query.memberNameOrMobile" size="small"  placeholder="请输入员工姓名或手机号码搜索"  clearable></el-input>
-                </el-form-item>
-                <el-form-item prop="bizerNameOrMobile" label="业务员"  >
-                    <el-input v-model="query.bizerNameOrMobile" size="small"  placeholder="请输入业务员昵称或手机号码搜索"  clearable></el-input>
-                </el-form-item>-->
                 <el-form-item>
                     <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                 </el-form-item>
@@ -99,25 +93,8 @@
             <el-table-column prop="data_after.signboard_name" label="商户招牌名"/>
             <el-table-column prop="oper_id" size="mini" label="激活运营中心ID"/>
             <el-table-column prop="operName" label="激活运营中心名称"/>
-            <!--<el-table-column prop="creatorOperId"  size="mini" label="录入运营中心ID"/>-->
-            <!--<el-table-column prop="creatorOperName" label="录入运营中心名称"/>-->
-            <!--<el-table-column label="签约人">
-                <template slot-scope="scope">
-                    <span v-if="scope.row.bizer"><span class="c-green">业务员 </span>{{scope.row.bizer.name}}/{{scope.row.bizer.mobile}}</span>
-                    <span v-else-if="scope.row.operBizMember"><span class="c-light-gray">员工 </span>{{scope.row.operBizMember.name}}/{{scope.row.operBizMember.mobile}}</span>
-                    <span v-else>无</span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="categoryPath" label="行业">
-                <template slot-scope="scope">
-            <span v-for="item in scope.row.categoryPath" :key="item.id">
-                {{ item.name }}
-            </span>
-                </template>
-            </el-table-column>-->
             <el-table-column prop="city" label="城市">
                 <template slot-scope="scope">
-                    <!--<span> {{ scope.row.province }} </span>-->
                     <span> {{ scope.row.data_after.city }} </span>
                     <span> {{ scope.row.data_after.area }} </span>
                 </template>
@@ -186,11 +163,30 @@
                 @current-change="getList"
                 :page-size="15"
                 :total="total"/>
-        <!--<el-dialog :visible.sync="showDetail" width="70%" title="商户详情">
-            <merchant-detail :data="currentMerchant" @change="() => {getList(); showDetail = false;}"/>
-        </el-dialog>-->
-        <el-dialog title="审核意见" :visible.sync="unAudit" :close-on-click-modal="false">
-            <unaudit-message   @cancel="unAudit = false"  :data="detailMerchant"   @change="merchantChange"/>
+        <el-dialog title="审核意见" :visible.sync="showAudit" :close-on-click-modal="false">
+            <el-row>
+                <el-form v-if="currentAuditRecord" label-width="120px" label-position="left" size="small">
+                    <!--商户录入信息左侧块-->
+                    <el-col :span="11">
+                        <el-form-item prop="name" label="商户名称">{{currentAuditRecord.name}}</el-form-item>
+                    </el-col>
+                    <el-col>
+                        <el-form-item prop="audit_suggestion" label="审核意见">
+                            <el-input placeholder="最多输入50个汉字，可不填" maxlength="50" v-model="auditForm.audit_suggestion"
+                                      :autosize="{minRows: 3}" type="textarea"/>
+                        </el-form-item>
+                    </el-col>
+
+                    <!-- 商户激活信息右侧块 -->
+                    <el-col>
+                        <el-form-item>
+                            <el-button @click="showAudit = false">取消</el-button>
+                            <el-button type="primary" @click="doAudit">确定</el-button>
+                        </el-form-item>
+
+                    </el-col>
+                </el-form>
+            </el-row>
         </el-dialog>
     </page>
 </template>
@@ -198,7 +194,6 @@
 <script>
     import api from '../../../assets/js/api'
     import CsMerchantDetail from './merchant-detail'
-    import UnauditMessage from './unaudit-message'
     import UnauditRecordReason from './unaudit-record-reason'
 
     export default {
@@ -208,9 +203,7 @@
                 activeTab: 'merchant',
                 showDetail: false,
                 isLoading: false,
-                unAudit: false,
                 detailMerchant: null,
-                fastAuditType: 1,
                 query: {
                     name: '',
                     signboardName: '',
@@ -233,6 +226,12 @@
                 total: 0,
                 currentMerchant: null,
                 tableLoading: false,
+                showAudit: false,
+                fastAuditType: 1,
+                auditForm: {
+                    audit_suggestion: ''
+                },
+                currentAuditRecord : null,
             }
         },
         computed: {
@@ -297,26 +296,27 @@
                 })
                 return false;
             },
-            //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
-            audit(scope, type){
-                /*console.log('type',type);
-                return '';*/
-                if(type==2 ||type==1){
-                    api.get('cs/merchant/audit/detail', {id: scope.row.id}).then(data => {
-                        this.detailMerchant = data;
-                        this.detailMerchant.type = type;
-                        this.unAudit = true;
-                    });
-                }else{
-                    let message = ['', '审核通过', '审核不通过'/*, '打回到商户池'*/][type];
-                    this.$confirm(`确定 ${message} 吗?`, scope.row.name).then(() => {
-                        api.post('cs/merchant/audit', {id: scope.row.id, type: type}).then(data => {
-                            this.$alert(message + ' 操作成功');
-                            this.getList();
-                        })
-                    });
+            //type: 1-审核通过  2-审核不通过
+            audit(scope, type) {
+                this.fastAuditType = type;
+                this.showAudit = true;
+                this.currentAuditRecord = scope.row;
+                this.auditForm.audit_suggestion = '';
+            },
+            doAudit(){
+                let auditTypeMessage = this.fastAuditType == 1 ? '审核通过' : '审核不通过';
+                if(this.fastAuditType == 2 && !this.auditForm.audit_suggestion){
+                    this.$message.error('请输入审核不通过意见');
+                    return ;
                 }
-
+                this.$confirm(`确定将商户 ${this.currentAuditRecord.name} ${auditTypeMessage}吗?`).then(() => {
+                    let reqData = {id: this.currentAuditRecord.id, type: this.fastAuditType,audit_suggestion:this.auditForm.audit_suggestion};
+                    api.post('/cs/merchant/audit', reqData).then(data => {
+                        this.$message.success(['', '审核通过', '审核不通过', '打回商户池'][this.fastAuditType] + ' 成功');
+                        this.getList();
+                        this.showAudit = false;
+                    })
+                })
             },
             downloadExcel() {
                 let message = '确定要导出当前筛选的商户列表么？';
@@ -370,7 +370,6 @@
         },
         components: {
             CsMerchantDetail,
-            UnauditMessage,
             UnauditRecordReason,
         }
     }

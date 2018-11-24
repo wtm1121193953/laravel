@@ -18,6 +18,7 @@ use PhpParser\Node\Expr\Array_;
 class CsUserAddressService extends BaseService {
     /**
      * 添加收获地址
+     * @param $data
      */
     public static function addAddresses($data){
         $user = request()->get('current_user');
@@ -185,6 +186,7 @@ class CsUserAddressService extends BaseService {
 
     /**
      * 删除收货地址
+     * @throws \Exception
      */
     public static function delAddress($id){
         $user = request()->get('current_user');
@@ -193,7 +195,7 @@ class CsUserAddressService extends BaseService {
           ->delete();
         if(!$res)
         {
-            throw new BaseResponseException('删除失败',ResultCode::DB_INSERT_FAIL);
+            throw new BaseResponseException('删除失败',ResultCode::DB_DELETE_FAIL);
         }
     }
 

@@ -6,7 +6,7 @@ import CsMerchantEdit from '../components/cs-merchant/edit.vue'
 
 import CsCategories from '../components/cs-category/list'
 
-import CsMerchantUnaudit from '../components/cs-merchant/unaudit-list'
+import CsMerchantUnaudit from '../components/cs-merchant/audit-list'
 import CsMerchantUnauditDetail from '../components/cs-merchant/unaudit-detail'
 
 /**

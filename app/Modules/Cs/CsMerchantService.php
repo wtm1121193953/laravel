@@ -269,12 +269,12 @@ class CsMerchantService extends BaseService {
     /**
      * 根据ID获取商户详情
      * @param $id
+     * @param $userId
      * @return CsMerchant
      */
-    public static function detail($id)
+    public static function detail($id, $userId)
     {
 
-        $userId = request()->get('current_user')->id;
         $merchant = CsMerchant::findOrFail($id);
         $merchant->account = $merchant->name;
         $merchant->business_time = json_decode($merchant->business_time, 1);
@@ -318,12 +318,11 @@ class CsMerchantService extends BaseService {
         $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
         $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
 
-        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
-        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
-        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
+        $oper = Oper::where('id', $csMerchantAudit->oper_id)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
             $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
+            $merchant->operName = $oper->name;
         }
         $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
         if($merchantFollow){

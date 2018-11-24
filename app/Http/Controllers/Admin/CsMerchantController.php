@@ -266,12 +266,7 @@ class CsMerchantController extends Controller
     public function getAuditList()
     {
         $params = [];
-        $user = request()->get('current_user');
-        if($user instanceof Oper){
-            $params['oper_id'] = $user->oper_id;
-        }elseif($user instanceof AdminUser){
-            $params['status'] = CsMerchantAudit::AUDIT_STATUS_AUDITING;
-        }
+//        $user = request()->get('current_user');
         $data = CsMerchantAuditService::getAuditResultList($params);
         return Result::success([
             'list' => $data->items(),
