@@ -334,15 +334,16 @@ class CsMerchantService extends BaseService {
         return $merchant;
     }
 
+
+
     /**
      * 编辑商户
-     * @param $id
      * @param $currentOperId
      * @param string $auditStauts
      * @param bool $isAdmin
-     * @return CsMerchant
+     * @return CsMerchantAudit
      */
-    public static function edit($id, $currentOperId, $auditStauts = '', $isAdmin = false)
+    public static function edit($currentOperId, $auditStauts = '', $isAdmin = false)
     {
         if(empty($currentOperId)){
             $currentOperId = 0;
@@ -355,35 +356,24 @@ class CsMerchantService extends BaseService {
         if($existCsMerchantAudit){
             throw new BaseResponseException('该商户已存在待审核记录');
         }
-
-        $csmerchant = CsMerchant::where('id', $id)
-            //->where('audit_oper_id', $currentOperId)
-            ->first();
-        //保留原有数据转存json到审核记录表
-        $beforeCsmerchant = $csmerchant->toArray();
-        $beforeCsmerchantToJson = json_encode($beforeCsmerchant);
-        //获取原有结算周期
-        $settlement_cycle_type = $csmerchant->settlement_cycle_type;
-        if (empty($csmerchant)) {
-            throw new BaseResponseException('该商户不存在');
+        $merchantAudit = CsMerchantAudit::find($id);
+        if(!$merchantAudit){
+            throw new BaseResponseException('不存在该审核记录');
         }
+        $csmerchant = CsMerchant::where('id', $id)
+            ->first();
+        $afterCsmerchantToJson = $beforeCsmerchantToJson = '';
 
-        $csmerchant->fillMerchantPoolInfoFromRequest();
-        $csmerchant->fillMerchantActiveInfoFromRequest();
-
-        if($csmerchant->settlement_cycle_type == CsMerchant::SETTLE_DAY_ADD_ONE || $csmerchant->settlement_cycle_type == CsMerchant::SETTLE_DAILY_AUTO){
-
-            //判断编辑之前商户是否已切换到T+1
-            /*if($settlement_cycle_type == CsMerchant::SETTLE_DAY_ADD_ONE || $settlement_cycle_type
-                == CsMerchant::SETTLE_MONTHLY){
-
-            }else{
-                $date = Carbon::now()->startOfDay();
-                $week = Carbon::now()->startOfWeek();
-                if($date != $week){
-                    throw new ParamInvalidException('周结改T+1需要周一才能修改');
-                }
-            }*/
+        //与原有数据对比，有修改字段另存储json到审核表
+        $modifyCsMerchant = [];
+        if($csmerchant){
+            // 如果为正式商户则跑以下逻辑
+            //保留原有数据转存json到审核记录表
+            $beforeCsmerchantToJson = json_encode($csmerchant);
+            //获取原有结算周期
+//            $settlementCyCleType = $csmerchant->settlement_cycle_type ?? CsMerchant::SETTLE_DAY_ADD_ONE;
+            $csmerchant->fillMerchantPoolInfoFromRequest();
+            $csmerchant->fillMerchantActiveInfoFromRequest();
 
             if($csmerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_COMPANY){
                 if($csmerchant->name != $csmerchant->bank_open_name){
@@ -394,28 +384,30 @@ class CsMerchantService extends BaseService {
                     throw new ParamInvalidException('提交失败，申请T+1结算，营业执照及法人姓名需和开户名一致');
                 }
             }
-        }
-        $csmerchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
 
-        //编辑商户，商户编辑后是待审核
+            //编辑商户，商户编辑后是待审核
+            CsMerchant::where('id',$id)->update(['audit_status' => CsMerchant::AUDIT_STATUS_AUDITING]);
+            $csmerchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
 
-        CsMerchant::where('id',$id)->update(['audit_status' => CsMerchant::AUDIT_STATUS_AUDITING]);
+            $afterCsmerchantToJson = json_encode($csmerchant);
 
-        $csmerchant->toArray();
-        $afterCsmerchantToJson = json_encode($csmerchant);
-
-        //与原有数据对比，有修改字段另存储json到审核表
-        $modifyCsMerchant = [];
-        foreach ($beforeCsmerchant as $key => $val){
-            if($csmerchant[$key] != $val){
-                array_push($modifyCsMerchant,[$key => $csmerchant[$key]]);
+            foreach ($csmerchant as $key => $val){
+                if($csmerchant[$key] != $val){
+                    array_push($modifyCsMerchant,[$key => $csmerchant[$key]]);
+                }
             }
+        }else{
+            // 如果不存在CsMerchant表，则不是正式商户数据
+//            var_dump($existCsMerchantAudit);
+            $beforeCsmerchantToJson = $merchantAudit->data_after;
+            $csmerchant = json_decode($merchantAudit->data_after,true);
         }
+
         $modifyCsMerchantToJson = json_encode($modifyCsMerchant);
         $params = [
             'oper_id' => $currentOperId,
             'type' => CsMerchantAudit::UPDATE_TYPE,
-            'CsmerchantId' => $csmerchant['id'],
+            'csMerchantId' => $csmerchant['id'],
             'name' => $csmerchant['name'],
             'dataBefore' => $beforeCsmerchantToJson,
             'dataAfter' => $afterCsmerchantToJson,
@@ -423,25 +415,27 @@ class CsMerchantService extends BaseService {
         ];
 
         // 添加审核记录
-        CsMerchantAuditService::addAudit($params);
-
-        return $csmerchant;
+        $audit = CsMerchantAuditService::addAudit($params);
+        return $audit;
     }
 
     /**
      * @param $currentOperId
+     * @param $name
      * 添加商户
      * @return CsMerchant
      */
-    public static function add($currentOperId)
+    public static function add($currentOperId,$name)
     {
         $csmerchant = new CsMerchant();
         $csmerchant->fillMerchantPoolInfoFromRequest();
         $csmerchant->fillMerchantActiveInfoFromRequest();
 
         // 补充商家创建者及审核提交者
+        $csmerchant->name = $name;
         $csmerchant->audit_oper_id = $currentOperId;
         $csmerchant->creator_oper_id = $currentOperId;
+        $csmerchant->settlement_cycle_type = CsMerchant::SETTLE_DAY_ADD_ONE;
 
         // 商户名不能重复
         //查询超市表

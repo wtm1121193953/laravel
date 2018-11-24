@@ -179,7 +179,7 @@ class CsMerchantController extends Controller
         if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
             throw new ParamInvalidException('负责人手机号码不合法');
         }
-        $merchant = CsMerchantService::edit(request('id'), request('audit_oper_id'),request('audit_status'),true);
+        $merchant = CsMerchantService::edit( request('audit_oper_id'),request('audit_status'),true);
 
         return Result::success($merchant);
     }
@@ -324,7 +324,8 @@ class CsMerchantController extends Controller
                 throw new ParamInvalidException('错误的操作');
             }
         }
-
+       /* var_dump($type);
+    exix();*/
         switch ($type){
             case '1': // 审核通过
                 $supermarket = CsMerchantAuditService::auditSuccess($supermarket, $auditSuggestion, $merchantAudit);

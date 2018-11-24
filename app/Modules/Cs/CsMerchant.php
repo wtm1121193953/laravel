@@ -96,27 +96,27 @@ class CsMerchant extends BaseModel
     /**
      * 未审核(审核中)
      */
-    const AUDIT_STATUS_AUDITING = 0;
+    const AUDIT_STATUS_AUDITING = 1;
     /**
      * 审核通过
      */
-    const AUDIT_STATUS_SUCCESS = 1;
+    const AUDIT_STATUS_SUCCESS = 2;
     /**
      * 审核不通过
      */
-    const AUDIT_STATUS_FAIL = 2;
+    const AUDIT_STATUS_FAIL = 3;
     /**
      * 重新提交审核
      */
-    const AUDIT_STATUS_RESUBMIT = 3;
+//    const AUDIT_STATUS_RESUBMIT = 3;
     /**
      * 审核不通过并且打回到商户池, 审核记录中才有该状态, 商家信息中直接置位审核不通过
      */
-    const AUDIT_STATUS_FAIL_TO_POOL = 4;
+//    const AUDIT_STATUS_FAIL_TO_POOL = 4;
     /**
      * 取消审核
      */
-    const AUDIT_STATUS_CANCEL = 5;
+//    const AUDIT_STATUS_CANCEL = 5;
 
     /**
      * 结算类型
