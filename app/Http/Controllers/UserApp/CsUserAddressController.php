@@ -8,7 +8,9 @@
 
 namespace App\HTTP\Controllers\UserApp;
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Cs\CsMerchantSettingService;
 use App\Modules\Cs\CsUserAddressService;
 use App\Result;
 
@@ -117,5 +119,24 @@ class CsUserAddressController extends Controller
             'city_limit' => $cityLimit,
             'show_city_limit' => $showCityLimit,
         ]);
+    }
+
+    /**
+     * 获取商家配送费设置
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function merchantSetting()
+    {
+        $this->validate(request(), [
+            'merchantId' => 'required|integer|min:1',
+        ]);
+        $merchantId = request('merchantId');
+
+        $merchantSetting = CsMerchantSettingService::getDeliverSetting($merchantId);
+        if ($merchantSetting->delivery_free_order_amount <= 0) {
+            throw new BaseResponseException('配送费设置有误');
+        }
+
+        return Result::success($merchantSetting);
     }
 }
