@@ -1,6 +1,6 @@
 <template>
     <page title="超市商户审核记录">
-        <el-table :data="list" stripe>
+        <el-table :data="list" stripe v-loading="tableLoading">
             <el-table-column prop="created_at" label="提交审核时间"/>
             <el-table-column prop="updated_at" label="审核时间"/>
             <el-table-column prop="name" label="商户名称"/>
@@ -43,6 +43,7 @@
                 },
                 list: [],
                 total: 0,
+                tableLoading: false
             }
         },
         methods: {
@@ -69,9 +70,12 @@
                 return false;
             },
             getList(){
+                this.tableLoading = true;
                 api.get('/cs/merchant/audit/list', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                }).finally(() => {
+                    this.tableLoading = false;
                 })
             }
         },
