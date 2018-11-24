@@ -26,31 +26,35 @@ class CsMerchantAuditService extends BaseService {
      */
     public static function getAuditResultList(array $params = [])
     {
+        $operId = array_get($params, 'operId');
+        $merchantId = array_get($params, 'merchantId');
+        $status = array_get($params, 'status');
+        $name = array_get($params, 'name');
 
-        $data = CsMerchantAudit::when(isset($params['oper_id']), function (Builder $query) use ($params){
-            $query->where('oper_id', $params['oper_id']);
-            })
-            ->when(isset($params['status']), function (Builder $query) use ($params){
-                $query->where('status',$params['status']);
-            })
-            ->orderByDesc('updated_at')->paginate();
+        $query = CsMerchantAudit::query();
+        if($operId){
+            $query->where('oper_id', $operId);
+        }
+        if($merchantId){
+            $query->where('cs_merchant_id', $merchantId);
+        }
+        if($status){
+            if(is_array($status)){
+                $query->whereIn('status', $status);
+            }else {
+                $query->where('status', $status);
+            }
+        }
+        if($name){
+            $query->where('name', 'like', "%$name%");
+        }
+        $data = $query->orderByDesc('updated_at')->paginate();
         $data->each(function($item) {
             $item->operName = Oper::where('id', $item->oper_id)->value('name');
             $item->data_after = json_decode($item->data_after,true);
             if($item->cs_merchant_id){
                 $item->cs_merchant_detail = CsMerchantService::getById($item->cs_merchant_id);
             }
-            /*// 解析JSON格式
-            $detail = json_decode($item->data_after,true);
-            if($item['cs_merchant_id']!=0){
-                $item->csMerchant = CsMerchant::find($item->cs_merchant_id);
-            }
-            foreach ($detail as $k => $v){
-                if(!$v){
-                    continue;
-                }
-                $item->$k = $v;
-            }*/
         });
         return $data;
     }
