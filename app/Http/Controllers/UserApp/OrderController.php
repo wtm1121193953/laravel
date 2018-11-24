@@ -17,6 +17,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Cs\CsMerchantService;
+use App\Modules\Cs\CsMerchantSettingService;
 use App\Modules\Cs\CsUserAddress;
 use App\Modules\CsOrder\CsOrderGood;
 use App\Modules\Dishes\DishesGoods;
@@ -666,9 +667,9 @@ class OrderController extends Controller
 
     /**
      * 生成超市订单
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function csOrderCreate(){
-        //TODO 超市订单生成
         //必传商家id，支付方式，商品列表 配送方式
         $this->validate(request(), [
             'merchant_id' => 'required|integer|min:1',
@@ -677,6 +678,7 @@ class OrderController extends Controller
             'delivery_type' => 'required|integer|min:1',
         ]);
 
+        $merchantId = request('merchant_id');
         $payType = request('pay_type');
         $addressId = request('address_id');
         $deliveryType = request('delivery_type');
@@ -687,18 +689,14 @@ class OrderController extends Controller
         if (empty($deliveryType)){
             $deliveryType = 0;
         }
-        if (request('delivery_type') == '2'){
+        if (request('delivery_type') == Order::DELIVERY_MERCHANT_POST){
             if (empty($addressId)){
                 throw new ParamInvalidException('请先选择地址');
             }
-            $address = CsUserAddress::findOrFail($addressId);
         }
 
-
-
-
         //判断商家状态
-        $merchant = CsMerchant::findOrFail(request('merchant_id'));
+        $merchant = CsMerchant::findOrFail($merchantId);
         if ($merchant->status == CsMerchant::STATUS_OFF){
             throw new BaseResponseException('该超市已下架，请选择其他商户下单');
         }
@@ -714,21 +712,24 @@ class OrderController extends Controller
         //运营中心
         $merchant_oper = Oper::find($merchant->oper_id);
 
-        //TODO 判断商家时候支持配送
-
-        $dishesList = request('goods_list');
-        if (is_string($dishesList)) {
-            $dishesList = json_decode($dishesList, true);
+        $csMerchantSetting = CsMerchantSettingService::getDeliverSetting($merchantId);
+        if ($csMerchantSetting->delivery_free_order_amount <= 0) {
+            throw new BaseResponseException('商家配送费有误');
         }
-        Log::info('disesList11',['diesList' => $dishesList]);
 
-        if (empty($dishesList)) {
+        $goodsList = request('goods_list');
+        if (is_string($goodsList)) {
+            $goodsList = json_decode($goodsList, true);
+        }
+        Log::info('disesList11',['diesList' => $goodsList]);
+
+        if (empty($goodsList)) {
             throw new ParamInvalidException('单品列表为空');
         }
-        if (sizeof($dishesList) < 1) {
+        if (sizeof($goodsList) < 1) {
             throw new ParamInvalidException('参数不合法1');
         }
-        foreach ($dishesList as $item) {
+        foreach ($goodsList as $item) {
             if (!isset($item['id']) || !isset($item['number'])) {
                 throw new ParamInvalidException('参数不合法2');
             }
@@ -752,7 +753,7 @@ class OrderController extends Controller
         $order->goods_name = $merchant->name ?? '';
         $order->dishes_id = 0;
         $order->status = Order::STATUS_UN_PAY;
-        $order->pay_price = $this->getCsTotalPrice($dishesList);
+        $order->pay_price = $this->getCsTotalPrice($goodsList);
         $order->settlement_rate = $merchant->settlement_rate;
         $order->remark = $remark;
         $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
@@ -771,7 +772,7 @@ class OrderController extends Controller
 
         $order->merchant_type = Order::MERCHANT_TYPE_SUPERMARKET;
         if ($order->save()){
-            foreach ($dishesList as $item) {
+            foreach ($goodsList as $item) {
                 $good = CsGood::findOrFail($item['id']);
                 $csOrderGood = new CsOrderGood();
                 $csOrderGood->oper_id = $merchant->oper_id;

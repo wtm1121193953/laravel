@@ -8,7 +8,9 @@
 
 namespace App\HTTP\Controllers\UserApp;
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Cs\CsMerchantSettingService;
 use App\Modules\Cs\CsUserAddressService;
 use App\Result;
 
@@ -50,7 +52,7 @@ class CsUserAddressController extends Controller
             $isTestAddress = request('is_test_radius');
         }
         $cityId = request('city_id');
-        $city_wide = config('common.city_wide');
+        $city_wide = config('common.city_limit');
         $query = CsUserAddressService::getList($isTestAddress, $cityId, $city_wide);
         return Result::success($query);
     }
@@ -93,6 +95,7 @@ class CsUserAddressController extends Controller
 
     /**
      * 删除收货地址
+     * @throws \Exception
      */
     public function deleteAddress()
     {
@@ -103,4 +106,37 @@ class CsUserAddressController extends Controller
         return Result::success('删除收货地址成功');
     }
 
+    /**
+     * 获取配送设置 是否限制只能选择同城地址 和 是否只支持同城配送
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDeliverySetting()
+    {
+        $cityLimit = config('common.city_limit');
+        $showCityLimit = config('common.show_city_limit');
+
+        return Result::success([
+            'city_limit' => $cityLimit,
+            'show_city_limit' => $showCityLimit,
+        ]);
+    }
+
+    /**
+     * 获取商家配送费设置
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function merchantSetting()
+    {
+        $this->validate(request(), [
+            'merchantId' => 'required|integer|min:1',
+        ]);
+        $merchantId = request('merchantId');
+
+        $merchantSetting = CsMerchantSettingService::getDeliverSetting($merchantId);
+        if ($merchantSetting->delivery_free_order_amount <= 0) {
+            throw new BaseResponseException('配送费设置有误');
+        }
+
+        return Result::success($merchantSetting);
+    }
 }
