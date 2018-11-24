@@ -182,14 +182,6 @@
                 })
             },
             search() {
-                if (this.query.startDate > this.query.endDate) {
-                    this.$message.error('搜索的开始时间不能大于结束时间！');
-                    return false;
-                }
-                //待审核页面bug修复
-                if (this.query.auditStatus.length == 0 && this.isAudit) {
-                    this.query.auditStatus = ['0', '3']
-                }
                 this.query.page = 1;
                 this.getList();
             },
