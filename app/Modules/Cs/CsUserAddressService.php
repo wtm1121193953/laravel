@@ -86,10 +86,11 @@ class CsUserAddressService extends BaseService {
     /**
      * 获取地址列表
      * @param $isTestAddress
+     * @param $cityId
      * @param $city_wide
      * @return CsUserAddress[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getList($isTestAddress,$city_wide){
+    public static function getList($isTestAddress, $cityId='', $city_wide=0){
         $user = request()->get('current_user');
         $list = CsUserAddress::where('user_id',$user->id)->get();
         foreach ($list as $item){
@@ -102,9 +103,8 @@ class CsUserAddressService extends BaseService {
         }
         if ($city_wide == 0 || $isTestAddress == 0){
             return $list;
-        }
-        else{
-            if (empty(request('city_id'))){
+        } else{
+            if (empty($cityId)){
                 throw new BaseResponseException('未选择商家', ResultCode::PARAMS_INVALID);
             }
             $list->each(function ($item){
