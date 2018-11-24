@@ -51,7 +51,7 @@ class SettlementMonth implements ShouldQueue
         Log::info('开始执行上月结算任务');
         $date = $this->date;
         // 获取运营中心支付到平台(平台参与分成) 商家
-        Merchant::where('settlement_cycle_type',Merchant::SETTLE_MONTHLY)
+        Merchant::where('settlement_cycle_type',Merchant::SETTLE_DAILY_AUTO)
             ->whereHas('oper', function($query){
             $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
         })

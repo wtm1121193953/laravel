@@ -371,7 +371,7 @@ class CsMerchantService extends BaseService {
         $csmerchant->fillMerchantPoolInfoFromRequest();
         $csmerchant->fillMerchantActiveInfoFromRequest();
 
-        if($csmerchant->settlement_cycle_type == CsMerchant::SETTLE_DAY_ADD_ONE || $csmerchant->settlement_cycle_type == CsMerchant::SETTLE_DAY_AUTO){
+        if($csmerchant->settlement_cycle_type == CsMerchant::SETTLE_DAY_ADD_ONE || $csmerchant->settlement_cycle_type == CsMerchant::SETTLE_DAILY_AUTO){
 
             //判断编辑之前商户是否已切换到T+1
             /*if($settlement_cycle_type == CsMerchant::SETTLE_DAY_ADD_ONE || $settlement_cycle_type

@@ -67,7 +67,7 @@ class SettlementWeekly implements ShouldQueue
                     $end = $date->copy()->subMonth()->endOfMonth();
                 }
                 break;
-            case Merchant::SETTLE_MONTHLY:
+            case Merchant::SETTLE_DAILY_AUTO:
                 $start = $date->copy()->subMonth()->startOfMonth();
                 $end = $date->copy()->subMonth()->endOfMonth();
                 break;

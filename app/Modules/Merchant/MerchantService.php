@@ -403,7 +403,7 @@ class MerchantService extends BaseService
             throw new ParamInvalidException('招牌名称不能重复');
         }
 
-        if($merchant->settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE || $merchant->settlement_cycle_type == Merchant::SETTLE_MONTHLY){
+        if($merchant->settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE || $merchant->settlement_cycle_type == Merchant::SETTLE_DAILY_AUTO){
 
             //判断编辑之前商户是否已切换到T+1
             /*if($settlement_cycle_type == Merchant::SETTLE_DAY_ADD_ONE || $settlement_cycle_type

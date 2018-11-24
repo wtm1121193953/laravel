@@ -223,7 +223,7 @@ class SettlementPlatformService extends BaseService
             throw new \Exception('结算单号生成失败');
         }
 
-        if($merchant->settlement_cycle_type == Merchant::SETTLE_MONTHLY){
+        if($merchant->settlement_cycle_type == Merchant::SETTLE_DAILY_AUTO){
             $type = SettlementPlatform::TYPE_AGENT;
         }else{
             $type = SettlementPlatform::TYPE_DEFAULT;
