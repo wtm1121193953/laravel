@@ -3,82 +3,26 @@
         <el-col>
             <el-form v-model="query" inline>
                 <el-form-item prop="merchantId" label="商户ID">
-                    <el-input v-model="query.merchantId" size="small" placeholder="商户ID" class="w-100"
-                              clearable></el-input>
+                    <el-input v-model="query.merchantId" size="small" placeholder="商户ID" class="w-100" clearable></el-input>
                 </el-form-item>
                 <el-form-item prop="name" label="商户名称">
                     <el-input v-model="query.name" size="small" placeholder="商户名称" clearable
                               @keyup.enter.native="search"/>
                 </el-form-item>
-                <el-form-item prop="signboardName" label="商户招牌名">
-                    <el-input v-model="query.signboardName" size="small" placeholder="商户招牌名" clearable
-                              @keyup.enter.native="search"/>
-                </el-form-item>
-                <el-form-item prop="startDate" label="添加商户开始时间">
-                    <el-date-picker
-                            v-model="query.startDate"
-                            type="date"
-                            size="small"
-                            placeholder="选择开始日期"
-                            format="yyyy 年 MM 月 dd 日"
-                            value-format="yyyy-MM-dd"
-                            :picker-options="{disabledDate: (time) => {return time.getTime() > new Date(query.endDate) - 8.64e7}}"
-                    ></el-date-picker>
-                </el-form-item>
-                <el-form-item prop="startDate" label="结束时间">
-                    <el-date-picker
-                            v-model="query.endDate"
-                            type="date"
-                            size="small"
-                            placeholder="选择结束日期"
-                            format="yyyy 年 MM 月 dd 日"
-                            value-format="yyyy-MM-dd"
-                            :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(query.startDate) - 8.64e7}}"
-                    ></el-date-picker>
-                </el-form-item>
-                <el-form-item label="审核状态" prop="auditStatus" v-if="isAudit">
-                    <el-select v-model="query.auditStatus" size="small" multiple placeholder="请选择" class="w-250">
-                        <el-option label="待审核" value="0"/>
-                        <el-option label="重新提交审核" value="3"/>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="审核状态" prop="auditStatus" v-else>
-                    <el-select v-model="query.auditStatus" size="small" multiple placeholder="请选择" class="w-150">
-                        <el-option label="待审核" value="0"/>
-                        <el-option label="审核通过" value="1"/>
-                        <el-option label="审核不通过" value="2"/>
-                        <el-option label="重新提交审核" value="3"/>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="结算周期" prop="settlementCycleType">
-                    <el-select v-model="query.settlementCycleType" size="small" multiple placeholder="请选择"
-                               class="w-150">
-                        <el-option label="周结" value="1"/>
-                        <el-option label="T+1(自动)" value="3"/>
-                        <el-option label="T+1(人工)" value="6"/>
-                    </el-select>
-                </el-form-item>
-                <el-form-item prop="operId" label="激活运营中心ID">
+                <el-form-item prop="operId" label="运营中心ID">
                     <el-input v-model="query.operId" size="small" placeholder="激活运营中心ID" class="w-100" clearable/>
                 </el-form-item>
-                <el-form-item prop="operName" label="激活运营中心名称">
-                    <el-input v-model="query.operName" size="small" placeholder="激活运营中心名称" clearable></el-input>
-                </el-form-item>
-                <el-form-item label="商户状态" prop="status">
-                    <el-select v-model="query.status" size="small" class="w-150">
-                        <el-option label="全部" value=""/>
-                        <el-option label="正常" value="1"/>
-                        <el-option label="冻结" value="2"/>
-                        <el-option label="未知" value="3"/>
+                <el-form-item label="审核状态" prop="auditStatus">
+                    <el-select v-model="query.auditStatus" size="small" multiple placeholder="请选择">
+                        <el-option label="待审核" value="1"/>
+                        <el-option label="审核通过" value="2"/>
+                        <el-option label="审核不通过" value="3"/>
+                        <el-option label="已撤回" value="4"/>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" size="small" @click="search"><i class="el-icon-search">搜 索</i></el-button>
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="success" size="small" @click="downloadExcel">导出Excel</el-button>
-                </el-form-item>
-
             </el-form>
         </el-col>
         <el-table :data="list" v-loading="tableLoading" stripe>
@@ -91,8 +35,8 @@
                 </template>
             </el-table-column>
             <el-table-column prop="data_after.signboard_name" label="商户招牌名"/>
-            <el-table-column prop="oper_id" size="mini" label="激活运营中心ID"/>
-            <el-table-column prop="operName" label="激活运营中心名称"/>
+            <el-table-column prop="oper_id" size="mini" label="运营中心ID"/>
+            <el-table-column prop="operName" label="运营中心名称"/>
             <el-table-column prop="city" label="城市">
                 <template slot-scope="scope">
                     <span> {{ scope.row.data_after.city }} </span>
@@ -100,10 +44,10 @@
                 </template>
             </el-table-column>
             <el-table-column prop="status" label="商户状态">
-                <template slot-scope="scope" v-if="scope.row.status == 2 || scope.row.status == 3">
-                    <span v-if="scope.row.cs_merchant_detail.audit_status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.cs_merchant_detail.audit_status === 2" class="c-danger">已冻结</span>
-                    <span v-else>未知 ({{scope.row.cs_merchant_detail.audit_status}})</span>
+                <template slot-scope="scope" v-if="scope.row.cs_merchant_detail && (scope.row.status == 2 || scope.row.status == 3)">
+                    <span v-if="scope.row.cs_merchant_detail.status === 1" class="c-green">正常</span>
+                    <span v-else-if="scope.row.cs_merchant_detail.status === 2" class="c-danger">已冻结</span>
+                    <span v-else>未知 ({{scope.row.cs_merchant_detail.status}})</span>
                 </template>
             </el-table-column>
             <el-table-column prop="audit_status" label="审核状态">
@@ -113,21 +57,21 @@
                             v-else-if="scope.row.status === 2"
                             placement="bottom-start"
                             width="200px" trigger="hover"
-                            @show="showMessage(scope)"
-                            :disabled="scope.row.audit_suggestion == ''">
+                            @show="showMessage(scope)">
                         <div slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
-                        <unaudit-record-reason :data="auditRecord"/>
+                        审核意见: {{scope.row.suggestion || '无'}}
+                        <!--<unaudit-record-reason :data="auditRecord"/>-->
                     </el-popover>
                     <el-popover
                             v-else-if="scope.row.status === 3"
                             placement="bottom-start"
                             width="200px" trigger="hover"
-                            @show="showMessage(scope)"
-                            :disabled="scope.row.audit_suggestion == ''">
+                            @show="showMessage(scope)">
                         <div slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
-                        <unaudit-record-reason :data="auditRecord"/>
+                        审核意见: {{scope.row.suggestion || '无'}}
+                        <!--<unaudit-record-reason :data="auditRecord"/>-->
                     </el-popover>
                     <span v-else-if="scope.row.status == 4" class="c-gray">已撤回</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
@@ -194,7 +138,6 @@
 <script>
     import api from '../../../assets/js/api'
     import CsMerchantDetail from './merchant-detail'
-    import UnauditRecordReason from './unaudit-record-reason'
 
     export default {
         name: "cs-merchant-list",
@@ -205,21 +148,10 @@
                 isLoading: false,
                 detailMerchant: null,
                 query: {
-                    name: '',
-                    signboardName: '',
-                    auditStatus: [],
-                    status: '',
-                    page: 1,
                     merchantId: '',
-                    startDate: '',
-                    endDate: '',
-                    operName: '',
+                    name: '',
                     operId: '',
-                    settlementCycleType: '',
-                    creatorOperName: '',
-                    creatorOperId: '',
-                    memberNameOrMobile: '',
-                    bizerNameOrMobile: '',
+                    status: '',
                 },
                 list: [],
                 auditRecord: [],
@@ -370,7 +302,6 @@
         },
         components: {
             CsMerchantDetail,
-            UnauditRecordReason,
         }
     }
 </script>

@@ -9,12 +9,9 @@ namespace App\Modules\Cs;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
-use App\Exceptions\ParamInvalidException;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
-use App\Modules\Oper\MyOperBizer;
 use App\Modules\Oper\Oper;
-use App\Modules\Oper\OperBizMember;
 use App\ResultCode;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -136,7 +133,6 @@ class CsMerchantAuditService extends BaseService {
      * @param $auditSuggestion string 审核意见
      * @param $merchantAudit CsMerchantAudit 审核记录
      * @return CsMerchant|null
-     * @throws \Exception
      */
     public static function auditSuccess($merchant, $auditSuggestion, $merchantAudit)
     {
@@ -179,11 +175,10 @@ class CsMerchantAuditService extends BaseService {
 
     /**
      * 审核不通过
-     * @param $merchant |null CsMerchant 要审核的商户
+     * @param $merchant null|CsMerchant 要审核的商户
      * @param $auditSuggestion string 审核意见
      * @param $merchantAudit CsMerchantAudit
-     * @return Merchant
-     * @throws \Exception
+     * @return CsMerchant
      */
     public static function auditFail($merchant, $auditSuggestion, $merchantAudit)
     {

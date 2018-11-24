@@ -1,15 +1,18 @@
 <template>
-    <page :title=" isAudit ? '审核商户': '超市商户列表'"     v-loading="isLoading" >
+    <page :title=" isAudit ? '审核商户': '超市商户列表'" v-loading="isLoading">
         <el-col>
             <el-form v-model="query" inline>
-                <el-form-item prop="merchantId" label="商户ID" >
-                    <el-input v-model="query.merchantId" size="small"  placeholder="商户ID"  class="w-100" clearable></el-input>
+                <el-form-item prop="merchantId" label="商户ID">
+                    <el-input v-model="query.merchantId" size="small" placeholder="商户ID" class="w-100"
+                              clearable></el-input>
                 </el-form-item>
-                <el-form-item prop="name" label="商户名称" >
-                    <el-input v-model="query.name" size="small"  placeholder="商户名称" clearable @keyup.enter.native="search"/>
+                <el-form-item prop="name" label="商户名称">
+                    <el-input v-model="query.name" size="small" placeholder="商户名称" clearable
+                              @keyup.enter.native="search"/>
                 </el-form-item>
-                <el-form-item prop="signboardName" label="商户招牌名" >
-                    <el-input v-model="query.signboardName" size="small"  placeholder="商户招牌名" clearable @keyup.enter.native="search"/>
+                <el-form-item prop="signboardName" label="商户招牌名">
+                    <el-input v-model="query.signboardName" size="small" placeholder="商户招牌名" clearable
+                              @keyup.enter.native="search"/>
                 </el-form-item>
                 <el-form-item prop="startDate" label="添加商户开始时间">
                     <el-date-picker
@@ -33,14 +36,14 @@
                             :picker-options="{disabledDate: (time) => {return time.getTime() < new Date(query.startDate) - 8.64e7}}"
                     ></el-date-picker>
                 </el-form-item>
-                <el-form-item label="审核状态" prop="auditStatus"  v-if="isAudit">
-                    <el-select v-model="query.auditStatus" size="small" multiple  placeholder="请选择" class="w-250">
-                        <el-option label="待审核" value="0" />
+                <el-form-item label="审核状态" prop="auditStatus" v-if="isAudit">
+                    <el-select v-model="query.auditStatus" size="small" multiple placeholder="请选择" class="w-250">
+                        <el-option label="待审核" value="0"/>
                         <el-option label="重新提交审核" value="3"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="审核状态" prop="auditStatus"  v-else>
-                    <el-select v-model="query.auditStatus" size="small"  multiple placeholder="请选择" class="w-150">
+                <el-form-item label="审核状态" prop="auditStatus" v-else>
+                    <el-select v-model="query.auditStatus" size="small" multiple placeholder="请选择" class="w-150">
                         <el-option label="待审核" value="1"/>
                         <el-option label="审核通过" value="2"/>
                         <el-option label="审核不通过" value="3"/>
@@ -48,17 +51,18 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="结算周期" prop="settlementCycleType">
-                    <el-select v-model="query.settlementCycleType" size="small" multiple placeholder="请选择" class="w-150">
+                    <el-select v-model="query.settlementCycleType" size="small" multiple placeholder="请选择"
+                               class="w-150">
                         <el-option label="周结" value="1"/>
                         <el-option label="T+1(自动)" value="3"/>
                         <el-option label="T+1(人工)" value="6"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item prop="operId" label="激活运营中心ID"  >
-                    <el-input v-model="query.operId" size="small"   placeholder="激活运营中心ID"  class="w-100" clearable />
+                <el-form-item prop="operId" label="激活运营中心ID">
+                    <el-input v-model="query.operId" size="small" placeholder="激活运营中心ID" class="w-100" clearable/>
                 </el-form-item>
-                <el-form-item prop="operName" label="激活运营中心名称"  >
-                    <el-input v-model="query.operName" size="small"  placeholder="激活运营中心名称"  clearable></el-input>
+                <el-form-item prop="operName" label="激活运营中心名称">
+                    <el-input v-model="query.operName" size="small" placeholder="激活运营中心名称" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="商户状态" prop="status">
                     <el-select v-model="query.status" size="small" class="w-150">
@@ -78,8 +82,8 @@
             </el-form>
         </el-col>
         <el-table :data="list" v-loading="tableLoading" stripe>
-            <el-table-column prop="created_at" label="添加时间"  width="160px" />
-            <el-table-column prop="id" size="mini"	 label="商户ID"/>
+            <el-table-column prop="created_at" label="添加时间" width="160px"/>
+            <el-table-column prop="id" size="mini" label="商户ID"/>
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="name" label="商户类型">
                 <template slot-scope="scope">
@@ -87,8 +91,8 @@
                 </template>
             </el-table-column>
             <el-table-column prop="signboard_name" label="商户招牌名"/>
-            <el-table-column prop="operId" size="mini" label="激活运营中心ID"/>
-            <el-table-column prop="operName" label="激活运营中心名称"/>
+            <el-table-column prop="operId" size="mini" label="运营中心ID"/>
+            <el-table-column prop="operName" label="运营中心名称"/>
             <el-table-column prop="city" label="城市">
                 <template slot-scope="scope">
                     <!--<span> {{ scope.row.province }} </span>-->
@@ -109,20 +113,20 @@
                     <el-popover
                             v-else-if="scope.row.audit_status === 1"
                             placement="bottom-start"
-                            width="200px"  trigger="hover"
-                            @show="showMessage(scope)"
-                            :disabled="scope.row.audit_suggestion == ''">
-                        <div   slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
-                        <unaudit-record-reason    :data="auditRecord"  />
+                            width="200px" trigger="hover"
+                            @show="showMessage(scope)">
+                        <div slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
+                        </div>
+                        审核意见: {{scope.row.audit_suggestion || '无'}}
                     </el-popover>
                     <el-popover
                             v-else-if="scope.row.audit_status === 2"
                             placement="bottom-start"
-                            width="200px"  trigger="hover"
-                            @show="showMessage(scope)"
-                            :disabled="scope.row.audit_suggestion == ''" >
-                        <div   slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span></div>
-                        <unaudit-record-reason    :data="auditRecord"  />
+                            width="200px" trigger="hover"
+                            @show="showMessage(scope)">
+                        <div slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
+                        </div>
+                        审核意见: {{scope.row.audit_suggestion || '无'}}
                     </el-popover>
                     <span v-else>未知 ({{scope.row.audit_status}})</span>
                 </template>
@@ -147,11 +151,8 @@
                 @current-change="getList"
                 :page-size="15"
                 :total="total"/>
-        <el-dialog :visible.sync="showDetail" width="70%" title="商户详情">
-            <merchant-detail :data="currentMerchant" @change="() => {getList(); showDetail = false;}"/>
-        </el-dialog>
         <el-dialog title="审核意见" :visible.sync="unAudit" :close-on-click-modal="false">
-            <unaudit-message   @cancel="unAudit = false"  :data="detailMerchant"   @change="merchantChange"/>
+            <unaudit-message @cancel="unAudit = false" :data="detailMerchant" @change="merchantChange"/>
         </el-dialog>
     </page>
 </template>
@@ -160,52 +161,49 @@
     import api from '../../../assets/js/api'
     import CsMerchantDetail from './merchant-detail'
     import UnauditMessage from './unaudit-message'
-    import UnauditRecordReason from './unaudit-record-reason'
 
     export default {
         name: "cs-merchant-list",
-        data(){
+        data() {
             return {
                 activeTab: 'merchant',
-                showDetail: false,
                 isLoading: false,
-                unAudit:false,
-                detailMerchant:null,
+                unAudit: false,
+                detailMerchant: null,
                 query: {
                     name: '',
-                    signboardName:'',
+                    signboardName: '',
                     auditStatus: [],
-                    status:'',
+                    status: '',
                     page: 1,
                     merchantId: '',
                     startDate: '',
                     endDate: '',
-                    operName:'',
-                    operId:'',
-                    settlementCycleType:'',
-                    creatorOperName:'',
-                    creatorOperId:'',
+                    operName: '',
+                    operId: '',
+                    settlementCycleType: '',
+                    creatorOperName: '',
+                    creatorOperId: '',
                     memberNameOrMobile: '',
                     bizerNameOrMobile: '',
                 },
                 list: [],
-                auditRecord:[],
+                auditRecord: [],
                 total: 0,
-                currentMerchant: null,
                 tableLoading: false,
             }
         },
         computed: {
-            isAudit(){
+            isAudit() {
                 let isAudit = this.$route.path;
-                return isAudit=="/cs/merchant/unaudits"
+                return isAudit == "/cs/merchant/unaudits"
             }
         },
         methods: {
-            merchantChange(){
+            merchantChange() {
                 this.getList();
             },
-            showMessage(scope){
+            showMessage(scope) {
                 api.get('/cs/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
                     this.auditRecord = [data];
                 })
@@ -216,13 +214,13 @@
                     return false;
                 }
                 //待审核页面bug修复
-                if( this.query.auditStatus .length == 0  && this.isAudit ){
+                if (this.query.auditStatus.length == 0 && this.isAudit) {
                     this.query.auditStatus = ['0', '3']
                 }
                 this.query.page = 1;
                 this.getList();
             },
-            getList(){
+            getList() {
                 this.tableLoading = true;
                 let params = {};
                 Object.assign(params, this.query);
@@ -236,7 +234,7 @@
                     this.tableLoading = false;
                 })
             },
-            detail(scope){
+            detail(scope) {
                 let self = this;
                 router.push({
                     path: 'csMerchant/detail',
@@ -248,7 +246,7 @@
                 })
             },
 
-            edit(scope){
+            edit(scope) {
                 router.push({
                     path: '/cs/merchant/edit',
                     query: {id: scope.row.id},
@@ -256,14 +254,14 @@
                 return false;
             },
             //type: 1-审核通过  2-审核不通过  3-审核不通过并打回到商户池
-            audit(scope, type){
-                if(type==2 ||type==1){
+            audit(scope, type) {
+                if (type == 2 || type == 1) {
                     api.get('cs/merchant/detail', {id: scope.row.id}).then(data => {
                         this.detailMerchant = data;
                         this.detailMerchant.type = type;
                         this.unAudit = true;
                     });
-                }else{
+                } else {
                     let message = ['', '审核通过', '审核不通过'/*, '打回到商户池'*/][type];
                     this.$confirm(`确定 ${message} 吗?`, scope.row.name).then(() => {
                         api.post('/cs/merchant/audit', {id: scope.row.id, type: type}).then(data => {
@@ -291,18 +289,18 @@
                     let data = this.query;
                     let params = [];
                     Object.keys(data).forEach((key) => {
-                        let value =  data[key];
+                        let value = data[key];
                         if (typeof value === 'undefined' || value == null) {
                             value = '';
                         }
                         params.push([key, encodeURIComponent(value)].join('='))
-                    }) ;
+                    });
                     let uri = params.join('&');
 
                     location.href = `/api/admin/cs/merchant/export?${uri}`;
                 })
             },
-            changeStatus(row){
+            changeStatus(row) {
                 let status = row.status === 1 ? 2 : 1;
                 this.$emit('before-request')
                 api.post('/cs/Merchant/changeStatus', {id: row.id, status: status}).then((data) => {
@@ -313,12 +311,12 @@
                 })
             },
         },
-        created(){
-            if(this.isAudit){
-                this.query.auditStatus=['0', '3'];
+        created() {
+            if (this.isAudit) {
+                this.query.auditStatus = ['0', '3'];
                 Object.assign(this.query, this.$route.params);
                 this.getList();
-            }else{
+            } else {
                 Object.assign(this.query, this.$route.params);
                 this.getList();
             }
@@ -327,19 +325,18 @@
         components: {
             CsMerchantDetail,
             UnauditMessage,
-            UnauditRecordReason,
         }
     }
 </script>
 
 <style scoped>
-    .message{
+    .message {
         overflow: hidden;
-        text-overflow:ellipsis;
+        text-overflow: ellipsis;
         white-space: nowrap;
-        width:120px;
-        font-size:12px;
-        color:gray;
+        width: 120px;
+        font-size: 12px;
+        color: gray;
     }
 
 </style>
