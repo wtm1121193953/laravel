@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Http\Controllers\Oper;
+
+use App\Exceptions\ParamInvalidException;
+use App\Modules\Cs\CsMerchant;
+use App\Modules\Cs\CsMerchantAuditService;
+use App\Modules\Cs\CsMerchantService;
+use App\Result;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
+class CsMerchantAuditController extends Controller
+{
+    public function edit(){
+        $validate = [
+            'name' => 'required|max:50',
+            'signboard_name' => 'required|max:20',
+        ];
+        if (request('is_pilot') !== CsMerchant::PILOT_MERCHANT){
+            $validate = array_merge($validate, [
+                'business_licence_pic_url' => 'required',
+                'organization_code' => 'required',
+                'settlement_rate' => 'required|numeric|min:0',
+            ]);
+        }
+        $this->validate(request(), $validate);
+        $mobile = request('contacter_phone');
+        if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
+            throw new ParamInvalidException('负责人手机号码不合法');
+        }
+
+        $audit = CsMerchantAuditService::editMerchantAudit( request()->get('current_user')->id);
+        return Result::success($audit);
+    }
+}

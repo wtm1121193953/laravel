@@ -153,15 +153,16 @@ class CsMerchantAuditService extends BaseService {
         $merchant->audit_status = CsMerchant::AUDIT_STATUS_SUCCESS;
         $merchant->status = CsMerchant::AUDIT_STATUS_SUCCESS;
         $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
-        $merchant->oper_id = $merchant->audit_oper_id;
+        $merchant->oper_id = $merchantAudit->oper_id;
         $merchant->active_time = Carbon::now();
         if (!$merchant->first_active_time) {
             $merchant->first_active_time = Carbon::now();
         }
 
         // 修改审核记录状态
-        $merchantAudit->suggestion = $auditSuggestion ? $auditSuggestion:'';
+        $merchantAudit->suggestion = $auditSuggestion ??'';
         $merchantAudit->status = CsMerchantAudit::AUDIT_STATUS_SUCCESS;
+        $merchantAudit->audit_time = date('Y-m-d H:i:s');
 
         // 开启事务
         DB::beginTransaction();
@@ -193,7 +194,8 @@ class CsMerchantAuditService extends BaseService {
             $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
         }
         $merchantAudit->status = CsMerchantAudit::AUDIT_STATUS_FAIL;
-        $merchantAudit->suggestion = $auditSuggestion ? $auditSuggestion:'';
+        $merchantAudit->suggestion = $auditSuggestion ?? '';
+        $merchantAudit->audit_time = date('Y-m-d H:i:s');
 
         // 开启事务
         DB::beginTransaction();
@@ -238,7 +240,7 @@ class CsMerchantAuditService extends BaseService {
             }
         }
 
-        if($lastAudit->cs_merchant_id){
+        if(isset($lastAudit->cs_merchant_id)){
             // 有商户信息则走以下逻辑
             $csMerchant = CsMerchant::find($lastAudit->cs_merchant_id);
             if($csMerchant){

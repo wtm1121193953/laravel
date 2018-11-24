@@ -14,6 +14,7 @@ use App\BaseModel;
  * @property string name
  * @property string suggestion
  * @property  int cs_merchant_id
+ * @property date audit_time
  */
 class CsMerchantAudit extends BaseModel
 {
