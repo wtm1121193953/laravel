@@ -121,8 +121,8 @@ class Order extends BaseModel
     const MERCHANT_TYPE_SUPERMARKET = 2;    // 超市商家
 
     //配送方式
-    const  DELIVERY_SELF_MENTION = 1;       //自提
     const  DELIVERY_MERCHANT_POST = 1;       //商家配送
+    const  DELIVERY_SELF_MENTION = 2;       //自提
     /**
      * 分润状态
      */
