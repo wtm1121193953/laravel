@@ -2,7 +2,15 @@
     <page title="超市商户审核记录">
         <el-table :data="list" stripe v-loading="tableLoading">
             <el-table-column prop="created_at" label="提交审核时间"/>
-            <el-table-column prop="updated_at" label="审核时间"/>
+            <el-table-column prop="audit_time" label="审核时间"/>
+            <el-table-column prop="type" label="操作">
+                <template slot-scope="scope">
+                    <span>{{scope.row.type == 1 ? '新增商户' : '修改商户'}}</span>
+                    <div v-if="scope.row.type == 2" class="c-green">
+                        商户ID: {{ scope.row.cs_merchant_id}}
+                    </div>
+                </template>
+            </el-table-column>
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">

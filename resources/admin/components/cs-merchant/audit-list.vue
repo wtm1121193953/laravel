@@ -27,7 +27,15 @@
         </el-col>
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="created_at" label="添加时间" width="160px"/>
-            <el-table-column prop="id" size="mini" label="商户ID"/>
+            <el-table-column prop="id" label="ID"/>
+            <el-table-column prop="cs_merchant_id" width="160px" label="操作类型">
+                <template slot-scope="scope">
+                    <span>{{scope.row.type == 1 ? '新增商户' : '修改商户'}}</span>
+                    <div v-if="scope.row.type == 2" class="c-green">
+                        商户ID: {{ scope.row.cs_merchant_id}}
+                    </div>
+                </template>
+            </el-table-column>
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="name" label="商户类型">
                 <template slot-scope="scope">
@@ -41,13 +49,6 @@
                 <template slot-scope="scope">
                     <span> {{ scope.row.data_after.city }} </span>
                     <span> {{ scope.row.data_after.area }} </span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="status" label="商户状态">
-                <template slot-scope="scope" v-if="scope.row.cs_merchant_detail && (scope.row.status == 2 || scope.row.status == 3)">
-                    <span v-if="scope.row.cs_merchant_detail.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.cs_merchant_detail.status === 2" class="c-danger">已冻结</span>
-                    <span v-else>未知 ({{scope.row.cs_merchant_detail.status}})</span>
                 </template>
             </el-table-column>
             <el-table-column prop="audit_status" label="审核状态">
