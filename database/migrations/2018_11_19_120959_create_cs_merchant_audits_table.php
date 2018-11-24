@@ -17,6 +17,8 @@ class CreateCsMerchantAuditsTable extends Migration
             $table->increments('id');
             $table->tinyInteger('type')->default(0)->comment('审核类型 1新增审核 2修改审核');
             $table->integer('cs_merchant_id')->default(0)->comment('审核超市商户ID');
+            $table->integer('oper_id')->default(0)->comment('运营中心id')->after('id');
+            $table->string('name')->default('')->comment('商户名称')->after('cs_merchant_id');
             $table->text('data_before')->comment('审核前数据json');
             $table->text('data_after')->comment('提交审核的数据json');
             $table->text('data_modify')->comment('修改的数据json');
