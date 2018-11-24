@@ -31,7 +31,7 @@
             <el-table-column prop="cs_merchant_id" width="160px" label="操作类型">
                 <template slot-scope="scope">
                     <span>{{scope.row.type == 1 ? '新增商户' : '修改商户'}}</span>
-                    <div v-if="scope.row.type == 2" class="c-green">
+                    <div v-if="scope.row.cs_merchant_id > 0" class="c-green">
                         商户ID: {{ scope.row.cs_merchant_id}}
                     </div>
                 </template>
