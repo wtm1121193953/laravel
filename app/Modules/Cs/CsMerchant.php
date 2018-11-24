@@ -123,7 +123,7 @@ class CsMerchant extends BaseModel
      */
     const SETTLE_WEEKLY = 1; // 周结
     const SETTLE_HALF_MONTHLY = 2; // 半月结
-    const SETTLE_MONTHLY = 3; // T+1（自动）
+    const SETTLE_DAY_AUTO = 3; // T+1（自动）
     const SETTLE_HALF_YEARLY = 4; // 半年结
     const SETTLE_YEARLY = 5; // 年结
     const SETTLE_DAY_ADD_ONE = 6; // T+1（人工）
