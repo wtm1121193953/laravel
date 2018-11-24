@@ -99,7 +99,8 @@ class CsMerchantController extends Controller
         if(request('isReEdit') == 'true'){
             $merchant = CsMerchantService::getReEditData(request('id'));
         }else{
-            $merchant = CsMerchantService::detail(request('id'));
+            $userId = request()->get('current_user')->id;
+            $merchant = CsMerchantService::detail(request('id'), $userId);
         }
 
         return Result::success($merchant);
