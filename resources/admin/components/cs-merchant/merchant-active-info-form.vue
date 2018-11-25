@@ -445,9 +445,9 @@
         },
         methods: {
             getOperBizMember(){
-                api.get('/bizer/operBizers/enable', {operId: this.data.audit_oper_id}).then(data => {
+                /*api.get('/bizer/operBizers/enable', {operId: this.data.audit_oper_id}).then(data => {
                     this.operBizMembers = data.list;
-                })
+                })*/
             },
             initForm(){
                 if(this.data){
@@ -518,9 +518,9 @@
                 })
             },
             getIsPayToPlatform() {
-                api.get('/merchant/isPayToPlatform',{operId: this.data.audit_oper_id}).then(data => {
+                /*api.get('/cs/merchant/isPayToPlatform',{operId: this.data.audit_oper_id}).then(data => {
                     this.isPayToPlatform = data;
-                })
+                })*/
             }
         },
         created(){
