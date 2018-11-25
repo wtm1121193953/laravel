@@ -316,9 +316,9 @@ class CsMerchantService extends BaseService {
         $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
         $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
 
-        $merchant->operName = Oper::where('id', $merchant->audit_oper_id)->value('name');
-        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
-        $oper = Oper::where('id', $merchant->audit_oper_id)->first();
+        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
+        $merchant->creatorOperName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->creator_oper_id)->value('name');
+        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
             $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
@@ -470,6 +470,7 @@ class CsMerchantService extends BaseService {
 
         // 补充商家创建者及审核提交者
         $csmerchant->name = $name;
+        $csmerchant->oper_id = $currentOperId;
         $csmerchant->audit_oper_id = $currentOperId;
         $csmerchant->creator_oper_id = $currentOperId;
         $csmerchant->settlement_cycle_type = CsMerchant::SETTLE_DAY_ADD_ONE;
