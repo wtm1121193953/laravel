@@ -10,7 +10,7 @@
                               @keyup.enter.native="search"/>
                 </el-form-item>
                 <el-form-item prop="operId" label="运营中心ID">
-                    <el-input v-model="query.operId" size="small" placeholder="激活运营中心ID" class="w-100" clearable/>
+                    <el-input v-model="query.operId" size="small" placeholder="运营中心ID" clearable/>
                 </el-form-item>
                 <el-form-item label="审核状态" prop="status">
                     <el-select v-model="query.status" size="small" multiple placeholder="请选择">
@@ -43,8 +43,8 @@
                 </template>
             </el-table-column>
             <el-table-column prop="data_after.signboard_name" label="商户招牌名"/>
-            <el-table-column prop="oper_id" size="mini" label="运营中心ID"/>
-            <el-table-column prop="operName" label="运营中心名称"/>
+            <el-table-column prop="oper_id" label="运营中心ID"/>
+            <el-table-column prop="operName" width="250" label="运营中心名称"/>
             <el-table-column prop="city" label="城市">
                 <template slot-scope="scope">
                     <span> {{ scope.row.data_after.city }} </span>
@@ -79,12 +79,12 @@
                     <span>{{ {1: '周结', 2: '半月结', 3: 'T+1(自动)', 4: '半年结', 5: '年结', 6: 'T+1(人工)', 7: '未知',}[scope.row.data_after.settlement_cycle_type] }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="150px">
+            <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
                     <template v-if="scope.row.status === 1 || scope.row.status === 3">
                         <el-button type="text" @click="detail(scope,3)">审核</el-button>
-                        <el-dropdown trigger="click" @command="(command) => {audit(scope, command)}">
+                        <el-dropdown class="m-l-10" trigger="click" @command="(command) => {audit(scope, command)}">
                             <el-button type="text">
                                 快捷审核 <i class="el-icon-arrow-down"></i>
                             </el-button>
