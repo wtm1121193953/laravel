@@ -1,5 +1,5 @@
 <template>
-    <page title="超市商户审核记录">
+    <page title="审核管理" :breadcrumbs="{超市商户管理: () => {$menu.change('/cs/merchants')} }">
         <el-col>
             <el-form v-model="query" inline>
                 <el-form-item prop="merchantId" label="商户ID">
@@ -59,7 +59,6 @@
                         <div slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.suggestion || '无'}}
-                        <!--<unaudit-record-reason :data="auditRecord"/>-->
                     </el-popover>
                     <el-popover
                             v-else-if="scope.row.status === 3"
@@ -69,7 +68,6 @@
                         <div slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.suggestion || '无'}}
-                        <!--<unaudit-record-reason :data="auditRecord"/>-->
                     </el-popover>
                     <span v-else-if="scope.row.status == 4" class="c-gray">已撤回</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
@@ -84,7 +82,11 @@
                 <template slot-scope="scope">
                     <el-button  type="text" @click="showMearchant(scope)">查看</el-button>
                     <el-button v-if="parseInt(scope.row.status) === 1" type="text" @click="recall(scope)">撤回审核</el-button>
-                    <el-button v-if="parseInt(scope.row.status) > 2" type="text" @click="edit(scope)">重新编辑</el-button>
+                    <el-tooltip effect="dark"
+                                content="重新提交审核将会新增一条审核记录"
+                                placement="top-end">
+                        <el-button v-if="parseInt(scope.row.status) > 2" type="text" @click="edit(scope)">重新提交审核</el-button>
+                    </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>
