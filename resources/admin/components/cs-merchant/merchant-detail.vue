@@ -41,12 +41,12 @@
 
                 </el-col>
                 <el-col :span="12" :offset="1">
-                    <el-form-item prop="audit_status" label="审核状态">
-                        <span v-if="data.audit_status === 0" class="c-warning">待审核</span>
-                        <span v-else-if="data.audit_status === 1" class="c-green">审核通过 {{data.audit_suggestion}}</span>
-                        <span v-else-if="data.audit_status === 2" class="c-danger">审核不通过 {{data.audit_suggestion}}</span>
-                        <span v-else-if="data.audit_status === 3" class="c-warning">重新提交审核</span>
-                        <span v-else>未知 ({{data.audit_status}})</span>
+                    <el-form-item prop="status" label="审核状态">
+                        <span v-if="data.status === 1" class="c-warning">待审核</span>
+                        <span v-else-if="data.status === 2" class="c-green">审核通过 {{data.suggestion}}</span>
+                        <span v-else-if="data.status === 3" class="c-danger">审核不通过 {{data.suggestion}}</span>
+                        <span v-else-if="data.status === 4" class="c-warning">撤回</span>
+                        <span v-else>未知 ({{data.status}})</span>
                     </el-form-item>
                 </el-col>
 
@@ -204,7 +204,7 @@
                         </el-form-item>
                         <el-col v-if="type != 'poolOnly' ">
                             <el-form-item prop="audit_suggestion" label="审核意见">
-                                <el-input v-if="(data.audit_status == 0 || data.audit_status == 3) && auditType == 3" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
+                                <el-input v-if="data.status == 1" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
                                 <span v-else>{{data.audit_suggestion}}</span>
                             </el-form-item>
                         </el-col>
@@ -232,8 +232,8 @@
 
                 </el-col>
                 <!-- 商户激活信息右侧块 -->
-                <el-col v-if="auditType == 3 && type != 'poolOnly'"  >
-                    <el-form-item v-if="data.audit_status == 0 || data.audit_status == 3">
+                <el-col v-if="data.status == 1"  >
+                    <el-form-item v-if="data.status == 1">
                         <el-button type="success" @click="audit(1)">审核通过</el-button>
                         <el-button type="warning" @click="audit(2)">审核不通过</el-button>
                         <el-button type="primary" @click="back()">返回</el-button>

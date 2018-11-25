@@ -315,10 +315,14 @@ class CsMerchantService extends BaseService {
         $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
         $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
         $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
+        $merchant->id = $merchantAudit->id;
+        $merchant->status = $merchantAudit->status;
+        $merchant->audit_suggestion = $merchantAudit->suggestion;
+        $operId = isset($merchantAudit->oper_id) ? $merchantAudit->oper_id:0;
+        $merchant->operName = Oper::where('id', $operId)->value('name');
+        $merchant->creatorOperName = Oper::where('id', $operId)->value('name');
 
-        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
-        $merchant->creatorOperName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->creator_oper_id)->value('name');
-        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
+        $oper = Oper::where('id', $operId)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
             $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
@@ -573,8 +577,6 @@ class CsMerchantService extends BaseService {
      */
     public static function getListAndDistance(array $params = [])
     {
-//        $query = CsMerchant::all();
-//        return $query;
 
         $city_id = array_get($params, 'city_id');
         $lng = array_get($params,'lng');
@@ -601,7 +603,7 @@ class CsMerchantService extends BaseService {
         //只能查询切换到平台的商户
         $query = CsMerchant::where('status', 1)
             ->where('oper_id', '>', 0)
-            ->whereIn('audit_status', [CsMerchant::AUDIT_STATUS_SUCCESS, CsMerchant::AUDIT_STATUS_RESUBMIT])
+            ->whereIn('audit_status', [CsMerchant::AUDIT_STATUS_SUCCESS])
             ->when($city_id, function(Builder $query) use ($city_id){
                 // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户
                 $areaInfo = Area::where('area_id', $city_id)->where('path', 1)->first();
@@ -677,6 +679,8 @@ class CsMerchantService extends BaseService {
             $merchantOrderData = CsStatisticsMerchantOrder::where('cs_merchant_id',$item->id)->select('order_number_30d','order_number_today')->first();
             if($merchantOrderData){
                 $item->month_order_number = $merchantOrderData->order_number_today + $merchantOrderData->order_number_30d;//月销售量加入当前销售量
+            }else{
+                $item->month_order_number = 0;
             }
 
             //配送信息:
@@ -687,6 +691,10 @@ class CsMerchantService extends BaseService {
                 $item->delivery_free_start = $MerchantInfo->delivery_free_start;
                 $item->delivery_free_order_amount = $MerchantInfo->delivery_free_order_amount;
             }
+            if(!isset($item->distance)){
+                $item->distance = 0;//没有经纬度时,设置为0
+            }
+
         });
 
         return ['list' => $list, 'total' => $total];
