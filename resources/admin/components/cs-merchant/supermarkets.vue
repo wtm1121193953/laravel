@@ -113,8 +113,7 @@
                     <el-popover
                             v-else-if="scope.row.audit_status === 1"
                             placement="bottom-start"
-                            width="200px" trigger="hover"
-                            @show="showMessage(scope)">
+                            width="200px" trigger="hover">
                         <div slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.audit_suggestion || '无'}}
@@ -122,8 +121,7 @@
                     <el-popover
                             v-else-if="scope.row.audit_status === 2"
                             placement="bottom-start"
-                            width="200px" trigger="hover"
-                            @show="showMessage(scope)">
+                            width="200px" trigger="hover">
                         <div slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.audit_suggestion || '无'}}
@@ -188,7 +186,6 @@
                     bizerNameOrMobile: '',
                 },
                 list: [],
-                auditRecord: [],
                 total: 0,
                 tableLoading: false,
             }
@@ -202,11 +199,6 @@
         methods: {
             merchantChange() {
                 this.getList();
-            },
-            showMessage(scope) {
-                api.get('/cs/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
-                    this.auditRecord = [data];
-                })
             },
             search() {
                 if (this.query.startDate > this.query.endDate) {

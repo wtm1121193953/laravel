@@ -57,22 +57,18 @@
                     <el-popover
                             v-else-if="scope.row.status === 2"
                             placement="bottom-start"
-                            width="200px" trigger="hover"
-                            @show="showMessage(scope)">
+                            width="200px" trigger="hover">
                         <div slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.suggestion || '无'}}
-                        <!--<unaudit-record-reason :data="auditRecord"/>-->
                     </el-popover>
                     <el-popover
                             v-else-if="scope.row.status === 3"
                             placement="bottom-start"
-                            width="200px" trigger="hover"
-                            @show="showMessage(scope)">
+                            width="200px" trigger="hover">
                         <div slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.suggestion || '无'}}
-                        <!--<unaudit-record-reason :data="auditRecord"/>-->
                     </el-popover>
                     <span v-else-if="scope.row.status == 4" class="c-gray">已撤回</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
@@ -155,7 +151,6 @@
                     status: '',
                 },
                 list: [],
-                auditRecord: [],
                 total: 0,
                 currentMerchant: null,
                 tableLoading: false,
@@ -176,11 +171,6 @@
         methods: {
             merchantChange() {
                 this.getList();
-            },
-            showMessage(scope) {
-                api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
-                    this.auditRecord = [data];
-                })
             },
             search() {
                 this.query.page = 1;
