@@ -51,7 +51,7 @@ class CsMerchantController extends Controller
         ]);
         $cs_merchant_id = request('merchant_id');
         $list = DataCacheService::getCsMerchantCats($cs_merchant_id);
-        return Result::success($list);
+        return Result::success(['list'=>$list]);
     }
 
 }
