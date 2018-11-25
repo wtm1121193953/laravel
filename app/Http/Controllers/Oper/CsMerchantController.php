@@ -228,8 +228,9 @@ class CsMerchantController extends Controller
         $account = request('account');
         $operId = request()->get('current_user')->oper_id;
         $password = request('password');
+        $type = request('type');
 
-        $account = MerchantAccountService::createAccount($merchantId,$account,$operId,$password);
+        $account = MerchantAccountService::createAccount($merchantId,$account,$operId,$password,$type);
 
         return Result::success($account);
     }

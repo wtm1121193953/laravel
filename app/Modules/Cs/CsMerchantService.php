@@ -15,6 +15,7 @@ use App\Modules\Area\Area;
 use App\Modules\Country\CountryService;
 use App\Modules\CsStatistics\CsStatisticsMerchantOrder;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantFollow;
 use App\Modules\Oper\Oper;
 use App\Support\Lbs;
@@ -229,7 +230,7 @@ class CsMerchantService extends BaseService {
             $data->each(function ($item) {
 
                 $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
-                $item->account = $item->name;
+                $item->account = MerchantAccount::where('merchant_id', $item->id)->where('type',MerchantAccount::TYPE_CS)->first();
                 $item->business_time = json_decode($item->business_time, 1);
                 $item->operName = Oper::where('id', $item->oper_id )->value('name');
             });
