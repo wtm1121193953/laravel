@@ -168,22 +168,9 @@ class CsMerchantService extends BaseService {
         }
         if ($operId) {
             if (is_array($operId) || $operId instanceof Collection) {
-                $query->where(function (Builder $query) use ($operId) {
-                    $query->whereIn('oper_id', $operId)
-                        ->orWhereIn('audit_oper_id', $operId);
-                });
+                $query->whereIn('oper_id', $operId);
             } else {
-                $query->where(function (Builder $query) use ($operId) {
-                    $query->where('oper_id', $operId)
-                        ->orWhere('audit_oper_id', $operId);
-                });
-            }
-        }
-        if (!empty($creatorOperId)) {
-            if (is_array($creatorOperId) || $creatorOperId instanceof Collection) {
-                $query->whereIn('creator_oper_id', $creatorOperId);
-            } else {
-                $query->where('creator_oper_id', $creatorOperId);
+                $query->where('oper_id', $operId);
             }
         }
 
