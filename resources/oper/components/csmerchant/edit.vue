@@ -27,6 +27,7 @@
                 isReEdit: null,
                 merchant: null,
                 isDraft: false,
+                dataType:'',
                 breadcrumbs: {},
             }
         },
@@ -34,6 +35,7 @@
             doEdit(data){
                 this.isLoading = true;
                 if (!this.isDraft){
+                    data.dataType = this.dataType;
                     api.post('/cs/merchant/edit', data).then(() => {
                         this.$message.success('保存成功');
                         if(this.isReEdit){
@@ -102,6 +104,15 @@
             this.id = this.$route.query.id;
             this.isReEdit = this.$route.query.type == 'cs-merchant-reedit';
             this.isDraft = this.$route.query.type == 'draft-list';
+            switch (this.$route.query.type) {
+                // 用于判断判断数据属于哪个表
+                case 'merchant-list':
+                    this.dataType = 'csMerchant';
+                    break;
+                case 'cs-merchant-reedit':
+                    this.dataType = 'audit';
+                    break;
+            }
             if (this.isDraft){
                 this.breadcrumbs = {'草稿箱': '/cs/merchant/drafts'};
             } else {
