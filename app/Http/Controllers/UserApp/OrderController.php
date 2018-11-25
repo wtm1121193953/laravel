@@ -199,7 +199,11 @@ class OrderController extends Controller
             $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
         }
         $merchant_of_order = MerchantService::getById($detail->merchant_id);
-        $detail->signboard_name = $merchant_of_order->value('signboard_name');
+        if ($detail->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){
+            $merchant_of_order = CsMerchantService::getById($detail->merchant_id);
+        }
+
+        $detail->signboard_name =$detail->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET?$merchant_of_order->name:$merchant_of_order->value('signboard_name');
         // 积分记录
         $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
             ->where('type', 1)
