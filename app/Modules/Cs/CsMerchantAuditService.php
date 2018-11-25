@@ -270,7 +270,7 @@ class CsMerchantAuditService extends BaseService {
             }
         }
 
-        if($dataType=='csMerchant'||isset($lastAudit->cs_merchant_id)){
+        if($dataType=='csMerchant'||(isset($lastAudit->cs_merchant_id)&&$lastAudit->cs_merchant_id!=0)){
             // 有商户信息则走以下逻辑
             $csMerchant = ($csMerchant->id) ? $csMerchant:CsMerchant::find($lastAudit->cs_merchant_id);
             if($csMerchant){
@@ -281,7 +281,6 @@ class CsMerchantAuditService extends BaseService {
 
             }
         }
-
         if($csMerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_COMPANY){
             if($dataAfter['name'] != $dataAfter['bank_open_name']){
                 throw new ParamInvalidException('提交失败，申请T+1结算，商户名称需和开户名一致');
