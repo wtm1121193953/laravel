@@ -9,6 +9,7 @@ namespace App\Modules\Cs;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAudit;
 use App\Modules\Oper\Oper;
@@ -151,7 +152,7 @@ class CsMerchantAuditService extends BaseService {
             $merchant->settlement_cycle_type = CsMerchant::SETTLE_DAY_ADD_ONE;
         }
         $merchant->audit_status = CsMerchant::AUDIT_STATUS_SUCCESS;
-        $merchant->status = CsMerchant::AUDIT_STATUS_SUCCESS;
+        $merchant->status = CsMerchant::STATUS_ON;
         $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
         $merchant->oper_id = $merchantAudit->oper_id;
         $merchant->active_time = Carbon::now();
@@ -191,6 +192,7 @@ class CsMerchantAuditService extends BaseService {
     {
         if(!is_null($merchant)){
             $merchant->audit_status = CsMerchant::AUDIT_STATUS_FAIL;
+            $merchant->status   = CsMerchant::STATUS_OFF;
             $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
         }
         $merchantAudit->status = CsMerchantAudit::AUDIT_STATUS_FAIL;
