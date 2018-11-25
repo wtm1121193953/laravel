@@ -142,6 +142,7 @@ class CsMerchantCategoryService extends BaseService
         $level1 = CsMerchantCategory::where('cs_merchant_id',$cs_merchant_id)
             ->where('cs_category_level',1)
             ->where('status',CsMerchantCategory::STATUS_ON)
+            ->orderBy('sort','asc')
             ->get();
 
         $rt = [];
@@ -167,6 +168,7 @@ class CsMerchantCategoryService extends BaseService
                 ->where('cs_category_level',2)
                 ->where('status',CsMerchantCategory::STATUS_ON)
                 ->where('cs_category_parent_id',$v1->platform_category_id)
+                ->orderBy('sort','asc')
                 ->get();
             if ($level2) {
                 foreach ($level2 as $v2) {
