@@ -70,6 +70,7 @@ class OrderController extends Controller
 
         $currentOperId = request()->get('current_oper_id');
         $data = Order::where('user_id', $user->id)
+            ->where('type','<>',Order::MERCHANT_TYPE_SUPERMARKET)//排除超市订单
             ->where(function (Builder $query) {
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function (Builder $query) {
@@ -114,14 +115,13 @@ class OrderController extends Controller
 
         $currentOperId = request()->get('current_oper_id');
         $data = Order::where('user_id', $user->id)
-            ->where('pay_target_type',Order::PAY_TARGET_TYPE_PLATFORM)
-            ->where('type','<>',Order::MERCHANT_TYPE_SUPERMARKET)//排除超市订单
             ->where(function (Builder $query) {
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function (Builder $query) {
                         $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
                             ->whereIn('status', [4, 6, 7]);
-                    })->orWhere('type', Order::TYPE_DISHES);
+                    })->orWhere('type', Order::TYPE_DISHES)
+                    ->orWhere('type', Order::TYPE_SUPERMARKET);
             })
             ->when($merchantShareInMiniprogram != 1, function (Builder $query) use ($currentOperId) {
                 $query->where('oper_id', $currentOperId);

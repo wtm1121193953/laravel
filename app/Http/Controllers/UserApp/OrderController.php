@@ -113,7 +113,6 @@ class OrderController extends Controller
      */
     public function getOrderList()
     {
-
         $status = request('status');
         $user = request()->get('current_user');
 
@@ -128,7 +127,9 @@ class OrderController extends Controller
                     ->orWhere(function (Builder $query) {
                         $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
                             ->whereIn('status', [4, 6, 7]);
-                    })->orWhere('type', Order::TYPE_DISHES);
+                    })->orWhere('type', Order::TYPE_DISHES)
+                    ->orWhere('type', Order::TYPE_SUPERMARKET);
+
             })
             ->when($merchantShareInMiniprogram != 1, function (Builder $query) use ($currentOperId) {
                 $query->where('oper_id', $currentOperId);
