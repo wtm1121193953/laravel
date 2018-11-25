@@ -162,7 +162,11 @@ class CsMerchantAuditService extends BaseService {
 
         if(!empty($merchantAudit->data_modify)){
             $dataModify = json_decode($merchantAudit->data_modify,true);
+            $unReplaceColumn = ['id'];
             foreach ($dataModify as $k=>$v){
+                if(in_array($k,$unReplaceColumn)){
+                    continue;
+                }
                 if($merchant->$k!=$v){
                     $merchant->$k = $v;
                 }
