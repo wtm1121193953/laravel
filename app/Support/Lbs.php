@@ -121,4 +121,63 @@ class Lbs
         return $arr;
     }
 
+
+    /**
+     * 添加超市商家GPS信息, 可批量添加
+     * @param $id int|Collection|array[{merchantId, lng, lat}]
+     * @param $lng
+     * @param $lat
+     */
+    public static function csMerchantGpsAdd($id, $lng=null, $lat=null)
+    {
+        if(is_array($id) || $id instanceof Collection){
+            $params = [];
+            foreach ($id as $item) {
+                $params[] = [$item->lng, $item->lat, $item->id];
+            }
+            $params = array_flatten($params);
+        }else {
+            $params = [$lng, $lat, $id];
+        }
+        Redis::geoadd('location:cs_merchant', ...$params);
+    }
+
+    /**
+     * 返回用户与超市商户的距离
+     * @param $merchantId
+     * @param $userId
+     * @param $userLng
+     * @param $userLat
+     * @param string $unit 单位, 取值: m, km 默认: m(米)
+     * @return null|int
+     */
+    public static function getDistanceOfCsMerchant($merchantId, $userId, $userLng, $userLat, $unit = 'm')
+    {
+        $userGpsKey = 'computed_user_' . $userId;
+        Redis::geoadd('location:cs_merchant', $userLng, $userLat, $userGpsKey);
+        $distance = Redis::geodist('location:cs_merchant', $merchantId, $userGpsKey, $unit);
+        return intval($distance);
+    }
+
+    /**
+     * 根据经纬度获取最近的超市商家距离
+     * @param $lng
+     * @param $lat
+     * @param int $radius 距离, 单位: 米
+     * @param string $sort
+     * @return array 返回数据的键为商家ID, 值为距离
+     */
+    public static function getNearlyCsMerchantDistanceByGps($lng, $lat, $radius = 3000, $sort = 'asc')
+    {
+        $result = Redis::georadius('location:cs_merchant', $lng, $lat, $radius, 'm', 'WITHDIST', $sort);
+
+        $arr = [];
+        foreach ($result as $item) {
+            if(is_numeric($item[0])){
+                $arr[$item[0]] = intval($item[1]);
+            }
+        }
+        return $arr;
+    }
+
 }

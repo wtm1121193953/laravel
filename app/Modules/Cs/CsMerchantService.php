@@ -552,9 +552,9 @@ class CsMerchantService extends BaseService {
     public static function geoAddToRedis($merchant)
     {
         if ($merchant instanceof Collection) {
-            Lbs::merchantGpsAdd($merchant);
+            Lbs::csMerchantGpsAdd($merchant);
         } else {
-            Lbs::merchantGpsAdd($merchant->id, $merchant->lng, $merchant->lat);
+            Lbs::csMerchantGpsAdd($merchant->id, $merchant->lng, $merchant->lat);
         }
     }
 
@@ -622,7 +622,7 @@ class CsMerchantService extends BaseService {
         $distances = null;
         if($lng && $lat && $radius){
             // 如果经纬度及范围都存在, 则按距离筛选出附近的商家
-            $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
+            $distances = Lbs::getNearlyCsMerchantDistanceByGps($lng, $lat, $radius);
         }
         $user_key = array_get($params, 'user_key', 0); //终端的唯一表示，用于计算距离
 
@@ -672,7 +672,7 @@ class CsMerchantService extends BaseService {
             $allList = $query->select('id')->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat, $user_key) {
-                    $item->distance = Lbs::getDistanceOfMerchant($item->id, $user_key, floatval($lng), floatval($lat));
+                    $item->distance = Lbs::getDistanceOfCsMerchant($item->id, $user_key, floatval($lng), floatval($lat));
                     return $item;
                 })
                 ->sortBy('distance')
@@ -683,7 +683,7 @@ class CsMerchantService extends BaseService {
                         $item->distance -= 100000000;
                     }
                     $item->distance = Utils::getFormativeDistance($item->distance);
-                    $merchant = DataCacheService::getMerchantDetail($item->id);
+                    $merchant = DataCacheService::getCsMerchantDetail($item->id);
                     $merchant->distance = $item->distance;
                     // 格式化距离
                     return $merchant;
@@ -742,7 +742,7 @@ class CsMerchantService extends BaseService {
         if($lng && $lat){
             $currentUser = request()->get('current_user');
             $tempToken = empty($currentUser) ? str_random() : $currentUser->id;
-            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, floatval($lng), floatval($lat));
+            $distance = Lbs::getDistanceOfCsMerchant($id, $tempToken, floatval($lng), floatval($lat));
             // 格式化距离
             $detail->distance = Utils::getFormativeDistance($distance);
         }
