@@ -12,6 +12,7 @@ Route::prefix('app/user')
 
         Route::get('version/last', 'VersionController@last');
         Route::get('versions', 'VersionController@getList');
+        Route::get('settings', 'SettingController@settings');
 
         Route::any('sms/verify_code', 'SmsController@sendVerifyCode');
 
@@ -134,7 +135,6 @@ Route::prefix('app/user')
         Route::get('cs/merchant/category','CsMerchantController@getCategoryTree');
         Route::get('cs/merchant/goods','CsGoodsController@getAllGoods');
         Route::post('cs/dishes/add','OrderController@csOrderCreate')->middleware(UserLoginFilter::class);
-        Route::get('cs/settings','CsCommonSettingController@settings');
 
 
     });

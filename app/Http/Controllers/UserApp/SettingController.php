@@ -10,7 +10,7 @@ namespace App\Http\Controllers\UserApp;
 use App\Http\Controllers\Controller;
 use App\Result;
 
-class CsCommonSettingController extends Controller
+class SettingController extends Controller
 {
     /**
      * 超市通用配置
