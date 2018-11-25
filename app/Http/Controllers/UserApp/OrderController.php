@@ -17,6 +17,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Cs\CsMerchantService;
+use App\Modules\Cs\CsMerchantSetting;
 use App\Modules\Cs\CsMerchantSettingService;
 use App\Modules\Cs\CsUserAddress;
 use App\Modules\CsOrder\CsOrderGood;
@@ -154,6 +155,8 @@ class OrderController extends Controller
 
             if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
                 $csMerchant = CsMerchant::where('id',$item->merchant_id)->first();
+                $csMerchantSetting = CsMerchantSetting::where('cs_merchant_id',$csMerchant->id)->get()->first();
+                $item->delivery_charges = $csMerchantSetting->delivery_charges;
                 $item->cs_merchant = $csMerchant;
 //                $item->merchant_name = $csMerchant->name;
 //                $item->merchant_logo = $csMerchant->logo;
