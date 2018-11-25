@@ -549,6 +549,7 @@ class CsMerchantService extends BaseService {
         $lng = array_get($params,'lng');
         $lat = array_get($params, 'lat');
         $keyword = array_get($params, 'keyword',null);
+        $pageSize = array_get($params, 'pageSize',15);
 
         // 暂时去掉商户列表中的距离限制
         $radius = array_get($params, 'radius');
@@ -618,7 +619,7 @@ class CsMerchantService extends BaseService {
                     return $item;
                 })
                 ->sortBy('distance')
-                ->forPage(request('page', 1), 15)
+                ->forPage(request('page', 1), $pageSize)
                 ->values()
                 ->map(function($item) {
                     if ($item->is_pilot == 1) {
@@ -632,7 +633,7 @@ class CsMerchantService extends BaseService {
                 });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
-            $data = $query->paginate();
+            $data = $query->paginate($pageSize);
             $list = $data->items();
             $total = $data->total();
         }
