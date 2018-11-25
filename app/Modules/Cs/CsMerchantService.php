@@ -682,7 +682,7 @@ class CsMerchantService extends BaseService {
                         $item->distance -= 100000000;
                     }
                     $item->distance = Utils::getFormativeDistance($item->distance);
-                    $merchant = DataCacheService::getMerchantDetail($item->id);
+                    $merchant = DataCacheService::getCsMerchantDetail($item->id);
                     $merchant->distance = $item->distance;
                     // 格式化距离
                     return $merchant;
