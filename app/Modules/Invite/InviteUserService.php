@@ -535,6 +535,18 @@ class InviteUserService
     }
 
     /**
+     * 查询超市商户邀请用户的列表
+     * @param $csMerchantId
+     * @param array $params
+     * @param bool $withQuery
+     * @return User|LengthAwarePaginator
+     */
+    public static function getInviteUsersWithOrderCountByCsMerchantId($csMerchantId, $params = [], $withQuery = false)
+    {
+        return self::getInviteUsersByOriginInfo($csMerchantId, InviteChannel::ORIGIN_TYPE_CS_MERCHANT, $params, $withQuery);
+    }
+
+    /**
      * 获取运营中心邀请的用户列表
      * @param $params
      * @param bool $return_query
