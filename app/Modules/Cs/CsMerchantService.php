@@ -315,10 +315,14 @@ class CsMerchantService extends BaseService {
         $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
         $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
         $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
+        $merchant->id = $merchantAudit->id;
+        $merchant->status = $merchantAudit->status;
+        $merchant->audit_suggestion = $merchantAudit->suggestion;
+        $operId = isset($merchantAudit->oper_id) ? $merchantAudit->oper_id:0;
+        $merchant->operName = Oper::where('id', $operId)->value('name');
+        $merchant->creatorOperName = Oper::where('id', $operId)->value('name');
 
-        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
-        $merchant->creatorOperName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->creator_oper_id)->value('name');
-        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
+        $oper = Oper::where('id', $operId)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
             $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
@@ -577,6 +581,7 @@ class CsMerchantService extends BaseService {
         $city_id = array_get($params, 'city_id');
         $lng = array_get($params,'lng');
         $lat = array_get($params, 'lat');
+        $keyword = array_get($params, 'keyword',null);
 
         // 暂时去掉商户列表中的距离限制
         $radius = array_get($params, 'radius');
@@ -616,6 +621,10 @@ class CsMerchantService extends BaseService {
                         ->pluck('area_id');
                     $query->whereIn('city_id', $cityIdArray);
                 }
+            })
+            ->when($keyword, function(Builder $query) use ($keyword){
+                $query->where('name', 'like', "%$keyword%")
+                    ->orWhere('signboard_name', 'like', "%$keyword%");
             })
             ->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
                 // 如果范围存在, 按距离搜索, 并按距离排序

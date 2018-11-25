@@ -70,8 +70,7 @@
                     <el-popover
                             v-else-if="scope.row.audit_status === 1"
                             placement="bottom-start"
-                            width="200px" trigger="hover"
-                            @show="showMessage(scope)">
+                            width="200px" trigger="hover">
                         <div slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.audit_suggestion || '无'}}
@@ -80,9 +79,7 @@
                     <el-popover
                             v-else-if="parseInt(scope.row.audit_status) === 2"
                             placement="bottom-start"
-                            width="200px" trigger="hover"
-                            @show="showMessage(scope)"
-                            :disabled="scope.row.audit_suggestion == ''">
+                            width="200px" trigger="hover">
                         <div slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.audit_suggestion || '无'}}
@@ -122,13 +119,11 @@
 
     import MerchantItemOptions from './merchant-item-options'
     import MerchantForm from './merchant-form'
-    import UnauditRecordReason from './unaudit-record-reason'
 
     export default {
         name: "merchant-list",
         data() {
             return {
-                auditRecord: [],
                 isLoading: false,
                 query: {
                     name: '',
@@ -185,12 +180,6 @@
                     }
                 });
             },
-            showMessage(scope) {
-                api.get('/cs/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
-                    this.auditRecord = [data];
-                })
-            },
-
             accountChanged(scope, account) {
                 let row = this.list[scope.$index];
                 row.account = account;
@@ -219,7 +208,6 @@
         components: {
             MerchantItemOptions,
             MerchantForm,
-            UnauditRecordReason
         }
     }
 </script>

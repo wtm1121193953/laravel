@@ -324,8 +324,7 @@ class CsMerchantController extends Controller
                 throw new ParamInvalidException('错误的操作');
             }
         }
-       /* var_dump($type);
-    exix();*/
+
         switch ($type){
             case '1': // 审核通过
                 $supermarket = CsMerchantAuditService::auditSuccess($supermarket, $auditSuggestion, $merchantAudit);
@@ -340,6 +339,10 @@ class CsMerchantController extends Controller
         return Result::success($supermarket);
     }
 
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     * 获取审核详情
+     */
     public function getAuditDetail()
     {
         $this->validate(request(), [
