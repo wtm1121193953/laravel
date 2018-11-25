@@ -58,21 +58,12 @@ class CsMerchantController extends Controller
         if($operName) {
             $operIds = OperService::getAll(['name' => $operName], 'id')->pluck('id');
         }
-        $creatorOperId = request('creatorOperId');
-        // 根据输入的运营中心名称获取录入信息的运营中心ID列表
-        $creatorOperName = request('creatorOperName');
-        if($creatorOperName){
-            $createOperIds = OperService::getAll(['name' => $creatorOperName], 'id')->pluck('id');
-        }
-
-
 
         $data = CsMerchantService::getList([
             'id' => $id,
             'operId' => $operIds ?? $operId,
             'name' => $name,
             'signboardName' => $signboardName,
-            'creatorOperId' => $createOperIds ?? $creatorOperId,
             'status' => $status,
             'settlementCycleType' => $settlementCycleType,
             'auditStatus' => $auditStatus,

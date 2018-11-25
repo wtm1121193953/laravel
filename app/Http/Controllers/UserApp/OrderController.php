@@ -153,10 +153,11 @@ class OrderController extends Controller
             }
 
             if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
-                $csMerchat = CsMerchant::where('id',$item->merchant_id)->first();
-                $item->merchant_name = $csMerchat->name;
-                $item->merchant_logo = $csMerchat->logo;
-                $item->merchant_service_phone = $csMerchat->service_phone;
+                $csMerchant = CsMerchant::where('id',$item->merchant_id)->first();
+                $item->cs_merchant = $csMerchant;
+//                $item->merchant_name = $csMerchant->name;
+//                $item->merchant_logo = $csMerchant->logo;
+//                $item->merchant_service_phone = $csMerchant->service_phone;
                 $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
 
             }else {

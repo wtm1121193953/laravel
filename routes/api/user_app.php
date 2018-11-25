@@ -12,6 +12,7 @@ Route::prefix('app/user')
 
         Route::get('version/last', 'VersionController@last');
         Route::get('versions', 'VersionController@getList');
+        Route::get('settings', 'SettingController@settings');
 
         Route::any('sms/verify_code', 'SmsController@sendVerifyCode');
 

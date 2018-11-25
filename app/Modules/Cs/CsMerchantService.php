@@ -80,29 +80,20 @@ class CsMerchantService extends BaseService {
     }
 
     /**
-     * @param array $data
+     * @param array $query
      * @return CsMerchant[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getAllNames(array $data = [])
+    public static function getAllNames(array $query = [])
     {
         // todo 后期可以对查询结果做缓存
-        $auditStatus = array_get($data, 'audit_status');
-        $status =array_get($data, 'status');
-        //$isPilot =array_get($data, 'isPilot');//是否为试点商户
-        $operId =array_get($data, 'operId'); //运营中心ID
-        //$bizer_id = array_get($data, 'bizer_id');//业务员ID
-//        $list = Merchant::where(function (Builder $query) use ($operId) {
-//            $query->where('oper_id', $operId)
-//                ->orWhere('audit_oper_id', $operId);
-//        })
+        $auditStatus = array_get($query, 'audit_status');
+        $status =array_get($query, 'status');
+        $operId =array_get($query, 'operId'); //运营中心ID
 
-        $data = CsMerchant::select('id', 'name')
+        $query = CsMerchant::select('id', 'name')
             ->when($status, function (Builder $query) use ($status) {
                 $query->where('status', $status);
             })
-            /*->when(!empty($bizer_id), function (Builder $query) use ($bizer_id) {
-                $query->where('bizer_id', $bizer_id);
-            })*/
             ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus) {
                 if ($auditStatus == -1) {
                     $auditStatus = 0;
@@ -111,10 +102,7 @@ class CsMerchantService extends BaseService {
             });
 
         if ($operId) {
-            $data->where(function (Builder $query) use ($operId) {
-                $query->where('oper_id', $operId)
-                    ->orWhere('audit_oper_id', $operId);
-            });
+            $query->where('oper_id', $operId);
         }
 
         /*if($isPilot){
@@ -123,7 +111,7 @@ class CsMerchantService extends BaseService {
             $data->where('is_pilot', CsMerchant::NORMAL_MERCHANT);
         }*/
 
-        $list = $data->orderBy('updated_at', 'desc')->get();
+        $list = $query->orderBy('updated_at', 'desc')->get();
 
         return $list;
     }
@@ -133,7 +121,6 @@ class CsMerchantService extends BaseService {
      * @param array $data 查询条件 {
      *      id,
      *      operId,
-     *      creatorOperId,
      *      name,
      *      signboardName,
      *      auditStatus,
@@ -147,7 +134,6 @@ class CsMerchantService extends BaseService {
     {
         $id = array_get($data,'id');
         $operId = array_get($data,'operId');
-        $creatorOperId = array_get($data,'creatorOperId');
         $name = array_get($data,'name');
         $merchantId = array_get($data,'merchantId');
         $signboardName = array_get($data,'signboardName');
@@ -160,8 +146,7 @@ class CsMerchantService extends BaseService {
         $cityId = array_get($data, "cityId");
 
         // 全局限制条件
-        $query = CsMerchant::where('audit_oper_id', '>', 0)
-            ->orderByDesc('id');
+        $query = CsMerchant::orderByDesc('id');
 
         // 筛选条件
         if ($id) {
@@ -169,22 +154,9 @@ class CsMerchantService extends BaseService {
         }
         if ($operId) {
             if (is_array($operId) || $operId instanceof Collection) {
-                $query->where(function (Builder $query) use ($operId) {
-                    $query->whereIn('oper_id', $operId)
-                        ->orWhereIn('audit_oper_id', $operId);
-                });
+                $query->whereIn('oper_id', $operId);
             } else {
-                $query->where(function (Builder $query) use ($operId) {
-                    $query->where('oper_id', $operId)
-                        ->orWhere('audit_oper_id', $operId);
-                });
-            }
-        }
-        if (!empty($creatorOperId)) {
-            if (is_array($creatorOperId) || $creatorOperId instanceof Collection) {
-                $query->whereIn('creator_oper_id', $creatorOperId);
-            } else {
-                $query->where('creator_oper_id', $creatorOperId);
+                $query->where('oper_id', $operId);
             }
         }
 
@@ -259,8 +231,7 @@ class CsMerchantService extends BaseService {
                 $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
                 $item->account = $item->name;
                 $item->business_time = json_decode($item->business_time, 1);
-                $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
-                $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
+                $item->operName = Oper::where('id', $item->oper_id )->value('name');
             });
             return $data;
         }
@@ -283,12 +254,11 @@ class CsMerchantService extends BaseService {
         $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
         $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
 
-        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
-        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
-        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
+        $oper = Oper::where('id', $merchant->oper_id)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
             $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
+            $merchant->operName = $oper->name;
         }
         $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
         if($merchantFollow){
@@ -320,7 +290,6 @@ class CsMerchantService extends BaseService {
         $merchant->audit_suggestion = $merchantAudit->suggestion;
         $operId = isset($merchantAudit->oper_id) ? $merchantAudit->oper_id:0;
         $merchant->operName = Oper::where('id', $operId)->value('name');
-        $merchant->creatorOperName = Oper::where('id', $operId)->value('name');
 
         $oper = Oper::where('id', $operId)->first();
         if ($oper) {
@@ -420,7 +389,7 @@ class CsMerchantService extends BaseService {
      * @param bool $isAdmin
      * @return CsMerchantAudit
      */
-    public static function edit($id,$currentOperId, $auditStauts = '', $isAdmin = false)
+    public static function edit($id, $currentOperId, $auditStauts = '', $isAdmin = false)
     {
         if(empty($currentOperId)){
             $currentOperId = 0;
@@ -514,8 +483,6 @@ class CsMerchantService extends BaseService {
         // 补充商家创建者及审核提交者
         $csmerchant->name = $name;
         $csmerchant->oper_id = $currentOperId;
-        $csmerchant->audit_oper_id = $currentOperId;
-        $csmerchant->creator_oper_id = $currentOperId;
         $csmerchant->settlement_cycle_type = CsMerchant::SETTLE_DAY_ADD_ONE;
         $csmerchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
 
@@ -621,6 +588,7 @@ class CsMerchantService extends BaseService {
         $lng = array_get($params,'lng');
         $lat = array_get($params, 'lat');
         $keyword = array_get($params, 'keyword',null);
+        $pageSize = array_get($params, 'pageSize',15);
 
         // 暂时去掉商户列表中的距离限制
         $radius = array_get($params, 'radius');
@@ -690,7 +658,7 @@ class CsMerchantService extends BaseService {
                     return $item;
                 })
                 ->sortBy('distance')
-                ->forPage(request('page', 1), 15)
+                ->forPage(request('page', 1), $pageSize)
                 ->values()
                 ->map(function($item) {
                     if ($item->is_pilot == 1) {
@@ -704,7 +672,7 @@ class CsMerchantService extends BaseService {
                 });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
-            $data = $query->paginate();
+            $data = $query->paginate($pageSize);
             $list = $data->items();
             $total = $data->total();
         }

@@ -138,7 +138,8 @@
                         {validator: validatePrice, trigger: 'blur'}
                     ],
                     summary: [
-                        {required: true, message: '简介不能为空'}
+                        {required: true, message: '简介不能为空'},
+                        {max: 200, message: '商品简介不能超过200个字'}
                     ],
                     logo: [
                         {required: true, message: '缩略图不能为空'}
