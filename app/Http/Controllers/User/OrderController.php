@@ -632,7 +632,7 @@ class OrderController extends Controller
     private function checkMerchant(Merchant $merchant)
     {
 
-        if ($merchant->audit_status != Merchant::AUDIT_STATUS_SUCCESS) {
+        if ($merchant->audit_status != Merchant::AUDIT_STATUS_SUCCESS && $merchant->audit_status != Merchant::AUDIT_STATUS_RESUBMIT) {
             throw new BaseResponseException('商家异常，请联系商家');
         }
         if($merchant->status == Merchant::STATUS_OFF){
