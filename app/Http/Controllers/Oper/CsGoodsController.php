@@ -7,6 +7,7 @@
  */
 namespace App\Http\Controllers\Oper;
 
+use App\DataCacheService;
 use App\Exceptions\BaseResponseException;
 use App\Exports\CsGoodsExport;
 use App\Http\Controllers\Controller;
