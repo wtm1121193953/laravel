@@ -53,8 +53,7 @@
                     <el-popover
                             v-else-if="scope.row.status === 2"
                             placement="bottom-start"
-                            width="200px" trigger="hover"
-                            @show="showMessage(scope)">
+                            width="200px" trigger="hover">
                         <div slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.suggestion || '无'}}
@@ -62,8 +61,7 @@
                     <el-popover
                             v-else-if="scope.row.status === 3"
                             placement="bottom-start"
-                            width="200px" trigger="hover"
-                            @show="showMessage(scope)">
+                            width="200px" trigger="hover">
                         <div slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.suggestion || '无'}}
@@ -109,7 +107,7 @@
                 query: {
                     merchantId: '',
                     name: '',
-                    status: ['1'],
+                    status: '',
                     page: 1,
                 },
                 list: [],
@@ -139,8 +137,8 @@
             },
             showMearchant(scope){
                 router.push({
-                    path: '/cs/merchant/detail',
-                    query: {id: scope.row.id,type: 'cs-merchant-reedit'},
+                    path: '/cs/merchant/audit/detail',
+                    query: {id: scope.row.id},
                 })
                 return false;
 

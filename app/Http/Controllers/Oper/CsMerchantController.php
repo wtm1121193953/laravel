@@ -273,6 +273,16 @@ class CsMerchantController extends Controller
         ]);
     }
 
+    public function getAuditDetail(){
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+
+        $merchant = CsMerchantService::getDetailData(request('id'),request()->get('current_user')->id);
+
+        return Result::success($merchant);
+    }
+
     /**
      * 获取最新一条审核记录
      */

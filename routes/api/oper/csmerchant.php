@@ -25,6 +25,8 @@ Route::post('/cs/merchant/editAccount', 'CsMerchantController@editAccount');
 Route::post('/cs/merchant/addFromMerchantPool', 'CsMerchantController@addFromMerchantPool');
 
 Route::get('/cs/merchant/audit/list', 'CsMerchantController@getAuditList');
+Route::get('/cs/merchant/audit/detail', 'CsMerchantController@getAuditDetail');
+
 
 Route::post('/merchant/draft/add', 'MerchantDraftController@add');
 Route::get('/merchant/drafts', 'MerchantDraftController@getList');
