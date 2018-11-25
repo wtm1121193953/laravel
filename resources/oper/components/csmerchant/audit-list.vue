@@ -24,7 +24,8 @@
         </el-col>
         <el-table :data="list" stripe v-loading="tableLoading">
             <el-table-column prop="created_at" label="添加时间" width="160px"/>
-            <el-table-column prop="id" label="ID"/>
+            <el-table-column prop="audit_time" label="审核时间" width="160px"/>
+            <el-table-column prop="id" label="审核ID"/>
             <el-table-column prop="cs_merchant_id" width="160px" label="操作类型">
                 <template slot-scope="scope">
                     <span>{{scope.row.type == 1 ? '新增商户' : '修改商户'}}</span>
@@ -40,8 +41,6 @@
                 </template>
             </el-table-column>
             <el-table-column prop="data_after.signboard_name" label="商户招牌名"/>
-            <el-table-column prop="oper_id" size="mini" label="运营中心ID"/>
-            <el-table-column prop="operName" label="运营中心名称"/>
             <el-table-column prop="city" label="城市">
                 <template slot-scope="scope">
                     <span> {{ scope.row.data_after.city }} </span>
@@ -110,7 +109,7 @@
                 query: {
                     merchantId: '',
                     name: '',
-                    status: '',
+                    status: ['1'],
                     page: 1,
                 },
                 list: [],
