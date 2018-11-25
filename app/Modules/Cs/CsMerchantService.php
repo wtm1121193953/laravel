@@ -339,6 +339,45 @@ class CsMerchantService extends BaseService {
     }
 
     /**
+     * @param $id
+     * @param $userId
+     * @return mixed
+     */
+    public static function getDetailData($id,$userId)
+    {
+        $merchantAudit = CsMerchantAudit::findOrFail($id);
+        $merchant = json_decode($merchantAudit->data_after,false);
+        $merchant->cs_merchant_id = $merchantAudit->cs_merchant_id == 0 ? '' : $merchantAudit->cs_merchant_id;
+        $merchant->account = $merchant->name;
+        $merchant->business_time = json_decode($merchant->business_time, 1);
+        $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
+        $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
+        $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
+        $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
+        $merchant->id = $merchantAudit->id;
+        $merchant->audit_status = $merchantAudit->status;
+        $merchant->audit_suggestion = $merchantAudit->suggestion;
+        $operId = isset($merchantAudit->oper_id) ? $merchantAudit->oper_id:0;
+        $merchant->operName = Oper::where('id', $operId)->value('name');
+        $merchant->creatorOperName = Oper::where('id', $operId)->value('name');
+
+        $oper = Oper::where('id', $operId)->first();
+        if ($oper) {
+            $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
+            $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
+        }
+        $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
+        if($merchantFollow){
+            $merchant->user_follow_status = 2;
+        }else{
+            $merchant->user_follow_status =1;
+        }
+        $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
+
+        return $merchant;
+    }
+
+    /**
      * 通过审核id获取最新修改的数据
      * @param $id
      * @return mixed
