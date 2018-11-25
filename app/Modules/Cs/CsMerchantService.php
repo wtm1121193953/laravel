@@ -301,6 +301,40 @@ class CsMerchantService extends BaseService {
     }
 
     /**
+     * @param $id
+     * @param $userId
+     * @return mixed
+     */
+    public static function getAuditDetail($id,$userId)
+    {
+        $merchantAudit = CsMerchantAudit::findOrFail($id);
+        $merchant = json_decode($merchantAudit->data_after,false);
+        $merchant->account = $merchant->name;
+        $merchant->business_time = json_decode($merchant->business_time, 1);
+        $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
+        $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
+        $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
+        $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
+
+        $merchant->operName = Oper::where('id', $merchant->audit_oper_id)->value('name');
+        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
+        $oper = Oper::where('id', $merchant->audit_oper_id)->first();
+        if ($oper) {
+            $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
+            $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
+        }
+        $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
+        if($merchantFollow){
+            $merchant->user_follow_status = 2;
+        }else{
+            $merchant->user_follow_status =1;
+        }
+        $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
+
+        return $merchant;
+    }
+
+    /**
      * 通过审核id获取最新修改的数据
      * @param $id
      * @return mixed
@@ -335,15 +369,15 @@ class CsMerchantService extends BaseService {
     }
 
 
-
     /**
      * 编辑商户
+     * @param $id
      * @param $currentOperId
      * @param string $auditStauts
      * @param bool $isAdmin
      * @return CsMerchantAudit
      */
-    public static function edit($currentOperId, $auditStauts = '', $isAdmin = false)
+    public static function edit($id,$currentOperId, $auditStauts = '', $isAdmin = false)
     {
         if(empty($currentOperId)){
             $currentOperId = 0;
@@ -356,7 +390,10 @@ class CsMerchantService extends BaseService {
         if($existCsMerchantAudit){
             throw new BaseResponseException('该商户已存在待审核记录');
         }
-        $merchantAudit = CsMerchantAudit::find($id);
+        $merchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)
+            ->where('type',CsMerchantAudit::INSERT_TYPE)
+            ->where('status',CsMerchantAudit::AUDIT_STATUS_AUDITING)
+            ->first();
         if(!$merchantAudit){
             throw new BaseResponseException('不存在该审核记录');
         }
@@ -436,6 +473,7 @@ class CsMerchantService extends BaseService {
         $csmerchant->audit_oper_id = $currentOperId;
         $csmerchant->creator_oper_id = $currentOperId;
         $csmerchant->settlement_cycle_type = CsMerchant::SETTLE_DAY_ADD_ONE;
+        $csmerchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
 
         // 商户名不能重复
         //查询超市表

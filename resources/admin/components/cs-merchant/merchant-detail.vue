@@ -189,7 +189,7 @@
 
                         <el-form-item label="合同">
                             <div class="contract" v-viewer style="display: none;">
-                                <img v-for="(item, index) in data.contract_pic_url.split(',')" :src="item" :key="index" alt="合同" />
+                                <img v-for="(item, index) in data.contract_pic_url" :src="item" :key="index" alt="合同" />
                             </div>
                             <el-button v-if="data.contract_pic_url" type="text" @click="previewImage('contract')">查看</el-button>
                         </el-form-item>
