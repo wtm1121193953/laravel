@@ -80,29 +80,20 @@ class CsMerchantService extends BaseService {
     }
 
     /**
-     * @param array $data
+     * @param array $query
      * @return CsMerchant[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getAllNames(array $data = [])
+    public static function getAllNames(array $query = [])
     {
         // todo 后期可以对查询结果做缓存
-        $auditStatus = array_get($data, 'audit_status');
-        $status =array_get($data, 'status');
-        //$isPilot =array_get($data, 'isPilot');//是否为试点商户
-        $operId =array_get($data, 'operId'); //运营中心ID
-        //$bizer_id = array_get($data, 'bizer_id');//业务员ID
-//        $list = Merchant::where(function (Builder $query) use ($operId) {
-//            $query->where('oper_id', $operId)
-//                ->orWhere('audit_oper_id', $operId);
-//        })
+        $auditStatus = array_get($query, 'audit_status');
+        $status =array_get($query, 'status');
+        $operId =array_get($query, 'operId'); //运营中心ID
 
-        $data = CsMerchant::select('id', 'name')
+        $query = CsMerchant::select('id', 'name')
             ->when($status, function (Builder $query) use ($status) {
                 $query->where('status', $status);
             })
-            /*->when(!empty($bizer_id), function (Builder $query) use ($bizer_id) {
-                $query->where('bizer_id', $bizer_id);
-            })*/
             ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus) {
                 if ($auditStatus == -1) {
                     $auditStatus = 0;
@@ -111,10 +102,7 @@ class CsMerchantService extends BaseService {
             });
 
         if ($operId) {
-            $data->where(function (Builder $query) use ($operId) {
-                $query->where('oper_id', $operId)
-                    ->orWhere('audit_oper_id', $operId);
-            });
+            $query->where('oper_id', $operId);
         }
 
         /*if($isPilot){
@@ -123,7 +111,7 @@ class CsMerchantService extends BaseService {
             $data->where('is_pilot', CsMerchant::NORMAL_MERCHANT);
         }*/
 
-        $list = $data->orderBy('updated_at', 'desc')->get();
+        $list = $query->orderBy('updated_at', 'desc')->get();
 
         return $list;
     }
@@ -133,7 +121,6 @@ class CsMerchantService extends BaseService {
      * @param array $data 查询条件 {
      *      id,
      *      operId,
-     *      creatorOperId,
      *      name,
      *      signboardName,
      *      auditStatus,
@@ -147,7 +134,6 @@ class CsMerchantService extends BaseService {
     {
         $id = array_get($data,'id');
         $operId = array_get($data,'operId');
-        $creatorOperId = array_get($data,'creatorOperId');
         $name = array_get($data,'name');
         $merchantId = array_get($data,'merchantId');
         $signboardName = array_get($data,'signboardName');
@@ -245,8 +231,7 @@ class CsMerchantService extends BaseService {
                 $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
                 $item->account = $item->name;
                 $item->business_time = json_decode($item->business_time, 1);
-                $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
-                $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
+                $item->operName = Oper::where('id', $item->oper_id )->value('name');
             });
             return $data;
         }
@@ -305,7 +290,6 @@ class CsMerchantService extends BaseService {
         $merchant->audit_suggestion = $merchantAudit->suggestion;
         $operId = isset($merchantAudit->oper_id) ? $merchantAudit->oper_id:0;
         $merchant->operName = Oper::where('id', $operId)->value('name');
-        $merchant->creatorOperName = Oper::where('id', $operId)->value('name');
 
         $oper = Oper::where('id', $operId)->first();
         if ($oper) {
@@ -366,7 +350,7 @@ class CsMerchantService extends BaseService {
      * @param bool $isAdmin
      * @return CsMerchantAudit
      */
-    public static function edit($id,$currentOperId, $auditStauts = '', $isAdmin = false)
+    public static function edit($id, $currentOperId, $auditStauts = '', $isAdmin = false)
     {
         if(empty($currentOperId)){
             $currentOperId = 0;

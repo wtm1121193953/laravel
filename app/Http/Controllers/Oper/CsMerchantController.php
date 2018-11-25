@@ -140,7 +140,6 @@ class CsMerchantController extends Controller
     {
         $validate = [
             'name' => 'required|max:50',
-            //'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
         if (request('is_pilot') !== CsMerchant::PILOT_MERCHANT){
@@ -156,7 +155,7 @@ class CsMerchantController extends Controller
         if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
             throw new ParamInvalidException('负责人手机号码不合法');
         }
-        $audit = CsMerchantService::edit(request('id'), request('audit_oper_id'),request('audit_status'));
+        $audit = CsMerchantService::edit(request('id'), request()->get('current_user')->oper_id, request('audit_status'));
         return Result::success($audit);
     }
 
