@@ -19,5 +19,6 @@ class MessageSystem extends Model
     const OB_TYPE_MERCHANT = 2;     // 商户
     const OB_TYPE_BIZER = 3;        // 业务员
     const OB_TYPE_OPER = 4;         // 运营中心
+    const OB_TYPE_CS_MERCHANT = 5;         // 超市商户
 
 }
