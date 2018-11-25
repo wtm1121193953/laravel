@@ -134,6 +134,7 @@ Route::prefix('app/user')
         Route::get('cs/merchant/category','CsMerchantController@getCategoryTree');
         Route::get('cs/merchant/goods','CsGoodsController@getAllGoods');
         Route::post('cs/dishes/add','OrderController@csOrderCreate')->middleware(UserLoginFilter::class);
+        Route::get('cs/settings','CsCommonSettingController@settings');
 
 
     });

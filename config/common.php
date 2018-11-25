@@ -1,5 +1,6 @@
 <?php
 return [
+    'supermarket_on' => 1,//超市开关 1开启 0关闭
     'city_limit' => 1, // 是否限制只能选择同城地址
-    'show_city_limit' => 1, // 是否只支持同城配送
+    'show_city_limit' => 1, // 是否显示只能选择同城的文字
 ];
