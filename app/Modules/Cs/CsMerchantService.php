@@ -581,6 +581,7 @@ class CsMerchantService extends BaseService {
         $city_id = array_get($params, 'city_id');
         $lng = array_get($params,'lng');
         $lat = array_get($params, 'lat');
+        $keyword = array_get($params, 'keyword',null);
 
         // 暂时去掉商户列表中的距离限制
         $radius = array_get($params, 'radius');
@@ -620,6 +621,10 @@ class CsMerchantService extends BaseService {
                         ->pluck('area_id');
                     $query->whereIn('city_id', $cityIdArray);
                 }
+            })
+            ->when($keyword, function(Builder $query) use ($keyword){
+                $query->where('name', 'like', "%$keyword%")
+                    ->orWhere('signboard_name', 'like', "%$keyword%");
             })
             ->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
                 // 如果范围存在, 按距离搜索, 并按距离排序

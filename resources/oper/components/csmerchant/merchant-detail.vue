@@ -196,6 +196,11 @@
 
                 </el-col>
 
+                <el-col v-if="data.audit_suggestion != '' ">
+                    <el-form-item prop="audit_suggestion" label="审核意见">
+                        <span>{{data.audit_suggestion}}</span>
+                    </el-form-item>
+                </el-col>
 
                 <el-col  >
                     <el-form-item >
