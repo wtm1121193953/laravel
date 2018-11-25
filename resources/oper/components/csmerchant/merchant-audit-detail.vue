@@ -7,6 +7,9 @@
                 </el-col>
                 <!--商户录入信息左侧块-->
                 <el-col :span="11">
+                    <el-form-item label="商户类型">
+                        <span>超市类</span>
+                    </el-form-item>
                     <el-form-item prop="status" label="商户状态">
                         <span v-if="data.status === 1" class="c-green">已启用</span>
                         <span v-else-if="data.status === 2" class="c-danger">已冻结</span>
