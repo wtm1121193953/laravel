@@ -573,8 +573,6 @@ class CsMerchantService extends BaseService {
      */
     public static function getListAndDistance(array $params = [])
     {
-//        $query = CsMerchant::all();
-//        return $query;
 
         $city_id = array_get($params, 'city_id');
         $lng = array_get($params,'lng');
