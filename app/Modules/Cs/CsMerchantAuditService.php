@@ -160,6 +160,15 @@ class CsMerchantAuditService extends BaseService {
             $merchant->first_active_time = Carbon::now();
         }
 
+        if(!empty($merchantAudit->data_modify)){
+            $dataModify = json_decode($merchantAudit->data_modify,true);
+            foreach ($dataModify as $k=>$v){
+                if($merchant->$k!=$v){
+                    $merchant->$k = $v;
+                }
+            }
+        }
+
         // 修改审核记录状态
         $merchantAudit->suggestion = $auditSuggestion ??'';
         $merchantAudit->status = CsMerchantAudit::AUDIT_STATUS_SUCCESS;
