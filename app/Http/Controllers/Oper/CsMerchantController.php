@@ -256,7 +256,18 @@ class CsMerchantController extends Controller
 
     public function getAuditList()
     {
-        $data = CsMerchantAuditService::getAuditResultList(['oper_id' => request()->get('current_user')->oper_id]);
+        $operId = request()->get('current_user')->oper_id;
+        $merchantId = request('merchantId');
+        $name = request('name');
+        $status = request('status');
+        $params = [
+            'operId' => $operId,
+            'merchantId' => $merchantId,
+            'name' => $name,
+            'status' => $status,
+        ];
+        $data = CsMerchantAuditService::getAuditResultList($params);
+
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
