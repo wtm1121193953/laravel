@@ -131,50 +131,58 @@ class CsMerchantCategoryService extends BaseService
         return CsMerchantCategory::where('cs_merchant_id',$cs_merchant_id)->max('sort');
     }
 
-    public static function getTree($merchantId){
-        $list = CsMerchantCategory::where('cs_category_level',1)
-            ->where('cs_merchant_id',$merchantId)
+
+    /**
+     * 获取商户的全部分类
+     * @param $cs_merchant_id
+     * @return array
+     */
+    public static function getTree($cs_merchant_id){
+
+        $level1 = CsMerchantCategory::where('cs_merchant_id',$cs_merchant_id)
+            ->where('cs_category_level',1)
+            ->where('status',CsMerchantCategory::STATUS_ON)
             ->get();
 
+        $rt = [];
+        $rt[] = [
+            'cat_name' => '全部分类',
+            'cat_id_level1' => 0,
+            'cat_id_level2' => 0,
+            'sub' => [],
+        ];
 
-        $totalCategory =new CsMerchantCategory();
-        $totalCategory->cs_cat_name = '全部分类';
-        $totalCategory->status = CsMerchantCategory::STATUS_ON;
-        $totalCategory->id = 0;
-        $query = Array();
-        array_push($query,$totalCategory);
-        foreach ($list as $item){
-                $item->sub = CsMerchantCategory::where('cs_category_level',2)
-                    ->where('cs_category_parent_id',$item->id)
-                    ->get();
-            array_push($query,$item);
-        }
-        $query = collect($query);
-        $query->each(function ($item){
-            $totalCategory =new CsMerchantCategory();
-            $totalCategory->cs_cat_name = '全部分类';
-            $totalCategory->status = CsMerchantCategory::STATUS_ON;
-            $totalCategory->id = 0;
-            $totalSub = Array();
-            if ($item->id == 0){
-                $totalCategory->cs_category_parent_id = 0;
-                array_push($totalSub,$totalCategory);
-                $item->sub = $totalSub;
-            }
-            else{
-                $totalCategory->id = $item->id;
-                array_push($totalSub,$totalCategory);
-                if (!empty($item->sub)){
-                    foreach ($item->sub as $subItem){
-                        array_push($totalSub,$subItem);
-                    }
+        foreach ($level1 as $v1) {
+            $l1 = [];
+            $l1['cat_name'] = $v1->cs_cat_name;
+            $l1['cat_id_level1'] = $v1->platform_category_id;
+            $l1['cat_id_level2'] = 0;
+            $l1['sub'][] = [
+                'cat_name' => '全部分类',
+                'cat_id_level1' => $v1->platform_category_id,
+                'cat_id_level2' => 0,
+                'sub' => [],
+            ];
+            $level2 = CsMerchantCategory::where('cs_merchant_id',$cs_merchant_id)
+                ->where('cs_category_level',2)
+                ->where('status',CsMerchantCategory::STATUS_ON)
+                ->where('cs_category_parent_id',$v1->platform_category_id)
+                ->get();
+            if ($level2) {
+                foreach ($level2 as $v2) {
+                    $l2 = [];
+                    $l2['cat_name'] = $v2->cs_cat_name;
+                    $l2['cat_id_level1'] = $v1->platform_category_id;
+                    $l2['cat_id_level2'] = $v2->platform_category_id;
+                    $l2['sub'] = [];
+                    $l1['sub'][] = $l2;
                 }
-                $item->sub = $totalSub;
             }
-        });
+            $rt[] = $l1;
+        }
 
+        return $rt;
 
-        return $query;
     }
 
 
@@ -183,6 +191,7 @@ class CsMerchantCategoryService extends BaseService
      * @param int $id
      * @param int $cs_merchant_id
      * @return int
+     * @throws \Exception
      */
     public static function changeStatus(int $id, int $cs_merchant_id)
     {
