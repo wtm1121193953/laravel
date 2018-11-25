@@ -58,10 +58,10 @@
                         <el-option label="T+1(人工)" value="6"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item prop="operId" label="激活运营中心ID">
+                <el-form-item prop="operId" label="运营中心ID">
                     <el-input v-model="query.operId" size="small" placeholder="激活运营中心ID" class="w-100" clearable/>
                 </el-form-item>
-                <el-form-item prop="operName" label="激活运营中心名称">
+                <el-form-item prop="operName" label="运营中心名称">
                     <el-input v-model="query.operName" size="small" placeholder="激活运营中心名称" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="商户状态" prop="status">
