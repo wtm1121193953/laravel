@@ -601,7 +601,7 @@ class CsMerchantService extends BaseService {
         //只能查询切换到平台的商户
         $query = CsMerchant::where('status', 1)
             ->where('oper_id', '>', 0)
-            ->whereIn('audit_status', [CsMerchant::AUDIT_STATUS_SUCCESS, CsMerchant::AUDIT_STATUS_RESUBMIT])
+            ->whereIn('audit_status', [CsMerchant::AUDIT_STATUS_SUCCESS])
             ->when($city_id, function(Builder $query) use ($city_id){
                 // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户
                 $areaInfo = Area::where('area_id', $city_id)->where('path', 1)->first();
@@ -677,6 +677,8 @@ class CsMerchantService extends BaseService {
             $merchantOrderData = CsStatisticsMerchantOrder::where('cs_merchant_id',$item->id)->select('order_number_30d','order_number_today')->first();
             if($merchantOrderData){
                 $item->month_order_number = $merchantOrderData->order_number_today + $merchantOrderData->order_number_30d;//月销售量加入当前销售量
+            }else{
+                $item->month_order_number = 0;
             }
 
             //配送信息:
@@ -687,6 +689,10 @@ class CsMerchantService extends BaseService {
                 $item->delivery_free_start = $MerchantInfo->delivery_free_start;
                 $item->delivery_free_order_amount = $MerchantInfo->delivery_free_order_amount;
             }
+            if(!isset($item->distance)){
+                $item->distance = 0;//没有经纬度时,设置为0
+            }
+
         });
 
         return ['list' => $list, 'total' => $total];
