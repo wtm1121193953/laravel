@@ -109,7 +109,7 @@
                 query: {
                     merchantId: '',
                     name: '',
-                    status: '',
+                    status: ['1'],
                     page: 1,
                 },
                 list: [],
@@ -168,6 +168,10 @@
             }
         },
         created(){
+            if(this.$route.query.merchantId){
+                this.query.merchantId = this.$route.query.merchantId
+                this.query.status = ''
+            }
             this.getList();
         }
     }
