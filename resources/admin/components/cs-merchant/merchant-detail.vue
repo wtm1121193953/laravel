@@ -22,7 +22,7 @@
                         <span v-else-if="data.settlement_cycle_type === 6" class="c-green">T+1</span>
                         <span v-else>未知</span>
                     </el-form-item>
-                    <el-form-item prop="id" label="商户ID">{{data.id}}</el-form-item>
+                    <el-form-item prop="id" label="商户ID">{{data.cs_merchant_id}}</el-form-item>
                     <el-form-item v-if="data.operName" prop="operName" label="运营中心">{{data.operName}}</el-form-item>
                     <el-form-item prop="name" label="商户名称">{{data.name}}</el-form-item>
                     <el-form-item prop="signboard_name" label="招牌名称">{{data.signboard_name}}</el-form-item>

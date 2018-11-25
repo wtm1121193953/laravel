@@ -291,6 +291,7 @@ class CsMerchantService extends BaseService {
         $merchant->audit_suggestion = $merchantAudit->suggestion;
         $operId = isset($merchantAudit->oper_id) ? $merchantAudit->oper_id:0;
         $merchant->operName = Oper::where('id', $operId)->value('name');
+        $merchant->cs_merchant_id = $merchantAudit->cs_merchant_id;
 
         $oper = Oper::where('id', $operId)->first();
         if ($oper) {
