@@ -107,7 +107,7 @@
                 query: {
                     merchantId: '',
                     name: '',
-                    status: ['1'],
+                    status: '',
                     page: 1,
                 },
                 list: [],
