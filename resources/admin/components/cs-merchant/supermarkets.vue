@@ -138,7 +138,7 @@
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
                     <el-button type="text" @click="edit(scope)">编辑</el-button>
-
+                    <el-button v-if="parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="changeStatus(scope.row)">{{parseInt(scope.row.status) === 1 ? '冻结' : '解冻'}}</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -295,7 +295,7 @@
             changeStatus(row) {
                 let status = row.status === 1 ? 2 : 1;
                 this.$emit('before-request')
-                api.post('/cs/Merchant/changeStatus', {id: row.id, status: status}).then((data) => {
+                api.post('/cs/merchant/changeStatus', {id: row.id, status: status}).then((data) => {
                     row.status = status;
                     this.$emit('change', this.scope, data)
                 }).finally(() => {
