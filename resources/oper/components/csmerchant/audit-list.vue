@@ -157,7 +157,6 @@
                 let params = {};
                 Object.assign(params, this.query);
                 api.get('/cs/merchant/audit/list', params).then(data => {
-                    console.log(data.list);
                     this.query.page = params.page;
                     this.list = data.list;
                     this.total = data.total;
