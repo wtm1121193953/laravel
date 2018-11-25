@@ -148,7 +148,7 @@
                     merchantId: '',
                     name: '',
                     operId: '',
-                    status: '',
+                    status: ['1', '2', '3'],
                 },
                 list: [],
                 total: 0,
