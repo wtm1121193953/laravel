@@ -160,8 +160,7 @@ class CsMerchantService extends BaseService {
         $cityId = array_get($data, "cityId");
 
         // 全局限制条件
-        $query = CsMerchant::where('audit_oper_id', '>', 0)
-            ->orderByDesc('id');
+        $query = CsMerchant::orderByDesc('id');
 
         // 筛选条件
         if ($id) {
