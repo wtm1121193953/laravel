@@ -411,6 +411,24 @@ class CsMerchantService extends BaseService {
         }
         $csmerchant = CsMerchant::where('id', $id)
             ->first();
+
+        // 商户名不能重复
+        //查询超市表
+        $exists = CsMerchant::where('id','<>',$id)->where('name',$csmerchant->name)->first();
+        //查询普通商户表
+        $existsMerchant = Merchant::where('name', $csmerchant->name)->first();
+        //查询超市审核记录表
+        $existsCsmerchantAudit = CsMerchantAudit::where('name', $csmerchant->name)->first();
+        if ($exists || $existsMerchant || $existsCsmerchantAudit) {
+            throw new ParamInvalidException('商户名称不能重复');
+        }
+        // 招牌名不能重复
+        $signboardName = CsMerchant::where('id','<>',$id)->where('signboard_name', $csmerchant->signboard_name)->first();
+        $existsMerchantSignboardName = Merchant::where('signboard_name',$csmerchant->signboard_name)->first();
+        if ($signboardName || $existsMerchantSignboardName) {
+            throw new ParamInvalidException('招牌名称不能重复');
+        }
+
         $afterCsmerchantToJson = $beforeCsmerchantToJson = '';
 
         //与原有数据对比，有修改字段另存储json到审核表
