@@ -169,6 +169,7 @@ class CsMerchantAuditService extends BaseService {
         DB::beginTransaction();
         try{
             $merchant->save();
+            $merchantAudit->cs_merchant_id = $merchant->id;
             $merchantAudit->save();
             DB::commit();
         }catch (\Exception $e){
