@@ -834,6 +834,21 @@ class OrderController extends Controller
     }
 
     /**
+     * 确认收货
+     */
+    public function confirmDelivery()
+    {
+        $this->validate(request(), [
+            'order_no' => 'required'
+        ]);
+        $order_no = request('order_no');
+        $user_id = request()->get('current_user')->id;
+        $rs = OrderService::userConfirmDelivery($order_no,$user_id);
+
+        return Result::success('确认收货成功');
+    }
+
+    /**
      * 下单检查商户状态
      * @param Merchant $merchant
      * @return bool
