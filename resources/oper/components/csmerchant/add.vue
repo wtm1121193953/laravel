@@ -25,7 +25,14 @@
                 this.isLoading = true;
                 api.post('/cs/merchant/add', data).then(() => {
                     this.$message.success('保存成功');
-                    router.push('/cs/merchant/audit/list');
+                    this.$confirm('您的商户资料已提交, 请耐心等待工作人员审核! ', '温馨提示', {
+                        confirmButtonText: '前往审核记录中查看',
+                        cancelButtonText: '取消, 返回我的商户',
+                    }).then(() => {
+                        this.$menu.change('merchant/audit/list')
+                    }).catch(() => {
+                        router.push('/cs/merchants');
+                    })
                 }).finally(() => {
                     this.isLoading = false;
                 })
