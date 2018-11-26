@@ -787,6 +787,7 @@ class OrderController extends Controller
                 $order->express_address ='';
             }
 
+            $order->save();
 
             //更新商品库存销量
             foreach ($goodsList as $item) {
