@@ -7,7 +7,7 @@
                 </el-form-item>
                 <el-form-item label="一级分类" prop="cs_platform_cat_id_level1">
                     <template>
-                        <el-select v-model="query.cs_platform_cat_id_level1" placeholder="请选择" @change="getLevel2()">
+                        <el-select clearable v-model="query.cs_platform_cat_id_level1" placeholder="请选择" @change="getLevel2()">
                             <el-option
                                     v-for="item in cs_platform_cat_id_level1"
                                     :key="item.value"
@@ -19,7 +19,7 @@
 
                 </el-form-item>
 
-                <el-form-item label="二级分类" prop="cs_platform_cat_id_level2">
+                <el-form-item clearable label="二级分类" prop="cs_platform_cat_id_level2">
                     <template>
                         <el-select v-model="query.cs_platform_cat_id_level2" placeholder="请选择">
                             <el-option

@@ -48,7 +48,7 @@ class GoodsController extends BaseController
         $cs_merchant_id = $this->_cs_merchant_id;
         $rt = CsMerchantCategoryService::getSubCat($cs_merchant_id,$parent_id);
 
-        $data = [['label'=>'全部','value'=>'0']];
+        $data = [];
         if ($rt) {
             foreach ($rt as $k=>$v) {
                 $d['label'] = $v;
