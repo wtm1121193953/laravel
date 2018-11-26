@@ -419,7 +419,7 @@ class OrderService extends BaseService
                     $order->save();
                 }else if ($order->type == Order::TYPE_SUPERMARKET && $order->deliver_type == Order::DELIVERY_SELF_MENTION) {
                     //超市订单支付成功后如果是到店自取的订单订单改为待取货，并成取货码
-                    $order->deliver_code = self::createDeliverCode();
+                    $order->deliver_code = self::createDeliverCode($order);
                     $order->status = Order::STATUS_NOT_TAKE_BY_SELF;
                     $order->save();
                 }else {
@@ -633,7 +633,7 @@ class OrderService extends BaseService
         $code = rand(100000,999999);
         $exist = Order::where('deliver_code',$code)->where('merchant_id',$order->merchant_id)->first();
         if ($exist) {
-            $code = self::createDeliverCode();
+            $code = self::createDeliverCode($order);
         }
         return $code;
     }
