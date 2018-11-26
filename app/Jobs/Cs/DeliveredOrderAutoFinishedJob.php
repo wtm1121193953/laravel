@@ -40,7 +40,7 @@ class DeliveredOrderAutoFinishedJob implements ShouldQueue
             $order->status = Order::STATUS_FINISHED;
             $order->finish_time = Carbon::now();
             $order->save();
-            OrderFinishedJob::dispatch($order);
+            OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(Carbon::now()->addMinute());
         } else {
             Log::info('超市订单自动完成 错误', [
                 'status' => $order->status,
