@@ -62,13 +62,17 @@
             </el-form>
         </el-col>
 
-        <el-table :data="list" stripe>
+        <el-table :data="list" stripe v-loading="dataLoading">
             <el-table-column prop="created_at" label="添加时间"/>
             <el-table-column prop="id" label="商品ID"/>
             <el-table-column prop="goods_name" label="商品名称"/>
             <el-table-column prop="cs_merchant.name" label="商户名称">
                 <template slot-scope="scope">
-                    <div  slot="reference"><p>{{scope.row.cs_merchant.name}}</p><a @click="checkThis(scope.row.cs_merchant_id)" class="c-green">只看他的</a></div>
+                    {{scope.row.cs_merchant.name}}
+                    <el-button type="text"
+                               v-if="!query.cs_merchant_id"
+                               @click="checkThis(scope)"
+                    >只看他的</el-button>
                 </template>
             </el-table-column>
             <el-table-column prop="cs_platform_cat_id_level1_name" label="一级分类"/>
@@ -139,6 +143,7 @@
             return {
                 isAdd: false,
                 isLoading: false,
+                dataLoading: false,
                 query: {
                     goods_name:'',
                     id:'',
@@ -183,9 +188,11 @@
                 })
             },
             getList(){
+                this.dataLoading = true;
                 api.get('/goods', this.query).then(data => {
                     this.list = data.list;
                     this.total = data.total;
+                    this.dataLoading = false;
                 })
             },
             itemChanged(index, data){
@@ -214,9 +221,10 @@
                 viewer.show()
                 return
             },
-            checkThis(cs_merchant_id) {
+            checkThis(scope) {
 
-                this.query.cs_merchant_id = cs_merchant_id
+                this.query.cs_merchant_id = scope.row.cs_merchant_id
+                this.query.merchant_name = scope.row.cs_merchant.name
                 this.getList();
             },
             search() {
