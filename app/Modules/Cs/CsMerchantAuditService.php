@@ -225,7 +225,7 @@ class CsMerchantAuditService extends BaseService {
      * @param $dataType
      * @return CsMerchantAudit
      */
-    public static function editMerchantAudit($id,$operId,$dataType){
+    public static function editOrAddMerchantAudit($id,$operId,$dataType){
         $merchantId = 0;
         if($dataType=='csMerchant'){
             // 如果来源为超市商家编辑
