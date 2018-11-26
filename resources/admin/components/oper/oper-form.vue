@@ -197,7 +197,16 @@
                     legal_name: [
                         {max: 60, message: '法人姓名不能超过60个字'}
                     ],
+                    contact_qq: [
+                        {required: true, message: '客服联系方式-QQ 不能为空'},
+                        {max: 50, message: '客服联系方式-QQ 不能超过50个字'}
+                    ],
+                    contact_wechat: [
+                        {required: true, message: '客服联系方式-微信 不能为空'},
+                        {max: 50, message: '客服联系方式-微信 不能超过50个字'}
+                    ],
                     contact_mobile: [
+                        {required: true, message: '客服联系方式-手机 不能为空'},
                         {validator: validateContacterPhone}
                     ],
                 },
