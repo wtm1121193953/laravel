@@ -11,6 +11,7 @@ namespace App\Modules\Order;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use App\Jobs\Cs\DeliveredOrderAutoFinishedJob;
 use App\Jobs\OrderPaidJob;
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Dishes\DishesGoods;
@@ -387,9 +388,8 @@ class OrderService extends BaseService
      * @param $transactionId
      * @param $totalFee
      * @param int $payType
-     * @param datetime $payTime 支付时间
+     * @param string $payTime 支付时间
      * @return bool
-     * @throws \Exception
      */
     public static function paySuccess($orderNo, $transactionId, $totalFee, $payType = Order::PAY_TYPE_WECHAT, $payTime='')
     {
@@ -532,6 +532,8 @@ class OrderService extends BaseService
         $order->status = Order::STATUS_DELIVERED;
         $order->save();
 
+        DeliveredOrderAutoFinishedJob::dispatch($order)->delay(Carbon::now()->addDay(7));
+
         return $order;
     }
 
@@ -565,6 +567,8 @@ class OrderService extends BaseService
         $order->status = Order::STATUS_DELIVERED;
         $order->save();
 
+        DeliveredOrderAutoFinishedJob::dispatch($order)->delay(Carbon::now()->addDay(7));
+
         return $order;
     }
 
@@ -585,11 +589,14 @@ class OrderService extends BaseService
         }
         if ($order->deliver_code == $deliverCode) {
             $order->deliver_time = Carbon::now();
-            $order->status = Order::STATUS_DELIVERED;
+            $order->status = Order::STATUS_FINISHED;
             $order->save();
+            OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(now()->addMinute());
         } else {
             throw new BaseResponseException('该订单核销码错误');
         }
+
+        DeliveredOrderAutoFinishedJob::dispatch($order)->delay(Carbon::now()->addDay(7));
 
         return $order;
     }
@@ -631,5 +638,32 @@ class OrderService extends BaseService
             $code = self::createDeliverCode();
         }
         return $code;
+    }
+
+    /**
+     * 用户确认收货
+     * @param $order_no
+     * @param $user_id
+     * @return Order
+     */
+    public static function userConfirmDelivery($order_no, $user_id)
+    {
+        $order = Order::where('order_no', $order_no)->first();
+        if (empty($order)) {
+            throw new BaseResponseException('该订单不存在');
+        }
+        if ($order->user_id != $user_id) {
+            throw new BaseResponseException('非法操作');
+        }
+        if ($order->status != Order::STATUS_DELIVERED) {
+            throw new BaseResponseException('不是已发货的订单不能确认收货');
+        }
+
+        $order->deliver_time = Carbon::now();
+        $order->status = Order::STATUS_FINISHED;
+        $order->save();
+        OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(now()->addMinute());
+
+        return $order;
     }
 }
