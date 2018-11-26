@@ -22,6 +22,7 @@
     temp[2] = '商户端';
     temp[3] = '业务员';
     temp[4] = '运营中心';
+    temp[5] = '超市商户端';
     const GuestTypeName = temp;
     export default {
         name: "system-detail",
