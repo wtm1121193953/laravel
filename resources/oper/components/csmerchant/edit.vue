@@ -41,7 +41,7 @@
                             confirmButtonText: '好的',
                             cancelButtonText: '返回我的商户',
                         }).then(() => {
-                            this.$menu.change('merchant/audit/list')
+                            this.$menu.change('/merchant/audit/list')
                         }).catch(() => {
                             router.push('/cs/merchants');
                         })

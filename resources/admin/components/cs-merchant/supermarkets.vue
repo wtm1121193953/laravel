@@ -91,7 +91,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="signboard_name" label="商户招牌名"/>
-            <el-table-column prop="operId" size="mini" label="运营中心ID"/>
+            <el-table-column prop="oper_id" size="mini" label="运营中心ID"/>
             <el-table-column prop="operName" label="运营中心名称"/>
             <el-table-column prop="city" label="城市">
                 <template slot-scope="scope">

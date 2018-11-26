@@ -449,6 +449,16 @@ class CsMerchantService extends BaseService {
             throw new ParamInvalidException('招牌名称不能重复');
         }
 
+        if($csmerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_COMPANY){
+            if($csmerchant->name != $csmerchant->bank_open_name){
+                throw new ParamInvalidException('提交失败，申请T+1结算，商户名称需和开户名一致');
+            }
+        }elseif($csmerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_PEOPLE){
+            if($csmerchant->corporation_name != $csmerchant->bank_open_name){
+                throw new ParamInvalidException('提交失败，申请T+1结算，营业执照及法人姓名需和开户名一致');
+            }
+        }
+
         $csmerchant->toArray();
         $jsonTomerchant = json_encode($csmerchant);
 
