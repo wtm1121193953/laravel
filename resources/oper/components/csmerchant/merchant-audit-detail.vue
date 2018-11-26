@@ -49,7 +49,6 @@
 
                 <!-- 商户录入信息右侧块 -->
                 <el-col :span="11" :offset="1">
-                    <el-form-item prop="merchant_type" label="商户类型" class="c-green">超市商户</el-form-item>
                     <el-form-item prop="operAddress" label="运营中心地址">
                         {{data.operAddress}}
                     </el-form-item>

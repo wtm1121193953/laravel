@@ -33,13 +33,7 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination
-                class="fr m-t-20"
-                layout="total, prev, pager, next"
-                :current-page.sync="query.page"
-                @current-change="getList"
-                :page-size="15"
-                :total="total"/>
+
 
         <el-dialog title="添加商品分类" :visible.sync="isAdd">
             <category-form
@@ -64,12 +58,11 @@
                 isAdd: false,
                 isLoading: false,
                 query: {
-                    page: 1,
+
                 },
                 parent: null,
                 list: [],
                 tree: [],
-                total: 0,
             }
         },
         computed: {
@@ -85,7 +78,6 @@
                 api.get('/cs/category/all', this.query).then(data => {
                     this.list = data.list;
                     this.tree = data.tree;
-                    this.total = data.total;
                 }).finally(() => {
                     this.isLoading = false;
                 })

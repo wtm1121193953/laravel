@@ -38,11 +38,12 @@
                     data.dataType = this.dataType;
                     api.post('/cs/merchant/edit', data).then(() => {
                         this.$message.success('保存成功');
-                        if(this.isReEdit){
+                        router.push('/cs/merchant/audit/list');
+                        /*if(this.isReEdit){
                             router.push('/cs/merchant/audit/list');
                         }else{
                             router.push('/cs/merchants');
-                        }
+                        }*/
 
                     }).finally(() => {
                         this.isLoading = false;
