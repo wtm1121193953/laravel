@@ -38,7 +38,7 @@
 
             <!--<el-button type="primary" size="small" class="m-l-30" @click="exportExcel">导出Excel</el-button>-->
 
-            <el-button class="fr inline" size="small" type="success" @click="add" icon="plus">新增商户资料</el-button>
+            <el-button class="fr inline" size="small" type="success" @click="add" icon="el-icon-plus">添加商户</el-button>
         </el-form>
         <el-table :data="list" stripe>
             <el-table-column prop="created_at" label="添加时间"/>

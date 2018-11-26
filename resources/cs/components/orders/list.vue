@@ -50,6 +50,10 @@
                         <el-form-item>
                             <el-upload
                                 :action="actionUrl"
+                                :show-file-list="false"
+                                :before-upload="beforeUploadExcel"
+                                :on-progress="uploadingExcel"
+                                :on-success="uploadSuccessExcel"
                             >
                                 <el-button type="primary" class="m-l-30">批量发货(200笔以内)</el-button>
                             </el-upload>
@@ -220,6 +224,8 @@
                 },
 
                 actionUrl: '/api/cs/order/batch/delivery',
+
+                fullscreenLoadingObj: null,
             }
         },
         methods: {
@@ -315,10 +321,35 @@
                     location.href = `/api/download?path=${data.url}&as=批量发货.xlsx&code=doc`;
                 })
             },
-            batchDelivery() {
-
+            beforeUploadExcel(file) {
+                let type = file.name.split(".").pop();
+                if (type != 'xls' && type != 'xlsx') {
+                    this.$message.error('只能上传xls或xlsx类型的文件');
+                    return false;
+                }
+                if (file.size > 2 * 1024 * 1024) {
+                    this.$message.error('上传文件不能大于2M');
+                    return false;
+                }
             },
-
+            uploadingExcel() {
+                this.fullscreenLoadingObj = this.$loading({
+                    text: '系统批量发货处理中，请不要关闭此页面',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
+            },
+            uploadSuccessExcel(res) {
+                if (res && res.code === 0) {
+                    this.fullscreenLoadingObj.close();
+                    this.$message.success('批量发货成功');
+                    this.getList();
+                    this.$emit('refresh');
+                } else {
+                    this.fullscreenLoadingObj.close();
+                    this.$message.error(res.message || '批量发货失败');
+                }
+            }
         },
         created() {
             this.query.status = this.status;

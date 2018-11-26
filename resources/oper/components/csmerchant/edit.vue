@@ -37,8 +37,16 @@
                 if (!this.isDraft){
                     data.dataType = this.dataType;
                     api.post('/cs/merchant/edit', data).then(() => {
-                        this.$message.success('保存成功');
-                        router.push('/cs/merchant/audit/list');
+                        this.$confirm('您的商户资料已提交, 请耐心等待工作人员审核! ', '温馨提示', {
+                            confirmButtonText: '好的',
+                            cancelButtonText: '返回我的商户',
+                        }).then(() => {
+                            this.$menu.change('/merchant/audit/list')
+                        }).catch(() => {
+                            router.push('/cs/merchants');
+                        })
+                        // this.$message.success('保存成功');
+                        // router.push('/cs/merchant/audit/list');
                         /*if(this.isReEdit){
                             router.push('/cs/merchant/audit/list');
                         }else{

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Cs;
 
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Imports\BatchDelivery;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
 use App\Result;
@@ -207,11 +209,16 @@ class OrdersController extends Controller
         return Result::success(['url' => $path]);
     }
 
+    /**
+     * 后台 批量发货
+     */
     public function batchDelivery()
     {
         $file = request()->file('file');
+        $merchantId = request()->get('current_user')->merchant_id;
 
-        $read = Excel::import($file, $file, null, ucfirst($file->getClientOriginalExtension()));
-        dd($read);
+        Excel::import(new BatchDelivery($merchantId), $file, null, ucfirst($file->getClientOriginalExtension()));
+
+        return Result::success();
     }
 }
