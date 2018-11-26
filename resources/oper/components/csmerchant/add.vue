@@ -29,7 +29,7 @@
                         confirmButtonText: '前往审核记录中查看',
                         cancelButtonText: '取消, 返回我的商户',
                     }).then(() => {
-                        this.$menu.change('merchant/audit/list')
+                        this.$menu.change('/cs/merchant/audit/list')
                     }).catch(() => {
                         router.push('/cs/merchants');
                     })
