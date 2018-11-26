@@ -21,6 +21,7 @@ class AddTypeToOrdersTable extends Migration
             $table->string('express_address', 1500)->default('')->comment('超市订单 地址 json');
             $table->dateTime('deliver_time')->nullable()->comment('超市订单 发货时间');
             $table->dateTime('take_delivery_time')->nullable()->comment('超市订单 收货时间');
+            $table->dateTime('user_deleted_at')->nullable()->comment('用户删除订单时间');
 
             $table->decimal('discount_price')->default(0.00)->comment('优惠金额')->after('pay_type');
             $table->decimal('total_price')->default(0.00)->comment('总价格')->after('pay_type');

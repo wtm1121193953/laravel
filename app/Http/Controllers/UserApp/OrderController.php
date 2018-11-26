@@ -125,6 +125,7 @@ class OrderController extends Controller
         //只能查询支付到平台的订单
         $data = Order::where('user_id', $user->id)
             ->where('pay_target_type',Order::PAY_TARGET_TYPE_PLATFORM)
+            ->whereNotNull('user_deleted_at')
             ->where(function (Builder $query) {
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function (Builder $query) {
@@ -164,7 +165,7 @@ class OrderController extends Controller
 //                $item->merchant_logo = $csMerchant->logo;
 //                $item->merchant_service_phone = $csMerchant->service_phone;
                 $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
-                $item->order_goods = CsOrderGood::where('order_id',$item->id);
+                $item->order_goods = CsOrderGood::where('order_id',$item->id)->get();
 
 
             }else {
@@ -848,6 +849,20 @@ class OrderController extends Controller
         $rs = OrderService::userConfirmDelivery($order_no,$user_id);
 
         return Result::success('确认收货成功');
+    }
+
+    /**
+     * 删除订单
+     */
+    public function userDel()
+    {
+        $this->validate(request(), [
+            'order_no' => 'required'
+        ]);
+        $order_no = request('order_no');
+        $user_id = request()->get('current_user')->id;
+        $rs = OrderService::userDel($order_no,$user_id);
+        return Result::success('删除成功');
     }
 
     /**

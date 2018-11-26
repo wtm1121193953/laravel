@@ -664,4 +664,27 @@ class OrderService extends BaseService
 
         return $order;
     }
+
+    /**
+     * 删除订单
+     * @param $order_no
+     * @param $user_id
+     * @return Order
+     */
+    public static function userDel($order_no, $user_id)
+    {
+        $order = Order::where('order_no', $order_no)->first();
+        if (empty($order)) {
+            throw new BaseResponseException('该订单不存在');
+        }
+        if ($order->user_id != $user_id) {
+            throw new BaseResponseException('非法操作');
+        }
+        if ($order->status != Order::STATUS_FINISHED) {
+            throw new BaseResponseException('未完成的订单不能删除');
+        }
+        $order->user_deleted_at = Carbon::now();
+        $order->save();
+        return $order;
+    }
 }

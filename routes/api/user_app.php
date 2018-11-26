@@ -136,6 +136,7 @@ Route::prefix('app/user')
         Route::get('cs/merchant/goods','CsGoodsController@getAllGoods');
         Route::post('cs/dishes/add','OrderController@csOrderCreate')->middleware(UserLoginFilter::class);
         Route::post('cs/confirm_delivery','OrderController@confirmDelivery')->middleware(UserLoginFilter::class);
+        Route::post('cs/order/del','OrderController@userDel')->middleware(UserLoginFilter::class);
 
 
     });

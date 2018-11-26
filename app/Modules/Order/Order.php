@@ -59,6 +59,7 @@ use Carbon\Carbon;
  * @property string express_address
  * @property Carbon deliver_time
  * @property Carbon take_delivery_time
+ * @property Carbon user_deleted_at
  * @property integer deliver_code
  */
 
