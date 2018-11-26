@@ -205,9 +205,9 @@
                                 <preview-img :url="pic" width="200px" height="100px"/>
                             </template> -->
                         </el-form-item>
-                        <el-col v-if="type != 'poolOnly' ">
+                        <el-col v-if="data.audit_status == 1">
                             <el-form-item prop="audit_suggestion" label="审核意见">
-                                <el-input v-if="data.status == 1" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
+                                <el-input v-if="data.audit_status == 1" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
                                 <span v-else>{{data.audit_suggestion}}</span>
                             </el-form-item>
                         </el-col>
@@ -235,12 +235,11 @@
 
                 </el-col>
                 <!-- 商户激活信息右侧块 -->
-                <el-col v-if="data.status == 1"  >
-                    <el-form-item v-if="data.status == 1">
+                <el-col v-if="data.audit_status == 1"  >
+                    <el-form-item>
                         <el-button type="success" @click="audit(1)">审核通过</el-button>
                         <el-button type="warning" @click="audit(2)">审核不通过</el-button>
                         <el-button type="primary" @click="back()">返回</el-button>
-                        <!--<el-button v-if="data.audit_status != 3" type="danger" @click="audit(3)">打回商户池</el-button>-->
                     </el-form-item>
                 </el-col>
 
