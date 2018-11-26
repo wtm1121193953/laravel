@@ -1,9 +1,10 @@
 <template>
     <el-row>
         <el-col :span="24">
+            <audit-message v-show="isShowAuditMessage" :data="data"></audit-message>
             <el-form label-width="120px" label-position="left" size="small">
                 <el-col>
-                    <div class="title">超市商户录入信息</div>
+                    <div class="title">商户信息</div>
                 </el-col>
                 <!--商户录入信息左侧块-->
                 <el-col :span="11">
@@ -225,6 +226,7 @@
     import previewImg from '../../../assets/components/img/preview-img'
     import imgPreviewDialog from '../../../assets/components/img/preview-dialog'
     import QmapChoosePoint from '../../../assets/components/qmap/qmap-choose-point'
+    import AuditMessage from './audit-message'
     import 'viewerjs/dist/viewer.css'
 
     export default {
@@ -240,6 +242,7 @@
             return {
                 isShowPreviewImage: false,
                 currentPreviewImage: '',
+                isShowAuditMessage: false
             }
         },
         methods: {
@@ -255,11 +258,16 @@
             }
         },
         created(){
+            // 判断请求路由
+            if(this.$route.path.indexOf('audit')!==-1){
+                this.isShowAuditMessage = true;
+            }
         },
         components: {
             previewImg,
             imgPreviewDialog,
             QmapChoosePoint,
+            AuditMessage
         }
     }
 
