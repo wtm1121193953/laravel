@@ -145,32 +145,25 @@ class CsMerchantAuditService extends BaseService {
         if(is_null($merchant)){
             // 商户表无数据则新增
             $merchant = new CsMerchant();
-            $saveColumn = json_decode($merchantAudit->data_after);
-            foreach ($saveColumn as $k=>$v){
-                $merchant->$k = $v;
-            }
             $merchant->settlement_cycle_type = CsMerchant::SETTLE_DAY_ADD_ONE;
         }
+
+        $saveColumn = json_decode($merchantAudit->data_after);
+        $unReplaceColumn = ['id','status'];
+        foreach ($saveColumn as $k=>$v){
+            if(in_array($k,$unReplaceColumn)){
+                continue;
+            }
+            $merchant->$k = $v;
+        }
+
         $merchant->audit_status = CsMerchant::AUDIT_STATUS_SUCCESS;
         $merchant->status = CsMerchant::STATUS_ON;
-        $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
+        $merchant->audit_suggestion = $auditSuggestion ?? '';
         $merchant->oper_id = $merchantAudit->oper_id;
         $merchant->active_time = Carbon::now();
         if (!$merchant->first_active_time) {
             $merchant->first_active_time = Carbon::now();
-        }
-
-        if(!empty($merchantAudit->data_modify)){
-            $dataModify = json_decode($merchantAudit->data_modify,true);
-            $unReplaceColumn = ['id'];
-            foreach ($dataModify as $k=>$v){
-                if(in_array($k,$unReplaceColumn)){
-                    continue;
-                }
-                if($merchant->$k!=$v){
-                    $merchant->$k = $v;
-                }
-            }
         }
 
         // 修改审核记录状态
@@ -204,11 +197,6 @@ class CsMerchantAuditService extends BaseService {
      */
     public static function auditFail($merchant, $auditSuggestion, $merchantAudit)
     {
-        if(!is_null($merchant)){
-            $merchant->audit_status = CsMerchant::AUDIT_STATUS_FAIL;
-            $merchant->status   = CsMerchant::STATUS_OFF;
-            $merchant->audit_suggestion = $auditSuggestion ? $auditSuggestion:'';
-        }
         $merchantAudit->status = CsMerchantAudit::AUDIT_STATUS_FAIL;
         $merchantAudit->suggestion = $auditSuggestion ?? '';
         $merchantAudit->audit_time = date('Y-m-d H:i:s');
@@ -217,6 +205,9 @@ class CsMerchantAuditService extends BaseService {
         DB::beginTransaction();
         try{
             if(!is_null($merchant)){
+                $merchant->audit_status = CsMerchant::AUDIT_STATUS_FAIL;
+                $merchant->status   = CsMerchant::STATUS_OFF;
+                $merchant->audit_suggestion = $auditSuggestion ?? '';
                 $merchant->save();
             }
             $merchantAudit->save();
@@ -228,6 +219,12 @@ class CsMerchantAuditService extends BaseService {
         return $merchant;
     }
 
+    /**
+     * @param    AuditId|CsMerchantId $id
+     * @param $operId
+     * @param $dataType
+     * @return CsMerchantAudit
+     */
     public static function editMerchantAudit($id,$operId,$dataType){
         $merchantId = 0;
         if($dataType=='csMerchant'){
@@ -239,6 +236,17 @@ class CsMerchantAuditService extends BaseService {
         }
         $csMerchant->fillMerchantPoolInfoFromRequest();
         $csMerchant->fillMerchantActiveInfoFromRequest();
+
+        // 判断是否存在重名
+        $existMerchant = Merchant::where('name',$csMerchant->name)->exists();
+        if($existMerchant){
+            throw new BaseResponseException('该商户名重复，请修改');
+        }
+        $existCsMerchant = CsMerchant::where('name',$csMerchant->name)->where('id','!=',$csMerchant->id??$merchantId)->first();
+
+        if($existCsMerchant){
+            throw new BaseResponseException('该商户名重复，请修改');
+        }
 
         $dataBefore = $dataModify = $dataAfter = [];
         $dataAfter  = $csMerchant->toArray();
