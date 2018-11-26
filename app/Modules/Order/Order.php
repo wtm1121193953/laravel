@@ -116,6 +116,7 @@ class Order extends BaseModel
     const STATUS_NOT_TAKE_BY_SELF = 9; // 待自提
     const STATUS_DELIVERED = 10; // 已发货
 
+
     // 商户类型
     const MERCHANT_TYPE_NORMAL = 1;         // 默认商家
     const MERCHANT_TYPE_SUPERMARKET = 2;    // 超市商家

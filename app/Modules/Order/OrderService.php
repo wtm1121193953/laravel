@@ -589,8 +589,9 @@ class OrderService extends BaseService
         }
         if ($order->deliver_code == $deliverCode) {
             $order->deliver_time = Carbon::now();
-            $order->status = Order::STATUS_DELIVERED;
+            $order->status = Order::STATUS_FINISHED;
             $order->save();
+            OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(now()->addMinute());
         } else {
             throw new BaseResponseException('该订单核销码错误');
         }
@@ -637,5 +638,32 @@ class OrderService extends BaseService
             $code = self::createDeliverCode();
         }
         return $code;
+    }
+
+    /**
+     * 用户确认收货
+     * @param $order_no
+     * @param $user_id
+     * @return Order
+     */
+    public static function userConfirmDelivery($order_no, $user_id)
+    {
+        $order = Order::where('order_no', $order_no)->first();
+        if (empty($order)) {
+            throw new BaseResponseException('该订单不存在');
+        }
+        if ($order->user_id != $user_id) {
+            throw new BaseResponseException('非法操作');
+        }
+        if ($order->status != Order::STATUS_DELIVERED) {
+            throw new BaseResponseException('不是已发货的订单不能确认收货');
+        }
+
+        $order->deliver_time = Carbon::now();
+        $order->status = Order::STATUS_FINISHED;
+        $order->save();
+        OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(now()->addMinute());
+
+        return $order;
     }
 }
