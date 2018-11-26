@@ -4,10 +4,12 @@ namespace App\Providers;
 
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Cs\CsMerchantCategory;
+use App\Modules\Cs\CsPlatformCategory;
 use App\Modules\Merchant\Merchant;
 use App\Modules\User\UserOpenIdMapping;
 use App\Observers\CsMerchantCategoryObserver;
 use App\Observers\CsMerchantObserver;
+use App\Observers\CsPlatformCategoryObserver;
 use App\Observers\MerchantObserver;
 use App\Observers\UserOpenIdMappingObserver;
 use Debugbar;
@@ -48,8 +50,10 @@ class AppServiceProvider extends ServiceProvider
         Merchant::observe(MerchantObserver::class);
         // 超市商户模型观察者
         CsMerchant::observe(CsMerchantObserver::class);
-        //
+        //商户分类缓存
         CsMerchantCategory::observe(CsMerchantCategoryObserver::class);
+        //平台分类缓存
+        CsPlatformCategory::observe(CsPlatformCategoryObserver::class);
         // 用户绑定运营中心模型观察者
         UserOpenIdMapping::observe(UserOpenIdMappingObserver::class);
 
