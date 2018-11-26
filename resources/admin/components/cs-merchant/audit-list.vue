@@ -12,7 +12,7 @@
                 <el-form-item prop="operId" label="运营中心ID">
                     <el-input v-model="query.operId" size="small" placeholder="运营中心ID" clearable/>
                 </el-form-item>
-                <el-form-item label="审核状态" prop="status">
+                <el-form-item clearable label="审核状态" prop="status">
                     <el-select v-model="query.status" size="small" multiple placeholder="请选择">
                         <el-option label="待审核" value="1"/>
                         <el-option label="审核通过" value="2"/>
@@ -220,10 +220,10 @@
             },
             doAudit(){
                 let auditTypeMessage = this.fastAuditType == 1 ? '审核通过' : '审核不通过';
-                if(this.fastAuditType == 2 && !this.auditForm.audit_suggestion){
+                /*if(this.fastAuditType == 2 && !this.auditForm.audit_suggestion){
                     this.$message.error('请输入审核不通过意见');
                     return ;
-                }
+                }*/
                 this.$confirm(`确定将商户 ${this.currentAuditRecord.name} ${auditTypeMessage}吗?`).then(() => {
                     let reqData = {id: this.currentAuditRecord.id, type: this.fastAuditType,audit_suggestion:this.auditForm.audit_suggestion};
                     api.post('/cs/merchant/audit', reqData).then(data => {

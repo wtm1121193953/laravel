@@ -92,7 +92,7 @@ Route::prefix('admin')
 
         Route::get('cs/merchants', 'CsMerchantController@getList');
         Route::get('cs/merchant/detail', 'CsMerchantController@detail');
-        Route::post('cs/merchant/edit', 'CsMerchantAuditController@edit');
+        Route::post('cs/merchant/edit', 'CsMerchantController@edit');
         Route::get('cs/merchant/export', 'CsMerchantController@export');
         Route::post('cs/merchant/changeStatus', 'CsMerchantController@changeStatus');
         Route::get('cs/merchant/list', 'CsMerchantController@getList');

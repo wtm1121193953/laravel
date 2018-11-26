@@ -25,7 +25,7 @@
                 this.isLoading = true;
                 api.post('/cs/merchant/add', data).then(() => {
                     this.$message.success('保存成功');
-                    router.push('/cs/merchants');
+                    router.push('/cs/merchant/audit/list');
                 }).finally(() => {
                     this.isLoading = false;
                 })

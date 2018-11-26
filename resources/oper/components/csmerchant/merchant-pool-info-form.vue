@@ -6,6 +6,9 @@
         </el-col>
         <!--商户录入信息表单-->
         <el-col v-if="!readonly" :span="16">
+            <el-form-item label="商户类型">
+                <span>超市类</span>
+            </el-form-item>
             <el-form-item prop="name" label="商户名称">
                 <el-input v-model="form.name" placeholder="请填写商户名称"   />
                 <div class="tips">须同营业执照名称一致，如营业执照未填写，填法人姓名</div>

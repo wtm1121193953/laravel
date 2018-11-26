@@ -15,6 +15,7 @@ use App\Modules\Area\Area;
 use App\Modules\Country\CountryService;
 use App\Modules\CsStatistics\CsStatisticsMerchantOrder;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantFollow;
 use App\Modules\Oper\Oper;
 use App\Support\Lbs;
@@ -229,7 +230,7 @@ class CsMerchantService extends BaseService {
             $data->each(function ($item) {
 
                 $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
-                $item->account = $item->name;
+                $item->account = MerchantAccount::where('merchant_id', $item->id)->where('type',MerchantAccount::TYPE_CS)->first();
                 $item->business_time = json_decode($item->business_time, 1);
                 $item->operName = Oper::where('id', $item->oper_id )->value('name');
             });
@@ -247,26 +248,16 @@ class CsMerchantService extends BaseService {
     {
 
         $merchant = CsMerchant::findOrFail($id);
+        $merchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)->orderBy('id','desc')->first();
         $merchant->account = $merchant->name;
-        $merchant->business_time = json_decode($merchant->business_time, 1);
-        $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
-        $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
-        $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
-        $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
-
+        $merchant->audit_status = $merchantAudit->status;
+        $merchant = self::makeDetail($merchant);
         $oper = Oper::where('id', $merchant->oper_id)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
             $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
             $merchant->operName = $oper->name;
         }
-        $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
-        if($merchantFollow){
-            $merchant->user_follow_status = 2;
-        }else{
-            $merchant->user_follow_status =1;
-        }
-        $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
         return $merchant;
     }
 
@@ -280,31 +271,35 @@ class CsMerchantService extends BaseService {
         $merchantAudit = CsMerchantAudit::findOrFail($id);
         $merchant = json_decode($merchantAudit->data_after,false);
         $merchant->account = $merchant->name;
-        $merchant->business_time = json_decode($merchant->business_time, 1);
-        $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
-        $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
-        $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
-        $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
+        $merchant = self::makeDetail($merchant);
         $merchant->id = $merchantAudit->id;
-        $merchant->status = $merchantAudit->status;
+        $merchant->audit_status = $merchantAudit->status;
         $merchant->audit_suggestion = $merchantAudit->suggestion;
         $operId = isset($merchantAudit->oper_id) ? $merchantAudit->oper_id:0;
         $merchant->operName = Oper::where('id', $operId)->value('name');
+        $merchant->cs_merchant_id = $merchantAudit->cs_merchant_id;
 
         $oper = Oper::where('id', $operId)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
             $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
         }
-        $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
-        if($merchantFollow){
-            $merchant->user_follow_status = 2;
-        }else{
-            $merchant->user_follow_status =1;
-        }
-        $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
-
         return $merchant;
+    }
+
+    /**
+     * 用以处理数据
+     * @param $csMerchant
+     * @return mixed
+     */
+    public static function makeDetail($csMerchant){
+        $csMerchant->business_time = json_decode($csMerchant->business_time, 1);
+        $csMerchant->desc_pic_list = $csMerchant->desc_pic_list ? explode(',', $csMerchant->desc_pic_list) : '';
+        $csMerchant->contract_pic_url = $csMerchant->contract_pic_url ? explode(',', $csMerchant->contract_pic_url) : '';
+        $csMerchant->other_card_pic_urls = $csMerchant->other_card_pic_urls ? explode(',', $csMerchant->other_card_pic_urls) : '';
+        $csMerchant->bank_card_pic_a = $csMerchant->bank_card_pic_a ? explode(',', $csMerchant->bank_card_pic_a) : '';
+        $csMerchant->countryName = CountryService::getNameZhById($csMerchant->country_id);
+        return $csMerchant;
     }
 
     /**
@@ -312,17 +307,19 @@ class CsMerchantService extends BaseService {
      * @param $userId
      * @return mixed
      */
-    public static function getDetailData($id,$userId)
+    /*public static function getDetailData($id,$userId)
     {
         $merchantAudit = CsMerchantAudit::findOrFail($id);
         $merchant = json_decode($merchantAudit->data_after,false);
         $merchant->cs_merchant_id = $merchantAudit->cs_merchant_id == 0 ? '' : $merchantAudit->cs_merchant_id;
         $merchant->account = $merchant->name;
         $merchant->business_time = json_decode($merchant->business_time, 1);
+
         $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
         $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
         $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
         $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
+
         $merchant->id = $merchantAudit->id;
         $merchant->audit_status = $merchantAudit->status;
         $merchant->audit_suggestion = $merchantAudit->suggestion;
@@ -344,7 +341,7 @@ class CsMerchantService extends BaseService {
         $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
 
         return $merchant;
-    }
+    }*/
 
     /**
      * 通过审核id获取最新修改的数据
@@ -382,46 +379,29 @@ class CsMerchantService extends BaseService {
 
 
     /**
-     * 编辑商户
+     * SaaS编辑商户
      * @param $id
      * @param $currentOperId
      * @param string $auditStauts
      * @param bool $isAdmin
-     * @return CsMerchantAudit
+     * @return CsMerchant
      */
     public static function edit($id, $currentOperId, $auditStauts = '', $isAdmin = false)
     {
-        if(empty($currentOperId)){
-            $currentOperId = 0;
-        }
-
-        $existCsMerchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)
-            ->where('type',CsMerchantAudit::UPDATE_TYPE)
-            ->where('status',CsMerchantAudit::AUDIT_STATUS_AUDITING)
-            ->first();
-        if($existCsMerchantAudit){
-            throw new BaseResponseException('该商户已存在待审核记录');
-        }
-        $merchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)
-            ->where('type',CsMerchantAudit::INSERT_TYPE)
-            ->where('status',CsMerchantAudit::AUDIT_STATUS_AUDITING)
-            ->first();
-        if(!$merchantAudit){
-            throw new BaseResponseException('不存在该审核记录');
-        }
-        $csmerchant = CsMerchant::where('id', $id)
-            ->first();
+        $csmerchant = CsMerchant::where('id', $id)->firstOrFail();
+        $csmerchant->fillMerchantPoolInfoFromRequest();
+        $csmerchant->fillMerchantActiveInfoFromRequest();
 
         // 商户名不能重复
         //查询超市表
         $exists = CsMerchant::where('id','<>',$id)->where('name',$csmerchant->name)->first();
         //查询普通商户表
         $existsMerchant = Merchant::where('name', $csmerchant->name)->first();
-        //查询超市审核记录表
-        $existsCsmerchantAudit = CsMerchantAudit::where('name', $csmerchant->name)->first();
-        if ($exists || $existsMerchant || $existsCsmerchantAudit) {
+
+        if(($exists&&$exists->id!=$id)||$existsMerchant){
             throw new ParamInvalidException('商户名称不能重复');
         }
+
         // 招牌名不能重复
         $signboardName = CsMerchant::where('id','<>',$id)->where('signboard_name', $csmerchant->signboard_name)->first();
         $existsMerchantSignboardName = Merchant::where('signboard_name',$csmerchant->signboard_name)->first();
@@ -429,61 +409,8 @@ class CsMerchantService extends BaseService {
             throw new ParamInvalidException('招牌名称不能重复');
         }
 
-        $afterCsmerchantToJson = $beforeCsmerchantToJson = '';
-
-        //与原有数据对比，有修改字段另存储json到审核表
-        $modifyCsMerchant = [];
-        if($csmerchant){
-            // 如果为正式商户则跑以下逻辑
-            //保留原有数据转存json到审核记录表
-            $beforeCsmerchantToJson = json_encode($csmerchant);
-            //获取原有结算周期
-//            $settlementCyCleType = $csmerchant->settlement_cycle_type ?? CsMerchant::SETTLE_DAY_ADD_ONE;
-            $csmerchant->fillMerchantPoolInfoFromRequest();
-            $csmerchant->fillMerchantActiveInfoFromRequest();
-
-            if($csmerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_COMPANY){
-                if($csmerchant->name != $csmerchant->bank_open_name){
-                    throw new ParamInvalidException('提交失败，申请T+1结算，商户名称需和开户名一致');
-                }
-            }elseif($csmerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_PEOPLE){
-                if($csmerchant->corporation_name != $csmerchant->bank_open_name){
-                    throw new ParamInvalidException('提交失败，申请T+1结算，营业执照及法人姓名需和开户名一致');
-                }
-            }
-
-            //编辑商户，商户编辑后是待审核
-            CsMerchant::where('id',$id)->update(['audit_status' => CsMerchant::AUDIT_STATUS_AUDITING]);
-            $csmerchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
-
-            $afterCsmerchantToJson = json_encode($csmerchant);
-
-            foreach ($csmerchant as $key => $val){
-                if($csmerchant[$key] != $val){
-                    array_push($modifyCsMerchant,[$key => $csmerchant[$key]]);
-                }
-            }
-        }else{
-            // 如果不存在CsMerchant表，则不是正式商户数据
-//            var_dump($existCsMerchantAudit);
-            $beforeCsmerchantToJson = $merchantAudit->data_after;
-            $csmerchant = json_decode($merchantAudit->data_after,true);
-        }
-
-        $modifyCsMerchantToJson = json_encode($modifyCsMerchant);
-        $params = [
-            'oper_id' => $currentOperId,
-            'type' => CsMerchantAudit::UPDATE_TYPE,
-            'csMerchantId' => $csmerchant['id'],
-            'name' => $csmerchant['name'],
-            'dataBefore' => $beforeCsmerchantToJson,
-            'dataAfter' => $afterCsmerchantToJson,
-            'dataModify' => $modifyCsMerchantToJson,
-        ];
-
-        // 添加审核记录
-        $audit = CsMerchantAuditService::addAudit($params);
-        return $audit;
+        $csmerchant->save();
+        return $csmerchant;
     }
 
     /**
@@ -551,9 +478,9 @@ class CsMerchantService extends BaseService {
     public static function geoAddToRedis($merchant)
     {
         if ($merchant instanceof Collection) {
-            Lbs::merchantGpsAdd($merchant);
+            Lbs::csMerchantGpsAdd($merchant);
         } else {
-            Lbs::merchantGpsAdd($merchant->id, $merchant->lng, $merchant->lat);
+            Lbs::csMerchantGpsAdd($merchant->id, $merchant->lng, $merchant->lat);
         }
     }
 
@@ -621,7 +548,7 @@ class CsMerchantService extends BaseService {
         $distances = null;
         if($lng && $lat && $radius){
             // 如果经纬度及范围都存在, 则按距离筛选出附近的商家
-            $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
+            $distances = Lbs::getNearlyCsMerchantDistanceByGps($lng, $lat, $radius);
         }
         $user_key = array_get($params, 'user_key', 0); //终端的唯一表示，用于计算距离
 
@@ -671,7 +598,7 @@ class CsMerchantService extends BaseService {
             $allList = $query->select('id')->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat, $user_key) {
-                    $item->distance = Lbs::getDistanceOfMerchant($item->id, $user_key, floatval($lng), floatval($lat));
+                    $item->distance = Lbs::getDistanceOfCsMerchant($item->id, $user_key, floatval($lng), floatval($lat));
                     return $item;
                 })
                 ->sortBy('distance')
@@ -682,7 +609,7 @@ class CsMerchantService extends BaseService {
                         $item->distance -= 100000000;
                     }
                     $item->distance = Utils::getFormativeDistance($item->distance);
-                    $merchant = DataCacheService::getMerchantDetail($item->id);
+                    $merchant = DataCacheService::getCsMerchantDetail($item->id);
                     $merchant->distance = $item->distance;
                     // 格式化距离
                     return $merchant;
@@ -741,7 +668,7 @@ class CsMerchantService extends BaseService {
         if($lng && $lat){
             $currentUser = request()->get('current_user');
             $tempToken = empty($currentUser) ? str_random() : $currentUser->id;
-            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, floatval($lng), floatval($lat));
+            $distance = Lbs::getDistanceOfCsMerchant($id, $tempToken, floatval($lng), floatval($lat));
             // 格式化距离
             $detail->distance = Utils::getFormativeDistance($distance);
         }

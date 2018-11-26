@@ -1,5 +1,5 @@
 <template>
-    <page title="我的超市商户" v-loading="isLoading">
+    <page title="超市商户列表" v-loading="isLoading">
         <el-form class="fl" inline size="small">
             <el-form-item label="商户ID">
                 <el-select v-model="query.merchantId" placeholder="输入商户ID或商户名" filterable clearable>
@@ -16,7 +16,7 @@
                           @keyup.enter.native="search"/>
             </el-form-item>
             <el-form-item label="商户状态" prop="status">
-                <el-select v-model="query.status" size="small" class="w-150">
+                <el-select clearable v-model="query.status" size="small" class="w-150">
                     <el-option label="全部" value=""/>
                     <el-option label="正常" value="1"/>
                     <el-option label="冻结" value="2"/>
@@ -24,7 +24,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="审核状态" prop="audit_status">
-                <el-select v-model="query.audit_status" placeholder="请选择">
+                <el-select clearable v-model="query.audit_status" placeholder="请选择">
                     <el-option label="全部" value=""/>
                     <el-option label="待审核" value="-1"/>
                     <el-option label="审核通过" value="1"/>

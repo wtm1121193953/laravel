@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\Merchant\MerchantService;
 use Illuminate\Console\Command;
 
@@ -40,5 +41,6 @@ class GeoAddMerchant extends Command
     {
         //
         MerchantService::geoAddAllToRedis();
+        CsMerchantService::geoAddAllToRedis();
     }
 }

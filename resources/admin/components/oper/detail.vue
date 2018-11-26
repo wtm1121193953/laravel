@@ -63,6 +63,16 @@
                 {{['', '正常合作中', '已冻结', '停止合作'][oper.status]}}
             </el-form-item>
 
+            <el-form-item label="客服联系方式-QQ" prop="contact_qq">
+                {{oper.contact_qq}}
+            </el-form-item>
+            <el-form-item label="客服联系方式-微信" prop="contact_wechat">
+                {{oper.contact_wechat}}
+            </el-form-item>
+            <el-form-item label="客服联系方式-手机" prop="contact_mobile">
+                {{oper.contact_mobile}}
+            </el-form-item>
+
             <el-form-item>
                 <el-button @click="cancel" type="primary">返 回</el-button>
             </el-form-item>

@@ -1,7 +1,7 @@
 <template>
     <el-row>
         <el-col :span="22">
-            <el-form :model="form" label-width="120px" :rules="formRules" ref="form" @submit.native.prevent>
+            <el-form :model="form" label-width="150px" :rules="formRules" ref="form" @submit.native.prevent>
                 <el-form-item prop="name" label="运营中心名称">
                     <el-input v-model="form.name"/>
                 </el-form-item>
@@ -85,6 +85,16 @@
                     </el-select>
                 </el-form-item>
 
+                <el-form-item label="客服联系方式-QQ" prop="contact_qq">
+                    <el-input v-model="form.contact_qq" placeholder=""/>
+                </el-form-item>
+                <el-form-item label="客服联系方式-微信" prop="contact_wechat">
+                    <el-input v-model="form.contact_wechat" placeholder=""/>
+                </el-form-item>
+                <el-form-item label="客服联系方式-手机" prop="contact_mobile">
+                    <el-input v-model="form.contact_mobile" placeholder=""/>
+                </el-form-item>
+
                 <el-form-item>
                     <el-button @click="cancel">取消</el-button>
                     <el-button type="primary" @click="save">保存</el-button>
@@ -116,6 +126,9 @@
         bank_code: '',
         licence_pic_url: '',
         business_licence_pic_url: '',
+        contact_qq: '',
+        contact_wechat: '',
+        contact_mobile: '',
     };
     export default {
         name: 'oper-form',
@@ -183,7 +196,10 @@
                     ],
                     legal_name: [
                         {max: 60, message: '法人姓名不能超过60个字'}
-                    ]
+                    ],
+                    contact_mobile: [
+                        {validator: validateContacterPhone}
+                    ],
                 },
                 areas: [],
                 invoiceTypes: [

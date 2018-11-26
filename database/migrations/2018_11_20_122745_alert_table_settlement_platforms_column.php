@@ -30,7 +30,7 @@ class AlertTableSettlementPlatformsColumn extends Migration
         Schema::table('settlement_platforms', function (Blueprint $table) {
             //
             $table->dropColumn([
-                'merchant_type'
+                'object_type'
             ]);
         });
     }

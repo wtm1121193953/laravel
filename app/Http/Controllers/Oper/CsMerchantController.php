@@ -228,8 +228,9 @@ class CsMerchantController extends Controller
         $account = request('account');
         $operId = request()->get('current_user')->oper_id;
         $password = request('password');
+        $type = request('type');
 
-        $account = MerchantAccountService::createAccount($merchantId,$account,$operId,$password);
+        $account = MerchantAccountService::createAccount($merchantId,$account,$operId,$password,$type);
 
         return Result::success($account);
     }
@@ -277,8 +278,7 @@ class CsMerchantController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-
-        $merchant = CsMerchantService::getDetailData(request('id'),request()->get('current_user')->id);
+        $merchant = CsMerchantService::getAuditDetail(request('id'),request()->get('current_user')->id);
 
         return Result::success($merchant);
     }

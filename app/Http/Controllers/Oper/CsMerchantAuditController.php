@@ -29,8 +29,9 @@ class CsMerchantAuditController extends Controller
         if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
             throw new ParamInvalidException('负责人手机号码不合法');
         }
-
-        $audit = CsMerchantAuditService::editMerchantAudit( request()->get('current_user')->id);
+        $id = request()->get('id',0);
+        $dataType= request()->get('dataType');  // 用以区分修改来源类型
+        $audit = CsMerchantAuditService::editMerchantAudit($id,request()->get('current_user')->id,$dataType);
         return Result::success($audit);
     }
 }

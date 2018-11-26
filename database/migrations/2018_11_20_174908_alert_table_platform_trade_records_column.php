@@ -26,6 +26,11 @@ class AlertTablePlatformTradeRecordsColumn extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('platform_trade_records', function (Blueprint $table) {
+            //
+            $table->dropColumn([
+                'merchant_type'
+            ]);
+        });
     }
 }
