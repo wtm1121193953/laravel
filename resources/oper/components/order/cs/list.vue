@@ -199,7 +199,7 @@
                 })
             },
             getMerchants(){
-                api.get('/merchant/allNames').then(data => {
+                api.get('/cs/merchant/allNames').then(data => {
                     this.merchants = data.list;
                 })
             },
