@@ -900,4 +900,32 @@ class OrderController extends Controller
         return $totalPrice;
     }
 
+    /**
+     * 确认收货
+     */
+    public function confirmDelivery()
+    {
+        $this->validate(request(), [
+            'order_no' => 'required'
+        ]);
+        $order_no = request('order_no');
+        $user_id = request()->get('current_user')->id;
+        OrderService::userConfirmDelivery($order_no,$user_id);
+
+        return Result::success('确认收货成功');
+    }
+
+    /**
+     * 删除订单
+     */
+    public function userDel()
+    {
+        $this->validate(request(), [
+            'order_no' => 'required'
+        ]);
+        $order_no = request('order_no');
+        $user_id = request()->get('current_user')->id;
+        OrderService::userDel($order_no,$user_id);
+        return Result::success('删除成功');
+    }
 }
