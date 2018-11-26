@@ -205,7 +205,7 @@
         logo: '',
         desc_pic_list: [],
         desc: '',
-        settlement_cycle_type: 1,
+        settlement_cycle_type: 6,
         settlement_rate: 0,
         // 银行卡信息
         bank_card_type: 1,
