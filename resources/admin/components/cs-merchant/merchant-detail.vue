@@ -8,6 +8,9 @@
 
                 <!--商户录入信息左侧块-->
                 <el-col :span="11">
+                    <el-form-item label="商户类型">
+                        <span>超市类</span>
+                    </el-form-item>
                     <el-form-item prop="status" label="商户状态">
                         <span v-if="data.status === 1" class="c-green">已启用</span>
                         <span v-else-if="data.status === 2" class="c-danger">已冻结</span>
@@ -41,12 +44,12 @@
 
                 </el-col>
                 <el-col :span="12" :offset="1">
-                    <el-form-item prop="status" label="审核状态">
-                        <span v-if="data.status === 1" class="c-warning">待审核</span>
-                        <span v-else-if="data.status === 2" class="c-green">审核通过 {{data.suggestion}}</span>
-                        <span v-else-if="data.status === 3" class="c-danger">审核不通过 {{data.suggestion}}</span>
-                        <span v-else-if="data.status === 4" class="c-warning">撤回</span>
-                        <span v-else>未知 ({{data.status}})</span>
+                    <el-form-item prop="audit_status" label="审核状态">
+                        <span v-if="data.audit_status === 1" class="c-warning">待审核</span>
+                        <span v-else-if="data.audit_status === 2" class="c-green">审核通过 {{data.suggestion}}</span>
+                        <span v-else-if="data.audit_status === 3" class="c-danger">审核不通过 {{data.suggestion}}</span>
+                        <span v-else-if="data.audit_status === 4" class="c-warning">撤回</span>
+                        <span v-else>未知 ({{data.audit_status}})</span>
                     </el-form-item>
                 </el-col>
 

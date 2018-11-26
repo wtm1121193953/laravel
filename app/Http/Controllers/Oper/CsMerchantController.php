@@ -278,8 +278,7 @@ class CsMerchantController extends Controller
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-
-        $merchant = CsMerchantService::getDetailData(request('id'),request()->get('current_user')->id);
+        $merchant = CsMerchantService::getAuditDetail(request('id'),request()->get('current_user')->id);
 
         return Result::success($merchant);
     }

@@ -248,26 +248,16 @@ class CsMerchantService extends BaseService {
     {
 
         $merchant = CsMerchant::findOrFail($id);
+        $merchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)->orderBy('id','desc')->first();
         $merchant->account = $merchant->name;
-        $merchant->business_time = json_decode($merchant->business_time, 1);
-        $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
-        $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
-        $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
-        $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
-
+        $merchant->audit_status = $merchantAudit->status;
+        $merchant = self::makeDetail($merchant);
         $oper = Oper::where('id', $merchant->oper_id)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
             $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
             $merchant->operName = $oper->name;
         }
-        $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
-        if($merchantFollow){
-            $merchant->user_follow_status = 2;
-        }else{
-            $merchant->user_follow_status =1;
-        }
-        $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
         return $merchant;
     }
 
@@ -281,13 +271,9 @@ class CsMerchantService extends BaseService {
         $merchantAudit = CsMerchantAudit::findOrFail($id);
         $merchant = json_decode($merchantAudit->data_after,false);
         $merchant->account = $merchant->name;
-        $merchant->business_time = json_decode($merchant->business_time, 1);
-        $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
-        $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
-        $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
-        $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
+        $merchant = self::makeDetail($merchant);
         $merchant->id = $merchantAudit->id;
-        $merchant->status = $merchantAudit->status;
+        $merchant->audit_status = $merchantAudit->status;
         $merchant->audit_suggestion = $merchantAudit->suggestion;
         $operId = isset($merchantAudit->oper_id) ? $merchantAudit->oper_id:0;
         $merchant->operName = Oper::where('id', $operId)->value('name');
@@ -298,15 +284,22 @@ class CsMerchantService extends BaseService {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
             $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
         }
-        $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
-        if($merchantFollow){
-            $merchant->user_follow_status = 2;
-        }else{
-            $merchant->user_follow_status =1;
-        }
-        $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
-
         return $merchant;
+    }
+
+    /**
+     * 用以处理数据
+     * @param $csMerchant
+     * @return mixed
+     */
+    public static function makeDetail($csMerchant){
+        $csMerchant->business_time = json_decode($csMerchant->business_time, 1);
+        $csMerchant->desc_pic_list = $csMerchant->desc_pic_list ? explode(',', $csMerchant->desc_pic_list) : '';
+        $csMerchant->contract_pic_url = $csMerchant->contract_pic_url ? explode(',', $csMerchant->contract_pic_url) : '';
+        $csMerchant->other_card_pic_urls = $csMerchant->other_card_pic_urls ? explode(',', $csMerchant->other_card_pic_urls) : '';
+        $csMerchant->bank_card_pic_a = $csMerchant->bank_card_pic_a ? explode(',', $csMerchant->bank_card_pic_a) : '';
+        $csMerchant->countryName = CountryService::getNameZhById($csMerchant->country_id);
+        return $csMerchant;
     }
 
     /**
@@ -314,17 +307,19 @@ class CsMerchantService extends BaseService {
      * @param $userId
      * @return mixed
      */
-    public static function getDetailData($id,$userId)
+    /*public static function getDetailData($id,$userId)
     {
         $merchantAudit = CsMerchantAudit::findOrFail($id);
         $merchant = json_decode($merchantAudit->data_after,false);
         $merchant->cs_merchant_id = $merchantAudit->cs_merchant_id == 0 ? '' : $merchantAudit->cs_merchant_id;
         $merchant->account = $merchant->name;
         $merchant->business_time = json_decode($merchant->business_time, 1);
+
         $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
         $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
         $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
         $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
+
         $merchant->id = $merchantAudit->id;
         $merchant->audit_status = $merchantAudit->status;
         $merchant->audit_suggestion = $merchantAudit->suggestion;
@@ -346,7 +341,7 @@ class CsMerchantService extends BaseService {
         $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
 
         return $merchant;
-    }
+    }*/
 
     /**
      * 通过审核id获取最新修改的数据
