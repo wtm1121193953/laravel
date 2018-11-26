@@ -164,6 +164,8 @@ class OrderController extends Controller
 //                $item->merchant_logo = $csMerchant->logo;
 //                $item->merchant_service_phone = $csMerchant->service_phone;
                 $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
+                $item->order_goods = CsOrderGood::where('order_id',$item->id);
+
 
             }else {
                 $item->merchant = Merchant::where('id', $item->merchant_id)->first();
