@@ -150,7 +150,12 @@ class CsMerchantCategoryService extends BaseService
             'cat_name' => '全部分类',
             'cat_id_level1' => 0,
             'cat_id_level2' => 0,
-            'sub' => [],
+            'sub' => [[
+                'cat_name' => '全部分类',
+                'cat_id_level1' => 0,
+                'cat_id_level2' => 0,
+                'sub' => [],
+            ]],
         ];
 
         foreach ($level1 as $v1) {
