@@ -249,6 +249,7 @@ class CsMerchantService extends BaseService {
 
         $merchant = CsMerchant::findOrFail($id);
         $merchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)->orderBy('id','desc')->first();
+        $merchant->cs_merchant_id = $merchant->id;
         $merchant->account = $merchant->name;
         $merchant->audit_status = $merchantAudit->status;
         $merchant = self::makeDetail($merchant);
