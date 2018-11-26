@@ -106,9 +106,9 @@ class OperAccountService extends BaseService
 
         $menus = [];
 
-        if ($oper->pay_to_platform == Oper::PAY_TO_OPER) {
+        if ($oper->pay_to_platform != Oper::PAY_TO_PLATFORM_WITH_SPLITTING) {
 
-            //未支付到平台的不显示超市相关的菜单
+            //不是第三种模式不显示不显示超市相关的菜单
             $menus = [
                 [ 'id' => 1, 'name' => '商户管理', 'level' => 1, 'url' => 'merchant', 'sub' =>
                     [

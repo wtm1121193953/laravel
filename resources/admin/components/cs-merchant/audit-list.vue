@@ -165,7 +165,9 @@
         computed: {
             isAudit() {
                 let isAudit = this.$route.path;
-                return isAudit == "/merchant/unaudits"
+                console.log('isAdudit:',isAudit);
+                return isAudit;
+                return isAudit == "/cs/merchant/unaudits"
             }
         },
         methods: {
@@ -181,7 +183,6 @@
                 let params = {};
                 Object.assign(params, this.query);
                 api.get('/cs/merchant/audit/list', params).then(data => {
-                    console.log(data.list);
                     this.query.page = params.page;
                     this.list = data.list;
                     this.total = data.total;
@@ -193,7 +194,7 @@
             detail(scope, type) {
                 let self = this;
                 router.push({
-                    path: 'cs/merchant/unaudits/detail',
+                    path: '/cs/merchant/unaudits/detail',
                     name: 'CsMerchantUnauditDetail',
                     query: {
                         id: scope.row.id,
