@@ -252,6 +252,7 @@ class CsMerchantService extends BaseService {
         $merchant->cs_merchant_id = $merchant->id;
         $merchant->account = $merchant->name;
         $merchant->audit_status = $merchantAudit->status;
+        $merchant->changeData = json_decode($merchantAudit->data_modify,true);
         $merchant = self::makeDetail($merchant);
         $oper = Oper::where('id', $merchant->oper_id)->first();
         if ($oper) {
@@ -279,6 +280,8 @@ class CsMerchantService extends BaseService {
         $operId = isset($merchantAudit->oper_id) ? $merchantAudit->oper_id:0;
         $merchant->operName = Oper::where('id', $operId)->value('name');
         $merchant->cs_merchant_id = $merchantAudit->cs_merchant_id;
+        $merchant->audit = $merchantAudit;
+        $merchant->changeData = json_decode($merchantAudit->data_modify,true);
 
         $oper = Oper::where('id', $operId)->first();
         if ($oper) {
@@ -302,47 +305,6 @@ class CsMerchantService extends BaseService {
         $csMerchant->countryName = CountryService::getNameZhById($csMerchant->country_id);
         return $csMerchant;
     }
-
-    /**
-     * @param $id
-     * @param $userId
-     * @return mixed
-     */
-    /*public static function getDetailData($id,$userId)
-    {
-        $merchantAudit = CsMerchantAudit::findOrFail($id);
-        $merchant = json_decode($merchantAudit->data_after,false);
-        $merchant->cs_merchant_id = $merchantAudit->cs_merchant_id == 0 ? '' : $merchantAudit->cs_merchant_id;
-        $merchant->account = $merchant->name;
-        $merchant->business_time = json_decode($merchant->business_time, 1);
-
-        $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
-        $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
-        $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
-        $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
-
-        $merchant->id = $merchantAudit->id;
-        $merchant->audit_status = $merchantAudit->status;
-        $merchant->audit_suggestion = $merchantAudit->suggestion;
-        $operId = isset($merchantAudit->oper_id) ? $merchantAudit->oper_id:0;
-        $merchant->operName = Oper::where('id', $operId)->value('name');
-        $merchant->creatorOperName = Oper::where('id', $operId)->value('name');
-
-        $oper = Oper::where('id', $operId)->first();
-        if ($oper) {
-            $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
-            $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
-        }
-        $merchantFollow = MerchantFollow::where('user_id',$userId)->where('merchant_id',$id);
-        if($merchantFollow){
-            $merchant->user_follow_status = 2;
-        }else{
-            $merchant->user_follow_status =1;
-        }
-        $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
-
-        return $merchant;
-    }*/
 
     /**
      * 通过审核id获取最新修改的数据
@@ -413,62 +375,6 @@ class CsMerchantService extends BaseService {
         $csmerchant->save();
         return $csmerchant;
     }
-
-    /**
-     * @param $currentOperId
-     * @param $name
-     * 添加商户
-     * @return CsMerchant
-     */
-    public static function add($currentOperId,$name)
-    {
-        $csmerchant = new CsMerchant();
-        $csmerchant->fillMerchantPoolInfoFromRequest();
-        $csmerchant->fillMerchantActiveInfoFromRequest();
-
-        // 补充商家创建者及审核提交者
-        $csmerchant->name = $name;
-        $csmerchant->oper_id = $currentOperId;
-        $csmerchant->settlement_cycle_type = CsMerchant::SETTLE_DAY_ADD_ONE;
-        $csmerchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
-
-        // 商户名不能重复
-        //查询超市表
-        $exists = CsMerchant::where('name', $csmerchant->name)->first();
-        //查询普通商户表
-        $existsMerchant = Merchant::where('name', $csmerchant->name)->first();
-        //查询超市审核记录表
-        $existsCsmerchantAudit = CsMerchantAudit::where('name', $csmerchant->name)->first();
-        if ($exists || $existsMerchant || $existsCsmerchantAudit) {
-            throw new ParamInvalidException('商户名称不能重复');
-        }
-        // 招牌名不能重复
-        $signboardName = CsMerchant::where('signboard_name', $csmerchant->signboard_name)->first();
-        $existsMerchantSignboardName = Merchant::where('signboard_name',$csmerchant->signboard_name)->first();
-        if ($signboardName || $existsMerchantSignboardName) {
-            throw new ParamInvalidException('招牌名称不能重复');
-        }
-
-        $csmerchant->toArray();
-        $jsonTomerchant = json_encode($csmerchant);
-
-        $params = [
-            'oper_id' => $currentOperId,
-            'name' => $csmerchant['name'],
-            'dataAfter' => $jsonTomerchant,
-        ];
-
-        // 添加审核记录
-        CsMerchantAuditService::addAudit($params);
-
-        return $csmerchant;
-    }
-
-    public static function addFromDraft()
-    {
-        // todo 从草稿箱添加
-    }
-
 
 
 

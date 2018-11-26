@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\UserApp;
 
 
+use App\DataCacheService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
@@ -125,6 +126,7 @@ class OrderController extends Controller
         //只能查询支付到平台的订单
         $data = Order::where('user_id', $user->id)
             ->where('pay_target_type',Order::PAY_TARGET_TYPE_PLATFORM)
+            ->whereNull('user_deleted_at')
             ->where(function (Builder $query) {
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function (Builder $query) {
@@ -164,6 +166,10 @@ class OrderController extends Controller
 //                $item->merchant_logo = $csMerchant->logo;
 //                $item->merchant_service_phone = $csMerchant->service_phone;
                 $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
+                $item->order_goods = CsOrderGood::where('order_id',$item->id)->with('cs_goods:id,logo')->get();
+
+                $item->oper_info = DataCacheService::getOperDetail($item->oper_id);
+
 
             }else {
                 $item->merchant = Merchant::where('id', $item->merchant_id)->first();
@@ -404,6 +410,8 @@ class OrderController extends Controller
 
     /**
      * 获取超市商品总价格
+     * @param $goodList
+     * @return float|int
      */
     public function getCsTotalPrice($goodList){
         $totalPrice = 0;
@@ -728,6 +736,7 @@ class OrderController extends Controller
             throw new BaseResponseException('商家配送费有误');
         }
 
+        $goodsPrice = 0;
         $goodsList = request('goods_list');
         if (is_string($goodsList)) {
             $goodsList = json_decode($goodsList, true);
@@ -747,10 +756,27 @@ class OrderController extends Controller
             if ($good->status == CsGood::STATUS_OFF) {
                 throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 已下架，请删除后重试');
             }
-            if ($good->stock<=$item['number']) {
+            if ($good->stock <= $item['number']) {
                 throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试');
             }
+
+            $goodsPrice += ($good->price) * ($item['number']);
         }
+
+        // 判断 起送价
+        if ($goodsPrice < $csMerchantSetting->delivery_start_price) {
+            throw new BaseResponseException('商品价格小于起送价');
+        }
+
+        // 计算 配送费 以及 配送费满减
+        $deliverPrice = $csMerchantSetting->delivery_charges;
+        $totalPrice = $deliverPrice + $goodsPrice;
+        if ($csMerchantSetting->delivery_free_start && $goodsPrice >= $csMerchantSetting->delivery_free_order_amount) {
+            $discountPrice = $csMerchantSetting->delivery_charges;
+        } else {
+            $discountPrice = 0;
+        }
+        $payPrice = $totalPrice - $discountPrice;
 
         DB::beginTransaction();
         try {
@@ -770,7 +796,10 @@ class OrderController extends Controller
             $order->goods_name = $merchant->name ?? '';
             $order->dishes_id = 0;
             $order->status = Order::STATUS_UN_PAY;
-            $order->pay_price = $this->getCsTotalPrice($goodsList);
+            $order->deliver_price = $deliverPrice;
+            $order->total_price = $totalPrice;
+            $order->discount_price = $discountPrice;
+            $order->pay_price = $payPrice;
             $order->settlement_rate = $merchant->settlement_rate;
             $order->remark = $remark;
             $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
@@ -831,6 +860,35 @@ class OrderController extends Controller
         }
         return $this->_returnOrder($order);
 
+    }
+
+    /**
+     * 确认收货
+     */
+    public function confirmDelivery()
+    {
+        $this->validate(request(), [
+            'order_no' => 'required'
+        ]);
+        $order_no = request('order_no');
+        $user_id = request()->get('current_user')->id;
+        OrderService::userConfirmDelivery($order_no,$user_id);
+
+        return Result::success('确认收货成功');
+    }
+
+    /**
+     * 删除订单
+     */
+    public function userDel()
+    {
+        $this->validate(request(), [
+            'order_no' => 'required'
+        ]);
+        $order_no = request('order_no');
+        $user_id = request()->get('current_user')->id;
+        OrderService::userDel($order_no,$user_id);
+        return Result::success('删除成功');
     }
 
     /**

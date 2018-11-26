@@ -1,15 +1,18 @@
 <template>
     <el-row>
+        <audit-message v-show="isShowAuditMessage" :data="data"></audit-message>
         <el-col :span="24">
             <el-form label-width="120px" label-position="left" size="small">
                 <el-col>
-                    <div class="title">商户录入信息</div>
+                    <div class="title">商户信息</div>
                 </el-col>
 
                 <!--商户录入信息左侧块-->
                 <el-col :span="11">
                     <el-form-item label="商户类型">
-                        <span>超市类</span>
+                        <el-tooltip class="item" effect="dark" content="Top Left 提示文字" placement="bottom">
+                            <span>超市类</span>
+                        </el-tooltip>
                     </el-form-item>
                     <el-form-item prop="status" label="商户状态">
                         <span v-if="data.status === 1" class="c-green">已启用</span>
@@ -27,8 +30,29 @@
                     </el-form-item>
                     <el-form-item prop="id" label="商户ID">{{data.cs_merchant_id}}</el-form-item>
                     <el-form-item v-if="data.operName" prop="operName" label="运营中心">{{data.operName}}</el-form-item>
-                    <el-form-item prop="name" label="商户名称">{{data.name}}</el-form-item>
-                    <el-form-item prop="signboard_name" label="招牌名称">{{data.signboard_name}}</el-form-item>
+
+                    <el-form-item prop="name" label="商户名称">
+                        <template v-if="checkIsset('name')">
+                            <el-tooltip class="item" effect="dark" :content="data.changeData.name" placement="bottom">
+                                <span class="c-danger">{{data.name}}</span>
+                            </el-tooltip>
+                        </template>
+                        <template v-else>
+                            <span>{{data.name}}</span>
+                        </template>
+                    </el-form-item>
+
+                    <el-form-item prop="name" label="招牌名称">
+                        <template v-if="checkIsset('name')">
+                            <el-tooltip class="item" effect="dark" :content="data.changeData.signboard_name" placement="bottom">
+                                <span class="c-danger">{{data.signboard_name}}</span>
+                            </el-tooltip>
+                        </template>
+                        <template v-else>
+                            <span>{{data.signboard_name}}</span>
+                        </template>
+                    </el-form-item>
+
                     <!--<el-form-item prop="merchant_category" label="所属行业">
                         <span v-for="item in data.categoryPath" :key="item.id">
                             {{ item.name }}
@@ -104,6 +128,7 @@
 
                         <el-form-item prop="business_time" label="营业时间">
                             <span v-if="data.business_time">{{data.business_time[0]}} 至 {{data.business_time[1]}}</span>
+
                         </el-form-item>
                         <el-form-item prop="logo" label="商家logo">
                             <div v-viewer>
@@ -119,13 +144,27 @@
                             <!-- <el-button type="text" @click="previewImage(data.desc_pic_list)">查看</el-button> -->
                         </el-form-item>
                         <el-form-item prop="desc_pic" label="商家介绍">
-                            {{data.desc}}
+                            <template v-if="checkIsset('desc')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.desc" placement="bottom">
+                                    <span class="c-danger">{{data.desc}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.desc}}</span>
+                            </template>
                         </el-form-item>
                         <!--<el-form-item label="结算周期">
                             {{ {1: '周结', 2: '半月结', 3: '月结', 4: '半年结', 5: '年结', 6: 'T+1',}[data.settlement_cycle_type] }}
                         </el-form-item>-->
                         <el-form-item label="分利比例">
-                            {{ data.settlement_rate }} %
+                            <template v-if="checkIsset('settlement_rate')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.settlement_rate" placement="bottom">
+                                    <span class="c-danger">{{data.settlement_rate}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.settlement_rate}}</span>
+                            </template>
                         </el-form-item>
 
                         <!-- 银行卡信息 start -->
@@ -134,22 +173,83 @@
                             <span v-if="data.bank_card_type === 2" class="c-green">个人</span>
                         </el-form-item>
                         <el-form-item label="银行开户名">
-                            {{data.bank_open_name}}
+                            <template v-if="checkIsset('bank_open_name')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.bank_open_name" placement="bottom">
+                                    <span class="c-danger">{{data.bank_open_name}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.bank_open_name}}</span>
+                            </template>
                         </el-form-item>
                         <el-form-item label="银行账号">
-                            {{data.bank_card_no}}
+                            <template v-if="checkIsset('bank_card_no')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.bank_card_no" placement="bottom">
+                                    <span class="c-danger">{{data.bank_card_no}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.bank_card_no}}</span>
+                            </template>
                         </el-form-item>
                         <el-form-item label="开户行">
-                            {{data.bank_name}}
+                            <template v-if="checkIsset('bank_name')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.bank_name" placement="bottom">
+                                    <span class="c-danger">{{data.bank_name}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.bank_name}}</span>
+                            </template>
                         </el-form-item>
                         <el-form-item label="开户行网点名称">
-                            {{data.sub_bank_name}}
+                            <template v-if="checkIsset('sub_bank_name')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.sub_bank_name" placement="bottom">
+                                    <span class="c-danger">{{data.sub_bank_name}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.sub_bank_name}}</span>
+                            </template>
                         </el-form-item>
                         <el-form-item label="开户行网点地址">
-                            <span>{{data.bank_province}}</span>
-                            <span>{{data.bank_city}}</span>
-                            <span>{{data.bank_area}}</span>
-                            <span>{{data.bank_open_address}}</span>
+
+                            <template v-if="checkIsset('bank_province')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.bank_province" placement="bottom">
+                                    <span class="c-danger">{{data.bank_province}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.bank_province}}</span>
+                            </template>
+
+                            <template v-if="checkIsset('bank_city')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.bank_city" placement="bottom">
+                                    <span class="c-danger">{{data.bank_city}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.bank_city}}</span>
+                            </template>
+
+                            <template v-if="checkIsset('bank_area')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.bank_area" placement="bottom">
+                                    <span class="c-danger">{{data.bank_area}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.bank_area}}</span>
+                            </template>
+
+                            <template v-if="checkIsset('bank_open_address')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.bank_open_address" placement="bottom">
+                                    <span class="c-danger">{{data.bank_open_address}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.bank_open_address}}</span>
+                            </template>
+
                         </el-form-item>
                         <el-form-item v-if="data.bank_card_type == 1" required prop="licence_pic_url" label="开户许可证">
                             <div v-viewer>
@@ -183,11 +283,34 @@
                         </el-form-item>
 
                         <el-form-item label="法人姓名">
-                            {{data.corporation_name}}
+                            <template v-if="checkIsset('corporation_name')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.corporation_name" placement="bottom">
+                                    <span class="c-danger">{{data.corporation_name}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.corporation_name}}</span>
+                            </template>
                         </el-form-item>
                         <el-form-item label="法人身份证号码">
-                            （{{data.countryName}}）
-                            {{data.legal_id_card_num}}
+                            <template v-if="checkIsset('countryName')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.countryName" placement="bottom">
+                                    <span class="c-danger">（{{data.countryName}}）</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>（{{data.countryName}}）</span>
+                            </template>
+
+                            <template v-if="checkIsset('legal_id_card_num')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.legal_id_card_num" placement="bottom">
+                                    <span class="c-danger">{{data.legal_id_card_num}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.legal_id_card_num}}</span>
+                            </template>
+
                         </el-form-item>
 
                         <el-form-item label="合同">
@@ -217,13 +340,34 @@
                     <!-- 商户激活信息右侧块 -->
                     <el-col :span="11" :offset="1">
                         <el-form-item prop="contacter" label="负责人姓名">
-                            {{data.contacter}}
+                            <template v-if="checkIsset('contacter')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.contacter" placement="bottom">
+                                    <span class="c-danger">{{data.contacter}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.contacter}}</span>
+                            </template>
                         </el-form-item>
                         <el-form-item prop="contacter_phone" label="负责人手机号码">
-                            {{data.contacter_phone}}
+                            <template v-if="checkIsset('contacter_phone')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.contacter_phone" placement="bottom">
+                                    <span class="c-danger">{{data.contacter_phone}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.contacter_phone}}</span>
+                            </template>
                         </el-form-item>
                         <el-form-item prop="service_phone" label="客服电话">
-                            {{data.service_phone}}
+                            <template v-if="checkIsset('service_phone')">
+                                <el-tooltip class="item" effect="dark" :content="data.changeData.service_phone" placement="bottom">
+                                    <span class="c-danger">{{data.service_phone}}</span>
+                                </el-tooltip>
+                            </template>
+                            <template v-else>
+                                <span>{{data.service_phone}}</span>
+                            </template>
                         </el-form-item>
                         <!--<el-form-item prop="site_acreage" label="商户面积">
                             {{data.site_acreage}} ㎡
@@ -263,6 +407,7 @@
     import previewImg from '../../../assets/components/img/preview-img'
     import imgPreviewDialog from '../../../assets/components/img/preview-dialog'
     import QmapChoosePoint from '../../../assets/components/qmap/qmap-choose-point'
+    import AuditMessage from './audit-message'
     import api from '../../../assets/js/api'
     import 'viewerjs/dist/viewer.css'
 
@@ -274,12 +419,12 @@
             auditType:Number,
         },
         computed:{
-
         },
         data(){
             return {
                 isShowPreviewImage: false,
                 currentPreviewImage: '',
+                isShowAuditMessage: false
             }
         },
         methods: {
@@ -289,6 +434,15 @@
 
                 const viewer = this.$el.querySelector('.' + viewerEl).$viewer
                 viewer.show()
+            },
+            checkIsset(key){
+                // console.log('changeData',key,this.data.changeData[key],this.data.changeData);
+                // console.log('change-data',this.data.changeData.key);
+                console.log('this.data.changeData[key]',key,this.data.changeData[key],this.data[key])
+                if(this.data.changeData!==null&&this.data.changeData[key]!==undefined){
+                    return true;
+                }
+                return false;
             },
             audit(type){
                 api.post('/cs/merchant/audit', {id: this.data.id, type: type,audit_suggestion:this.data.audit_suggestion}).then(data => {
@@ -301,11 +455,16 @@
             }
         },
         created(){
+            // 判断请求路由
+            if(this.$route.path.indexOf('unaudits')!==-1){
+                this.isShowAuditMessage = true;
+            }
         },
         components: {
             previewImg,
             imgPreviewDialog,
             QmapChoosePoint,
+            AuditMessage
         }
     }
 

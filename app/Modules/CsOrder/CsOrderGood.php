@@ -2,6 +2,7 @@
 
 namespace App\Modules\CsOrder;
 
+use App\Modules\Cs\CsGood;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -21,4 +22,8 @@ use Illuminate\Database\Eloquent\Model;
 class CsOrderGood extends Model
 {
     //
+    public function cs_goods()
+    {
+        return $this->belongsTo(CsGood::class);
+    }
 }

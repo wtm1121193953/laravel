@@ -220,12 +220,12 @@ class CsMerchantAuditService extends BaseService {
     }
 
     /**
-     * @param    AuditId|CsMerchantId $id
+     * @param    CsMerchantAudit Id|CsMerchant Id $id
      * @param $operId
      * @param $dataType
      * @return CsMerchantAudit
      */
-    public static function editMerchantAudit($id,$operId,$dataType){
+    public static function editOrAddMerchantAudit($id,$operId,$dataType){
         $merchantId = 0;
         if($dataType=='csMerchant'){
             // 如果来源为超市商家编辑
@@ -243,7 +243,6 @@ class CsMerchantAuditService extends BaseService {
             throw new BaseResponseException('该商户名重复，请修改');
         }
         $existCsMerchant = CsMerchant::where('name',$csMerchant->name)->where('id','!=',$csMerchant->id??$merchantId)->first();
-
         if($existCsMerchant){
             throw new BaseResponseException('该商户名重复，请修改');
         }
@@ -275,15 +274,15 @@ class CsMerchantAuditService extends BaseService {
         if(!empty($dataBefore)){
             // 存储变更数据
             foreach ($dataAfter as $k=>$v){
-                if(isset($dataBefore[$k])&&$dataAfter[$k]==$dataBefore[$k]){
-                    continue;
+//                var_dump(isset($dataBefore[$k]),$k);
+                if(isset($dataBefore[$k])&&($dataAfter[$k]!=$dataBefore[$k])){
+                    $dataModify[$k] = $dataBefore[$k];
                 }
-                $dataModify[$k] = $v;
             }
         }
 
-        if($dataType=='csMerchant'||(isset($lastAudit->cs_merchant_id)&&$lastAudit->cs_merchant_id!=0)){
-            // 有商户信息则走以下逻辑
+        /*if($dataType=='csMerchant'||(isset($lastAudit->cs_merchant_id)&&$lastAudit->cs_merchant_id!=0)){
+            // 有商户信息则走以下逻辑      运营中心审核不走改用户状态逻辑
             $csMerchant = ($csMerchant->id) ? $csMerchant:CsMerchant::find($lastAudit->cs_merchant_id);
             if($csMerchant){
 
@@ -292,7 +291,7 @@ class CsMerchantAuditService extends BaseService {
                 $csMerchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
 
             }
-        }
+        }*/
         if($csMerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_COMPANY){
             if($dataAfter['name'] != $dataAfter['bank_open_name']){
                 throw new ParamInvalidException('提交失败，申请T+1结算，商户名称需和开户名一致');
@@ -302,10 +301,11 @@ class CsMerchantAuditService extends BaseService {
                 throw new ParamInvalidException('提交失败，申请T+1结算，营业执照及法人姓名需和开户名一致');
             }
         }
+        $auditType = ($csMerchant->id)?CsMerchantAudit::UPDATE_TYPE:CsMerchantAudit::INSERT_TYPE;
 
         $params = [
             'oper_id' => $operId,
-            'type' => CsMerchantAudit::UPDATE_TYPE,
+            'type' => $auditType,
             'csMerchantId' => $merchantId,
             'name' => $dataAfter['name'],
             'dataBefore' => json_encode($dataBefore),

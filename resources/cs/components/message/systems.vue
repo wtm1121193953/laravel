@@ -1,5 +1,5 @@
 <template>
-    <page title="系统消息管理" v-loading="isLoading">
+    <page title="公告" v-loading="isLoading">
         <el-form class="fl" inline size="small">
             <el-form-item prop="app_type" label="">
                 <el-form-item label="添加时间">

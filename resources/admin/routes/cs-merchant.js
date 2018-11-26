@@ -24,9 +24,6 @@ export default [
         path: '/',
         component: Home,
         children: [
-            {path: 'cs/merchants', component: CsMerchants, name: 'CsMerchants'},
-            {path: 'cs/merchant/detail', component: CsMerchantDetail, name: 'CsMerchantDetail'},
-            {path: 'cs/merchant/edit', component: CsMerchantEdit, name: 'CsMerchantEdit'},
             {path: '/cs/merchants', component: CsMerchants, name: 'CsMerchants'},
             {path: '/cs/merchant/detail', component: CsMerchantDetail, name: 'CsMerchantDetail'},
             {path: '/cs/merchant/edit', component: CsMerchantEdit, name: 'CsMerchantEdit'},

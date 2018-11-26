@@ -60,7 +60,7 @@
                     <span v-else-if="scope.row.type == 2">扫码支付订单</span>
                     <span v-else-if="scope.row.type == 3">点菜订单</span>
                     <span v-else-if="scope.row.type == 4">超市订单</span>
-                    <span>其他({{scope.row.type}})</span>
+                    <span v-else>其他({{scope.row.type}})</span>
                 </template>
             </el-table-column>
             <el-table-column prop="goods_name" width="250" label="商品名称">
@@ -199,7 +199,7 @@
                 })
             },
             getMerchants(){
-                api.get('/merchant/allNames').then(data => {
+                api.get('/cs/merchant/allNames').then(data => {
                     this.merchants = data.list;
                 })
             },
