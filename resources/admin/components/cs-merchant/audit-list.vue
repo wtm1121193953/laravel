@@ -12,7 +12,7 @@
                 <el-form-item prop="operId" label="运营中心ID">
                     <el-input v-model="query.operId" size="small" placeholder="运营中心ID" clearable/>
                 </el-form-item>
-                <el-form-item label="审核状态" prop="status">
+                <el-form-item clearable label="审核状态" prop="status">
                     <el-select v-model="query.status" size="small" multiple placeholder="请选择">
                         <el-option label="待审核" value="1"/>
                         <el-option label="审核通过" value="2"/>
