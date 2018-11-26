@@ -125,7 +125,7 @@ class OrderController extends Controller
         //只能查询支付到平台的订单
         $data = Order::where('user_id', $user->id)
             ->where('pay_target_type',Order::PAY_TARGET_TYPE_PLATFORM)
-            ->whereNotNull('user_deleted_at')
+            ->whereNull('user_deleted_at')
             ->where(function (Builder $query) {
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function (Builder $query) {
