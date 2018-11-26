@@ -175,6 +175,9 @@ class OperService extends BaseService
         $oper->bank_code = request('bank_code', '');
         $oper->licence_pic_url = request('licence_pic_url', '');
         $oper->business_licence_pic_url = request('business_licence_pic_url', '');
+        $oper->contact_qq = request('contact_qq', '');
+        $oper->contact_wechat = request('contact_wechat', '');
+        $oper->contact_mobile = request('contact_mobile', '');
 
         $oper->save();
         return $oper;
@@ -224,6 +227,9 @@ class OperService extends BaseService
         $oper->bank_code = request('bank_code', '');
         $oper->licence_pic_url = request('licence_pic_url', '');
         $oper->business_licence_pic_url = request('business_licence_pic_url', '');
+        $oper->contact_qq = request('contact_qq', '');
+        $oper->contact_wechat = request('contact_wechat', '');
+        $oper->contact_mobile = request('contact_mobile', '');
 
         $oper->save();
 
