@@ -277,7 +277,7 @@ class CsMerchantAuditService extends BaseService {
                 if(isset($dataBefore[$k])&&$dataAfter[$k]==$dataBefore[$k]){
                     continue;
                 }
-                $dataModify[$k] = $v;
+                $dataModify[$k] = $dataBefore[$k];
             }
         }
 
