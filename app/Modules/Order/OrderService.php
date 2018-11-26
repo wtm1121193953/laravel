@@ -596,8 +596,6 @@ class OrderService extends BaseService
             throw new BaseResponseException('该订单核销码错误');
         }
 
-        DeliveredOrderAutoFinishedJob::dispatch($order)->delay(Carbon::now()->addDay(7));
-
         return $order;
     }
 
