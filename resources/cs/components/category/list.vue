@@ -8,6 +8,8 @@
                     <span v-if="parseInt(scope.row.status) === 1" class="c-green">上架</span>
                     <span v-else-if="parseInt(scope.row.status) === 2" class="c-danger">下架</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
+                    <span v-if="parseInt(scope.row.platform_cat_status) === 2">(平台已禁用)</span>
+
                 </template>
             </el-table-column>
             <el-table-column prop="created_at" label="添加时间">
