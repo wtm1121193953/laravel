@@ -571,12 +571,12 @@ class WalletService extends BaseService
                     $item->bank_card_type = $bankCard->bank_card_type?? '';
                 } elseif ($item->origin_type == Wallet::ORIGIN_TYPE_MERCHANT) {
                     $merchant = MerchantService::getById($item->origin_id);
-                    $item->merchant_name = $merchant->name;
-                    $item->oper_name = OperService::getNameById($merchant->oper_id);
-                    $item->bank_open_name = $merchant->bank_open_name;
-                    $item->bank_card_no = $merchant->bank_card_no;
-                    $item->sub_bank_name = $merchant->sub_bank_name;
-                    $item->bank_card_type = $merchant->bank_card_type;
+                    $item->merchant_name = $merchant->name ?? '';
+                    $item->oper_name = OperService::getNameById($merchant->oper_id ?? '');
+                    $item->bank_open_name = $merchant->bank_open_name ?? '';
+                    $item->bank_card_no = $merchant->bank_card_no ?? '';
+                    $item->sub_bank_name = $merchant->sub_bank_name ?? '';
+                    $item->bank_card_type = $merchant->bank_card_type ?? '';
                 } elseif ($item->origin_type == Wallet::ORIGIN_TYPE_OPER) {
                     $oper = OperService::getById($item->origin_id);
                     $item->oper_name = $oper->name;
