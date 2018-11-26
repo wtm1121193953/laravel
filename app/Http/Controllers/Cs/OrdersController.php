@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Cs;
 
-use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Imports\BatchDelivery;
 use App\Modules\Order\Order;

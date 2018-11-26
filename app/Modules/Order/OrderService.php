@@ -11,6 +11,7 @@ namespace App\Modules\Order;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use App\Jobs\Cs\DeliveredOrderAutoFinishedJob;
 use App\Jobs\OrderPaidJob;
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Dishes\DishesGoods;
@@ -387,9 +388,8 @@ class OrderService extends BaseService
      * @param $transactionId
      * @param $totalFee
      * @param int $payType
-     * @param datetime $payTime 支付时间
+     * @param string $payTime 支付时间
      * @return bool
-     * @throws \Exception
      */
     public static function paySuccess($orderNo, $transactionId, $totalFee, $payType = Order::PAY_TYPE_WECHAT, $payTime='')
     {
@@ -532,6 +532,8 @@ class OrderService extends BaseService
         $order->status = Order::STATUS_DELIVERED;
         $order->save();
 
+        DeliveredOrderAutoFinishedJob::dispatch($order)->delay(Carbon::now()->addDay(7));
+
         return $order;
     }
 
@@ -565,6 +567,8 @@ class OrderService extends BaseService
         $order->status = Order::STATUS_DELIVERED;
         $order->save();
 
+        DeliveredOrderAutoFinishedJob::dispatch($order)->delay(Carbon::now()->addDay(7));
+
         return $order;
     }
 
@@ -590,6 +594,8 @@ class OrderService extends BaseService
         } else {
             throw new BaseResponseException('该订单核销码错误');
         }
+
+        DeliveredOrderAutoFinishedJob::dispatch($order)->delay(Carbon::now()->addDay(7));
 
         return $order;
     }
