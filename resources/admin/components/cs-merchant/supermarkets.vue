@@ -37,13 +37,13 @@
                     ></el-date-picker>
                 </el-form-item>
                 <el-form-item label="审核状态" prop="auditStatus" v-if="isAudit">
-                    <el-select v-model="query.auditStatus" size="small" multiple placeholder="请选择" class="w-250">
+                    <el-select clearable v-model="query.auditStatus" size="small" multiple placeholder="请选择" class="w-250">
                         <el-option label="待审核" value="0"/>
                         <el-option label="重新提交审核" value="3"/>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="审核状态" prop="auditStatus" v-else>
-                    <el-select v-model="query.auditStatus" size="small" multiple placeholder="请选择" class="w-150">
+                    <el-select clearable v-model="query.auditStatus" size="small" multiple placeholder="请选择" class="w-150">
                         <el-option label="待审核" value="1"/>
                         <el-option label="审核通过" value="2"/>
                         <el-option label="审核不通过" value="3"/>
@@ -51,21 +51,21 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="结算周期" prop="settlementCycleType">
-                    <el-select v-model="query.settlementCycleType" size="small" multiple placeholder="请选择"
+                    <el-select clearable v-model="query.settlementCycleType" size="small" multiple placeholder="请选择"
                                class="w-150">
                         <el-option label="周结" value="1"/>
                         <el-option label="T+1(自动)" value="3"/>
                         <el-option label="T+1(人工)" value="6"/>
                     </el-select>
                 </el-form-item>
-                <el-form-item prop="operId" label="激活运营中心ID">
+                <el-form-item prop="operId" label="运营中心ID">
                     <el-input v-model="query.operId" size="small" placeholder="激活运营中心ID" class="w-100" clearable/>
                 </el-form-item>
-                <el-form-item prop="operName" label="激活运营中心名称">
+                <el-form-item prop="operName" label="运营中心名称">
                     <el-input v-model="query.operName" size="small" placeholder="激活运营中心名称" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="商户状态" prop="status">
-                    <el-select v-model="query.status" size="small" class="w-150">
+                    <el-select clearable v-model="query.status" size="small" class="w-150">
                         <el-option label="全部" value=""/>
                         <el-option label="正常" value="1"/>
                         <el-option label="冻结" value="2"/>
@@ -113,8 +113,7 @@
                     <el-popover
                             v-else-if="scope.row.audit_status === 1"
                             placement="bottom-start"
-                            width="200px" trigger="hover"
-                            @show="showMessage(scope)">
+                            width="200px" trigger="hover">
                         <div slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.audit_suggestion || '无'}}
@@ -122,8 +121,7 @@
                     <el-popover
                             v-else-if="scope.row.audit_status === 2"
                             placement="bottom-start"
-                            width="200px" trigger="hover"
-                            @show="showMessage(scope)">
+                            width="200px" trigger="hover">
                         <div slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.audit_suggestion || '无'}}
@@ -140,7 +138,7 @@
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
                     <el-button type="text" @click="edit(scope)">编辑</el-button>
-
+                    <el-button v-if="parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="changeStatus(scope.row)">{{parseInt(scope.row.status) === 1 ? '冻结' : '解冻'}}</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -188,7 +186,6 @@
                     bizerNameOrMobile: '',
                 },
                 list: [],
-                auditRecord: [],
                 total: 0,
                 tableLoading: false,
             }
@@ -202,11 +199,6 @@
         methods: {
             merchantChange() {
                 this.getList();
-            },
-            showMessage(scope) {
-                api.get('/cs/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
-                    this.auditRecord = [data];
-                })
             },
             search() {
                 if (this.query.startDate > this.query.endDate) {
@@ -303,7 +295,7 @@
             changeStatus(row) {
                 let status = row.status === 1 ? 2 : 1;
                 this.$emit('before-request')
-                api.post('/cs/Merchant/changeStatus', {id: row.id, status: status}).then((data) => {
+                api.post('/cs/merchant/changeStatus', {id: row.id, status: status}).then((data) => {
                     row.status = status;
                     this.$emit('change', this.scope, data)
                 }).finally(() => {

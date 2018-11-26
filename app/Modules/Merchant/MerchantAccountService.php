@@ -190,7 +190,7 @@ class MerchantAccountService extends BaseService
                 [ 'id' => 4, 'name' => '用户管理', 'level' => 1, 'url' => 'user', 'sub' =>
                     [
                         [ 'id' => 401, 'name' => '我的用户', 'level' => 2, 'url' => '/cs/invite/statistics/list', 'pid' => 3,],
-                        [ 'id' => 402, 'name' => '用户分析', 'level' => 2, 'url' => '/cs/merchant/invite/statistics/daily', 'pid' => 3,],
+                        [ 'id' => 402, 'name' => '用户分析', 'level' => 2, 'url' => '/cs/invite/statistics/daily', 'pid' => 3,],
                     ]
                 ],
                 [ 'id' => 5, 'name' => '财务管理', 'level' => 1, 'url' => 'settlements',
@@ -208,7 +208,7 @@ class MerchantAccountService extends BaseService
                 [ 'id' => 7, 'name' => '素材中心', 'level' => 1, 'url' => 'material', 'sub' =>
                     [
                         [ 'id' => 701, 'name' => '分享用户二维码', 'level' => 2, 'url' => '/cs/invite/channel', 'pid' => 6,],
-                        [ 'id' => 702, 'name' => '支付二维码', 'level' => 2, 'url' => '/cs/pay/qrcode', 'pid' => 6,],
+//                        [ 'id' => 702, 'name' => '支付二维码', 'level' => 2, 'url' => '/cs/pay/qrcode', 'pid' => 6,],
                     ]
                 ],
 //                [ 'id' => 8, 'name' => '电子合同管理', 'level' => 1, 'url' => '/cs/electronic/contract',],
@@ -255,11 +255,17 @@ class MerchantAccountService extends BaseService
      * @param $password
      * @return MerchantAccount
      */
-    public static function createAccount($merchantId, $getAccount,$operId,$password){
+    public static function createAccount($merchantId, $getAccount,$operId,$password,$type = false){
 
         $isAccount = MerchantAccount::where('merchant_id', $merchantId)->first();
         if(!empty($isAccount)){
             throw new BaseResponseException('该商户账户已存在, 不能重复创建');
+        }
+
+        if($type){
+            $accountType = MerchantAccount::TYPE_CS;
+        }else{
+            $accountType = MerchantAccount::TYPE_NORMAL;
         }
         // 查询账号是否重复
         if(!empty(MerchantAccount::where('account', $getAccount)->first())){
@@ -270,6 +276,7 @@ class MerchantAccountService extends BaseService
         $account->oper_id = $operId;
         $account->account = $getAccount;
         $account->merchant_id = $merchantId;
+        $account->type = $accountType;
         $salt = str_random();
         $account->salt = $salt;
         $account->password = MerchantAccount::genPassword($password, $salt);

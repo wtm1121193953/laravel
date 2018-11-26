@@ -17,9 +17,11 @@ use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Cs\CsMerchantService;
+use App\Modules\Cs\CsMerchantSetting;
 use App\Modules\Cs\CsMerchantSettingService;
 use App\Modules\Cs\CsUserAddress;
 use App\Modules\CsOrder\CsOrderGood;
+use App\Modules\CsStatistics\CsStatisticsMerchantOrderService;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
@@ -52,6 +54,7 @@ use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Merchant\MerchantSettingService;
@@ -113,7 +116,6 @@ class OrderController extends Controller
      */
     public function getOrderList()
     {
-
         $status = request('status');
         $user = request()->get('current_user');
 
@@ -128,7 +130,9 @@ class OrderController extends Controller
                     ->orWhere(function (Builder $query) {
                         $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
                             ->whereIn('status', [4, 6, 7]);
-                    })->orWhere('type', Order::TYPE_DISHES);
+                    })->orWhere('type', Order::TYPE_DISHES)
+                    ->orWhere('type', Order::TYPE_SUPERMARKET);
+
             })
             ->when($merchantShareInMiniprogram != 1, function (Builder $query) use ($currentOperId) {
                 $query->where('oper_id', $currentOperId);
@@ -152,10 +156,13 @@ class OrderController extends Controller
             }
 
             if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
-                $csMerchat = CsMerchant::where('id',$item->merchant_id)->first();
-                $item->merchant_name = $csMerchat->name;
-                $item->merchant_logo = $csMerchat->logo;
-                $item->merchant_service_phone = $csMerchat->service_phone;
+                $csMerchant = CsMerchant::where('id',$item->merchant_id)->first();
+                $csMerchantSetting = CsMerchantSetting::where('cs_merchant_id',$csMerchant->id)->get()->first();
+                $item->delivery_charges = $csMerchantSetting->delivery_charges;
+                $item->cs_merchant = $csMerchant;
+//                $item->merchant_name = $csMerchant->name;
+//                $item->merchant_logo = $csMerchant->logo;
+//                $item->merchant_service_phone = $csMerchant->service_phone;
                 $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
 
             }else {
@@ -194,7 +201,11 @@ class OrderController extends Controller
             $detail->isOperSelf = $detail->oper_id === $currentOperId ? 1 : 0;
         }
         $merchant_of_order = MerchantService::getById($detail->merchant_id);
-        $detail->signboard_name = $merchant_of_order->value('signboard_name');
+        if ($detail->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){
+            $merchant_of_order = CsMerchantService::getById($detail->merchant_id);
+        }
+
+        $detail->signboard_name =$detail->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET?$merchant_of_order->name:$merchant_of_order->value('signboard_name');
         // 积分记录
         $creditRecord = UserCreditRecord::where('order_no', $detail->order_no)
             ->where('type', 1)
@@ -721,7 +732,6 @@ class OrderController extends Controller
         if (is_string($goodsList)) {
             $goodsList = json_decode($goodsList, true);
         }
-        Log::info('disesList11',['diesList' => $goodsList]);
 
         if (empty($goodsList)) {
             throw new ParamInvalidException('单品列表为空');
@@ -730,50 +740,62 @@ class OrderController extends Controller
             throw new ParamInvalidException('参数不合法1');
         }
         foreach ($goodsList as $item) {
-            if (!isset($item['id']) || !isset($item['number'])) {
+            if (empty($item['id']) || empty($item['number'])) {
                 throw new ParamInvalidException('参数不合法2');
             }
             $good = CsGood::findOrFail($item['id']);
             if ($good->status == CsGood::STATUS_OFF) {
-                throw new BaseResponseException('订单中 ' . $good->goods_name . ' 已下架，请删除后重试');
+                throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 已下架，请删除后重试');
+            }
+            if ($good->stock<=$item['number']) {
+                throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试');
             }
         }
 
-        $user =  $user = request()->get('current_user');
-        $order = new Order();
-        $orderNo = Order::genOrderNo();
-        $order->oper_id = $merchant->oper_id;
-        $order->order_no = $orderNo;
-        $order->user_id = $user->id;
-        $order->user_name = $user->name ?? '';
-        $order->type = Order::TYPE_SUPERMARKET;
-        $order->notify_mobile = $user->mobile;
-        $order->merchant_id = $merchant->id;
-        $order->merchant_name = $merchant->name ?? '';
-        $order->goods_name = $merchant->name ?? '';
-        $order->dishes_id = 0;
-        $order->status = Order::STATUS_UN_PAY;
-        $order->pay_price = $this->getCsTotalPrice($goodsList);
-        $order->settlement_rate = $merchant->settlement_rate;
-        $order->remark = $remark;
-        $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
-        $order->pay_type = $payType;
-        $order->settlement_rate = $merchant->settlement_rate;
-        $order->origin_app_type = request()->header('app-type');
-        $order->bizer_id = 0;
-        $order->deliver_type = $deliveryType;
-        if (!empty($addressId)){
-            $address = CsUserAddress::findOrFail($addressId);
-            $order->express_address = json_encode($address);
-        }
-        else{
-            $order->express_address ='';
-        }
+        DB::beginTransaction();
+        try {
+            //创建订单
+            $user =  $user = request()->get('current_user');
+            $order = new Order();
+            $orderNo = Order::genOrderNo();
+            $order->merchant_type = Order::MERCHANT_TYPE_SUPERMARKET;
+            $order->oper_id = $merchant->oper_id;
+            $order->order_no = $orderNo;
+            $order->user_id = $user->id;
+            $order->user_name = $user->name ?? '';
+            $order->type = Order::TYPE_SUPERMARKET;
+            $order->notify_mobile = $user->mobile;
+            $order->merchant_id = $merchant->id;
+            $order->merchant_name = $merchant->name ?? '';
+            $order->goods_name = $merchant->name ?? '';
+            $order->dishes_id = 0;
+            $order->status = Order::STATUS_UN_PAY;
+            $order->pay_price = $this->getCsTotalPrice($goodsList);
+            $order->settlement_rate = $merchant->settlement_rate;
+            $order->remark = $remark;
+            $order->pay_target_type = $merchant_oper->pay_to_platform ? Order::PAY_TARGET_TYPE_PLATFORM : Order::PAY_TARGET_TYPE_OPER;
+            $order->pay_type = $payType;
+            $order->settlement_rate = $merchant->settlement_rate;
+            $order->origin_app_type = request()->header('app-type');
+            $order->bizer_id = 0;
+            $order->deliver_type = $deliveryType;
+            if (!empty($addressId)){
+                $address = CsUserAddress::findOrFail($addressId);
+                $order->express_address = json_encode($address);
+            }
+            else{
+                $order->express_address ='';
+            }
 
-        $order->merchant_type = Order::MERCHANT_TYPE_SUPERMARKET;
-        if ($order->save()){
+            $order->save();
+
+            //更新商品库存销量
             foreach ($goodsList as $item) {
                 $good = CsGood::findOrFail($item['id']);
+                $good->sale_num += $item['number'];
+                $good->stock -= $item['number'];
+                $good->save();
+
                 $csOrderGood = new CsOrderGood();
                 $csOrderGood->oper_id = $merchant->oper_id;
                 $csOrderGood->price = $good->price;
@@ -785,7 +807,18 @@ class OrderController extends Controller
                 $csOrderGood->save();
             }
 
+            //更新商户当日销量
+            CsStatisticsMerchantOrderService::addMerchantOrderNumberToday($merchantId);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('超市下单失败', [
+                'message' => $e->getMessage(),
+                'data' => $e
+            ]);
+            throw new BaseResponseException('系统错误，创建订单失败');
         }
+
 
         if(!$payType){
             return Result::success([

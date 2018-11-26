@@ -14,7 +14,7 @@ Route::get('/cs/merchant/audit/record/newest', 'CsMerchantController@getNewestAu
 Route::get('/cs/merchant/isPayToPlatform', 'CsMerchantController@isPayToPlatform');
 
 Route::post('/cs/merchant/add', 'CsMerchantController@add');
-Route::post('/cs/merchant/edit', 'CsMerchantController@edit');
+Route::post('/cs/merchant/edit', 'CsMerchantAuditController@edit');
 Route::post('/cs/merchant/changeStatus', 'CsMerchantController@changeStatus');
 Route::get('/cs/merchant/export', 'CsMerchantController@export');
 Route::post('/cs/merchant/recall', 'CsMerchantController@recall');
@@ -25,6 +25,8 @@ Route::post('/cs/merchant/editAccount', 'CsMerchantController@editAccount');
 Route::post('/cs/merchant/addFromMerchantPool', 'CsMerchantController@addFromMerchantPool');
 
 Route::get('/cs/merchant/audit/list', 'CsMerchantController@getAuditList');
+Route::get('/cs/merchant/audit/detail', 'CsMerchantController@getAuditDetail');
+
 
 Route::post('/merchant/draft/add', 'MerchantDraftController@add');
 Route::get('/merchant/drafts', 'MerchantDraftController@getList');

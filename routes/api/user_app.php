@@ -12,6 +12,7 @@ Route::prefix('app/user')
 
         Route::get('version/last', 'VersionController@last');
         Route::get('versions', 'VersionController@getList');
+        Route::get('settings', 'SettingController@settings');
 
         Route::any('sms/verify_code', 'SmsController@sendVerifyCode');
 
@@ -49,7 +50,7 @@ Route::prefix('app/user')
         Route::get('goods/detail', 'GoodsController@detail');
 
         Route::get('orders', 'OrderController@getList')->middleware(UserLoginFilter::class);
-        Route::get('user/orders', 'OrderController@getOrderList')->middleware(UserLoginFilter::class);
+        Route::get('userOrders', 'OrderController@getOrderList')->middleware(UserLoginFilter::class);
 
         Route::get('order/detail', 'OrderController@detail')->middleware(UserLoginFilter::class);
         Route::post('order/buy', 'OrderController@buy')->middleware(UserLoginFilter::class);
@@ -131,7 +132,7 @@ Route::prefix('app/user')
 
         //超市
         Route::get('cs/merchant/list','CsMerchantController@getList');
-        Route::get('cs/merchant/category','MerchantCategoryController@getCsTree');
+        Route::get('cs/merchant/category','CsMerchantController@getCategoryTree');
         Route::get('cs/merchant/goods','CsGoodsController@getAllGoods');
         Route::post('cs/dishes/add','OrderController@csOrderCreate')->middleware(UserLoginFilter::class);
 

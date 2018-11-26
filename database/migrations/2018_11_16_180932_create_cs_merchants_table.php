@@ -76,8 +76,6 @@ class CreateCsMerchantsTable extends Migration
             $table->tinyInteger('audit_status')->default(0)->comment('商户资料审核状态 0-未审核 1-已审核 2-审核不通过 3-重新提交审核');
             $table->string('audit_suggestion',128)->default('')->comment('审核意见');
 
-            $table->integer('audit_oper_id')->default(0)->comment('当前提交审核的运营中心ID');
-            $table->integer('creator_oper_id')->default(0)->comment('录入资料的运营中心ID');
             $table->string('service_phone')->default('')->comment('客服电话');
             $table->string('bank_card_pic_a',500)->default('')->comment('法人银行卡正面照');
             $table->string('other_card_pic_urls',2000)->default('')->comment('其他证件照片');

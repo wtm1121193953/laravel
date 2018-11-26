@@ -52,12 +52,15 @@ class CsGoodService extends BaseService
             ->when(!empty($params['cs_merchant_ids']),function (Builder $query) use ($params){
                 $query->whereIn('cs_merchant_id', $params['cs_merchant_ids']);
             })
+            ->when(!empty($params['sort']) && !empty($params['order']),function (Builder $query) use ($params) {
+                $query->orderBy($params['sort'],$params['order']);
+            })
             ->when(!empty($params['sort']),function (Builder $query) use ($params){
                 if ($params['sort'] == 1) {
                     $query->orderBy('sort','desc');
                 } elseif ($params['sort'] == 2) {
                     $query->orderBy('created_at','desc');
-                } else {
+                }  else {
                     $query->orderBy('sort','desc');
                 }
 

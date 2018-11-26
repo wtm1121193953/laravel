@@ -15,6 +15,7 @@ use App\Modules\Area\Area;
 use App\Modules\Country\CountryService;
 use App\Modules\CsStatistics\CsStatisticsMerchantOrder;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantFollow;
 use App\Modules\Oper\Oper;
 use App\Support\Lbs;
@@ -80,29 +81,20 @@ class CsMerchantService extends BaseService {
     }
 
     /**
-     * @param array $data
+     * @param array $query
      * @return CsMerchant[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getAllNames(array $data = [])
+    public static function getAllNames(array $query = [])
     {
         // todo 后期可以对查询结果做缓存
-        $auditStatus = array_get($data, 'audit_status');
-        $status =array_get($data, 'status');
-        //$isPilot =array_get($data, 'isPilot');//是否为试点商户
-        $operId =array_get($data, 'operId'); //运营中心ID
-        //$bizer_id = array_get($data, 'bizer_id');//业务员ID
-//        $list = Merchant::where(function (Builder $query) use ($operId) {
-//            $query->where('oper_id', $operId)
-//                ->orWhere('audit_oper_id', $operId);
-//        })
+        $auditStatus = array_get($query, 'audit_status');
+        $status =array_get($query, 'status');
+        $operId =array_get($query, 'operId'); //运营中心ID
 
-        $data = CsMerchant::select('id', 'name')
+        $query = CsMerchant::select('id', 'name')
             ->when($status, function (Builder $query) use ($status) {
                 $query->where('status', $status);
             })
-            /*->when(!empty($bizer_id), function (Builder $query) use ($bizer_id) {
-                $query->where('bizer_id', $bizer_id);
-            })*/
             ->when(!empty($auditStatus), function (Builder $query) use ($auditStatus) {
                 if ($auditStatus == -1) {
                     $auditStatus = 0;
@@ -111,10 +103,7 @@ class CsMerchantService extends BaseService {
             });
 
         if ($operId) {
-            $data->where(function (Builder $query) use ($operId) {
-                $query->where('oper_id', $operId)
-                    ->orWhere('audit_oper_id', $operId);
-            });
+            $query->where('oper_id', $operId);
         }
 
         /*if($isPilot){
@@ -123,7 +112,7 @@ class CsMerchantService extends BaseService {
             $data->where('is_pilot', CsMerchant::NORMAL_MERCHANT);
         }*/
 
-        $list = $data->orderBy('updated_at', 'desc')->get();
+        $list = $query->orderBy('updated_at', 'desc')->get();
 
         return $list;
     }
@@ -133,7 +122,6 @@ class CsMerchantService extends BaseService {
      * @param array $data 查询条件 {
      *      id,
      *      operId,
-     *      creatorOperId,
      *      name,
      *      signboardName,
      *      auditStatus,
@@ -147,7 +135,6 @@ class CsMerchantService extends BaseService {
     {
         $id = array_get($data,'id');
         $operId = array_get($data,'operId');
-        $creatorOperId = array_get($data,'creatorOperId');
         $name = array_get($data,'name');
         $merchantId = array_get($data,'merchantId');
         $signboardName = array_get($data,'signboardName');
@@ -160,8 +147,7 @@ class CsMerchantService extends BaseService {
         $cityId = array_get($data, "cityId");
 
         // 全局限制条件
-        $query = CsMerchant::where('audit_oper_id', '>', 0)
-            ->orderByDesc('id');
+        $query = CsMerchant::orderByDesc('id');
 
         // 筛选条件
         if ($id) {
@@ -169,22 +155,9 @@ class CsMerchantService extends BaseService {
         }
         if ($operId) {
             if (is_array($operId) || $operId instanceof Collection) {
-                $query->where(function (Builder $query) use ($operId) {
-                    $query->whereIn('oper_id', $operId)
-                        ->orWhereIn('audit_oper_id', $operId);
-                });
+                $query->whereIn('oper_id', $operId);
             } else {
-                $query->where(function (Builder $query) use ($operId) {
-                    $query->where('oper_id', $operId)
-                        ->orWhere('audit_oper_id', $operId);
-                });
-            }
-        }
-        if (!empty($creatorOperId)) {
-            if (is_array($creatorOperId) || $creatorOperId instanceof Collection) {
-                $query->whereIn('creator_oper_id', $creatorOperId);
-            } else {
-                $query->where('creator_oper_id', $creatorOperId);
+                $query->where('oper_id', $operId);
             }
         }
 
@@ -257,10 +230,9 @@ class CsMerchantService extends BaseService {
             $data->each(function ($item) {
 
                 $item->desc_pic_list = $item->desc_pic_list ? explode(',', $item->desc_pic_list) : [];
-                $item->account = $item->name;
+                $item->account = MerchantAccount::where('merchant_id', $item->id)->where('type',MerchantAccount::TYPE_CS)->first();
                 $item->business_time = json_decode($item->business_time, 1);
-                $item->operName = Oper::where('id', $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id)->value('name');
-                $item->operId = $item->oper_id > 0 ? $item->oper_id : $item->audit_oper_id;
+                $item->operName = Oper::where('id', $item->oper_id )->value('name');
             });
             return $data;
         }
@@ -276,16 +248,87 @@ class CsMerchantService extends BaseService {
     {
 
         $merchant = CsMerchant::findOrFail($id);
+        $merchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)->orderBy('id','desc')->first();
+        $merchant->cs_merchant_id = $merchant->id;
+        $merchant->account = $merchant->name;
+        $merchant->audit_status = $merchantAudit->status;
+        $merchant = self::makeDetail($merchant);
+        $oper = Oper::where('id', $merchant->oper_id)->first();
+        if ($oper) {
+            $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
+            $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
+            $merchant->operName = $oper->name;
+        }
+        return $merchant;
+    }
+
+    /**
+     * @param $id
+     * @param $userId
+     * @return mixed
+     */
+    public static function getAuditDetail($id,$userId)
+    {
+        $merchantAudit = CsMerchantAudit::findOrFail($id);
+        $merchant = json_decode($merchantAudit->data_after,false);
+        $merchant->account = $merchant->name;
+        $merchant = self::makeDetail($merchant);
+        $merchant->id = $merchantAudit->id;
+        $merchant->audit_status = $merchantAudit->status;
+        $merchant->audit_suggestion = $merchantAudit->suggestion;
+        $operId = isset($merchantAudit->oper_id) ? $merchantAudit->oper_id:0;
+        $merchant->operName = Oper::where('id', $operId)->value('name');
+        $merchant->cs_merchant_id = $merchantAudit->cs_merchant_id;
+
+        $oper = Oper::where('id', $operId)->first();
+        if ($oper) {
+            $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
+            $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
+        }
+        return $merchant;
+    }
+
+    /**
+     * 用以处理数据
+     * @param $csMerchant
+     * @return mixed
+     */
+    public static function makeDetail($csMerchant){
+        $csMerchant->business_time = json_decode($csMerchant->business_time, 1);
+        $csMerchant->desc_pic_list = $csMerchant->desc_pic_list ? explode(',', $csMerchant->desc_pic_list) : '';
+        $csMerchant->contract_pic_url = $csMerchant->contract_pic_url ? explode(',', $csMerchant->contract_pic_url) : '';
+        $csMerchant->other_card_pic_urls = $csMerchant->other_card_pic_urls ? explode(',', $csMerchant->other_card_pic_urls) : '';
+        $csMerchant->bank_card_pic_a = $csMerchant->bank_card_pic_a ? explode(',', $csMerchant->bank_card_pic_a) : '';
+        $csMerchant->countryName = CountryService::getNameZhById($csMerchant->country_id);
+        return $csMerchant;
+    }
+
+    /**
+     * @param $id
+     * @param $userId
+     * @return mixed
+     */
+    /*public static function getDetailData($id,$userId)
+    {
+        $merchantAudit = CsMerchantAudit::findOrFail($id);
+        $merchant = json_decode($merchantAudit->data_after,false);
+        $merchant->cs_merchant_id = $merchantAudit->cs_merchant_id == 0 ? '' : $merchantAudit->cs_merchant_id;
         $merchant->account = $merchant->name;
         $merchant->business_time = json_decode($merchant->business_time, 1);
+
         $merchant->desc_pic_list = $merchant->desc_pic_list ? explode(',', $merchant->desc_pic_list) : '';
         $merchant->contract_pic_url = $merchant->contract_pic_url ? explode(',', $merchant->contract_pic_url) : '';
         $merchant->other_card_pic_urls = $merchant->other_card_pic_urls ? explode(',', $merchant->other_card_pic_urls) : '';
         $merchant->bank_card_pic_a = $merchant->bank_card_pic_a ? explode(',', $merchant->bank_card_pic_a) : '';
 
-        $merchant->operName = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->value('name');
-        $merchant->creatorOperName = Oper::where('id', $merchant->creator_oper_id)->value('name');
-        $oper = Oper::where('id', $merchant->oper_id > 0 ? $merchant->oper_id : $merchant->audit_oper_id)->first();
+        $merchant->id = $merchantAudit->id;
+        $merchant->audit_status = $merchantAudit->status;
+        $merchant->audit_suggestion = $merchantAudit->suggestion;
+        $operId = isset($merchantAudit->oper_id) ? $merchantAudit->oper_id:0;
+        $merchant->operName = Oper::where('id', $operId)->value('name');
+        $merchant->creatorOperName = Oper::where('id', $operId)->value('name');
+
+        $oper = Oper::where('id', $operId)->first();
         if ($oper) {
             $merchant->operAddress = $oper->province . $oper->city . $oper->area . $oper->address;
             $merchant->isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
@@ -297,8 +340,9 @@ class CsMerchantService extends BaseService {
             $merchant->user_follow_status =1;
         }
         $merchant->countryName = CountryService::getNameZhById($merchant->country_id);
+
         return $merchant;
-    }
+    }*/
 
     /**
      * 通过审核id获取最新修改的数据
@@ -334,8 +378,9 @@ class CsMerchantService extends BaseService {
         return $merchant;
     }
 
+
     /**
-     * 编辑商户
+     * SaaS编辑商户
      * @param $id
      * @param $currentOperId
      * @param string $auditStauts
@@ -344,104 +389,48 @@ class CsMerchantService extends BaseService {
      */
     public static function edit($id, $currentOperId, $auditStauts = '', $isAdmin = false)
     {
-        if(empty($currentOperId)){
-            $currentOperId = 0;
-        }
-
-        $existCsMerchantAudit = CsMerchantAudit::where('cs_merchant_id',$id)
-            ->where('type',CsMerchantAudit::UPDATE_TYPE)
-            ->where('status',CsMerchantAudit::AUDIT_STATUS_AUDITING)
-            ->first();
-        if($existCsMerchantAudit){
-            throw new BaseResponseException('该商户已存在待审核记录');
-        }
-
-        $csmerchant = CsMerchant::where('id', $id)
-            //->where('audit_oper_id', $currentOperId)
-            ->first();
-        //保留原有数据转存json到审核记录表
-        $beforeCsmerchant = $csmerchant->toArray();
-        $beforeCsmerchantToJson = json_encode($beforeCsmerchant);
-        //获取原有结算周期
-        $settlement_cycle_type = $csmerchant->settlement_cycle_type;
-        if (empty($csmerchant)) {
-            throw new BaseResponseException('该商户不存在');
-        }
-
+        $csmerchant = CsMerchant::where('id', $id)->firstOrFail();
         $csmerchant->fillMerchantPoolInfoFromRequest();
         $csmerchant->fillMerchantActiveInfoFromRequest();
 
-        if($csmerchant->settlement_cycle_type == CsMerchant::SETTLE_DAY_ADD_ONE || $csmerchant->settlement_cycle_type == CsMerchant::SETTLE_MONTHLY){
+        // 商户名不能重复
+        //查询超市表
+        $exists = CsMerchant::where('id','<>',$id)->where('name',$csmerchant->name)->first();
+        //查询普通商户表
+        $existsMerchant = Merchant::where('name', $csmerchant->name)->first();
 
-            //判断编辑之前商户是否已切换到T+1
-            /*if($settlement_cycle_type == CsMerchant::SETTLE_DAY_ADD_ONE || $settlement_cycle_type
-                == CsMerchant::SETTLE_MONTHLY){
-
-            }else{
-                $date = Carbon::now()->startOfDay();
-                $week = Carbon::now()->startOfWeek();
-                if($date != $week){
-                    throw new ParamInvalidException('周结改T+1需要周一才能修改');
-                }
-            }*/
-
-            if($csmerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_COMPANY){
-                if($csmerchant->name != $csmerchant->bank_open_name){
-                    throw new ParamInvalidException('提交失败，申请T+1结算，商户名称需和开户名一致');
-                }
-            }elseif($csmerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_PEOPLE){
-                if($csmerchant->corporation_name != $csmerchant->bank_open_name){
-                    throw new ParamInvalidException('提交失败，申请T+1结算，营业执照及法人姓名需和开户名一致');
-                }
-            }
+        if(($exists&&$exists->id!=$id)||$existsMerchant){
+            throw new ParamInvalidException('商户名称不能重复');
         }
-        $csmerchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
 
-        //编辑商户，商户编辑后是待审核
-
-        CsMerchant::where('id',$id)->update(['audit_status' => CsMerchant::AUDIT_STATUS_AUDITING]);
-
-        $csmerchant->toArray();
-        $afterCsmerchantToJson = json_encode($csmerchant);
-
-        //与原有数据对比，有修改字段另存储json到审核表
-        $modifyCsMerchant = [];
-        foreach ($beforeCsmerchant as $key => $val){
-            if($csmerchant[$key] != $val){
-                array_push($modifyCsMerchant,[$key => $csmerchant[$key]]);
-            }
+        // 招牌名不能重复
+        $signboardName = CsMerchant::where('id','<>',$id)->where('signboard_name', $csmerchant->signboard_name)->first();
+        $existsMerchantSignboardName = Merchant::where('signboard_name',$csmerchant->signboard_name)->first();
+        if ($signboardName || $existsMerchantSignboardName) {
+            throw new ParamInvalidException('招牌名称不能重复');
         }
-        $modifyCsMerchantToJson = json_encode($modifyCsMerchant);
-        $params = [
-            'oper_id' => $currentOperId,
-            'type' => CsMerchantAudit::UPDATE_TYPE,
-            'CsmerchantId' => $csmerchant['id'],
-            'name' => $csmerchant['name'],
-            'dataBefore' => $beforeCsmerchantToJson,
-            'dataAfter' => $afterCsmerchantToJson,
-            'dataModify' => $modifyCsMerchantToJson,
-        ];
 
-        // 添加审核记录
-        CsMerchantAuditService::addAudit($params);
-
+        $csmerchant->save();
         return $csmerchant;
     }
 
     /**
      * @param $currentOperId
+     * @param $name
      * 添加商户
      * @return CsMerchant
      */
-    public static function add($currentOperId)
+    public static function add($currentOperId,$name)
     {
         $csmerchant = new CsMerchant();
         $csmerchant->fillMerchantPoolInfoFromRequest();
         $csmerchant->fillMerchantActiveInfoFromRequest();
 
         // 补充商家创建者及审核提交者
-        $csmerchant->audit_oper_id = $currentOperId;
-        $csmerchant->creator_oper_id = $currentOperId;
+        $csmerchant->name = $name;
+        $csmerchant->oper_id = $currentOperId;
+        $csmerchant->settlement_cycle_type = CsMerchant::SETTLE_DAY_ADD_ONE;
+        $csmerchant->audit_status = CsMerchant::AUDIT_STATUS_AUDITING;
 
         // 商户名不能重复
         //查询超市表
@@ -490,9 +479,9 @@ class CsMerchantService extends BaseService {
     public static function geoAddToRedis($merchant)
     {
         if ($merchant instanceof Collection) {
-            Lbs::merchantGpsAdd($merchant);
+            Lbs::csMerchantGpsAdd($merchant);
         } else {
-            Lbs::merchantGpsAdd($merchant->id, $merchant->lng, $merchant->lat);
+            Lbs::csMerchantGpsAdd($merchant->id, $merchant->lng, $merchant->lat);
         }
     }
 
@@ -540,12 +529,11 @@ class CsMerchantService extends BaseService {
      */
     public static function getListAndDistance(array $params = [])
     {
-//        $query = CsMerchant::all();
-//        return $query;
-
         $city_id = array_get($params, 'city_id');
         $lng = array_get($params,'lng');
         $lat = array_get($params, 'lat');
+        $keyword = array_get($params, 'keyword',null);
+        $pageSize = array_get($params, 'pageSize',15);
 
         // 暂时去掉商户列表中的距离限制
         $radius = array_get($params, 'radius');
@@ -561,14 +549,14 @@ class CsMerchantService extends BaseService {
         $distances = null;
         if($lng && $lat && $radius){
             // 如果经纬度及范围都存在, 则按距离筛选出附近的商家
-            $distances = Lbs::getNearlyMerchantDistanceByGps($lng, $lat, $radius);
+            $distances = Lbs::getNearlyCsMerchantDistanceByGps($lng, $lat, $radius);
         }
         $user_key = array_get($params, 'user_key', 0); //终端的唯一表示，用于计算距离
 
         //只能查询切换到平台的商户
         $query = CsMerchant::where('status', 1)
             ->where('oper_id', '>', 0)
-            ->whereIn('audit_status', [CsMerchant::AUDIT_STATUS_SUCCESS, CsMerchant::AUDIT_STATUS_RESUBMIT])
+            ->whereIn('audit_status', [CsMerchant::AUDIT_STATUS_SUCCESS])
             ->when($city_id, function(Builder $query) use ($city_id){
                 // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户
                 $areaInfo = Area::where('area_id', $city_id)->where('path', 1)->first();
@@ -585,6 +573,10 @@ class CsMerchantService extends BaseService {
                         ->pluck('area_id');
                     $query->whereIn('city_id', $cityIdArray);
                 }
+            })
+            ->when($keyword, function(Builder $query) use ($keyword){
+                $query->where('name', 'like', "%$keyword%")
+                    ->orWhere('signboard_name', 'like', "%$keyword%");
             })
             ->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
                 // 如果范围存在, 按距离搜索, 并按距离排序
@@ -607,25 +599,25 @@ class CsMerchantService extends BaseService {
             $allList = $query->select('id')->get();
             $total = $query->count();
             $list = $allList->map(function ($item) use ($lng, $lat, $user_key) {
-                    $item->distance = Lbs::getDistanceOfMerchant($item->id, $user_key, floatval($lng), floatval($lat));
+                    $item->distance = Lbs::getDistanceOfCsMerchant($item->id, $user_key, floatval($lng), floatval($lat));
                     return $item;
                 })
                 ->sortBy('distance')
-                ->forPage(request('page', 1), 15)
+                ->forPage(request('page', 1), $pageSize)
                 ->values()
                 ->map(function($item) {
                     if ($item->is_pilot == 1) {
                         $item->distance -= 100000000;
                     }
                     $item->distance = Utils::getFormativeDistance($item->distance);
-                    $merchant = DataCacheService::getMerchantDetail($item->id);
+                    $merchant = DataCacheService::getCsMerchantDetail($item->id);
                     $merchant->distance = $item->distance;
                     // 格式化距离
                     return $merchant;
                 });
         }else {
             // 没有按距离搜索时, 直接在数据库中排序并分页
-            $data = $query->paginate();
+            $data = $query->paginate($pageSize);
             $list = $data->items();
             $total = $data->total();
         }
@@ -644,6 +636,8 @@ class CsMerchantService extends BaseService {
             $merchantOrderData = CsStatisticsMerchantOrder::where('cs_merchant_id',$item->id)->select('order_number_30d','order_number_today')->first();
             if($merchantOrderData){
                 $item->month_order_number = $merchantOrderData->order_number_today + $merchantOrderData->order_number_30d;//月销售量加入当前销售量
+            }else{
+                $item->month_order_number = 0;
             }
 
             //配送信息:
@@ -654,6 +648,10 @@ class CsMerchantService extends BaseService {
                 $item->delivery_free_start = $MerchantInfo->delivery_free_start;
                 $item->delivery_free_order_amount = $MerchantInfo->delivery_free_order_amount;
             }
+            if(!isset($item->distance)){
+                $item->distance = 0;//没有经纬度时,设置为0
+            }
+
         });
 
         return ['list' => $list, 'total' => $total];
@@ -671,7 +669,7 @@ class CsMerchantService extends BaseService {
         if($lng && $lat){
             $currentUser = request()->get('current_user');
             $tempToken = empty($currentUser) ? str_random() : $currentUser->id;
-            $distance = Lbs::getDistanceOfMerchant($id, $tempToken, floatval($lng), floatval($lat));
+            $distance = Lbs::getDistanceOfCsMerchant($id, $tempToken, floatval($lng), floatval($lat));
             // 格式化距离
             $detail->distance = Utils::getFormativeDistance($distance);
         }

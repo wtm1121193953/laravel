@@ -2,10 +2,11 @@
     <!-- 商户列表项操作 v-if="parseInt(scope.row.audit_status) !== 1" -->
     <div>
         <el-button  type="text" @click="showMearchant(scope)">查看</el-button>
-        <el-button v-if="parseInt(scope.row.audit_status)!==0" type="text" @click="edit(scope)">编辑</el-button>
+        <el-button v-if="parseInt(scope.row.audit_status)!==0" type="text" @click="edit(scope)">重新提交审核</el-button>
+        <el-button v-if="parseInt(scope.row.audit_status)!==0" type="text" @click="seeAuditRecords">查看审核记录</el-button>
         <el-button v-if="parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="changeStatus">{{parseInt(scope.row.status) === 1 ? '冻结' : ''}}</el-button>
         <el-button  style=" margin-left: 0px;" v-if="!scope.row.account && parseInt(scope.row.audit_status)!==0 && parseInt(scope.row.audit_status)!==2" type="text" @click="showCreateAccountDialog = true">生成帐户</el-button>
-        <!--<el-button  style=" margin-left: 0px;" v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改帐户密码</el-button>-->
+        <el-button  style=" margin-left: 0px;" v-if="scope.row.account" type="text" @click="showModifyAccountDialog = true">修改帐户密码</el-button>
         <el-dialog title="创建商户帐号" :visible.sync="showCreateAccountDialog">
             <el-row>
                 <el-col :span="16">
@@ -109,7 +110,9 @@
                 })
                 return false;
             },
-
+            seeAuditRecords(){
+                this.$menu.change('/cs/merchant/audit/list', {merchantId: this.scope.row.id})
+            },
             showMearchant(scope){
                 router.push({
                     path: '/cs/merchant/detail',
@@ -131,6 +134,7 @@
             createAccount(){
                 let data = this.accountForm;
                 data.merchant_id = this.scope.row.id;
+                data.type = true;
                 this.$refs.form.validate(valid => {
                     if (valid) {
                         api.post('/cs/merchant/createAccount', data).then(data => {

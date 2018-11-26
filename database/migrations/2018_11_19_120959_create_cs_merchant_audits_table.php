@@ -25,6 +25,7 @@ class CreateCsMerchantAuditsTable extends Migration
 
             $table->tinyInteger('status')->default(0)->comment('审核状态 1待审核 2审核通过 3审核不通过');
             $table->string('suggestion')->default('')->comment('审核意见');
+            $table->dateTime('audit_time')->nullable()->default(null)->comment('审核时间');
             $table->timestamps();
             $table->comment = '超市商户审核表';
         });

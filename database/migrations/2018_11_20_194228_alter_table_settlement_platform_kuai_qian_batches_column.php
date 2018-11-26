@@ -26,6 +26,11 @@ class AlterTableSettlementPlatformKuaiQianBatchesColumn extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('settlement_platform_kuai_qian_batches', function (Blueprint $table) {
+            //
+            $table->dropColumn([
+                'merchant_type'
+            ]);
+        });
     }
 }

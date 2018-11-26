@@ -5,6 +5,7 @@
 
 namespace App\Exports;
 
+use App\DataCacheService;
 use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsPlatformCategoryService;
 use Illuminate\Database\Query\Builder;

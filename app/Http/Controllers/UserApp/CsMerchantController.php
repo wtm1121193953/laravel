@@ -9,7 +9,9 @@
 namespace App\Http\Controllers\UserApp;
 
 
+use App\DataCacheService;
 use App\Http\Controllers\Controller;
+use App\Modules\Cs\CsMerchantCategoryService;
 use App\Modules\Cs\CsMerchantService;
 use App\Result;
 
@@ -38,6 +40,18 @@ class CsMerchantController extends Controller
 
         return Result::success($data);
 
+    }
+
+    /**
+     * 获取超市商户全部分类
+     */
+    public function getCategoryTree(){
+        $this->validate(request(),[
+            'merchant_id' => 'required|integer|min:1'
+        ]);
+        $cs_merchant_id = request('merchant_id');
+        $list = DataCacheService::getCsMerchantCats($cs_merchant_id);
+        return Result::success(['list'=>$list]);
     }
 
 }

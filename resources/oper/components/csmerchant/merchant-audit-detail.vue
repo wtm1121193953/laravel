@@ -24,14 +24,14 @@
                         <span v-else-if="data.settlement_cycle_type === 6" class="c-green">T+1</span>
                         <span v-else class="c-green">未知</span>
                     </el-form-item>-->
-                    <el-form-item prop="id" label="商户ID">{{data.id}}</el-form-item>
+                    <el-form-item prop="id" label="商户ID">{{data.cs_merchant_id}}</el-form-item>
                     <el-form-item v-if="data.operName" prop="operName" label="运营中心">{{data.operName}}</el-form-item>
                     <el-form-item prop="name" label="商户名称">{{data.name}}</el-form-item>
                     <el-form-item prop="signboard_name" label="招牌名称">{{data.signboard_name}}</el-form-item>
                     <el-form-item label="营业执照">
                         <div class="licence" v-viewer style="display: none;">
-                                <img :src="data.business_licence_pic_url" />
-                            </div>
+                            <img :src="data.business_licence_pic_url" />
+                        </div>
                         <el-button v-if="data.business_licence_pic_url" type="text" @click="previewImage('licence')">查看</el-button>
                         <!-- <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button> -->
                     </el-form-item>
@@ -49,7 +49,6 @@
 
                 <!-- 商户录入信息右侧块 -->
                 <el-col :span="11" :offset="1">
-                    <el-form-item prop="merchant_type" label="商户类型" class="c-green">超市商户</el-form-item>
                     <el-form-item prop="operAddress" label="运营中心地址">
                         {{data.operAddress}}
                     </el-form-item>

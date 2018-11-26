@@ -413,9 +413,14 @@ class OrderService extends BaseService
                     $order->status = Order::STATUS_FINISHED;
                     $order->finish_time = Carbon::now();
                     $order->save();
-                }else if($order->type == Order::TYPE_DISHES){
+                }else if($order->type == Order::TYPE_DISHES) {
                     $order->status = Order::STATUS_FINISHED;
                     $order->finish_time = Carbon::now();
+                    $order->save();
+                }else if ($order->type == Order::TYPE_SUPERMARKET && $order->deliver_type == Order::DELIVERY_SELF_MENTION) {
+                    //超市订单支付成功后如果是到店自取的订单订单改为待取货，并成取货码
+                    $order->deliver_code = self::createDeliverCode();
+                    $order->status = Order::STATUS_NOT_TAKE_BY_SELF;
                     $order->save();
                 }else {
                     $order->status = Order::STATUS_PAID;
@@ -610,5 +615,21 @@ class OrderService extends BaseService
         } else {
             throw new BaseResponseException('该订单核销码错误');
         }
+    }
+
+
+    /**
+     * 生成取货码（暂时同一个商户唯一）
+     * @param Order $order
+     * @return int
+     */
+    public static function createDeliverCode(Order $order)
+    {
+        $code = rand(100000,999999);
+        $exist = Order::where('deliver_code',$code)->where('merchant_id',$order->merchant_id)->first();
+        if ($exist) {
+            $code = self::createDeliverCode();
+        }
+        return $code;
     }
 }

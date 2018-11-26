@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Cs;
 
 
+use App\Exports\CsInviteUserRecordExport;
 use App\Exports\InviteUserRecordExport;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteStatisticsService;
@@ -63,7 +64,7 @@ class InviteStatisticsController
      */
     public function getList()
     {
-        $merchantId = request()->get('current_user')->merchant_id;
+        $cs_merchant_id = request()->get('current_user')->merchant_id;
         $page = request('page', 1);
         $pageSize = request('pageSize', 15);
         $mobile = request('mobile', '');
@@ -78,7 +79,7 @@ class InviteStatisticsController
             'mobile' => $mobile,
         ];
 
-        $data = InviteUserService::getInviteUsersWithOrderCountByMerchantId($merchantId, $param, false);
+        $data = InviteUserService::getInviteUsersWithOrderCountByCsMerchantId($cs_merchant_id, $param, false);
 
         return Result::success([
             'list' => $data->items(),
@@ -92,9 +93,9 @@ class InviteStatisticsController
      */
     public function downloadInviteRecordList()
     {
-        $merchantId = request()->get('current_user')->merchant_id;
+        $cs_merchant_id = request()->get('current_user')->merchant_id;
         $mobile = request('mobile', '');
 
-        return (new InviteUserRecordExport($merchantId, $mobile))->download('我的用户.xlsx');
+        return (new CsInviteUserRecordExport($cs_merchant_id, $mobile))->download('我的用户.xlsx');
     }
 }

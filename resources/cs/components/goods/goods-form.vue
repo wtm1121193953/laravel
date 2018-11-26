@@ -43,11 +43,11 @@
                 </el-form-item>
 
                 <el-form-item prop="logo" label="产品logo图">
-                    <image-upload v-model="form.logo" :limit="1"/>
+                    <image-upload :width="750" :height="750" v-model="form.logo" :limit="1"/>
                     <div>图片尺寸: 750 px * 750 px</div>
                 </el-form-item>
                 <el-form-item prop="pic_list" label="产品详情图">
-                    <image-upload  v-model="form.detail_imgs" :limit="6"/>
+                    <image-upload :width="750" :height="750" v-model="form.detail_imgs" :limit="6"/>
                     <div>图片尺寸: 750 px * 750 px</div>
                 </el-form-item>
                 <el-form-item prop="summary" label="商品简介">
@@ -138,7 +138,8 @@
                         {validator: validatePrice, trigger: 'blur'}
                     ],
                     summary: [
-                        {required: true, message: '简介不能为空'}
+                        {required: true, message: '简介不能为空'},
+                        {max: 200, message: '商品简介不能超过200个字'}
                     ],
                     logo: [
                         {required: true, message: '缩略图不能为空'}

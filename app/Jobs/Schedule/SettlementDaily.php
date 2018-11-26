@@ -51,7 +51,7 @@ class SettlementDaily implements ShouldQueue
         Log::info('开始执行每日结算任务');
         $date   = $this->date;
         // 获取运营中心支付到平台(平台参与分成) 及结算周期为T+1的商家
-        Merchant::whereIn('settlement_cycle_type',[Merchant::SETTLE_MONTHLY,Merchant::SETTLE_DAY_ADD_ONE])
+        Merchant::whereIn('settlement_cycle_type',[Merchant::SETTLE_DAILY_AUTO,Merchant::SETTLE_DAY_ADD_ONE])
             ->whereHas('oper', function($query){
             $query->whereIn('pay_to_platform', [ Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING ]);
         })

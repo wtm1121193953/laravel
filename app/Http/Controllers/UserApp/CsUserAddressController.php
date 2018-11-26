@@ -52,8 +52,8 @@ class CsUserAddressController extends Controller
             $isTestAddress = request('is_test_radius');
         }
         $cityId = request('city_id');
-        $city_wide = config('common.city_limit');
-        $query = CsUserAddressService::getList($isTestAddress, $cityId, $city_wide);
+        $cityLimit = config('common.city_limit');
+        $query = CsUserAddressService::getList($isTestAddress, $cityId, $cityLimit);
         return Result::success($query);
     }
 

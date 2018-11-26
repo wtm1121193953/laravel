@@ -17,7 +17,7 @@ class MessageSystemService extends BaseService
      */
     public static function createSystem($postData)
     {
-        $objectType = [MessageSystem::OB_TYPE_USER, MessageSystem::OB_TYPE_MERCHANT, MessageSystem::OB_TYPE_BIZER, MessageSystem::OB_TYPE_OPER];
+        $objectType = [MessageSystem::OB_TYPE_USER, MessageSystem::OB_TYPE_MERCHANT, MessageSystem::OB_TYPE_BIZER, MessageSystem::OB_TYPE_OPER, MessageSystem::OB_TYPE_CS_MERCHANT];
         // 验证参数是否合法
         foreach ($postData['object_type'] as $k=>$v) {
             if (!in_array($v, $objectType)) {

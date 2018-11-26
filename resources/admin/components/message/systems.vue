@@ -70,6 +70,7 @@
                         <el-checkbox :label="2" :key="2">商户端</el-checkbox>
                         <el-checkbox :label="3" :key="3">业务员</el-checkbox>
                         <el-checkbox :label="4" :key="4">运营中心</el-checkbox>
+                        <el-checkbox :label="5" :key="5">超市商户端</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item prop="content" label="内容">

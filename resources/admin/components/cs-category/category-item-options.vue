@@ -3,7 +3,7 @@
     <div>
         <el-button type="text" @click="edit">编辑</el-button>
         <el-button type="text" @click="changeStatus">{{scope.row.status === 1 ? '禁用' : '启用'}}</el-button>
-        <el-button type="text" @click="addSub">添加子分类</el-button>
+        <el-button v-if="scope.row.level === 1" type="text" @click="addSub">添加子分类</el-button>
 
         <el-dialog title="编辑商品分类信息" :visible.sync="isEdit">
             <category-form

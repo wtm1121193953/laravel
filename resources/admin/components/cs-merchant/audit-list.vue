@@ -10,9 +10,9 @@
                               @keyup.enter.native="search"/>
                 </el-form-item>
                 <el-form-item prop="operId" label="运营中心ID">
-                    <el-input v-model="query.operId" size="small" placeholder="激活运营中心ID" class="w-100" clearable/>
+                    <el-input v-model="query.operId" size="small" placeholder="运营中心ID" clearable/>
                 </el-form-item>
-                <el-form-item label="审核状态" prop="status">
+                <el-form-item clearable label="审核状态" prop="status">
                     <el-select v-model="query.status" size="small" multiple placeholder="请选择">
                         <el-option label="待审核" value="1"/>
                         <el-option label="审核通过" value="2"/>
@@ -27,7 +27,15 @@
         </el-col>
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="created_at" label="添加时间" width="160px"/>
-            <el-table-column prop="id" size="mini" label="商户ID"/>
+            <el-table-column prop="id" label="审核ID"/>
+            <el-table-column prop="cs_merchant_id" width="160px" label="操作类型">
+                <template slot-scope="scope">
+                    <span>{{scope.row.type == 1 ? '新增商户' : '修改商户'}}</span>
+                    <div v-if="scope.row.cs_merchant_id > 0" class="c-green">
+                        商户ID: {{ scope.row.cs_merchant_id}}
+                    </div>
+                </template>
+            </el-table-column>
             <el-table-column prop="name" label="商户名称"/>
             <el-table-column prop="name" label="商户类型">
                 <template slot-scope="scope">
@@ -35,19 +43,12 @@
                 </template>
             </el-table-column>
             <el-table-column prop="data_after.signboard_name" label="商户招牌名"/>
-            <el-table-column prop="oper_id" size="mini" label="运营中心ID"/>
-            <el-table-column prop="operName" label="运营中心名称"/>
+            <el-table-column prop="oper_id" label="运营中心ID"/>
+            <el-table-column prop="operName" width="250" label="运营中心名称"/>
             <el-table-column prop="city" label="城市">
                 <template slot-scope="scope">
                     <span> {{ scope.row.data_after.city }} </span>
                     <span> {{ scope.row.data_after.area }} </span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="status" label="商户状态">
-                <template slot-scope="scope" v-if="scope.row.cs_merchant_detail && (scope.row.status == 2 || scope.row.status == 3)">
-                    <span v-if="scope.row.cs_merchant_detail.status === 1" class="c-green">正常</span>
-                    <span v-else-if="scope.row.cs_merchant_detail.status === 2" class="c-danger">已冻结</span>
-                    <span v-else>未知 ({{scope.row.cs_merchant_detail.status}})</span>
                 </template>
             </el-table-column>
             <el-table-column prop="audit_status" label="审核状态">
@@ -56,22 +57,18 @@
                     <el-popover
                             v-else-if="scope.row.status === 2"
                             placement="bottom-start"
-                            width="200px" trigger="hover"
-                            @show="showMessage(scope)">
+                            width="200px" trigger="hover">
                         <div slot="reference" class="c-green"><p>审核通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.suggestion || '无'}}
-                        <!--<unaudit-record-reason :data="auditRecord"/>-->
                     </el-popover>
                     <el-popover
                             v-else-if="scope.row.status === 3"
                             placement="bottom-start"
-                            width="200px" trigger="hover"
-                            @show="showMessage(scope)">
+                            width="200px" trigger="hover">
                         <div slot="reference" class="c-danger"><p>审核不通过</p><span class="message">{{scope.row.audit_suggestion}}</span>
                         </div>
                         审核意见: {{scope.row.suggestion || '无'}}
-                        <!--<unaudit-record-reason :data="auditRecord"/>-->
                     </el-popover>
                     <span v-else-if="scope.row.status == 4" class="c-gray">已撤回</span>
                     <span v-else>未知 ({{scope.row.status}})</span>
@@ -82,12 +79,12 @@
                     <span>{{ {1: '周结', 2: '半月结', 3: 'T+1(自动)', 4: '半年结', 5: '年结', 6: 'T+1(人工)', 7: '未知',}[scope.row.data_after.settlement_cycle_type] }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="150px">
+            <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
                     <el-button type="text" @click="detail(scope)">查看</el-button>
                     <template v-if="scope.row.status === 1 || scope.row.status === 3">
                         <el-button type="text" @click="detail(scope,3)">审核</el-button>
-                        <el-dropdown trigger="click" @command="(command) => {audit(scope, command)}">
+                        <el-dropdown class="m-l-10" trigger="click" @command="(command) => {audit(scope, command)}">
                             <el-button type="text">
                                 快捷审核 <i class="el-icon-arrow-down"></i>
                             </el-button>
@@ -151,10 +148,9 @@
                     merchantId: '',
                     name: '',
                     operId: '',
-                    status: '',
+                    status: ['1', '2', '3'],
                 },
                 list: [],
-                auditRecord: [],
                 total: 0,
                 currentMerchant: null,
                 tableLoading: false,
@@ -176,20 +172,7 @@
             merchantChange() {
                 this.getList();
             },
-            showMessage(scope) {
-                api.get('/merchant/audit/record/newest', {id: scope.row.id}).then(data => {
-                    this.auditRecord = [data];
-                })
-            },
             search() {
-                if (this.query.startDate > this.query.endDate) {
-                    this.$message.error('搜索的开始时间不能大于结束时间！');
-                    return false;
-                }
-                //待审核页面bug修复
-                if (this.query.auditStatus.length == 0 && this.isAudit) {
-                    this.query.auditStatus = ['0', '3']
-                }
                 this.query.page = 1;
                 this.getList();
             },
@@ -237,10 +220,10 @@
             },
             doAudit(){
                 let auditTypeMessage = this.fastAuditType == 1 ? '审核通过' : '审核不通过';
-                if(this.fastAuditType == 2 && !this.auditForm.audit_suggestion){
+                /*if(this.fastAuditType == 2 && !this.auditForm.audit_suggestion){
                     this.$message.error('请输入审核不通过意见');
                     return ;
-                }
+                }*/
                 this.$confirm(`确定将商户 ${this.currentAuditRecord.name} ${auditTypeMessage}吗?`).then(() => {
                     let reqData = {id: this.currentAuditRecord.id, type: this.fastAuditType,audit_suggestion:this.auditForm.audit_suggestion};
                     api.post('/cs/merchant/audit', reqData).then(data => {

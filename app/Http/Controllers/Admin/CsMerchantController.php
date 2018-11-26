@@ -8,14 +8,10 @@ use App\Exceptions\ParamInvalidException;
 use App\Exports\AdminCsMerchantExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Admin\AdminUser;
-use App\Modules\Bizer\BizerService;
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Cs\CsMerchantAudit;
 use App\Modules\Cs\CsMerchantAuditService;
-use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAccountService;
-use App\Modules\Merchant\MerchantAuditService;
-use App\Modules\Merchant\MerchantCategoryService;
 use App\Modules\Cs\CsMerchantService;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperBizerService;
@@ -58,21 +54,12 @@ class CsMerchantController extends Controller
         if($operName) {
             $operIds = OperService::getAll(['name' => $operName], 'id')->pluck('id');
         }
-        $creatorOperId = request('creatorOperId');
-        // 根据输入的运营中心名称获取录入信息的运营中心ID列表
-        $creatorOperName = request('creatorOperName');
-        if($creatorOperName){
-            $createOperIds = OperService::getAll(['name' => $creatorOperName], 'id')->pluck('id');
-        }
-
-
 
         $data = CsMerchantService::getList([
             'id' => $id,
             'operId' => $operIds ?? $operId,
             'name' => $name,
             'signboardName' => $signboardName,
-            'creatorOperId' => $createOperIds ?? $creatorOperId,
             'status' => $status,
             'settlementCycleType' => $settlementCycleType,
             'auditStatus' => $auditStatus,
@@ -179,7 +166,7 @@ class CsMerchantController extends Controller
         if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
             throw new ParamInvalidException('负责人手机号码不合法');
         }
-        $merchant = CsMerchantService::edit(request('id'), request('audit_oper_id'),request('audit_status'),true);
+        $merchant = CsMerchantService::edit(request('id'), request()->get('oper_id'),request('audit_status'),true);
 
         return Result::success($merchant);
     }
@@ -339,22 +326,20 @@ class CsMerchantController extends Controller
         return Result::success($supermarket);
     }
 
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     * 获取审核详情
+     */
     public function getAuditDetail()
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
         ]);
-        $merchantAudit = CsMerchantAudit::findOrFail(request()->get('id'));
-        $detail = json_decode($merchantAudit->data_after);
-        $detail->other_card_pic_urls = $detail->other_card_pic_urls ? explode(',', $detail->other_card_pic_urls) : '';
-        $unReplaceColumn = ['id'];
-        foreach ($detail as $k=>$v){
-            // 部分字段值避免覆盖
-            if(in_array($k,$unReplaceColumn)){
-                continue;
-            }
-            $merchantAudit->$k = $v;
-        }
+        $id = request()->get('id');
+        $userId = request()->get('current_user')->id;
+
+        $merchantAudit = CsMerchantService::getAuditDetail($id,$userId);
+
         return Result::success($merchantAudit);
     }
 

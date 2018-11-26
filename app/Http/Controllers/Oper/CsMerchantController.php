@@ -99,7 +99,7 @@ class CsMerchantController extends Controller
         if(request('isReEdit') == 'true'){
             $merchant = CsMerchantService::getReEditData(request('id'));
         }else{
-            $merchant = CsMerchantService::detail(request('id'));
+            $merchant = CsMerchantService::detail(request('id'),request()->get('current_user')->id);
         }
 
         return Result::success($merchant);
@@ -127,10 +127,8 @@ class CsMerchantController extends Controller
             throw new ParamInvalidException('负责人手机号码不合法');
         }
         $this->validate(request(), $validate);
-
         $currentOperId = request()->get('current_user')->oper_id;
-
-        $merchant = CsMerchantService::add($currentOperId);
+        $merchant = CsMerchantService::add($currentOperId,request()->get('name'));
 
         return Result::success($merchant);
     }
@@ -142,7 +140,6 @@ class CsMerchantController extends Controller
     {
         $validate = [
             'name' => 'required|max:50',
-            //'merchant_category_id' => 'required',
             'signboard_name' => 'required|max:20',
         ];
         if (request('is_pilot') !== CsMerchant::PILOT_MERCHANT){
@@ -158,39 +155,8 @@ class CsMerchantController extends Controller
         if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
             throw new ParamInvalidException('负责人手机号码不合法');
         }
-        $merchant = CsMerchantService::edit(request('id'), request('audit_oper_id'),request('audit_status'));
-
-        return Result::success($merchant);
-    }
-
-    /**
-     * 从商户池添加商户, 即补充商户池中商户的合同信息
-     */
-    public function addFromMerchantPool()
-    {
-        $this->validate(request(), [
-            'id' => 'required|integer|min:1',
-            'business_licence_pic_url' => 'required',
-            'organization_code' => 'required',
-            'settlement_rate' => 'required|numeric|min:0',
-        ]);
-
-        $merchantId = request('id');
-        $merchant = CsMerchantService::getById($merchantId);
-        if(empty($merchant)){
-            throw new DataNotFoundException('商户池信息不存在');
-        }
-        if($merchant->oper_id > 0){
-            throw new ParamInvalidException('该商户已不在商户池中');
-        }
-        if($merchant->audit_oper_id > 0){
-            throw new ParamInvalidException('该商户已被其他运营中心认领');
-        }
-
-        $currentOperId = request()->get('current_user')->oper_id;
-        $merchant = CsMerchantService::addFromMerchantPool($currentOperId, $merchant);
-
-        return Result::success('操作成功', $merchant);
+        $audit = CsMerchantService::edit(request('id'), request()->get('current_user')->oper_id, request('audit_status'));
+        return Result::success($audit);
     }
 
     /**
@@ -262,8 +228,9 @@ class CsMerchantController extends Controller
         $account = request('account');
         $operId = request()->get('current_user')->oper_id;
         $password = request('password');
+        $type = request('type');
 
-        $account = MerchantAccountService::createAccount($merchantId,$account,$operId,$password);
+        $account = MerchantAccountService::createAccount($merchantId,$account,$operId,$password,$type);
 
         return Result::success($account);
     }
@@ -289,11 +256,31 @@ class CsMerchantController extends Controller
 
     public function getAuditList()
     {
-        $data = CsMerchantAuditService::getAuditResultList(['oper_id' => request()->get('current_user')->oper_id]);
+        $operId = request()->get('current_user')->oper_id;
+        $merchantId = request('merchantId');
+        $name = request('name');
+        $status = request('status');
+        $params = [
+            'operId' => $operId,
+            'merchantId' => $merchantId,
+            'name' => $name,
+            'status' => $status,
+        ];
+        $data = CsMerchantAuditService::getAuditResultList($params);
+
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
         ]);
+    }
+
+    public function getAuditDetail(){
+        $this->validate(request(), [
+            'id' => 'required|integer|min:1'
+        ]);
+        $merchant = CsMerchantService::getAuditDetail(request('id'),request()->get('current_user')->id);
+
+        return Result::success($merchant);
     }
 
     /**

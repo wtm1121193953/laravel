@@ -8,6 +8,9 @@
 
                 <!--商户录入信息左侧块-->
                 <el-col :span="11">
+                    <el-form-item label="商户类型">
+                        <span>超市类</span>
+                    </el-form-item>
                     <el-form-item prop="status" label="商户状态">
                         <span v-if="data.status === 1" class="c-green">已启用</span>
                         <span v-else-if="data.status === 2" class="c-danger">已冻结</span>
@@ -22,7 +25,7 @@
                         <span v-else-if="data.settlement_cycle_type === 6" class="c-green">T+1</span>
                         <span v-else>未知</span>
                     </el-form-item>
-                    <el-form-item prop="id" label="商户ID">{{data.id}}</el-form-item>
+                    <el-form-item prop="id" label="商户ID">{{data.cs_merchant_id}}</el-form-item>
                     <el-form-item v-if="data.operName" prop="operName" label="运营中心">{{data.operName}}</el-form-item>
                     <el-form-item prop="name" label="商户名称">{{data.name}}</el-form-item>
                     <el-form-item prop="signboard_name" label="招牌名称">{{data.signboard_name}}</el-form-item>
@@ -42,10 +45,10 @@
                 </el-col>
                 <el-col :span="12" :offset="1">
                     <el-form-item prop="audit_status" label="审核状态">
-                        <span v-if="data.audit_status === 0" class="c-warning">待审核</span>
-                        <span v-else-if="data.audit_status === 1" class="c-green">审核通过 {{data.audit_suggestion}}</span>
-                        <span v-else-if="data.audit_status === 2" class="c-danger">审核不通过 {{data.audit_suggestion}}</span>
-                        <span v-else-if="data.audit_status === 3" class="c-warning">重新提交审核</span>
+                        <span v-if="data.audit_status === 1" class="c-warning">待审核</span>
+                        <span v-else-if="data.audit_status === 2" class="c-green">审核通过 {{data.suggestion}}</span>
+                        <span v-else-if="data.audit_status === 3" class="c-danger">审核不通过 {{data.suggestion}}</span>
+                        <span v-else-if="data.audit_status === 4" class="c-warning">撤回</span>
                         <span v-else>未知 ({{data.audit_status}})</span>
                     </el-form-item>
                 </el-col>
@@ -202,9 +205,9 @@
                                 <preview-img :url="pic" width="200px" height="100px"/>
                             </template> -->
                         </el-form-item>
-                        <el-col v-if="type != 'poolOnly' ">
+                        <el-col v-if="data.audit_status == 1">
                             <el-form-item prop="audit_suggestion" label="审核意见">
-                                <el-input v-if="(data.audit_status == 0 || data.audit_status == 3) && auditType == 3" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
+                                <el-input v-if="data.audit_status == 1" placeholder="最多输入50个汉字"  maxlength="50" v-model="data.audit_suggestion" :autosize="{minRows: 3}" type="textarea"/>
                                 <span v-else>{{data.audit_suggestion}}</span>
                             </el-form-item>
                         </el-col>
@@ -232,12 +235,11 @@
 
                 </el-col>
                 <!-- 商户激活信息右侧块 -->
-                <el-col v-if="auditType == 3 && type != 'poolOnly'"  >
-                    <el-form-item v-if="data.audit_status == 0 || data.audit_status == 3">
+                <el-col v-if="data.audit_status == 1"  >
+                    <el-form-item>
                         <el-button type="success" @click="audit(1)">审核通过</el-button>
                         <el-button type="warning" @click="audit(2)">审核不通过</el-button>
                         <el-button type="primary" @click="back()">返回</el-button>
-                        <!--<el-button v-if="data.audit_status != 3" type="danger" @click="audit(3)">打回商户池</el-button>-->
                     </el-form-item>
                 </el-col>
 

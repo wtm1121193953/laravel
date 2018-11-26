@@ -112,18 +112,18 @@ class CsMerchant extends BaseModel
     /**
      * 审核不通过并且打回到商户池, 审核记录中才有该状态, 商家信息中直接置位审核不通过
      */
-    const AUDIT_STATUS_FAIL_TO_POOL = 4;
+//    const AUDIT_STATUS_FAIL_TO_POOL = 4;
     /**
      * 取消审核
      */
-    const AUDIT_STATUS_CANCEL = 5;
+//    const AUDIT_STATUS_CANCEL = 5;
 
     /**
      * 结算类型
      */
     const SETTLE_WEEKLY = 1; // 周结
     const SETTLE_HALF_MONTHLY = 2; // 半月结
-    const SETTLE_MONTHLY = 3; // T+1（自动）
+    const SETTLE_DAILY_AUTO = 3; // T+1（自动）
     const SETTLE_HALF_YEARLY = 4; // 半年结
     const SETTLE_YEARLY = 5; // 年结
     const SETTLE_DAY_ADD_ONE = 6; // T+1（人工）

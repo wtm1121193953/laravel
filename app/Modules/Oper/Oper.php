@@ -31,6 +31,13 @@ use App\BaseModel;
  * @property number pay_to_platform
  * @property number status
  * @property float bizer_divide
+ * @property string contact_qq
+ * @property string contact_wechat
+ * @property string contact_mobile
+ * @property string business_licence_pic_url
+ * @property number city_id
+ * @property number province_id
+ * @property string contacter
  */
 class Oper extends BaseModel
 {
