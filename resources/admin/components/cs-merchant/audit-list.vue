@@ -220,10 +220,10 @@
             },
             doAudit(){
                 let auditTypeMessage = this.fastAuditType == 1 ? '审核通过' : '审核不通过';
-                if(this.fastAuditType == 2 && !this.auditForm.audit_suggestion){
+                /*if(this.fastAuditType == 2 && !this.auditForm.audit_suggestion){
                     this.$message.error('请输入审核不通过意见');
                     return ;
-                }
+                }*/
                 this.$confirm(`确定将商户 ${this.currentAuditRecord.name} ${auditTypeMessage}吗?`).then(() => {
                     let reqData = {id: this.currentAuditRecord.id, type: this.fastAuditType,audit_suggestion:this.auditForm.audit_suggestion};
                     api.post('/cs/merchant/audit', reqData).then(data => {
