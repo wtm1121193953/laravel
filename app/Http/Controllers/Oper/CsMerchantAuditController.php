@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\Oper;
 
 use App\Exceptions\ParamInvalidException;
-use App\Modules\Cs\CsMerchant;
 use App\Modules\Cs\CsMerchantAuditService;
-use App\Modules\Cs\CsMerchantService;
 use App\Result;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -34,7 +32,7 @@ class CsMerchantAuditController extends Controller
         }
         $id = request()->get('id',0);
         $dataType= request()->get('dataType');  // 用以区分修改来源类型
-        $audit = CsMerchantAuditService::editOrAddMerchantAudit($id,request()->get('current_user')->id,$dataType);
+        $audit = CsMerchantAuditService::editOrAddMerchantAudit($id,request()->get('current_user')->oper_id,$dataType);
         return Result::success($audit);
     }
 }
