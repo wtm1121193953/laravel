@@ -192,16 +192,17 @@ class OperAccountService extends BaseService
                 ],
                 [ 'id' => 2, 'name' => '超市商户管理', 'level' => 1, 'url' => 'cs/merchant', 'sub' =>
                     [
-                        [ 'id' => 201, 'name' => '超市商户列表', 'level' => 2, 'url' => '/oper/cs/merchants', 'pid' => 12,],
-                        [ 'id' => 202, 'name' => '审核管理', 'level' => 2, 'url' => '/oper/cs/merchant/audit/list', 'pid' => 12],
-                        [ 'id' => 203, 'name' => '超市商品管理', 'level' => 2, 'url' => '/oper/cs/goods', 'pid' => 12],
+                        [ 'id' => 201, 'name' => '超市商户列表', 'level' => 2, 'url' => '/oper/cs/merchants', 'pid' => 2,],
+                        [ 'id' => 202, 'name' => '添加商户', 'level' => 2, 'url' => '/oper/cs/merchant/add', 'pid' => 2,],
+                        [ 'id' => 203, 'name' => '审核管理', 'level' => 2, 'url' => '/oper/cs/merchant/audit/list', 'pid' => 2],
+                        [ 'id' => 204, 'name' => '超市商品管理', 'level' => 2, 'url' => '/oper/cs/goods', 'pid' => 2],
                     ]
 
                 ],
                 [ 'id' => 3, 'name' => '订单管理', 'level' => 1, 'url' => 'orders', 'sub' =>
                     [
-                        [ 'id' => 301, 'name' => '超市订单管理', 'level' => 2, 'url' => '/oper/cs/orders', 'pid' => 2],
-                        [ 'id' => 302, 'name' => '普通订单管理', 'level' => 2, 'url' => '/oper/orders', 'pid' => 2],
+                        [ 'id' => 301, 'name' => '超市订单管理', 'level' => 2, 'url' => '/oper/cs/orders', 'pid' => 3],
+                        [ 'id' => 302, 'name' => '普通订单管理', 'level' => 2, 'url' => '/oper/orders', 'pid' => 3],
                     ]
                 ],
                 ['id' => 4, 'name' => '消息管理', 'level' => 1, 'url' => '', 'sub' =>
