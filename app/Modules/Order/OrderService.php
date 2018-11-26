@@ -515,6 +515,45 @@ class OrderService extends BaseService
         if (empty($order)) {
             throw new BaseResponseException('该订单不存在');
         }
+        if ($order->status != Order::STATUS_UNDELIVERED) {
+            throw new BaseResponseException('该订单状态不是待发货');
+        }
+        if ($order->status == Order::STATUS_DELIVERED) {
+            throw new BaseResponseException('该订单已发货');
+        }
+        $order->express_company = $expressCompany;
+        $order->express_no = $expressNo;
+        $order->deliver_time = Carbon::now();
+        $order->status = Order::STATUS_DELIVERED;
+        $order->save();
+
+        return $order;
+    }
+
+    /**
+     * 根据订单号 发货 批量发货使用
+     * @param $orderNo
+     * @param $merchantId
+     * @param $expressCompany
+     * @param $expressNo
+     * @return Order
+     * @throws \Exception
+     */
+    public static function deliverByOrderNo($orderNo, $merchantId, $expressCompany, $expressNo)
+    {
+        $order = Order::where('order_no', $orderNo)
+            ->where('merchant_id', $merchantId)
+            ->first();
+        if (empty($order)) {
+            throw new \Exception("订单号为{$orderNo}的订单不存在");
+        }
+        if ($order->status != Order::STATUS_UNDELIVERED) {
+            throw new \Exception("订单号为{$orderNo}的订单的状态不是待发货");
+        }
+        $preg = '/[.e]/';
+        if (preg_match($preg, $expressNo)) {
+            throw new \Exception("订单号为{$orderNo}的订单的快递单号{$expressNo}有误");
+        }
         $order->express_company = $expressCompany;
         $order->express_no = $expressNo;
         $order->deliver_time = Carbon::now();
@@ -535,6 +574,9 @@ class OrderService extends BaseService
         $order = self::getById($orderId);
         if (empty($order)) {
             throw new BaseResponseException('该订单不存在');
+        }
+        if ($order->status != Order::STATUS_NOT_TAKE_BY_SELF) {
+            throw new BaseResponseException('该订单已发货');
         }
         if ($order->deliver_code == $deliverCode) {
             $order->deliver_time = Carbon::now();
@@ -559,6 +601,10 @@ class OrderService extends BaseService
         if (empty($order)) {
             throw new BaseResponseException('该订单不存在');
         }
+        if ($order->status != Order::STATUS_NOT_TAKE_BY_SELF) {
+            throw new BaseResponseException('该订单已发货');
+        }
+
         if ($order->deliver_code == $deliverCode) {
             return $order;
         } else {
