@@ -6,11 +6,13 @@ use App\Modules\Cs\CsMerchant;
 use App\Modules\Cs\CsMerchantCategory;
 use App\Modules\Cs\CsPlatformCategory;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Oper\Oper;
 use App\Modules\User\UserOpenIdMapping;
 use App\Observers\CsMerchantCategoryObserver;
 use App\Observers\CsMerchantObserver;
 use App\Observers\CsPlatformCategoryObserver;
 use App\Observers\MerchantObserver;
+use App\Observers\OperObserver;
 use App\Observers\UserOpenIdMappingObserver;
 use Debugbar;
 use Illuminate\Support\Facades\App;
@@ -46,6 +48,8 @@ class AppServiceProvider extends ServiceProvider
             });
         }
 
+        //运营中心模型观察者
+        Oper::observe(OperObserver::class);
         // 商户模型观察者
         Merchant::observe(MerchantObserver::class);
         // 超市商户模型观察者

@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\UserApp;
 
 
+use App\DataCacheService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
@@ -125,7 +126,7 @@ class OrderController extends Controller
         //只能查询支付到平台的订单
         $data = Order::where('user_id', $user->id)
             ->where('pay_target_type',Order::PAY_TARGET_TYPE_PLATFORM)
-            ->whereNotNull('user_deleted_at')
+            ->whereNull('user_deleted_at')
             ->where(function (Builder $query) {
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function (Builder $query) {
@@ -165,7 +166,9 @@ class OrderController extends Controller
 //                $item->merchant_logo = $csMerchant->logo;
 //                $item->merchant_service_phone = $csMerchant->service_phone;
                 $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
-                $item->order_goods = CsOrderGood::where('order_id',$item->id)->get();
+                $item->order_goods = CsOrderGood::where('order_id',$item->id)->with('cs_goods:id,logo')->get();
+
+                $item->oper_info = DataCacheService::getOperDetail($item->oper_id);
 
 
             }else {

@@ -12,15 +12,47 @@ use App\Modules\Cs\CsMerchant;
 use App\Modules\Cs\CsMerchantCategoryService;
 use App\Modules\Cs\CsPlatformCategoryService;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Oper\Oper;
 use Illuminate\Support\Facades\Cache;
 use test\Mockery\Fixtures\EmptyTestCaseV5;
 
 class DataCacheService extends BaseService
 {
+    const REDIS_KEY_OPER = 'oper:id:';
     const REDIS_KEY_MERCHANT = 'merchant:id:';//商户信息缓存键值
     const REDIS_KEY_CS_MERCHANT = 'cs_merchant:id:';//超市商户信息缓存键值
     const REDIS_KEY_PLATFORM_CATS = 'common_data:platform_cats';//平台分类缓存
     const REDIS_KEY_CS_MERCHANT_CATS = 'common_data:merchant_cats:';//商户分类缓存
+
+    /**
+     * 获取运营中心详情缓存
+     * @param $id
+     * @return Merchant|mixed
+     */
+    public static function getOperDetail($id)
+    {
+        $cache_key = self::REDIS_KEY_OPER . $id;
+        $data = Cache::store('redis')->get($cache_key);
+        if (empty($data)) {
+            $data = Oper::findOrFail($id,['id','name','contact_qq','contact_wechat','contact_mobile']);
+            Cache::store('redis')->forever($cache_key, $data);
+        }
+        return $data;
+    }
+
+    /**
+     * 删除运营中心详情缓存
+     * @param array $ids
+     */
+    public static function delOperDetail($ids = [])
+    {
+        if ($ids) {
+            foreach ($ids as $id) {
+                $cache_key = self::REDIS_KEY_OPER . $id;
+                Cache::store('redis')->forget($cache_key);
+            }
+        }
+    }
 
     /**
      * 获取商户详情缓存

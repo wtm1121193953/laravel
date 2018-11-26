@@ -16,8 +16,8 @@
                 <el-row>
                     <el-col :span="11">
                         <el-form-item label="操作类型">
-                            <span v-if="reversedData.audit.type === 1">新增审核</span>
-                            <span v-if="reversedData.audit.type === 2">修改审核</span>
+                            <span v-if="reversedData.audit.type === 1">新增商户</span>
+                            <span v-else-if="reversedData.audit.type === 2">更新商户信息</span>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -50,10 +50,10 @@
                 </el-row>
 
 
-                <el-row>
+                <el-row v-if="reversedData.audit.suggestion!==''">
                     <el-col :span="11">
                         <el-form-item label="审核意见">
-                            <span>{{data.audit.suggestion}}</span>
+                            <span>{{reversedData.audit.suggestion}}</span>
                         </el-form-item>
                     </el-col>
                 </el-row>
