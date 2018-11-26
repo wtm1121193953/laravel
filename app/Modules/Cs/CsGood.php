@@ -17,6 +17,7 @@ use App\BaseModel;
  * @property float market_price
  * @property float price
  * @property integer stock
+ * @property integer sale_num
  * @property string logo
  * @property string detail_imgs
  * @property string summary
