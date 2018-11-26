@@ -105,59 +105,6 @@ class CsMerchantController extends Controller
         return Result::success($merchant);
     }
 
-    /**
-     * 添加数据
-     */
-    public function add()
-    {
-        $validate = [
-            'name' => 'required|max:50',
-            'signboard_name' => 'required|max:20',
-        ];
-        if (request('is_pilot') !== CsMerchant::PILOT_MERCHANT){
-            $validate = array_merge($validate, [
-                'business_licence_pic_url' => 'required',
-                'organization_code' => 'required',
-                'settlement_rate' => 'required|numeric|min:0',
-                ]);
-        }
-
-        $mobile = request('contacter_phone');
-        if(!preg_match('/^1[3456789]\d{9}$/', $mobile)){
-            throw new ParamInvalidException('负责人手机号码不合法');
-        }
-        $this->validate(request(), $validate);
-        $currentOperId = request()->get('current_user')->oper_id;
-        $merchant = CsMerchantService::add($currentOperId,request()->get('name'));
-
-        return Result::success($merchant);
-    }
-
-    /**
-     * 编辑
-     */
-    public function edit()
-    {
-        $validate = [
-            'name' => 'required|max:50',
-            'signboard_name' => 'required|max:20',
-        ];
-        if (request('is_pilot') !== CsMerchant::PILOT_MERCHANT){
-            $validate = array_merge($validate, [
-                'business_licence_pic_url' => 'required',
-                'organization_code' => 'required',
-                'settlement_rate' => 'required|numeric|min:0',
-            ]);
-        }
-        $this->validate(request(), $validate);
-
-        $mobile = request('contacter_phone');
-        if(!preg_match('/^1[3,4,5,6,7,8,9]\d{9}$/', $mobile)){
-            throw new ParamInvalidException('负责人手机号码不合法');
-        }
-        $audit = CsMerchantService::edit(request('id'), request()->get('current_user')->oper_id, request('audit_status'));
-        return Result::success($audit);
-    }
 
     /**
      * 修改状态
