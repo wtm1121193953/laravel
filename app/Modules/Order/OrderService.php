@@ -11,8 +11,10 @@ namespace App\Modules\Order;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\ParamInvalidException;
 use App\Jobs\Cs\DeliveredOrderAutoFinishedJob;
 use App\Jobs\OrderPaidJob;
+use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsMerchant;
 use App\Modules\Dishes\DishesGoods;
 use App\Jobs\OrderFinishedJob;
@@ -29,6 +31,7 @@ use App\Modules\Sms\SmsVerifyCodeService;
 use App\Modules\User\User;
 use App\Modules\Oper\Oper;
 use App\Modules\UserCredit\UserCreditRecord;
+use App\ResultCode;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
@@ -686,5 +689,45 @@ class OrderService extends BaseService
         $order->user_deleted_at = Carbon::now();
         $order->save();
         return $order;
+    }
+
+    /**
+     * 判断商品库存 并 返回商品价格
+     * @param CsMerchant $merchant
+     * @param $goodsList
+     * @return float|int
+     */
+    public static function checkGoodsStockAndReturnPrice(CsMerchant $merchant, $goodsList)
+    {
+        if ($merchant->status == CsMerchant::STATUS_OFF){
+            throw new BaseResponseException('该超市已下架，请选择其他商户下单', ResultCode::CS_MERCHANT_OFF);
+        }
+
+        if (is_string($goodsList)) {
+            $goodsList = json_decode($goodsList, true);
+        }
+
+        if (empty($goodsList)) {
+            throw new ParamInvalidException('商品列表为空');
+        }
+        if (sizeof($goodsList) < 1) {
+            throw new ParamInvalidException('参数不合法1');
+        }
+        $goodsPrice = 0;
+        foreach ($goodsList as $item) {
+            if (!isset($item['id']) || !isset($item['number'])) {
+                throw new ParamInvalidException('参数不合法2');
+            }
+            $good = CsGood::findOrFail($item['id']);
+            if ($good->status == CsGood::STATUS_OFF) {
+                throw new BaseResponseException('订单中 ' . $good->goods_name . ' 已下架，请删除后重试');
+            }
+            if ($good->stock <= $item['number']) {
+                throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试', ResultCode::CS_GOODS_STOCK_NULL);
+            }
+            $goodsPrice += ($good->price) * ($item['number']);
+        }
+
+        return $goodsPrice;
     }
 }

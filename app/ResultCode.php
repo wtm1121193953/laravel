@@ -47,6 +47,10 @@ class ResultCode
 
     const EMAIL_SEND_ERROR = 31000; // 邮件发送失败
 
+    const CS_MERCHANT_OFF = 40001; // 超市商户禁用
+    const CS_GOODS_STOCK_NULL = 40002; // 超市商品库存不足
+    const CS_MERCHANT_NOT_EXIST = 40003; // 超市商户不存在
+
 
     /************ 微信接口相关  **************/
     const WECHAT_REQUEST_FAIL          = 70001;   // 请求微信服务器失败
