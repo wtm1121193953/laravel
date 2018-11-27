@@ -147,7 +147,7 @@ class OrderController extends Controller
             }
 
             $item->oper_info = DataCacheService::getOperDetail($item->oper_id);//运营中心客服电话
-            
+
             if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
                 $csMerchat = CsMerchant::where('id',$item->merchant_id)->first();
                 $item->merchant_name = $csMerchat->name;

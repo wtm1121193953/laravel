@@ -80,7 +80,7 @@ class WechatPay extends PayBase
      */
     public function refund($order)
     {
-        if($order->status != Order::STATUS_PAID){
+        if(($order->status != Order::STATUS_PAID) || ($order->status != Order::STATUS_UNDELIVERED)){
             throw new BaseResponseException('订单状态不允许退款');
         }
         if ($order->pay_type != Order::PAY_TYPE_WECHAT) {
