@@ -138,16 +138,10 @@ Route::prefix('app/user')
         Route::post('cs/confirm_delivery','OrderController@confirmDelivery')->middleware(UserLoginFilter::class);
         Route::post('cs/order/del','OrderController@userDel')->middleware(UserLoginFilter::class);
 
+        Route::get('message/isShowRedDot', 'MessageController@isShowRedDot')->middleware(UserLoginFilter::class);
+        Route::get('message/systems', 'MessageController@getSystems')->middleware(UserLoginFilter::class);
+        Route::post('message/behavior', 'MessageController@userBehavior')->middleware(UserLoginFilter::class);
+        Route::get('payments/platform', 'PaymentController@getListByPlatform')->middleware(UserLoginFilter::class);
+        Route::get('message/redDotNum', 'MessageController@redDotNumList')->middleware(UserLoginFilter::class);
 
-    });
-
-Route::prefix('app/user')
-    ->middleware('user_app')->group(function () {
-
-        Route::get('message/isShowRedDot', 'User\MessageController@isShowRedDot')->middleware(UserLoginFilter::class);
-        Route::get('message/systems', 'Admin\MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
-        Route::get('payments/platform', 'Admin\PaymentController@getListByPlatform')->middleware(UserLoginFilter::class);
-        Route::get('message/systems', 'Admin\MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
-        Route::post('message/behavior', 'User\MessageController@userBehavior')->middleware(UserLoginFilter::class);
-        Route::get('message/redDotNum', 'User\MessageController@redDotNumList')->middleware(UserLoginFilter::class);
     });

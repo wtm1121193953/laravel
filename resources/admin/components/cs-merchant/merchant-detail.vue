@@ -426,9 +426,6 @@
                 viewer.show()
             },
             checkIsset(key){
-                // console.log('changeData',key,this.data.changeData[key],this.data.changeData);
-                // console.log('change-data',this.data.changeData.key);
-                console.log('this.data.changeData[key]',key,this.data.changeData[key],this.data[key])
                 if(this.data.changeData!==null&&this.data.changeData[key]!==undefined){
                     return true;
                 }

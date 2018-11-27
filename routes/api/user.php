@@ -126,16 +126,14 @@ Route::prefix('user')
         Route::post('order/cs/add','OrderController@csOrderCreate')->middleware(UserLoginFilter::class);
         Route::post('cs/confirm_delivery','OrderController@confirmDelivery')->middleware(UserLoginFilter::class);
         Route::post('cs/order/del','OrderController@userDel')->middleware(UserLoginFilter::class);
-    });
 
-Route::prefix('user')->middleware('user')->group(function (){
-    Route::get('payments/platform', 'Admin\PaymentController@getListByPlatform')->middleware(UserLoginFilter::class);
-    Route::get('message/systems', 'Admin\MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
-    Route::get('message/notices', 'UserApp\MessageController@getNotices')->middleware(UserLoginFilter::class);
-    Route::get('message/noticesNum', 'UserApp\MessageController@getNeedViewNum')->middleware(UserLoginFilter::class);
-    Route::get('message/noticesDetail', 'UserApp\MessageController@getNoticeDetail')->middleware(UserLoginFilter::class);
-    Route::get('message/systemDetail', 'UserApp\MessageController@getSystemDetail')->middleware(UserLoginFilter::class);
-});
+        Route::get('payments/platform', 'PaymentController@getListByPlatform')->middleware(UserLoginFilter::class);
+        Route::get('message/systems', 'MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
+        Route::get('message/notices', 'UserApp\MessageController@getNotices')->middleware(UserLoginFilter::class);
+        Route::get('message/noticesNum', 'UserApp\MessageController@getNeedViewNum')->middleware(UserLoginFilter::class);
+        Route::get('message/noticesDetail', 'UserApp\MessageController@getNoticeDetail')->middleware(UserLoginFilter::class);
+        Route::get('message/systemDetail', 'UserApp\MessageController@getSystemDetail')->middleware(UserLoginFilter::class);
+    });
 
 
 
