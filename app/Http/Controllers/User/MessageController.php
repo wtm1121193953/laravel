@@ -26,6 +26,11 @@ class MessageController extends Controller
         return Result::success(['is_show'=>($exists)?true:false,'polling_time'=>$pollingTime]);
     }
 
+    /**
+     * 获取系统消息列表
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getSystems(Request $request)
     {
         $allowQueryColumns = ['start_time', 'end_time', 'content', 'object_type'];
@@ -34,28 +39,22 @@ class MessageController extends Controller
             $params[$v] = $request->get($v, null);
         }
         // 添加用户最后查阅时间
-        $cacheKey = 'message_last_read_time'.$request->get('current_user')->id;
-        if(Cache::has($cacheKey)){
-            Cache::forget($cacheKey);
-        }
-        Cache::put($cacheKey,date('Y-m-d H:i:s'), 60*24*30);
+        MessageSystemService::setLastReadTime($request->get('current_user')->id);
         $params['object_type'] = MessageSystem::OB_TYPE_USER;
         $data = MessageSystemService::getSystems($params);
-        $list = $data->items();
         // 处理是否已读已阅
-        $records = MessageSystemUserBehaviorRecordService::getRecordByUserId($request->get('current_user')->id);
-        $isViewIds = empty($records->is_view) ? [] : json_decode($records->is_view);
-        $isReadIds = empty($records->is_read) ? [] : json_decode($records->is_read);
-        foreach ($list as $k => $v){
-            $list[$k]['is_view'] = (!empty($isViewIds) && in_array($v->id,$isViewIds)) ? MessageSystemUserBehaviorRecord::IS_VIEW_VIEWED : MessageSystemUserBehaviorRecord::IS_VIEW_NORMAL;
-            $list[$k]['is_read'] = (!empty($isReadIds) && in_array($v->id,$isReadIds)) ? MessageSystemUserBehaviorRecord::IS_READ_READED : MessageSystemUserBehaviorRecord::IS_READ_NORMAL;
-        }
+        $list = MessageSystemService::isReadNView($request->get('current_user')->id,$data->items());
         return Result::success([
             'list' => $list,
             'total' => $data->total(),
         ]);
     }
 
+    /**
+     * 获取通知消息
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getNotices(Request $request)
     {
         $user = $request->get('current_user');
@@ -67,6 +66,11 @@ class MessageController extends Controller
         ]);
     }
 
+    /**
+     * 获取通知消息详情
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getNoticeDetail( Request $request)
     {
         $this->validate($request,['id'=>'required|numeric'],[
@@ -78,6 +82,11 @@ class MessageController extends Controller
         return Result::success($notice);
     }
 
+    /**
+     * 获取通知消息需要显示红点数
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getNeedViewNum(Request $request)
     {
         $user = $request->get('current_user');
