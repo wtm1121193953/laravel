@@ -714,10 +714,16 @@ class OrderController extends Controller
         if (empty($deliveryType)){
             $deliveryType = 0;
         }
-        if (request('delivery_type') == Order::DELIVERY_MERCHANT_POST){
-            if (empty($addressId)){
-                throw new ParamInvalidException('请先选择地址');
+        //如果是商家配送必须选择收货地址
+        $address = '';
+        if ($deliveryType == Order::DELIVERY_MERCHANT_POST && empty($addressId)){
+            throw new ParamInvalidException('请先选择地址');
+
+            $address = CsUserAddress::find($addressId);
+            if (empty($address)) {
+                throw new ParamInvalidException('收货地址不存在');
             }
+
         }
 
         $merchant = CsMerchant::find($merchantId);
@@ -745,8 +751,8 @@ class OrderController extends Controller
             throw new BaseResponseException('商家配送费有误');
         }
 
-        // 判断 起送价
-        if ($goodsPrice < $csMerchantSetting->delivery_start_price) {
+        // 商家配送必须达到 起送价
+        if (($deliveryType == Order::DELIVERY_MERCHANT_POST) && ($goodsPrice < $csMerchantSetting->delivery_start_price)  ) {
             throw new BaseResponseException('商品价格小于起送价');
         }
 
@@ -790,13 +796,8 @@ class OrderController extends Controller
             $order->origin_app_type = request()->header('app-type');
             $order->bizer_id = 0;
             $order->deliver_type = $deliveryType;
-            if (!empty($addressId)){
-                $address = CsUserAddress::findOrFail($addressId);
-                $order->express_address = json_encode($address);
-            }
-            else{
-                $order->express_address ='';
-            }
+
+            $order->express_address = $address;
 
             $order->save();
 
