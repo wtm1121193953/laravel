@@ -468,7 +468,7 @@ class CsMerchantService extends BaseService {
         $query = CsMerchant::where('status', 1)
             ->where('oper_id', '>', 0)
             ->whereIn('audit_status', [CsMerchant::AUDIT_STATUS_SUCCESS])
-            ->where('status',CsMerchant::STATUS_ON);
+            ->where('status',CsMerchant::STATUS_ON)
             ->when($city_id, function(Builder $query) use ($city_id){
                 // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户
                 $areaInfo = Area::where('area_id', $city_id)->where('path', 1)->first();
