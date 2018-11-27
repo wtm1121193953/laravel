@@ -390,7 +390,7 @@ class OrderController extends Controller
         if (is_string($goodsList)) {
             $goodsList = json_decode($goodsList, true);
         }
-        $goodsPrice = OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList);
+        $goodsPrice = OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList,1);
 
         $oper = Oper::find($merchant->oper_id);
         if (empty($oper)) {
