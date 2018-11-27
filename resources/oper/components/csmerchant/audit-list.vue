@@ -70,11 +70,11 @@
                     <span v-else>未知 ({{scope.row.status}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="cs_merchant_detail.settlement_cycle_type" label="结算周期">
+            <!--<el-table-column prop="cs_merchant_detail.settlement_cycle_type" label="结算周期">
                 <template slot-scope="scope">
                     <span>{{ {1: '周结', 2: '半月结', 3: 'T+1(自动)', 4: '半年结', 5: '年结', 6: 'T+1(人工)', 7: '未知',}[scope.row.data_after.settlement_cycle_type] }}</span>
                 </template>
-            </el-table-column>
+            </el-table-column>-->
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">
                     <el-button  type="text" @click="showMearchant(scope)">查看</el-button>

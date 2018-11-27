@@ -10,9 +10,7 @@
                 <!--商户录入信息左侧块-->
                 <el-col :span="11">
                     <el-form-item label="商户类型">
-                        <el-tooltip class="item" effect="dark" content="Top Left 提示文字" placement="bottom">
-                            <span>超市类</span>
-                        </el-tooltip>
+                        <span>超市类</span>
                     </el-form-item>
                     <el-form-item prop="status" label="商户状态">
                         <span v-if="data.status === 1" class="c-green">已启用</span>
@@ -43,7 +41,7 @@
                     </el-form-item>
 
                     <el-form-item prop="name" label="招牌名称">
-                        <template v-if="checkIsset('name')">
+                        <template v-if="checkIsset('signboard_name')">
                             <el-tooltip class="item" effect="dark" :content="data.changeData.signboard_name" placement="bottom">
                                 <span class="c-danger">{{data.signboard_name}}</span>
                             </el-tooltip>
