@@ -24,7 +24,7 @@ class AddTypeToOrdersTable extends Migration
             $table->dateTime('user_deleted_at')->nullable()->comment('用户删除订单时间');
 
             $table->decimal('discount_price')->default(0.00)->comment('优惠金额')->after('pay_type');
-            $table->decimal('total_price')->default(0.00)->comment('总价格')->after('pay_type');
+            $table->decimal('total_price')->default(0.00)->comment('商品总价格')->after('pay_type');
             $table->decimal('deliver_price')->default(0.00)->comment('超市配送费')->after('pay_type');
 
             $table->tinyInteger('user_deleted')->default(0)->comment('用户是否已删除订单')->after('deleted_at');

@@ -696,9 +696,10 @@ class OrderService extends BaseService
      * 判断商品库存 并 返回商品价格
      * @param CsMerchant $merchant
      * @param $goodsList
+     * @param int $throw
      * @return float|int
      */
-    public static function checkGoodsStockAndReturnPrice(CsMerchant $merchant, $goodsList, $throw=0)
+    public static function checkGoodsStockAndReturnPrice(CsMerchant $merchant, $goodsList, $throw = 0)
     {
         if ($merchant->status == CsMerchant::STATUS_OFF){
             throw new BaseResponseException('该超市已下架，请选择其他商户下单', ResultCode::CS_MERCHANT_OFF);

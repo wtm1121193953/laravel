@@ -415,7 +415,7 @@ class OrderController extends Controller
 
         // 计算 配送费 以及 配送费满减
         $deliverPrice = $csMerchantSetting->delivery_charges;
-        $totalPrice = $deliverPrice + $goodsPrice;
+        $totalPrice = $goodsPrice;
         if ($csMerchantSetting->delivery_free_start && $goodsPrice >= $csMerchantSetting->delivery_free_order_amount) {
             $discountPrice = $csMerchantSetting->delivery_charges;
         } else {
