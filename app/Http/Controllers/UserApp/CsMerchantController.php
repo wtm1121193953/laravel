@@ -51,7 +51,7 @@ class CsMerchantController extends Controller
         ]);
         $cs_merchant_id = request('merchant_id');
         $list = DataCacheService::getCsMerchantCats($cs_merchant_id);
-        /*
+
         if ($list) {
             $platform_useful = DataCacheService::getPlatformCatsUseful();
             foreach ($list as $k1=>$v1) {
@@ -72,10 +72,12 @@ class CsMerchantController extends Controller
                             continue;
                         }
                     }
+                    sort($v1['sub']);
                 }
             }
+            sort($list);
         }
-        */
+
         return Result::success(['list'=>$list]);
     }
 
