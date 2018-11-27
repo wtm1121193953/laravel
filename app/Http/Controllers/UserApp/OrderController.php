@@ -717,11 +717,13 @@ class OrderController extends Controller
         //如果是商家配送必须选择收货地址
         $address = '';
         if ($deliveryType == Order::DELIVERY_MERCHANT_POST && empty($addressId)){
-            throw new ParamInvalidException('请先选择地址');
-
-            $address = CsUserAddress::find($addressId);
-            if (empty($address)) {
-                throw new ParamInvalidException('收货地址不存在');
+            if (empty($addressId)) {
+                throw new ParamInvalidException('请先选择地址');
+            } else {
+                $address = CsUserAddress::find($addressId);
+                if (empty($address)) {
+                    throw new ParamInvalidException('收货地址不存在');
+                }
             }
 
         }
