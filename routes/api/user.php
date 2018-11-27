@@ -121,7 +121,7 @@ Route::prefix('user')
 
         //超市
         Route::get('cs/merchant/list','CsMerchantController@getList');
-        Route::get('cs/merchant/category','MerchantCategoryController@getCsTree');
+        Route::get('cs/merchant/category','CsMerchantController@getCategoryTree');
         Route::get('cs/merchant/goods','CsGoodsController@getAllGoods');
         Route::post('order/cs/add','OrderController@csOrderCreate')->middleware(UserLoginFilter::class);
         Route::post('cs/confirm_delivery','OrderController@confirmDelivery')->middleware(UserLoginFilter::class);
