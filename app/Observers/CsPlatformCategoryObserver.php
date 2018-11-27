@@ -17,5 +17,6 @@ class CsPlatformCategoryObserver
     {
         Log::info('触发观察者 cs_platform_category saved');
         DataCacheService::delPlatformCats();
+        DataCacheService::delPlatformCatsUseful();
     }
 }

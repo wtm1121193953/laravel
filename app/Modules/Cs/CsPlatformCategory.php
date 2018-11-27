@@ -17,5 +17,5 @@ class CsPlatformCategory extends BaseModel
 {
     //
     const STATUS_ON = 1;//启用
-    const STATUS_OFF = 0;//暂停
+    const STATUS_OFF = 2;//暂停
 }
