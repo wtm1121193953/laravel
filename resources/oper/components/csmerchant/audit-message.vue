@@ -53,7 +53,7 @@
                 <el-row>
                     <el-col :span="11">
                         <el-form-item label="审核意见">
-                            <span>{{reversedData.audit.suggestion||无}}</span>
+                            <span>{{reversedData.audit.suggestion||'无'}}</span>
                         </el-form-item>
                     </el-col>
                 </el-row>
