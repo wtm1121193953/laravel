@@ -13,9 +13,9 @@
                         <span>超市类</span>
                     </el-form-item>
                     <el-form-item prop="status" label="商户状态">
-                        <span v-if="data.status === 1" class="c-green">已启用</span>
-                        <span v-else-if="data.status === 2" class="c-danger">已冻结</span>
-                        <span v-else>未知 ({{data.status}})</span>
+                        <span v-if="data.merchant_status === 1" class="c-green">已启用</span>
+                        <span v-else-if="data.merchant_status === 2" class="c-danger">已冻结</span>
+                        <span v-else>未知 ({{data.merchant_status}})</span>
                     </el-form-item>
                     <el-form-item prop="settlement_cycle_type" label="结算周期">
                         <span v-if="data.settlement_cycle_type === 1" class="c-green">周结</span>

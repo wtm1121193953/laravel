@@ -253,6 +253,7 @@ class CsMerchantService extends BaseService {
         $merchant->account = $merchant->name;
         $merchant->audit_status = $merchantAudit->status;
         $merchant->changeData = json_decode($merchantAudit->data_modify,true);
+        $merchant->merchant_status = $merchant->status;
         $merchant = self::makeDetail($merchant);
         $oper = Oper::where('id', $merchant->oper_id)->first();
         if ($oper) {
@@ -282,6 +283,10 @@ class CsMerchantService extends BaseService {
         $merchant->cs_merchant_id = $merchantAudit->cs_merchant_id;
         $merchant->audit = $merchantAudit;
         $merchant->changeData = json_decode($merchantAudit->data_modify,true);
+        if($merchantAudit->cs_merchant_id!=0){
+            $csMerchant = CsMerchantService::getById($merchantAudit->cs_merchant_id);
+            $merchant->merchant_status = $csMerchant->status;
+        }
 
         $oper = Oper::where('id', $operId)->first();
         if ($oper) {
