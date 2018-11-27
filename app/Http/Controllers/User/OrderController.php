@@ -359,6 +359,8 @@ class OrderController extends Controller
         $addressId = request('address_id');
         $deliveryType = request('delivery_type');
         $remark = request('remark');
+        $goodsList = request('goods_list');
+
         if (empty($remark)){
             $remark = '';
         }
@@ -371,11 +373,14 @@ class OrderController extends Controller
             }
         }
 
-        //判断商家状态
-        $merchant = CsMerchant::findOrFail($merchantId);
-        if ($merchant->status == CsMerchant::STATUS_OFF){
-            throw new BaseResponseException('该超市已下架，请选择其他商户下单');
+        $merchant = CsMerchant::find($merchantId);
+        if (empty($merchant)) {
+            throw new BaseResponseException('该超市不存在，请选择其他超市下单', ResultCode::CS_MERCHANT_NOT_EXIST);
         }
+        if (is_string($goodsList)) {
+            $goodsList = json_decode($goodsList, true);
+        }
+        $goodsPrice = OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList);
 
         $oper = Oper::find($merchant->oper_id);
         if (empty($oper)) {
@@ -391,33 +396,6 @@ class OrderController extends Controller
         $csMerchantSetting = CsMerchantSettingService::getDeliverSetting($merchantId);
         if ($csMerchantSetting->delivery_free_order_amount <= 0) {
             throw new BaseResponseException('商家配送费有误');
-        }
-
-        $goodsPrice = 0;
-        $goodsList = request('goods_list');
-        if (is_string($goodsList)) {
-            $goodsList = json_decode($goodsList, true);
-        }
-
-        if (empty($goodsList)) {
-            throw new ParamInvalidException('商品列表为空');
-        }
-        if (sizeof($goodsList) < 1) {
-            throw new ParamInvalidException('参数不合法1');
-        }
-        foreach ($goodsList as $item) {
-            if (!isset($item['id']) || !isset($item['number'])) {
-                throw new ParamInvalidException('参数不合法2');
-            }
-            $good = CsGood::findOrFail($item['id']);
-            if ($good->status == CsGood::STATUS_OFF) {
-                throw new BaseResponseException('订单中 ' . $good->goods_name . ' 已下架，请删除后重试');
-            }
-            if ($good->stock <= $item['number']) {
-                throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试');
-            }
-
-            $goodsPrice += ($good->price) * ($item['number']);
         }
 
         // 判断 起送价
@@ -927,5 +905,28 @@ class OrderController extends Controller
         $user_id = request()->get('current_user')->id;
         OrderService::userDel($order_no,$user_id);
         return Result::success('删除成功');
+    }
+
+    /**
+     * 检查库存 并 返回商品总价
+     * @return float|int
+     */
+    public function checkGoodsStockAndReturnPrice()
+    {
+        $this->validate(request(), [
+            'merchant_id' => 'required|integer|min:1',
+            'goods_list' => 'required|min:1',
+        ]);
+
+        $merchantId = request('merchant_id');
+        $goodsList = request('goods_list');
+
+        $merchant = CsMerchant::find($merchantId);
+        if (empty($merchant)) {
+            throw new BaseResponseException('该超市不存在，请选择其他超市下单', ResultCode::CS_MERCHANT_NOT_EXIST);
+        }
+        $goodsPrice = OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList);
+
+         return $goodsPrice;
     }
 }

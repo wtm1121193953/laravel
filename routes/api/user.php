@@ -121,11 +121,12 @@ Route::prefix('user')
 
         //超市
         Route::get('cs/merchant/list','CsMerchantController@getList');
-        Route::get('cs/merchant/category','MerchantCategoryController@getCsTree');
+        Route::get('cs/merchant/category','CsMerchantController@getCategoryTree');
         Route::get('cs/merchant/goods','CsGoodsController@getAllGoods');
         Route::post('order/cs/add','OrderController@csOrderCreate')->middleware(UserLoginFilter::class);
         Route::post('cs/confirm_delivery','OrderController@confirmDelivery')->middleware(UserLoginFilter::class);
         Route::post('cs/order/del','OrderController@userDel')->middleware(UserLoginFilter::class);
+        Route::post('cs/order/check','OrderController@checkGoodsStockAndReturnPrice')->middleware(UserLoginFilter::class);
 
         Route::get('payments/platform', 'PaymentController@getListByPlatform')->middleware(UserLoginFilter::class);
         Route::get('message/systems', 'MessageController@getSystems')->middleware(UserLoginFilter::class);
