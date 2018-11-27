@@ -566,6 +566,8 @@ class CsMerchantService extends BaseService {
                 $item->delivery_free_start = $MerchantInfo->delivery_free_start;
                 $item->delivery_free_order_amount = $MerchantInfo->delivery_free_order_amount;
             }
+            $item->city_limit = config('common.city_limit');
+            $item->show_city_limit = config('common.show_city_limit');
             if(!isset($item->distance)){
                 $item->distance = 0;//没有经纬度时,设置为0
             }

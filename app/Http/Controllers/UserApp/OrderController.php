@@ -157,6 +157,7 @@ class OrderController extends Controller
             }else if($item->type == Order::TYPE_GROUP_BUY){
                 $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
             }
+            $item->oper_info = DataCacheService::getOperDetail($item->oper_id);//运营中心客服电话
 
             if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
                 $csMerchant = CsMerchant::where('id',$item->merchant_id)->first();
@@ -172,7 +173,7 @@ class OrderController extends Controller
                 $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
                 $item->order_goods = CsOrderGood::where('order_id',$item->id)->with('cs_goods:id,logo')->get();
 
-                $item->oper_info = DataCacheService::getOperDetail($item->oper_id);
+
 
 
             }else {
@@ -714,10 +715,18 @@ class OrderController extends Controller
         if (empty($deliveryType)){
             $deliveryType = 0;
         }
-        if (request('delivery_type') == Order::DELIVERY_MERCHANT_POST){
-            if (empty($addressId)){
+        //如果是商家配送必须选择收货地址
+        $address = '';
+        if ($deliveryType == Order::DELIVERY_MERCHANT_POST && empty($addressId)){
+            if (empty($addressId)) {
                 throw new ParamInvalidException('请先选择地址');
+            } else {
+                $address = CsUserAddress::find($addressId);
+                if (empty($address)) {
+                    throw new ParamInvalidException('收货地址不存在');
+                }
             }
+
         }
 
         $merchant = CsMerchant::find($merchantId);
@@ -727,7 +736,7 @@ class OrderController extends Controller
         if (is_string($goodsList)) {
             $goodsList = json_decode($goodsList, true);
         }
-        $goodsPrice = OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList);
+        $goodsPrice = OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList,1);
 
         $oper = Oper::find($merchant->oper_id);
         if (empty($oper)) {
@@ -745,8 +754,8 @@ class OrderController extends Controller
             throw new BaseResponseException('商家配送费有误');
         }
 
-        // 判断 起送价
-        if ($goodsPrice < $csMerchantSetting->delivery_start_price) {
+        // 商家配送必须达到 起送价
+        if (($deliveryType == Order::DELIVERY_MERCHANT_POST) && ($goodsPrice < $csMerchantSetting->delivery_start_price)  ) {
             throw new BaseResponseException('商品价格小于起送价');
         }
 
@@ -774,8 +783,8 @@ class OrderController extends Controller
             $order->type = Order::TYPE_SUPERMARKET;
             $order->notify_mobile = $user->mobile;
             $order->merchant_id = $merchant->id;
-            $order->merchant_name = $merchant->name ?? '';
-            $order->goods_name = $merchant->name ?? '';
+            $order->merchant_name = $merchant->signboard_name ?? '';
+            $order->goods_name = $merchant->signboard_name ?? '';
             $order->dishes_id = 0;
             $order->status = Order::STATUS_UN_PAY;
             $order->deliver_price = $deliverPrice;
@@ -790,13 +799,8 @@ class OrderController extends Controller
             $order->origin_app_type = request()->header('app-type');
             $order->bizer_id = 0;
             $order->deliver_type = $deliveryType;
-            if (!empty($addressId)){
-                $address = CsUserAddress::findOrFail($addressId);
-                $order->express_address = json_encode($address);
-            }
-            else{
-                $order->express_address ='';
-            }
+
+            $order->express_address = $address;
 
             $order->save();
 

@@ -31,6 +31,7 @@ use App\Modules\Sms\SmsVerifyCodeService;
 use App\Modules\User\User;
 use App\Modules\Oper\Oper;
 use App\Modules\UserCredit\UserCreditRecord;
+use App\Result;
 use App\ResultCode;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -683,8 +684,8 @@ class OrderService extends BaseService
         if ($order->user_id != $user_id) {
             throw new BaseResponseException('非法操作');
         }
-        if ($order->status != Order::STATUS_FINISHED) {
-            throw new BaseResponseException('未完成的订单不能删除');
+        if (!in_array($order->status,[Order::STATUS_FINISHED,Order::STATUS_CANCEL,Order::STATUS_CLOSED,Order::STATUS_REFUNDED])) {
+            throw new BaseResponseException('订单不满足删除条件');
         }
         $order->user_deleted_at = Carbon::now();
         $order->save();
@@ -697,7 +698,7 @@ class OrderService extends BaseService
      * @param $goodsList
      * @return float|int
      */
-    public static function checkGoodsStockAndReturnPrice(CsMerchant $merchant, $goodsList)
+    public static function checkGoodsStockAndReturnPrice(CsMerchant $merchant, $goodsList, $throw=0)
     {
         if ($merchant->status == CsMerchant::STATUS_OFF){
             throw new BaseResponseException('该超市已下架，请选择其他商户下单', ResultCode::CS_MERCHANT_OFF);
@@ -723,7 +724,12 @@ class OrderService extends BaseService
                 throw new BaseResponseException('订单中 ' . $good->goods_name . ' 已下架，请删除后重试');
             }
             if ($good->stock <= $item['number']) {
-                throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试', ResultCode::CS_GOODS_STOCK_NULL);
+                if ($throw) {
+                    throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试', ResultCode::CS_GOODS_STOCK_NULL);
+                } else {
+                    return Result::error(ResultCode::CS_GOODS_STOCK_NULL, '订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试', ['goods_id' => $item['id']]);
+                }
+
             }
             $goodsPrice += ($good->price) * ($item['number']);
         }
