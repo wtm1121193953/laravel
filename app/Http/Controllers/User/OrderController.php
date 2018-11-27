@@ -914,7 +914,7 @@ class OrderController extends Controller
      * 检查库存 并 返回商品总价
      * @return float|int
      */
-    public function checkGoodsStockAndReturnPrice()
+    public function checkGoodsStock()
     {
         $this->validate(request(), [
             'merchant_id' => 'required|integer|min:1',
@@ -928,8 +928,8 @@ class OrderController extends Controller
         if (empty($merchant)) {
             throw new BaseResponseException('该超市不存在，请选择其他超市下单', ResultCode::CS_MERCHANT_NOT_EXIST);
         }
-        $goodsPrice = OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList);
+        OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList);
 
-         return $goodsPrice;
+         return Result::success();
     }
 }

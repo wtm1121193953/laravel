@@ -137,7 +137,7 @@ Route::prefix('app/user')
         Route::post('order/cs/add','OrderController@csOrderCreate')->middleware(UserLoginFilter::class);
         Route::post('cs/confirm_delivery','OrderController@confirmDelivery')->middleware(UserLoginFilter::class);
         Route::post('cs/order/del','OrderController@userDel')->middleware(UserLoginFilter::class);
-        Route::post('cs/order/check','OrderController@checkGoodsStockAndReturnPrice')->middleware(UserLoginFilter::class);
+        Route::post('cs/order/check','OrderController@checkGoodsStock')->middleware(UserLoginFilter::class);
 
         Route::get('message/isShowRedDot', 'MessageController@isShowRedDot')->middleware(UserLoginFilter::class);
         Route::get('message/systems', 'MessageController@getSystems')->middleware(UserLoginFilter::class);
