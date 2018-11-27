@@ -698,7 +698,7 @@ class OrderService extends BaseService
      * @param $goodsList
      * @return float|int
      */
-    public static function checkGoodsStockAndReturnPrice(CsMerchant $merchant, $goodsList)
+    public static function checkGoodsStockAndReturnPrice(CsMerchant $merchant, $goodsList, $throw=0)
     {
         if ($merchant->status == CsMerchant::STATUS_OFF){
             throw new BaseResponseException('该超市已下架，请选择其他商户下单', ResultCode::CS_MERCHANT_OFF);
@@ -724,8 +724,12 @@ class OrderService extends BaseService
                 throw new BaseResponseException('订单中 ' . $good->goods_name . ' 已下架，请删除后重试');
             }
             if ($good->stock <= $item['number']) {
-//                throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试', ResultCode::CS_GOODS_STOCK_NULL);
-                return Result::error(ResultCode::CS_GOODS_STOCK_NULL, '订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试', ['goods_id' => $item['id']]);
+                if ($throw) {
+                    throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试', ResultCode::CS_GOODS_STOCK_NULL);
+                } else {
+                    return Result::error(ResultCode::CS_GOODS_STOCK_NULL, '订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试', ['goods_id' => $item['id']]);
+                }
+
             }
             $goodsPrice += ($good->price) * ($item['number']);
         }

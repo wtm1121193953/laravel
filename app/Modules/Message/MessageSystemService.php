@@ -3,7 +3,6 @@
 namespace App\Modules\Message;
 
 use App\BaseService;
-use App\Modules\Message\MessageSystem;
 use App\Exceptions\BaseResponseException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;

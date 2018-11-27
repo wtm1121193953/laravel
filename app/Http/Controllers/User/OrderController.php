@@ -146,6 +146,8 @@ class OrderController extends Controller
                 $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
             }
 
+            $item->oper_info = DataCacheService::getOperDetail($item->oper_id);//运营中心客服电话
+
             if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
                 $csMerchat = CsMerchant::where('id',$item->merchant_id)->first();
                 $item->merchant_name = $csMerchat->name;
@@ -388,7 +390,7 @@ class OrderController extends Controller
         if (is_string($goodsList)) {
             $goodsList = json_decode($goodsList, true);
         }
-        $goodsPrice = OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList);
+        $goodsPrice = OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList,1);
 
         $oper = Oper::find($merchant->oper_id);
         if (empty($oper)) {

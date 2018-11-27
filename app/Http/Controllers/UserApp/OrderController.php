@@ -157,6 +157,7 @@ class OrderController extends Controller
             }else if($item->type == Order::TYPE_GROUP_BUY){
                 $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
             }
+            $item->oper_info = DataCacheService::getOperDetail($item->oper_id);//运营中心客服电话
 
             if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
                 $csMerchant = CsMerchant::where('id',$item->merchant_id)->first();
@@ -172,7 +173,7 @@ class OrderController extends Controller
                 $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
                 $item->order_goods = CsOrderGood::where('order_id',$item->id)->with('cs_goods:id,logo')->get();
 
-                $item->oper_info = DataCacheService::getOperDetail($item->oper_id);
+
 
 
             }else {
@@ -735,7 +736,7 @@ class OrderController extends Controller
         if (is_string($goodsList)) {
             $goodsList = json_decode($goodsList, true);
         }
-        $goodsPrice = OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList);
+        $goodsPrice = OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList,1);
 
         $oper = Oper::find($merchant->oper_id);
         if (empty($oper)) {
@@ -782,8 +783,8 @@ class OrderController extends Controller
             $order->type = Order::TYPE_SUPERMARKET;
             $order->notify_mobile = $user->mobile;
             $order->merchant_id = $merchant->id;
-            $order->merchant_name = $merchant->name ?? '';
-            $order->goods_name = $merchant->name ?? '';
+            $order->merchant_name = $merchant->signboard_name ?? '';
+            $order->goods_name = $merchant->signboard_name ?? '';
             $order->dishes_id = 0;
             $order->status = Order::STATUS_UN_PAY;
             $order->deliver_price = $deliverPrice;
