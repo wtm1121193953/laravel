@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\User;
 
 
+use App\DataCacheService;
 use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsMerchantService;
 use App\Result;
