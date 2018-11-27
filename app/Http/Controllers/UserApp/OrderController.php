@@ -746,7 +746,7 @@ class OrderController extends Controller
         }
 
         if (empty($goodsList)) {
-            throw new ParamInvalidException('单品列表为空');
+            throw new ParamInvalidException('商品列表为空');
         }
         if (sizeof($goodsList) < 1) {
             throw new ParamInvalidException('参数不合法1');
