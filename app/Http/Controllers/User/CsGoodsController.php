@@ -46,6 +46,7 @@ class CsGoodsController extends Controller
             $params['sort'] = '1';
         }
 
+        $data = CsGoodService::getList($params);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
