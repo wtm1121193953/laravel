@@ -11,7 +11,6 @@ use App\Result;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {
@@ -34,6 +33,12 @@ class MessageController extends Controller
         foreach ($allowQueryColumns as $k => $v) {
             $params[$v] = $request->get($v, null);
         }
+        // 添加用户最后查阅时间
+        $cacheKey = 'message_last_read_time'.$request->get('current_user')->id;
+        if(Cache::has($cacheKey)){
+            Cache::forget($cacheKey);
+        }
+        Cache::put($cacheKey,date('Y-m-d H:i:s'), 60*24*30);
         $params['object_type'] = MessageSystem::OB_TYPE_USER;
         $data = MessageSystemService::getSystems($params);
         $list = $data->items();
