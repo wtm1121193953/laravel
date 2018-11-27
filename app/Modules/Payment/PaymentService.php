@@ -10,6 +10,7 @@ namespace App\Modules\Payment;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Wallet\Wallet;
 use Illuminate\Database\Eloquent\Builder;
 
 class PaymentService extends BaseService
