@@ -97,10 +97,10 @@ Route::prefix('admin')
         Route::post('cs/merchant/changeStatus', 'CsMerchantController@changeStatus');
         Route::get('cs/merchant/list', 'CsMerchantController@getList');
 
-        Route::get('cs/merchant/audit/list', 'CsMerchantController@getAuditList');
-        Route::get('cs/merchant/audit/detail', 'CsMerchantController@getAuditDetail');
-        Route::post('cs/merchant/audit', 'CsMerchantController@audit');
-        Route::get('cs/merchant/audit/record/newest', 'CsMerchantController@getNewestAuditRecord');
+        Route::get('cs/merchant/audit/list', 'CsMerchantAuditController@getAuditList');
+        Route::get('cs/merchant/audit/detail', 'CsMerchantAuditController@getAuditDetail');
+        Route::post('cs/merchant/audit', 'CsMerchantAuditController@audit');
+        Route::get('cs/merchant/audit/record/newest', 'CsMerchantAuditController@getNewestAuditRecord');
 
         Route::get('/tps/getBindInfo', 'TpsBindController@getBindInfo');
         Route::post('/tps/bindAccount', 'TpsBindController@bindAccount');
