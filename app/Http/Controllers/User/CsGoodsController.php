@@ -10,6 +10,7 @@ namespace App\Http\Controllers\User;
 
 
 use App\Http\Controllers\Controller;
+use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsGoodService;
 use App\Result;
 
