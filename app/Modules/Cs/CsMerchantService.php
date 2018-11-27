@@ -547,7 +547,7 @@ class CsMerchantService extends BaseService {
             }
 
             //配送信息:
-            $MerchantInfo = CsMerchantSetting::where('cs_merchant_id',$item->id)->first();
+            $MerchantInfo = CsMerchantSettingService::getDeliverSetting($item->id);
             if($MerchantInfo){
                 $item->delivery_start_price = $MerchantInfo->delivery_start_price;
                 $item->delivery_charges = $MerchantInfo->delivery_charges;
