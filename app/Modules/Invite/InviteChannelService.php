@@ -13,6 +13,7 @@ use App\BaseService;
 use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Cs\CsMerchant;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\Oper\OperService;
@@ -131,13 +132,15 @@ class InviteChannelService extends BaseService
         $originId = $inviteChannel->origin_id;
 
         $originName = '';
-        if($originType == 1){
+        if($originType == InviteChannel::ORIGIN_TYPE_USER){
             $user = User::findOrFail($originId);
             $originName = Utils::getHalfHideMobile($user->mobile);
-        }else if($originType == 2){
+        }else if($originType == InviteChannel::ORIGIN_TYPE_MERCHANT){
             $originName = Merchant::where('id', $originId)->value('signboard_name');
-        }else if($originType == 3){
+        }else if($originType == InviteChannel::ORIGIN_TYPE_OPER){
             $originName = Oper::where('id', $originId)->value('name');
+        }else if($originType == InviteChannel::ORIGIN_TYPE_CS_MERCHANT){
+            $originName = CsMerchant::where('id', $originId)->value('name');
         }
         return $originName;
     }
