@@ -92,6 +92,17 @@ class MessageController extends Controller
         ]);
     }
 
+    public function getNoticeDetail( Request $request)
+    {
+        $this->validate($request,['id'=>'required|numeric'],[
+            'id.required'=>'参数不合法',
+            'id.numeric'=>'参数不合法'
+        ]);
+        $user = $request->get('current_user');
+        $notice = MessageNoticeService::getNoticeDetailByUserIdNId($user->id,$request->get('id'));
+        return Result::success($notice);
+    }
+
     public function getSystemDetail( Request $request)
     {
         $this->validate($request,['id'=>'required|numeric'],[
