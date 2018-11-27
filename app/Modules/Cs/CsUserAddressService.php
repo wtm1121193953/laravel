@@ -92,7 +92,10 @@ class CsUserAddressService extends BaseService {
      */
     public static function getList($isTestAddress, $cityId='', $cityLimit=0){
         $user = request()->get('current_user');
-        $list = CsUserAddress::where('user_id',$user->id)->get();
+        $list = CsUserAddress::where('user_id',$user->id)
+            ->orderBy('is_default','desc')
+            ->orderBy('id','desc')
+            ->get();
         foreach ($list as $item){
             if ($item->city_id == 0){
                 $item->city = '';
