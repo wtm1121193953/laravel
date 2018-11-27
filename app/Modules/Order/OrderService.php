@@ -31,6 +31,7 @@ use App\Modules\Sms\SmsVerifyCodeService;
 use App\Modules\User\User;
 use App\Modules\Oper\Oper;
 use App\Modules\UserCredit\UserCreditRecord;
+use App\Result;
 use App\ResultCode;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -723,7 +724,8 @@ class OrderService extends BaseService
                 throw new BaseResponseException('订单中 ' . $good->goods_name . ' 已下架，请删除后重试');
             }
             if ($good->stock <= $item['number']) {
-                throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试', ResultCode::CS_GOODS_STOCK_NULL);
+//                throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试', ResultCode::CS_GOODS_STOCK_NULL);
+                return Result::error(ResultCode::CS_GOODS_STOCK_NULL, '订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试', ['goods_id' => $item['id']]);
             }
             $goodsPrice += ($good->price) * ($item['number']);
         }
