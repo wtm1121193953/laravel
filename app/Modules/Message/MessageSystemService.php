@@ -67,6 +67,36 @@ class MessageSystemService extends BaseService
     }
 
     /**
+     * 处理用户是否已阅已读
+     * @param int $userId
+     * @param array $list
+     * @return array
+     */
+    public static function isReadNView($userId,$list){
+        $records = MessageSystemUserBehaviorRecordService::getRecordByUserId($userId);
+        $isViewIds = empty($records->is_view) ? [] : json_decode($records->is_view);
+        $isReadIds = empty($records->is_read) ? [] : json_decode($records->is_read);
+        foreach ($list as $k => $v){
+            $list[$k]['is_view'] = (!empty($isViewIds) && in_array($v->id,$isViewIds)) ? MessageSystemUserBehaviorRecord::IS_VIEW_VIEWED : MessageSystemUserBehaviorRecord::IS_VIEW_NORMAL;
+            $list[$k]['is_read'] = (!empty($isReadIds) && in_array($v->id,$isReadIds)) ? MessageSystemUserBehaviorRecord::IS_READ_READED : MessageSystemUserBehaviorRecord::IS_READ_NORMAL;
+        }
+        return $list;
+    }
+
+    /**
+     * 设置用户最后查阅时间
+     * @param $userId
+     */
+    public static function setLastReadTime($userId){
+        // 添加用户最后查阅时间
+        $cacheKey = 'message_last_read_time'.$userId;
+        if(Cache::has($cacheKey)){
+            Cache::forget($cacheKey);
+        }
+        Cache::put($cacheKey,date('Y-m-d H:i:s'), 60*24*30);
+    }
+
+    /**
      * @param $params
      * @return mixed
      */

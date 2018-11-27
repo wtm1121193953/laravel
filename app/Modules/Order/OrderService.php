@@ -684,8 +684,8 @@ class OrderService extends BaseService
         if ($order->user_id != $user_id) {
             throw new BaseResponseException('非法操作');
         }
-        if ($order->status != Order::STATUS_FINISHED) {
-            throw new BaseResponseException('未完成的订单不能删除');
+        if (!in_array($order->status,[Order::STATUS_FINISHED,Order::STATUS_CANCEL,Order::STATUS_CLOSED,Order::STATUS_REFUNDED])) {
+            throw new BaseResponseException('订单不满足删除条件');
         }
         $order->user_deleted_at = Carbon::now();
         $order->save();
