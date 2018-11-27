@@ -128,7 +128,7 @@ Route::prefix('user')
         Route::post('cs/order/del','OrderController@userDel')->middleware(UserLoginFilter::class);
 
         Route::get('payments/platform', 'PaymentController@getListByPlatform')->middleware(UserLoginFilter::class);
-        Route::get('message/systems', 'MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
+        Route::get('message/systems', 'MessageController@getSystems')->middleware(UserLoginFilter::class);
         Route::get('message/notices', 'MessageController@getNotices')->middleware(UserLoginFilter::class);
         Route::get('message/noticesNum', 'MessageController@getNeedViewNum')->middleware(UserLoginFilter::class);
         Route::get('message/noticesDetail', 'MessageController@getNoticeDetail')->middleware(UserLoginFilter::class);
