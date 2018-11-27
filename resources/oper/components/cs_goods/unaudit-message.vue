@@ -46,7 +46,7 @@
             },
             audit(type){
                 api.post('/cs_goods/audit', {id: this.data.id, type: type,audit_suggestion:this.data.audit_suggestion}).then(data => {
-                    this.$message(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
+                    this.$message.success(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
                     this.$emit('cancel');
                     this.$emit('change');
                 })

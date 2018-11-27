@@ -161,7 +161,10 @@ class OrderController extends Controller
             if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
                 $csMerchant = CsMerchant::where('id',$item->merchant_id)->first();
                 $csMerchantSetting = CsMerchantSetting::where('cs_merchant_id',$csMerchant->id)->get()->first();
-                $item->delivery_charges = $csMerchantSetting->delivery_charges;
+                $csMerchant->delivery_start_price = $csMerchantSetting->delivery_start_price;
+                $csMerchant->delivery_charges = $csMerchantSetting->delivery_charges;
+                $csMerchant->delivery_free_start = $csMerchantSetting->delivery_free_start;
+                $csMerchant->delivery_free_order_amount = $csMerchantSetting->delivery_free_order_amount;
                 $item->cs_merchant = $csMerchant;
 //                $item->merchant_name = $csMerchant->name;
 //                $item->merchant_logo = $csMerchant->logo;

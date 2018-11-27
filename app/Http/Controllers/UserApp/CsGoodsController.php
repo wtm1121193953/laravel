@@ -42,7 +42,7 @@ class CsGoodsController extends Controller
             $params['order'] = $isSale == 1 ?'asc':'desc';
         } elseif (!empty($isPrice)) {
             $params['sort'] = 'price';
-            $params['order'] = $isSale == 1 ?'asc':'desc';
+            $params['order'] = $isPrice == 1 ?'asc':'desc';
         } else {
             $params['sort'] = '1';
         }

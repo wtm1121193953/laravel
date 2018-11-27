@@ -165,7 +165,6 @@
         computed: {
             isAudit() {
                 let isAudit = this.$route.path;
-                console.log('isAdudit:',isAudit);
                 return isAudit;
                 return isAudit == "/cs/merchant/unaudits"
             }

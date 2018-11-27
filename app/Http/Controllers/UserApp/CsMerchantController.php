@@ -51,6 +51,33 @@ class CsMerchantController extends Controller
         ]);
         $cs_merchant_id = request('merchant_id');
         $list = DataCacheService::getCsMerchantCats($cs_merchant_id);
+
+        if ($list) {
+            $platform_useful = DataCacheService::getPlatformCatsUseful();
+            foreach ($list as $k1=>$v1) {
+                if ($v1['cat_id_level1'] == 0) {
+                    continue;
+                }
+                if (empty($platform_useful[$v1['cat_id_level1']])) {
+                    unset($list[$k1]);
+                    continue;
+                }
+                if (!empty($v1['sub'])) {
+                    foreach ($v1['sub'] as $k2=>$v2) {
+                        if ($v2['cat_id_level2'] == 0) {
+                            continue;
+                        }
+                        if (empty($platform_useful[$v2['cat_id_level2']])) {
+                            unset($list[$k1]['sub'][$k2]);
+                            continue;
+                        }
+                    }
+                    sort($v1['sub']);
+                }
+            }
+            sort($list);
+        }
+
         return Result::success(['list'=>$list]);
     }
 

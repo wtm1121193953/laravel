@@ -3,17 +3,13 @@
 namespace App\Http\Controllers\Oper;
 
 use App\Exceptions\DataNotFoundException;
-use App\Exceptions\ParamInvalidException;
 use App\Exports\OperCsMerchantExport;
 use App\Http\Controllers\Controller;
-use App\Modules\Cs\CsMerchant;
 use App\Modules\Cs\CsMerchantAudit;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantAccountService;
 use App\Modules\Cs\CsMerchantAuditService;
 use App\Modules\Cs\CsMerchantService;
-use App\Modules\Oper\Oper;
-use App\Modules\Oper\OperService;
 use App\Result;
 
 
@@ -128,24 +124,6 @@ class CsMerchantController extends Controller
         return Result::success($merchant);
     }
 
-    /**
-     * 删除
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
-     * @throws \Exception
-     */
-    public function del()
-    {
-        $this->validate(request(), [
-            'id' => 'required|integer|min:1',
-        ]);
-        $merchant = CsMerchantService::getById(request('id'));
-        if(empty($merchant)){
-            throw new DataNotFoundException('商户信息不存在');
-        }
-        $merchant->delete();
-        return Result::success($merchant);
-    }
-
     public function recall()
     {
         $this->validate(request(), [
@@ -201,39 +179,10 @@ class CsMerchantController extends Controller
         return Result::success($account);
     }
 
-    public function getAuditList()
-    {
-        $operId = request()->get('current_user')->oper_id;
-        $merchantId = request('merchantId');
-        $name = request('name');
-        $status = request('status');
-        $params = [
-            'operId' => $operId,
-            'merchantId' => $merchantId,
-            'name' => $name,
-            'status' => $status,
-        ];
-        $data = CsMerchantAuditService::getAuditResultList($params);
-
-        return Result::success([
-            'list' => $data->items(),
-            'total' => $data->total(),
-        ]);
-    }
-
-    public function getAuditDetail(){
-        $this->validate(request(), [
-            'id' => 'required|integer|min:1'
-        ]);
-        $merchant = CsMerchantService::getAuditDetail(request('id'),request()->get('current_user')->id);
-
-        return Result::success($merchant);
-    }
-
     /**
      * 获取最新一条审核记录
      */
-    public function getNewestAuditRecord()
+    /*public function getNewestAuditRecord()
     {
         $this->validate(request(), [
             'id' => 'required|integer|min:1'
@@ -241,17 +190,17 @@ class CsMerchantController extends Controller
         $merchantId = request('id');
         $record = CsMerchantAuditService::getNewestAuditRecordByMerchantId($merchantId);
         return Result::success($record);
-    }
+    }*/
 
     //判断运营中心是否切换到平台
-    public function isPayToPlatform(){
+    /*public function isPayToPlatform(){
 
         $oper = OperService::getById(request()->get('current_user')->oper_id);
 
         $isPayToPlatform = in_array($oper->pay_to_platform, [Oper::PAY_TO_PLATFORM_WITHOUT_SPLITTING, Oper::PAY_TO_PLATFORM_WITH_SPLITTING]);
 
         return $isPayToPlatform;
-    }
+    }*/
 
 
 }

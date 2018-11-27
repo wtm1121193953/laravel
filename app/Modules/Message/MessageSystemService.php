@@ -6,6 +6,8 @@ use App\BaseService;
 use App\Modules\Message\MessageSystem;
 use App\Exceptions\BaseResponseException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class MessageSystemService extends BaseService
 {
@@ -32,6 +34,36 @@ class MessageSystemService extends BaseService
         $messageSystem->object_type = implode(',', $postData['object_type']);
         $messageSystem->save();
         return $messageSystem;
+    }
+
+    /**
+     * 获取消息页是否显示小红点事件
+     * @param $userId
+     * @return mixed
+     */
+    public static function isShowRedDot($userId){
+        $lastReadTime = Cache::get('message_last_read_time'.$userId);
+        $exists = Db::table('message_system')
+            ->when( $lastReadTime, function ($query) use ($lastReadTime) {
+                $query->where('created_at','>', $lastReadTime);
+                $query->where('object_type','like', '1%');
+            })
+            ->exists();
+        if($exists){
+            return $exists;
+        }
+        $exists = Db::table('message_notice')
+            ->when( $lastReadTime, function ($query) use ($lastReadTime,$userId) {
+                $query->where('user_id',$userId);
+                $query->where('created_at','>', $lastReadTime);
+            })
+            ->exists();
+        return $exists;
+    }
+
+    public static function getSystems($params)
+    {
+        return MessageSystemService::getList($params);
     }
 
     /**

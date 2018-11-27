@@ -41,19 +41,19 @@
                 <el-row>
                     <el-col :span="11">
                         <el-form-item label="审核结果">
-                            <span v-if="reversedData.audit.status === 1">待审核</span>
-                            <span v-if="reversedData.audit.status === 2">审核通过</span>
-                            <span v-if="reversedData.audit.status === 3">审核不通过</span>
-                            <span v-if="reversedData.audit.status === 4">已撤回</span>
+                            <span class="c-warning" v-if="reversedData.audit.status === 1">待审核</span>
+                            <span class="c-green" v-if="reversedData.audit.status === 2">审核通过</span>
+                            <span class="c-danger" v-if="reversedData.audit.status === 3">审核不通过</span>
+                            <span class="c-warning" v-if="reversedData.audit.status === 4">已撤回</span>
                         </el-form-item>
                     </el-col>
                 </el-row>
 
 
-                <el-row v-if="reversedData.audit.suggestion!==''">
+                <el-row>
                     <el-col :span="11">
                         <el-form-item label="审核意见">
-                            <span>{{reversedData.audit.suggestion}}</span>
+                            <span>{{reversedData.audit.suggestion||'无'}}</span>
                         </el-form-item>
                     </el-col>
                 </el-row>

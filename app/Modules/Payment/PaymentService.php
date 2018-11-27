@@ -10,6 +10,7 @@ namespace App\Modules\Payment;
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
+use App\Modules\Wallet\Wallet;
 use Illuminate\Database\Eloquent\Builder;
 
 class PaymentService extends BaseService
@@ -74,10 +75,11 @@ class PaymentService extends BaseService
 
     /**
      * 根据平台查询数据
-     * @param array $whereArr  // 待查询字段数组
+     * @param array $whereArr // 待查询字段数组
+     * @param $wallet
      * @return Builder[]|\Illuminate\Database\Eloquent\Collection
      */
-    public static function getListByPlatForm($whereArr)
+    public static function getListByPlatForm($whereArr,$wallet)
     {
         $query = Payment::query()
             ->where('status',Payment::STATUS_ON)
@@ -85,8 +87,22 @@ class PaymentService extends BaseService
         foreach ($whereArr as $k => $v){
             $query = $query->where($k,$v);
         }
-        return $query->orderBy('id','desc')->get();
+        $list = $query->orderBy('id','desc')->get();
+        foreach ($list as $k => $v){
+            // ID 4为钱包支付
+            if(($v['id']==4) && $wallet['status']==Wallet::STATUS_OFF){
+                unset($list[$k]);
+                continue;
+            }
+            $list[$k]['need_password'] = ($v['id']==4) ? true : false;
+        }
+        $result = array();
+        foreach ($list as $k => $v){
+            array_push($result,$v);
+        }
+        return $result;
     }
+
 
     public static function getDetailById($id)
     {

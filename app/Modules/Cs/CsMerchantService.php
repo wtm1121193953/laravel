@@ -143,7 +143,6 @@ class CsMerchantService extends BaseService {
         $auditStatus = array_get($data,'auditStatus');
         $startCreatedAt = array_get($data,'startCreatedAt');
         $endCreatedAt = array_get($data,'endCreatedAt');
-
         $cityId = array_get($data, "cityId");
 
         // 全局限制条件
@@ -189,7 +188,7 @@ class CsMerchantService extends BaseService {
             $query->whereIn('settlement_cycle_type', $settlementCycleType);
         }
 
-        if (!empty($auditStatus)) {
+        if ((!empty($auditStatus)||$auditStatus==0)&&$auditStatus!=null) {
             if (is_array($auditStatus) || $auditStatus instanceof Collection) {
                 $query->whereIn('audit_status', $auditStatus);
             } else {
@@ -197,6 +196,7 @@ class CsMerchantService extends BaseService {
                 $query->where('audit_status', $auditStatus);
             }
         }
+
         if ($startCreatedAt && $endCreatedAt) {
             if ($startCreatedAt == $endCreatedAt) {
                 $query->whereDate('created_at', $startCreatedAt);
@@ -253,6 +253,7 @@ class CsMerchantService extends BaseService {
         $merchant->account = $merchant->name;
         $merchant->audit_status = $merchantAudit->status;
         $merchant->changeData = json_decode($merchantAudit->data_modify,true);
+        $merchant->merchant_status = $merchant->status;
         $merchant = self::makeDetail($merchant);
         $oper = Oper::where('id', $merchant->oper_id)->first();
         if ($oper) {
@@ -282,6 +283,10 @@ class CsMerchantService extends BaseService {
         $merchant->cs_merchant_id = $merchantAudit->cs_merchant_id;
         $merchant->audit = $merchantAudit;
         $merchant->changeData = json_decode($merchantAudit->data_modify,true);
+        if($merchantAudit->cs_merchant_id!=0){
+            $csMerchant = CsMerchantService::getById($merchantAudit->cs_merchant_id);
+            $merchant->merchant_status = $csMerchant->status;
+        }
 
         $oper = Oper::where('id', $operId)->first();
         if ($oper) {
@@ -463,6 +468,7 @@ class CsMerchantService extends BaseService {
         $query = CsMerchant::where('status', 1)
             ->where('oper_id', '>', 0)
             ->whereIn('audit_status', [CsMerchant::AUDIT_STATUS_SUCCESS])
+            ->where('status',CsMerchant::STATUS_ON)
             ->when($city_id, function(Builder $query) use ($city_id){
                 // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户
                 $areaInfo = Area::where('area_id', $city_id)->where('path', 1)->first();
@@ -547,7 +553,7 @@ class CsMerchantService extends BaseService {
             }
 
             //配送信息:
-            $MerchantInfo = CsMerchantSetting::where('cs_merchant_id',$item->id)->first();
+            $MerchantInfo = CsMerchantSettingService::getDeliverSetting($item->id);
             if($MerchantInfo){
                 $item->delivery_start_price = $MerchantInfo->delivery_start_price;
                 $item->delivery_charges = $MerchantInfo->delivery_charges;

@@ -55,11 +55,17 @@ class CsPlatformCategoryService extends BaseService
 
     /**
      * 获取所有的id名称
+     * @param int $useful 获取可用的分类
      * @return array
      */
-    public static function getAllIdName()
+    public static function getAllIdName($useful = 0)
     {
-        $rs = CsPlatformCategory::select('id','cat_name')->get();
+        if ($useful) {
+            $rs = CsPlatformCategory::select('id','cat_name')->where('status',CsPlatformCategory::STATUS_ON)->get();
+        } else {
+            $rs = CsPlatformCategory::select('id','cat_name')->get();
+        }
+
         $rt = [];
         foreach ($rs as $v) {
             $rt[$v->id] = $v->cat_name;

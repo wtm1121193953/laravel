@@ -164,19 +164,10 @@ class PaymentController extends Controller
         }else{
             $whereArr['on_pc'] = Payment::PC_ON;
         }
-        $list = PaymentService::getListByPlatForm(array_filter($whereArr));
         $wallet = WalletService::getWalletInfo($request->get('current_user'))->toArray();
+        $list = PaymentService::getListByPlatForm(array_filter($whereArr),$wallet);
         $record = UserIdentityAuditRecordService::getRecordByUserId($request->get('current_user')->id);
         $wallet['identityInfoStatus'] = ($record) ? $record->status : UserIdentityAuditRecord::STATUS_UN_SAVE;
-
-        foreach ($list as $k => $v){
-            // ID 4为钱包支付
-            if(($v['id']==4) && $wallet['status']==Wallet::STATUS_OFF){
-                unset($list[$k]);
-                continue;
-            }
-            $list[$k]['need_password'] = ($v['id']==4) ? true : false;
-        }
         $result = array();
         foreach ($list as $k => $v){
             array_push($result,$v);

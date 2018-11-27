@@ -13,9 +13,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="created_at" label="添加时间">
-                <template slot-scope="scope">
-                    {{scope.row.created_at.substr(0, 10)}}
-                </template>
+
             </el-table-column>
             <el-table-column label="操作" width="250px">
                 <template slot-scope="scope">

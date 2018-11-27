@@ -22,6 +22,7 @@ class DataCacheService extends BaseService
     const REDIS_KEY_MERCHANT = 'merchant:id:';//商户信息缓存键值
     const REDIS_KEY_CS_MERCHANT = 'cs_merchant:id:';//超市商户信息缓存键值
     const REDIS_KEY_PLATFORM_CATS = 'common_data:platform_cats';//平台分类缓存
+    const REDIS_KEY_PLATFORM_CATS_USEFUL = 'common_data:platform_cats_useful';//平台可用分类缓存
     const REDIS_KEY_CS_MERCHANT_CATS = 'common_data:merchant_cats:';//商户分类缓存
 
     /**
@@ -108,6 +109,32 @@ class DataCacheService extends BaseService
     public static function delPlatformCats()
     {
         Cache::store('redis')->forget(self::REDIS_KEY_PLATFORM_CATS);
+    }
+
+    /**
+     * 获取平台分类缓存
+     * @return array|mixed
+     */
+    public static function getPlatformCatsUseful()
+    {
+        $data = Cache::store('redis')->get(self::REDIS_KEY_PLATFORM_CATS_USEFUL);
+        if (empty($data)) {
+            $data = CsPlatformCategoryService::getAllIdName(1);
+            if (!empty($data)) {
+                Cache::store('redis')->forever(self::REDIS_KEY_PLATFORM_CATS_USEFUL, json_encode($data));
+            }
+        } else {
+            $data = json_decode($data,true);
+        }
+        return $data;
+    }
+
+    /**
+     * 删除平台分类缓存
+     */
+    public static function delPlatformCatsUseful()
+    {
+        Cache::store('redis')->forget(self::REDIS_KEY_PLATFORM_CATS_USEFUL);
     }
 
     /**
