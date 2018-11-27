@@ -141,6 +141,16 @@ class InviteStatisticsService extends BaseService
     }
 
     /**
+     * 获取超市商户邀请人当天的邀请数量
+     * @param $cs_merchant_id
+     * @return int
+     */
+    public static function getTodayInviteCountByCsMerchantId($cs_merchant_id)
+    {
+        return self::getTodayInviteCountByOriginInfo($cs_merchant_id, InviteChannel::ORIGIN_TYPE_CS_MERCHANT);
+    }
+
+    /**
      * 获取当日的邀请记录统计, 返回一个 InviteUserStatisticsDaily 对象, 不入库
      * @param $originId
      * @param $originType
@@ -238,6 +248,16 @@ class InviteStatisticsService extends BaseService
     public static function getTotalInviteCountByMerchantId($merchantId)
     {
         return self::getTotalInviteCountByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT);
+    }
+
+    /**
+     * 获取超市商户类型邀请人的邀请总数
+     * @param $cs_merchant_id
+     * @return int
+     */
+    public static function getTotalInviteCountByCsMerchantId($cs_merchant_id)
+    {
+        return self::getTotalInviteCountByOriginInfo($cs_merchant_id, InviteChannel::ORIGIN_TYPE_CS_MERCHANT);
     }
 
 

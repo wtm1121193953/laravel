@@ -49,8 +49,8 @@ class InviteStatisticsController
     public function getTodayAndTotalInviteNumber()
     {
         $merchantId = request()->get('current_user')->merchant_id;
-        $todayInviteCount = InviteStatisticsService::getTodayInviteCountByMerchantId($merchantId);
-        $totalInviteCount = InviteStatisticsService::getTotalInviteCountByMerchantId($merchantId);
+        $todayInviteCount = InviteStatisticsService::getTodayInviteCountByCsMerchantId($merchantId);
+        $totalInviteCount = InviteStatisticsService::getTotalInviteCountByCsMerchantId($merchantId);
 
         return Result::success([
             'todayInviteCount' => $todayInviteCount,
