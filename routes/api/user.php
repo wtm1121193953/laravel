@@ -129,10 +129,10 @@ Route::prefix('user')
 
         Route::get('payments/platform', 'PaymentController@getListByPlatform')->middleware(UserLoginFilter::class);
         Route::get('message/systems', 'MessageSystemController@getSystems')->middleware(UserLoginFilter::class);
-        Route::get('message/notices', 'UserApp\MessageController@getNotices')->middleware(UserLoginFilter::class);
-        Route::get('message/noticesNum', 'UserApp\MessageController@getNeedViewNum')->middleware(UserLoginFilter::class);
-        Route::get('message/noticesDetail', 'UserApp\MessageController@getNoticeDetail')->middleware(UserLoginFilter::class);
-        Route::get('message/systemDetail', 'UserApp\MessageController@getSystemDetail')->middleware(UserLoginFilter::class);
+        Route::get('message/notices', 'MessageController@getNotices')->middleware(UserLoginFilter::class);
+        Route::get('message/noticesNum', 'MessageController@getNeedViewNum')->middleware(UserLoginFilter::class);
+        Route::get('message/noticesDetail', 'MessageController@getNoticeDetail')->middleware(UserLoginFilter::class);
+        Route::get('message/systemDetail', 'MessageController@getSystemDetail')->middleware(UserLoginFilter::class);
     });
 
 
