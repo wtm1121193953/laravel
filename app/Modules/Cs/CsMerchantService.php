@@ -349,36 +349,42 @@ class CsMerchantService extends BaseService {
     /**
      * SaaS编辑商户
      * @param $id
-     * @param $currentOperId
-     * @param string $auditStauts
-     * @param bool $isAdmin
      * @return CsMerchant
      */
-    public static function edit($id, $currentOperId, $auditStauts = '', $isAdmin = false)
+    public static function edit($id)
     {
-        $csmerchant = CsMerchant::where('id', $id)->firstOrFail();
-        $csmerchant->fillMerchantPoolInfoFromRequest();
-        $csmerchant->fillMerchantActiveInfoFromRequest();
+        $csMerchant = CsMerchant::where('id', $id)->firstOrFail();
+        $csMerchant->fillMerchantPoolInfoFromRequest();
+        $csMerchant->fillMerchantActiveInfoFromRequest();
 
+        if($csMerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_COMPANY){
+            if($csMerchant->name != $csMerchant->bank_open_name){
+                throw new ParamInvalidException('提交失败，申请T+1结算，商户名称需和开户名一致');
+            }
+        }elseif($csMerchant->bank_card_type == CsMerchant::BANK_CARD_TYPE_PEOPLE){
+            if($csMerchant->corporation_name != $csMerchant->bank_open_name){
+                throw new ParamInvalidException('提交失败，申请T+1结算，营业执照及法人姓名需和开户名一致');
+            }
+        }
         // 商户名不能重复
         //查询超市表
-        $exists = CsMerchant::where('id','<>',$id)->where('name',$csmerchant->name)->first();
+        $exists = CsMerchant::where('id','<>',$id)->where('name',$csMerchant->name)->first();
         //查询普通商户表
-        $existsMerchant = Merchant::where('name', $csmerchant->name)->first();
+        $existsMerchant = Merchant::where('name', $csMerchant->name)->first();
 
         if(($exists&&$exists->id!=$id)||$existsMerchant){
             throw new ParamInvalidException('商户名称不能重复');
         }
 
         // 招牌名不能重复
-        $signboardName = CsMerchant::where('id','<>',$id)->where('signboard_name', $csmerchant->signboard_name)->first();
-        $existsMerchantSignboardName = Merchant::where('signboard_name',$csmerchant->signboard_name)->first();
+        $signboardName = CsMerchant::where('id','<>',$id)->where('signboard_name', $csMerchant->signboard_name)->first();
+        $existsMerchantSignboardName = Merchant::where('signboard_name',$csMerchant->signboard_name)->first();
         if ($signboardName || $existsMerchantSignboardName) {
             throw new ParamInvalidException('招牌名称不能重复');
         }
 
-        $csmerchant->save();
-        return $csmerchant;
+        $csMerchant->save();
+        return $csMerchant;
     }
 
 

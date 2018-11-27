@@ -2,15 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Modules\Message\MessageSystem;
 use App\Modules\Message\MessageSystemService;
-use App\Modules\Message\MessageSystemUserBehaviorRecord;
-use App\Modules\Message\MessageSystemUserBehaviorRecordService;
 use App\Result;
-use App\ResultCode;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Class MessageController
