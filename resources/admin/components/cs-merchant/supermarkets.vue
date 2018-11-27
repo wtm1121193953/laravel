@@ -44,10 +44,10 @@
                 </el-form-item>
                 <el-form-item label="审核状态" prop="auditStatus" v-else>
                     <el-select clearable v-model="query.auditStatus" size="small" multiple placeholder="请选择" class="w-150">
-                        <el-option label="待审核" value="1"/>
-                        <el-option label="审核通过" value="2"/>
-                        <el-option label="审核不通过" value="3"/>
-                        <el-option label="重新提交审核" value="5"/>
+                        <el-option label="待审核" value="0"/>
+                        <el-option label="审核通过" value="1"/>
+                        <el-option label="审核不通过" value="2"/>
+                        <el-option label="重新提交审核" value="3"/>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="结算周期" prop="settlementCycleType">

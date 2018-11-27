@@ -143,7 +143,6 @@ class CsMerchantService extends BaseService {
         $auditStatus = array_get($data,'auditStatus');
         $startCreatedAt = array_get($data,'startCreatedAt');
         $endCreatedAt = array_get($data,'endCreatedAt');
-
         $cityId = array_get($data, "cityId");
 
         // 全局限制条件
@@ -189,7 +188,7 @@ class CsMerchantService extends BaseService {
             $query->whereIn('settlement_cycle_type', $settlementCycleType);
         }
 
-        if (!empty($auditStatus)) {
+        if ((!empty($auditStatus)||$auditStatus==0)&&$auditStatus!=null) {
             if (is_array($auditStatus) || $auditStatus instanceof Collection) {
                 $query->whereIn('audit_status', $auditStatus);
             } else {
@@ -197,6 +196,7 @@ class CsMerchantService extends BaseService {
                 $query->where('audit_status', $auditStatus);
             }
         }
+
         if ($startCreatedAt && $endCreatedAt) {
             if ($startCreatedAt == $endCreatedAt) {
                 $query->whereDate('created_at', $startCreatedAt);
