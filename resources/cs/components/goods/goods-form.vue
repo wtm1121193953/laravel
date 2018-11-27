@@ -7,7 +7,7 @@
                 </el-form-item>
                 <el-form-item label="一级分类" prop="cs_platform_cat_id_level1">
                     <template>
-                        <el-select v-model="form.cs_platform_cat_id_level1" placeholder="请选择" @change="getLevel2()">
+                        <el-select v-model="form.cs_platform_cat_id_level1" placeholder="请选择" @change="changeLevel2()">
                             <el-option
                                     v-for="item in cs_platform_cat_id_level1"
                                     :key="item.value"
@@ -161,8 +161,14 @@
             getLevel1() {
                 api.get('/sub_cat', {parent_id:0}).then(data => {
 
+
                     this.cs_platform_cat_id_level1 = data;
                 })
+            },
+            changeLevel2() {
+
+                this.form.cs_platform_cat_id_level2 = '';
+                this.getLevel2();
             },
             getLevel2() {
                 if (this.form.cs_platform_cat_id_level1 == 0) {
@@ -170,7 +176,6 @@
 
                 }
                 api.get('/sub_cat', {parent_id:this.form.cs_platform_cat_id_level1}).then(data => {
-
                     this.cs_platform_cat_id_level2 = data;
                 })
             },

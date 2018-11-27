@@ -274,7 +274,6 @@ class CsMerchantAuditService extends BaseService {
         if(!empty($dataBefore)){
             // 存储变更数据
             foreach ($dataAfter as $k=>$v){
-//                var_dump(isset($dataBefore[$k]),$k);
                 if(isset($dataBefore[$k])&&($dataAfter[$k]!=$dataBefore[$k])){
                     $dataModify[$k] = $dataBefore[$k];
                 }
