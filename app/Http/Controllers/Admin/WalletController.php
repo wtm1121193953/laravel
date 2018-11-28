@@ -41,6 +41,8 @@ class WalletController extends Controller
             $originId = $userId;
         } elseif ($originType == Wallet::ORIGIN_TYPE_BIZER) {
             $originId = $bizerId;
+        } elseif ($originType == Wallet::ORIGIN_TYPE_CS) {
+            $originId = $merchantId;
         }
 
         $param = compact('originType', 'originId', 'status', 'userMobile', 'merchantName', 'operName', 'bizerMobile', 'bizerName');
