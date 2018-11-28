@@ -767,7 +767,7 @@ class OrderController extends Controller
         } else {
             $discountPrice = 0;
         }
-        $payPrice = $totalPrice - $discountPrice;
+        $payPrice = $totalPrice + $deliverPrice - $discountPrice;
 
         DB::beginTransaction();
         try {
