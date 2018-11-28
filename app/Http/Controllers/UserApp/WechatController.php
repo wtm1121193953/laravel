@@ -15,7 +15,7 @@ use App\Result;
 
 class WechatController extends Controller
 {
-    public function share(){
+    public function getShareInfo(){
 
         $this->validate(request(), [
             'type' => 'required|in:merchant,goods'
@@ -40,7 +40,7 @@ class WechatController extends Controller
                 }
                 $miniprogramShareInfo['desc_pic'] = $desc_pic;
 
-                $miniprogramShareInfo['path'] = '/pages/merchant/index?id='.$miniprogramShareInfo['id'];//小程序页面路径
+                $miniprogramShareInfo['path'] = '/pages/merchant/index?id='.$merchantInfo->id;//小程序页面路径
             }
 
 
@@ -58,7 +58,7 @@ class WechatController extends Controller
                 $miniprogramShareInfo['logo'] = $merchantInfo->logo;
                 $miniprogramShareInfo['desc_pic'] = $goodsInfo->thumb_url;
 
-                $miniprogramShareInfo['path'] = 'pages/product/info?id='.$miniprogramShareInfo['id'];//小程序页面路径
+                $miniprogramShareInfo['path'] = 'pages/product/info?id='.$goodsInfo->id;//小程序页面路径
             }
         }
         $miniProgram = config('platform.miniprogram');
