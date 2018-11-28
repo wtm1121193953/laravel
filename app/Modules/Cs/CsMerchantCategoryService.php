@@ -223,11 +223,13 @@ class CsMerchantCategoryService extends BaseService
                     ->update(['status'=>CsMerchantCategory::STATUS_OFF])
                 ;
                 if ($merchant_cat->cs_category_level == 1) {
-                    CsGood::where('cs_platform_cat_id_level1',$merchant_cat->platform_category_id)
+                    CsGood::where('cs_merchant_id',$cs_merchant_id)
+                        ->where('cs_platform_cat_id_level1',$merchant_cat->platform_category_id)
                         ->update(['status'=>CsGood::STATUS_OFF])
                     ;
                 } elseif ($merchant_cat->cs_category_level == 2) {
-                    CsGood::where('cs_platform_cat_id_level2',$merchant_cat->platform_category_id)
+                    CsGood::where('cs_merchant_id',$cs_merchant_id)
+                        ->where('cs_platform_cat_id_level2',$merchant_cat->platform_category_id)
                         ->update(['status'=>CsGood::STATUS_OFF])
                     ;
                 }

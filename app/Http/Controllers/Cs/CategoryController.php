@@ -32,6 +32,10 @@ class CategoryController extends BaseController
         ]);
     }
 
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
     public function changeStatus()
     {
 
@@ -42,6 +46,10 @@ class CategoryController extends BaseController
         return Result::success($data);
     }
 
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
     public function changeSort()
     {
         parent::__init();
