@@ -252,6 +252,9 @@
 
         },
         created(){
+            if(this.$route.query.merchantName!==undefined){
+                this.query.merchant_name = this.$route.query.merchantName;
+            }
             this.getLevel1();
             this.getList();
         },
