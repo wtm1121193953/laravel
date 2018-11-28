@@ -821,7 +821,7 @@ class OrderController extends Controller
         DB::beginTransaction();
         try {
             //创建订单
-            $user =  $user = request()->get('current_user');
+            $user = request()->get('current_user');
             $order = new Order();
             $orderNo = Order::genOrderNo();
             $order->merchant_type = Order::MERCHANT_TYPE_SUPERMARKET;
