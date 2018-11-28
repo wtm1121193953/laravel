@@ -51,12 +51,14 @@ class CsUserAddressService extends BaseService {
             $userAddress->city = Area::getNameByAreaId($userAddress->city_id);
         }
         else{
+            $userAddress->city_id = 0;
             $userAddress->city ='0';
         }
         if (!empty($userAddress->area_id)){
             $userAddress->area = Area::getNameByAreaId($userAddress->area_id);
         }
         else{
+            $userAddress->area_id = 0;
             $userAddress->area = '0';
         }
 
