@@ -145,4 +145,8 @@ Route::prefix('app/user')
         Route::get('payments/platform', 'PaymentController@getListByPlatform')->middleware(UserLoginFilter::class);
         Route::get('message/redDotNum', 'MessageController@redDotNumList')->middleware(UserLoginFilter::class);
 
+
+        //小程序分享：
+        Route::get('miniProgram/shareMerchant','MiniProgramController@shartMerchant');
+
     });
