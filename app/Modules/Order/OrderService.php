@@ -594,6 +594,8 @@ class OrderService extends BaseService
         if ($order->deliver_code == $deliverCode) {
             $order->deliver_time = Carbon::now();
             $order->status = Order::STATUS_FINISHED;
+            $order->finish_time = Carbon::now();
+            $order->take_delivery_time = Carbon::now();
             $order->save();
             OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(now()->addMinute());
         } else {
