@@ -9,9 +9,9 @@
 namespace App\Http\Controllers\User;
 
 
+use App\DataCacheService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
-use App\Exceptions\NoPermissionException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsGood;
@@ -19,9 +19,7 @@ use App\Modules\Cs\CsMerchant;
 use App\Modules\Cs\CsMerchantSettingService;
 use App\Modules\Cs\CsUserAddress;
 use App\Modules\CsOrder\CsOrderGood;
-use App\Modules\CsStatistics\CsStatisticsMerchantOrderService;
 use App\Modules\Dishes\DishesGoods;
-use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Goods\Goods;
 use App\Modules\Dishes\Dishes;
@@ -32,8 +30,6 @@ use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Oper\Oper;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
-use App\Modules\Order\OrderPay;
-use App\Modules\Order\OrderRefund;
 
 use App\Modules\Order\OrderService;
 use App\Modules\Payment\Payment;
@@ -41,22 +37,15 @@ use App\Modules\Payment\PaymentService;
 use App\Modules\Setting\SettingService;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
-use App\Modules\Wallet\Wallet;
-use App\Modules\Wallet\WalletBill;
-use App\Modules\Wallet\WalletService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use App\ResultCode;
 use App\Support\Lbs;
-use App\Support\Payment\PayBase;
-use App\Support\Payment\WalletPay;
 use App\Support\Payment\WechatPay;
 use App\Support\Reapal\ReapalPay;
 use App\Support\Utils;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -432,14 +421,21 @@ class OrderController extends Controller
         }
 
         // 计算 配送费 以及 配送费满减
-        $deliverPrice = $csMerchantSetting->delivery_charges;
-        $totalPrice = $goodsPrice;
-        if ($csMerchantSetting->delivery_free_start && $goodsPrice >= $csMerchantSetting->delivery_free_order_amount) {
-            $discountPrice = $csMerchantSetting->delivery_charges;
-        } else {
+        if($deliveryType == Order::DELIVERY_MERCHANT_POST){ // 商家配送, 有配送费
+            $deliverPrice = $csMerchantSetting->delivery_charges; // 运费
+            $totalPrice = $goodsPrice;
+            if ($csMerchantSetting->delivery_free_start && $goodsPrice >= $csMerchantSetting->delivery_free_order_amount) {
+                $discountPrice = $csMerchantSetting->delivery_charges;
+            } else {
+                $discountPrice = 0;
+            }
+            $payPrice = $totalPrice + $deliverPrice - $discountPrice;
+        }else {
+            $deliverPrice = 0; // 运费
+            $totalPrice = $goodsPrice;
             $discountPrice = 0;
+            $payPrice = $goodsPrice;
         }
-        $payPrice = $totalPrice + $deliverPrice - $discountPrice;
 
         DB::beginTransaction();
         try {
