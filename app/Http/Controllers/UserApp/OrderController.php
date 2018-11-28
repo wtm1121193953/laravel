@@ -742,7 +742,7 @@ class OrderController extends Controller
         }
         //如果是商家配送必须选择收货地址
         $address = '';
-        if ($deliveryType == Order::DELIVERY_MERCHANT_POST && empty($addressId)){
+        if ($deliveryType == Order::DELIVERY_MERCHANT_POST){
             if (empty($addressId)) {
                 throw new ParamInvalidException('请先选择地址');
             } else {
