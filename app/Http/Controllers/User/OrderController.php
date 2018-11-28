@@ -631,8 +631,16 @@ class OrderController extends Controller
         $order = Order::where('order_no', $orderNo)->firstOrFail();
         $order->pay_type = request()->get('pay_type',Payment::ID_WECHAT);
         $order->save();
-        $merchant = MerchantService::getById($order->merchant_id);
-        $this->checkMerchant($merchant);
+
+        if($order->merchant_type == Order::MERCHANT_TYPE_NORMAL){
+            $merchant = MerchantService::getById($order->merchant_id);
+            $this->checkMerchant($merchant);
+        }else {
+            $merchant = CsMerchant::find($order->merchant_id);
+            if (empty($merchant)) {
+                throw new BaseResponseException('该超市不存在，请选择其他超市下单', ResultCode::CS_MERCHANT_NOT_EXIST);
+            }
+        }
 
         if ($order->status == Order::STATUS_PAID || $order->status == Order::STATUS_FINISHED) {
             throw new BaseResponseException('订单已支付，请重新发起订单');
@@ -872,7 +880,7 @@ class OrderController extends Controller
     private function checkMerchant(Merchant $merchant)
     {
 
-        if ($merchant->audit_status != Merchant::AUDIT_STATUS_SUCCESS) {
+        if ($merchant->audit_status != Merchant::AUDIT_STATUS_SUCCESS && $merchant->audit_status != Merchant::AUDIT_STATUS_RESUBMIT) {
             throw new BaseResponseException('商家异常，请联系商家');
         }
         if($merchant->status == Merchant::STATUS_OFF){
