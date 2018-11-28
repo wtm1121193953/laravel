@@ -8,6 +8,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Modules\Bizer\Bizer;
 use App\Modules\Bizer\BizerService;
 use App\Modules\Cs\CsMerchant;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Merchant\Merchant;
@@ -373,7 +374,12 @@ class WalletService extends BaseService
         } else {
             $data = $query->paginate($pageSize);
             $data->each(function ($item) {
-                $item->merchant_name = MerchantService::getNameById($item->origin_id);
+                if ($item->origin_type == WalletBill::ORIGIN_TYPE_CS) {
+                    $item->merchant_name = CsMerchantService::getNameById($item->origin_id);
+                } else {
+                    $item->merchant_name = MerchantService::getNameById($item->origin_id);
+                }
+
                 $item->oper_name = OperService::getNameById($item->origin_id);
                 if ($item->origin_type == WalletBill::ORIGIN_TYPE_MERCHANT) {
                     $item->merchant_level = MerchantService::getById($item->origin_id)->level;
@@ -538,6 +544,17 @@ class WalletService extends BaseService
                 $originIds = MerchantService::getMerchantColumnArrayByParams(compact('operIds'), 'id');
             }
         }
+        if($originType == Wallet::ORIGIN_TYPE_CS){
+            if ($merchantName && $operName) {
+                $operIds = OperService::getOperColumnArrayByOperName($operName, 'id');
+                $originIds = CsMerchantService::getMerchantColumnArrayByParams(compact('operIds', 'merchantName'), 'id');
+            } elseif ($merchantName) {
+                $originIds = CsMerchantService::getMerchantColumnArrayByParams(compact('merchantName'), 'id');
+            } elseif ($operName) {
+                $operIds = OperService::getOperColumnArrayByOperName($operName, 'id');
+                $originIds = CsMerchantService::getMerchantColumnArrayByParams(compact('operIds'), 'id');
+            }
+        }
         if ($originType == Wallet::ORIGIN_TYPE_OPER && $operName) {
             $originIds = OperService::getOperColumnArrayByOperName($operName, 'id');
         }
@@ -592,6 +609,14 @@ class WalletService extends BaseService
                     $item->bank_card_no = $bizerBank->bank_card_no ?? '';
                     $item->bank_name = $bizerBank->bank_name ?? '';
                     $item->bank_card_type = $bizerBank->bank_card_type ?? '';
+                } elseif ($item->origin_type == Wallet::ORIGIN_TYPE_CS) {
+                    $merchant = CsMerchantService::getById($item->origin_id);
+                    $item->merchant_name = $merchant->name ?? '';
+                    $item->oper_name = OperService::getNameById($merchant->oper_id ?? '');
+                    $item->bank_open_name = $merchant->bank_open_name ?? '';
+                    $item->bank_card_no = $merchant->bank_card_no ?? '';
+                    $item->sub_bank_name = $merchant->sub_bank_name ?? '';
+                    $item->bank_card_type = $merchant->bank_card_type ?? '';
                 }
             });
             return $data;

@@ -62,7 +62,6 @@
                                 <img :src="data.business_licence_pic_url" />
                             </div>
                         <el-button v-if="data.business_licence_pic_url" type="text" @click="previewImage('licence')">查看</el-button>
-                        <!-- <el-button type="text" @click="previewImage(data.business_licence_pic_url)">查看</el-button> -->
                     </el-form-item>
 
                 </el-col>
@@ -149,7 +148,7 @@
                         </el-form-item>-->
                         <el-form-item label="分利比例">
                             <template v-if="checkIsset('settlement_rate')">
-                                <el-tooltip class="item" effect="dark" :content="data.changeData.settlement_rate" placement="bottom">
+                                <el-tooltip class="item" effect="dark" :content="''+data.changeData.settlement_rate.toFixed(2)" placement="bottom">
                                     <span class="c-danger">{{data.settlement_rate}}</span>
                                 </el-tooltip>
                             </template>
@@ -427,7 +426,7 @@
                 viewer.show()
             },
             checkIsset(key){
-                if(this.data.changeData!==null&&this.data.changeData[key]!==undefined){
+                if(this.data.changeData!==null&&this.data.changeData[key]!==undefined&&this.data.changeData[key]!==''){
                     return true;
                 }
                 return false;

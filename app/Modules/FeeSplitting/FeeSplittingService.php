@@ -656,6 +656,8 @@ class FeeSplittingService extends BaseService
                 } elseif ($item->origin_type == FeeSplittingRecord::ORIGIN_TYPE_BIZER) {
                     $bizer = BizerService::getById($item->origin_id);
                     $item->name = empty($bizer) ? '' : ($bizer->name ?: $bizer->mobile);
+                } elseif ($item->origin_type == FeeSplittingRecord::ORIGIN_TYPE_CS) {
+                    $item->name = CsMerchantService::getNameById($item->origin_id) ?: '';
                 } else {
                     $item->name = '';
                 }
