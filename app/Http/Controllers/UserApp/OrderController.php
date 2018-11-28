@@ -825,7 +825,7 @@ class OrderController extends Controller
             $order->bizer_id = 0;
             $order->deliver_type = $deliveryType;
 
-            $order->express_address = $address;
+            $order->express_address = $address ? json_encode($address) : $address;
 
             $order->save();
 
