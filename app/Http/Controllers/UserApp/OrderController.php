@@ -142,7 +142,25 @@ class OrderController extends Controller
                 $query->where('oper_id', $currentOperId);
             })
             ->when($status, function (Builder $query) use ($status) {
-                $query->where('status', $status);
+                $status_map = [
+                    'a' => Order::STATUS_UN_PAY, //待付款
+                    'b' => Order::STATUS_UNDELIVERED,//代发货
+                    'c' => Order::STATUS_DELIVERED,//待收货
+                    'd' => [Order::STATUS_PAID,Order::STATUS_NOT_TAKE_BY_SELF],//待使用
+                    'e' => [Order::STATUS_CLOSED,Order::STATUS_FINISHED],//已完成
+                    'f' => Order::STATUS_REFUNDED,//已退款
+                ];
+
+                if (empty($status_map[$status])) {
+                    throw new BaseResponseException('订单状态参数错误');
+                }
+                $map = $status_map[$status];
+                if (is_array($map)) {
+                    $query->whereIn('status',$map);
+                } else {
+                    $query->where('status', $map);
+                }
+
             })
             ->orderByDesc('id')
             ->paginate();

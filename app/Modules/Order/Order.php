@@ -114,7 +114,7 @@ class Order extends BaseModel
     const STATUS_REFUNDED = 6; // 已退款
     const STATUS_FINISHED = 7; // 已完成
     const STATUS_UNDELIVERED = 8; // 待发货
-    const STATUS_NOT_TAKE_BY_SELF = 4; // 待自提
+    const STATUS_NOT_TAKE_BY_SELF = 9; // 待自提
     const STATUS_DELIVERED = 10; // 已发货
 
 
