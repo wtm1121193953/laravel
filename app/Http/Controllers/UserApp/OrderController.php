@@ -550,6 +550,7 @@ class OrderController extends Controller
 
     /**
      * 立即付款
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function pay()
     {
