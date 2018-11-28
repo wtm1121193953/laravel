@@ -17,6 +17,7 @@ use App\Modules\Order\OrderRefund;
 use App\Modules\Order\OrderService;
 use App\Modules\Payment\Payment;
 use App\Modules\Platform\PlatformTradeRecord;
+use App\Modules\User\User;
 use App\Modules\User\UserService;
 use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletBill;
@@ -33,7 +34,7 @@ class WalletPay extends PayBase
      * @param $order
      * @throws \Exception
      */
-    public function buy($user, $order)
+    public function buy(User $user, Order $order)
     {
         // 判断密码的有效性
         /*request()->validate([

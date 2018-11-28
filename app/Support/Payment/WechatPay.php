@@ -19,6 +19,7 @@ use App\Modules\Order\OrderPay;
 use App\Modules\Order\OrderRefund;
 use App\Modules\Order\OrderService;
 use App\Modules\Platform\PlatformTradeRecord;
+use App\Modules\User\User;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use Illuminate\Support\Carbon;
@@ -79,7 +80,7 @@ class WechatPay extends PayBase
      * @return mixed
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    public function refund($order)
+    public function refund(Order $order)
     {
         if($order->status != Order::STATUS_PAID && $order->status != Order::STATUS_UNDELIVERED){
             throw new BaseResponseException('订单状态不允许退款');
@@ -151,4 +152,14 @@ class WechatPay extends PayBase
 
     }
 
+    /**
+     * 下单
+     * @param User $user
+     * @param Order $order
+     * @return mixed
+     */
+    public function buy(User $user, Order $order)
+    {
+        // TODO: Implement buy() method.
+    }
 }
