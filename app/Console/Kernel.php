@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Jobs\Schedule\AutoDownGoodsJob;
 use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
+use App\Jobs\Schedule\OrderAutoConfirmed;
 use App\Jobs\Schedule\OrderAutoFinished;
 use App\Jobs\Schedule\OrderExpired;
 use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
@@ -45,6 +46,8 @@ class Kernel extends ConsoleKernel
         $schedule->job(OrderExpired::class)->hourly();
         /** 输入金额付款订单自动完成 */
         $schedule->job(OrderAutoFinished::class)->daily();
+        /**超过7天自动收货任务*/
+        $schedule->job(OrderAutoConfirmed::class)->hourly();
         /** 结算任务 */
         // 周结, 旧结算逻辑, 支付到运营中心的订单结算
         $schedule->job(new SettlementWeekly(Merchant::SETTLE_WEEKLY))

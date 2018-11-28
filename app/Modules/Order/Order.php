@@ -60,6 +60,7 @@ use Carbon\Carbon;
  * @property Carbon deliver_time
  * @property Carbon take_delivery_time
  * @property Carbon user_deleted_at
+ * @property Carbon delivery_confirmed
  * @property integer deliver_code
  */
 
