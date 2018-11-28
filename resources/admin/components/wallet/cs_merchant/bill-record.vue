@@ -1,5 +1,5 @@
 <template>
-    <page title="商户账户交易记录" :breadcrumbs="{商户账户管理: '/wallet/merchant'}">
+    <page title="超市商户账户交易记录" :breadcrumbs="{超市商户账户管理: '/wallet/cs_merchant'}">
         <el-form :model="query" inline size="small">
             <el-form-item prop="billNo" label="交易号">
                 <el-input v-model="query.billNo" clearable placeholder="请输入交易号"/>
