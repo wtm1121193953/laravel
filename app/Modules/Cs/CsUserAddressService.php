@@ -130,6 +130,7 @@ class CsUserAddressService extends BaseService {
     public static function editAddress($data){
         $user = request()->get('current_user');
         $id = array_get($data,'id');
+        $isDefault = array_get($data,'is_default',0);
 
         $userAddress = CsUserAddress::where('user_id',$user->id)
             ->where('id',$id)
@@ -141,12 +142,13 @@ class CsUserAddressService extends BaseService {
         $userAddress->city_id = array_get($data,'city_id',0);
         $userAddress->area_id = array_get($data,'area_id',0);
         $userAddress->address = array_get($data,'address','');
-        $userAddress->is_default = array_get($data,'is_default',0);
+        $userAddress->is_default = $isDefault;
         $userAddress->province = Area::getNameByAreaId($userAddress->province_id) ?? '';
         $userAddress->city = Area::getNameByAreaId($userAddress->city_id) ?? '';
         $userAddress->area = Area::getNameByAreaId($userAddress->area_id) ?? '';
 
-        if ($userAddress->is_default == CsUserAddress::DEFAULT){
+
+        if ($isDefault == CsUserAddress::DEFAULT){
             //如果本条数据设置默认，其它默认地址设置为否
             CsUserAddress::where('user_id', $user->id )
                 ->where("is_default", CsUserAddress::DEFAULT)
