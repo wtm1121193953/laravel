@@ -22,6 +22,10 @@ class AddTypeToOrdersTable extends Migration
             $table->dateTime('deliver_time')->nullable()->comment('超市订单 发货时间');
             $table->dateTime('take_delivery_time')->nullable()->comment('超市订单 收货时间');
             $table->dateTime('user_deleted_at')->nullable()->comment('用户删除订单时间');
+            $table->decimal('delivery_start_price')->default(0.00)->comment('起送价');
+            $table->decimal('delivery_charges')->default(0.00)->comment('配送费');
+            $table->tinyInteger('delivery_free_start')->default(0)->comment('是否开启满多少免运费 1是 0否');
+            $table->decimal('delivery_free_order_amount')->default(0.00)->comment('订单满多少免运费');
 
             $table->decimal('discount_price')->default(0.00)->comment('优惠金额')->after('pay_type');
             $table->decimal('total_price')->default(0.00)->comment('商品总价格')->after('pay_type');
