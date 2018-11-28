@@ -12,7 +12,7 @@ use App\Modules\Goods\Goods;
 use App\Modules\Merchant\Merchant;
 use App\Result;
 
-class MiniProgramController extends Controller
+class WechatController extends Controller
 {
     public function share(){
 
