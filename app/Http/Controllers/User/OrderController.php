@@ -681,7 +681,7 @@ class OrderController extends Controller
                 throw new BaseResponseException('无法使用该退款方式');
             }
             $paymentClass = new $paymentClassName();
-            $res =  $paymentClass->refund($order,request()->get('current_user'));
+            $res =  $paymentClass->refund($order);
         }
         // 还原库存
         $this->decSellNumber($order);
@@ -707,8 +707,9 @@ class OrderController extends Controller
         if(!class_exists($paymentClassName)){
             throw new BaseResponseException('无法使用该支付方式');
         }
+        $user = request()->get('current_user');
         $paymentClass = new $paymentClassName();
-        return $paymentClass->buy($order);
+        return $paymentClass->buy($user, $order);
     }
 
     /**
@@ -781,7 +782,8 @@ class OrderController extends Controller
             }
             $paymentClass = new $paymentClassName();
             try{
-                $data =  $paymentClass->buy($order);
+                $user = request()->get('current_user');
+                $data =  $paymentClass->buy($user, $order);
             }catch (\Exception $e){
                 if($e instanceof ValidationException){
                     $message = implode(',',array_map(function(&$value){
