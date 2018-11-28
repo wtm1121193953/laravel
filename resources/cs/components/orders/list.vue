@@ -183,10 +183,6 @@
                 required: true,
                 type: String,
             },
-            tab: {
-                required: true,
-                type: String,
-            },
             status: {
                 default: '',
             }
@@ -359,13 +355,6 @@
             this.query.status = this.status;
 
             this.getList();
-        },
-        watch: {
-            activeTab(newValue) {
-                if (newValue == this.tab) {
-                    this.getList();
-                }
-            }
         },
         components: {
             OrderForm,
