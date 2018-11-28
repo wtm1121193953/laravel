@@ -695,7 +695,7 @@ class OrderController extends Controller
             if(!class_exists($paymentClassName)){
                 throw new BaseResponseException('无法使用该支付方式');
             }
-            $user = request('current_user');
+            $user = request()->get('current_user');
             $paymentClass = new $paymentClassName();
             $data = $paymentClass->buy($user, $order);
         }
