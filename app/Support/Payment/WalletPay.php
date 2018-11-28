@@ -27,14 +27,18 @@ use Illuminate\Support\Facades\Cache;
 
 class WalletPay extends PayBase
 {
-    public function buy($order)
+    /**
+     * @param $user
+     * @param $order
+     * @throws \Exception
+     */
+    public function buy($user, $order)
     {
         // 判断密码的有效性
         /*request()->validate([
             'temp_token' => 'required'
         ]);*/
         $inputToken = request()->get('temp_token');
-        $user = request()->get('current_user');
         $tempToken = Cache::get('user_pay_password_modify_temp_token_' . $user->id);
         if(empty($tempToken)){
             throw new NoPermissionException('您的验证信息已超时, 请返回重新验证');

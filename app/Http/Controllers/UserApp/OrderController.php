@@ -22,7 +22,6 @@ use App\Modules\Cs\CsMerchantSetting;
 use App\Modules\Cs\CsMerchantSettingService;
 use App\Modules\Cs\CsUserAddress;
 use App\Modules\CsOrder\CsOrderGood;
-use App\Modules\CsStatistics\CsStatisticsMerchantOrderService;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
@@ -33,36 +32,27 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
-use App\Modules\Order\OrderPay;
-use App\Modules\Order\OrderRefund;
 use App\Modules\Order\OrderService;
 use App\Modules\Payment\Payment;
 use App\Modules\Payment\PaymentService;
 use App\Modules\Setting\SettingService;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
-use App\Modules\Wallet\Wallet;
-use App\Modules\Wallet\WalletBill;
-use App\Modules\Wallet\WalletService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use App\ResultCode;
-use App\Support\Alipay;
 use App\Support\Lbs;
-use App\Support\Payment\PayBase;
 use App\Support\Payment\WalletPay;
 use App\Support\Payment\WechatPay;
 use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Oper\Oper;
-
 
 
 class OrderController extends Controller
@@ -300,9 +290,10 @@ class OrderController extends Controller
             $detail->order_goods = CsOrderGood::where('order_id',$detail->id)->with('cs_goods:id,logo')->get();
 
         }else {
-            $detail->merchant = Merchant::where('id', $detail->merchant_id)->first();
-            $detail->merchant_logo = $detail->merchant->logo;
-            $detail->signboard_name = $detail->merchant->signboard_name;
+            $merchant = Merchant::where('id', $detail->merchant_id)->first();
+            $detail->merchant_logo = $merchant->logo;
+            $detail->signboard_name = $merchant->signboard_name;
+            $detail->merchant = $merchant;
         }
         return Result::success($detail);
     }
