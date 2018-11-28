@@ -809,19 +809,29 @@ class OrderController extends Controller
         }
 
         // 商家配送必须达到 起送价
-        if (($deliveryType == Order::DELIVERY_MERCHANT_POST) && ($goodsPrice < $csMerchantSetting->delivery_start_price)  ) {
+        if (
+            $deliveryType == Order::DELIVERY_MERCHANT_POST
+            && $goodsPrice < $csMerchantSetting->delivery_start_price
+        ) {
             throw new BaseResponseException('商品价格小于起送价');
         }
 
         // 计算 配送费 以及 配送费满减
-        $deliverPrice = $csMerchantSetting->delivery_charges;
-        $totalPrice = $goodsPrice;
-        if ($csMerchantSetting->delivery_free_start && $goodsPrice >= $csMerchantSetting->delivery_free_order_amount) {
-            $discountPrice = $csMerchantSetting->delivery_charges;
-        } else {
+        if($deliveryType == Order::DELIVERY_MERCHANT_POST){ // 商家配送, 有配送费
+            $deliverPrice = $csMerchantSetting->delivery_charges; // 运费
+            $totalPrice = $goodsPrice;
+            if ($csMerchantSetting->delivery_free_start && $goodsPrice >= $csMerchantSetting->delivery_free_order_amount) {
+                $discountPrice = $csMerchantSetting->delivery_charges;
+            } else {
+                $discountPrice = 0;
+            }
+            $payPrice = $totalPrice + $deliverPrice - $discountPrice;
+        }else {
+            $deliverPrice = 0; // 运费
+            $totalPrice = $goodsPrice;
             $discountPrice = 0;
+            $payPrice = $goodsPrice;
         }
-        $payPrice = $totalPrice + $deliverPrice - $discountPrice;
 
         DB::beginTransaction();
         try {
