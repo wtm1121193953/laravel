@@ -39,7 +39,7 @@
                     <el-input-number v-model="form.price" :min="0"/>
                 </el-form-item>
                 <el-form-item prop="stock" label="库存">
-                    <el-input-number v-model="form.stock" :min="0"/>
+                    <el-input-number v-model="form.stock" :min="0" :max="100000"/>
                 </el-form-item>
 
                 <el-form-item prop="summary" label="商品简介">
@@ -135,6 +135,9 @@
                     price: [
                         {required: true, message: '销售价不能为空'},
                         {validator: validatePrice, trigger: 'blur'}
+                    ],
+                    stock: [
+                        {type: 'number', max: 100000, message: '库存不能超过100000'}
                     ],
                     summary: [
                         {required: true, message: '简介不能为空'}

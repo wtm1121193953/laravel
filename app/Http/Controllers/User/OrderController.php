@@ -389,7 +389,7 @@ class OrderController extends Controller
         }
         //如果是商家配送必须选择收货地址
         $address = '';
-        if ($deliveryType == Order::DELIVERY_MERCHANT_POST && empty($addressId)){
+        if ($deliveryType == Order::DELIVERY_MERCHANT_POST){
             if (empty($addressId)) {
                 throw new ParamInvalidException('请先选择地址');
             } else {
@@ -469,7 +469,7 @@ class OrderController extends Controller
             $order->origin_app_type = request()->header('app-type');
             $order->bizer_id = 0;
             $order->deliver_type = $deliveryType;
-            $order->express_address = $address;
+            $order->express_address = $address ? json_encode($address) : $address;
 
             $order->merchant_type = Order::MERCHANT_TYPE_SUPERMARKET;
             if ($order->save()) {
@@ -491,8 +491,6 @@ class OrderController extends Controller
                 }
             }
 
-            //更新商户当日销量
-            CsStatisticsMerchantOrderService::addMerchantOrderNumberToday($merchantId);
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

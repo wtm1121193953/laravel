@@ -245,10 +245,6 @@ class OrderController extends Controller
             $detail->user_level_text = User::getLevelText($creditRecord->user_level);
             $detail->credit = $creditRecord->credit;
         }
-        // 单品订单
-        if ($detail->type == Order::TYPE_DISHES) {
-            $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
-        }
 
         if($lng && $lat){
             $distance = Lbs::getDistanceOfMerchant($detail->merchant_id, request()->get('current_open_id'), floatval($lng), floatval($lat));
@@ -270,14 +266,43 @@ class OrderController extends Controller
         }
 
         //商家详情
-        $detail['merchant'] = $merchant_of_order;
-        $detail['good'] = GoodsService::getById($detail->goods_id);
-        $detail['pay_type'] = PaymentService::getDetailById($detail->pay_type);
+        $detail->merchant = $merchant_of_order;
+        $detail->good = GoodsService::getById($detail->goods_id);
+        $detail->pay_type = PaymentService::getDetailById($detail->pay_type);
 
         if ($detail->status == Order::STATUS_DELIVERED) {//如果是已发货显示收货剩余时间
-            $detail['confirm_left_time'] = strtotime($detail->deliver_time) + 7 * 86400 - time();
+            $detail->confirm_left_time = strtotime($detail->deliver_time) + 7 * 86400 - time();
         } else {
-            $detail['confirm_left_time'] = 999999999;
+            $detail->confirm_left_time = 999999999;
+        }
+
+        // 单品订单
+        if ($detail->type == Order::TYPE_DISHES) {
+            $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
+            $detail->order_goods_number = DishesItem::where('dishes_id',$detail->dishes_id)->sum('number');
+        }else if($detail->type == Order::TYPE_GROUP_BUY){
+            $detail->goods_end_date = Goods::withTrashed()->where('id', $detail->goods_id)->value('end_date');
+        }
+        $detail->oper_info = DataCacheService::getOperDetail($detail->oper_id);//运营中心客服电话
+
+        if($detail->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
+            $csMerchant = CsMerchant::where('id',$detail->merchant_id)->first();
+            $csMerchantSetting = CsMerchantSetting::where('cs_merchant_id',$csMerchant->id)->get()->first();
+            $csMerchant->delivery_start_price = $csMerchantSetting->delivery_start_price;
+            $csMerchant->delivery_charges = $csMerchantSetting->delivery_charges;
+            $csMerchant->delivery_free_start = $csMerchantSetting->delivery_free_start;
+            $csMerchant->delivery_free_order_amount = $csMerchantSetting->delivery_free_order_amount;
+            $detail->cs_merchant = $csMerchant;
+//                $detail->merchant_name = $csMerchant->name;
+//                $detail->merchant_logo = $csMerchant->logo;
+//                $detail->merchant_service_phone = $csMerchant->service_phone;
+            $detail->order_goods_number = CsOrderGood::where('order_id',$detail->id)->sum('number');
+            $detail->order_goods = CsOrderGood::where('order_id',$detail->id)->with('cs_goods:id,logo')->get();
+
+        }else {
+            $detail->merchant = Merchant::where('id', $detail->merchant_id)->first();
+            $detail->merchant_logo = $detail->merchant->logo;
+            $detail->signboard_name = $detail->merchant->signboard_name;
         }
         return Result::success($detail);
     }
@@ -742,7 +767,7 @@ class OrderController extends Controller
         }
         //如果是商家配送必须选择收货地址
         $address = '';
-        if ($deliveryType == Order::DELIVERY_MERCHANT_POST && empty($addressId)){
+        if ($deliveryType == Order::DELIVERY_MERCHANT_POST){
             if (empty($addressId)) {
                 throw new ParamInvalidException('请先选择地址');
             } else {
@@ -825,7 +850,7 @@ class OrderController extends Controller
             $order->bizer_id = 0;
             $order->deliver_type = $deliveryType;
 
-            $order->express_address = $address;
+            $order->express_address = $address ? json_encode($address) : $address;
 
             $order->save();
 
@@ -847,8 +872,7 @@ class OrderController extends Controller
                 $csOrderGood->save();
             }
 
-            //更新商户当日销量
-            CsStatisticsMerchantOrderService::addMerchantOrderNumberToday($merchantId);
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
