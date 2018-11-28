@@ -23,6 +23,10 @@ class CsUserAddressController extends Controller{
      * @return \Illuminate\Http\JsonResponse
      */
     public function addUserAddresses(){
+        $this->validate(request(), [
+            'contact_phone' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}/',
+            'contacts' => 'required|min:1|max:30|regex:/^[\x7f-\xff]+$/',
+        ]);
         $default = 0;
         if (!empty(request('is_default'))){
             $default = request('is_default');
@@ -57,7 +61,9 @@ class CsUserAddressController extends Controller{
      */
     public function editAddress(){
         $this->validate(request(), [
-            'id' => 'required'
+            'id' => 'required',
+            'contact_phone' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}/',
+            'contacts' => 'required|min:1|max:30|regex:/^[\x7f-\xff]+$/',
         ]);
         $data = Array();
         $data['id'] = request('id');

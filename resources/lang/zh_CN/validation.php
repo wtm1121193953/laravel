@@ -102,6 +102,17 @@ return [
             'regex' => '手机号码不合法'
         ],
 
+        'contact_phone' => [
+            'required' => '手机号码不能为空',
+            'size' => '手机号码位数不正确',
+            'regex' => '手机号码不合法'
+        ],
+        'contacts' => [
+            'max' => '最多输入 :max 字',
+            'min' => '最多输少 :min 字',
+            'regex' => '联系人必须为中文'
+        ],
+
         'province_id' => [
             'required' => '省份ID不能为空',
         ],
