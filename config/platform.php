@@ -4,6 +4,7 @@ return [
     // 平台小程序配置
     'miniprogram' => [
         // 新小程序
+        'gh_id' => env('APP_ENV') == 'production' ? 'gh_01a1f482ac66' : 'gh_b3dec410dad9', // 原始ID
         'app_id' => env('APP_ENV') == 'production' ? 'wx3e070e382ddde646' : 'wx34b4a02220e854d8',
         'app_secret' => env('APP_ENV') == 'production' ? 'ed8dfc08cbd0f5d630e7a7caa7ec38ce' : '50e65d209b61529a1c58193073ebaa34',
 
