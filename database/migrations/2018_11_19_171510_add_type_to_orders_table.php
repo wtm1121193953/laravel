@@ -26,11 +26,10 @@ class AddTypeToOrdersTable extends Migration
             $table->decimal('delivery_charges')->default(0.00)->comment('配送费');
             $table->tinyInteger('delivery_free_start')->default(0)->comment('是否开启满多少免运费 1是 0否');
             $table->decimal('delivery_free_order_amount')->default(0.00)->comment('订单满多少免运费');
-
+            $table->dateTime('delivery_confirmed')->nullable()->comment('确认收货时间');
             $table->decimal('discount_price')->default(0.00)->comment('优惠金额')->after('pay_type');
             $table->decimal('total_price')->default(0.00)->comment('商品总价格')->after('pay_type');
             $table->decimal('deliver_price')->default(0.00)->comment('超市配送费')->after('pay_type');
-
             $table->tinyInteger('user_deleted')->default(0)->comment('用户是否已删除订单')->after('deleted_at');
             $table->string('deliver_code')->default('')->comment('超市订单 取货码')->after('deliver_type');
 
@@ -53,11 +52,17 @@ class AddTypeToOrdersTable extends Migration
                 'express_address',
                 'deliver_time',
                 'take_delivery_time',
+                'user_deleted_at',
+                'delivery_start_price',
+                'delivery_charges',
+                'delivery_free_start',
+                'delivery_free_order_amount',
+                'delivery_confirmed',
                 'discount_price',
                 'total_price',
                 'deliver_price',
                 'user_deleted',
-                'deliver_code',
+                'deliver_code'
             ]);
         });
     }

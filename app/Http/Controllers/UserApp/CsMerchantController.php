@@ -72,10 +72,10 @@ class CsMerchantController extends Controller
                             continue;
                         }
                     }
-                    sort($v1['sub']);
+                    $v1['sub'] = array_values($v1['sub']);
                 }
             }
-            sort($list);
+            $list = array_values($list);
         }
 
         return Result::success(['list'=>$list]);

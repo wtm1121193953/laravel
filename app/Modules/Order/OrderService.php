@@ -673,7 +673,7 @@ class OrderService extends BaseService
             throw new BaseResponseException('不是已发货的订单不能确认收货');
         }
 
-        $order->deliver_time = Carbon::now();
+        $order->delivery_confirmed =  Carbon::now();
         $order->status = Order::STATUS_FINISHED;
         $order->save();
         OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(now()->addSecond(5));

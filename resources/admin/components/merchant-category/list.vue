@@ -48,7 +48,7 @@
                             <el-input v-model="form.name"/>
                         </el-form-item>
                         <el-form-item prop="icon" label="类目图标" v-if="form.pid == 0">
-                            <image-upload v-model="form.icon" :limit="1" :width="imageWidth" :height="imageHeight"></image-upload>
+                            <image-upload v-model="form.icon" :limit="1"></image-upload>
                             <div class="tips">{{imageWidth}}px * {{imageHeight}}px</div>
                         </el-form-item>
                         <el-form-item prop="status" label="状态">
