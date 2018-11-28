@@ -426,7 +426,11 @@ class OrderService extends BaseService
                     $order->deliver_code = self::createDeliverCode($order);
                     $order->status = Order::STATUS_NOT_TAKE_BY_SELF;
                     $order->save();
-                }else {
+                }else if ($order->type == Order::TYPE_SUPERMARKET && $order->deliver_type == Order::DELIVERY_MERCHANT_POST) {
+                    //超市订单支付成功后如果是配送的订单订单改为待发货
+                    $order->status = Order::STATUS_UNDELIVERED;
+                    $order->save();
+                } else {
                     $order->status = Order::STATUS_PAID;
                     $order->save();
                 }
