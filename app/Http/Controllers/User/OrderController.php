@@ -55,6 +55,7 @@ use App\Support\Reapal\ReapalPay;
 use App\Support\Utils;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -930,8 +931,12 @@ class OrderController extends Controller
         if (empty($merchant)) {
             throw new BaseResponseException('该超市不存在，请选择其他超市下单', ResultCode::CS_MERCHANT_NOT_EXIST);
         }
-        OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList);
+        $res = OrderService::checkGoodsStockAndReturnPrice($merchant, $goodsList);
 
-         return Result::success();
+        if ($res instanceof JsonResponse){
+            return $res;
+        } else {
+            return Result::success();
+        }
     }
 }
