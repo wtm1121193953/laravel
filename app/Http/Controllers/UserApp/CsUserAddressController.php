@@ -72,32 +72,19 @@ class CsUserAddressController extends Controller
             'contact_phone' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}/',
             'contacts' => 'required|min:1|max:30|regex:/^[\x7f-\xff]+$/',
         ]);
+        $params = [
+            'id' => request('id'),
+            'contacts' => request('contacts'),
+            'contact_phone' => request('contact_phone'),
+            'province_id' => request('province_id'),
+            'city_id' => request('city_id'),
+            'area_id' => request('area_id'),
+            'address' => request('address'),
+            'is_default' => request('is_default'),
 
-        $data = Array();
-        $data['id'] = request('id');
-        if (!empty(request('contacts'))) {
-            $data['contacts'] = request('contacts');
-        }
-        if (!empty(request('contact_phone'))) {
-            $data['contact_phone'] = request('contact_phone');
-        }
-        if (!empty(request('province_id'))) {
-            $data['province_id'] = request('province_id');
-        }
-        if (!empty(request('city_id'))) {
-            $data['city_id'] = request('city_id');
-        }
-        if (!empty(request('area_id'))) {
-            $data['area_id'] = request('area_id');
-        }
-        if (!empty(request('address'))) {
-            $data['address'] = request('address');
-        }
-        if (!empty(request('is_default'))) {
-            $data['is_default'] = request('is_default');
-        }
+        ];
 
-        CsUserAddressService::editAddress($data);
+        CsUserAddressService::editAddress($params);
         return Result::success('更新收货地址成功');
     }
 

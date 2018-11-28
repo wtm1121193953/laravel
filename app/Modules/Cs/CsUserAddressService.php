@@ -124,62 +124,35 @@ class CsUserAddressService extends BaseService {
 
     /**
      * 编辑地址
+     * @param $data
+     * @throws \Exception
      */
     public static function editAddress($data){
         $user = request()->get('current_user');
+        $id = array_get($data,'id');
+        $isDefault = array_get($data,'is_default',0);
 
         $userAddress = CsUserAddress::where('user_id',$user->id)
-            ->where('id',$data['id'])
+            ->where('id',$id)
             ->first();
-         if (!empty($data['contacts']))  {
-             $userAddress->contacts = $data['contacts'];
-         }
-        $userAddress->contacts = array_get($data,'contacts',$userAddress->contacts);
-        $userAddress->contact_phone = array_get($data,'contact_phone',$userAddress->contact_phone);
-        $userAddress->province_id =array_get($data,'province_id',$userAddress->province_id);
+        $userAddress->contacts = array_get($data,'contacts','');
+        $userAddress->contact_phone = array_get($data,'contact_phone','');
+        $userAddress->province_id =array_get($data,'province_id',0);
 
-        $userAddress->city_id = array_get($data,'city_id',$userAddress->city_id);
-        $userAddress->area_id = array_get($data,'area_id',$userAddress->area_id);
-        $userAddress->address = array_get($data,'address',$userAddress->address);
-        $userAddress->is_default = array_get($data,'is_default',$userAddress->is_default);
+        $userAddress->city_id = array_get($data,'city_id',0);
+        $userAddress->area_id = array_get($data,'area_id',0);
+        $userAddress->address = array_get($data,'address','');
+        $userAddress->is_default = $isDefault;
+        $userAddress->province = Area::getNameByAreaId($userAddress->province_id) ?? '';
+        $userAddress->city = Area::getNameByAreaId($userAddress->city_id) ?? '';
+        $userAddress->area = Area::getNameByAreaId($userAddress->area_id) ?? '';
 
 
-        if (!empty($data['province_id']))  {
-            $userAddress->province_id = $data['province_id'];
-            $userAddress->province = Area::getNameByAreaId($userAddress->province_id);
-        }
-        if (!empty($data['city_id']))  {
-            $userAddress->city_id = $data['city_id'];
-            $userAddress->city = Area::getNameByAreaId($userAddress->city_id);
-        }
-        else{
-            $userAddress->city_id = '0';
-            $userAddress->city = '0';
-        }
-        if (!empty($data['area_id']))  {
-            $userAddress->area_id = $data['area_id'];
-            $userAddress->area = Area::getNameByAreaId($userAddress->area_id);
-        }
-        else{
-            $userAddress->area_id = '0';
-            $userAddress->area = '0';
-        }
-        if ($userAddress->is_default == CsUserAddress::DEFAULT){
-            //设置默认
-            $query  = CsUserAddress::where('user_id', $user->id )
-                ->where("is_default", CsUserAddress::DEFAULT);
-            if (!empty($query->get())){
-                // 开启事务
-                DB::beginTransaction();
-                try{
-                    // 全部改为未选
-                    $query->update(['is_default'=>CsUserAddress::UNDEFAULT]);
-                    DB::commit();
-                }catch ( \Exception $e ){
-                    DB::rollBack();
-                    throw new BaseResponseException( $e->getMessage(),ResultCode::DB_INSERT_FAIL);
-                }
-            }
+        if ($isDefault == CsUserAddress::DEFAULT){
+            //如果本条数据设置默认，其它默认地址设置为否
+            CsUserAddress::where('user_id', $user->id )
+                ->where("is_default", CsUserAddress::DEFAULT)
+                ->update(['is_default' => CsUserAddress::UNDEFAULT]);
         }
         //保存地址
         if( !($userAddress->save()) ) {
