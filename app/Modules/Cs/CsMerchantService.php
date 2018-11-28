@@ -471,10 +471,9 @@ class CsMerchantService extends BaseService {
         $user_key = array_get($params, 'user_key', 0); //终端的唯一表示，用于计算距离
 
         //只能查询切换到平台的商户
-        $query = CsMerchant::where('status', 1)
+        $query = CsMerchant::where('status', CsMerchant::STATUS_ON)
             ->where('oper_id', '>', 0)
             ->whereIn('audit_status', [CsMerchant::AUDIT_STATUS_SUCCESS])
-            ->where('status',CsMerchant::STATUS_ON)
             ->when($city_id, function(Builder $query) use ($city_id){
                 // 特殊城市，如澳门。属于省份，要显示下属所有城市的商户
                 $areaInfo = Area::where('area_id', $city_id)->where('path', 1)->first();
@@ -493,8 +492,10 @@ class CsMerchantService extends BaseService {
                 }
             })
             ->when($keyword, function(Builder $query) use ($keyword){
-                $query->where('name', 'like', "%$keyword%")
-                    ->orWhere('signboard_name', 'like', "%$keyword%");
+                $query->where(function (Builder $query) use ($keyword) {
+                    $query->where('name', 'like', "%$keyword%")
+                        ->orWhere('signboard_name', 'like', "%$keyword%");
+                });
             })
             ->when($lng && $lat && $radius, function (Builder $query) use ($distances) {
                 // 如果范围存在, 按距离搜索, 并按距离排序
