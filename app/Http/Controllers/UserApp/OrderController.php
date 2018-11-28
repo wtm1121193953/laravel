@@ -847,8 +847,7 @@ class OrderController extends Controller
                 $csOrderGood->save();
             }
 
-            //更新商户当日销量
-            CsStatisticsMerchantOrderService::addMerchantOrderNumberToday($merchantId);
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
