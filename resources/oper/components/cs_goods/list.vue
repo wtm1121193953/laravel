@@ -123,12 +123,6 @@
                 :page-size="query.pageSize"
                 :total="total"/>
 
-        <el-dialog title="添加商品" :visible.sync="isAdd">
-            <goods-form
-                    ref="addForm"
-                    @cancel="isAdd = false"
-                    @save="doAdd"/>
-        </el-dialog>
     </page>
 </template>
 

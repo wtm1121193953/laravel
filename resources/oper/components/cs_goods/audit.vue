@@ -1,11 +1,20 @@
 <template>
     <page title="商品详细" :breadcrumbs="{商品列表: '/cs/goods'}">
         <el-row>
-            <el-col>商品状态：{{goods.status_name}},审核状态：{{goods.audit_status_name}}</el-col>
-        </el-row>
-        <el-row>
             <el-col :span="22">
                 <el-form label-width="120px">
+                    <el-form-item prop="status_name" label="商品状态">
+                        <span v-if="parseInt(goods.status) === 1" class="c-green">上架</span>
+                        <span v-else-if="parseInt(goods.status) === 2" class="c-danger">下架</span>
+                        <span v-else>未知 ({{goods.status}})</span>
+                    </el-form-item>
+                    <el-form-item prop="status_name" label="审核状态">
+                        <span v-if="parseInt(goods.audit_status) === 1" class="c-warning">审核中</span>
+                        <div v-else-if="parseInt(goods.audit_status) === 2"  slot="reference" class="c-green"><span>审核通过</span></div>
+                        <div  v-else-if="parseInt(goods.audit_status) === 3" slot="reference" class="c-danger"><span>审核不通过</span><span class="message">{{goods.audit_suggestion}}</span></div>
+                        <span v-else>未知 ({{goods.status}})</span>
+                    </el-form-item>
+
                     <el-form-item prop="goods_name" label="商品名称">
                         {{goods.goods_name}}
                     </el-form-item>
