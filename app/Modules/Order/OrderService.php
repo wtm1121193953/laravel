@@ -729,14 +729,14 @@ class OrderService extends BaseService
         }
         $goodsPrice = 0;
         foreach ($goodsList as $item) {
-            if (!isset($item['id']) || !isset($item['number'])) {
+            if (!isset($item['id']) || !isset($item['number']) || $item['number']<=0) {
                 throw new ParamInvalidException('参数不合法2');
             }
             $good = CsGood::findOrFail($item['id']);
             if ($good->status == CsGood::STATUS_OFF) {
                 throw new BaseResponseException('订单中 ' . $good->goods_name . ' 已下架，请删除后重试');
             }
-            if ($good->stock < $item['number']) {
+            if ($good->stock<=0 || $good->stock < $item['number']) {
                 if ($throw) {
                     throw new BaseResponseException('订单中商品 ' . $good->goods_name . ' 库存不足，请删除后重试', ResultCode::CS_GOODS_STOCK_NULL);
                 } else {

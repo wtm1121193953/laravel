@@ -61,6 +61,12 @@
                 <el-form-item label="快递单号：" v-if="order.status == 7 || order.status == 10">
                     {{order.express_no}}
                 </el-form-item>
+                <el-form-item label="收货人：">
+                    {{order.express_address ? order.express_address.contacts : ''}}
+                </el-form-item>
+                <el-form-item label="收货人手机号码：">
+                    {{order.express_address ? order.express_address.contact_phone : ''}}
+                </el-form-item>
                 <el-form-item label="地址：">
                     {{order.express_address ? order.express_address.province + order.express_address.city + order.express_address.area + order.express_address.address : ''}}
                 </el-form-item>
