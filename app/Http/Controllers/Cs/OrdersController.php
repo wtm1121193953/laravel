@@ -158,18 +158,18 @@ class OrdersController extends Controller
     public function getOrderFieldStatistics()
     {
         $undeliveredNum = OrderService::getList([
-            'merchantId' => request()->get('current_user')->merchantId,
+            'merchantId' => request()->get('current_user')->merchant_id,
             'status' => Order::STATUS_UNDELIVERED,
             'merchantType' => Order::MERCHANT_TYPE_SUPERMARKET,
             'type' => Order::TYPE_SUPERMARKET,
-        ], true)->get()->count();
+        ], true)->count();
 
         $notTakeBySelfNum = OrderService::getList([
-            'merchantId' => request()->get('current_user')->merchantId,
+            'merchantId' => request()->get('current_user')->merchant_id,
             'status' => Order::STATUS_NOT_TAKE_BY_SELF,
             'merchantType' => Order::MERCHANT_TYPE_SUPERMARKET,
             'type' => Order::TYPE_SUPERMARKET,
-        ], true)->get()->count();
+        ], true)->count();
 
         return Result::success([
             'undeliveredNum' => $undeliveredNum,
