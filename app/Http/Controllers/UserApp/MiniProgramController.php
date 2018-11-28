@@ -14,7 +14,7 @@ use App\Result;
 
 class MiniProgramController extends Controller
 {
-    public function shartMerchant(){
+    public function shareMerchant(){
 
         $data = [];
         $merchantId  = request('merchant_id',0);
