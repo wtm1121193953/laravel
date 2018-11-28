@@ -282,7 +282,7 @@ class OrderService extends BaseService
             $order->save();
             // 核销完订单之后 进行分润操作
             if($order->status == Order::STATUS_FINISHED){
-                OrderFinishedJob::dispatch($order)->onQueue('order:finished');
+                OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(now()->addSecond(5));
             }
 
             return $order;
@@ -492,7 +492,7 @@ class OrderService extends BaseService
 
             // 如果订单是已完成的状态, 分发一个订单完成的任务, 读写分离, 必须在修改状态的地方发任务, 否则可能会造成丢单
             if($order->status == Order::STATUS_FINISHED){
-                OrderFinishedJob::dispatch($order)->onQueue('order:finished');
+                OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(now()->addSecond(5));
             }
 
             SmsVerifyCodeService::sendBuySuccessNotify($orderNo);
@@ -595,7 +595,7 @@ class OrderService extends BaseService
             $order->deliver_time = Carbon::now();
             $order->status = Order::STATUS_FINISHED;
             $order->save();
-            OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(now()->addMinute());
+            OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(now()->addSecond(5));
         } else {
             throw new BaseResponseException('该订单核销码错误');
         }
@@ -664,7 +664,7 @@ class OrderService extends BaseService
         $order->deliver_time = Carbon::now();
         $order->status = Order::STATUS_FINISHED;
         $order->save();
-        OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(now()->addMinute());
+        OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(now()->addSecond(5));
 
         return $order;
     }
