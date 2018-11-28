@@ -33,9 +33,6 @@
             <el-form-item label="免配送费：">
                 {{order.discount_price}}元
             </el-form-item>
-            <el-form-item label="优惠：">
-                -{{order.discount_price}}元
-            </el-form-item>
             <el-form-item label="实付：">
                 {{order.pay_price}}元
             </el-form-item>
