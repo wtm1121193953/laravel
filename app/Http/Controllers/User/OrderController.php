@@ -469,7 +469,7 @@ class OrderController extends Controller
             $order->origin_app_type = request()->header('app-type');
             $order->bizer_id = 0;
             $order->deliver_type = $deliveryType;
-            $order->express_address = $address;
+            $order->express_address = $address ? json_encode($address) : $address;
 
             $order->merchant_type = Order::MERCHANT_TYPE_SUPERMARKET;
             if ($order->save()) {
