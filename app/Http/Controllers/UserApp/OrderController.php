@@ -273,6 +273,12 @@ class OrderController extends Controller
         $detail['merchant'] = $merchant_of_order;
         $detail['good'] = GoodsService::getById($detail->goods_id);
         $detail['pay_type'] = PaymentService::getDetailById($detail->pay_type);
+
+        if ($detail->status == Order::STATUS_DELIVERED) {//如果是已发货显示收货剩余时间
+            $detail['confirm_left_time'] = strtotime($detail->deliver_time) + 7 * 86400 - time();
+        } else {
+            $detail['confirm_left_time'] = 999999999;
+        }
         return Result::success($detail);
     }
 
