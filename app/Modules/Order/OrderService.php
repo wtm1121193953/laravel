@@ -201,11 +201,11 @@ class OrderService extends BaseService
 
             if ($merchantType == Order::MERCHANT_TYPE_SUPERMARKET) {
                 if (in_array($item->status, [Order::STATUS_UNDELIVERED, Order::STATUS_NOT_TAKE_BY_SELF, Order::STATUS_DELIVERED])) {
-                    $item->take_time = date('H时i分', time() - strtotime($item->pay_time));
+                    $item->take_time = self::formatTime(time(), strtotime($item->pay_time));
                 } elseif ($item->status == Order::STATUS_FINISHED) {
-                    $item->take_time = date('H时i分', time() - strtotime($item->finish_time));
+                    $item->take_time = self::formatTime(strtotime($item->finish_time), strtotime($item->pay_time));
                 } elseif ($item->status == Order::STATUS_REFUNDED) {
-                    $item->take_time = date('H时i分', time() - strtotime($item->refund_time));
+                    $item->take_time = self::formatTime(strtotime($item->refund_time), strtotime($item->pay_time));
                 }
                 $item->express_address = json_decode($item->express_address, true);
             }
@@ -748,5 +748,20 @@ class OrderService extends BaseService
         }
 
         return $goodsPrice;
+    }
+
+    /**
+     * 格式化 历时
+     * @param $endTime
+     * @param $startTime
+     * @return string
+     */
+    private static function formatTime($endTime, $startTime)
+    {
+        $time = $endTime - $startTime;
+        $hours = floor($time/3600);
+        $minutes = floor(($time/60) % 60);
+        $text = $hours . '时' . $minutes . '分';
+        return $text;
     }
 }
