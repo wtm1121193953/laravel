@@ -7,6 +7,7 @@
  */
 
 namespace App\Http\Controllers\UserApp;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Goods\Goods;
@@ -29,20 +30,20 @@ class WechatController extends Controller
                 throw new ParamInvalidException('参数不合法');
             }
             $merchantInfo = Merchant::where('id',$merchantId)->first();
-            if($merchantInfo){
-                $miniprogramShareInfo['name'] = $merchantInfo->name;
-                $miniprogramShareInfo['desc'] = $merchantInfo->desc;
-                $miniprogramShareInfo['logo'] = $merchantInfo->logo;
-                if(!empty($merchantInfo->desc_pic_list)){
-                    $desc_pic = explode(",", $merchantInfo->desc_pic_list)[0];
-                }else{
-                    $desc_pic = $merchantInfo->logo;
-                }
-                $miniprogramShareInfo['desc_pic'] = $desc_pic;
+            if(empty($merchantInfo)){
+                throw new DataNotFoundException('商户信息不存在');
+            }
+            $miniprogramShareInfo['name'] = $merchantInfo->name;
+            $miniprogramShareInfo['desc'] = $merchantInfo->desc;
+            $miniprogramShareInfo['logo'] = $merchantInfo->logo;
+            if(!empty($merchantInfo->desc_pic_list)){
+                $desc_pic = explode(",", $merchantInfo->desc_pic_list)[0];
+            }else{
+                $desc_pic = $merchantInfo->logo;
+            }
+            $miniprogramShareInfo['desc_pic'] = $desc_pic;
 
                 $miniprogramShareInfo['path'] = '/pages/merchant/index?id='.$merchantInfo->id;//小程序页面路径
-            }
-
 
         }else if($type == "goods"){
             $goodsId = request('goodsId', 0);
@@ -50,16 +51,20 @@ class WechatController extends Controller
                 throw new ParamInvalidException('参数不合法');
             }
             $goodsInfo = Goods::findOrFail($goodsId);
-            if($goodsInfo){
-                $merchantInfo = Merchant::where('id',$goodsInfo->merchant_id)->first();
-
-                $miniprogramShareInfo['name'] = $goodsInfo->name;
-                $miniprogramShareInfo['desc'] = $goodsInfo->desc;
-                $miniprogramShareInfo['logo'] = $merchantInfo->logo;
-                $miniprogramShareInfo['desc_pic'] = $goodsInfo->thumb_url;
-
-                $miniprogramShareInfo['path'] = 'pages/product/info?id='.$goodsInfo->id;//小程序页面路径
+            if(empty($goodsInfo)){
+                throw new DataNotFoundException('商品信息不存在');
             }
+            $merchantInfo = Merchant::where('id',$goodsInfo->merchant_id)->first();
+            if(empty($merchantInfo)){
+                throw new DataNotFoundException('商户信息不存在');
+            }
+
+            $miniprogramShareInfo['name'] = $goodsInfo->name;
+            $miniprogramShareInfo['desc'] = $goodsInfo->desc;
+            $miniprogramShareInfo['logo'] = $merchantInfo->logo;
+            $miniprogramShareInfo['desc_pic'] = $goodsInfo->thumb_url;
+
+            $miniprogramShareInfo['path'] = 'pages/product/info?id='.$goodsInfo->id;//小程序页面路径
         }
         $miniProgram = config('platform.miniprogram');
         $miniprogramShareInfo['web_page_url'] = "https://o2o.niucha.ren/app-download-h5";//兼容低版本网页地址
