@@ -233,6 +233,7 @@
                 // 导出操作
                 let array = [];
                 for (let key in this.query){
+                    if (this.query[key] == null) this.query[key] = '';
                     array.push(key + '=' + this.query[key]);
                 }
                 location.href = '/api/cs/orders/export?' + array.join('&');
