@@ -16,6 +16,7 @@ use App\Jobs\Cs\DeliveredOrderAutoFinishedJob;
 use App\Jobs\OrderPaidJob;
 use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsMerchant;
+use App\Modules\CsStatistics\CsStatisticsMerchantOrderService;
 use App\Modules\Dishes\DishesGoods;
 use App\Jobs\OrderFinishedJob;
 use App\Modules\Dishes\DishesItem;
@@ -426,7 +427,11 @@ class OrderService extends BaseService
                     $order->deliver_code = self::createDeliverCode($order);
                     $order->status = Order::STATUS_NOT_TAKE_BY_SELF;
                     $order->save();
-                }else {
+                }else if ($order->type == Order::TYPE_SUPERMARKET && $order->deliver_type == Order::DELIVERY_MERCHANT_POST) {
+                    //超市订单支付成功后如果是配送的订单订单改为待发货
+                    $order->status = Order::STATUS_UNDELIVERED;
+                    $order->save();
+                } else {
                     $order->status = Order::STATUS_PAID;
                     $order->save();
                 }
@@ -479,6 +484,11 @@ class OrderService extends BaseService
                     $platform_trade_record->user_id = $order->user_id;
                     $platform_trade_record->remark = '';
                     $platform_trade_record->save();
+                }
+
+                //如果是超市商户，更新商户当月销量
+                if ($order->type == Order::TYPE_SUPERMARKET) {
+                    CsStatisticsMerchantOrderService::addMerchantOrderNumberToday($order->merchant_id);
                 }
 
                 DB::commit();

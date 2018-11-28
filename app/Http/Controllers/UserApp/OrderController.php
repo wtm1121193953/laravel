@@ -273,6 +273,12 @@ class OrderController extends Controller
         $detail['merchant'] = $merchant_of_order;
         $detail['good'] = GoodsService::getById($detail->goods_id);
         $detail['pay_type'] = PaymentService::getDetailById($detail->pay_type);
+
+        if ($detail->status == Order::STATUS_DELIVERED) {//如果是已发货显示收货剩余时间
+            $detail['confirm_left_time'] = strtotime($detail->deliver_time) + 7 * 86400 - time();
+        } else {
+            $detail['confirm_left_time'] = 999999999;
+        }
         return Result::success($detail);
     }
 
@@ -819,7 +825,7 @@ class OrderController extends Controller
             $order->bizer_id = 0;
             $order->deliver_type = $deliveryType;
 
-            $order->express_address = $address;
+            $order->express_address = $address ? json_encode($address) : $address;
 
             $order->save();
 
@@ -841,8 +847,7 @@ class OrderController extends Controller
                 $csOrderGood->save();
             }
 
-            //更新商户当日销量
-            CsStatisticsMerchantOrderService::addMerchantOrderNumberToday($merchantId);
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

@@ -25,6 +25,20 @@ class CsStatisticsMerchantOrderService extends BaseService
     }
 
     /**
+     * 商户当日销量-1
+     * @param $cs_merchant_id
+     * @return int
+     */
+    public static function minusCsMerchantOrderNumberToday($cs_merchant_id)
+    {
+        $obj = self::createMerchantData($cs_merchant_id);
+        if (empty($obj->id)) {
+            throw new BaseResponseException('创建初始数据失败');
+        }
+        return $obj->decrement('order_number_today');
+    }
+
+    /**
      * 创建商户统计初始数据
      * @param $cs_merchant_id
      * @return CsStatisticsMerchantOrder|bool
