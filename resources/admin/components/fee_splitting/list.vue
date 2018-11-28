@@ -10,6 +10,7 @@
                     <el-option label="商户" value="2"/>
                     <el-option label="运营中心" value="3"/>
                     <el-option label="业务员" value="4"/>
+                    <el-option label="超市" value="5"/>
                 </el-select>
             </el-form-item>
             <el-form-item prop="orderId" label="订单ID">
@@ -47,6 +48,7 @@
                     <span v-else-if="scope.row.origin_type == 2">商户</span>
                     <span v-else-if="scope.row.origin_type == 3">运营中心</span>
                     <span v-else-if="scope.row.origin_type == 4">业务员</span>
+                    <span v-else-if="scope.row.origin_type == 5">超市</span>
                     <span v-else>未知({{scope.row.origin_type}})</span>
                 </template>
             </el-table-column>
