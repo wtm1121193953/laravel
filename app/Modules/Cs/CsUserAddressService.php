@@ -12,7 +12,6 @@ use App\Exceptions\BaseResponseException;
 use App\Modules\Area\Area;
 use App\ResultCode;
 use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Expr\Array_;
 
 
 class CsUserAddressService extends BaseService {
@@ -135,6 +134,9 @@ class CsUserAddressService extends BaseService {
         $userAddress = CsUserAddress::where('user_id',$user->id)
             ->where('id',$id)
             ->first();
+        if(empty($userAddress)){
+            throw new BaseResponseException('数据不存在');
+        }
         $userAddress->contacts = array_get($data,'contacts','');
         $userAddress->contact_phone = array_get($data,'contact_phone','');
         $userAddress->province_id =array_get($data,'province_id',0);
@@ -147,16 +149,17 @@ class CsUserAddressService extends BaseService {
         $userAddress->city = Area::getNameByAreaId($userAddress->city_id) ?? '';
         $userAddress->area = Area::getNameByAreaId($userAddress->area_id) ?? '';
 
+        //保存地址
+        if( !($userAddress->save()) ) {
+            throw new BaseResponseException('更新失败', ResultCode::DB_INSERT_FAIL);
+        }
 
         if ($isDefault == CsUserAddress::DEFAULT){
             //如果本条数据设置默认，其它默认地址设置为否
             CsUserAddress::where('user_id', $user->id )
+                ->where('id','<>',$id)
                 ->where("is_default", CsUserAddress::DEFAULT)
                 ->update(['is_default' => CsUserAddress::UNDEFAULT]);
-        }
-        //保存地址
-        if( !($userAddress->save()) ) {
-            throw new BaseResponseException('更新失败', ResultCode::DB_INSERT_FAIL);
         }
     }
 

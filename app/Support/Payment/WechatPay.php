@@ -8,6 +8,7 @@
 namespace App\Support\Payment;
 
 use App\Exceptions\BaseResponseException;
+use App\Modules\CsStatistics\CsStatisticsMerchantOrderService;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\Goods\Goods;
@@ -132,6 +133,10 @@ class WechatPay extends PayBase
             $platform_trade_record->user_id = $order->user_id;
             $platform_trade_record->remark = '';
             $platform_trade_record->save();
+            //如果是超市商户，更新商户当月销量
+            if ($order->type == Order::TYPE_SUPERMARKET) {
+                CsStatisticsMerchantOrderService::minusCsMerchantOrderNumberToday($order->merchant_id);
+            }
             return Result::success($orderRefund);
         } else {
             Log::error('微信退款失败 :', [
