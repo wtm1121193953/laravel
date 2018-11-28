@@ -24,4 +24,6 @@ abstract class PayBase
     }
 
     abstract public function doNotify();
+
+
 }

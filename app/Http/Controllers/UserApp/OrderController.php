@@ -601,6 +601,10 @@ class OrderController extends Controller
         ]);
         $order = OrderService::getInfoByOrderNo(request()->get('order_no'));
         $payment = PaymentService::getDetailById($order->pay_type);
+        // 验证是否是自己的订单
+        if(request()->get('current_user')->id != $order->user_id){
+            throw new NoPermissionException('订单不存在');
+        }
         if($payment->pay_type==Payment::TYPE_WECHAT){
             $m = new WechatPay();
             $res =  $m->refund($order);
@@ -610,7 +614,7 @@ class OrderController extends Controller
                 throw new BaseResponseException('无法使用该退款方式');
             }
             $paymentClass = new $paymentClassName();
-            $res =  $paymentClass->refund($order,request()->get('current_user'));
+            $res =  $paymentClass->refund($order);
         }
         // 还原库存
         $this->decSellNumber($order);
@@ -673,12 +677,12 @@ class OrderController extends Controller
     /**
      * 处理订单返回
      * @param $order
-     * @param bool $isprofitAmount
+     * @param bool $isProfitAmount
      * @param int $profitAmount
      * @return \Illuminate\Http\JsonResponse
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    private function _returnOrder($order,$isprofitAmount = false,$profitAmount = 0){
+    private function _returnOrder($order, $isProfitAmount = false, $profitAmount = 0){
         // 如果是微信支付
         $sdkConfig = null;
         $data = null;
@@ -691,8 +695,9 @@ class OrderController extends Controller
             if(!class_exists($paymentClassName)){
                 throw new BaseResponseException('无法使用该支付方式');
             }
+            $user = request('current_user');
             $paymentClass = new $paymentClassName();
-            $data = $paymentClass->buy($order);
+            $data = $paymentClass->buy($user, $order);
         }
 
         $list = [
@@ -704,7 +709,7 @@ class OrderController extends Controller
         ];
 
         //判断是否需要返利金额
-        if($isprofitAmount){
+        if($isProfitAmount){
             $profitAmounArr = ['profitAmount' => $profitAmount];
             $list = array_merge($list,$profitAmounArr);
         }
@@ -735,7 +740,7 @@ class OrderController extends Controller
         // 删除有效时间，避免重复提交
         Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
         $walletPay = new WalletPay();
-        return $walletPay->buy($user,$order);
+        return $walletPay->buy($user, $order);
     }
 
     /**

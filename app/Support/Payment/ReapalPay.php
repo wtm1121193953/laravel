@@ -8,6 +8,10 @@
 namespace App\Support\Payment;
 
 use App\Modules\Log\LogDbService;
+use App\Modules\Log\LogOrderNotifyReapal;
+use App\Modules\Order\Order;
+use App\Modules\Order\OrderService;
+use App\Support\Reapal\ReapalUtils;
 
 class ReapalPay extends PayBase
 {
