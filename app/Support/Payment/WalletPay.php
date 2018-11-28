@@ -23,7 +23,6 @@ use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletBill;
 use App\Modules\Wallet\WalletService;
 use App\Result;
-use App\Support\Payment\PayBase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 

@@ -9,9 +9,6 @@ namespace App\Support\Payment;
 
 use App\Exceptions\BaseResponseException;
 use App\Modules\CsStatistics\CsStatisticsMerchantOrderService;
-use App\Modules\Dishes\DishesGoods;
-use App\Modules\Dishes\DishesItem;
-use App\Modules\Goods\Goods;
 use App\Modules\Log\LogDbService;
 use App\Modules\Oper\OperMiniprogramService;
 use App\Modules\Order\Order;
