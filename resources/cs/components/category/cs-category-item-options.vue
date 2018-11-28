@@ -52,7 +52,7 @@
                     this.$confirm(message).then(() => {
                         api.post('/category/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
                             this.scope.row.status = data;
-                            this.$message.success((row.status == 1 ? '下架' : '上架') + '分类成功' )
+                            this.$message.success((row.status == 2 ? '下架' : '上架') + '分类成功' )
                         }).finally(() => {
                             this.$emit('after-request')
                         })
@@ -60,7 +60,7 @@
                 }else {
                     api.post('/category/changeStatus', {id: this.scope.row.id, status: status}).then((data) => {
                         this.scope.row.status = data;
-                        this.$message.success((row.status == 1 ? '下架' : '上架') + '分类成功' )
+                        this.$message.success((row.status == 2 ? '下架' : '上架') + '分类成功' )
                     }).finally(() => {
                         this.$emit('after-request')
                     })

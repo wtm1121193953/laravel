@@ -116,7 +116,7 @@
             },
             audit(type){
                 api.post('/cs_goods/audit', {id: this.id, type: type,audit_suggestion:this.goods.audit_suggestion}).then(data => {
-                    this.$alert(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
+                    this.$message.success(['', '审核通过', '审核不通过', '打回商户池'][type] + ' 成功');
                     this.back()
                 })
             },
