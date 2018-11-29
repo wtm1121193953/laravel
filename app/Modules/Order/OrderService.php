@@ -568,6 +568,12 @@ class OrderService extends BaseService
         if (empty($order)) {
             throw new \Exception("订单号为{$orderNo}的订单不存在");
         }
+        if (!$expressCompany) {
+            throw new \Exception("订单号为{$orderNo}的订单的快递公司不能为空");
+        }
+        if (!$expressNo) {
+            throw new \Exception("订单号为{$orderNo}的订单的快递单号不能为空");
+        }
         if ($order->status != Order::STATUS_UNDELIVERED) {
             throw new \Exception("订单号为{$orderNo}的订单的状态不是待发货");
         }
