@@ -13,6 +13,7 @@ use App\Exports\CsGoodsExport;
 use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsGoodService;
+use App\Modules\Cs\CsMerchantCategory;
 use App\Modules\Cs\CsMerchantService;
 use App\Modules\Cs\CsPlatformCategoryService;
 use App\Result;
@@ -146,7 +147,8 @@ class CsGoodsController extends Controller
 
         if ($type == 1) {
             //审核通过自动上架
-            $cs_goods->status = CsGood::STATUS_ON;
+            $cs_cat = CsMerchantCategory::findOrFail($cs_goods->cs_platform_cat_id_level2);
+            $cs_goods->status = $cs_cat->status == CsMerchantCategory::STATUS_ON?CsGood::STATUS_ON:CsGood::STATUS_OFF;
             $cs_goods->audit_status = CsGood::AUDIT_STATUS_SUCCESS;
         } else {
             //审核不通过自动下架
