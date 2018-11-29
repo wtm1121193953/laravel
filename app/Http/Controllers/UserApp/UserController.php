@@ -54,6 +54,7 @@ class UserController extends Controller
         $user->avatar_url = UserService::getUserAvatarUrlByUserId($user->id);
 
         $user->level_text = User::getLevelText($user->level);
+        $user->custom_service_email = config('common.custom_service_email');
         $bindInfo = TpsBindService::getTpsBindInfoByOriginInfo($user->id, TpsBind::ORIGIN_TYPE_USER);
         if ($bindInfo) {
             $user['tpsBindInfo'] = $bindInfo;
@@ -71,6 +72,7 @@ class UserController extends Controller
         } else {
             $user['superior'] = '';
         }
+
         return Result::success([
             'userInfo' => $user
         ]);

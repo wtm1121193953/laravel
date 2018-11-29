@@ -42,7 +42,7 @@ class UserController extends Controller
         }
 
         $user->level_text = User::getLevelText($user->level);
-
+        $user->custom_service_email = config('common.custom_service_email');
         return Result::success([
             'userInfo' => $user
         ]);
