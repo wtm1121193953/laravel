@@ -84,7 +84,7 @@ class Utils
      * @param int $decimalQuantity
      * @return float|int
      */
-    public static function getDecimalByNotRounding($number, $decimalQuantity = 2)
+    public static function floorDecimal($number, $decimalQuantity = 2)
     {
         if ($decimalQuantity < 0) $decimalQuantity = 2;
         $pow = pow(10, $decimalQuantity);

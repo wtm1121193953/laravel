@@ -33,6 +33,7 @@
                     <span v-if="scope.row.type == 1">团购订单</span>
                     <span v-else-if="scope.row.type == 2">扫码买单</span>
                     <span v-else-if="scope.row.type == 3">单品订单</span>
+                    <span v-else-if="scope.row.type == 4">超市订单</span>
                     <span v-else>未知({{scope.row.type}})</span>
                 </template>
             </el-table-column>
