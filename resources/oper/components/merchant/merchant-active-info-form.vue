@@ -99,7 +99,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item prop="sub_bank_name" label="开户行网点名称">
-                <el-input v-model="form.sub_bank_name" placeholder="填写银行网点具体名称，如北京市××分行××支行"/>
+                <el-input v-model="form.sub_bank_name" placeholder="填写银行网点具体名称，如广东省广州市XX分行XX支行"/>
             </el-form-item>
             <el-form-item prop="bank_area" label="开户行网点地址">
                 <el-cascader
@@ -131,7 +131,7 @@
             </el-form-item>
 
             <el-form-item prop="corporation_name" label="法人姓名">
-                <el-input v-model="form.corporation_name" placeholder="需同身份证一致"/>
+                <el-input v-model="form.corporation_name" placeholder="需同营业执照一致"/>
             </el-form-item>
             <el-form-item label="法人身份证号码">
                 <el-form-item prop="country_id" style="width: 20%; display: inline-block;">

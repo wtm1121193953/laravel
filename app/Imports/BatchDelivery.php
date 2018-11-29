@@ -28,6 +28,13 @@ class BatchDelivery implements ToCollection
             $merchantId = $this->merchantId;
             $arr = $collection->toArray();
             array_shift($arr);
+            $arr = array_filter($arr, function ($v) {
+                if (!$v[0] && !$v[1] && !$v[2]) {
+                    return false;
+                } else {
+                    return true;
+                }
+            });
             if (count($arr) > 200) {
                 throw new \Exception('批量发货不能超过200条');
             }
