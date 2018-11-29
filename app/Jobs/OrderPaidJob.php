@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Exceptions\DataNotFoundException;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteUserRecord;
@@ -81,11 +82,17 @@ class OrderPaidJob implements ShouldQueue
         $userId = $order->user_id;
         if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
             $merchantId = $order->merchant_id;
-            $merchant = MerchantService::getById($merchantId);
+            if ($order->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET && $order->type == Order::TYPE_SUPERMARKET) {
+                $merchant = CsMerchantService::getById($merchantId);
+                $originType = InviteChannel::ORIGIN_TYPE_CS_MERCHANT;
+            } else {
+                $merchant = MerchantService::getById($merchantId);
+                $originType = InviteChannel::ORIGIN_TYPE_MERCHANT;
+            }
             if(empty($merchant)){
                 throw new DataNotFoundException('商户信息不存在');
             }
-            $inviteChannel = InviteChannelService::getByOriginInfo($merchantId, InviteChannel::ORIGIN_TYPE_MERCHANT, $merchant->oper_id);
+            $inviteChannel = InviteChannelService::getByOriginInfo($merchantId, $originType, $merchant->oper_id);
             InviteUserService::bindInviter($userId, $inviteChannel);
         }
     }
