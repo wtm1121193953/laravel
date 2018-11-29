@@ -60,7 +60,6 @@ class NavigationService extends BaseService
         if(!empty($data['payload'])){
             $nav->payload = json_encode($data['payload']);
         }
-        $nav->sort = array_get($data, 'sort', 0);
         $nav->save();
         return $nav;
     }
