@@ -591,7 +591,7 @@ class FeeSplittingService extends BaseService
         $operAndBizerRatio = self::getOperAndBizerFeeSplittingRatio($order);
         $ratio = $userRatio + $parentRatio + $operAndBizerRatio['operRatio'] + $operAndBizerRatio['bizerRatio'];
 
-        $orderPureProfit = $orderProfit - Utils::getDecimalByNotRounding($order->pay_price * $ratio, 2);
+        $orderPureProfit = $orderProfit - Utils::floorDecimal($order->pay_price * $ratio, 2);
 
         return $orderPureProfit;
     }
