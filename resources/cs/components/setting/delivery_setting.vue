@@ -9,7 +9,7 @@
                 <el-input-number v-model="form.delivery_charges" :min="0"></el-input-number>元
 
             </el-form-item>
-            <el-form-item label="订单满免配送费" prop="fee_splitting_ratio_to_parent_of_user">
+            <el-form-item v-if="form.delivery_charges!=0" label="订单满免配送费" prop="fee_splitting_ratio_to_parent_of_user">
                 <el-switch
                         v-model="form.delivery_free_start"
                         :active-value="1"

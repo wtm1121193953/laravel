@@ -72,8 +72,8 @@ class SettlementPlatformExport implements FromQuery, WithHeadings, WithMapping
             $sub_bank_name = $bank_info[1];
         }
         return [
-            $row->merchant->id??0,
-            $row->merchant->name??'',
+            $row->merchant? $row->merchant->id:($row->cs_merchant ? $row->cs_merchant->id : 0),
+            $row->merchant? $row->merchant->name:($row->cs_merchant?$row->cs_merchant->name : ''),
             $row->oper->name??'',
             ['', '周结', '半月结', 'T+1(自动)', '半年结', '年结', 'T+1(人工)', '未知'][$row->settlement_cycle_type],
             $row->created_at,

@@ -70,7 +70,7 @@ class WalletPay extends PayBase
      */
     public function refund(Order $order)
     {
-        if(($order->status != Order::STATUS_PAID) || ($order->status != Order::STATUS_UNDELIVERED)){
+        if(!in_array($order->status,[Order::STATUS_PAID, Order::STATUS_UNDELIVERED])){
             throw new BaseResponseException('订单状态不允许退款');
         }
         if ($order->pay_type != Payment::ID_WALLET) {

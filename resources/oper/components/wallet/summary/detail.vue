@@ -60,6 +60,7 @@
                         <span v-if="orderOrWithdrawData.type == 1">团购</span>
                         <span v-else-if="orderOrWithdrawData.type == 2">买单</span>
                         <span v-else-if="orderOrWithdrawData.type == 3">单品</span>
+                        <span v-else-if="orderOrWithdrawData.type == 4">超市</span>
                         <span v-else>未知({{orderOrWithdrawData.type}})</span>
                     </el-form-item>
                     <el-form-item label="订单金额">
