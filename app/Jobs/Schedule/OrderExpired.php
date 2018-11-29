@@ -5,6 +5,7 @@ namespace App\Jobs\Schedule;
 use App\Modules\CsOrder\CsOrderGoodService;
 use App\Modules\Order\Order;
 use Illuminate\Bus\Queueable;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
