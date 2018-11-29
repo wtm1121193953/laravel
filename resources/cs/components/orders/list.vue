@@ -305,6 +305,7 @@
                             api.post('/verification', param).then(data => {
                                 this.$message.success('核销成功');
                                 this.getList();
+                                this.$emit('refresh');
                             });
                         }).catch(() => {});
                     })

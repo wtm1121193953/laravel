@@ -10,6 +10,7 @@ namespace App\Http\Controllers\User;
 
 
 use App\DataCacheService;
+use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsMerchantService;
 use App\Result;
@@ -80,5 +81,22 @@ class CsMerchantController extends Controller
         return Result::success(['list'=>$list]);
     }
 
+    /**
+     * 获取超市详情
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function detail()
+    {
+        $this->validate(request(), [
+            'merchant_id' => 'required|integer',
+        ]);
 
+        $merchant_id = request('merchant_id');
+        $detail = CsMerchantService::getById($merchant_id);
+        if (empty($detail)) {
+            throw new BaseResponseException('该超市不存在');
+        }
+
+        return Result::success($detail);
+    }
 }

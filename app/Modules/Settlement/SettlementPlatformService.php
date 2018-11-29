@@ -116,9 +116,16 @@ class SettlementPlatformService extends BaseService
             $query->whereIn('status', $params['status']);
         }
 
-        $query->with('merchant:id,name')
-            ->with('oper:id,name')
-            ->orderBy('id', 'desc');
+        if($params['merchantType']==SettlementPlatform::MERCHANT_TYPE_CS){
+            $query->with('cs_merchant:id,name')
+                ->with('oper:id,name')
+                ->orderBy('id', 'desc');
+
+        }else{
+            $query->with('merchant:id,name')
+                ->with('oper:id,name')
+                ->orderBy('id', 'desc');
+        }
         if ($return_query) {
             return  $query;
         }
@@ -223,11 +230,7 @@ class SettlementPlatformService extends BaseService
             throw new \Exception('结算单号生成失败');
         }
 
-        if($merchant->settlement_cycle_type == Merchant::SETTLE_DAILY_AUTO){
-            $type = SettlementPlatform::TYPE_AGENT;
-        }else{
-            $type = SettlementPlatform::TYPE_DEFAULT;
-        }
+        $type = ($merchant->settlement_cycle_type == Merchant::SETTLE_DAILY_AUTO) ? SettlementPlatform::TYPE_AGENT:SettlementPlatform::TYPE_DEFAULT;
 
 
         // 开启事务
@@ -239,6 +242,7 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform->start_date = $start_date;
             $settlementPlatform->end_date = $end_date;
             $settlementPlatform->type = $type;
+            $settlementPlatform->merchant_type = $merchantType;
             $settlementPlatform->settlement_cycle_type = $merchant->settlement_cycle_type;
             $settlementPlatform->settlement_no = $settlementNum;
             $settlementPlatform->settlement_rate = $merchant->settlement_rate;

@@ -634,7 +634,7 @@ class OrderController extends Controller
         $data = [
             'body' => $order->merchant_name,
             'out_trade_no' => $order->order_no,
-            'total_fee' => $order->pay_price * 100,
+            'total_fee' => bcmul($order->pay_price, 100),
             'trade_type' => 'APP',
         ];
         $unifyResult = $payApp->order->unify($data);

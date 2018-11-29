@@ -46,8 +46,9 @@ class OrderAutoConfirmed implements ShouldQueue
             ->where('status', Order::STATUS_DELIVERED)
             ->chunk(1000, function(Collection $list){
                 foreach ($list as $l) {
+                    $l->take_delivery_time =  Carbon::now();
+                    $l->finish_time = Carbon::now();
                     $l->status = Order::STATUS_FINISHED;
-                    $l->delivery_confirmed =  Carbon::now();
                     $l->save();
                     OrderFinishedJob::dispatch($l)->onQueue('order:finished')->delay(now()->addSecond(5));
                 }
