@@ -8,6 +8,7 @@
 namespace App\Support\Payment;
 
 use App\Exceptions\BaseResponseException;
+use App\Modules\CsOrder\CsOrderGoodService;
 use App\Modules\CsStatistics\CsStatisticsMerchantOrderService;
 use App\Modules\Log\LogDbService;
 use App\Modules\Oper\OperMiniprogramService;
@@ -136,6 +137,7 @@ class WechatPay extends PayBase
             //如果是超市商户，更新商户当月销量
             if ($order->type == Order::TYPE_SUPERMARKET) {
                 CsStatisticsMerchantOrderService::minusCsMerchantOrderNumberToday($order->merchant_id);
+                CsOrderGoodService::orderCancel($order->id);
             }
             return Result::success($orderRefund);
         } else {

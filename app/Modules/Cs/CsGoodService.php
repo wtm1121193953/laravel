@@ -155,33 +155,4 @@ class CsGoodService extends BaseService
         return $goods;
     }
 
-    public static function getGoodsList($merchant_id,$isSaleAsc,$isPriceAsc,$firstLevelId,$secondLevelId){
-        $query = CsGood::where('cs_merchant_id',$merchant_id)
-        ->where('audit_status',2);
-        if (!empty($secondLevelId) && $secondLevelId > 0){
-            $query->where('cs_platform_cat_id_level2',$secondLevelId);
-        }
-        elseif (!empty($firstLevelId) && $secondLevelId > 0){
-            $query->where('cs_platform_cat_id_level1',$firstLevelId);
-        }
-        if (!empty($isSaleAsc)){
-            if ($isSaleAsc == '1'){
-                $query->orderBy('sale_num', 'ASC');
-            }
-            else{
-                $query->orderBy('sale_num', 'DESC');
-            }
-        }
-
-        if (!empty($isPriceAsc)){
-
-            if ($isPriceAsc == '1'){
-                $query->orderBy('market_price', 'ASC');
-            }
-            else{
-                $query->orderBy('market_price', 'DESC');
-            }
-        }
-        return $query->get();
-    }
 }
