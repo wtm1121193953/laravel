@@ -92,6 +92,7 @@ class NavigationController extends Controller
             'type' => $type,
             'payload' => $payload,
         ]);
+        $nav->payload = json_decode($nav->payload, 1);
         return Result::success($nav);
     }
 

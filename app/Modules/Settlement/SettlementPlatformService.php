@@ -117,15 +117,14 @@ class SettlementPlatformService extends BaseService
         }
 
         if($params['merchantType']==SettlementPlatform::MERCHANT_TYPE_CS){
-            $query->with('cs_merchant:id,name')
-                ->with('oper:id,name')
-                ->orderBy('id', 'desc');
+            $query->with('cs_merchant:id,name');
 
         }else{
-            $query->with('merchant:id,name')
-                ->with('oper:id,name')
-                ->orderBy('id', 'desc');
+            $query->with('merchant:id,name');
         }
+        $query->with('oper:id,name')
+            ->orderBy('id', 'desc');
+
         if ($return_query) {
             return  $query;
         }

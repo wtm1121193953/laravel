@@ -68,14 +68,10 @@
             },
             initForm(){
                 if(this.data){
-                    this.form.id = this.data.id;
-                    this.form.title = this.data.title;
-                    this.form.icon = this.data.icon;
-                    this.form.type = this.data.type;
-                    if(this.form.type == 'merchant_category'){
-                        console.log(this.data)
-                        this.form.categoryId = this.data.payload.category_id;
+                    if(this.data.type == 'merchant_category'){
+                        this.data.categoryId = this.data.payload.category_id;
                     }
+                    this.form = Object.assign({}, this.data);
                 }else {
                     this.form = deepCopy(defaultForm)
                 }
@@ -86,6 +82,12 @@
             save(){
                 this.$refs.form.validate(valid => {
                     if(valid){
+                        if(this.form.type == 'merchant_category'){
+                            if(!this.form.categoryId){
+                                this.$message.error('分类不能为空')
+                                return ;
+                            }
+                        }
                         let data = deepCopy(this.form);
                         this.$emit('save', data);
                         setTimeout(() => {
