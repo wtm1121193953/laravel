@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Cs;
 use App\Http\Controllers\Controller;
 
 use App\Exceptions\DataNotFoundException;
+use App\Modules\Settlement\SettlementPlatform;
 use App\Result;
 use App\Modules\Settlement\SettlementPlatformService;
 
@@ -21,6 +22,7 @@ class SettlementPlatformController extends Controller
     {
         $data = SettlementPlatformService::getList([
             'merchantId' => request()->get('current_user')->merchant_id,
+            'merchant_type' =>  SettlementPlatform::MERCHANT_TYPE_CS,
         ]);
 
         $data->each(function ($item) {

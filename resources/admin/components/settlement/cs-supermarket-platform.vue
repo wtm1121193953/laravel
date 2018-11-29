@@ -1,6 +1,6 @@
 <template>
 
-    <page title="商户货款结算管理" v-loading="isLoading">
+    <page title="超市商户货款结算管理" v-loading="isLoading">
         <el-col style="margin-bottom: 10px;">
             <el-alert
                     title="温馨提示：T+1结算单规则，单日总订单金额小于100元，不生成结算单，总订单金额累计到100元后再生成结算单；周结账单无最低消费金额限制。"
@@ -11,10 +11,10 @@
         <el-col>
             <el-form v-model="query" inline>
                 <el-form-item prop="merchantId" label="商户ID" >
-                    <el-input v-model="query.merchant_id" size="small"  placeholder="商户ID"  class="w-100" clearable></el-input>
+                    <el-input v-model="query.merchant_id" size="small"  placeholder="超市商户ID"  class="w-100" clearable></el-input>
                 </el-form-item>
                 <el-form-item prop="merchantId" label="商户名称" >
-                    <el-input v-model="query.merchant_name" size="small"  placeholder="商户名称"  class="w-150" clearable></el-input>
+                    <el-input v-model="query.merchant_name" size="small"  placeholder="超市商户名称"  class="w-150" clearable></el-input>
                 </el-form-item>
                 <el-form-item label="结算日期">
                     <el-date-picker
@@ -65,9 +65,9 @@
         </el-dialog>
 
         <el-table :data="list" v-loading="tableLoading" stripe>
-            <el-table-column prop="merchant.id" label="商户ID"  width="100px" />
-            <el-table-column prop="merchant.name" label="商户名称"  width="160px" />
-            <el-table-column prop="merchant.merchant_type" label="商户类型"  width="160px" >
+            <el-table-column prop="cs_merchant.id" label="商户ID"  width="100px" />
+            <el-table-column prop="cs_merchant.name" label="商户名称"  width="160px" />
+            <el-table-column prop="cs_merchant.merchant_type" label="商户类型"  width="160px" >
                 <template slot-scope="scope">
                     <span>{{ {1: '普通', 2: '超市'}[scope.row.merchant_type] }}</span>
                 </template>
