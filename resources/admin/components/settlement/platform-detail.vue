@@ -19,7 +19,11 @@
                     </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="merchant.name|cs_merchant.name" label="商户" align="center"/>
+            <el-table-column prop="merchant.name" label="商户" align="center">
+                <template slot-scope="scope">
+                    <span>{{ scope.row.merchant.name|scope.row.cs_merchant.name }}%</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="oper.name" label="运营中心" align="center"/>
             <el-table-column prop="pay_price" label="订单金额" align="center"/>
             <el-table-column prop="settlement_rate" label="利率" width="100px" align="center">
