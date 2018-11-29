@@ -33,7 +33,6 @@ class SettlementPlatformController extends Controller
         $uri = request()->getRequestUri();
         // 商户类型
         $merchantType = (strpos($uri,'csPlatforms')) ? SettlementPlatform::MERCHANT_TYPE_CS : ((request('merchant_type')) ? request('merchant_type') : '');
-//        var_dump((strpos($uri,'csPlatforms')),$merchantType);
         $startTime = microtime(true);
         $data = SettlementPlatformService::getListForSaas([
             'merchant_name' => $merchant_name,

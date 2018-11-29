@@ -11,7 +11,7 @@
                     <el-form-item prop="status_name" label="审核状态">
                         <span v-if="parseInt(goods.audit_status) === 1" class="c-warning">审核中</span>
                         <div v-else-if="parseInt(goods.audit_status) === 2"  class="c-green"><span>审核通过</span></div>
-                        <div  v-else-if="parseInt(goods.audit_status) === 3"  class="c-danger"><span>审核不通过</span><span class="message">{{goods.audit_suggestion}}</span></div>
+                        <div  v-else-if="parseInt(goods.audit_status) === 3"  class="c-danger"><span>审核不通过</span><span class="message">（{{goods.audit_suggestion}}）</span></div>
                         <span v-else>未知 ({{goods.status}})</span>
                     </el-form-item>
 

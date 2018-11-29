@@ -82,7 +82,7 @@ class SettlementPlatform extends BaseModel
     }
 
     public function cs_merchant(){
-        return $this->belongsTo(CsMerchant::class);
+        return $this->belongsTo(CsMerchant::class,'merchant_id');
     }
 
     public function oper()
