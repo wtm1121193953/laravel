@@ -190,7 +190,7 @@ class ConsumeQuotaService extends BaseService
                 'createTime'    => $order->created_at->toDateTimeString(),
                 'customerId'    => $tpsBind->tps_uid,
                 'shopkeeperId'  => $tpsBind->tps_uid,
-                'orderAmountUsd'=> Utils::getDecimalByNotRounding($record->tps_consume_quota, 2),
+                'orderAmountUsd'=> Utils::floorDecimal($record->tps_consume_quota, 2),
                 'orderProfitUsd'=> $record->consume_quota_profit,
                 'score'         => $record->sync_tps_credit,
                 'status'        => $record->status,

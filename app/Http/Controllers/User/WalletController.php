@@ -128,8 +128,8 @@ class WalletController extends Controller
         ], 15, true)->sum('consume_quota');
 
         return Result::success([
-            'totalTpsConsume' => Utils::getDecimalByNotRounding($totalTpsConsume, 2),
-            'theMonthTpsConsume' => Utils::getDecimalByNotRounding($theMonthTpsConsume, 2),
+            'totalTpsConsume' => Utils::floorDecimal($totalTpsConsume, 2),
+            'theMonthTpsConsume' => Utils::floorDecimal($theMonthTpsConsume, 2),
             'showReminder' => $this->reminder, // 是否显示提示语 有则显示，没有则不显示
         ]);
     }
@@ -217,9 +217,9 @@ class WalletController extends Controller
         $contributeToParent = floor($wallet->total_tps_credit / 100) * 50;
 
         return Result::success([
-            'totalTpsCredit' => Utils::getDecimalByNotRounding($wallet->total_tps_credit, 2), // 个人消费获得TPS积分
-            'totalShareTpsCredit' => Utils::getDecimalByNotRounding($wallet->total_share_tps_credit, 2), // 下级累计贡献TPS积分
-            'tpsCreditSum' => Utils::getDecimalByNotRounding($wallet->total_share_tps_credit + $wallet->total_tps_credit, 2), // 总累计TPS积分
+            'totalTpsCredit' => Utils::floorDecimal($wallet->total_tps_credit, 2), // 个人消费获得TPS积分
+            'totalShareTpsCredit' => Utils::floorDecimal($wallet->total_share_tps_credit, 2), // 下级累计贡献TPS积分
+            'tpsCreditSum' => Utils::floorDecimal($wallet->total_share_tps_credit + $wallet->total_tps_credit, 2), // 总累计TPS积分
             'totalSyncTpsCredit' => $totalSyncTpsCredit, // 已置换
             'contributeToParent' => $contributeToParent, // 累计贡献上级TPS积分
             'showReminder' => $this->reminder, // 是否显示提示语 有则显示，没有则不显示

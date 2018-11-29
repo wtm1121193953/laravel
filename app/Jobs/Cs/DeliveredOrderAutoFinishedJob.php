@@ -39,6 +39,7 @@ class DeliveredOrderAutoFinishedJob implements ShouldQueue
         if ($order->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET && $order->status == Order::STATUS_DELIVERED) {
             $order->status = Order::STATUS_FINISHED;
             $order->finish_time = Carbon::now();
+            $order->take_delivery_time =  Carbon::now();
             $order->save();
             OrderFinishedJob::dispatch($order)->onQueue('order:finished')->delay(Carbon::now()->addMinute());
         } else {
