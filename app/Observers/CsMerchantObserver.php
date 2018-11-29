@@ -19,7 +19,6 @@ class CsMerchantObserver
 
     public function saved(CsMerchant $csMerchant)
     {
-        Log::info('触发观察者 cs_merchant saved');
         Lbs::csMerchantGpsAdd($csMerchant->id, $csMerchant->lng, $csMerchant->lat);
         DataCacheService::delCsMerchantDetail([$csMerchant->id]);
     }
