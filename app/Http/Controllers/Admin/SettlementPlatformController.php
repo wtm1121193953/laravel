@@ -32,7 +32,7 @@ class SettlementPlatformController extends Controller
         $isAutoSettlement = request('is_auto_settlement');
         $uri = request()->getRequestUri();
         // 商户类型
-        $merchantType = (strpos($uri,'csPlatforms')) ? SettlementPlatform::MERCHANT_TYPE_CS : ((request('merchant_type')) ? request('merchant_type') : '');
+        $merchantType = (strpos($uri,'csPlatforms')) ? SettlementPlatform::MERCHANT_TYPE_CS : ((request('merchant_type')) ? request('merchant_type') : SettlementPlatform::MERCHANT_TYPE_NORMAL);
         $startTime = microtime(true);
         $data = SettlementPlatformService::getListForSaas([
             'merchant_name' => $merchant_name,
@@ -69,7 +69,7 @@ class SettlementPlatformController extends Controller
         $isAutoSettlement = request('is_auto_settlement');
 
         $uri = request()->getRequestUri();
-        $merchantType = (strpos($uri,'csDownload')) ? SettlementPlatform::MERCHANT_TYPE_CS : ((request('merchant_type')) ? request('merchant_type') : '');
+        $merchantType = (strpos($uri,'csDownload')) ? SettlementPlatform::MERCHANT_TYPE_CS : ((request('merchant_type')) ? request('merchant_type') : SettlementPlatform::MERCHANT_TYPE_NORMAL);
 
         $query = SettlementPlatformService::getListForSaas([
             'merchant_name' => $merchant_name,
