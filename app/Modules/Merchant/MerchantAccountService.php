@@ -179,7 +179,7 @@ class MerchantAccountService extends BaseService
                 [ 'id' => 2, 'name' => '订单管理', 'level' => 1, 'url' => 'order', 'sub' =>
                     [
                         ['id' => 201, 'name' => '超市订单管理', 'level' => 2, 'url' => '/cs/orders', 'pid' => 2],
-                        ['id' => 202, 'name' => '买单订单管理', 'level' => 2, 'url' => '/cs/scan/orders', 'pid' => 2],
+//                        ['id' => 202, 'name' => '买单订单管理', 'level' => 2, 'url' => '/cs/scan/orders', 'pid' => 2],
                     ]
                 ],
                 ['id' => 3, 'name' => '消息管理', 'level' => 1, 'url' => '', 'sub' =>
