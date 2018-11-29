@@ -155,13 +155,19 @@ class OrderController extends Controller
 
             $item->oper_info = DataCacheService::getOperDetail($item->oper_id);//运营中心客服电话
 
-            if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
-                $csMerchat = CsMerchant::where('id',$item->merchant_id)->first();
-                $item->merchant_name = $csMerchat->name;
-                $item->merchant_logo = $csMerchat->logo;
-                $item->merchant_service_phone = $csMerchat->service_phone;
-                $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
 
+            if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
+                $csMerchant = CsMerchant::where('id',$item->merchant_id)->first();
+                $csMerchantSetting = CsMerchantSettingService::getDeliverSetting($csMerchant->id);
+                $csMerchant->delivery_start_price = $csMerchantSetting->delivery_start_price;
+                $csMerchant->delivery_charges = $csMerchantSetting->delivery_charges;
+                $csMerchant->delivery_free_start = $csMerchantSetting->delivery_free_start;
+                $csMerchant->delivery_free_order_amount = $csMerchantSetting->delivery_free_order_amount;
+                $csMerchant->city_limit = config('common.city_limit');
+                $csMerchant->show_city_limit = config('common.show_city_limit');
+                $item->cs_merchant = $csMerchant;
+                $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
+                $item->order_goods = CsOrderGood::where('order_id',$item->id)->with('cs_goods:id,logo')->get();
             }else {
                 $item->merchant = Merchant::where('id', $item->merchant_id)->first();
                 $item->merchant_logo = $item->merchant->logo;
