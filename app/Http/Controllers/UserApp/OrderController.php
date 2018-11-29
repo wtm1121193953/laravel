@@ -634,15 +634,10 @@ class OrderController extends Controller
         $data = [
             'body' => $order->merchant_name,
             'out_trade_no' => $order->order_no,
-            'total_fee' => $order->pay_price * 100,
+            'total_fee' => intval($order->pay_price * 100),
             'trade_type' => 'APP',
         ];
         $unifyResult = $payApp->order->unify($data);
-        Log::error('微信请求数据', [
-            'payConfig' => $payApp->getConfig(),
-            'data' => $data,
-            'result' => $unifyResult,
-        ]);
         if (!($unifyResult['return_code'] === 'SUCCESS' && array_get($unifyResult, 'result_code') === 'SUCCESS')) {
             Log::error('微信统一下单失败', [
                 'payConfig' => $payApp->getConfig(),

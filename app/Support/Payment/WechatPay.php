@@ -106,7 +106,8 @@ class WechatPay extends PayBase
             // 获取平台的微信支付实例
             $payApp = WechatService::getOpenPlatformPayAppFromPlatform();
         }
-        $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->refund_no, $orderPay->amount * 100, $orderPay->amount * 100, [
+        $refundFee = intval($orderPay->amount * 100);
+        $result = $payApp->refund->byTransactionId($orderPay->transaction_no, $orderRefund->refund_no,$refundFee , $refundFee, [
             'refund_desc' => '用户发起退款',
         ]);
         if ($result['return_code'] === 'SUCCESS' && array_get($result, 'result_code') === 'SUCCESS') {
