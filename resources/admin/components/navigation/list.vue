@@ -57,8 +57,10 @@
 
         },
         methods: {
-            getList(){
-                this.isLoading = true;
+            getList(withLoading = true){
+                if(withLoading){
+                    this.isLoading = true;
+                }
                 api.get('/navigation/all', this.query).then(data => {
                     this.list = data.list;
                 }).finally(() => {
@@ -79,7 +81,8 @@
                 })
             },
             itemChanged(index, data){
-                this.list.splice(index, 1, data)
+                // this.list.splice(index, 1, data)
+                this.getList(false);
             },
         },
         created(){
