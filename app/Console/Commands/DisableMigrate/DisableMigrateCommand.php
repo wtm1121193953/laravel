@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\DisableMigrate;
 
 use Illuminate\Console\Command;
 
@@ -18,7 +18,7 @@ class DisableMigrateCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Run the database migrations';
 
     /**
      * Create a new command instance.
@@ -38,6 +38,6 @@ class DisableMigrateCommand extends Command
     public function handle()
     {
         //
-        $this->info('migrate命令已禁用 ');
+        $this->info('migrate 命令已禁用 ');
     }
 }
