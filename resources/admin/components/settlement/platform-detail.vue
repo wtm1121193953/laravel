@@ -19,9 +19,9 @@
                     </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="merchant.name" label="商户" align="center">
+            <el-table-column prop="oper.name" label="商户" align="center">
                 <template slot-scope="scope">
-                    <span>{{ scope.row.merchant.name|scope.row.cs_merchant.name }}%</span>
+                    <span>{{ merchantName}}</span>
                 </template>
             </el-table-column>
             <el-table-column prop="oper.name" label="运营中心" align="center"/>
@@ -110,6 +110,11 @@
         },
         created() {
             this.init();
+        },
+        computed:{
+            merchantName:function(){
+                return (this.scope.merchant!==undefined) ? this.scope.merchant.name : this.scope.cs_merchant.name;
+            }
         },
         watch: {
             scope: {
