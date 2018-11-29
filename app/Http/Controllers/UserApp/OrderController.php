@@ -22,7 +22,6 @@ use App\Modules\Cs\CsMerchantSetting;
 use App\Modules\Cs\CsMerchantSettingService;
 use App\Modules\Cs\CsUserAddress;
 use App\Modules\CsOrder\CsOrderGood;
-use App\Modules\CsStatistics\CsStatisticsMerchantOrderService;
 use App\Modules\Dishes\DishesGoods;
 use App\Modules\Dishes\DishesItem;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
@@ -33,36 +32,27 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderItem;
-use App\Modules\Order\OrderPay;
-use App\Modules\Order\OrderRefund;
 use App\Modules\Order\OrderService;
 use App\Modules\Payment\Payment;
 use App\Modules\Payment\PaymentService;
 use App\Modules\Setting\SettingService;
 use App\Modules\User\User;
 use App\Modules\UserCredit\UserCreditRecord;
-use App\Modules\Wallet\Wallet;
-use App\Modules\Wallet\WalletBill;
-use App\Modules\Wallet\WalletService;
 use App\Modules\Wechat\WechatService;
 use App\Result;
 use App\ResultCode;
-use App\Support\Alipay;
 use App\Support\Lbs;
-use App\Support\Payment\PayBase;
 use App\Support\Payment\WalletPay;
 use App\Support\Payment\WechatPay;
 use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Modules\Dishes\Dishes;
 use App\Modules\Merchant\MerchantSettingService;
 use App\Modules\Oper\Oper;
-
 
 
 class OrderController extends Controller
@@ -300,9 +290,10 @@ class OrderController extends Controller
             $detail->order_goods = CsOrderGood::where('order_id',$detail->id)->with('cs_goods:id,logo')->get();
 
         }else {
-            $detail->merchant = Merchant::where('id', $detail->merchant_id)->first();
-            $detail->merchant_logo = $detail->merchant->logo;
-            $detail->signboard_name = $detail->merchant->signboard_name;
+            $merchant = Merchant::where('id', $detail->merchant_id)->first();
+            $detail->merchant_logo = $merchant->logo;
+            $detail->signboard_name = $merchant->signboard_name;
+            $detail->merchant = $merchant;
         }
         return Result::success($detail);
     }
@@ -550,6 +541,7 @@ class OrderController extends Controller
 
     /**
      * 立即付款
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
     public function pay()
     {
@@ -560,8 +552,15 @@ class OrderController extends Controller
         $orderNo = request('order_no');
         $order = Order::where('order_no', $orderNo)->first();
 
-        $merchant = MerchantService::getById($order->merchant_id);
-        $this->checkMerchant($merchant);
+        if($order->merchant_type == Order::MERCHANT_TYPE_NORMAL){
+            $merchant = MerchantService::getById($order->merchant_id);
+            $this->checkMerchant($merchant);
+        }else {
+            $merchant = CsMerchant::find($order->merchant_id);
+            if (empty($merchant)) {
+                throw new BaseResponseException('该超市不存在，请选择其他超市下单', ResultCode::CS_MERCHANT_NOT_EXIST);
+            }
+        }
 
         if ($order->status == Order::STATUS_PAID) {
             throw new ParamInvalidException('该订单已支付');
@@ -602,6 +601,10 @@ class OrderController extends Controller
         ]);
         $order = OrderService::getInfoByOrderNo(request()->get('order_no'));
         $payment = PaymentService::getDetailById($order->pay_type);
+        // 验证是否是自己的订单
+        if(request()->get('current_user')->id != $order->user_id){
+            throw new NoPermissionException('订单不存在');
+        }
         if($payment->pay_type==Payment::TYPE_WECHAT){
             $m = new WechatPay();
             $res =  $m->refund($order);
@@ -611,7 +614,7 @@ class OrderController extends Controller
                 throw new BaseResponseException('无法使用该退款方式');
             }
             $paymentClass = new $paymentClassName();
-            $res =  $paymentClass->refund($order,request()->get('current_user'));
+            $res =  $paymentClass->refund($order);
         }
         // 还原库存
         $this->decSellNumber($order);
@@ -674,12 +677,12 @@ class OrderController extends Controller
     /**
      * 处理订单返回
      * @param $order
-     * @param bool $isprofitAmount
+     * @param bool $isProfitAmount
      * @param int $profitAmount
      * @return \Illuminate\Http\JsonResponse
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      */
-    private function _returnOrder($order,$isprofitAmount = false,$profitAmount = 0){
+    private function _returnOrder($order, $isProfitAmount = false, $profitAmount = 0){
         // 如果是微信支付
         $sdkConfig = null;
         $data = null;
@@ -692,8 +695,9 @@ class OrderController extends Controller
             if(!class_exists($paymentClassName)){
                 throw new BaseResponseException('无法使用该支付方式');
             }
+            $user = request()->get('current_user');
             $paymentClass = new $paymentClassName();
-            $data = $paymentClass->buy($order);
+            $data = $paymentClass->buy($user, $order);
         }
 
         $list = [
@@ -705,7 +709,7 @@ class OrderController extends Controller
         ];
 
         //判断是否需要返利金额
-        if($isprofitAmount){
+        if($isProfitAmount){
             $profitAmounArr = ['profitAmount' => $profitAmount];
             $list = array_merge($list,$profitAmounArr);
         }
@@ -736,7 +740,7 @@ class OrderController extends Controller
         // 删除有效时间，避免重复提交
         Cache::forget('user_pay_password_modify_temp_token_' . $user->id);
         $walletPay = new WalletPay();
-        return $walletPay->buy($user,$order);
+        return $walletPay->buy($user, $order);
     }
 
     /**
@@ -805,24 +809,34 @@ class OrderController extends Controller
         }
 
         // 商家配送必须达到 起送价
-        if (($deliveryType == Order::DELIVERY_MERCHANT_POST) && ($goodsPrice < $csMerchantSetting->delivery_start_price)  ) {
+        if (
+            $deliveryType == Order::DELIVERY_MERCHANT_POST
+            && $goodsPrice < $csMerchantSetting->delivery_start_price
+        ) {
             throw new BaseResponseException('商品价格小于起送价');
         }
 
         // 计算 配送费 以及 配送费满减
-        $deliverPrice = $csMerchantSetting->delivery_charges;
-        $totalPrice = $goodsPrice;
-        if ($csMerchantSetting->delivery_free_start && $goodsPrice >= $csMerchantSetting->delivery_free_order_amount) {
-            $discountPrice = $csMerchantSetting->delivery_charges;
-        } else {
+        if($deliveryType == Order::DELIVERY_MERCHANT_POST){ // 商家配送, 有配送费
+            $deliverPrice = $csMerchantSetting->delivery_charges; // 运费
+            $totalPrice = $goodsPrice;
+            if ($csMerchantSetting->delivery_free_start && $goodsPrice >= $csMerchantSetting->delivery_free_order_amount) {
+                $discountPrice = $csMerchantSetting->delivery_charges;
+            } else {
+                $discountPrice = 0;
+            }
+            $payPrice = $totalPrice + $deliverPrice - $discountPrice;
+        }else {
+            $deliverPrice = 0; // 运费
+            $totalPrice = $goodsPrice;
             $discountPrice = 0;
+            $payPrice = $goodsPrice;
         }
-        $payPrice = $totalPrice + $deliverPrice - $discountPrice;
 
         DB::beginTransaction();
         try {
             //创建订单
-            $user =  $user = request()->get('current_user');
+            $user = request()->get('current_user');
             $order = new Order();
             $orderNo = Order::genOrderNo();
             $order->merchant_type = Order::MERCHANT_TYPE_SUPERMARKET;
@@ -934,7 +948,7 @@ class OrderController extends Controller
     private function checkMerchant(Merchant $merchant)
     {
 
-        if ($merchant->audit_status != Merchant::AUDIT_STATUS_SUCCESS) {
+        if ($merchant->audit_status != Merchant::AUDIT_STATUS_SUCCESS && $merchant->audit_status != Merchant::AUDIT_STATUS_RESUBMIT) {
             throw new BaseResponseException('商家异常，请联系商家');
         }
         if($merchant->status == Merchant::STATUS_OFF){

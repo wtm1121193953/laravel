@@ -8,6 +8,11 @@
 namespace App\Support\Payment;
 
 use App\Modules\Log\LogDbService;
+use App\Modules\Log\LogOrderNotifyReapal;
+use App\Modules\Order\Order;
+use App\Modules\Order\OrderService;
+use App\Modules\User\User;
+use App\Support\Reapal\ReapalUtils;
 
 class ReapalPay extends PayBase
 {
@@ -37,5 +42,26 @@ class ReapalPay extends PayBase
         } else {
             echo 'sign error';
         }
+    }
+
+    /**
+     * 下单
+     * @param User $user
+     * @param Order $order
+     * @return mixed
+     */
+    public function buy(User $user, Order $order)
+    {
+        // TODO: Implement buy() method.
+    }
+
+    /**
+     * 订单退款
+     * @param Order $order
+     * @return mixed
+     */
+    public function refund(Order $order)
+    {
+        // TODO: Implement refund() method.
     }
 }

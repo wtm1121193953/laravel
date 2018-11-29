@@ -19,7 +19,6 @@ class MerchantObserver
 
     public function saved(Merchant $merchant)
     {
-        Log::info('触发观察者 merchant saved');
         Lbs::merchantGpsAdd($merchant->id, $merchant->lng, $merchant->lat);
         DataCacheService::delMerchantDetail([$merchant->id]);
     }

@@ -2,8 +2,8 @@
 
 namespace App\Modules\CsOrder;
 
+use App\BaseModel;
 use App\Modules\Cs\CsGood;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * 购买超市商品
@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string goods_name
  */
 
-class CsOrderGood extends Model
+class CsOrderGood extends BaseModel
 {
     //
     public function cs_goods()

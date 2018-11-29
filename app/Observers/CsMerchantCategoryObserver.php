@@ -15,7 +15,6 @@ class CsMerchantCategoryObserver
 {
     public function saved(CsMerchantCategory $cs_merchant_category)
     {
-        Log::info('触发观察者 cs_merchant_category saved');
         DataCacheService::delCsMerchantCats($cs_merchant_category->cs_merchant_id);
     }
 }

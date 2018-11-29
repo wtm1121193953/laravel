@@ -374,7 +374,12 @@ class WalletService extends BaseService
         } else {
             $data = $query->paginate($pageSize);
             $data->each(function ($item) {
-                $item->merchant_name = MerchantService::getNameById($item->origin_id);
+                if ($item->origin_type == WalletBill::ORIGIN_TYPE_CS) {
+                    $item->merchant_name = CsMerchantService::getNameById($item->origin_id);
+                } else {
+                    $item->merchant_name = MerchantService::getNameById($item->origin_id);
+                }
+
                 $item->oper_name = OperService::getNameById($item->origin_id);
                 if ($item->origin_type == WalletBill::ORIGIN_TYPE_MERCHANT) {
                     $item->merchant_level = MerchantService::getById($item->origin_id)->level;

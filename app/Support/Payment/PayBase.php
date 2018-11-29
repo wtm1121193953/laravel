@@ -8,6 +8,9 @@
  */
 namespace App\Support\Payment;
 
+use App\Modules\Order\Order;
+use App\Modules\User\User;
+
 abstract class PayBase
 {
 
@@ -24,4 +27,20 @@ abstract class PayBase
     }
 
     abstract public function doNotify();
+
+    /**
+     * 下单
+     * @param User $user
+     * @param Order $order
+     * @return mixed
+     */
+    abstract public function buy(User $user, Order $order);
+
+    /**
+     * 订单退款
+     * @param Order $order
+     * @return mixed
+     */
+    abstract public function refund(Order $order);
+
 }

@@ -147,6 +147,6 @@ Route::prefix('app/user')
 
 
         //小程序分享：
-        Route::get('miniProgram/shareMerchant','MiniProgramController@shartMerchant');
+        Route::get('wechat/getShareInfo','WechatController@getShareInfo');
 
     });

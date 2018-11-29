@@ -18,7 +18,6 @@ class OperObserver
 
     public function saved(Oper $row)
     {
-        Log::info('触发观察者 oper saved');
         DataCacheService::delOperDetail([$row->id]);
     }
 }

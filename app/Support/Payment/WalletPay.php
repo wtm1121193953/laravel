@@ -17,24 +17,29 @@ use App\Modules\Order\OrderRefund;
 use App\Modules\Order\OrderService;
 use App\Modules\Payment\Payment;
 use App\Modules\Platform\PlatformTradeRecord;
+use App\Modules\User\User;
+use App\Modules\User\UserService;
 use App\Modules\Wallet\Wallet;
 use App\Modules\Wallet\WalletBill;
 use App\Modules\Wallet\WalletService;
 use App\Result;
-use App\Support\Payment\PayBase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
 class WalletPay extends PayBase
 {
-    public function buy($order)
+    /**
+     * @param $user
+     * @param $order
+     * @throws \Exception
+     */
+    public function buy(User $user, Order $order)
     {
         // 判断密码的有效性
         /*request()->validate([
             'temp_token' => 'required'
         ]);*/
         $inputToken = request()->get('temp_token');
-        $user = request()->get('current_user');
         $tempToken = Cache::get('user_pay_password_modify_temp_token_' . $user->id);
         if(empty($tempToken)){
             throw new NoPermissionException('您的验证信息已超时, 请返回重新验证');
@@ -58,7 +63,12 @@ class WalletPay extends PayBase
         // TODO: Implement doNotify() method.
     }
 
-    public function refund($order,$user)
+    /**
+     * @param $order
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    public function refund(Order $order)
     {
         if(($order->status != Order::STATUS_PAID) || ($order->status != Order::STATUS_UNDELIVERED)){
             throw new BaseResponseException('订单状态不允许退款');
@@ -75,6 +85,7 @@ class WalletPay extends PayBase
         $orderRefund->order_no = $order->order_no;
         $orderRefund->amount = $orderPay->amount;
         $orderRefund->save();
+        $user = UserService::getUserById($order->user_id);
         $wallet = WalletService::getWalletInfo($user);
         WalletService::addBalance($wallet,$order->pay_price,WalletBill::TYPE_PLATFORM_REFUND,$orderRefund->id);
         // 修改order表状态

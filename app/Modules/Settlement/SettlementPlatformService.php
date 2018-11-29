@@ -239,6 +239,7 @@ class SettlementPlatformService extends BaseService
             $settlementPlatform->start_date = $start_date;
             $settlementPlatform->end_date = $end_date;
             $settlementPlatform->type = $type;
+            $settlementPlatform->merchant_type = $merchantType;
             $settlementPlatform->settlement_cycle_type = $merchant->settlement_cycle_type;
             $settlementPlatform->settlement_no = $settlementNum;
             $settlementPlatform->settlement_rate = $merchant->settlement_rate;
