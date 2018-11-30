@@ -784,6 +784,9 @@ class OrderController extends Controller
         if (empty($merchant)) {
             throw new BaseResponseException('该超市不存在，请选择其他超市下单', ResultCode::CS_MERCHANT_NOT_EXIST);
         }
+        if ($merchant->status != CsMerchant::STATUS_ON || $merchant->audit_status != CsMerchant::AUDIT_STATUS_SUCCESS) {
+            throw new BaseResponseException('该超市状态异常，请选择其他超市下单', ResultCode::CS_MERCHANT_NOT_EXIST);
+        }
         if (is_string($goodsList)) {
             $goodsList = json_decode($goodsList, true);
         }
