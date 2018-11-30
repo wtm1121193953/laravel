@@ -187,11 +187,14 @@ class OrderController extends Controller
                 $item->merchant_logo = $item->merchant->logo;
                 $item->signboard_name = $item->merchant->signboard_name;
 
-                if($lng && $lat){
-                    $distance = Lbs::getDistanceOfMerchant($item->merchant->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
-                    // 格式化距离
-                    $item->merchant->distance = Utils::getFormativeDistance($distance);
+                if ($item->type == Order::TYPE_GROUP_BUY) {
+                    if($lng && $lat){
+                        $distance = Lbs::getDistanceOfMerchant($item->merchant->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
+                        // 格式化距离
+                        $item->merchant->distance = Utils::getFormativeDistance($distance);
+                    }
                 }
+
             }
             $item->deliver_price -= $item->discount_price;
         });
