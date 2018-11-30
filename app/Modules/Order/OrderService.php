@@ -814,11 +814,11 @@ class OrderService extends BaseService
     public static function getUserCounts($user_id,$merchantShareInMiniprogram = 1,$currentOperId=0)
     {
         $status_map = [
-            //'a' => Order::STATUS_UN_PAY, //待付款
+            'a' => Order::STATUS_UN_PAY, //待付款
             'b' => Order::STATUS_UNDELIVERED,//代发货
             'c' => Order::STATUS_DELIVERED,//待收货
             'd' => [Order::STATUS_PAID,Order::STATUS_NOT_TAKE_BY_SELF],//待使用
-            'e' => [Order::STATUS_CLOSED,Order::STATUS_FINISHED],//已完成
+            //'e' => [Order::STATUS_CLOSED,Order::STATUS_FINISHED],//已完成
             //'f' => Order::STATUS_REFUNDED,//已退款
         ];
 
