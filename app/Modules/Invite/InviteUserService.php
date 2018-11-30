@@ -66,7 +66,7 @@ class InviteUserService
         }else if($obj instanceof Merchant) {
             return $obj->signboard_name;
         }else if($obj instanceof CsMerchant) {
-            return $obj->name;
+            return $obj->signboard_name;
         }else if($obj instanceof Oper){
             return $obj->name;
         }else {
