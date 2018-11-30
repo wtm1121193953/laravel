@@ -111,6 +111,8 @@ class OrderController extends Controller
     {
         $status = request('status');
         $user = request()->get('current_user');
+        $lng = request('lng');
+        $lat = request('lat');
 
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
 
@@ -154,7 +156,7 @@ class OrderController extends Controller
             })
             ->orderByDesc('id')
             ->paginate();
-        $data->each(function ($item) use ($currentOperId) {
+        $data->each(function ($item) use ($currentOperId,$lat,$lng) {
             $item->items = OrderItem::where('order_id', $item->id)->get();
             // 判断商户是否是当前小程序关联运营中心下的商户
 //            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
@@ -184,6 +186,12 @@ class OrderController extends Controller
                 $item->merchant = Merchant::where('id', $item->merchant_id)->first();
                 $item->merchant_logo = $item->merchant->logo;
                 $item->signboard_name = $item->merchant->signboard_name;
+
+                if($lng && $lat){
+                    $distance = Lbs::getDistanceOfMerchant($item->merchant->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
+                    // 格式化距离
+                    $item->merchant->distance = Utils::getFormativeDistance($distance);
+                }
             }
         });
         $order_counts = OrderService::getUserCounts($user->id);
