@@ -220,7 +220,13 @@ class OrderController extends Controller
         if ($detail->type == Order::TYPE_DISHES) {
             $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
         } elseif ($detail->type == Order::TYPE_SUPERMARKET) {
-            $detail->cs_items = CsOrderGood::where('order_id', $detail->id)->get();
+            $csItems = CsOrderGood::where('order_id', $detail->id)->get();
+            if ($csItems->isNotEmpty()) {
+                foreach ($csItems as &$item) {
+                    $item->logo = CsGood::where('id', $item->cs_goods_id)->value('logo');
+                }
+            }
+            $detail->cs_items = $csItems;
         }
 
         if($lng && $lat){
