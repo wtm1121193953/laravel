@@ -166,7 +166,9 @@ class OrderController extends Controller
                 $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
                 $item->order_goods_number = DishesItem::where('dishes_id',$item->dishes_id)->sum('number');
             }else if($item->type == Order::TYPE_GROUP_BUY){
-                $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
+                $goods = Goods::withTrashed()->where('id', $item->goods_id)->first();
+                $item->goods_end_date = $goods->end_date;
+                $item->goods_price = $goods->price;
             }
             $item->oper_info = DataCacheService::getOperDetail($item->oper_id);//运营中心客服电话
 
