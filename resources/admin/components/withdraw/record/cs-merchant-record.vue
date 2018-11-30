@@ -206,7 +206,7 @@
             },
             detail(row) {
                 router.push({
-                    path: '/withdraw/record/merchant',
+                    path: '/withdraw/record/cs',
                     query: {
                         id: row.id,
                     }
@@ -214,7 +214,7 @@
             },
             audit(row) {
                 router.push({
-                    path: '/withdraw/record/merchant',
+                    path: '/withdraw/record/cs',
                     query: {
                         id: row.id,
                         audit: true,
@@ -263,7 +263,7 @@
             }
         },
         created() {
-            if (this.type == 'merchant') {
+            if (this.type == 'cs') {
                 this.form.status = this.status;
                 this.form.startDate = this.queryStartDate;
                 this.form.endDate = this.queryEndDate;
