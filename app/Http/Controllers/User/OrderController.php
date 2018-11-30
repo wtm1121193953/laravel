@@ -102,6 +102,8 @@ class OrderController extends Controller
     {
         $status = request('status');
         $user = request()->get('current_user');
+        $lng = request('lng');
+        $lat = request('lat');
 
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
 
@@ -140,7 +142,7 @@ class OrderController extends Controller
             })
             ->orderByDesc('id')
             ->paginate();
-        $data->each(function ($item) use ($currentOperId) {
+        $data->each(function ($item) use ($currentOperId,$lat,$lng) {
             $item->items = OrderItem::where('order_id', $item->id)->get();
             // 判断商户是否是当前小程序关联运营中心下的商户
 //            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
@@ -150,7 +152,9 @@ class OrderController extends Controller
                 $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
                 $item->order_goods_number = DishesItem::where('dishes_id',$item->dishes_id)->sum('number');
             }else if($item->type == Order::TYPE_GROUP_BUY){
-                $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
+                $goods = Goods::withTrashed()->where('id', $item->goods_id)->first();
+                $item->goods_end_date = $goods->end_date;
+                $item->goods_price = $goods->price;
             }
 
             $item->oper_info = DataCacheService::getOperDetail($item->oper_id);//运营中心客服电话
@@ -172,6 +176,14 @@ class OrderController extends Controller
                 $item->merchant = Merchant::where('id', $item->merchant_id)->first();
                 $item->merchant_logo = $item->merchant->logo;
                 $item->signboard_name = $item->merchant->signboard_name;
+
+                if ($item->type == Order::TYPE_GROUP_BUY) {
+                    if($lng && $lat){
+                        $distance = Lbs::getDistanceOfMerchant($item->merchant->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
+                        // 格式化距离
+                        $item->merchant->distance = Utils::getFormativeDistance($distance);
+                    }
+                }
             }
             $item->deliver_price -= $item->discount_price;
         });
