@@ -186,9 +186,11 @@ class OrderController extends Controller
                 $item->signboard_name = $item->merchant->signboard_name;
             }
         });
+        $order_counts = OrderService::getUserCounts($user->id);
         return Result::success([
             'list' => $data->items(),
             'total' => $data->total(),
+            'order_counts' => $order_counts
         ]);
     }
 

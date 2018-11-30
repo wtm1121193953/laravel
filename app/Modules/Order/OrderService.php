@@ -802,4 +802,56 @@ class OrderService extends BaseService
         $text = $hours . '时' . $minutes . '分';
         return $text;
     }
+
+
+    /***
+     * 统计用户各种状态的订单
+     * @param $user_id
+     * @param int $merchantShareInMiniprogram
+     * @param int $currentOperId
+     * @return array
+     */
+    public static function getUserCounts($user_id,$merchantShareInMiniprogram = 1,$currentOperId=0)
+    {
+        $status_map = [
+            //'a' => Order::STATUS_UN_PAY, //待付款
+            'b' => Order::STATUS_UNDELIVERED,//代发货
+            'c' => Order::STATUS_DELIVERED,//待收货
+            'd' => [Order::STATUS_PAID,Order::STATUS_NOT_TAKE_BY_SELF],//待使用
+            'e' => [Order::STATUS_CLOSED,Order::STATUS_FINISHED],//已完成
+            //'f' => Order::STATUS_REFUNDED,//已退款
+        ];
+
+        foreach ($status_map as $k=>$v) {
+            //只能查询支付到平台的订单
+            $status_map[$k] = Order::where('user_id', $user_id)
+                ->where('pay_target_type',Order::PAY_TARGET_TYPE_PLATFORM)
+                ->whereNull('user_deleted_at')
+                ->where(function (Builder $query) {
+                    $query->where('type', Order::TYPE_GROUP_BUY)
+                        ->orWhere(function (Builder $query) {
+                            $query->where('type', Order::TYPE_SCAN_QRCODE_PAY)
+                                ->whereIn('status', [4, 6, 7]);
+                        })->orWhere('type', Order::TYPE_DISHES)
+                        ->orWhere('type', Order::TYPE_SUPERMARKET);
+
+                })
+                ->when($merchantShareInMiniprogram != 1, function (Builder $query) use ($currentOperId) {
+                    $query->where('oper_id', $currentOperId);
+                })
+                ->when($v, function (Builder $query) use ($v) {
+                    if (is_array($v)) {
+                        $query->whereIn('status',$v);
+                    } else {
+                        $query->where('status', $v);
+                    }
+
+                })
+                ->count();
+        }
+
+        return $status_map;
+
+
+    }
 }
