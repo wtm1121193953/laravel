@@ -10,6 +10,7 @@ namespace App\Support\Payment;
 
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\NoPermissionException;
+use App\Modules\CsOrder\CsOrderGoodService;
 use App\Modules\CsStatistics\CsStatisticsMerchantOrderService;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderPay;
@@ -107,9 +108,10 @@ class WalletPay extends PayBase
         $platform_trade_record->remark = '';
         $platform_trade_record->save();
 
-        //如果是超市商户，更新商户当月销量
+        //如果是超市商户，更新商户当月销量,商品库存
         if ($order->type == Order::TYPE_SUPERMARKET) {
             CsStatisticsMerchantOrderService::minusCsMerchantOrderNumberToday($order->merchant_id);
+            CsOrderGoodService::orderCancel($order->id);
         }
         return Result::success($orderRefund);
 

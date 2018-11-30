@@ -105,6 +105,14 @@ class CsGoodService extends BaseService
 
         $goods->status = $goods->status == CsGood::STATUS_ON?CsGood::STATUS_OFF:CsGood::STATUS_ON;
 
+        if ($goods->status == CsGood::STATUS_ON) {
+            $cs_cat = CsMerchantCategoryService::getMerchantCat($goods->cs_merchant_id,$goods->cs_platform_cat_id_level2);
+            if ($cs_cat->status == CsMerchantCategory::STATUS_OFF) {
+                throw new BaseResponseException('请先上架分类:'.$cs_cat->cs_cat_name);
+            }
+        }
+
+
         $goods->save();
 
         return $goods;
@@ -155,33 +163,4 @@ class CsGoodService extends BaseService
         return $goods;
     }
 
-    public static function getGoodsList($merchant_id,$isSaleAsc,$isPriceAsc,$firstLevelId,$secondLevelId){
-        $query = CsGood::where('cs_merchant_id',$merchant_id)
-        ->where('audit_status',2);
-        if (!empty($secondLevelId) && $secondLevelId > 0){
-            $query->where('cs_platform_cat_id_level2',$secondLevelId);
-        }
-        elseif (!empty($firstLevelId) && $secondLevelId > 0){
-            $query->where('cs_platform_cat_id_level1',$firstLevelId);
-        }
-        if (!empty($isSaleAsc)){
-            if ($isSaleAsc == '1'){
-                $query->orderBy('sale_num', 'ASC');
-            }
-            else{
-                $query->orderBy('sale_num', 'DESC');
-            }
-        }
-
-        if (!empty($isPriceAsc)){
-
-            if ($isPriceAsc == '1'){
-                $query->orderBy('market_price', 'ASC');
-            }
-            else{
-                $query->orderBy('market_price', 'DESC');
-            }
-        }
-        return $query->get();
-    }
 }
