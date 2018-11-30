@@ -53,7 +53,7 @@
                 </el-form-item>
                 <el-form-item prop="logo" label="商家logo">
                     <div v-viewer>
-                        <img :src="data.logo" alt="商家logo" style="max-width: 200px;" height="100px" />
+                        <img :src="data.logo" alt="商家logo" style="max-width: 190px;" height="190px" />
                     </div>
                 </el-form-item>
                 <el-form-item prop="desc_pic" label="商家介绍图片">

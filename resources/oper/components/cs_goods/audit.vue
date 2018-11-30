@@ -40,7 +40,7 @@
 
                     <el-form-item prop="logo" label="产品logo图">
                         <div v-viewer>
-                            <img :src="goods.logo" alt="商家logo" width="200px" height="100px" />
+                            <img :src="goods.logo" alt="商家logo" width="190px" height="190px" />
                         </div>
                     </el-form-item>
                     <el-form-item prop="detail_imgs" label="产品详情图">
