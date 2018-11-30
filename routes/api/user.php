@@ -13,7 +13,7 @@ Route::prefix('user')
 
         Route::any('wxLogin', 'WechatController@login');
         Route::any('sms/verify_code', 'SmsController@sendVerifyCode');
-
+        Route::get('settings', 'SettingController@settings');
         Route::any('navigation/index', 'NavigationController@index');
 
         Route::any('login', 'LoginController@login');

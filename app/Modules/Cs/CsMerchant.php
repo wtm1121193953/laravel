@@ -65,7 +65,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int audit_status
  * @property string audit_suggestion
  * @property string licence_pic_url
- * @property int audit_oper_id
  * @property int creator_oper_id
  * @property string service_phone
  * @property string bank_card_pic_a

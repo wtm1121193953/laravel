@@ -42,8 +42,8 @@
                 <el-col :span="12" :offset="1">
                     <el-form-item prop="audit_status" label="审核状态">
                         <span v-if="data.audit_status === 0" class="c-warning">待审核</span>
-                        <span v-else-if="data.audit_status === 1" class="c-green">审核通过:<span style="color: gray;margin-left: 10px;">{{data.audit_suggestion}}</span></span>
-                        <span v-else-if="data.audit_status === 2" class="c-danger">审核不通过:<span style="color: gray;margin-left: 10px;">{{data.audit_suggestion}}</span></span>
+                        <span v-else-if="data.audit_status === 1" class="c-green">审核通过 <span style="color: gray;margin-left: 10px;">{{data.audit_suggestion}}</span></span>
+                        <span v-else-if="data.audit_status === 2" class="c-danger">审核不通过 <span style="color: gray;margin-left: 10px;">{{data.audit_suggestion}}</span></span>
                         <span v-else-if="data.audit_status === 3" class="c-warning">重新提交审核</span>
                         <span v-else>未知 ({{data.audit_status}})</span>
                     </el-form-item>
@@ -104,7 +104,7 @@
                         </el-form-item>
                         <el-form-item prop="logo" label="商家logo">
                             <div v-viewer>
-                                <img :src="data.logo" alt="商家logo" width="200px" height="100px" />
+                                <img :src="data.logo" alt="商家logo" width="190px" height="190px" />
                             </div>
                             <!-- <preview-img :url="data.logo" width="50px" height="50px"/> -->
                         </el-form-item>
