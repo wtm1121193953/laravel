@@ -185,6 +185,7 @@ class OrderController extends Controller
                 $item->merchant_logo = $item->merchant->logo;
                 $item->signboard_name = $item->merchant->signboard_name;
             }
+            $item->deliver_price -= $item->discount_price;
         });
         $order_counts = OrderService::getUserCounts($user->id);
         return Result::success([
@@ -292,6 +293,7 @@ class OrderController extends Controller
             $detail->signboard_name = $merchant->signboard_name;
             $detail->merchant = $merchant;
         }
+        $detail->deliver_price -= $detail->discount_price;
         return Result::success($detail);
     }
 
@@ -898,6 +900,7 @@ class OrderController extends Controller
         }
 
 
+
         if(!$payType){
             return Result::success([
                 'order_no' => $order->order_no,
@@ -907,6 +910,7 @@ class OrderController extends Controller
                 'data'  =>  null
             ]);
         }
+        $order->deliver_price -= $order->discount_price;
         return $this->_returnOrder($order);
 
     }

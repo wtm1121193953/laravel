@@ -173,6 +173,7 @@ class OrderController extends Controller
                 $item->merchant_logo = $item->merchant->logo;
                 $item->signboard_name = $item->merchant->signboard_name;
             }
+            $item->deliver_price -= $item->discount_price;
         });
         $order_counts = OrderService::getUserCounts($user->id);
         return Result::success([
@@ -240,6 +241,7 @@ class OrderController extends Controller
 
         // 贡献值
         $detail->consume_quota = floor($detail->pay_price);
+        $detail->deliver_price -= $detail->discount_price;
         return Result::success($detail);
     }
 
@@ -527,7 +529,7 @@ class OrderController extends Controller
                 'data'  =>  null
             ]);
         }
-
+        $order->deliver_price -= $order->discount_price;
         return $this->_returnCsOrder($order,$order->order_no);
     }
 
@@ -882,7 +884,7 @@ class OrderController extends Controller
 
         return Result::success([
             'order_no' => $orderNo,
-            'isOperSelf' => $isOperSelf,
+            'isOperSelf' => 1,
             'sdk_config' => $sdkConfig,
             'pay_type'  =>  $order->pay_type,
             'order' =>  $order,
