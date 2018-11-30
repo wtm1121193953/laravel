@@ -46,7 +46,7 @@
                     <el-input v-model="form.summary" :autosize="{minRows: 2}" type="textarea"/>
                 </el-form-item>
 
-                <el-form-item prop="logo" label="产品logo图">
+                <el-form-item prop="logo" label="产品主图">
                     <preview-img :url="form.logo" alt="" width="200px" height="200px"/>
                     <div>图片尺寸: 750 px * 750 px</div>
                 </el-form-item>
