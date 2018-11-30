@@ -46,6 +46,9 @@ class WithdrawController extends Controller
             case 'bizer':
                 $originType = 4;
                 break;
+            case 'cs':
+                $originType = 5;
+                break;
             default:
                 $originType = null;
         }
@@ -146,6 +149,8 @@ class WithdrawController extends Controller
             $originId = $operId;
         } elseif ($originType == WalletWithdraw::ORIGIN_TYPE_BIZER) {
             $originId = $bizerId;
+        } elseif ($originType == WalletWithdraw::ORIGIN_TYPE_CS) {
+            $originId = $merchantId;
         }
 
         $param = compact('originType', 'originId', 'withdrawNo', 'bankCardType', 'start', 'end', 'status', 'userMobile', 'merchantName', 'operName', 'bizerMobile', 'batchId');

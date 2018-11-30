@@ -606,7 +606,7 @@ class CsMerchantService extends BaseService {
      * 根据商户名称获取商户某个字段的数组
      * @param $params
      * @param $field
-     * @return Collection
+     * @return Collection|\Illuminate\Support\Collection
      */
     public static function getMerchantColumnArrayByParams($params, $field)
     {

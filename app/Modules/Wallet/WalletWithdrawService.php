@@ -8,6 +8,7 @@ use App\Exceptions\BaseResponseException;
 use App\Modules\Bizer\Bizer;
 use App\Modules\Bizer\BizerService;
 use App\Modules\Cs\CsMerchant;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\Oper;
@@ -275,6 +276,17 @@ class WalletWithdrawService extends BaseService
         }
         if ($originType == WalletWithdraw::ORIGIN_TYPE_BIZER && $bizerMobile) {
             $originIds = BizerService::getBizerColumnArrayByParams(['bizerMobile' => $bizerMobile], 'id');
+        }
+        if ($originType == WalletWithdraw::ORIGIN_TYPE_CS && $merchantName && $operName) {
+            $originIds1 = CsMerchantService::getMerchantColumnArrayByParams(compact('merchantName'), 'id')->toArray();
+            $operIds = OperService::getOperColumnArrayByOperName($operName, 'id');
+            $originIds2 = CsMerchantService::getMerchantColumnArrayByParams(compact('operIds'), 'id')->toArray();
+            $originIds = array_intersect($originIds1, $originIds2);
+        } elseif ($originType == WalletWithdraw::ORIGIN_TYPE_CS && $merchantName) {
+            $originIds = CsMerchantService::getMerchantColumnArrayByParams(compact('merchantName'), 'id');
+        } elseif ($originType == WalletWithdraw::ORIGIN_TYPE_CS && $operName) {
+            $operIds = OperService::getOperColumnArrayByOperName($operName, 'id');
+            $originIds = CsMerchantService::getMerchantColumnArrayByParams(compact('operIds'), 'id');
         }
         if(isset($originIds)){
             $query->whereIn('origin_id', $originIds);

@@ -6,6 +6,7 @@
             <el-tab-pane label="用户提现汇总" name="user"></el-tab-pane>
             <el-tab-pane label="运营中心提现汇总" name="oper"></el-tab-pane>
             <el-tab-pane label="业务员提现汇总" name="bizer"></el-tab-pane>
+            <el-tab-pane label="超市提现汇总" name="cs"></el-tab-pane>
         </el-tabs>
         <el-col class="m-t-30 search-bar">
 
@@ -130,7 +131,8 @@
                     'merchant': '商户提现汇总',
                     'user': '用户提现汇总',
                     'oper': '运营中心提现汇总',
-                    'bizer': '业务员提现汇总'
+                    'bizer': '业务员提现汇总',
+                    'cs': '超市提现汇总',
                 }[this.originType]
             },
             getTimeTypeText(){
