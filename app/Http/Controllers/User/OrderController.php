@@ -219,6 +219,8 @@ class OrderController extends Controller
         // 单品订单
         if ($detail->type == Order::TYPE_DISHES) {
             $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
+        } elseif ($detail->type == Order::TYPE_SUPERMARKET) {
+            $detail->cs_items = CsOrderGood::where('order_id', $detail->id)->get();
         }
 
         if($lng && $lat){
