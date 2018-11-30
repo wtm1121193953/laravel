@@ -17,6 +17,8 @@ use App\ResultCode;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
 
 class CsMerchantAuditService extends BaseService {
 
@@ -149,9 +151,11 @@ class CsMerchantAuditService extends BaseService {
         }
 
         $saveColumn = json_decode($merchantAudit->data_after);
+        $csMerchantColumn = Schema::getColumnListing('cs_merchants');
         $unReplaceColumn = ['id','status'];
         foreach ($saveColumn as $k=>$v){
-            if(in_array($k,$unReplaceColumn)){
+            // 如果为过滤字段或者字段不在数据表内，则退出
+            if(in_array($k,$unReplaceColumn)||(!in_array($k,$csMerchantColumn))){
                 continue;
             }
             $merchant->$k = $v;

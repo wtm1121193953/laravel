@@ -42,7 +42,7 @@
                     <el-input-number v-model="form.stock" :min="0" :max="100000"/>
                 </el-form-item>
 
-                <el-form-item prop="logo" label="产品logo图">
+                <el-form-item prop="logo" label="产品主图">
                     <image-upload :width="750" :height="750" v-model="form.logo" :limit="1"/>
                     <div>图片尺寸: 750 px * 750 px</div>
                 </el-form-item>

@@ -219,6 +219,14 @@ class OrderController extends Controller
         // 单品订单
         if ($detail->type == Order::TYPE_DISHES) {
             $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
+        } elseif ($detail->type == Order::TYPE_SUPERMARKET) {
+            $csItems = CsOrderGood::where('order_id', $detail->id)->get();
+            if ($csItems->isNotEmpty()) {
+                foreach ($csItems as &$item) {
+                    $item->logo = CsGood::where('id', $item->cs_goods_id)->value('logo');
+                }
+            }
+            $detail->cs_items = $csItems;
         }
 
         if($lng && $lat){
@@ -402,6 +410,11 @@ class OrderController extends Controller
         if (empty($merchant)) {
             throw new BaseResponseException('该超市不存在，请选择其他超市下单', ResultCode::CS_MERCHANT_NOT_EXIST);
         }
+
+        if ($merchant->status != CsMerchant::STATUS_ON || $merchant->audit_status != CsMerchant::AUDIT_STATUS_SUCCESS) {
+            throw new BaseResponseException('该超市状态异常，请选择其他超市下单', ResultCode::CS_MERCHANT_NOT_EXIST);
+        }
+        
         if (is_string($goodsList)) {
             $goodsList = json_decode($goodsList, true);
         }
