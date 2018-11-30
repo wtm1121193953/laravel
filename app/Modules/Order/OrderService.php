@@ -509,7 +509,7 @@ class OrderService extends BaseService
                 $userId = $order->user_id;
                 if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
                     $merchantId = $order->merchant_id;
-                    if ($order->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET && $order->type == Order::TYPE_SUPERMARKET) {
+                    if ($order->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET) {
                         $merchant = CsMerchantService::getById($merchantId);
                         $originType = InviteChannel::ORIGIN_TYPE_CS_MERCHANT;
                     } else {
