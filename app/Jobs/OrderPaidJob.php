@@ -55,9 +55,6 @@ class OrderPaidJob implements ShouldQueue
         // 更新用户的下单数
         $this->updateUserOrderCount();
 
-        // 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
-        $this->handleMerchantInvite();
-
     }
 
     /**
@@ -69,32 +66,6 @@ class OrderPaidJob implements ShouldQueue
         $user = UserService::getUserById($order->user_id);
         $user->order_count = OrderService::getOrderCountByUserId($user->id);
         $user->save();
-    }
-
-    /**
-     * 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
-     * @throws \Exception
-     */
-    private function handleMerchantInvite()
-    {
-        $order = $this->order;
-        // 支付成功, 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
-        $userId = $order->user_id;
-        if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
-            $merchantId = $order->merchant_id;
-            if ($order->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET && $order->type == Order::TYPE_SUPERMARKET) {
-                $merchant = CsMerchantService::getById($merchantId);
-                $originType = InviteChannel::ORIGIN_TYPE_CS_MERCHANT;
-            } else {
-                $merchant = MerchantService::getById($merchantId);
-                $originType = InviteChannel::ORIGIN_TYPE_MERCHANT;
-            }
-            if(empty($merchant)){
-                throw new DataNotFoundException('商户信息不存在');
-            }
-            $inviteChannel = InviteChannelService::getByOriginInfo($merchantId, $originType, $merchant->oper_id);
-            InviteUserService::bindInviter($userId, $inviteChannel);
-        }
     }
 
 }

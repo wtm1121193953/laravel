@@ -11,11 +11,13 @@ namespace App\Modules\Order;
 
 use App\BaseService;
 use App\Exceptions\BaseResponseException;
+use App\Exceptions\DataNotFoundException;
 use App\Exceptions\ParamInvalidException;
 use App\Jobs\Cs\DeliveredOrderAutoFinishedJob;
 use App\Jobs\OrderPaidJob;
 use App\Modules\Cs\CsGood;
 use App\Modules\Cs\CsMerchant;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\CsStatistics\CsStatisticsMerchantOrderService;
 use App\Modules\Dishes\DishesGoods;
 use App\Jobs\OrderFinishedJob;
@@ -23,9 +25,12 @@ use App\Modules\Dishes\DishesItem;
 use App\Modules\FeeSplitting\FeeSplittingRecord;
 use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Goods\Goods;
+use App\Modules\Invite\InviteChannel;
+use App\Modules\Invite\InviteChannelService;
 use App\Modules\Invite\InviteUserRecord;
 use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
+use App\Modules\Merchant\MerchantService;
 use App\Modules\Payment\Payment;
 use App\Modules\Platform\PlatformTradeRecord;
 use App\Modules\Sms\SmsVerifyCodeService;
@@ -497,6 +502,32 @@ class OrderService extends BaseService
                 Log::error('订单支付成功回调操作失败,失败信息:'.$e->getMessage());
                 return false;
             }
+
+            try {
+                // 支付成功, 如果用户没有被邀请过, 将用户的邀请人设置为当前商户
+                // 需要同步执行, 以防止执行订单完成任务的分润时, 商户还没绑定为用户的邀请人, 同时, 该操作执行失败不影响订单支付完成状态
+                $userId = $order->user_id;
+                if( empty( InviteUserRecord::where('user_id', $userId)->first() ) ){
+                    $merchantId = $order->merchant_id;
+                    if ($order->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET && $order->type == Order::TYPE_SUPERMARKET) {
+                        $merchant = CsMerchantService::getById($merchantId);
+                        $originType = InviteChannel::ORIGIN_TYPE_CS_MERCHANT;
+                    } else {
+                        $merchant = MerchantService::getById($merchantId);
+                        $originType = InviteChannel::ORIGIN_TYPE_MERCHANT;
+                    }
+                    if(empty($merchant)){
+                        throw new DataNotFoundException('商户信息不存在');
+                    }
+                    $inviteChannel = InviteChannelService::getByOriginInfo($merchantId, $originType, $merchant->oper_id);
+                    InviteUserService::bindInviter($userId, $inviteChannel);
+                }
+
+            }catch (\Exception $e){
+                // 此操作不影响流程, 捕捉异常之后不做其他操作
+                Log::error('订单支付完成后, 绑定商户为用户的邀请人操作失败', compact('order', 'merchant'));
+            }
+
             // 提交事务之后再派发任务, 防止任务处理时订单状态还未修改
             OrderPaidJob::dispatch($order);
 
