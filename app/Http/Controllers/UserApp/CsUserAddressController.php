@@ -74,13 +74,13 @@ class CsUserAddressController extends Controller
         ]);
         $params = [
             'id' => request('id'),
-            'contacts' => request('contacts'),
-            'contact_phone' => request('contact_phone'),
-            'province_id' => request('province_id'),
-            'city_id' => request('city_id'),
-            'area_id' => request('area_id'),
-            'address' => request('address'),
-            'is_default' => request('is_default'),
+            'contacts' => request('contacts',''),
+            'contact_phone' => request('contact_phone',''),
+            'province_id' => request('province_id',0),
+            'city_id' => request('city_id',0),
+            'area_id' => request('area_id',0),
+            'address' => request('address',''),
+            'is_default' => request('is_default',0),
 
         ];
 
