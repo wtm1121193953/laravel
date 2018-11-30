@@ -513,7 +513,7 @@ class OrderController extends Controller
             ]);
         }
 
-        return $this->_returnOrder($order ,$merchant->oper_id,$merchant,$order->order_no);
+        return $this->_returnCsOrder($order,$order->order_no);
     }
 
     /**
@@ -799,6 +799,63 @@ class OrderController extends Controller
                     $message,[
                     'order_no' => $orderNo,
                     'isOperSelf' => $isOperSelf,
+                    'sdk_config' => $sdkConfig,
+                    'pay_type'  =>  $order->pay_type,
+                    'order' =>  $order,
+                    'anther_pay'  =>  $data
+                ]);
+            }
+
+        }
+
+        return Result::success([
+            'order_no' => $orderNo,
+            'isOperSelf' => $isOperSelf,
+            'sdk_config' => $sdkConfig,
+            'pay_type'  =>  $order->pay_type,
+            'order' =>  $order,
+            'anther_pay'  =>  $data
+        ]);
+    }
+
+    /**
+     * 处理超市订单返回
+     * @param $order
+     * @param $orderNo
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
+     */
+    private function _returnCsOrder($order,$orderNo){
+        $sdkConfig = null;
+        $data = null;
+        $payment = PaymentService::getDetailById($order->pay_type);
+        if($payment->type==Payment::TYPE_WECHAT){
+            // 如果为微信支付 走以下逻辑
+            // 如果为微信支付,则返回支付参数
+            $payApp = WechatService::getWechatPayAppForPlatform();
+            $sdkConfig = $this->_payByWechat($order,$payApp);
+        }else{
+            $paymentClassName = '\\App\\Support\\Payment\\'.$payment->class_name;
+            if(!class_exists($paymentClassName)){
+                throw new BaseResponseException('无法使用该支付方式');
+            }
+            $paymentClass = new $paymentClassName();
+            try{
+                $user = request()->get('current_user');
+                $data =  $paymentClass->buy($user, $order);
+            }catch (\Exception $e){
+                if($e instanceof ValidationException){
+                    $message = implode(',',array_map(function(&$value){
+                        return implode('|', $value);
+                    }, $e->errors()));;
+                }else{
+                    $message = $e->getMessage();
+                }
+                return Result::error(
+                    ResultCode::PARAMS_INVALID,
+                    $message,[
+                    'order_no' => $orderNo,
+                    'isOperSelf' => 1,
                     'sdk_config' => $sdkConfig,
                     'pay_type'  =>  $order->pay_type,
                     'order' =>  $order,
