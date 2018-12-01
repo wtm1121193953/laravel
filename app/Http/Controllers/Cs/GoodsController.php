@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Cs;
 
 
+use App\DataCacheService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\Modules\Cs\CsGood;
@@ -48,11 +49,19 @@ class GoodsController extends BaseController
         $cs_merchant_id = $this->_cs_merchant_id;
         $rt = CsMerchantCategoryService::getSubCat($cs_merchant_id,$parent_id);
 
+        $useful_cat = DataCacheService::getPlatformCatsUseful();
         $data = [];
         if ($rt) {
             foreach ($rt as $k=>$v) {
-                $d['label'] = $v;
-                $d['value'] = $k;
+                $d = [];
+                if (empty($useful_cat[$k])) {
+                    $d['label'] = $v . '（平台已禁用）';
+                    $d['value'] = $k;
+                    $d['disabled'] = true;
+                } else {
+                    $d['label'] = $v;
+                    $d['value'] = $k;
+                }
                 $data[] = $d;
             }
         }
