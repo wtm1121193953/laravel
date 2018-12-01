@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Cs;
 
 use App\Http\Controllers\Controller;
 use App\Imports\BatchDelivery;
+use App\Modules\Cs\CsMerchant;
 use App\Modules\Order\Order;
 use App\Modules\Order\OrderService;
 use App\Result;
@@ -84,18 +85,32 @@ class OrdersController extends Controller
         }
         fputcsv($fp, $title);
 
-        $query->chunk(1000, function ($data) use ($fp) {
+        $merchantIds = $query->pluck('merchant_id');
+
+        $merchants = CsMerchant::whereIn('id', $merchantIds->all())->get(['id', 'name'])->keyBy('id');
+
+
+        $query->chunk(1000, function ($data) use ($fp,$merchants) {
             foreach ($data as $key => $value) {
                 $item = [];
 
                 $item['pay_time'] = $value['pay_time'];
                 $item['order_no'] = $value['order_no'];
                 if (in_array($value['status'], [Order::STATUS_UNDELIVERED, Order::STATUS_NOT_TAKE_BY_SELF, Order::STATUS_DELIVERED])) {
-                    $item['take_time'] = date('H时i分', time() - strtotime($value['pay_time']));
+                    $time_use = time() - strtotime($value['pay_time']);
+                    $h = intval($time_use/3600);
+                    $m = intval(($time_use - $h * 3600)/60);
+                    $item['take_time'] = "{$h}时{$m}分";
                 } elseif ($value['status'] == Order::STATUS_FINISHED) {
-                    $item['take_time'] = date('H时i分', time() - strtotime($value['pay_time']));
+                    $time_use = time() - strtotime($value['pay_time']);
+                    $h = intval($time_use/3600);
+                    $m = intval(($time_use - $h * 3600)/60);
+                    $item['take_time'] = "{$h}时{$m}分";
                 } elseif ($value['status'] == Order::STATUS_REFUNDED) {
-                    $item['take_time'] = date('H时i分', time() - strtotime($value['pay_time']));
+                    $time_use = time() - strtotime($value['pay_time']);
+                    $h = intval($time_use/3600);
+                    $m = intval(($time_use - $h * 3600)/60);
+                    $item['take_time'] = "{$h}时{$m}分";
                 }
                 $item['type'] = Order::getTypeText($value['type']);
                 $item['goods_name'] = Order::getGoodsNameText($value['type'], $value['csOrderGoods'], $value['goods_name']);
@@ -103,7 +118,7 @@ class OrdersController extends Controller
                 $item['notify_mobile'] = $value['notify_mobile'];
                 $item['status'] = Order::getStatusText($value['status']);
                 $item['deliver_type'] = Order::getDeliverTypeText($value['deliver_type']);
-                $item['merchant_name'] = $value['merchant_name'];
+                $item['merchant_name'] = $merchants[$value['merchant_id']]->name;
 
                 foreach ($item as $k => $v) {
                     $item[$k] = iconv('UTF-8', 'GBK', $v);
