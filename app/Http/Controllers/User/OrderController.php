@@ -503,6 +503,10 @@ class OrderController extends Controller
             $order->express_address = $address ? json_encode($address) : $address;
 
             $order->merchant_type = Order::MERCHANT_TYPE_SUPERMARKET;
+            $order->delivery_start_price = $csMerchantSetting->delivery_start_price;
+            $order->delivery_charges = $csMerchantSetting->delivery_charges;
+            $order->delivery_free_start = $csMerchantSetting->delivery_free_start;
+            $order->delivery_free_order_amount = $csMerchantSetting->delivery_free_order_amount;
             if ($order->save()) {
                 foreach ($goodsList as $item) {
                     $good = CsGood::findOrFail($item['id']);
