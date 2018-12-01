@@ -87,7 +87,7 @@ class PaymentService extends BaseService
         foreach ($whereArr as $k => $v){
             $query = $query->where($k,$v);
         }
-        $list = $query->orderBy('id','desc')->get();
+        $list = $query->orderBy('id','asc')->get();
         foreach ($list as $k => $v){
             // ID 4为钱包支付
             if(($v['id']==4) && $wallet['status']==Wallet::STATUS_OFF){
