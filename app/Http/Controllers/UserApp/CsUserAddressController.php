@@ -26,7 +26,7 @@ class CsUserAddressController extends Controller
     public function addUserAddresses()
     {
         $this->validate(request(), [
-            'contact_phone' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}/',
+            'contact_phone' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}$/',
             'contacts' => 'required|min:1|max:30|regex:/^[\x7f-\xff]+$/',
         ]);
 
@@ -69,7 +69,7 @@ class CsUserAddressController extends Controller
     {
         $this->validate(request(), [
             'id' => 'required',
-            'contact_phone' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}/',
+            'contact_phone' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}$/',
             'contacts' => 'required|min:1|max:30|regex:/^[\x7f-\xff]+$/',
         ]);
         $params = [
