@@ -12,8 +12,7 @@
                                     v-for="item in cs_platform_cat_id_level1"
                                     :key="item.value"
                                     :label="item.label"
-                                    :value="item.value"
-                                    :disabled="item.disabled">
+                                    :value="item.value">
                             </el-option>
                         </el-select>
                     </template>
@@ -27,8 +26,7 @@
                                     v-for="item in cs_platform_cat_id_level2"
                                     :key="item.value"
                                     :label="item.label"
-                                    :value="item.value"
-                                    :disabled="item.disabled">
+                                    :value="item.value">
                             </el-option>
                         </el-select>
                     </template>
