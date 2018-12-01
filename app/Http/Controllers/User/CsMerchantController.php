@@ -13,6 +13,7 @@ use App\DataCacheService;
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsMerchantService;
+use App\Modules\Cs\CsMerchantSettingService;
 use App\Result;
 
 class CsMerchantController extends Controller
@@ -95,6 +96,20 @@ class CsMerchantController extends Controller
         $detail = CsMerchantService::getById($merchant_id);
         if (empty($detail)) {
             throw new BaseResponseException('该超市不存在');
+        }
+
+        // 补充配送信息
+        $deliverSetting = CsMerchantSettingService::getDeliverSetting($detail->id);
+        if($deliverSetting){
+            $detail->delivery_start_price = $deliverSetting->delivery_start_price;
+            $detail->delivery_charges = $deliverSetting->delivery_charges;
+            $detail->delivery_free_start = $deliverSetting->delivery_free_start;
+            $detail->delivery_free_order_amount = $deliverSetting->delivery_free_order_amount;
+        }
+        $detail->city_limit = config('common.city_limit');
+        $detail->show_city_limit = config('common.show_city_limit');
+        if(!isset($detail->distance)){
+            $detail->distance = 0;//没有经纬度时,设置为0
         }
 
         return Result::success($detail);
