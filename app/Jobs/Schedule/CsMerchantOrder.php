@@ -2,6 +2,7 @@
 
 namespace App\Jobs\Schedule;
 
+use App\Modules\CsStatistics\CsStatisticsMerchantOrderService;
 use App\Modules\Order\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
@@ -45,16 +46,21 @@ class CsMerchantOrder implements ShouldQueue
         $start_date = date('Y-m-d',time()-30*86400);
         $end_date = date('Y-m-d');
 
-        $status = [Order::STATUS_FINISHED,Order::STATUS_DELIVERED,Order::STATUS_NOT_TAKE_BY_SELF];
+        $status = [Order::STATUS_FINISHED];
         $status = implode(',',$status);
 
-        $sql = "SELECT merchant_id,count(*) from orders where created_at<'$end_date' and created_at>'{$start_date}' and merchant_type=2 and `status` in ({$status})
+        $sql = "SELECT merchant_id,count(*) c from orders where created_at<'$end_date' and created_at>'{$start_date}' and merchant_type=2 and `status` in ({$status})
 GROUP BY merchant_id
         ";
 
-        echo  $sql;exit;
-        $rs = DB::query($sql);
-        print_r($rs);exit;
+        $rs = DB::select($sql);
+        if ($rs) {
+            foreach ($rs as $v) {
+                $row = CsStatisticsMerchantOrderService::createMerchantData($v->merchant_id);
+                $row->order_number_30d = $v->c;
+                $row->save();
+            }
+        }
 
 
         Log::info('超市商户最近30天订单统计结束');
