@@ -14,6 +14,7 @@ use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsMerchantService;
 use App\Modules\Cs\CsMerchantSettingService;
+use App\Modules\Setting\SettingService;
 use App\Result;
 
 class CsMerchantController extends Controller
@@ -106,8 +107,8 @@ class CsMerchantController extends Controller
             $detail->delivery_free_start = $deliverSetting->delivery_free_start;
             $detail->delivery_free_order_amount = $deliverSetting->delivery_free_order_amount;
         }
-        $detail->city_limit = config('common.city_limit');
-        $detail->show_city_limit = config('common.show_city_limit');
+        $detail->city_limit = SettingService::getValueByKey('supermarket_city_limit');
+        $detail->show_city_limit = SettingService::getValueByKey('supermarket_show_city_limit');
         if(!isset($detail->distance)){
             $detail->distance = 0;//没有经纬度时,设置为0
         }

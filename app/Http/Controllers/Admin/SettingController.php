@@ -54,8 +54,16 @@ class SettingController extends Controller
             'fee_splitting_ratio_to_parent_of_merchant_level_1',
             'fee_splitting_ratio_to_parent_of_merchant_level_2',
             'fee_splitting_ratio_to_parent_of_merchant_level_3',
-            'fee_splitting_ratio_to_parent_of_oper'
+            'fee_splitting_ratio_to_parent_of_oper',
+            'supermarket_on',
+            'supermarket_city_limit',
+            'supermarket_show_city_limit',
+            'supermarket_index_cs_banner_on'
         );
+        $list['supermarket_on'] = isset($list['supermarket_on'])?intval($list['supermarket_on']):0;
+        $list['supermarket_city_limit'] = isset($list['supermarket_city_limit'])?intval($list['supermarket_city_limit']):0;
+        $list['supermarket_show_city_limit'] = isset($list['supermarket_show_city_limit'])?intval($list['supermarket_show_city_limit']):0;
+        $list['supermarket_index_cs_banner_on'] = isset($list['supermarket_index_cs_banner_on'])?intval($list['supermarket_index_cs_banner_on']):0;
         return Result::success([
             'list' => $list
         ]);
@@ -74,6 +82,10 @@ class SettingController extends Controller
             'fee_splitting_ratio_to_parent_of_merchant_level_2',
             'fee_splitting_ratio_to_parent_of_merchant_level_3',
             'fee_splitting_ratio_to_parent_of_oper',
+            'supermarket_on',
+            'supermarket_city_limit',
+            'supermarket_show_city_limit',
+            'supermarket_index_cs_banner_on'
         ]);
         foreach ($data as $key => $value) {
             SettingService::set($key, $value);

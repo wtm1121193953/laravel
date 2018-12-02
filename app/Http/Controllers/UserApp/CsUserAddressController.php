@@ -12,6 +12,7 @@ use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsMerchantSettingService;
 use App\Modules\Cs\CsUserAddressService;
+use App\Modules\Setting\SettingService;
 use App\Result;
 
 class CsUserAddressController extends Controller
@@ -57,7 +58,7 @@ class CsUserAddressController extends Controller
             $isTestAddress = request('is_test_radius');
         }
         $cityId = request('city_id');
-        $cityLimit = config('common.city_limit');
+        $cityLimit = SettingService::getValueByKey('supermarket_city_limit');
         $query = CsUserAddressService::getList($isTestAddress, $cityId, $cityLimit);
         return Result::success($query);
     }
@@ -107,8 +108,8 @@ class CsUserAddressController extends Controller
      */
     public function getDeliverySetting()
     {
-        $cityLimit = config('common.city_limit');
-        $showCityLimit = config('common.show_city_limit');
+        $cityLimit = SettingService::getValueByKey('supermarket_city_limit');
+        $showCityLimit = SettingService::getValueByKey('supermarket_show_city_limit');
 
         return Result::success([
             'city_limit' => $cityLimit,

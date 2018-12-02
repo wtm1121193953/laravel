@@ -167,8 +167,8 @@ class OrderController extends Controller
                 $csMerchant->delivery_charges = $csMerchantSetting->delivery_charges;
                 $csMerchant->delivery_free_start = $csMerchantSetting->delivery_free_start;
                 $csMerchant->delivery_free_order_amount = $csMerchantSetting->delivery_free_order_amount;
-                $csMerchant->city_limit = config('common.city_limit');
-                $csMerchant->show_city_limit = config('common.show_city_limit');
+                $csMerchant->city_limit = SettingService::getValueByKey('supermarket_city_limit');
+                $csMerchant->show_city_limit = SettingService::getValueByKey('supermarket_show_city_limit');
                 $item->cs_merchant = $csMerchant;
                 $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
                 $item->order_goods = CsOrderGood::where('order_id',$item->id)->with('cs_goods:id,logo')->get();
