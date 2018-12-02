@@ -149,7 +149,9 @@ class OrderController extends Controller
 
             $item->goods_end_date = '';
             if ($item->type == Order::TYPE_DISHES) {
-                $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
+                $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)
+                    ->with('dishes_goods:id,dishes_category_id')
+                    ->get();
                 $item->order_goods_number = DishesItem::where('dishes_id',$item->dishes_id)->sum('number');
             }else if($item->type == Order::TYPE_GROUP_BUY){
                 $goods = Goods::withTrashed()->where('id', $item->goods_id)->first();
@@ -446,9 +448,9 @@ class OrderController extends Controller
         $merchant_oper = Oper::find($merchant->oper_id);
 
         $csMerchantSetting = CsMerchantSettingService::getDeliverSetting($merchantId);
-        if ($csMerchantSetting->delivery_free_order_amount <= 0) {
-            throw new BaseResponseException('商家配送费有误');
-        }
+//        if ($csMerchantSetting->delivery_free_order_amount <= 0) {
+//            throw new BaseResponseException('商家配送费有误');
+//        }
 
         // 商家配送必须达到 起送价
         if (($deliveryType == Order::DELIVERY_MERCHANT_POST) && ($goodsPrice < $csMerchantSetting->delivery_start_price)  ) {

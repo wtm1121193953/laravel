@@ -22,4 +22,7 @@ use App\BaseModel;
 class DishesItem extends BaseModel
 {
     //
+    public function dishes_goods() {
+        return $this->belongsTo(DishesGoods::class);
+    }
 }
