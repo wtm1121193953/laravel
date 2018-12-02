@@ -48,7 +48,7 @@
                         :inactive-value="0"
                 >
                 </el-switch>
-                <span class="tips">商户分享的用户消费，平台奖励商户的</span>
+                <span class="tips">是否限制只能选择同城地址</span>
             </el-form-item>
             <el-form-item label="是否显示只能选择同城的文字" prop="supermarket_show_city_limit">
                 <el-switch
