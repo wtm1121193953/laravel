@@ -43,9 +43,6 @@ class CsMerchantOrder implements ShouldQueue
         $end_date = date('Y-m-d');
         Log::info('超市商户最近30天订单统计'.$start_date.'到' . $end_date);
 
-        $start_date = date('Y-m-d',time()-30*86400);
-        $end_date = date('Y-m-d');
-
         $status = [Order::STATUS_FINISHED];
         $status = implode(',',$status);
 
