@@ -127,7 +127,7 @@ class WalletExport implements FromQuery, WithMapping, WithHeadings
             $row->bank_card_type = $bizerBank->bank_card_type ?? '';
         } elseif ($row->origin_type == Wallet::ORIGIN_TYPE_CS) {
             $merchant = CsMerchantService::getById($row->origin_id);
-            $row->merchant_name = $merchant->name;
+            $row->merchant_name = isset($merchant->name) ? $merchant->name : '';
             $row->oper_name = OperService::getNameById($merchant->oper_id);
             $row->bank_open_name = $merchant->bank_open_name;
             $row->bank_card_no = $merchant->bank_card_no;

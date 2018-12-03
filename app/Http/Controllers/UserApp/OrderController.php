@@ -273,6 +273,9 @@ class OrderController extends Controller
 
         if ($detail->status == Order::STATUS_DELIVERED) {//如果是已发货显示收货剩余时间
             $detail->confirm_left_time = strtotime($detail->deliver_time) + 7 * 86400 - time();
+            if ($detail->confirm_left_time< 0 ) {
+                $detail->confirm_left_time = 0;
+            }
         } else {
             $detail->confirm_left_time = 999999999;
         }
