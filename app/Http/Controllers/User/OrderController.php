@@ -495,8 +495,8 @@ class OrderController extends Controller
             $order->type = Order::TYPE_SUPERMARKET;
             $order->notify_mobile = $user->mobile;
             $order->merchant_id = $merchant->id;
-            $order->merchant_name = $merchant->name ?? '';
-            $order->goods_name = $merchant->name ?? '';
+            $order->merchant_name = $merchant->signboard_name ?? '';
+            $order->goods_name = $merchant->signboard_name ?? '';
             $order->dishes_id = 0;
             $order->status = Order::STATUS_UN_PAY;
             $order->deliver_price = $deliverPrice;

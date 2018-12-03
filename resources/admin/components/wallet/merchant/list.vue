@@ -32,7 +32,7 @@
             </el-table-column>
             <el-table-column prop="balance" label="可提现金额"></el-table-column>
             <el-table-column prop="freeze_balance" label="冻结金额"></el-table-column>
-            <el-table-column prop="bank_card_no" label="银行账号">
+            <el-table-column prop="bank_card_no" label="银行账号" width="200px">
                 <template slot-scope="scope">
                     <span v-if="scope.row.bank_card_no">
                         {{scope.row.bank_card_no.substr(0,5) + '****' + scope.row.bank_card_no.substr(-4,4)}}
@@ -43,7 +43,7 @@
             </el-table-column>
             <el-table-column prop="bank_open_name" label="账户名"></el-table-column>
             <el-table-column prop="sub_bank_name" label="开户行"></el-table-column>
-            <el-table-column prop="oper_name" label="运营中心"></el-table-column>
+            <el-table-column prop="oper_name" label="运营中心" width="200px"></el-table-column>
             <el-table-column prop="status" label="账户状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status == 1">正常</span>

@@ -73,8 +73,8 @@
                     <span>{{ {1: '周结', 2: '半月结', 3: 'T+1(自动)', 4: '半年结', 5: '年结', 6: 'T+1(人工)', 7: '未知',}[scope.row.settlement_cycle_type] }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="created_at" label="结算单生成时间"/>
-            <el-table-column prop="date" label="结算日期">
+            <el-table-column prop="created_at" label="结算单生成时间" width="150px"/>
+            <el-table-column prop="date" label="结算日期" width="200px">
                 <template slot-scope="scope">
                     {{scope.row.start_date}} 至 {{scope.row.end_date}}
                 </template>

@@ -34,7 +34,7 @@
                     <span v-else>其他({{scope.row.origin_type}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="created_at" label="添加时间"/>
+            <el-table-column prop="created_at" label="添加时间" width="200px"/>
             <el-table-column prop="invite_user_records_count" label="注册人数">
                 <template slot-scope="scope">
                     <el-button type="text" @click="inviteRecords(scope.row)">

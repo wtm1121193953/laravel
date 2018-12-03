@@ -29,7 +29,7 @@ class GoodsController extends BaseController
         $params['cs_platform_cat_id_level1'] = request('cs_platform_cat_id_level1','');
         $params['cs_platform_cat_id_level2'] = request('cs_platform_cat_id_level2','');
         $params['cs_merchant_id'] = $this->_cs_merchant_id;
-        $params['sort'] = 1;
+        $params['sort'] = 2;
         $data = CsGoodService::getList($params);
 
         return Result::success([
