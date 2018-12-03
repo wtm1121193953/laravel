@@ -22,8 +22,6 @@ use App\Modules\CsStatistics\CsStatisticsMerchantOrderService;
 use App\Modules\Dishes\DishesGoods;
 use App\Jobs\OrderFinishedJob;
 use App\Modules\Dishes\DishesItem;
-use App\Modules\FeeSplitting\FeeSplittingRecord;
-use App\Modules\FeeSplitting\FeeSplittingService;
 use App\Modules\Goods\Goods;
 use App\Modules\Invite\InviteChannel;
 use App\Modules\Invite\InviteChannelService;
@@ -35,6 +33,7 @@ use App\Modules\Payment\Payment;
 use App\Modules\Platform\PlatformTradeRecord;
 use App\Modules\Sms\SmsVerifyCodeService;
 use App\Modules\User\User;
+use App\Modules\Sms\SmsService;
 use App\Modules\Oper\Oper;
 use App\Modules\UserCredit\UserCreditRecord;
 use App\Result;
@@ -398,7 +397,7 @@ class OrderService extends BaseService
      * @param $transactionId
      * @param $totalFee
      * @param int $payType
-     * @param string $payTime 支付时间
+     * @param Carbon|string $payTime 支付时间
      * @return bool
      */
     public static function paySuccess($orderNo, $transactionId, $totalFee, $payType = Order::PAY_TYPE_WECHAT, $payTime='')
