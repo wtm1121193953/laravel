@@ -68,7 +68,14 @@
         <el-table :data="list" stripe>
             <el-table-column prop="pay_time" width="150" label="支付时间"/>
             <el-table-column prop="order_no" width="200" label="订单号"/>
-            <el-table-column prop="take_time" label="历时"/>
+            <el-table-column prop="take_time" label="历时">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.take_time.split('时')[0] >= 24 && scope.row.status == 8">
+                        <span style="color: red;">{{scope.row.take_time}}</span>
+                    </span>
+                    <span v-else>{{scope.row.take_time}}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="type" width="80" label="订单类型">
                 <template slot-scope="scope">
                     <span v-if="scope.row.type == 1">团购订单</span>
