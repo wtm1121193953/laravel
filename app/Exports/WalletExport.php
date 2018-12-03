@@ -4,6 +4,7 @@ namespace App\Exports;
 
 
 use App\Modules\Bizer\BizerService;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperService;
 use App\Modules\User\UserService;
@@ -47,7 +48,7 @@ class WalletExport implements FromQuery, WithMapping, WithHeadings
 //                '开户行',
                 '账户状态',
             ];
-        } elseif ($this->originType == Wallet::ORIGIN_TYPE_MERCHANT) {
+        } elseif ($this->originType == Wallet::ORIGIN_TYPE_MERCHANT || $this->originType == Wallet::ORIGIN_TYPE_CS) {
             $array = [
                 '商户名称',
                 '商户ID',
@@ -124,6 +125,14 @@ class WalletExport implements FromQuery, WithMapping, WithHeadings
             $row->bank_card_no = $bizerBank->bank_card_no ?? '';
             $row->bank_name = $bizerBank->bank_name ?? '';
             $row->bank_card_type = $bizerBank->bank_card_type ?? '';
+        } elseif ($row->origin_type == Wallet::ORIGIN_TYPE_CS) {
+            $merchant = CsMerchantService::getById($row->origin_id);
+            $row->merchant_name = $merchant->name;
+            $row->oper_name = OperService::getNameById($merchant->oper_id);
+            $row->bank_open_name = $merchant->bank_open_name;
+            $row->bank_card_no = $merchant->bank_card_no;
+            $row->sub_bank_name = $merchant->sub_bank_name;
+            $row->bank_card_type = $merchant->bank_card_type;
         }
 
         if ($this->originType == Wallet::ORIGIN_TYPE_USER) {
@@ -138,7 +147,7 @@ class WalletExport implements FromQuery, WithMapping, WithHeadings
 //                $row->bank_name,
                 ['', '正常', '已冻结'][$row->status]
             ];
-        } elseif ($this->originType == Wallet::ORIGIN_TYPE_MERCHANT) {
+        } elseif ($this->originType == Wallet::ORIGIN_TYPE_MERCHANT || $this->originType == Wallet::ORIGIN_TYPE_CS) {
             $array = [
                 $row->merchant_name,
                 $row->origin_id,
