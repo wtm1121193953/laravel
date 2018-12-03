@@ -140,7 +140,7 @@ class InviteChannelService extends BaseService
         }else if($originType == InviteChannel::ORIGIN_TYPE_OPER){
             $originName = Oper::where('id', $originId)->value('name');
         }else if($originType == InviteChannel::ORIGIN_TYPE_CS_MERCHANT){
-            $originName = CsMerchant::where('id', $originId)->value('name');
+            $originName = CsMerchant::where('id', $originId)->value('signboard_name');
         }
         return $originName;
     }
