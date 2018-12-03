@@ -5,7 +5,6 @@
         <el-button v-else type="text" @click="edit">编辑</el-button>
         <el-button v-if="parseInt(scope.row.audit_status) === 2" type="text" @click="changeStatus">{{scope.row.status === 1 ? '下架' : '上架'}}</el-button>
         <el-button type="text" @click="sort">排序</el-button>
-        <el-button type="text" @click="del">删除</el-button>
 
         <el-dialog title="编辑商品信息" :visible.sync="isEdit">
             <goods-form
