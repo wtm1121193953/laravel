@@ -69,7 +69,7 @@ class OrderController extends Controller
         //只能查询支付到平台的订单
         $data = Order::where('user_id', $user->id)
             ->where('pay_target_type',Order::PAY_TARGET_TYPE_PLATFORM)
-            ->where('merchant_type','<>',Order::MERCHANT_TYPE_SUPERMARKET)//排除超市订单
+            ->where('merchant_type',Order::MERCHANT_TYPE_NORMAL)//只看普通商家订单
             ->where(function (Builder $query) {
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function (Builder $query) {
