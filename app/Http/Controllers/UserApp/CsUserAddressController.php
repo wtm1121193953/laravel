@@ -60,7 +60,7 @@ class CsUserAddressController extends Controller
         $cityId = request('city_id');
         $cityLimit = SettingService::getValueByKey('supermarket_city_limit');
         $query = CsUserAddressService::getList($isTestAddress, $cityId, $cityLimit);
-        return Result::success($query);
+        return Result::success(['list' => $query]);
     }
 
     /**
