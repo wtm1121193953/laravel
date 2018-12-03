@@ -5,7 +5,10 @@
                 {{order.statusText}}
             </el-form-item>
             <el-form-item label="历时：">
-                {{order.take_time}}
+                <span v-if="order.take_time.split('时')[0] >= 24 && order.status == 8">
+                    <span style="color: red;">{{order.take_time}}</span>
+                </span>
+                <span v-else>{{order.take_time}}</span>
             </el-form-item>
             <el-form-item label="订单类型：">
                 {{['','团购', '买单','单品', '超市'][order.type]}}
@@ -31,7 +34,7 @@
             </el-form-item>
             <!--暂时使用discount_price字段-->
             <el-form-item label="免配送费：">
-                {{order.discount_price}}元
+                -{{order.discount_price}}元
             </el-form-item>
             <el-form-item label="实付：">
                 {{order.pay_price}}元
