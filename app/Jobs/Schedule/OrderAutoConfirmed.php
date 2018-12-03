@@ -42,7 +42,7 @@ class OrderAutoConfirmed implements ShouldQueue
         //
         Log::info('开始执行自动收货');
         Order::where('type', Order::TYPE_SUPERMARKET)
-            ->where('deliver_time', '<', Carbon::now()->subDay(1))
+            ->where('deliver_time', '<', Carbon::now()->subDay(7))
             ->where('status', Order::STATUS_DELIVERED)
             ->chunk(1000, function(Collection $list){
                 foreach ($list as $l) {
