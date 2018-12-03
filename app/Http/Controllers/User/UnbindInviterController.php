@@ -10,7 +10,9 @@ namespace App\Http\Controllers\User;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Cs\CsMerchant;
 use App\Modules\Invite\InviteUserRecord;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Invite\InviteUserUnbindRecord;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
@@ -40,24 +42,13 @@ class UnbindInviterController extends Controller
         $merchant = null; // 关联的上级商户
         $oper = null; // 关联的上级运营中心
         $user = null; // 关联的上级用户
-        if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_MERCHANT){
-            $merchant = Merchant::where('id', $inviteRecord->origin_id)->first();
-            $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
-                ->where('origin_type', UserMapping::ORIGIN_TYPE_MERCHANT)
-                ->first();
-            if(!empty($userMapping)){
-                $mappingUser = User::find($userMapping->user_id);
-            }
-        }else if($inviteRecord->origin_type == InviteUserRecord::ORIGIN_TYPE_OPER){
-            $oper = Oper::where('id', $inviteRecord->origin_id)->first();
-            $userMapping = UserMapping::where('origin_id', $inviteRecord->origin_id)
-                ->where('origin_type', UserMapping::ORIGIN_TYPE_OPER)
-                ->first();
-            if(!empty($userMapping)){
-                $mappingUser = User::find($userMapping->user_id);
-            }
-        }else {
-            $user = User::find($inviteRecord->origin_id);
+        $parent = InviteUserService::getParent($userId);
+        if($parent instanceof User){
+            $user = $parent;
+        }else if($parent instanceof Merchant || $parent instanceof CsMerchant){
+            $merchant = $parent;
+        }else if ($parent instanceof Oper){
+            $oper = $parent;
         }
 
         return Result::success([

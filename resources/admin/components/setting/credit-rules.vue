@@ -30,6 +30,44 @@
                 <el-input-number v-model="form.fee_splitting_ratio_to_parent_of_oper" :min="0"></el-input-number>%
                 <span class="tips">运营中心分享的用户消费，平台奖励运营中心的</span>
             </el-form-item>
+
+            <el-form-item label="超市配置"></el-form-item>
+            <el-form-item label="超市开关" prop="supermarket_on">
+                <el-switch
+                        v-model="form.supermarket_on"
+                        :active-value="1"
+                        :inactive-value="0"
+                >
+                </el-switch>
+                <span class="tips">超市开关</span>
+            </el-form-item>
+            <el-form-item label="是否限制只能选择同城地址" prop="supermarket_city_limit">
+                <el-switch
+                        v-model="form.supermarket_city_limit"
+                        :active-value="1"
+                        :inactive-value="0"
+                >
+                </el-switch>
+                <span class="tips">是否限制只能选择同城地址</span>
+            </el-form-item>
+            <el-form-item label="是否显示只能选择同城的文字" prop="supermarket_show_city_limit">
+                <el-switch
+                        v-model="form.supermarket_show_city_limit"
+                        :active-value="1"
+                        :inactive-value="0"
+                >
+                </el-switch>
+                <span class="tips">是否显示只能选择同城的文字</span>
+            </el-form-item>
+            <el-form-item label="首页超市banner" prop="supermarket_index_cs_banner_on">
+                <el-switch
+                        v-model="form.supermarket_index_cs_banner_on"
+                        :active-value="1"
+                        :inactive-value="0"
+                >
+                </el-switch>
+                <span class="tips">首页超市banner</span>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="save">保 存</el-button>
             </el-form-item>
@@ -52,6 +90,10 @@
                     fee_splitting_ratio_to_parent_of_merchant_level_2 : 25,
                     fee_splitting_ratio_to_parent_of_merchant_level_3 : 30,
                     fee_splitting_ratio_to_parent_of_oper : 20,
+                    supermarket_on:0,
+                    supermarket_city_limit:0,
+                    supermarket_show_city_limit:0,
+                    supermarket_index_cs_banner_on:0
                 },
             }
         },
@@ -71,6 +113,7 @@
                             self.form[key] = data.list[key];
                         }
                     }
+                    this.form = data.list;
                     this.formLoading = false;
                 })
             }

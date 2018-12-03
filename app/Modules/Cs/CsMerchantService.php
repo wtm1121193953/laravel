@@ -18,6 +18,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantAccount;
 use App\Modules\Merchant\MerchantFollow;
 use App\Modules\Oper\Oper;
+use App\Modules\Setting\SettingService;
 use App\Support\Lbs;
 use App\Support\Utils;
 use Illuminate\Database\Eloquent\Builder;
@@ -567,8 +568,8 @@ class CsMerchantService extends BaseService {
                 $item->delivery_free_start = $MerchantInfo->delivery_free_start;
                 $item->delivery_free_order_amount = $MerchantInfo->delivery_free_order_amount;
             }
-            $item->city_limit = config('common.city_limit');
-            $item->show_city_limit = config('common.show_city_limit');
+            $item->city_limit = SettingService::getValueByKey('supermarket_city_limit');
+            $item->show_city_limit = SettingService::getValueByKey('supermarket_show_city_limit');
             if(!isset($item->distance)){
                 $item->distance = 0;//没有经纬度时,设置为0
             }

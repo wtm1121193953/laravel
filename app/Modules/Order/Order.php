@@ -62,6 +62,10 @@ use Carbon\Carbon;
  * @property Carbon user_deleted_at
  * @property Carbon delivery_confirmed
  * @property integer deliver_code
+ * @property float delivery_start_price
+ * @property float delivery_charges
+ * @property integer delivery_free_start
+ * @property float delivery_free_order_amount
  */
 
 class Order extends BaseModel

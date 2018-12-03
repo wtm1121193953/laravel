@@ -16,6 +16,7 @@ use App\Exceptions\DataNotFoundException;
 use App\Exceptions\NoPermissionException;
 use App\Exceptions\PasswordErrorException;
 use App\Modules\Merchant\MerchantDraft;
+use App\Modules\Setting\SettingService;
 use App\ResultCode;
 use Illuminate\Support\Facades\Session;
 
@@ -101,12 +102,13 @@ class OperAccountService extends BaseService
     public static function getMenus($operId)
     {
 
+        $supermarket_on = SettingService::getValueByKey('supermarket_on');
         $oper = OperService::getById($operId);
         $merchantDraftCount = MerchantDraft::where('creator_oper_id', $operId)->count();
 
         $menus = [];
 
-        if ($oper->pay_to_platform != Oper::PAY_TO_PLATFORM_WITH_SPLITTING) {
+        if ($oper->pay_to_platform != Oper::PAY_TO_PLATFORM_WITH_SPLITTING || $supermarket_on != 1) {
 
             //不是第三种模式不显示不显示超市相关的菜单
             $menus = [

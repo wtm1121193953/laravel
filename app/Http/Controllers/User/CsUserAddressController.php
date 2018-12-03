@@ -12,6 +12,7 @@ use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
 use App\Modules\Cs\CsMerchantSettingService;
 use App\Modules\Cs\CsUserAddressService;
+use App\Modules\Setting\SettingService;
 use App\Result;
 
 class CsUserAddressController extends Controller{
@@ -24,7 +25,7 @@ class CsUserAddressController extends Controller{
      */
     public function addUserAddresses(){
         $this->validate(request(), [
-            'contact_phone' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}/',
+            'contact_phone' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}$/',
             'contacts' => 'required|min:1|max:30|regex:/^[\x7f-\xff]+$/',
         ]);
         $default = 0;
@@ -51,9 +52,9 @@ class CsUserAddressController extends Controller{
             $isTestAddress = request('is_test_radius');
         }
         $cityId = request('city_id');
-        $city_wide = config('common.city_limit');
+        $city_wide = SettingService::getValueByKey('city_limit');
         $query = CsUserAddressService::getList($isTestAddress,$cityId,$city_wide);
-        return Result::success($query);
+        return Result::success(['list' => $query]);
     }
 
     /**
@@ -62,7 +63,7 @@ class CsUserAddressController extends Controller{
     public function editAddress(){
         $this->validate(request(), [
             'id' => 'required',
-            'contact_phone' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}/',
+            'contact_phone' => 'required|regex:/^1[3,4,5,6,7,8,9]\d{9}$/',
             'contacts' => 'required|min:1|max:30|regex:/^[\x7f-\xff]+$/',
         ]);
         $data = Array();
@@ -111,8 +112,8 @@ class CsUserAddressController extends Controller{
      */
     public function getDeliverySetting()
     {
-        $cityLimit = config('common.city_limit');
-        $showCityLimit = config('common.show_city_limit');
+        $cityLimit = SettingService::getValueByKey('supermarket_city_limit');
+        $showCityLimit = SettingService::getValueByKey('supermarket_supermarket_city_limit');
 
         return Result::success([
             'city_limit' => $cityLimit,

@@ -93,7 +93,20 @@ class SettingService
             $value = Setting::where('key', $key)->value('value');
             Cache::forever('setting_cache:' . $key, $value);
         }
-        return $value ?? '';
+        $value =  $value ?? '';
+        $intval_list = [
+            'supermarket_on',
+            'supermarket_city_limit',
+            'supermarket_show_city_limit',
+            'supermarket_index_cs_banner_on'
+        ];
+
+        //需要整形处理的
+        if (in_array($key,$intval_list)) {
+            return intval($value);
+        } else {
+            return $value;
+        }
     }
 
     /**

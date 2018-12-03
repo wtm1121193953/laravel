@@ -62,7 +62,7 @@ class OrderController extends Controller
 
         $currentOperId = request()->get('current_oper_id');
         $data = Order::where('user_id', $user->id)
-            ->where('type','<>',Order::MERCHANT_TYPE_SUPERMARKET)//排除超市订单
+            ->where('merchant_type',Order::MERCHANT_TYPE_NORMAL)//只看普通商家订单
             ->where(function (Builder $query) {
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function (Builder $query) {
@@ -102,6 +102,8 @@ class OrderController extends Controller
     {
         $status = request('status');
         $user = request()->get('current_user');
+        $lng = request('lng');
+        $lat = request('lat');
 
         $merchantShareInMiniprogram = SettingService::getValueByKey('merchant_share_in_miniprogram');
 
@@ -140,17 +142,21 @@ class OrderController extends Controller
             })
             ->orderByDesc('id')
             ->paginate();
-        $data->each(function ($item) use ($currentOperId) {
+        $data->each(function ($item) use ($currentOperId,$lat,$lng) {
             $item->items = OrderItem::where('order_id', $item->id)->get();
             // 判断商户是否是当前小程序关联运营中心下的商户
 //            $item->isOperSelf = $item->oper_id === $currentOperId ? 1 : 0;
 
             $item->goods_end_date = '';
             if ($item->type == Order::TYPE_DISHES) {
-                $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)->get();
+                $item->dishes_items = DishesItem::where('dishes_id', $item->dishes_id)
+                    ->with('dishes_goods:id,dishes_category_id')
+                    ->get();
                 $item->order_goods_number = DishesItem::where('dishes_id',$item->dishes_id)->sum('number');
             }else if($item->type == Order::TYPE_GROUP_BUY){
-                $item->goods_end_date = Goods::withTrashed()->where('id', $item->goods_id)->value('end_date');
+                $goods = Goods::withTrashed()->where('id', $item->goods_id)->first();
+                $item->goods_end_date = $goods->end_date;
+                $item->goods_price = $goods->price;
             }
 
             $item->oper_info = DataCacheService::getOperDetail($item->oper_id);//运营中心客服电话
@@ -163,8 +169,8 @@ class OrderController extends Controller
                 $csMerchant->delivery_charges = $csMerchantSetting->delivery_charges;
                 $csMerchant->delivery_free_start = $csMerchantSetting->delivery_free_start;
                 $csMerchant->delivery_free_order_amount = $csMerchantSetting->delivery_free_order_amount;
-                $csMerchant->city_limit = config('common.city_limit');
-                $csMerchant->show_city_limit = config('common.show_city_limit');
+                $csMerchant->city_limit = SettingService::getValueByKey('supermarket_city_limit');
+                $csMerchant->show_city_limit = SettingService::getValueByKey('supermarket_show_city_limit');
                 $item->cs_merchant = $csMerchant;
                 $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
                 $item->order_goods = CsOrderGood::where('order_id',$item->id)->with('cs_goods:id,logo')->get();
@@ -172,7 +178,16 @@ class OrderController extends Controller
                 $item->merchant = Merchant::where('id', $item->merchant_id)->first();
                 $item->merchant_logo = $item->merchant->logo;
                 $item->signboard_name = $item->merchant->signboard_name;
+
+                if ($item->type == Order::TYPE_GROUP_BUY) {
+                    if($lng && $lat){
+                        $distance = Lbs::getDistanceOfMerchant($item->merchant->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
+                        // 格式化距离
+                        $item->merchant->distance = Utils::getFormativeDistance($distance);
+                    }
+                }
             }
+            $item->deliver_price -= $item->discount_price;
         });
         $order_counts = OrderService::getUserCounts($user->id);
         return Result::success([
@@ -240,6 +255,7 @@ class OrderController extends Controller
 
         // 贡献值
         $detail->consume_quota = floor($detail->pay_price);
+        $detail->deliver_price -= $detail->discount_price;
         return Result::success($detail);
     }
 
@@ -432,9 +448,9 @@ class OrderController extends Controller
         $merchant_oper = Oper::find($merchant->oper_id);
 
         $csMerchantSetting = CsMerchantSettingService::getDeliverSetting($merchantId);
-        if ($csMerchantSetting->delivery_free_order_amount <= 0) {
-            throw new BaseResponseException('商家配送费有误');
-        }
+//        if ($csMerchantSetting->delivery_free_order_amount <= 0) {
+//            throw new BaseResponseException('商家配送费有误');
+//        }
 
         // 商家配送必须达到 起送价
         if (($deliveryType == Order::DELIVERY_MERCHANT_POST) && ($goodsPrice < $csMerchantSetting->delivery_start_price)  ) {
@@ -489,6 +505,10 @@ class OrderController extends Controller
             $order->express_address = $address ? json_encode($address) : $address;
 
             $order->merchant_type = Order::MERCHANT_TYPE_SUPERMARKET;
+            $order->delivery_start_price = $csMerchantSetting->delivery_start_price;
+            $order->delivery_charges = $csMerchantSetting->delivery_charges;
+            $order->delivery_free_start = $csMerchantSetting->delivery_free_start;
+            $order->delivery_free_order_amount = $csMerchantSetting->delivery_free_order_amount;
             if ($order->save()) {
                 foreach ($goodsList as $item) {
                     $good = CsGood::findOrFail($item['id']);
@@ -527,7 +547,7 @@ class OrderController extends Controller
                 'data'  =>  null
             ]);
         }
-
+        $order->deliver_price -= $order->discount_price;
         return $this->_returnCsOrder($order,$order->order_no);
     }
 
@@ -882,7 +902,7 @@ class OrderController extends Controller
 
         return Result::success([
             'order_no' => $orderNo,
-            'isOperSelf' => $isOperSelf,
+            'isOperSelf' => 1,
             'sdk_config' => $sdkConfig,
             'pay_type'  =>  $order->pay_type,
             'order' =>  $order,

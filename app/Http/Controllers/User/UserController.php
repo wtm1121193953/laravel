@@ -11,6 +11,7 @@ namespace App\Http\Controllers\User;
 
 use App\Exceptions\BaseResponseException;
 use App\Http\Controllers\Controller;
+use App\Modules\Invite\InviteUserService;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
@@ -43,6 +44,13 @@ class UserController extends Controller
 
         $user->level_text = User::getLevelText($user->level);
         $user->custom_service_email = config('common.custom_service_email');
+        //查询我的上级
+        $superior = InviteUserService::getParentName($user->id);
+        if ($superior) {
+            $user['superior'] = $superior;
+        } else {
+            $user['superior'] = '';
+        }
         return Result::success([
             'userInfo' => $user
         ]);

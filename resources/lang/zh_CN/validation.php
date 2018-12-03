@@ -105,7 +105,7 @@ return [
         'contact_phone' => [
             'required' => '手机号码不能为空',
             'size' => '手机号码位数不正确',
-            'regex' => '手机号码不合法'
+            'regex' => '手机号码格式错误'
         ],
         'contacts' => [
             'max' => '最多输入 :max 字',
