@@ -139,7 +139,7 @@
             },
             download() {
                 let query = this.query;
-                location.href = '/api/merchant/wallet/consume/exportExcel?consumeQuotaNo=' + query.consumeQuotaNo + '&startDate=' + query.startDate + '&endDate=' + query.endDate +'&status=' + query.status;
+                location.href = '/api/cs/wallet/consume/exportExcel?consumeQuotaNo=' + query.consumeQuotaNo + '&startDate=' + query.startDate + '&endDate=' + query.endDate +'&status=' + query.status;
             },
             detail(row) {
                 router.push({
