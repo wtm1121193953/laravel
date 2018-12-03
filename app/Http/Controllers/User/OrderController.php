@@ -231,6 +231,16 @@ class OrderController extends Controller
             $detail->user_level_text = User::getLevelText($creditRecord->user_level);
             $detail->credit = $creditRecord->credit;
         }
+
+        if ($detail->status == Order::STATUS_DELIVERED) {//如果是已发货显示收货剩余时间
+            $detail->confirm_left_time = strtotime($detail->deliver_time) + 7 * 86400 - time();
+            if ($detail->confirm_left_time< 0 ) {
+                $detail->confirm_left_time = 0;
+            }
+        } else {
+            $detail->confirm_left_time = 999999999;
+        }
+
         // 单品订单
         if ($detail->type == Order::TYPE_DISHES) {
             $detail->dishes_items = DishesItem::where('dishes_id', $detail->dishes_id)->get();
