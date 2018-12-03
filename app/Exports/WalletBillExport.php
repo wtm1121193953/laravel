@@ -79,6 +79,14 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
                 '账户交易金额',
                 '账户余额'
             ];
+        } elseif ($this->originType == WalletBill::ORIGIN_TYPE_CS) {
+            $array = [
+                '交易时间',
+                '交易号',
+                '交易类型',
+                '账户交易金额',
+                '账户余额',
+            ];
         } else {
             $array = [];
         }
@@ -177,6 +185,14 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
                 $row->bill_no,
                 $row->bizer_mobile,
                 $row->bizer_name,
+                $typeText,
+                ($row->inout_type == 1 ? '+' : '-') . "\t" . $row->amount,
+                $row->after_amount,
+            ];
+        } elseif ($this->originType == WalletBill::ORIGIN_TYPE_CS) {
+            $array = [
+                $row->created_at,
+                $row->bill_no,
                 $typeText,
                 ($row->inout_type == 1 ? '+' : '-') . "\t" . $row->amount,
                 $row->after_amount,
