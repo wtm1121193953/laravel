@@ -84,7 +84,7 @@
                 <el-table-column prop="name" label="商户名称"/>
                 <el-table-column prop="signboard_name" label="商户招牌名"/>
                 <el-table-column prop="operId" size="mini" label="激活运营中心ID"/>
-                <el-table-column prop="operName" label="激活运营中心名称"/>
+                <el-table-column prop="operName" label="激活运营中心名称" width="200px"/>
                 <el-table-column label="签约人" >
                     <template slot-scope="scope">
                         <span v-if="scope.row.bizer"><span class="c-green">业务员 </span>{{scope.row.bizer.name}}/{{scope.row.bizer.mobile}}</span>

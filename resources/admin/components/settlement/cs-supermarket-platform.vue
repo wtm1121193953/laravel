@@ -67,19 +67,19 @@
         <el-table :data="list" v-loading="tableLoading" stripe>
             <el-table-column prop="cs_merchant.id" label="商户ID"  width="100px" />
             <el-table-column prop="cs_merchant.name" label="商户名称"  width="160px" />
-            <el-table-column prop="cs_merchant.merchant_type" label="商户类型"  width="160px" >
+            <el-table-column prop="cs_merchant.merchant_type" label="商户类型">
                 <template slot-scope="scope">
                     <span>{{ {1: '普通', 2: '超市'}[scope.row.merchant_type] }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="oper.name" size="mini" label="运营中心"/>
+            <el-table-column prop="oper.name" label="运营中心" width="200px"/>
             <el-table-column prop="settlement_cycle_type" label="结算周期">
                 <template slot-scope="scope">
                     <span>{{ {1: '周结', 2: '半月结', 3: 'T+1(自动)', 4: '半年结', 5: '年结', 6: 'T+1(人工)', 7: '未知',}[scope.row.settlement_cycle_type] }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="created_at" label="结算单生成时间"/>
-            <el-table-column prop="date" label="结算日期">
+            <el-table-column prop="created_at" label="结算单生成时间" width="150px"/>
+            <el-table-column prop="date" label="结算日期" width="200px">
                 <template slot-scope="scope">
                     {{scope.row.start_date}} 至 {{scope.row.end_date}}
                 </template>

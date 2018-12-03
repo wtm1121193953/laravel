@@ -40,8 +40,8 @@
             </el-form-item>
         </el-form>
         <el-table :data="list" v-loading="tableLoading" stripe>
-            <el-table-column prop="created_at" label="提现时间"></el-table-column>
-            <el-table-column prop="withdraw_no" label="提现编号"></el-table-column>
+            <el-table-column prop="created_at" label="提现时间" width="150px"></el-table-column>
+            <el-table-column prop="withdraw_no" label="提现编号" width="200px"></el-table-column>
             <el-table-column prop="amount" label="提现金额"></el-table-column>
             <el-table-column prop="charge_amount" label="手续费"></el-table-column>
             <el-table-column prop="remit_amount" label="到账金额"></el-table-column>

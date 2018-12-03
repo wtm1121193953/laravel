@@ -43,8 +43,8 @@
             </el-form-item>
         </el-form>
         <el-table :data="list" v-loading="tableLoading" stripe>
-            <el-table-column prop="created_at" label="提现时间"></el-table-column>
-            <el-table-column prop="withdraw_no" label="提现编号"></el-table-column>
+            <el-table-column prop="created_at" label="提现时间" width="150px"></el-table-column>
+            <el-table-column prop="withdraw_no" label="提现编号" width="200px"></el-table-column>
             <el-table-column prop="amount" label="提现金额"></el-table-column>
             <el-table-column prop="charge_amount" label="手续费"></el-table-column>
             <el-table-column prop="remit_amount" label="到账金额"></el-table-column>
@@ -65,7 +65,7 @@
                     <span v-else>未知({{scope.row.bank_card_type}})</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="oper_name" label="运营中心名称"></el-table-column>
+            <el-table-column prop="oper_name" label="运营中心名称" width="200px"></el-table-column>
             <el-table-column prop="origin_id" label="运营中心ID"></el-table-column>
             <el-table-column prop="status" label="提现状态">
                 <template slot-scope="scope">

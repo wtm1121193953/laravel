@@ -85,10 +85,10 @@
                     type="selection"
                     width="55">
             </el-table-column>
-            <el-table-column prop="bizer_identity_audit_record.created_at" label="提交认证时间"/>
-            <el-table-column prop="mobile" label="手机号码"/>
+            <el-table-column prop="bizer_identity_audit_record.created_at" label="提交认证时间" width="200px"/>
+            <el-table-column prop="mobile" label="手机号码" width="120px"/>
             <el-table-column prop="id" label="业务员ID"/>
-            <el-table-column prop="created_at" label="注册时间"/>
+            <el-table-column prop="created_at" label="注册时间" width="200px"/>
             <el-table-column prop="name" label="姓名">
                 <template slot-scope="scope">
                     <span>{{scope.row.bizer_identity_audit_record ? scope.row.bizer_identity_audit_record.name : ''}}</span>

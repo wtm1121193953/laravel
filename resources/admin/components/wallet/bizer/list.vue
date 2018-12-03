@@ -33,7 +33,7 @@
             </el-table-column>
             <el-table-column prop="balance" label="可提现金额"></el-table-column>
             <el-table-column prop="freeze_balance" label="冻结金额"></el-table-column>
-            <el-table-column prop="bank_card_no" label="银行账号">
+            <el-table-column prop="bank_card_no" label="银行账号" width="200px">
                 <template slot-scope="scope">
                     <span v-if="scope.row.bank_card_no">
                         {{scope.row.bank_card_no.substr(0,5) + '****' + scope.row.bank_card_no.substr(-4,4)}}
