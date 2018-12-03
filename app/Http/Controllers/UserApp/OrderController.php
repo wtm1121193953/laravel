@@ -171,9 +171,18 @@ class OrderController extends Controller
                 $goods = Goods::withTrashed()->where('id', $item->goods_id)->first();
                 $item->goods_end_date = $goods->end_date;
                 $item->goods_price = $goods->price;
+                if($lng && $lat){
+                    $distance = Lbs::getDistanceOfMerchant($item->merchant->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
+                    // 格式化距离
+                    $item->merchant->distance = Utils::getFormativeDistance($distance);
+                }
+            }else if($item->type == Order::TYPE_SUPERMARKET){
+                $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
+                $item->order_goods = CsOrderGood::where('order_id',$item->id)->with('cs_goods:id,logo')->get();
             }
             $item->oper_info = DataCacheService::getOperDetail($item->oper_id);//运营中心客服电话
 
+            // 补充商户信息
             if($item->merchant_type == Order::MERCHANT_TYPE_SUPERMARKET){//超市
                 $csMerchant = CsMerchant::where('id',$item->merchant_id)->first();
                 $csMerchantSetting = CsMerchantSettingService::getDeliverSetting($csMerchant->id);
@@ -184,21 +193,10 @@ class OrderController extends Controller
                 $csMerchant->city_limit = SettingService::getValueByKey('supermarket_city_limit');
                 $csMerchant->show_city_limit = SettingService::getValueByKey('supermarket_show_city_limit');
                 $item->cs_merchant = $csMerchant;
-                $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
-                $item->order_goods = CsOrderGood::where('order_id',$item->id)->with('cs_goods:id,logo')->get();
             }else {
                 $item->merchant = Merchant::where('id', $item->merchant_id)->first();
                 $item->merchant_logo = $item->merchant->logo;
                 $item->signboard_name = $item->merchant->signboard_name;
-
-                if ($item->type == Order::TYPE_GROUP_BUY) {
-                    if($lng && $lat){
-                        $distance = Lbs::getDistanceOfMerchant($item->merchant->id, request()->get('current_open_id'), floatval($lng), floatval($lat));
-                        // 格式化距离
-                        $item->merchant->distance = Utils::getFormativeDistance($distance);
-                    }
-                }
-
             }
             $item->deliver_price -= $item->discount_price;
         });
@@ -285,6 +283,9 @@ class OrderController extends Controller
             $detail->order_goods_number = DishesItem::where('dishes_id',$detail->dishes_id)->sum('number');
         }else if($detail->type == Order::TYPE_GROUP_BUY){
             $detail->goods_end_date = Goods::withTrashed()->where('id', $detail->goods_id)->value('end_date');
+        }else if($detail->type == Order::TYPE_SUPERMARKET){
+            $detail->order_goods_number = CsOrderGood::where('order_id',$detail->id)->sum('number');
+            $detail->order_goods = CsOrderGood::where('order_id',$detail->id)->with('cs_goods:id,logo')->get();
         }
         $detail->oper_info = DataCacheService::getOperDetail($detail->oper_id);//运营中心客服电话
 
@@ -299,8 +300,6 @@ class OrderController extends Controller
 //                $detail->merchant_name = $csMerchant->name;
 //                $detail->merchant_logo = $csMerchant->logo;
 //                $detail->merchant_service_phone = $csMerchant->service_phone;
-            $detail->order_goods_number = CsOrderGood::where('order_id',$detail->id)->sum('number');
-            $detail->order_goods = CsOrderGood::where('order_id',$detail->id)->with('cs_goods:id,logo')->get();
 
         }else {
             $merchant = Merchant::where('id', $detail->merchant_id)->first();
