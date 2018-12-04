@@ -194,33 +194,15 @@ class SettlementPlatformService extends BaseService
         $end_date = $date;
 
         if( $sum<100 ){
-
-            //从第一个订单起7天内如果订单金额还不满100，直接强制生成结算单
-            $start = strtotime($start_date);
-            $now = strtotime($date->endOfDay())?? strtotime("now");
-            $diffDay = ($now-$start)/86400;
-
-            if($diffDay >= 7){
-                Log::info('商家结算单超过七天，且总金额小于100，直接强制生成结算单', [
-                    'merchantId' => $merchant->id,
-                    'merchantType'  =>  $merchantType,
-                    'start_date' => $start_date,
-                    'start' => $start,
-                    'diffDay' => $diffDay,
-                    'timestamp' => date('Y-m-d H:i:s')
-                ]);
-            }else{
-                Log::info('商家每日结算时订单金额小于100，跳过结算', [
-                    'merchantId' => $merchant->id,
-                    'merchantType'  =>  $merchantType,
-                    'start_date' => $start_date,
-                    'start' => $start,
-                    'diffDay' => $diffDay,
-                    'now' => $now,
-                    'timestamp' => date('Y-m-d H:i:s')
-                ]);
-                return true;
-            }
+            Log::info('商家每日结算时订单金额小于100，跳过结算', [
+                'merchantId' => $merchant->id,
+                'merchantType'  =>  $merchantType,
+                'sum' => $sum,
+                'start_date' => $start_date,
+                'date' => $date,
+                'timestamp' => date('Y-m-d H:i:s')
+            ]);
+            return true;
         }
 
         // 生成结算单，方便之后结算订单中保存结算信息
@@ -297,6 +279,9 @@ class SettlementPlatformService extends BaseService
             ->where('status', Order::STATUS_FINISHED )
             ->where('finish_time','<=', $date);
 
+        // 统计所有需结算金额
+        $sum = $query->sum('pay_price');
+
         //获得结算周期时间
         $start_date = $query->min('finish_time');
         //如果该商户无订单，跳过结算
@@ -309,6 +294,17 @@ class SettlementPlatformService extends BaseService
             return true;
         }
         $end_date = $date;
+
+        if( $sum<100 ){
+            Log::info('商家周结结算时订单金额小于100，跳过结算', [
+                'merchantId' => $merchant->id,
+                'sum' => $sum,
+                'start_date' => $start_date,
+                'date' => $date,
+                'timestamp' => date('Y-m-d H:i:s')
+            ]);
+            return true;
+        }
 
         // 生成结算单，方便之后结算订单中保存结算信息
         $settlementNum = self::genSettlementNo(10);

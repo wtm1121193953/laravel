@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Cs;
 use App\Exceptions\BaseResponseException;
 use App\Modules\Cs\CsMerchantSettingService;
 use App\Result;
+use App\ResultCode;
 
 class SettingController extends BaseController
 {
@@ -44,17 +45,25 @@ class SettingController extends BaseController
         if (empty($setting)) {
             throw new BaseResponseException('系统错误');
         }
-        $setting->delivery_start_price = request('delivery_start_price');
-        $setting->delivery_charges = request('delivery_charges');
-        $setting->delivery_free_start = request('delivery_free_start');
-        $setting->delivery_free_order_amount = request('delivery_free_order_amount');
+        $deliveryStartPrice = request('delivery_start_price');
+        $deliveryCharges = request('delivery_charges');
+        $deliveryFreeStart = request('delivery_free_start');
+        $deliveryFreeOrderAmount = request('delivery_free_order_amount');
+
+        if ($deliveryCharges != 0 && $deliveryFreeStart == 1 && $deliveryFreeOrderAmount < $deliveryStartPrice) {
+            throw new BaseResponseException('订单满免配送费的价格不能小于起送价');
+        }
+
+        $setting->delivery_start_price = $deliveryStartPrice;
+        $setting->delivery_charges = $deliveryCharges;
+        $setting->delivery_free_start = $deliveryFreeStart;
+        $setting->delivery_free_order_amount = $deliveryFreeOrderAmount;
 
         $rs = $setting->save();
         if ($rs) {
             return Result::success('保存成功');
         } else {
-
-            return Result::error('保存失败');
+            return Result::error(ResultCode::DB_INSERT_FAIL,'保存失败');
         }
     }
 
