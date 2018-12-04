@@ -10,6 +10,7 @@ namespace App\Http\Controllers\Cs;
 use App\Exceptions\BaseResponseException;
 use App\Modules\Cs\CsMerchantSettingService;
 use App\Result;
+use App\ResultCode;
 
 class SettingController extends BaseController
 {
@@ -62,7 +63,7 @@ class SettingController extends BaseController
         if ($rs) {
             return Result::success('保存成功');
         } else {
-            return Result::error('保存失败');
+            return Result::error(ResultCode::DB_INSERT_FAIL,'保存失败');
         }
     }
 
