@@ -39,7 +39,7 @@ class UserIdentityAuditRecordController extends Controller
         $request->validate([
             'name' => 'required',
             'country_id'    => 'required',
-            'id_card_no' => 'bail|required|unique:user_identity_audit_records',
+            'id_card_no' => 'bail|required',
             'front_pic' => 'required',
             'opposite_pic' => 'required',
             'user_id' => 'unique:user_identity_audit_records'
