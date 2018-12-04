@@ -113,7 +113,7 @@ class CsUserAddressController extends Controller{
     public function getDeliverySetting()
     {
         $cityLimit = SettingService::getValueByKey('supermarket_city_limit');
-        $showCityLimit = SettingService::getValueByKey('supermarket_supermarket_city_limit');
+        $showCityLimit = SettingService::getValueByKey('supermarket_show_city_limit');
 
         return Result::success([
             'city_limit' => $cityLimit,
