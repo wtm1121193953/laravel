@@ -58,7 +58,7 @@ class UserIdentityAuditRecordService extends BaseService
             throw new DataNotFoundException('找不到可修改的用户验证信息');
         }
         // 判断身份证是否被他人使用
-        self::checkRecordCardNoUsed($user->id, $data['id_card_no']);
+//        self::checkRecordCardNoUsed($user->id, $data['id_card_no']);
         // 判断是否有新修改内容
         if (count($data) <= 1) {
             throw new BaseResponseException(ResultCode::DB_UPDATE_FAIL, '不可无修改内容');
