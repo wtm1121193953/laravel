@@ -111,8 +111,8 @@ class CsUserAddressService extends BaseService {
             if (empty($cityId)){
                 throw new BaseResponseException('未选择商家', ResultCode::PARAMS_INVALID);
             }
-            $list->each(function ($item){
-                if ($item->city_id == request('city_id')){
+            $list->each(function ($item) use ($cityId){
+                if ($item->city_id == $cityId){
                     $item->outRadius = '0';
                 }
                 else{
