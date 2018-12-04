@@ -6,7 +6,6 @@ use App\BaseService;
 use App\Exceptions\BaseResponseException;
 use App\Exceptions\DataNotFoundException;
 use App\ResultCode;
-use function foo\func;
 
 /**
  * 身份验证记录
