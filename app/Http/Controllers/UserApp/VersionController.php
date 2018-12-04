@@ -9,7 +9,6 @@
 namespace App\Http\Controllers\UserApp;
 
 
-use App\Exceptions\BaseResponseException;
 use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Version\VersionService;
@@ -26,10 +25,9 @@ class VersionController extends Controller
         $appType = request()->headers->get('app-type');
         $versionNo = request()->headers->get('version');
 
-        throw new BaseResponseException('当前版本1.4.8');
         $lastVersion = VersionService::getLastVersion($appType, $versionNo);
         if(empty($lastVersion)){
-            return Result::success('当前版本1.4.8');
+            return Result::success('当前版本1.4.7');
         }
 
         $lastVersion->version = $lastVersion->version_no;
