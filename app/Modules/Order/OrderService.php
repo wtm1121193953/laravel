@@ -31,6 +31,7 @@ use App\Modules\Merchant\Merchant;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Payment\Payment;
 use App\Modules\Platform\PlatformTradeRecord;
+use App\Modules\Setting\SettingService;
 use App\Modules\Sms\SmsVerifyCodeService;
 use App\Modules\User\User;
 use App\Modules\Sms\SmsService;
@@ -820,6 +821,18 @@ class OrderService extends BaseService
             //'e' => [Order::STATUS_CLOSED,Order::STATUS_FINISHED],//已完成
             //'f' => Order::STATUS_REFUNDED,//已退款
         ];
+
+        $supermarket_on = SettingService::getValueByKey('supermarket_on');
+        if (empty($supermarket_on)) {
+            $status_map = [
+                'a' => 0, //待付款
+                'b' => 0,//代发货
+                'c' => 0,//待收货
+                'd' => 0,//待使用
+            ];
+            return $status_map;
+        }
+
 
         foreach ($status_map as $k=>$v) {
             //只能查询支付到平台的订单
