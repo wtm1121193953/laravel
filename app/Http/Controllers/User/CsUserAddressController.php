@@ -52,7 +52,7 @@ class CsUserAddressController extends Controller{
             $isTestAddress = request('is_test_radius');
         }
         $cityId = request('city_id');
-        $city_wide = SettingService::getValueByKey('city_limit');
+        $city_wide = SettingService::getValueByKey('supermarket_city_limit');
         $query = CsUserAddressService::getList($isTestAddress,$cityId,$city_wide);
         return Result::success(['list' => $query]);
     }
@@ -113,7 +113,7 @@ class CsUserAddressController extends Controller{
     public function getDeliverySetting()
     {
         $cityLimit = SettingService::getValueByKey('supermarket_city_limit');
-        $showCityLimit = SettingService::getValueByKey('supermarket_supermarket_city_limit');
+        $showCityLimit = SettingService::getValueByKey('supermarket_show_city_limit');
 
         return Result::success([
             'city_limit' => $cityLimit,

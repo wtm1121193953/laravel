@@ -33,7 +33,7 @@ class WechatController extends Controller
             if(empty($merchantInfo)){
                 throw new DataNotFoundException('商户信息不存在');
             }
-            $miniprogramShareInfo['name'] = $merchantInfo->name;
+            $miniprogramShareInfo['name'] = $merchantInfo->signboard_name;
             $miniprogramShareInfo['desc'] = $merchantInfo->desc;
             $miniprogramShareInfo['logo'] = $merchantInfo->logo;
             if(!empty($merchantInfo->desc_pic_list)){

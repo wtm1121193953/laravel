@@ -162,6 +162,9 @@ class OrderController extends Controller
                     // 格式化距离
                     $item->merchant->distance = Utils::getFormativeDistance($distance);
                 }
+                // 如果为团购订单，则显示团购商品名
+                $item->merchant_name_bak = $item->merchant_name;
+                $item->merchant_name = $item->goods_name;
             }else if($item->type == Order::TYPE_SUPERMARKET){
                 $item->order_goods_number = CsOrderGood::where('order_id',$item->id)->sum('number');
                 $item->order_goods = CsOrderGood::where('order_id',$item->id)->with('cs_goods:id,logo')->get();

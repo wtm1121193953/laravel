@@ -193,7 +193,7 @@
         },
         watch: {
             value (val){
-                this.initFileList()
+                // this.initFileList()
             }
         },
         components: {

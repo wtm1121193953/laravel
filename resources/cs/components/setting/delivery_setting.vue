@@ -17,7 +17,7 @@
                 >
                 </el-switch>
                 <span v-if="form.delivery_free_start == 1" class="m-l-20">
-                    订单价格满 <el-input-number v-model="form.delivery_free_order_amount" :min="0"></el-input-number>元，免配送费
+                    订单价格满 <el-input-number v-model="form.delivery_free_order_amount" :min="form.delivery_start_price"></el-input-number>元，免配送费
                 </span>
             </el-form-item>
 
@@ -47,6 +47,12 @@
         },
         methods: {
             save() {
+                if (this.form.delivery_charges != 0 && this.form.delivery_free_start == 1) {
+                    if (this.form.delivery_free_order_amount < this.form.delivery_start_price) {
+                        this.$message.error('订单满免配送费的价格不能小于起送价');
+                        return false;
+                    }
+                }
                 api.post('/setting/saveDeliverySetting', this.form).then(() => {
                     this.$message.success('保存成功');
                 })
@@ -56,7 +62,6 @@
             },
 
             getSetting() {
-
                 api.get('/setting/getDeliverySetting').then(data => {
                     this.form = data;
                     this.formLoading = false;
