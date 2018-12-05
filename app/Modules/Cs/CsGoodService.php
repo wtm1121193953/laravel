@@ -75,8 +75,7 @@ class CsGoodService extends BaseService
         } else {
 
             $pageSize = array_get($params, 'pageSize',15);
-            //$data = $query->paginate($pageSize);
-            $data = $query->get();
+            $data = $query->paginate($pageSize);
             $all_cats = DataCacheService::getPlatformCats();
             $data->each(function ($item) use ($all_cats) {
 
