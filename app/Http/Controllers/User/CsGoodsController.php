@@ -36,7 +36,7 @@ class CsGoodsController extends Controller
         $params['cs_platform_cat_id_level2'] = request('second_level_id','');
         $params['status'] = [CsGood::STATUS_ON];
         $params['audit_status'] =[CsGood::AUDIT_STATUS_SUCCESS];
-        $params['pageSize'] = request('pageSize',15);
+        $params['pageSize'] = request('pageSize',200);
         if (!empty($isSale)) {
 
             $params['sort'] = 'sale_num';

@@ -41,6 +41,7 @@ class WalletController extends Controller
         $user = request()->get('current_user');
 
         $wallet = WalletService::getWalletInfoByOriginInfo($user->id, Wallet::ORIGIN_TYPE_USER);
+        unset($wallet->withdraw_password,$wallet->salt);
 
         return Result::success($wallet);
     }

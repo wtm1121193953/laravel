@@ -78,6 +78,9 @@ class AreaController extends Controller
             throw new BaseResponseException('请输入关键字');
         }
         $list = AreaService::getCityListByKeyword($name);
+        if ($list->count()==0) {
+            throw new BaseResponseException('暂不支持该地区');
+        }
         return Result::success([
             'list' => $list,
         ]);
