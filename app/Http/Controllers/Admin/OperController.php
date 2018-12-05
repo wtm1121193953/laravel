@@ -55,6 +55,7 @@ class OperController extends Controller
             'province_id' => 'required',
             'city_id' => 'required',
             'bank_card_no' =>  'bail|required|min:8|max:35',
+            'contact_wechat'    =>  'required|regex:/^[a-zA-Z\d_]{5,19}$/'
         ]);
         $this->validate(request(),[
             'bank_card_no' =>  'numeric',
@@ -75,6 +76,7 @@ class OperController extends Controller
             'province_id' => 'required',
             'city_id' => 'required',
             'bank_card_no' =>  'bail|required|min:8|max:35',
+            'contact_wechat'    =>  'required|regex:/^[a-zA-Z\d_]{5,19}$/'
         ]);
         $this->validate(request(),[
             'bank_card_no' =>  'numeric',
