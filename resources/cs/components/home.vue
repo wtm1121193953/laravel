@@ -296,7 +296,7 @@
                 router.replace('/login');
                 return ;
             }
-            this.checkMerchantElectronicContract();
+            // this.checkMerchantElectronicContract();
             this.themeSettingForm = deepCopy(store.state.theme);
 
             // 刷新页面时重新获取一下权限
