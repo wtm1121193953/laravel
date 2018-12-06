@@ -3,6 +3,7 @@
 namespace App\Modules\Merchant;
 
 use App\BaseModel;
+use App\Modules\Cs\CsMerchant;
 
 /**
  * Class MerchantStatistics
@@ -22,5 +23,10 @@ class MerchantStatistics extends BaseModel
     public function merchant()
     {
         return $this->belongsTo(Merchant::class);
+    }
+
+    public function csMerchant()
+    {
+        return $this->belongsTo(CsMerchant::class);
     }
 }

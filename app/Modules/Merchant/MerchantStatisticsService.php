@@ -63,7 +63,6 @@ class MerchantStatisticsService extends BaseService
             $query->where('merchant_id', '=', $params['merchantId']);
         }
 
-
         $query->groupBy('merchant_id');
         $query->orderBy('merchant_id', 'desc');
         $query->with('merchant:id,name,province,city');
