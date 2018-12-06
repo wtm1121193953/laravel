@@ -35,6 +35,10 @@ class CsStatisticsMerchantOrderService extends BaseService
         if (empty($obj->id)) {
             throw new BaseResponseException('创建初始数据失败');
         }
+        //如果为0就不减了，不能为负数
+        if ($obj->order_number_today == 0) {
+            return $obj;
+        }
         return $obj->decrement('order_number_today');
     }
 
