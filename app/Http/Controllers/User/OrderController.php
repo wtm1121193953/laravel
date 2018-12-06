@@ -109,6 +109,7 @@ class OrderController extends Controller
 
         $currentOperId = request()->get('current_oper_id');
         $data = Order::where('user_id', $user->id)
+            ->whereNull('user_deleted_at')
             ->where(function (Builder $query) {
                 $query->where('type', Order::TYPE_GROUP_BUY)
                     ->orWhere(function (Builder $query) {

@@ -211,6 +211,10 @@ return [
         ],
         'temp_token'    =>  [
             'required'  =>  '交易密码不正确'
+        ],
+        'contact_wechat'    =>  [
+            'required'  =>  '联系微信不可为空',
+            'regex'     =>  '联系微信号必须由5~19位英文字母、数字与_组成的'
         ]
     ],
 
