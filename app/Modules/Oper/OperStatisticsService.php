@@ -34,8 +34,8 @@ class OperStatisticsService extends BaseService
         $query->groupBy('oper_id');
         $query->with('oper:id,name,province,city');
 
-        $orderColumn = $params['orderColumn'] ?: 'oper_id';
-        $orderType = $params['orderType'] ?: 'descending';
+        $orderColumn = isset($params['orderColumn']) ? $params['orderColumn'] : 'oper_id';
+        $orderType = isset($params['orderType']) ? $params['orderType'] : 'descending';
         $query->orderBy($orderColumn, $orderType == 'descending' ? 'desc' : 'asc');
 
         if ($return_query) {

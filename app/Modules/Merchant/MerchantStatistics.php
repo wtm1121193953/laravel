@@ -27,6 +27,6 @@ class MerchantStatistics extends BaseModel
 
     public function csMerchant()
     {
-        return $this->belongsTo(CsMerchant::class);
+        return $this->belongsTo(CsMerchant::class, 'merchant_id');
     }
 }
