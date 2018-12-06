@@ -65,7 +65,7 @@ class MerchantStatisticsService extends BaseService
 
         $query->groupBy('merchant_id');
         $query->orderBy('merchant_id', 'desc');
-        $query->with('merchant:id,name,province,city');
+        $query->with(['merchant:id,name,province,city', 'csMerchant:id,name,province,city']);
 
         if ($return_query) {
             return  $query;
@@ -78,7 +78,7 @@ class MerchantStatisticsService extends BaseService
         $data = $query->get();
         $total = $query->get()->count();
 
-        $data->each(function ($item) use ($params){
+        $data->each(function (&$item) use ($params){
             $item->date = "{$params['startDate']}至{$params['endDate']}";
         });
 

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Platform;
 
+use App\Modules\Cs\CsMerchant;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
 use App\Modules\User\User;
@@ -41,6 +42,11 @@ class PlatformTradeRecord extends Model
     public function merchant()
     {
         return $this->belongsTo(Merchant::class);
+    }
+
+    public function csMerchant()
+    {
+        return $this->belongsTo(CsMerchant::class, 'merchant_id');
     }
 
     public function user()

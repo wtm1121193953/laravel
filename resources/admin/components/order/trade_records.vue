@@ -62,7 +62,13 @@
                     <span v-else-if="scope.row.type === 2" class="c-warning">退款</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="merchant.name" label="交易商户"/>
+            <el-table-column label="交易商户">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.merchant">{{scope.row.merchant.name}}</span>
+                    <span v-else-if="scope.row.cs_merchant">{{scope.row.cs_merchant.name}}</span>
+                    <span v-else></span>
+                </template>
+            </el-table-column>
             <el-table-column prop="oper.name" label="所属运营中心"/>
             <el-table-column prop="user_id" label="用户ID"/>
         </el-table>

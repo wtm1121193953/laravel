@@ -45,7 +45,7 @@ class PlatformTradeRecordService extends BaseService
         ;
 
         $query->with('oper:id,name');
-        $query->with('merchant:id,name');
+        $query->with(['merchant:id,name', 'csMerchant:id,name']);
 
 
         $query->orderBy('trade_time', 'desc');

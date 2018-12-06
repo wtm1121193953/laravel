@@ -44,7 +44,13 @@
         <el-table :data="list" stripe v-loading="isLoading" @sort-change="sortChange">
             <el-table-column prop="date" label="时间"/>
             <el-table-column prop="merchant_id" label="商户ID"/>
-            <el-table-column prop="merchant.name" label="商户名称"/>
+            <el-table-column label="商户名称">
+                <template slot-scope="scope">
+                    <span v-if="scope.row.merchant">{{scope.row.merchant.name}}</span>
+                    <span v-else-if="scope.row.cs_merchant">{{scope.row.cs_merchant.name}}</span>
+                    <span v-else></span>
+                </template>
+            </el-table-column>
             <el-table-column label="商户省份+城市">
                 <template slot-scope="scope">
                     <span>{{scope.row.merchant ? scope.row.merchant.province : ''}}</span>
