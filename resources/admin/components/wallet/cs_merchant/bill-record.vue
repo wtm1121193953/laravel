@@ -43,14 +43,6 @@
             <el-table-column prop="created_at" label="交易时间"></el-table-column>
             <el-table-column prop="bill_no" label="交易号"></el-table-column>
             <el-table-column prop="merchant_name" label="商户名称"></el-table-column>
-            <el-table-column prop="merchant_level" label="商户等级">
-                <template slot-scope="scope">
-                    <span v-if="scope.row.merchant_level == 1">普通商户</span>
-                    <span v-else-if="scope.row.merchant_level == 2">金牌商户</span>
-                    <span v-else-if="scope.row.merchant_level == 3">超级商户</span>
-                    <span v-else>未知</span>
-                </template>
-            </el-table-column>
             <el-table-column prop="type" label="交易类型">
                 <template slot-scope="scope">
                     <span v-if="scope.row.type == 1">自己消费奖励</span>

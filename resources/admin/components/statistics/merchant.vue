@@ -53,8 +53,14 @@
             </el-table-column>
             <el-table-column label="商户省份+城市">
                 <template slot-scope="scope">
-                    <span>{{scope.row.merchant ? scope.row.merchant.province : ''}}</span>
-                    <span>{{scope.row.merchant ? scope.row.merchant.city : ''}}</span>
+                    <span v-if="scope.row.merchant">
+                        <span>{{scope.row.merchant ? scope.row.merchant.province : ''}}</span>
+                        <span>{{scope.row.merchant ? scope.row.merchant.city : ''}}</span>
+                    </span>
+                    <span v-else-if="scope.row.cs_merchant">
+                        <span>{{scope.row.cs_merchant ? scope.row.cs_merchant.province : ''}}</span>
+                        <span>{{scope.row.cs_merchant ? scope.row.cs_merchant.city : ''}}</span>
+                    </span>
                 </template>
             </el-table-column>
             <el-table-column prop="invite_user_num" label="商户邀请会员数" sortable="custom">
