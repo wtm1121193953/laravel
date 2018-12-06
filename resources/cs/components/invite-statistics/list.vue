@@ -60,7 +60,7 @@
                 this.getList();
             },
             downloadExcel() {
-                location.href = '/api/merchant/invite/statistics/downloadInviteRecordList?mobile=' + this.query.mobile;
+                location.href = '/api/cs/invite/statistics/downloadInviteRecordList?mobile=' + this.query.mobile;
             },
             sortChange(column) {
                 this.query.orderColumn = column.prop;
