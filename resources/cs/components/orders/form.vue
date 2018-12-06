@@ -34,7 +34,8 @@
             </el-form-item>
             <!--暂时使用discount_price字段-->
             <el-form-item label="免配送费：">
-                -{{order.discount_price}}元
+                <span v-if="order.discount_price == 0">{{order.discount_price}}元</span>
+                <span v-else>-{{order.discount_price}}元</span>
             </el-form-item>
             <el-form-item label="实付：">
                 {{order.pay_price}}元

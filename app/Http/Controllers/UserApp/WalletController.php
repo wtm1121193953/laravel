@@ -333,6 +333,9 @@ class WalletController extends Controller
         ]);
         $merchantId = request('merchantId');
         $ratio = FeeSplittingService::getUserFeeSplittingRatioToSelfByMerchantId($merchantId);
+        if ($ratio < 0) {
+            $ratio = 0;
+        }
         // 返回的是系数 直接乘以金额就好了
         return Result::success([
             'ratio' => $ratio,
