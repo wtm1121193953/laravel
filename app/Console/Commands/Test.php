@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\DataCacheService;
 use App\Jobs\ImageMigrationToCOSJob;
+use App\Jobs\Schedule\CsMerchantOrder;
 use App\Jobs\Schedule\InviteUserStatisticsDailyJob;
 use App\Jobs\Schedule\PlatformTradeRecordsDailyJob;
 use App\Jobs\Schedule\SettlementAgentPayDaily;
@@ -87,6 +88,11 @@ class Test extends Command
      */
     public function handle()
     {
+
+        //月销量统计
+        CsMerchantOrder::dispatch();
+        dd('ok');
+
         $order = Order::find(4703);
         $a = OrderFinishedJob::dispatch($order);
         dd('over');

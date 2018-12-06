@@ -40,13 +40,19 @@ class CsMerchantOrder implements ShouldQueue
     {
         //
         $start_date = date('Y-m-d',time()-30*86400);
-        $end_date = date('Y-m-d');
-        Log::info('超市商户最近30天订单统计'.$start_date.'到' . $end_date);
+        Log::info('超市商户最近30天订单统计'.$start_date);
 
-        $status = [Order::STATUS_FINISHED];
+        $status = [
+            Order::STATUS_FINISHED,
+            Order::STATUS_REFUNDED,
+            Order::STATUS_PAID,
+            Order::STATUS_UNDELIVERED,
+            Order::STATUS_DELIVERED,
+            Order::STATUS_NOT_TAKE_BY_SELF
+        ];
         $status = implode(',',$status);
 
-        $sql = "SELECT merchant_id,count(*) c from orders where created_at<'$end_date' and created_at>'{$start_date}' and merchant_type=2 and `status` in ({$status})
+        $sql = "SELECT merchant_id,count(*) c from orders where merchant_type=2 and created_at>'{$start_date}' and `status` in ({$status})
 GROUP BY merchant_id
         ";
 
@@ -54,11 +60,11 @@ GROUP BY merchant_id
         if ($rs) {
             foreach ($rs as $v) {
                 $row = CsStatisticsMerchantOrderService::createMerchantData($v->merchant_id);
+                $row->order_number_today = 0;
                 $row->order_number_30d = $v->c;
                 $row->save();
             }
         }
-
 
         Log::info('超市商户最近30天订单统计结束');
     }
