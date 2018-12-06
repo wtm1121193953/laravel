@@ -13,6 +13,7 @@ use App\Exceptions\ParamInvalidException;
 use App\Http\Controllers\Controller;
 use App\Modules\Sms\SmsVerifyCodeService;
 use App\Result;
+use App\Support\RedisLock;
 
 class SmsController extends Controller
 {
@@ -26,8 +27,16 @@ class SmsController extends Controller
             throw new ParamInvalidException('手机号码不合法');
         }
 
-        $smsVerifyCode = SmsVerifyCodeService::add($mobile);
-        $result = SmsVerifyCodeService::sendVerifyCode($smsVerifyCode->mobile, $smsVerifyCode->verify_code);
+        $redisLockKey = 'userSendVerifyCode:' . $mobile;
+        $redisLock = RedisLock::lock($redisLockKey, 5);
+
+        if ($redisLock) {
+            $smsVerifyCode = SmsVerifyCodeService::add($mobile);
+            $result = SmsVerifyCodeService::sendVerifyCode($smsVerifyCode->mobile, $smsVerifyCode->verify_code);
+            RedisLock::unlock($redisLockKey);
+        } else {
+            throw new BaseResponseException('短信已发送');
+        }
 
         if ($result['code'] == 0){
             return Result::success();
