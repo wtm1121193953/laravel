@@ -463,6 +463,7 @@ class MerchantService extends BaseService
             }
         }
 
+        var_dump($merchant);exit;
         $merchant->save();
 
         // 更新业务员已发展商户和审核通过商户数量
