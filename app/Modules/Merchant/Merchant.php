@@ -255,7 +255,7 @@ class Merchant extends BaseModel
         if (!empty($licence_pic_url) && is_array($licence_pic_url)) {
             $licence_pic_url = implode(',',$licence_pic_url);
         }
-        $this->licence_pic_url = request('licence_pic_url','');
+        $this->licence_pic_url = $licence_pic_url;
 
         $this->legal_id_card_pic_a = request('legal_id_card_pic_a','');
         $this->legal_id_card_pic_b = request('legal_id_card_pic_b','');
