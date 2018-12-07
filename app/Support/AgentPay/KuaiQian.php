@@ -161,7 +161,7 @@ class KuaiQian extends AgentPayBase
 <tns:request-body>
     <tns:batch-no>'.$batchno.'</tns:batch-no>
     <tns:page>1</tns:page>
-    <tns:page-size>20</tns:page-size>
+    <tns:page-size>1000</tns:page-size>
     <tns:list-flag>0</tns:list-flag>
   </tns:request-body>
 </tns:batchid-query-request>';
