@@ -10,6 +10,7 @@ namespace App\Exports;
 
 
 use App\Modules\Bizer\BizerService;
+use App\Modules\Cs\CsMerchantService;
 use App\Modules\Merchant\MerchantService;
 use App\Modules\Oper\OperService;
 use App\Modules\User\UserService;
@@ -83,6 +84,7 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
             $array = [
                 '交易时间',
                 '交易号',
+                '商户名称',
                 '交易类型',
                 '账户交易金额',
                 '账户余额',
@@ -107,7 +109,11 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
             $bizer = BizerService::getById($row->origin_id);
             $row->bizer_mobile = $bizer->mobile;
             $row->bizer_name = $bizer->name;
+        }else if ($row->origin_type == WalletBill::ORIGIN_TYPE_CS) {
+            $merchant = CsMerchantService::getById($row->origin_id, ['name']);
+            $row->merchant_name = $merchant->name;
         }
+
         if (in_array($row->type, [WalletBill::TYPE_WITHDRAW, WalletBill::TYPE_WITHDRAW_FAILED])) {
             $walletWithdraw = WalletWithdrawService::getWalletWithdrawById($row->obj_id);
             $row->status = $walletWithdraw->status;
@@ -193,6 +199,7 @@ class WalletBillExport implements FromQuery, WithHeadings, WithMapping
             $array = [
                 $row->created_at,
                 $row->bill_no,
+                $row->merchant_name,
                 $typeText,
                 ($row->inout_type == 1 ? '+' : '-') . "\t" . $row->amount,
                 $row->after_amount,
