@@ -7,6 +7,7 @@ use App\Exceptions\BaseResponseException;
 use App\Modules\CsOrder\CsOrderGood;
 use App\Modules\Merchant\Merchant;
 use App\Modules\Oper\Oper;
+use App\Modules\User\User;
 use App\Modules\Wallet\WalletConsumeQuotaRecord;
 use Carbon\Carbon;
 
@@ -234,5 +235,10 @@ class Order extends BaseModel
     public function csOrderGoods()
     {
         return $this->hasMany(CsOrderGood::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

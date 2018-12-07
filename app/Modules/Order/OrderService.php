@@ -172,6 +172,7 @@ class OrderService extends BaseService
         }
 
         $query->with('oper:id,name');
+        $query->with('user:id,name,avatar_url,wx_nick_name,wx_avatar_url');
         $query->orderBy('id', 'desc');
 
         if ($getWithQuery) {
