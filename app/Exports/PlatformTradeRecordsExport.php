@@ -74,7 +74,7 @@ class PlatformTradeRecordsExport implements FromQuery, WithHeadings, WithMapping
             $row->order_no,
             $row->trade_amount,
             $types[$row->type],
-            $row->merchant ? $row->merchant->name : ($row->cs_merchant ? $row->cs_merchant->name : ''),
+            $row->merchant ? $row->merchant->name : ($row->csMerchant ? $row->csMerchant->name : ''),
             $row->oper->name,
             $row->user_id,
         ];

@@ -13,7 +13,7 @@ class PlatformTradeRecordService extends BaseService
      * 查询订单列表
      * @param array $params
      * @param bool $getWithQuery
-     * @return Order|\Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator|Builder|mixed
      */
     public static function getList(array $params, $getWithQuery = false)
     {
@@ -45,7 +45,8 @@ class PlatformTradeRecordService extends BaseService
         ;
 
         $query->with('oper:id,name');
-        $query->with(['merchant:id,name', 'csMerchant:id,name']);
+        $query->with('merchant:id,name');
+        $query->with('csMerchant:id,name');
 
 
         $query->orderBy('trade_time', 'desc');
