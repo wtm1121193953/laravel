@@ -170,6 +170,7 @@ class OrderController extends Controller
             'startTime' => request('startTime'),
             'endTime' => request('endTime'),
             'user_id' => request('user_id'),
+            'merchant_type' => request('merchant_type'),
         ];
 
         $data = PlatformTradeRecordService::getList($params,true);
